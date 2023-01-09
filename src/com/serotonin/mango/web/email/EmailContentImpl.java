@@ -67,4 +67,15 @@ class EmailContentImpl implements IMsgContent {
     public String getEncoding() {
         return this.encoding;
     }
+
+    @Override
+    public String toString() {
+        return "EmailContentImpl{" +
+                "plainContent='" + plainContent + '\'' +
+                ", htmlContent='" + htmlContent + '\'' +
+                ", attachments=" + attachments +
+                ", inlineParts=" + inlineParts +
+                ", encoding='" + encoding + '\'' +
+                '}';
+    }
 }

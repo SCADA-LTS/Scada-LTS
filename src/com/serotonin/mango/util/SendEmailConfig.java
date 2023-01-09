@@ -109,4 +109,19 @@ public class SendEmailConfig {
         if((user == null || user.isEmpty()) && (password == null || password.isEmpty()))
             throw new IllegalStateException("Email config properties: " + SystemSettingsDAO.EMAIL_SMTP_USERNAME + " / " + SystemSettingsDAO.EMAIL_SMTP_PASSWORD + " is null!");
     }
+
+    @Override
+    public String toString() {
+        return "SendEmailConfig{" +
+                "fromAddr='" + fromAddr + '\'' +
+                ", pretty='" + pretty + '\'' +
+                ", host='" + host + '\'' +
+                ", port=" + port +
+                ", authorization=" + authorization +
+                ", username='" + username + '\'' +
+                ", password='*****'" +
+                ", tls=" + tls +
+                ", timeout=" + timeout +
+                '}';
+    }
 }
