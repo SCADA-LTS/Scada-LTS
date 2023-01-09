@@ -45,16 +45,6 @@ public class UserDaoWithCache implements IUserDAO {
     }
 
     @Override
-    public void updateHideMenu(User user) {
-        userCache.update(user);
-    }
-
-    @Override
-    public void updateScadaTheme(User user) {
-        userCache.update(user);
-    }
-
-    @Override
     public void updateHomeUrl(int userId, String homeUrl) {
         userCache.updateHomeUrl(userId, homeUrl);
     }
