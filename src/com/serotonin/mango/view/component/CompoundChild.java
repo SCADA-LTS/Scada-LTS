@@ -42,8 +42,8 @@ public class CompoundChild {
     private CompoundChild(CompoundChild compoundChild) {
         this.id = compoundChild.getId();
         this.description = compoundChild.getDescription();
-        this.viewComponent = compoundChild.getViewComponent().copy();
-        this.dataTypesOverride = compoundChild.getDataTypes().clone();
+        this.viewComponent = compoundChild.getViewComponent() != null ? compoundChild.getViewComponent().copy() : null;
+        this.dataTypesOverride = compoundChild.getDataTypes() != null ? compoundChild.getDataTypes().clone() : null;
     }
 
     public String getId() {

@@ -46,20 +46,103 @@ public class CopyViewComponentTest {
 
     @Test
     public void when_copy_then_equals_true() {
+        //when:
         ViewComponent result = expected.copy();
+
+        //then:
         assertEquals(expected, result);
     }
 
     @Test
-    public void when_copy_and_modified_then_equals_false() {
+    public void when_copy_and_modified_Index_then_equals_false() {
+        //when:
         ViewComponent result = expected.copy();
+
+        //and:
         result.setIndex(99);
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_Z_then_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setZ(88);
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_Style_then_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setStyle("new style");
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_IdSuffix_then_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setIdSuffix("new IdSuffix");
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_Location_then_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setLocation(1,2);
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_Xthen_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setX(3);
+
+        //then:
+        assertNotEquals(expected, result);
+    }
+
+    @Test
+    public void when_copy_and_modified_Y_then_equals_false() {
+        //when:
+        ViewComponent result = expected.copy();
+
+        //and:
+        result.setY(4);
+
+        //then:
         assertNotEquals(expected, result);
     }
 
     @Test
     public void when_copy_then_other_reference() {
+        //when:
         ViewComponent result = expected.copy();
+
+        //then:
         assertNotSame(expected, result);
     }
 }
