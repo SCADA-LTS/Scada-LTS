@@ -73,4 +73,13 @@ class MangoEmailContentImpl extends TemplateEmailContentImpl implements IMsgSubj
 
         return Common.ctx.getFreemarkerConfig().getTemplate(name);
     }
+
+    @Override
+    public String toString() {
+        return "MangoEmailContentImpl{" +
+                "defaultSubject='" + defaultSubject + '\'' +
+                ", subjectDirective=" + subjectDirective +
+                super.toString() +
+                '}';
+    }
 }

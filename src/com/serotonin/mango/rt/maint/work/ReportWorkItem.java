@@ -293,4 +293,18 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 		LOG.error("Failed sending report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 	}
+
+	@Override
+	public String toString() {
+		return "ReportWorkItem{" +
+				"reportConfig=" + reportConfig +
+				", user=" + user +
+				", reportInstance=" + reportInstance +
+				'}';
+	}
+
+	@Override
+	public String getDetails() {
+		return this.toString();
+	}
 }

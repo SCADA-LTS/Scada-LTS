@@ -42,4 +42,17 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     public int getPriority() {
         return WorkItem.PRIORITY_MEDIUM;
     }
+
+    @Override
+    public String toString() {
+        return "EmailAfterWorkItem{" +
+                "sendEmailData=" + sendEmailData +
+                ", sendEmailConfig=" + sendEmailConfig +
+                '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
+    }
 }
