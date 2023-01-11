@@ -35,6 +35,7 @@ import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.dwr.util.AnonymousUserUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
@@ -43,8 +44,8 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.utils.HttpParameterUtils;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
@@ -69,6 +70,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.util.ViewControllerUtils.*;
 
 public class MiscDwr extends BaseDwr {
 	public static final Log LOG = LogFactory.getLog(MiscDwr.class);
@@ -362,15 +365,10 @@ public class MiscDwr extends BaseDwr {
 							.getAnonViewId());
 				else {
 					int viewId = pollRequest.getViewId();
-					if(viewId == Common.NEW_ID) {
-						viewId = HttpParameterUtils.getValue("mainViewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
-					}
-					if(viewId != Common.NEW_ID) {
-						View view = new ViewService().getView(viewId);
-						view.validateViewComponents(user);
-						newStates = viewDwr.getViewPointData(user, view, pollRequest
-								.isViewEdit());
-					}
+					View view = getView(viewId, httpRequest, new ViewService(), pollRequest.isViewEdit());
+					view.validateViewComponents(user);
+					newStates = viewDwr.getViewPointData(user, view, pollRequest
+							.isViewEdit());
 				}
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
 

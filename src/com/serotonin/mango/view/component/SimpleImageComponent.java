@@ -37,6 +37,18 @@ public class SimpleImageComponent extends PointComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("simpleImage", "SIMPLE_IMAGE", "graphic.simpleImage",
             new int[] { DataTypes.IMAGE });
 
+    public SimpleImageComponent() {
+    }
+
+    private SimpleImageComponent(SimpleImageComponent simpleImageComponent) {
+        super(simpleImageComponent);
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new SimpleImageComponent(this);
+    }
+
     @Override
     public String snippetName() {
         return "imageValueContent";
@@ -82,5 +94,10 @@ public class SimpleImageComponent extends PointComponent {
         if (ver == 1) {
             // no op
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleImageComponent{} " + super.toString();
     }
 }

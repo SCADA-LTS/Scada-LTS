@@ -24,7 +24,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -72,7 +74,28 @@ public class View implements Serializable, JsonSerializable {
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
-	
+
+	public View() {}
+
+	private View(View view) {
+		this.id = view.getId();
+		this.xid = view.getXid();
+		this.name = view.getName();
+		this.backgroundFilename = view.getBackgroundFilename();
+		this.width = view.getWidth();
+		this.height = view.getHeight();
+		this.resolution = view.getResolution();
+		this.modificationTime = view.getModificationTime();
+		this.userId = view.getUserId();
+		this.viewComponents = view.getViewComponents().stream()
+				.map(ViewComponent::copy)
+				.collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+		this.anonymousAccess = view.getAnonymousAccess();
+		this.viewUsers = view.getViewUsers().stream()
+				.map(ShareUser::copy)
+				.collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+	}
+
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;
@@ -239,6 +262,10 @@ public class View implements Serializable, JsonSerializable {
 
 	public Integer getHeight() {
 		return height;
+	}
+
+	public View copy() {
+		return new View(this);
 	}
 
 	public void setHeight(Integer height) {
@@ -468,5 +495,36 @@ public class View implements Serializable, JsonSerializable {
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
 		map.put("resolution", ResolutionView.RESOLUTION_VIEW_CODES.getCode(resolution));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof View)) return false;
+		View view = (View) o;
+		return getId() == view.getId() && getResolution() == view.getResolution() && getModificationTime() == view.getModificationTime() && getUserId() == view.getUserId() && getAnonymousAccess() == view.getAnonymousAccess() && Objects.equals(getXid(), view.getXid()) && Objects.equals(getName(), view.getName()) && Objects.equals(getBackgroundFilename(), view.getBackgroundFilename()) && Objects.equals(getWidth(), view.getWidth()) && Objects.equals(getHeight(), view.getHeight()) && Objects.equals(getViewComponents(), view.getViewComponents()) && Objects.equals(getViewUsers(), view.getViewUsers());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId(), getXid(), getName(), getBackgroundFilename(), getWidth(), getHeight(), getResolution(), getModificationTime(), getUserId(), getViewComponents(), getAnonymousAccess(), getViewUsers());
+	}
+
+	@Override
+	public String toString() {
+		return "View{" +
+				"id=" + id +
+				", xid='" + xid + '\'' +
+				", name='" + name + '\'' +
+				", backgroundFilename='" + backgroundFilename + '\'' +
+				", width=" + width +
+				", height=" + height +
+				", resolution=" + resolution +
+				", modificationTime=" + modificationTime +
+				", userId=" + userId +
+				", viewComponents=" + viewComponents +
+				", anonymousAccess=" + anonymousAccess +
+				", viewUsers=" + viewUsers +
+				'}';
 	}
 }

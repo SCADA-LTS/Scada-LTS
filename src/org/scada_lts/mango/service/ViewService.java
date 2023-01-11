@@ -100,11 +100,6 @@ public class ViewService {
 		return views;
 	}
 
-	@Deprecated
-	public List<ScadaObjectIdentifier> getAllViews() {
-		return viewDAO.findIdentifiers();
-	}
-
 	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
 		return getViewsWithAccess.getObjectIdentifiersWithAccess(user);
 	}
@@ -119,13 +114,18 @@ public class ViewService {
 
 	public View getView(int id) {
 		View view = viewDAO.findById(id);
-		if(view != null)
+		if(view != null) {
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		}
 		return view;
 	}
-	
+
 	public View getViewByXid(String xid) {
-		return viewDAO.findByXid(xid);
+		View view = viewDAO.findByXid(xid);
+		if(view != null) {
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		}
+		return view;
 	}
 	
 	public View getView(String name) {
@@ -157,12 +157,6 @@ public class ViewService {
 		} else {
 			viewDAO.update(view);
 		}
-
-		//sharing an object doesn't work
-		//saveViewUsers(view);
-
-		//TODO why don't update
-		//usersPermissions.clear();
 	}
 
 	public int saveViewAPI(View view) throws IOException {
@@ -175,8 +169,6 @@ public class ViewService {
 		} else {
 			viewDAO.update(view);
 		}
-
-		//usersPermissions.clear();
 		return id;
 	}
 
@@ -190,14 +182,11 @@ public class ViewService {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeView(final int viewId) {
-		//viewDAO.deleteViewForUser(viewId);
 		viewDAO.delete(viewId);
-		//usersProfileService.updateViewPermissions();
 	}
 	
 	public void removeUserFromView(int viewId, int userId) {
 		viewDAO.deleteViewForUser(viewId, userId);
-		//usersProfileService.updateViewPermissions();
 	}
 
 

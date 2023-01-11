@@ -11,6 +11,7 @@ public interface IViewDAO extends ScadaRepository<View, Integer> {
 
     View findByName(String name);
 
+    @Deprecated
     void deleteViewForUser(int viewId);
 
     void deleteViewForUser(int viewId, int userId);
