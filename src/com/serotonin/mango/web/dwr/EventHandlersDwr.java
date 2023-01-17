@@ -339,11 +339,6 @@ public class EventHandlersDwr extends BaseDwr {
 			response.addData("handler", vo);
 		}
 
-		if(type.getTypeId() == EventType.EventSources.DATA_POINT) {
-			DataPointRT dp = Common.ctx.getRuntimeManager().getDataPoint(type.getTypeRef1());
-			Common.ctx.getRuntimeManager().saveDataPoint(dp.getVO());
-		}
-
 		return response;
 	}
 

@@ -526,12 +526,6 @@ public class DataPointService implements MangoDataPoint {
 	public void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 
-		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
-			}
-		}
-		
 		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
 			try {
 			    pointEventDetectorDAO.insert(pointEventDetector);
