@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.event.type.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
