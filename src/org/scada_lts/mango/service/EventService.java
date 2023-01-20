@@ -103,25 +103,13 @@ public class EventService implements MangoEvent {
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
-		
-		eventDAO.updateAck(time, userId, alternateAckSource, eventId);
-		// true silenced
-		userEventDAO.updateAck(eventId, true);
-
-		clearCache();
-		notifyEventAck(eventId);
-
-		//TODO check
-		/*if( signalAlarmLevelChange ) {
-			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
-			Common.ctx.getEventManager().notifyEventAck(eventId,  userId);
-		}*/
-		
+		_ackEvent(eventId, time, userId, alternateAckSource, signalAlarmLevelChange);
 	}
 
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
-		ackEvent(eventId, time, userId, alternateAckSource, true);
+		_ackEvent(eventId, time, userId, alternateAckSource, true);
 	}
 
 	@Override
@@ -527,5 +515,25 @@ public class EventService implements MangoEvent {
 
 	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
 		return eventDAO.findCommentsByEventId(eventId);
+	}
+
+	@Override
+	public String generateUniqueXid() {
+		return DAO.getInstance().generateUniqueXid(EventHandlerVO.XID_PREFIX, "eventHandlers");
+	}
+
+	private void _ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
+		eventDAO.updateAck(time, userId, alternateAckSource, eventId);
+		// true silenced
+		userEventDAO.updateAck(eventId, true);
+
+		clearCache();
+		notifyEventAck(eventId);
+
+		//TODO check
+		/*if( signalAlarmLevelChange ) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
+			Common.ctx.getEventManager().notifyEventAck(eventId,  userId);
+		}*/
 	}
 }

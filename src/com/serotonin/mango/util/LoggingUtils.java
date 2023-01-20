@@ -10,6 +10,7 @@ import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -98,6 +99,14 @@ public final class LoggingUtils {
         String info =  "eventHandler: {0} (id: {1}, xid: {2}, type: {3}, script active id: {4}, script inactive id: {5})";
         return MessageFormat.format(info, eventHandler.getAlias(), eventHandler.getId(), eventHandler.getXid(), eventHandler.getHandlerType(),
                 eventHandler.getActiveScriptCommand(), eventHandler.getInactiveScriptCommand());
+    }
+
+    public static String pointEventDetectorInfo(PointEventDetectorVO pointEventDetector) {
+        if(pointEventDetector == null)
+            return "";
+        String info =  "pointEventDetector: {0} (id: {1}, xid: {2}, type: {3}, key: {4}, event type: {5})";
+        return MessageFormat.format(info, pointEventDetector.getAlias(), pointEventDetector.getId(), pointEventDetector.getXid(), pointEventDetector.getDetectorType(),
+                pointEventDetector.getEventDetectorKey(), pointEventDetector.getEventType());
     }
 
     public static String pointValueTimeInfo(PointValueTime pointValueTime, SetPointSource source) {
