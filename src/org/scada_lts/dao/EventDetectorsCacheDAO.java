@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.PointEventDetectorCache;
+import org.scada_lts.dao.model.PointEventDetectorCacheEntry;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -36,6 +36,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
+@Deprecated
 public class EventDetectorsCacheDAO {
 	
 	private static final Log LOG = LogFactory.getLog(EventDetectorsCacheDAO.class);
@@ -77,15 +78,15 @@ public class EventDetectorsCacheDAO {
 	// @formatter:on
 	
 	@SuppressWarnings("rawtypes")
-	protected List<PointEventDetectorCache> getAll() {
+	protected List<PointEventDetectorCacheEntry> getAll() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL EventDetectors");
 		}
 		try {
 			@SuppressWarnings("unchecked")
-			List<PointEventDetectorCache> listPointEventDetectorVO = DAO.getInstance().getJdbcTemp().query(SQL, new RowMapper() {
+			List<PointEventDetectorCacheEntry> listPointEventDetectorVO = DAO.getInstance().getJdbcTemp().query(SQL, new RowMapper() {
 				@Override
-				public PointEventDetectorCache mapRow(ResultSet rs, int rownumber) throws SQLException {
+				public PointEventDetectorCacheEntry mapRow(ResultSet rs, int rownumber) throws SQLException {
 					PointEventDetectorVO eventDetector = new PointEventDetectorVO();
 					eventDetector.setId(rs.getInt(COLUMN_NAME_ID));
 					eventDetector.setXid(rs.getString(COLUMN_NAME_XID));
@@ -101,7 +102,7 @@ public class EventDetectorsCacheDAO {
 					eventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 					eventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
 					
-					PointEventDetectorCache pedc = new PointEventDetectorCache();
+					PointEventDetectorCacheEntry pedc = new PointEventDetectorCacheEntry();
 					pedc.setPointEventDetector(eventDetector);
 					pedc.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
 					
@@ -118,13 +119,13 @@ public class EventDetectorsCacheDAO {
 	
 
 	protected TreeMap<Integer, List<PointEventDetectorVO>> getMapEventDetectors(
-			final List<PointEventDetectorCache> listEventDetectorCache) {
+			final List<PointEventDetectorCacheEntry> listEventDetectorCache) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getMapEventDetectorForUser");
 		}
 		TreeMap<Integer, List<PointEventDetectorVO>> mappedEventDetectorForUser = new TreeMap<Integer, List<PointEventDetectorVO>>();
 		
-		for (PointEventDetectorCache eventDetector : listEventDetectorCache) {
+		for (PointEventDetectorCacheEntry eventDetector : listEventDetectorCache) {
 		    int key = eventDetector.getDataPointId();
 			if (mappedEventDetectorForUser.get(key) == null) {
 				mappedEventDetectorForUser.put(key, new ArrayList<PointEventDetectorVO>());

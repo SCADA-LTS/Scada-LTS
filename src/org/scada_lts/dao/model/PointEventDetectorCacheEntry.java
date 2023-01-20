@@ -25,12 +25,12 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PointEventDetectorCache {
+public class PointEventDetectorCacheEntry {
 	
 	private PointEventDetectorVO pointEventDetector;
 	private int dataPointId;
 	
-	public PointEventDetectorCache() {
+	public PointEventDetectorCacheEntry() {
 		//
 	}
 	

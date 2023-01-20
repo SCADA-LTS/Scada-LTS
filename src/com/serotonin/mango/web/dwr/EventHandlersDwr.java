@@ -33,7 +33,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
@@ -63,6 +62,7 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.serorepl.utils.StringUtils;
 
@@ -77,7 +77,7 @@ public class EventHandlersDwr extends BaseDwr {
 		User user = Common.getUser();
 		Permissions.ensureAdmin(user);
 
-		EventDao eventDao = new EventDao();
+		EventService eventDao = new EventService();
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		// Get the data points
@@ -322,10 +322,10 @@ public class EventHandlersDwr extends BaseDwr {
 		EventTypeVO type = new EventTypeVO(eventSourceId, eventTypeRef1,
 				eventTypeRef2);
 		Permissions.ensureEventTypePermission(Common.getUser(), type);
-		EventDao eventDao = new EventDao();
+		EventService eventService = new EventService();
 
 		vo.setId(handlerId);
-		vo.setXid(StringUtils.isEmpty(xid) ? eventDao.generateUniqueXid() : xid);
+		vo.setXid(StringUtils.isEmpty(xid) ? eventService.generateUniqueXid() : xid);
 		vo.setAlias(alias);
 		vo.setDisabled(disabled);
 
@@ -333,8 +333,8 @@ public class EventHandlersDwr extends BaseDwr {
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {
-			eventDao.saveEventHandler(type, vo);
-			response.addData("handler", vo);
+			EventHandlerVO handler = eventService.saveEventHandler(type, vo);
+			response.addData("handler", handler);
 		}
 
 		return response;
@@ -342,10 +342,10 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public void deleteEventHandler(int handlerId) {
 		Permissions.ensureAdmin();
-		EventDao eventDao = new EventDao();
+		EventService eventService = new EventService();
 		Permissions.ensureEventTypePermission(Common.getUser(),
-				eventDao.getEventHandlerType(handlerId));
-		eventDao.deleteEventHandler(handlerId);
+				eventService.getEventHandlerType(handlerId));
+		eventService.deleteEventHandler(handlerId);
 	}
 
 	public LocalizableMessage testProcessCommand(String command) {

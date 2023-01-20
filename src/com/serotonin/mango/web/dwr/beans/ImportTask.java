@@ -39,7 +39,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -81,9 +80,7 @@ import com.serotonin.web.i18n.I18NUtils;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoReport;
-import org.scada_lts.mango.service.ReportService;
-import org.scada_lts.mango.service.ScriptService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 /**
  * @author Matthew Lohbihler
@@ -95,12 +92,12 @@ public class ImportTask extends ProgressiveTask {
 	private final DwrResponseI18n response;
 	private final UserDao userDao = new UserDao();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
-	private final DataPointDao dataPointDao = new DataPointDao();
+	private final DataPointService dataPointService = new DataPointService();
 	private final ViewService viewDao = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
-	private final EventDao eventDao = new EventDao();
+	private final EventService eventService = new EventService();
 	private final MailingListDao mailingListDao = new MailingListDao();
 	private final PublisherDao publisherDao = new PublisherDao();
 	private final WatchListDao watchListDao = new WatchListDao();
@@ -195,7 +192,7 @@ public class ImportTask extends ProgressiveTask {
 							name == null ? "(undefined)" : name);
 				else {
 					DataSourceVO<?> dsvo;
-					DataPointVO vo = dataPointDao.getDataPoint(xid);
+					DataPointVO vo = dataPointService.getDataPoint(xid);
 					if (vo == null) {
 						// Locate the data source for the point.
 						String dsxid = dataPoint.getString("dataSourceXid");
@@ -520,7 +517,7 @@ public class ImportTask extends ProgressiveTask {
 					name == null ? "(undefined)" : name);
 		else {
 			DataSourceVO<?> dsvo;
-			DataPointVO vo = dataPointDao.getDataPoint(xid);
+			DataPointVO vo = dataPointService.getDataPoint(xid);
 			if (vo == null) {
 				// Locate the data source for the point.
 				String dsxid = dataPoint.getString("dataSourceXid");
@@ -571,8 +568,8 @@ public class ImportTask extends ProgressiveTask {
 							dsvo.setState(new ImportChangeEnableStateDs());
 							Common.ctx.getRuntimeManager().saveDataSource(dsvo);
 						}
-
 						Common.ctx.getRuntimeManager().saveDataPoint(vo);
+						dataPointService.saveEventDetectors(vo);
 						addSuccessMessage(isnew, "emport.dataPoint.prefix", xid);
 					}
 				} catch (LocalizableJsonException e) {
@@ -652,13 +649,13 @@ public class ImportTask extends ProgressiveTask {
 					pointHierarchyJson, List.class, PointFolder.class);
 			root.setSubfolders(subfolders);
 
-			for (DataPointVO dp : dataPointDao.getDataPoints(null, false)) {
+			for (DataPointVO dp : dataPointService.getDataPoints(null, false)) {
 				dp.setPointFolderId(0);
-				dataPointDao.updateDataPointShallow(dp);
+				dataPointService.updateDataPointShallow(dp);
 			}
 
 			// Save the new values.
-			dataPointDao.savePointHierarchy(root);
+			dataPointService.savePointHierarchy(root);
 			response.addGenericMessage("emport.pointHierarchy.prefix",
 					I18NUtils.getMessage(bundle, "emport.saved"));
 		} catch (LocalizableJsonException e) {
@@ -889,7 +886,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.eventHandler.xid");
 		else {
-			EventHandlerVO handler = eventDao.getEventHandler(xid);
+			EventHandlerVO handler = eventService.getEventHandler(xid);
 			if (handler == null) {
 				handler = new EventHandlerVO();
 				handler.setXid(xid);
@@ -917,11 +914,11 @@ public class ImportTask extends ProgressiveTask {
 
 					if (!isnew) {
 						// Check if the event type has changed.
-						EventType oldEventType = eventDao
+						EventType oldEventType = eventService
 								.getEventHandlerType(handler.getId());
 						if (!oldEventType.equals(eventType)) {
 							// Event type has changed. Delete the old one.
-							eventDao.deleteEventHandler(handler.getId());
+							eventService.deleteEventHandler(handler.getId());
 
 							// Call it new
 							handler.setId(Common.NEW_ID);
@@ -930,7 +927,7 @@ public class ImportTask extends ProgressiveTask {
 					}
 
 					// Save it.
-					eventDao.saveEventHandler(eventType, handler);
+					eventService.saveEventHandler(eventType, handler);
 					addSuccessMessage(isnew, "emport.eventHandler.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {

@@ -1,12 +1,11 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.web.mvc.api.AggregateSettings;
-
-import static org.scada_lts.dao.pointvalues.PointValueAmChartDAO.dataPointInfo;
 
 public final class AggregateUtils {
 
@@ -78,7 +77,7 @@ public final class AggregateUtils {
             return -1;
         }
         if(dataPoint.getPointLocator() == null) {
-            LOG.warn(dataPointInfo(dataPoint));
+            LOG.warn(LoggingUtils.dataPointInfo(dataPoint));
             return -1;
         }
         return dataPoint.getPointLocator().getDataTypeId();

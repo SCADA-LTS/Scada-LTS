@@ -30,7 +30,7 @@ import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.dao.EventDetectorsCacheDAO;
-import org.scada_lts.dao.model.PointEventDetectorCache;
+import org.scada_lts.dao.model.PointEventDetectorCacheEntry;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
@@ -40,6 +40,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
+@Deprecated
 public class UpdateEventDetectors extends EventDetectorsCacheDAO implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdateEventDetectors.class);
@@ -47,7 +48,7 @@ public class UpdateEventDetectors extends EventDetectorsCacheDAO implements Stat
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		LOG.trace("UpdateEventDetectors");
-		List<PointEventDetectorCache> listEventDetector = getAll();
+		List<PointEventDetectorCacheEntry> listEventDetector = getAll();
 		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
 		try {
 			EventDetectorsCache.getInstance().setMapEventDetectorForDataPoint(mapEventDetector);

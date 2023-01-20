@@ -114,4 +114,6 @@
 
     <cache alias="view_by_id" uses-template="integer_view_template"/>
     <cache alias="view_by_xid" uses-template="string_view_template"/>
+
+    <cache alias="point_event_detector_list" uses-template="string_list_cache_template"/>
 </config>
