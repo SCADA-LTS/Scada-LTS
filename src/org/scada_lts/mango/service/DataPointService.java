@@ -491,7 +491,7 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	private void setEventDetectors(DataPointVO dataPoint) {
-		dataPoint.setEventDetectors(pointEventDetectorDAO.getPointEventDetectors(dataPoint));
+		dataPoint.setEventDetectors(getEventDetectors(dataPoint));
 	}
 
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
@@ -499,7 +499,7 @@ public class DataPointService implements MangoDataPoint {
 			return pointEventDetectorDAO.getPointEventDetectors(dataPoint);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 	}
 
