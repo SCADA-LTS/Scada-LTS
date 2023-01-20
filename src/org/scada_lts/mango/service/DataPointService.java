@@ -494,38 +494,17 @@ public class DataPointService implements MangoDataPoint {
 		dataPoint.setEventDetectors(pointEventDetectorDAO.getPointEventDetectors(dataPoint));
 	}
 
-	@Deprecated
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
-
-		EventDetectorsCache.LOG.trace("getEventDetectors() dpId:" + dataPoint.getId());
-		long startTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			startTime = System.currentTimeMillis();
-		}
-
-		List<PointEventDetectorVO> result = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
-			} else {
-				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-			}
-		} catch (SchedulerException | IOException e) {
-			EventDetectorsCache.LOG.error(e);
+			return pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return Collections.emptyList();
 		}
-
-		long endTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			endTime = System.currentTimeMillis();
-		}
-		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
-
-		return result;
 	}
 
 	public void saveEventDetectors(DataPointVO dataPoint) {
-		List<PointEventDetectorVO> detectors = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 		for (PointEventDetectorVO pointEventDetector: detectors) {
 			if (!dataPoint.getEventDetectors().contains(pointEventDetector)) {
 				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
