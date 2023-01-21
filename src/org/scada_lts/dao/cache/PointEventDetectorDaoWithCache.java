@@ -31,6 +31,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
         return pointEventDetectorCache.findAll().stream()
                 .filter(a -> a.getDataPointId() == dataPoint.getId())
                 .map(PointEventDetectorCacheEntry::getPointEventDetector)
+                .map(PointEventDetectorVO::copy)
                 .peek(a -> a.njbSetDataPoint(dataPoint))
                 .collect(Collectors.toList());
     }
@@ -39,6 +40,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     public int getId(String pointEventDetectorXid, int dataPointId) {
         return pointEventDetectorCache.findAll().stream()
                 .filter(a -> a.getPointEventDetector() != null)
+                .filter(a -> a.getPointEventDetector().getXid() != null)
                 .filter(a -> a.getPointEventDetector().getXid().equals(pointEventDetectorXid))
                 .findAny()
                 .map(a -> a.getPointEventDetector().getId())
@@ -49,6 +51,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     public String getXid(int pointEventDetectorId) {
         return pointEventDetectorCache.findAll().stream()
                 .filter(a -> a.getPointEventDetector() != null)
+                .filter(a -> a.getPointEventDetector().getXid() != null)
                 .filter(a -> a.getPointEventDetector().getId() == pointEventDetectorId)
                 .findAny()
                 .map(a -> a.getPointEventDetector().getXid())
@@ -60,7 +63,8 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
         return pointEventDetectorCache.findAll().stream()
                 .filter(a -> a.getPointEventDetector() != null)
                 .filter(a -> a.getPointEventDetector().getId() != excludeId)
-                .anyMatch(a -> a.getPointEventDetector().getXid().equals(xid));
+                .filter(a -> a.getPointEventDetector().getXid() != null)
+                .noneMatch(a -> a.getPointEventDetector().getXid().equals(xid));
     }
 
     @Override

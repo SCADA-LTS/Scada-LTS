@@ -127,6 +127,14 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     private String alphanumericState;
     private double weight;
 
+    public PointEventDetectorVO() {
+    }
+
+    public PointEventDetectorVO(int id, String xid) {
+        this.id = id;
+        this.xid = xid;
+    }
+
     public EventTypeVO getEventType() {
         return new EventTypeVO(EventType.EventSources.DATA_POINT, dataPoint.getId(), id, getDescription(), alarmLevel,
                 getEventDetectorKey());
@@ -682,5 +690,13 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
 
     public static boolean validDurationType(int durationType) {
         return Common.TIME_PERIOD_CODES.isValidId(durationType);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", xid='" + xid + '\'' +
+                "} ";
     }
 }
