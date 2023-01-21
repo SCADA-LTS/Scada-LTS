@@ -832,7 +832,6 @@
               if (runSaveCallback)
                   saveCallback();
           }
-          console.log('saveCB');
       }
   }
   var pointEventDetectorEditor = new PointEventDetectorEditor();
