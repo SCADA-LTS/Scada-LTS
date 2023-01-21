@@ -519,7 +519,7 @@
                 };
                 var errorMessage = errors["eventDetector"+ edTableNodes[i].pedId +"ErrorMessage"];
                 if(errorMessage) {
-                    $("eventDetector"+ edTableNodes[i].pedId +"ErrorMessage").innerHTML = errors["eventDetector"+ edTableNodes[i].pedId +"ErrorMessage"];
+                    $("eventDetector"+ edTableNodes[i].pedId +"ErrorMessage").innerHTML = errorMessage;
                 }
             }
           }
