@@ -15,7 +15,7 @@ import org.scada_lts.dao.*;
 import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.cache.UserCachable;
 import org.scada_lts.dao.cache.UserCommentCachable;
-import org.scada_lts.dao.cache.UsersProfileCachable;
+import org.scada_lts.dao.cache.UsersProfileCacheable;
 import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.dao.cache.ViewCachable;
 
@@ -49,7 +49,7 @@ public class ApplicationBeans {
     }
 
     public static IUsersProfileDAO getUsersProfileDaoBean() {
-        boolean usersprofileCacheEnabled = Common.getEnvironmentProfile().getBoolean(UsersProfileCachable.CACHE_ENABLED_KEY, true);
+        boolean usersprofileCacheEnabled = Common.getEnvironmentProfile().getBoolean(UsersProfileCacheable.CACHE_ENABLED_KEY, true);
         return usersprofileCacheEnabled ?
                 getBeanFromContext("usersProfileDaoWithCache", IUsersProfileDAO.class) :
                 getBeanFromContext("usersProfileDAO", IUsersProfileDAO.class);

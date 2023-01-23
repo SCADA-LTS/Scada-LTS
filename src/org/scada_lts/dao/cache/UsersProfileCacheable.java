@@ -10,13 +10,13 @@ import org.springframework.cache.annotation.Caching;
 
 import java.util.List;
 
-public interface UsersProfileCachable {
+public interface UsersProfileCacheable {
 
     String CACHE_ENABLED_KEY = "usersprofile.cache.enabled";
 
     @Cacheable(cacheNames = "profile_list_by_userid", key = "#p0")
     List<UsersProfileVO> selectUserProfileByUserId(int userId);
-    @Cacheable(cacheNames = "profile_list_offset_limit", key = "#offset + ':' + #limit")
+    @Cacheable(cacheNames = "profile_list_offset_limit", key = "#p0 + ':' + #p1")
     List<UsersProfileVO> selectProfiles(int offset, int limit);
     @Cacheable(cacheNames = "userid_list_by_profileid", key = "#p0")
     List<Integer> selectUsersByProfileId(int profileId);

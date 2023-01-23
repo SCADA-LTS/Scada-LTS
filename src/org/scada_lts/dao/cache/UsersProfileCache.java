@@ -8,7 +8,7 @@ import org.scada_lts.dao.UsersProfileDAO;
 
 import java.util.List;
 
-public class UsersProfileCache implements UsersProfileCachable {
+public class UsersProfileCache implements UsersProfileCacheable {
 
     private final UsersProfileDAO usersProfileDAO;
 
