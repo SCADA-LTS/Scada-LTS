@@ -130,8 +130,8 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 
 		//Insert PointEventDetector
-		int firstId = pointEventDetectorDAO.insert(pointEventDetector);
-		int secondId = pointEventDetectorDAO.insert(secondPointEventDecorator);
+		int firstId = pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
+		int secondId = pointEventDetectorDAO.insert(dataPoint.getId(), secondPointEventDecorator);
 		pointEventDetector.setId(firstId);
 		secondPointEventDecorator.setId(secondId);
 
@@ -151,7 +151,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		updatePointEventDecorator.setAlphanumericState(UPDATE_ALPHANUMERIC_STATE);
 		updatePointEventDecorator.setWeight(UPDATE_WEIGHT);
 
-		pointEventDetectorDAO.update(updatePointEventDecorator);
+		pointEventDetectorDAO.update(dataPoint.getId(), updatePointEventDecorator);
 
 		//Select all PointEventDetectors with specific DataPoint
 		List<PointEventDetectorVO> pointEventDetectorList = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
@@ -174,7 +174,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		assertTrue(pointEventDetectorList.get(0).getWeight() == UPDATE_WEIGHT);
 
 		//Delete all pointEventDetector with specific DataPointId
-		pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+		pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector);
 		assertTrue(pointEventDetectorDAO.getPointEventDetectors(dataPoint).size() == 1);
 	}
 }

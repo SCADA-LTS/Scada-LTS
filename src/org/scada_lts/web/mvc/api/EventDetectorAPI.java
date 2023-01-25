@@ -89,10 +89,11 @@ public class EventDetectorAPI {
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+                PointEventDetectorVO pointEventDetectorVO = peds.stream().filter(a -> a.getId() == id).findAny().orElse(null);
                 if (!peds.isEmpty())  {
                     peds.removeIf(ped -> ped.getId() == id);
                 }
-                dataPointService.deleteEventDetector(dataPointVO, id);
+                dataPointService.deleteEventDetector(dataPointVO, pointEventDetectorVO);
                 Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 Map<String, String> response = new HashMap<>();
                 response.put("status", "deleted");
@@ -199,7 +200,7 @@ public class EventDetectorAPI {
     private ResponseEntity<String> updateEventDetector(EventDetectorDTO eventDetectorBody, DataPointVO dataPoint,
                                                        PointEventDetectorVO toUpdate) {
         updateValueEventDetector(toUpdate, eventDetectorBody);
-        dataPointService.updateEventDetectorWithType(toUpdate);
+        dataPointService.updateEventDetectorWithType(dataPoint, toUpdate);
         Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
         return new ResponseEntity<>("update", HttpStatus.OK);
     }

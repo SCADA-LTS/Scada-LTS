@@ -468,12 +468,18 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public String getDetectorXid(int pointEventDetectorId) {
-		return pointEventDetectorDAO.getXid(pointEventDetectorId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorId);
+		if(pointEventDetectorVO == null)
+			return null;
+		return pointEventDetectorVO.getXid();
 	}
 
 	@Override
 	public int getDetectorId(String pointEventDetectorXid, int dataPointId) {
-		return pointEventDetectorDAO.getId(pointEventDetectorXid, dataPointId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid);
+		if(pointEventDetectorVO == null)
+			return 0;
+		return pointEventDetectorVO.getId();
 	}
 
 	@Override
@@ -506,37 +512,26 @@ public class DataPointService implements MangoDataPoint {
 	public void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
 		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if (!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+			if(dataPoint.getEventDetectors().stream()
+					.noneMatch(a -> a.getXid().equals(pointEventDetector.getXid()))) {
+				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector);
 			}
 		}
 		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
 			try {
-			    int id = pointEventDetectorDAO.insert(pointEventDetector);
-				pointEventDetector.setId(id);
+				pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
 			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
+				pointEventDetectorDAO.update(dataPoint.getId(), pointEventDetector);
 			}
 		}
 	}
 
-	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
-		pointEventDetectorDAO.updateWithType(eventDetector);
+	public void updateEventDetectorWithType(DataPointVO dataPoint, PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(dataPoint.getId(), eventDetector);
 	}
 
-	public void deleteEventDetector(DataPointVO dataPoint, int id){
-		pointEventDetectorDAO.delete(dataPoint.getId(), id);
-	}
-
-	@Deprecated
-	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
-		for (PointEventDetectorVO ped : list) {
-			if (ped.getId() == id) {
-				list.remove(ped);
-				return ped;
-			}
-		}
-		return null;
+	public void deleteEventDetector(DataPointVO dataPoint, PointEventDetectorVO eventDetector){
+		pointEventDetectorDAO.delete(dataPoint.getId(), eventDetector);
 	}
 
 	@Override
