@@ -7,137 +7,109 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.dao.cache.PointEventDetectorCache;
 import org.scada_lts.dao.cache.PointEventDetectorDaoWithCache;
-import org.scada_lts.dao.model.PointEventDetectorCacheEntry;
 
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
 public class IsEventDetectorXidUniqueTest {
 
-    @Parameterized.Parameters(name= "{index}: detectors: {0}, xid: {1}, exclude id: {2}, result: {3}")
+    @Parameterized.Parameters(name= "{index}: detectors: {0}, {1}, {2}, xid: {3}, exclude id: {4}, result: {5}")
     public static Object[][] primeNumbers() {
         return new Object[][] {
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 4)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_126",
                         0,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_126",
                         0,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 4)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_125",
                         0,
                         false
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_125",
                         0,
                         false
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 4)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_126",
                         1,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_126",
                         1,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 4)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_123",
                         1,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_123",
                         1,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 4)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_123",
                         2,
                         false
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, "PED_124"), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, "PED_125"), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, "PED_124"),
+                        new PointEventDetectorVO(3, "PED_125"),
                         "PED_123",
                         2,
                         false
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, null), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, null), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, null), 4)
-                        ),
+                        new PointEventDetectorVO(1, null),
+                        new PointEventDetectorVO(2, null),
+                        new PointEventDetectorVO(3, null),
                         "PED_126",
                         1,
                         true
                 },
                 new Object[] {
-                        Arrays.asList(
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(1, "PED_123"), 4),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(2, null), 5),
-                                new PointEventDetectorCacheEntry(new PointEventDetectorVO(3, null), 6)
-                        ),
+                        new PointEventDetectorVO(1, "PED_123"),
+                        new PointEventDetectorVO(2, null),
+                        new PointEventDetectorVO(3, null),
                         "PED_123",
                         2,
                         false
@@ -146,14 +118,18 @@ public class IsEventDetectorXidUniqueTest {
     }
 
 
-    private final List<PointEventDetectorCacheEntry> pointEventDetectors;
+    private final PointEventDetectorVO pointEventDetector1;
+    private final PointEventDetectorVO pointEventDetector2;
+    private final PointEventDetectorVO pointEventDetector3;
     private final String xid;
     private final int exclusiveId;
     private final boolean expected;
 
-    public IsEventDetectorXidUniqueTest(List<PointEventDetectorCacheEntry> pointEventDetectors, String xid,
-                                        int exclusiveId, boolean expected) {
-        this.pointEventDetectors = pointEventDetectors;
+    public IsEventDetectorXidUniqueTest(PointEventDetectorVO pointEventDetector1, PointEventDetectorVO pointEventDetector2,
+                                        PointEventDetectorVO pointEventDetector3, String xid, int exclusiveId, boolean expected) {
+        this.pointEventDetector1 = pointEventDetector1;
+        this.pointEventDetector2 = pointEventDetector2;
+        this.pointEventDetector3 = pointEventDetector3;
         this.xid = xid;
         this.exclusiveId = exclusiveId;
         this.expected = expected;
@@ -164,8 +140,12 @@ public class IsEventDetectorXidUniqueTest {
     @Before
     public void config() {
         PointEventDetectorDAO pointEventDetectorDaoMock = mock(PointEventDetectorDAO.class);
-        subject = new PointEventDetectorDaoWithCache(new PointEventDetectorCache(pointEventDetectorDaoMock));
-        when(pointEventDetectorDaoMock.getAll()).thenReturn(pointEventDetectors);
+        PointEventDetectorCache pointEventDetectorCache = new PointEventDetectorCache(pointEventDetectorDaoMock);
+        subject = new PointEventDetectorDaoWithCache(pointEventDetectorCache);
+
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector1.getXid()))).thenReturn(pointEventDetector1);
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector2.getXid()))).thenReturn(pointEventDetector2);
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector3.getXid()))).thenReturn(pointEventDetector3);
     }
 
     @Test

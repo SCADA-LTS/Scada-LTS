@@ -234,7 +234,7 @@ public class EventServiceTest extends TestDAO {
 		pointEventDetector.setWeight(WEIGHT);
 		
 		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
-		int idPointEventDetector = pointEventDetectorDAO.insert(pointEventDetector);
+		int idPointEventDetector = pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
 		
 		EventType type = new DataPointEventType(id,idPointEventDetector);
 		long activeTS = 0;

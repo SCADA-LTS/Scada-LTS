@@ -23,9 +23,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.PointEventDetectorCacheEntry;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -255,7 +257,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	}
 
-	@Override
+	@Deprecated
 	public int getId(String pointEventDetectorXid, int dataPointId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -274,7 +276,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		
 	}
 
-	@Override
+	@Deprecated
 	public String getXid(int pointEventDetectorId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -301,7 +303,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(final PointEventDetectorVO pointEventDetector) {
+	public int insert(int dataPointId, final PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -332,12 +334,14 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 			}
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		int id = keyHolder.getKey().intValue();
+		pointEventDetector.setId(id);
+		return id;
 	}
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void update(PointEventDetectorVO pointEventDetector) {
+	public void update(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -362,7 +366,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void updateWithType(PointEventDetectorVO pointEventDetector) {
+	public void updateWithType(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -388,16 +392,16 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int dataPointId, int pointEventDetectorId) {
+	public void delete(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("delete(int dataPointId) dataPointId:" + pointEventDetectorId);
+			LOG.trace("delete(int dataPointId, PointEventDetectorVO pointEventDetector) dataPointId:" + pointEventDetector + ", pointEventDetector: " + pointEventDetector);
 		}
 
 		String templateDelete = POINT_EVENT_DETECTOR_DELETE + " id=?";
 
-		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataPointId, pointEventDetectorId});
-		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetectorId});
+		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataPointId, pointEventDetector.getId()});
+		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetector.getId()});
 	}
 
 	@Override
@@ -419,42 +423,49 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
-	public List<PointEventDetectorCacheEntry> getAll() {
+	@Override
+	public PointEventDetectorVO getPointEventDetector(int pointEventDetectorId) {
+
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("SQL EventDetectors");
+			LOG.trace("getPointEventDetector(int pointEventDetectorId) pointEventDetectorId:" +pointEventDetectorId);
 		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_ID + "=? "
+				+ "order by " + COLUMN_NAME_ID;
+
 		try {
-			@SuppressWarnings("unchecked")
-			List<PointEventDetectorCacheEntry> listPointEventDetectorVO = DAO.getInstance().getJdbcTemp().query(SQL, new RowMapper() {
-				@Override
-				public PointEventDetectorCacheEntry mapRow(ResultSet rs, int rownumber) throws SQLException {
-					PointEventDetectorVO eventDetector = new PointEventDetectorVO();
-					eventDetector.setId(rs.getInt(COLUMN_NAME_ID));
-					eventDetector.setXid(rs.getString(COLUMN_NAME_XID));
-					eventDetector.setAlias(rs.getString(COLUMN_NAME_ALIAS));
-					eventDetector.setDetectorType(rs.getInt(COLUMN_NAME_DETECTOR_TYPE));
-					eventDetector.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
-					eventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
-					eventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
-					eventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
-					eventDetector.setBinaryState(rs.getBoolean(COLUMN_NAME_BINARY_STATE));
-					eventDetector.setMultistateState(rs.getInt(COLUMN_NAME_MULTISTATE_STATE));
-					eventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
-					eventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
-					eventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
-
-					PointEventDetectorCacheEntry pedc = new PointEventDetectorCacheEntry();
-					pedc.setPointEventDetector(eventDetector);
-					pedc.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
-
-					return pedc;
-				}
-			});
-
-			return listPointEventDetectorVO;
-		} catch (Exception e) {
-			LOG.error(e);
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
+					new Object[]{pointEventDetectorId}, new PointEventDetectorRowMapper(null));
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return null;
 		}
-		return null;
+
+	}
+
+	@Override
+	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointEventDetector(String pointEventDetectorXid) pointEventDetectorXid:" +pointEventDetectorXid);
+		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? "
+				+ "order by " + COLUMN_NAME_ID;
+
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
+					new Object[]{pointEventDetectorXid}, new PointEventDetectorRowMapper(null));
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		} catch (IncorrectResultSizeDataAccessException ex) {
+			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", msg: " +ex.getMessage(), ex);
+			return new PointEventDetectorVO(Common.NEW_ID, null);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return new PointEventDetectorVO(Common.NEW_ID, null);
+		}
 	}
 }
