@@ -14,14 +14,12 @@ services:
             - MYSQL_USER=root
             - MYSQL_PASSWORD=root
             - MYSQL_DATABASE=scadalts
-            - "--lower_case_table_names=0"
-            - "--log_bin_trust_function_creators=1"
-            - "--innodb_print_all_deadlocks=1"
         expose: ["3306"]
         volumes:
             - ./docker/vloumes/mysql/data:/var/lib/mysql
             - ./docker/volumes/mysql/config:/etc/mysql
             - ./docker/volumes/mysql/log:/var/log/mysql
+        command: --log_bin_trust_function_creators=1
     scadalts:
         image: scadalts/scadalts:latest
         environment:
