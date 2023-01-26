@@ -19,9 +19,9 @@ services:
             - "--innodb_print_all_deadlocks=1"
         expose: ["3306"]
         volumes:
-            - ./docker/vloumes/data:/var/lib/mysql
-            - ./docker/volumes/config:/etc/mysql
-            - ./docker/volumes/log:/var/log/mysql
+            - ./docker/vloumes/mysql/data:/var/lib/mysql
+            - ./docker/volumes/mysql/config:/etc/mysql
+            - ./docker/volumes/mysql/log:/var/log/mysql
     scadalts:
         image: scadalts/scadalts:latest
         environment:
