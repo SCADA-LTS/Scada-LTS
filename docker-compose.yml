@@ -6,7 +6,7 @@ version: '3'
 services: 
     database:
         container_name: mysql
-        image: mysql/mysql-server:5.7
+        image: mysql/mysql-server:8.0.32
         ports:
             - "3306:3306"
         environment: 
@@ -16,7 +16,7 @@ services:
             - MYSQL_DATABASE=scadalts
         expose: ["3306"]
         volumes:
-            -   ./docker/volumes/databases:/home/
+            -   ./docker/volumes/databases:/var/lib/mysql
     scadalts:
         image: scadalts/scadalts:latest
         environment:
