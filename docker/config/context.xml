@@ -30,7 +30,7 @@
           password="root"
           driverClassName="com.mysql.jdbc.Driver"
           defaultTransactionIsolation="READ_COMMITTED"
-          connectionProperties="allowPublicKeyRetrieval=true;useSSL=false"
+          connectionProperties="useSSL=false"
           url="jdbc:mysql://database:3306/scadalts"
          />
 </Context>
