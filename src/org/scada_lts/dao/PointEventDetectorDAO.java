@@ -179,26 +179,6 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF1 + "=? "
 			+ "and "
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF2 + "=? ";
-
-	private static final String SQL = ""
-			+ "select "
-			+ "id, "
-			+ "xid, "
-			+ "alias, "
-			+ "detectorType, "
-			+ "alarmLevel, "
-			+ "stateLimit, "
-			+ "duration, "
-			+ "durationType, "
-			+ "binaryState,   "
-			+ "multistateState, "
-			+ "changeCount, "
-			+ "alphanumericState, "
-			+ "weight, "
-			+ "dataPointId "
-			+ "from "
-			+ "pointEventDetectors "
-			+ "order by dataPointId";
 	// @formatter:on
 
 	private class PointEventDetectorRowMapper implements RowMapper<PointEventDetectorVO> {
