@@ -166,7 +166,7 @@ public class ScheduledEventDAO {
 			scheduledEventVO.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			scheduledEventVO.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
 			scheduledEventVO.setReturnToNormal(DAO.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
-			scheduledEventVO.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
+			scheduledEventVO.setDisabled(DAO.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
 			scheduledEventVO.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
 			scheduledEventVO.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
 			scheduledEventVO.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));
