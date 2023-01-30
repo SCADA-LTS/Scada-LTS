@@ -28,6 +28,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -38,8 +39,6 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.Tuple;
 import org.apache.commons.logging.LogFactory;
@@ -87,7 +86,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final IUserCommentDAO userCommentDAO;
 
-	private static final PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
+	private final IPointEventDetectorDAO pointEventDetectorDAO;
 
 	private final PointHierarchyDAO pointHierarchyDAO;
 
@@ -114,6 +113,7 @@ public class DataPointService implements MangoDataPoint {
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
 		this.userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
+		this.pointEventDetectorDAO = ApplicationBeans.getPointEventDetectorDaoBean();
 	}
 
 	@Override
@@ -468,12 +468,18 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public String getDetectorXid(int pointEventDetectorId) {
-		return pointEventDetectorDAO.getXid(pointEventDetectorId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorId);
+		if(pointEventDetectorVO == null)
+			return null;
+		return pointEventDetectorVO.getXid();
 	}
 
 	@Override
 	public int getDetectorId(String pointEventDetectorXid, int dataPointId) {
-		return pointEventDetectorDAO.getId(pointEventDetectorXid, dataPointId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid);
+		if(pointEventDetectorVO == null)
+			return 0;
+		return pointEventDetectorVO.getId();
 	}
 
 	@Override
@@ -495,68 +501,37 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
-
-		EventDetectorsCache.LOG.trace("getEventDetectors() dpId:" + dataPoint.getId());
-		long startTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			startTime = System.currentTimeMillis();
-		}
-
-		List<PointEventDetectorVO> result = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
-			} else {
-				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-			}
-		} catch (SchedulerException | IOException e) {
-			EventDetectorsCache.LOG.error(e);
+			return pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return new ArrayList<>();
 		}
-
-		long endTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			endTime = System.currentTimeMillis();
-		}
-		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
-
-		return result;
 	}
 
 	public void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
-
 		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+			if(dataPoint.getEventDetectors().stream()
+					.noneMatch(a -> a.getXid().equals(pointEventDetector.getXid()))) {
+				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector);
 			}
 		}
-		
 		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
 			try {
-			    pointEventDetectorDAO.insert(pointEventDetector);
+				pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
 			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
+				pointEventDetectorDAO.update(dataPoint.getId(), pointEventDetector);
 			}
 		}
 	}
 
-	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
-		pointEventDetectorDAO.updateWithType(eventDetector);
+	public void updateEventDetectorWithType(DataPointVO dataPoint, PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(dataPoint.getId(), eventDetector);
 	}
 
-	public void deleteEventDetector(DataPointVO dataPoint, int id){
-		pointEventDetectorDAO.delete(dataPoint.getId(), id);
-	}
-
-	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
-		for (PointEventDetectorVO ped : list) {
-			if (ped.getId() == id) {
-				list.remove(ped);
-				return ped;
-			}
-		}
-		return null;
+	public void deleteEventDetector(DataPointVO dataPoint, PointEventDetectorVO eventDetector){
+		pointEventDetectorDAO.delete(dataPoint.getId(), eventDetector);
 	}
 
 	@Override
@@ -671,7 +646,7 @@ public class DataPointService implements MangoDataPoint {
 				.map(Optional::get)
 				.peek(a -> {
 					if(a.getPointLocator() == null) {
-						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
+						LOG.warn(LoggingUtils.dataPointInfo(a));
 					}
 				})
 				.filter(a -> a.getPointLocator() != null)

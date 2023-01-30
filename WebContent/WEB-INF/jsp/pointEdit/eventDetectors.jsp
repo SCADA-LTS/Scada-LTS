@@ -509,6 +509,20 @@
       this.initCB = function(detectorList) {
           for (var i=0; i<detectorList.length; i++)
               pointEventDetectorEditor.addEventDetectorCB(detectorList[i]);
+          var edTableNodes = $("eventDetectorTable").childNodes;
+          for (var i=0; i<edTableNodes.length; i++) {
+            if(edTableNodes[i].pedId) {
+                var errors = {
+                    <c:forEach items="${error}" var="item" varStatus="loop">
+                      "${item.key}": "${item.value}" ${not loop.last ? ',' : ''}
+                    </c:forEach>
+                };
+                var errorMessage = errors["eventDetector"+ edTableNodes[i].pedId +"ErrorMessage"];
+                if(errorMessage) {
+                    $("eventDetector"+ edTableNodes[i].pedId +"ErrorMessage").innerHTML = errorMessage;
+                }
+            }
+          }
       }
       
       this.addEventDetector = function() {

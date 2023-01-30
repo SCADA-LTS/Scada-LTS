@@ -25,12 +25,18 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PointEventDetectorCache {
+@Deprecated
+public class PointEventDetectorCacheEntry {
 	
 	private PointEventDetectorVO pointEventDetector;
 	private int dataPointId;
-	
-	public PointEventDetectorCache() {
+
+	public PointEventDetectorCacheEntry(PointEventDetectorVO pointEventDetector, int dataPointId) {
+		this.pointEventDetector = pointEventDetector;
+		this.dataPointId = dataPointId;
+	}
+
+	public PointEventDetectorCacheEntry() {
 		//
 	}
 	
@@ -45,5 +51,13 @@ public class PointEventDetectorCache {
 	}
 	public void setDataPointId(int dataPointId) {
 		this.dataPointId = dataPointId;
+	}
+
+	@Override
+	public String toString() {
+		return "{" +
+				"pointEventDetector=" + pointEventDetector +
+				", dataPointId=" + dataPointId +
+				'}';
 	}
 }
