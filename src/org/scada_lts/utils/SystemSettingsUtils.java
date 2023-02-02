@@ -22,6 +22,11 @@ public final class SystemSettingsUtils {
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
     private static final String BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY = "bp.workitems.limit";
 
+    private static final String SECURITY_JS_ACCESS_DENIED_METHODS_REGEX = "scadalts.security.js.access.denied.methods.regex";
+    private static final String SECURITY_JS_ACCESS_DENIED_CLASSES_REGEX = "scadalts.security.js.access.denied.classes.regex";
+    private static final String SECURITY_JS_ACCESS_GRANTED_METHODS_REGEX = "scadalts.security.js.access.granted.methods.regex";
+    private static final String SECURITY_JS_ACCESS_GRANTED_CLASSES_REGEX = "scadalts.security.js.access.granted.classes.regex";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -78,6 +83,46 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 100;
+        }
+    }
+
+    public static String[] getSecurityJsAccessGrantedClasses() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASSES_REGEX, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessDeniedClasses() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASSES_REGEX, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessDeniedMethods() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHODS_REGEX, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessGrantedMethods() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHODS_REGEX, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
         }
     }
 }
