@@ -20,6 +20,7 @@ package org.scada_lts.scripting;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 /** 
  * Set new protected context 
@@ -32,6 +33,19 @@ public class SandboxContextFactory extends ContextFactory {
 	protected Context makeContext() {
 		Context cx = super.makeContext();
 		cx.setWrapFactory(new SandboxWrapFactory());
+		cx.setClassShutter(className -> {
+			for(String conf: SystemSettingsUtils.getSecurityJsAccessDeniedClasses()) {
+				if (className.matches(conf)) {
+					return false;
+				}
+			}
+			for(String conf: SystemSettingsUtils.getSecurityJsAccessGrantedClasses()) {
+				if (className.matches(conf)) {
+					return true;
+				}
+			}
+			return false;
+		});
 		return cx;
 	}
 
