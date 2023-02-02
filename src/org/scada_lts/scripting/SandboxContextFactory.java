@@ -34,13 +34,13 @@ public class SandboxContextFactory extends ContextFactory {
 		Context cx = super.makeContext();
 		cx.setWrapFactory(new SandboxWrapFactory());
 		cx.setClassShutter(className -> {
-			for(String conf: SystemSettingsUtils.getSecurityJsAccessDeniedClasses()) {
-				if (className.matches(conf)) {
+			for(String classNameRegex: SystemSettingsUtils.getSecurityJsAccessDeniedClassRegexes()) {
+				if (className.matches(classNameRegex)) {
 					return false;
 				}
 			}
-			for(String conf: SystemSettingsUtils.getSecurityJsAccessGrantedClasses()) {
-				if (className.matches(conf)) {
+			for(String classNameRegex: SystemSettingsUtils.getSecurityJsAccessGrantedClassRegexes()) {
+				if (className.matches(classNameRegex)) {
 					return true;
 				}
 			}

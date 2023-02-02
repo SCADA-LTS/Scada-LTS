@@ -37,13 +37,13 @@ public class SandboxNativeJavaObject extends NativeJavaObject  {
  
 	@Override
 	public Object get(String name, Scriptable start) {
-		for(String conf: SystemSettingsUtils.getSecurityJsAccessDeniedMethods()) {
-			if (name.matches(conf)) {
+		for(String methodNameRegex: SystemSettingsUtils.getSecurityJsAccessDeniedMethodRegexes()) {
+			if (name.matches(methodNameRegex)) {
 				return NOT_FOUND;
 			}
 		}
-		for(String conf: SystemSettingsUtils.getSecurityJsAccessGrantedMethods()) {
-			if (name.matches(conf)) {
+		for(String methodNameRegex: SystemSettingsUtils.getSecurityJsAccessGrantedMethodRegexes()) {
+			if (name.matches(methodNameRegex)) {
 				return super.get(name, start);
 			}
 		}

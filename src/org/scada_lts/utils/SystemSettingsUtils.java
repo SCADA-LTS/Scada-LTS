@@ -22,10 +22,10 @@ public final class SystemSettingsUtils {
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
     private static final String BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY = "bp.workitems.limit";
 
-    private static final String SECURITY_JS_ACCESS_DENIED_METHODS_REGEX = "scadalts.security.js.access.denied.methods.regex";
-    private static final String SECURITY_JS_ACCESS_DENIED_CLASSES_REGEX = "scadalts.security.js.access.denied.classes.regex";
-    private static final String SECURITY_JS_ACCESS_GRANTED_METHODS_REGEX = "scadalts.security.js.access.granted.methods.regex";
-    private static final String SECURITY_JS_ACCESS_GRANTED_CLASSES_REGEX = "scadalts.security.js.access.granted.classes.regex";
+    private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
+    private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = "scadalts.security.js.access.denied.class.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES = "scadalts.security.js.access.granted.class.regexes";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -86,9 +86,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String[] getSecurityJsAccessGrantedClasses() {
+    public static String[] getSecurityJsAccessGrantedClassRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASSES_REGEX, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -96,9 +96,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String[] getSecurityJsAccessDeniedClasses() {
+    public static String[] getSecurityJsAccessDeniedClassRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASSES_REGEX, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -106,9 +106,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String[] getSecurityJsAccessDeniedMethods() {
+    public static String[] getSecurityJsAccessDeniedMethodRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHODS_REGEX, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -116,9 +116,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String[] getSecurityJsAccessGrantedMethods() {
+    public static String[] getSecurityJsAccessGrantedMethodRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHODS_REGEX, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
