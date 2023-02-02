@@ -20,6 +20,7 @@ package org.scada_lts.scripting;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 /** 
  * Own sandbox for native java object.
@@ -36,11 +37,17 @@ public class SandboxNativeJavaObject extends NativeJavaObject  {
  
 	@Override
 	public Object get(String name, Scriptable start) {
-		if (name.equals("getDeclaredField") || name.equals("getPassword")) {
-			return NOT_FOUND;
-		} 
- 
-		return super.get(name, start);
+		for(String conf: SystemSettingsUtils.getSecurityJsAccessDeniedMethods()) {
+			if (name.matches(conf)) {
+				return NOT_FOUND;
+			}
+		}
+		for(String conf: SystemSettingsUtils.getSecurityJsAccessGrantedMethods()) {
+			if (name.matches(conf)) {
+				return super.get(name, start);
+			}
+		}
+		return NOT_FOUND;
 	}
 
 }
