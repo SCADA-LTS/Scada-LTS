@@ -14,7 +14,7 @@ import static utils.CopyViewTestUtils.*;
 public class CopyViewComponentTest {
 
     @Parameterized.Parameters(name= "{index}: viewComponent: {0}")
-    public static Collection primeNumbers() {
+    public static Collection data() {
         return Arrays.asList(new Object[][] {
                 {createScriptComponent()},
                 {createButtonComponent()},
