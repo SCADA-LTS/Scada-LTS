@@ -60,7 +60,7 @@ public class CsvWriter {
         // double quotes.
         if (fieldValue.indexOf('"') != -1) {
             needsQuotes = true;
-            fieldValue.replaceAll("\"", "\"\"");
+            fieldValue = fieldValue.replace("\"", "\"\"");
         }
 
         // A field that contains embedded line-breaks must be surounded by double-quotes
@@ -71,9 +71,23 @@ public class CsvWriter {
         if (fieldValue.startsWith(" ") || fieldValue.endsWith(" "))
             needsQuotes = true;
 
+        if(isNeedsQuotes(fieldValue))
+            needsQuotes = true;
+
         if (needsQuotes)
-            fieldValue = '"' + fieldValue + '"';
+            fieldValue = "\"'" + fieldValue + '"';
 
         return fieldValue;
+    }
+
+    private static final char[] ILLEGAL_CHARACTERS_FOR_STARTS_CELL = {'=','+','-','@','\t','\n','\r'};
+
+    private static boolean isNeedsQuotes(String fieldValue) {
+        for (char illegalCharacter: ILLEGAL_CHARACTERS_FOR_STARTS_CELL) {
+            if(fieldValue.startsWith(String.valueOf(illegalCharacter))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

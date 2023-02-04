@@ -184,5 +184,6 @@ test {
         includeTestsMatching "org.scada_lts.utils.PathSecureUtilsTest"
         includeTestsMatching "com.serotonin.mango.view.CopyViewTest"
         includeTestsMatching "org.scada_lts.dao.IsEventDetectorXidUniqueTest"
+        includeTestsMatching "com.serotonin.mango.view.export.CsvWriterTest"
     }
 }

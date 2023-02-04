@@ -16,7 +16,7 @@ import static utils.CopyViewTestUtils.createDynamicGraphicComponent;
 public class CopyCompoundChildTest {
 
     @Parameterized.Parameters(name= "{index}: viewComponent: {0}")
-    public static Collection primeNumbers() {
+    public static Collection data() {
         return Arrays.asList(new Object[][] {
                 {new CompoundChild("ID_1", new LocalizableMessage("description_1"), createScriptComponent(), new int[]{1})},
                 {new CompoundChild("ID_2", new LocalizableMessage("description_2"), createButtonComponent(), new int[]{2})},
