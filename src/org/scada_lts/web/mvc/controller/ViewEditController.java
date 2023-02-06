@@ -133,9 +133,10 @@ public class ViewEditController {
         LOG.debug("ViewEditController:showForm");
         Map<String, Object> model = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
+        View view = null;
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
-            View view = getOrEmptyView(request, viewService, true);
+            view = getOrEmptyView(request, viewService, true);
             Permissions.ensureViewPermission(user, view);
 
             form.setView(view);
@@ -144,7 +145,7 @@ public class ViewEditController {
 
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             User user = Common.getUser(request);
-            View view = getOrEmptyView(request, viewService, true);
+            view = getOrEmptyView(request, viewService, true);
             Permissions.ensureViewPermission(user, view);
 
             form.setView(view);
@@ -155,6 +156,7 @@ public class ViewEditController {
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        model.put("currentView", view);
         return new ModelAndView(FORM_VIEW, model);
     }
 
