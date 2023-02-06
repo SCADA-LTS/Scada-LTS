@@ -35,9 +35,8 @@
       $set("settable", locator.settable);
       $set("dataTypeId", locator.dataTypeId);
       DataSourceEditDwr.getChangeTypes(locator.dataTypeId, function(data) {
-          changeDataTypeCB(data);
           $set("changeTypeId", locator.changeTypeId);
-          changeDataType();
+          changeDataTypeCB(data, locator.changeTypeId);
       });
   }
   
@@ -82,21 +81,28 @@
   }
   
   function changeDataType() {
-      DataSourceEditDwr.getChangeTypes($get("dataTypeId"), changeDataTypeCB);
+      DataSourceEditDwr.getChangeTypes($get("dataTypeId"), function(data) {
+        changeDataTypeCB(data);
+      });
   }
   
-  function changeDataTypeCB(changeTypes) {
+  function changeDataTypeCB(changeTypes, changeTypeId) {
       var changeTypeDD = $("changeTypeId");
-      var savedType = changeTypeDD.value;
       dwr.util.removeAllOptions(changeTypeDD);
       dwr.util.addOptions(changeTypeDD, changeTypes, "key", "message");
+      var savedType;
+      if(changeTypeId) {
+          savedType = changeTypeId;
+      } else {
+          savedType = 5;
+      }
       changeTypeDD.value = savedType;
-      changeChangeType();
+      changeChangeType(savedType);
   }
   
-  function changeChangeType() {
-      var changeTypeId = "divCH"+ $get("changeTypeId");
-      
+  function changeChangeType(changeTypeId) {
+      var changeType = changeTypeId ? changeTypeId : $get("changeTypeId");
+      var changeTypeId = "divCH" + changeType;
       // Close the current change type div.
       if (currentChangeType)
           hide(currentChangeType);
@@ -214,7 +220,7 @@
   
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.changeType"/></td>
-    <td class="formField"><select id="changeTypeId" onchange="changeChangeType();"></select></td>
+    <td class="formField"><select id="changeTypeId" onchange="changeChangeType(this.value);"></select></td>
   </tr>
   
   <%--
