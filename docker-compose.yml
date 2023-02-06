@@ -16,9 +16,8 @@ services:
             - MYSQL_DATABASE=scadalts
         expose: ["3306"]
         volumes:
-            - ./docker/vloumes/mysql/data:/var/lib/mysql
-            - ./docker/volumes/mysql/config:/etc/mysql
-            - ./docker/volumes/mysql/log:/var/log/mysql
+            - ./db_data:/var/lib/mysql:rw
+            - ./db_conf:/etc/mysql:ro
         command: --log_bin_trust_function_creators=1
     scadalts:
         image: scadalts/scadalts:latest
@@ -29,6 +28,8 @@ services:
         depends_on: 
             - database
         expose: ["8080", "8000"]
+        volumes:
+            - ./tomcat_log:/usr/local/tomcat/logs:rw
         links:
             - database:database
         command:
