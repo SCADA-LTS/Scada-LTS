@@ -8,9 +8,12 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
+import com.serotonin.mango.vo.report.ReportInstance;
+import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
@@ -121,5 +124,27 @@ public final class LoggingUtils {
 
     public static Exception getCause(Exception e) {
         return e.getCause() != null ? (Exception) e.getCause() : e;
+    }
+
+    public static String userInfo(User user) {
+        if(user == null)
+            return "";
+        String info = "user: {0} (id: {1}, userProfileId: {2})";
+        return MessageFormat.format(info, user.getUsername(), user.getId(), user.getUserProfile());
+    }
+
+    public static String reportInfo(ReportVO report) {
+        if(report == null)
+            return "";
+        String info =  "report: {0} (id: {1}, xid: {2}, username: {3}, userId: {4})";
+        return MessageFormat.format(info, report.getName(), report.getId(), report.getXid(), report.getUsername(),
+                report.getUserId());
+    }
+
+    public static String reportInstanceInfo(ReportInstance reportInstance) {
+        if(reportInstance == null)
+            return "";
+        String info =  "reportInstance: {0} (id: {1}, userId: {2})";
+        return MessageFormat.format(info, reportInstance.getName(), reportInstance.getId(), reportInstance.getUserId());
     }
 }

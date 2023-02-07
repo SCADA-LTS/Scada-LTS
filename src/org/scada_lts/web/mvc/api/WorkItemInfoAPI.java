@@ -95,7 +95,7 @@ public class WorkItemInfoAPI {
     @Deprecated
     @GetMapping(value = "/limit/{limit}/")
     public ResponseEntity<List<WorkItemInfo>> setWorkItemsLimit(@PathVariable(value = "limit", required = true) Integer limit) {
-        return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+        return new ResponseEntity<>(Collections.emptyList(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @GetMapping(value = "/longer/{executedMs}/")
