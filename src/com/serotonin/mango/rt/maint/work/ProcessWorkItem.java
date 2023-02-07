@@ -48,27 +48,27 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     public static void queueProcess(String command, EventHandlerVO handler) {
-        ProcessWorkItem item = new ProcessWorkItem(command, handler);
+        ProcessWorkItem item = new ProcessWorkItem(command, LoggingUtils.eventHandlerInfo(handler));
         Common.ctx.getBackgroundProcessing().addWorkItem(item);
     }
 
     final String command;
-    final EventHandlerVO handler;
+    final String details;
 
     public ProcessWorkItem(String command) {
         this.command = command;
-        this.handler = null;
+        this.details = null;
     }
 
-    public ProcessWorkItem(String command, EventHandlerVO handler) {
+    public ProcessWorkItem(String command, String details) {
         this.command = command;
-        this.handler = handler;
+        this.details = details;
     }
 
     @Override
     public void work() {
         try {
-            executeProcessCommand(command, handler);
+            executeProcessCommand(command, details);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -83,19 +83,19 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
                 new LocalizableMessage("event.process.failure", command, throwable.getMessage()));
     }
 
-    public static void executeProcessCommand(String command, EventHandlerVO handler) throws IOException {
+    public static void executeProcessCommand(String command, String details) throws IOException {
         BackgroundProcessing bp = Common.ctx.getBackgroundProcessing();
 
         Process process = Runtime.getRuntime().exec(command);
 
-        InputReader out = new InputReader(process.getInputStream(), handler);
-        InputReader err = new InputReader(process.getErrorStream(), handler);
+        InputReader out = new InputReader(process.getInputStream(), details);
+        InputReader err = new InputReader(process.getErrorStream(), details);
 
         bp.addWorkItem(out);
         bp.addWorkItem(err);
 
         try {
-            ProcessTimeout timeout = new ProcessTimeout(process, command, handler);
+            ProcessTimeout timeout = new ProcessTimeout(process, command, details);
             bp.addWorkItem(timeout);
 
             process.waitFor();
@@ -128,18 +128,18 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         private final Process process;
         private final String command;
         private volatile boolean interrupted;
-        private final EventHandlerVO handler;
+        private final String details;
 
         ProcessTimeout(Process process, String command) {
             this.process = process;
             this.command = command;
-            this.handler = null;
+            this.details = null;
         }
 
-        ProcessTimeout(Process process, String command, EventHandlerVO handler) {
+        ProcessTimeout(Process process, String command, String details) {
             this.process = process;
             this.command = command;
-            this.handler = handler;
+            this.details = details;
         }
 
         @Override
@@ -174,9 +174,11 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         @Override
         public String toString() {
             return "ProcessTimeout{" +
-                    "command='" + command + '\'' + ", "
-                    + LoggingUtils.eventHandlerInfo(handler) +
-                    '}';
+                    "process=" + process +
+                    ", command='" + command + '\'' +
+                    ", interrupted=" + interrupted +
+                    ", details='" + details + '\'' +
+                    "} " + super.toString();
         }
 
         @Override
@@ -189,16 +191,16 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         private final InputStreamReader reader;
         private final StringWriter writer = new StringWriter();
         private boolean done;
-        private final EventHandlerVO handler;
+        private final String details;
 
         InputReader(InputStream is) {
             this.reader = new InputStreamReader(is);
-            this.handler = null;
+            this.details = null;
         }
 
-        InputReader(InputStream is, EventHandlerVO handler) {
+        InputReader(InputStream is, String details) {
             this.reader = new InputStreamReader(is);
-            this.handler = handler;
+            this.details = details;
         }
 
         public String getInput() {
@@ -247,9 +249,11 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         @Override
         public String toString() {
             return "InputReader{" +
-                    "done=" + done + ", "
-                    + LoggingUtils.eventHandlerInfo(handler) +
-                    '}';
+                    "reader=" + reader +
+                    ", writer=" + writer +
+                    ", done=" + done +
+                    ", details='" + details + '\'' +
+                    "} " + super.toString();
         }
 
         @Override
@@ -261,9 +265,9 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     @Override
     public String toString() {
         return "ProcessWorkItem{" +
-                "command='" + command + "', " +
-                LoggingUtils.eventHandlerInfo(handler) +
-                '}';
+                "command='" + command + '\'' +
+                ", details='" + details + '\'' +
+                "} " + super.toString();
     }
 
     @Override

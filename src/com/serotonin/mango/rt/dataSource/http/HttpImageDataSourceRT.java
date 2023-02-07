@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -224,7 +225,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         public String toString() {
             return "ImageRetriever{" +
                     "monitor=" + monitor +
-                    ", dp=" + dp +
+                    ", " + (dp == null ? null : LoggingUtils.dataPointInfo(dp.getVO())) +
                     ", time=" + time +
                     ", retrievalFailure=" + retrievalFailure +
                     ", saveFailure=" + saveFailure +

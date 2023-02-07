@@ -489,7 +489,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		if (l != null)
 			Common.ctx.getBackgroundProcessing().addWorkItem(
 					new EventNotifyWorkItem(l, oldValue, newValue, set,
-							backdate, vo));
+							backdate, LoggingUtils.dataPointInfo(vo)));
 	}
 
 	@Override
@@ -507,7 +507,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		private final PointValueTime newValue;
 		private final boolean set;
 		private final boolean backdate;
-		private final DataPointVO dataPointVO;
+		private final String details;
 
 		@Deprecated
 		EventNotifyWorkItem(DataPointListener listener,
@@ -518,18 +518,18 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			this.newValue = newValue;
 			this.set = set;
 			this.backdate = backdate;
-			this.dataPointVO = null;
+			this.details = null;
 		}
 
 		EventNotifyWorkItem(DataPointListener listener,
 							PointValueTime oldValue, PointValueTime newValue, boolean set,
-							boolean backdate, DataPointVO dataPointVO) {
+							boolean backdate, String details) {
 			this.listener = listener;
 			this.oldValue = oldValue;
 			this.newValue = newValue;
 			this.set = set;
 			this.backdate = backdate;
-			this.dataPointVO = dataPointVO;
+			this.details = details;
 		}
 
 		@Override
@@ -563,8 +563,8 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 					", newValue=" + newValue +
 					", set=" + set +
 					", backdate=" + backdate +
-					", " + LoggingUtils.dataPointInfo(dataPointVO) +
-					'}';
+					", details='" + details + '\'' +
+					"} " + super.toString();
 		}
 
 		@Override

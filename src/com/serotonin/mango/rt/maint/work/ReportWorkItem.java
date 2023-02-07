@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.AbstractEmailAttachment;
 import com.serotonin.mango.web.email.AbstractEmailInline;
@@ -297,10 +298,11 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	@Override
 	public String toString() {
 		return "ReportWorkItem{" +
-				"reportConfig=" + reportConfig +
-				", user=" + user +
-				", reportInstance=" + reportInstance +
-				'}';
+				"" + LoggingUtils.reportInfo(reportConfig) +
+				", " + LoggingUtils.userInfo(user) +
+				", " + LoggingUtils.reportInstanceInfo(reportInstance) +
+				", filesToDelete=" + filesToDelete +
+				"} " + super.toString();
 	}
 
 	@Override
