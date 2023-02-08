@@ -516,6 +516,11 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
         }
 
+        @Deprecated
+        static void add(BatchWriteBehindEntry e, PointValueService pointValueService) {
+            add(e);
+        }
+
         static void add(BatchWriteBehindEntry e) {
             synchronized (ENTRIES) {
                 ENTRIES.push(e);
