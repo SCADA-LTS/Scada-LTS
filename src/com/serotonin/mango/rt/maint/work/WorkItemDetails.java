@@ -4,10 +4,7 @@ public interface WorkItemDetails {
     String getDetails();
     boolean isExecuted();
     boolean isSuccess();
-    boolean isWorkSuccess();
-    boolean isBeforeWorkSuccess();
-    boolean isAfterWorkSuccess();
-    boolean isFinallyWorkSuccess();
+    boolean isWorkFailed();
     boolean isRunning();
     int getExecutedMs();
 }

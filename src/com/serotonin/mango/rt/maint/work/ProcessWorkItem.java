@@ -77,7 +77,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     @Override
     public void workFail(Exception e) {
         Throwable throwable = e.getCause() != null ? e.getCause() : e;
-        LOG.error(throwable.getMessage(), throwable);
+        LOG.error(this + " - " + throwable.getMessage(), throwable);
         SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
                 System.currentTimeMillis(), false,
                 new LocalizableMessage("event.process.failure", command, throwable.getMessage()));
@@ -172,6 +172,11 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
+        public void workFail(Exception e) {
+            LOG.error("Error in process timeout: " + this, e);
+        }
+
+        @Override
         public String toString() {
             return "ProcessTimeout{" +
                     "process=" + process +
@@ -243,7 +248,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
 
         @Override
         public void workFail(Exception e) {
-            LOG.error("Error in process input reader", e);
+            LOG.error("Error in process input reader: " + this, e);
         }
 
         @Override

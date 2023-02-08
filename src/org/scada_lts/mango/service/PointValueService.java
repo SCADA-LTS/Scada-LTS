@@ -229,7 +229,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
-                    dvalue, time), this);
+                    dvalue, time));
             return -1;
         }
 
@@ -258,7 +258,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
-                    dvalue, time), this);
+                    dvalue, time));
             return -1;
         }
 
@@ -516,13 +516,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
         }
 
-        static void add(BatchWriteBehindEntry e, PointValueService pointValueService) {
+        static void add(BatchWriteBehindEntry e) {
             synchronized (ENTRIES) {
                 ENTRIES.push(e);
                 ENTRIES_MONITOR.setValue(ENTRIES.size());
                 if (ENTRIES.size() > instances.size() * SPAWN_THRESHOLD) {
                     if (instances.size() < MAX_INSTANCES) {
-                        BatchWriteBehind bwb = new BatchWriteBehind(pointValueService);
+                        BatchWriteBehind bwb = new BatchWriteBehind();
                         instances.add(bwb);
                         INSTANCES_MONITOR.setValue(instances.size());
                         try {
@@ -538,8 +538,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             }
         }
 
+        @Deprecated
         private final PointValueService pointValueService;
 
+        public BatchWriteBehind() {
+            this.pointValueService = null;
+        }
+
+        @Deprecated
         public BatchWriteBehind(PointValueService pointValueService) {
             this.pointValueService = pointValueService;
         }

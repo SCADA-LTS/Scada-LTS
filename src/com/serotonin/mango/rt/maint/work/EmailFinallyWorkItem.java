@@ -17,11 +17,6 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     }
 
     public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
-                                       AfterWork.WorkFinally workFinally) {
-        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, new AfterWork() {}, workFinally);
-    }
-
-    public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
                                        AfterWork afterWork, AfterWork.WorkFinally workFinally) {
         return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, afterWork, workFinally);
     }

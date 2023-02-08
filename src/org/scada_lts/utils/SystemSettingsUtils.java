@@ -20,8 +20,10 @@ public final class SystemSettingsUtils {
     private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
     private static final String HTTP_RESPONSE_HEADERS_KEY = "systemsettings.http.response.headers";
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
-    private static final String BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY = "bp.workitems.limit";
+    private static final String PROCESSING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.limit";
+    private static final String PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.failed.limit";
 
+    private static final String PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.running.limit";
     private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
     private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = "scadalts.security.js.access.denied.class.regexes";
     private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
@@ -78,7 +80,27 @@ public final class SystemSettingsUtils {
 
     public static int getWorkItemsLimit() {
         try {
-            String limit = ScadaConfig.getInstance().getConf().getProperty(BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY, "100");
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getFailedWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getRunningWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY, "100");
             return Integer.parseInt(limit);
         } catch (Exception e) {
             LOG.error(e.getMessage());
