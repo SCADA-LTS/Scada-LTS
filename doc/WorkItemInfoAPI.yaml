@@ -50,7 +50,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/fail/:
+  /work-items/failed/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -59,11 +59,29 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/fail/group-by/:
+  /work-items/failed/group-by/:
     get:
       tags:
         - WorkItemInfoAPI
       description: 'Grouping work items fail executed by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items running'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by class'
       responses:
         '200':
           description: "Get successful"

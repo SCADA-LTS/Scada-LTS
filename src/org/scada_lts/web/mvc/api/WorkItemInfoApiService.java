@@ -1,8 +1,8 @@
 package org.scada_lts.web.mvc.api;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.rt.maint.work.WorkItems;
+import org.scada_lts.utils.WorkItemsUtils;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.json.WorkItemInfo;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.ValidationUtils.checkIfNonAdminThenUnauthorized;
@@ -19,160 +22,103 @@ import static org.scada_lts.utils.ValidationUtils.checkIfNonAdminThenUnauthorize
 public class WorkItemInfoApiService {
 
     public List<WorkItemInfo> getWorkItems(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().get();
-            return getWorkItemInfos(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getAll);
     }
 
     public List<WorkItemInfo> getExecutedWorkItems(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecuted();
-            return getWorkItemInfos(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getByExecuted);
     }
 
     public List<WorkItemInfo> getExecutedSuccessWorkItems(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getBySuccess();
-            return getWorkItemInfos(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getBySuccess);
     }
 
-    public List<WorkItemInfo> getExecutedFailWorkItems(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByFail();
-            return getWorkItemInfos(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+    public List<WorkItemInfo> getExecutedFailedWorkItems(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getByFailed);
     }
 
     public List<WorkItemInfo> getNotExecutedWorkItems(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByNotExecuted();
-            return getWorkItemInfos(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getByNotExecuted);
     }
 
     public List<WorkItemInfo> getExecutedLongerWorkItems(HttpServletRequest request, int executedMs) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLongerThan(executedMs);
-            return getWorkItemInfos(workItems, byExecuteMsComparator());
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, byExecuteMsComparator(),
+                WorkItemsUtils::getByExecutedLongerThan, executedMs);
     }
 
     public List<WorkItemInfo> getExecutedWorkItemsByPriority(HttpServletRequest request, WorkItemPriority priority) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByPriority(priority);
-            return getWorkItemInfos(workItems, byExecuteMsComparator());
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, byExecuteMsComparator(),
+                WorkItemsUtils::getByPriority, priority);
     }
 
     public List<WorkItemInfo> getExecutedLessWorkItems(HttpServletRequest request, int executedMs) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLessThan(executedMs);
-            return getWorkItemInfos(workItems, byExecuteMsComparator());
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::getWorkItems, byExecuteMsComparator(),
+                WorkItemsUtils::getByExecutedLessThan, executedMs);
     }
 
     public Map<String, Long> getExecutedWorkItemsGroupBy(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecuted();
-            return groupByClassName(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByExecuted);
     }
 
     public Map<String, Long> getExecutedSuccessWorkItemsGroupBy(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getBySuccess();
-            return groupByClassName(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getBySuccess);
     }
 
-    public Map<String, Long> getExecutedFailWorkItemsGroupBy(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByFail();
-            return groupByClassName(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+    public Map<String, Long> getExecutedFailedWorkItemsGroupBy(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByFailed);
     }
 
     public Map<String, Long> getWorkItemsGroupBy(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().get();
-            return groupByClassName(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getAll);
     }
 
     public Map<String, Long> getNotExecutedWorkItemsGroupBy(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByNotExecuted();
-            return groupByClassName(workItems);
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByNotExecuted);
     }
 
     public Map<String, Long> getExecutedLongerWorkItemsGroupBy(HttpServletRequest request, int executedMs) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLongerThan(executedMs);
-            return groupByClassName(workItems, byExecuteMsComparator());
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
+        return get(request, WorkItemInfoApiService::groupByClassName, byExecuteMsComparator(),
+                WorkItemsUtils::getByExecutedLongerThan, executedMs);
     }
 
     public Map<String, Long> getExecutedLessWorkItemsGroupBy(HttpServletRequest request, int executedMs) {
+        return get(request, WorkItemInfoApiService::groupByClassName, byExecuteMsComparator(),
+                WorkItemsUtils::getByExecutedLessThan, executedMs);
+    }
+
+    public Map<String, Long> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request,
+                                                                     WorkItemPriority priority) {
+        return get(request, WorkItemInfoApiService::groupByClassName,
+                byExecuteMsComparator(), WorkItemsUtils::getByPriority, priority);
+    }
+
+    public List<WorkItemInfo> getRunningWorkItems(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getRunning);
+    }
+
+    public Map<String, Long> getRunningWorkItemsGroupBy(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getRunning);
+    }
+
+    private static <T> T get(HttpServletRequest request,
+                     Function<List<WorkItems.Execute>, T> preparing,
+                     Supplier<List<WorkItems.Execute>> data) {
         checkIfNonAdminThenUnauthorized(request);
         try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLessThan(executedMs);
-            return groupByClassName(workItems, byExecuteMsComparator());
+            List<WorkItems.Execute> workItems = data.get();
+            return preparing.apply(workItems);
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
-    public Map<String, Long> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request, WorkItemPriority priority) {
+    private static <R, T, S> T get(HttpServletRequest request,
+                        BiFunction<List<WorkItems.Execute>, R, T> preparing, R preparingArg,
+                        Function<S, List<WorkItems.Execute>> data, S dataArg) {
         checkIfNonAdminThenUnauthorized(request);
         try {
-            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByPriority(priority);
-            return groupByClassName(workItems, byExecuteMsComparator());
+            List<WorkItems.Execute> workItems = data.apply(dataArg);
+            return preparing.apply(workItems, preparingArg);
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }
@@ -189,15 +135,15 @@ public class WorkItemInfoApiService {
         return groupByClassName(workItems, Comparator.reverseOrder());
     }
 
-    private static List<WorkItemInfo> getWorkItemInfos(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
+    private static List<WorkItemInfo> getWorkItems(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
         return workItems.stream()
                 .sorted(comparator)
                 .map(WorkItemInfo::new)
                 .collect(Collectors.toList());
     }
 
-    private static List<WorkItemInfo> getWorkItemInfos(List<WorkItems.Execute> workItems) {
-        return getWorkItemInfos(workItems, Comparator.reverseOrder());
+    private static List<WorkItemInfo> getWorkItems(List<WorkItems.Execute> workItems) {
+        return getWorkItems(workItems, Comparator.reverseOrder());
     }
 
     private static Comparator<WorkItems.Execute> byExecuteMsComparator() {

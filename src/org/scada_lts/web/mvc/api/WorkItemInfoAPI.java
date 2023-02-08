@@ -61,15 +61,27 @@ public class WorkItemInfoAPI {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/fail/")
+    @GetMapping(value = "/failed/")
     public ResponseEntity<WorkItemInfoList> getExecutedFailWorkItems(HttpServletRequest request) {
-        List<WorkItemInfo> response = workItemInfoApiService.getExecutedFailWorkItems(request);
+        List<WorkItemInfo> response = workItemInfoApiService.getExecutedFailedWorkItems(request);
         return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/fail/group-by/")
+    @GetMapping(value = "/failed/group-by/")
     public ResponseEntity<Map<String, Long>> getExecutedFailWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedFailWorkItemsGroupBy(request);
+        Map<String, Long> response = workItemInfoApiService.getExecutedFailedWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/running/")
+    public ResponseEntity<WorkItemInfoList> getRunningWorkItems(HttpServletRequest request) {
+        List<WorkItemInfo> response = workItemInfoApiService.getRunningWorkItems(request);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/running/group-by/")
+    public ResponseEntity<Map<String, Long>> getRunningFailWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getRunningWorkItemsGroupBy(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

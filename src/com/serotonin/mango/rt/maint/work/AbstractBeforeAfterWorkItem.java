@@ -2,6 +2,7 @@ package com.serotonin.mango.rt.maint.work;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,26 +11,39 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         AfterWork, AfterWork.WorkSuccessFail, AfterWork.WorkFinally {
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
+    private static final WorkItems FAILED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getFailedWorkItemsLimit());
+    private static final WorkItems RUNNING_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getRunningWorkItemsLimit());
     private volatile boolean executed = false;
     private volatile boolean success = false;
-    private volatile boolean workSuccess = false;
-    private volatile boolean beforeWorkSuccess = false;
-    private volatile boolean afterWorkSuccess = false;
-    private volatile boolean finallyWorkSuccess = false;
+    private volatile boolean workFailed = false;
     private volatile boolean running = false;
     private volatile int executedMs = -1;
-
+    public static WorkItems failedWorkItems() {
+        return FAILED_WORK_ITEMS;
+    }
+    public static WorkItems runningWorkItems() {
+        return RUNNING_WORK_ITEMS;
+    }
     @Override
     public final void execute() {
-        this.executed = false;
+        if(running) {
+            LOG.warn("Work items is running! : " + this);
+        } else {
+            RUNNING_WORK_ITEMS.add(this);
+        }
         this.running = true;
         long startMs = System.currentTimeMillis();
+        this.executedMs = -1;
+        this.workFailed = false;
+        this.executed = false;
+        boolean failed = false;
         Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
             } catch (Exception beforeWorkException) {
-                this.beforeWorkSuccess = false;
+                this.workFailed = true;
+                failed = true;
                 exceptions.put("beforeWork", beforeWorkException);
                 try {
                     beforeWorkFail(beforeWorkException);
@@ -39,11 +53,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
                 return;
             }
-            this.beforeWorkSuccess = true;
             try {
                 work();
             } catch (Exception workException) {
-                this.workSuccess = false;
+                this.workFailed = true;
+                failed = true;
                 exceptions.put("work", workException);
                 try {
                     workFail(workException);
@@ -53,11 +67,10 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
                 return;
             }
-            this.workSuccess = true;
             try {
                 workSuccess();
             } catch (Exception workSuccessException) {
-                this.afterWorkSuccess = false;
+                failed = true;
                 exceptions.put("workSuccess", workSuccessException);
                 try {
                     workSuccessFail(workSuccessException);
@@ -67,12 +80,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
                 return;
             }
-            this.afterWorkSuccess = true;
         } finally {
             try {
                 workFinally(exceptions);
             } catch (Exception workFinallyException) {
-                this.finallyWorkSuccess = false;
+                failed = true;
                 exceptions.put("workFinally", workFinallyException);
                 try {
                     workFinallyFail(workFinallyException, exceptions);
@@ -81,10 +93,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                     exceptions.put("workFinallyFail", workFinallyFailException);
                 }
             }
-            this.executed = true;
-            this.success = exceptions.isEmpty();
+            this.success = !failed;
             this.executedMs = (int)(System.currentTimeMillis() - startMs);
-            this.finallyWorkSuccess = true;
+            this.executed = true;
+            if(failed)
+                FAILED_WORK_ITEMS.add(this);
             this.running = false;
         }
     }
@@ -94,19 +107,19 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
 
     @Override
     public void beforeWorkFail(Exception exception) {
-        LOG.error(exception.getMessage(), exception);
+        LOG.error(this + " - " + exception.getMessage(), exception);
     }
 
     public abstract void work();
 
     @Override
     public void workFail(Exception exception) {
-        LOG.error(exception.getMessage(), exception);
+        LOG.error(this + " - " + exception.getMessage(), exception);
     }
 
     @Override
     public void workSuccessFail(Exception exception) {
-        LOG.error(exception.getMessage(), exception);
+        LOG.error(this + " - " + exception.getMessage(), exception);
     }
 
     @Override
@@ -114,7 +127,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
 
     @Override
     public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
-        LOG.error(finallyException.getMessage(), finallyException);
+        LOG.error(this + " - " + finallyException.getMessage(), finallyException);
     }
 
     @Override
@@ -128,23 +141,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     @Override
-    public boolean isWorkSuccess() {
-        return workSuccess;
-    }
-
-    @Override
-    public boolean isBeforeWorkSuccess() {
-        return beforeWorkSuccess;
-    }
-
-    @Override
-    public boolean isAfterWorkSuccess() {
-        return afterWorkSuccess;
-    }
-
-    @Override
-    public boolean isFinallyWorkSuccess() {
-        return finallyWorkSuccess;
+    public boolean isWorkFailed() {
+        return workFailed;
     }
 
     @Override

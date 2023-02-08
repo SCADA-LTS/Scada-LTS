@@ -14,15 +14,20 @@ public class WorkItems {
     private final Map<Integer, Execute> items;
     private final int limit;
     private final AtomicInteger counter;
+    private final AtomicLong serial;
 
     public WorkItems(int limit) {
         this.items = new ConcurrentHashMap<>();
         this.limit = limit;
         this.counter = new AtomicInteger();
+        this.serial = new AtomicLong();
     }
 
     public void add(WorkItem item) {
-        Execute execute = new Execute(item);
+        if(limit == 0) {
+            return;
+        }
+        Execute execute = new Execute(item, serial.incrementAndGet());
         int index = counter.incrementAndGet();
         if(index >= limit) {
             counter.set(0);
@@ -38,48 +43,6 @@ public class WorkItems {
                 .collect(Collectors.toList());
     }
 
-    public List<Execute> getByExecuted() {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted())
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getByNotExecuted() {
-        return get().stream()
-                .filter(a -> !a.getWorkItem().isExecuted())
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getBySuccess() {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted() && a.getWorkItem().isSuccess())
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getByFail() {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted() && !a.getWorkItem().isSuccess())
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getByExecutedLongerThan(long executedMs) {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted() && a.getWorkItem().getExecutedMs() > executedMs)
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getByExecutedLessThan(long executedMs) {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted() && a.getWorkItem().getExecutedMs() < executedMs)
-                .collect(Collectors.toList());
-    }
-
-    public List<Execute> getByPriority(WorkItemPriority priority) {
-        return get().stream()
-                .filter(a -> a.getWorkItem().isExecuted() && a.getPriority() == priority)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public String toString() {
         return "ExecuteItems{" +
@@ -89,16 +52,15 @@ public class WorkItems {
 
     public static class Execute implements Comparable<Execute> {
 
-        private static final AtomicLong counter = new AtomicLong();
         private final String className;
         private final long serial;
         private final WorkItem workItem;
         private final WorkItemPriority priority;
 
-        public Execute(WorkItem workItem) {
+        public Execute(WorkItem workItem, long serial) {
             this.className = workItem.getClass().getName();
             this.workItem = workItem;
-            this.serial = counter.incrementAndGet();
+            this.serial = serial;
             this.priority = WorkItemPriority.priorityOf(workItem.getPriority());
         }
 
