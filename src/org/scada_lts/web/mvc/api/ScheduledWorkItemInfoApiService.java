@@ -30,16 +30,31 @@ public class ScheduledWorkItemInfoApiService {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Long> getScheduledWorkItemsGroupByClassName(HttpServletRequest request) {
+    public Map<String, Long> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request) {
         checkIfNonAdminThenUnauthorized(request);
         return Common.timer.getTasks().stream()
                 .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.counting()));
     }
 
-    public Map<String, Long> getScheduledWorkItemsGroupByClassName(HttpServletRequest request, TimerTaskState state) {
+    public Map<String, List<ScheduledWorkItem>> getScheduledWorkItemsGroupByClassName(HttpServletRequest request) {
+        checkIfNonAdminThenUnauthorized(request);
+        return Common.timer.getTasks().stream()
+                .map(ScheduledWorkItem::new)
+                .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.toList()));
+    }
+
+    public Map<String, Long> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request, TimerTaskState state) {
         checkIfNonAdminThenUnauthorized(request);
         return Common.timer.getTasks().stream()
                 .filter(a -> TimerTaskState.stateOf(a) == state)
                 .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.counting()));
+    }
+
+    public Map<String, List<ScheduledWorkItem>> getScheduledWorkItemsGroupByClassName(HttpServletRequest request, TimerTaskState state) {
+        checkIfNonAdminThenUnauthorized(request);
+        return Common.timer.getTasks().stream()
+                .filter(a -> TimerTaskState.stateOf(a) == state)
+                .map(ScheduledWorkItem::new)
+                .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.toList()));
     }
 }

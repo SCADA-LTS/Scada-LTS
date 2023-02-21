@@ -31,6 +31,11 @@ public final class SendUtils {
 
     public static void sendMsg(EventInstance evt, NotificationType notificationType, Set<String> addresses,
                                String alias, AfterWork afterWork) {
+        sendMsg(evt, notificationType, addresses, alias, afterWork, () -> "sendMsg from: " + SendUtils.class.getName());
+    }
+
+    public static void sendMsg(EventInstance evt, NotificationType notificationType, Set<String> addresses,
+                               String alias, AfterWork afterWork, WorkItemDetails workItemDetails) {
         sendMsg(evt, notificationType, addresses, alias, afterWork, new BeforeWork.NotExecuted() {
             @Override
             public void workNotExecuted(String msg) {
@@ -45,11 +50,11 @@ public final class SendUtils {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
-        });
+        }, workItemDetails);
     }
 
     public static void sendMsg(String[] toAddresses, String subject, IMsgContent msgContent, AfterWork afterWork,
-                               AfterWork.WorkFinally workFinally) {
+                               AfterWork.WorkFinally workFinally, WorkItemDetails workItemDetails) {
         sendMsg(toAddresses, subject, msgContent, afterWork, workFinally, new BeforeWork.NotExecuted() {
             @Override
             public void workNotExecuted(Exception exception) {
@@ -68,10 +73,10 @@ public final class SendUtils {
                     }
                 }
             }
-        });
+        }, workItemDetails);
     }
 
-    public static void sendMsgTestSync(Set<String> addresses, AfterWork afterWork) {
+    public static void sendMsgTestSync(Set<String> addresses, AfterWork afterWork, WorkItemDetails workItemDetails) {
         sendMsgTestSync(addresses, afterWork, new BeforeWork.NotExecuted() {
             @Override
             public void workNotExecuted(Exception exception) {
@@ -81,44 +86,48 @@ public final class SendUtils {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
-        });
+        }, workItemDetails);
     }
 
-    public static void sendMsgTestSync(String toAddresses, IMsgSubjectContent content, Map<String, Object> result) {
-        sendMsgTestSync(new String[]{toAddresses}, content, result);
+    public static void sendMsgTestSync(String toAddresses, IMsgSubjectContent content, Map<String, Object> result,
+                                       WorkItemDetails workItemDetails) {
+        sendMsgTestSync(new String[]{toAddresses}, content, result, workItemDetails);
     }
 
-    public static void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, Map<String, Object> result) {
+    public static void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, Map<String, Object> result,
+                                       WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, new AfterWork() {
             @Override
             public void workFail(Exception e) {
                 LOG.error(MessageFormat.format("Info about email: {0}, error: {1}",
                         "test", e.getMessage()));
-                result.put("exception", getShortMsg(e));
+                result.put("exception", "Send fail: " + getShortMsg(e));
             }
 
             @Override
             public void workSuccess() {
                 result.put("message", new LocalizableMessage("common.testEmailSent",  Arrays.toString(toAddresses)));
             }
-        }, (res, e) -> res.put("exception", getShortMsg(e)), result);
+        }, (res, e) -> res.put("exception", "Send fail: " + getShortMsg(e)), result, workItemDetails);
     }
 
-    public static void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, DwrResponseI18n response) {
+    public static void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, DwrResponseI18n response,
+                                       WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, new AfterWork() {
             @Override
             public void workFail(Exception e) {
                 LOG.error(MessageFormat.format("Info about email: {0}, error: {1}",
                         "test", e.getMessage()));
-                response.addGenericMessage("common.default", getShortMsg(e));
+                response.addGenericMessage("common.default", "Send fail: " + getShortMsg(e));
             }
-        }, (res, ex) -> res.addGenericMessage("common.default", getShortMsg(ex)), response);
+        }, (res, ex) -> res.addGenericMessage("common.default", "Send fail: " + getShortMsg(ex)), response, workItemDetails);
     }
 
-    private static void sendMsgTestSync(Set<String> addresses, AfterWork afterWork, BeforeWork.NotExecuted notExecuted) {
+    private static void sendMsgTestSync(Set<String> addresses, AfterWork afterWork, BeforeWork.NotExecuted notExecuted,
+                                        WorkItemDetails workItemDetails) {
         try {
             IMsgSubjectContent content = MsgContentUtils.createEmailTest();
-            sendMsgTestSync(addresses.toArray(new String[0]), content, afterWork, (a,b) -> {}, new HashMap<>());
+            sendMsgTestSync(addresses.toArray(new String[0]), content, afterWork, (a,b) -> {}, new HashMap<>(), workItemDetails);
         } catch (Exception e) {
             try {
                 notExecuted.workNotExecuted(e);
@@ -129,7 +138,8 @@ public final class SendUtils {
     }
 
     private static void sendMsg(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-                                String alias, AfterWork afterWork, BeforeWork.NotExecuted notExecuted) {
+                                String alias, AfterWork afterWork, BeforeWork.NotExecuted notExecuted,
+                                WorkItemDetails workItemDetails) {
         try {
 
             validateEmail(evt, notificationType, addresses, alias);
@@ -145,7 +155,7 @@ public final class SendUtils {
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
 
             SendEmailData sendEmailData = toSendEmailData(evt, notificationType, addresses, alias, sendEmailConfig);
-            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork);
+            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork, workItemDetails);
 
             // Send the email.
             queueMsg(workItem);
@@ -161,14 +171,15 @@ public final class SendUtils {
 
     private static void sendMsg(String[] toAddresses, String subject,
                                 IMsgContent msgContent, AfterWork afterWork,
-                                AfterWork.WorkFinally workFinally, BeforeWork.NotExecuted notExecuted) {
+                                AfterWork.WorkFinally workFinally, BeforeWork.NotExecuted notExecuted,
+                                WorkItemDetails workItemDetails) {
         try {
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
 
             SendEmailData sendEmailData = toSendEmailData(toAddresses, subject, msgContent, sendEmailConfig);
-            WorkItem workItem = EmailFinallyWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork, workFinally);
+            WorkItem workItem = EmailFinallyWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork, workFinally, workItemDetails);
 
             // Send the email.
             queueMsg(workItem);
@@ -183,7 +194,8 @@ public final class SendUtils {
     }
 
     private static <T> void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, AfterWork afterWork,
-                                            BiConsumer<T, Exception> handleException, T object) {
+                                            BiConsumer<T, Exception> handleException, T object,
+                                            WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, afterWork, handleException, object, new BeforeWork.NotExecuted() {
             @Override
             public void workNotExecuted(Exception exception) {
@@ -193,19 +205,19 @@ public final class SendUtils {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
-        });
+        }, workItemDetails);
     }
 
     private static <T> void sendMsgTestSync(String[] toAddresses, IMsgSubjectContent content, AfterWork afterWork,
                                             BiConsumer<T, Exception> handleException, T object,
-                                            BeforeWork.NotExecuted notExecuted) {
+                                            BeforeWork.NotExecuted notExecuted, WorkItemDetails workItemDetails) {
         try {
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
 
             SendEmailData sendEmailData = toSendEmailData(toAddresses, content, sendEmailConfig);
-            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork);
+            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork, workItemDetails);
 
             // Send the email.
             workItem.execute();

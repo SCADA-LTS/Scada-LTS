@@ -12,38 +12,63 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
     private static final WorkItems FAILED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getFailedWorkItemsLimit());
-    private static final WorkItems RUNNING_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getRunningWorkItemsLimit());
+    private static final WorkItems RUNNING_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getRunningWorkItemsLimit(), SystemSettingsUtils.getRepeatAddWorkItemsSafe());
+    private static final WorkItems EXECUTED_LONGER_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryExecutedLongerWorkItemsLimit());
+    private static final int EXECUTED_LONGER_WORK_ITEMS_THAN = SystemSettingsUtils.getHistoryExecutedLongerWorkItemsThan();
     private volatile boolean executed = false;
     private volatile boolean success = false;
     private volatile boolean workFailed = false;
     private volatile boolean running = false;
     private volatile int executedMs = -1;
+
+    private volatile String errorMessage = "";
+
     public static WorkItems failedWorkItems() {
         return FAILED_WORK_ITEMS;
     }
     public static WorkItems runningWorkItems() {
         return RUNNING_WORK_ITEMS;
     }
+    public static WorkItems executedLongerWorkItems() {
+        return EXECUTED_LONGER_WORK_ITEMS;
+    }
+
+    private static void addWorkItemAfterExecuted(WorkItem workItem, boolean failed, int executedMs) {
+        if(failed)
+            FAILED_WORK_ITEMS.add(workItem);
+        if(executedMs > EXECUTED_LONGER_WORK_ITEMS_THAN)
+            EXECUTED_LONGER_WORK_ITEMS.add(workItem);
+    }
+    private static void addWorkItemIfNotRunning(WorkItem workItem, boolean running) {
+        if(running) {
+            LOG.warn("Work items is running! : " + workItem);
+        } else {
+            RUNNING_WORK_ITEMS.add(workItem, WorkItemMetrics::isRunning);
+        }
+    }
+
     @Override
     public final void execute() {
-        if(running) {
-            LOG.warn("Work items is running! : " + this);
-        } else {
-            RUNNING_WORK_ITEMS.add(this);
-        }
-        this.running = true;
         long startMs = System.currentTimeMillis();
+        boolean runningNow = this.running;
+        this.running = true;
         this.executedMs = -1;
         this.workFailed = false;
         this.executed = false;
+        this.success = false;
+        this.errorMessage = "";
+        addWorkItemIfNotRunning(this, runningNow);
         boolean failed = false;
+        boolean workFailed = false;
+        String msg = "";
         Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
             } catch (Exception beforeWorkException) {
-                this.workFailed = true;
+                workFailed = true;
                 failed = true;
+                msg = beforeWorkException.getMessage();
                 exceptions.put("beforeWork", beforeWorkException);
                 try {
                     beforeWorkFail(beforeWorkException);
@@ -56,8 +81,9 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             try {
                 work();
             } catch (Exception workException) {
-                this.workFailed = true;
+                workFailed = true;
                 failed = true;
+                msg = workException.getMessage();
                 exceptions.put("work", workException);
                 try {
                     workFail(workException);
@@ -71,6 +97,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 workSuccess();
             } catch (Exception workSuccessException) {
                 failed = true;
+                msg = workSuccessException.getMessage();
                 exceptions.put("workSuccess", workSuccessException);
                 try {
                     workSuccessFail(workSuccessException);
@@ -85,6 +112,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 workFinally(exceptions);
             } catch (Exception workFinallyException) {
                 failed = true;
+                msg = workFinallyException.getMessage();
                 exceptions.put("workFinally", workFinallyException);
                 try {
                     workFinallyFail(workFinallyException, exceptions);
@@ -94,10 +122,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
             }
             this.success = !failed;
+            this.workFailed = workFailed;
             this.executedMs = (int)(System.currentTimeMillis() - startMs);
             this.executed = true;
-            if(failed)
-                FAILED_WORK_ITEMS.add(this);
+            this.errorMessage = msg;
+            addWorkItemAfterExecuted(this, failed, executedMs);
             this.running = false;
         }
     }
@@ -155,4 +184,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         return executedMs;
     }
 
+    @Override
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 }

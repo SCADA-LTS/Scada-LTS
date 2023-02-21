@@ -232,5 +232,5 @@
         <b:property name="realmName" value="Basic Auth"/>
     </b:bean>
 
-    <b:bean id="GetSecurityBeans" class="org.scada_lts.web.beans.GetSecurityBeans"/>
+    <b:bean id="getSecurityBeans" class="org.scada_lts.web.beans.GetSecurityBeans"/>
 </b:beans>

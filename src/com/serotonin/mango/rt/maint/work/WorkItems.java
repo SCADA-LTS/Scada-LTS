@@ -7,12 +7,14 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WorkItems {
 
     private final Map<Integer, Execute> items;
     private final int limit;
+    private final int safe;
     private final AtomicInteger counter;
     private final AtomicLong serial;
 
@@ -21,6 +23,15 @@ public class WorkItems {
         this.limit = limit;
         this.counter = new AtomicInteger();
         this.serial = new AtomicLong();
+        this.safe = 0;
+    }
+
+    public WorkItems(int limit, int safe) {
+        this.items = new ConcurrentHashMap<>();
+        this.limit = limit;
+        this.counter = new AtomicInteger();
+        this.serial = new AtomicLong();
+        this.safe = safe;
     }
 
     public void add(WorkItem item) {
@@ -34,6 +45,38 @@ public class WorkItems {
             items.put(0, execute);
         } else {
             items.put(index, execute);
+        }
+    }
+
+    public void add(WorkItem item, Predicate<WorkItem> repeatAddIf) {
+        if(limit == 0) {
+            return;
+        }
+        add(item, repeatAddIf, safe);
+    }
+
+    private void add(WorkItem item, Predicate<WorkItem> repeatAddIf, int safe) {
+        if(safe < 0 || !repeatAddIf.test(item)) {
+            return;
+        }
+        Execute execute = new Execute(item, serial.incrementAndGet());
+        int index = counter.incrementAndGet();
+        if(index >= limit) {
+            counter.set(0);
+            Execute executeOld = items.put(0, execute);
+            repeatAddIf(executeOld, repeatAddIf, safe);
+        } else {
+            Execute executeOld = items.put(index, execute);
+            repeatAddIf(executeOld, repeatAddIf, safe);
+        }
+    }
+
+    private void repeatAddIf(Execute execute, Predicate<WorkItem> repeatAddIf, int safe) {
+        if (execute != null) {
+            WorkItem workItem = execute.getWorkItem();
+            if (workItem != null && repeatAddIf.test(workItem)) {
+                add(workItem, repeatAddIf, --safe);
+            }
         }
     }
 

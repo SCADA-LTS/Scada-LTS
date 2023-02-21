@@ -3,7 +3,6 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportInstance;
@@ -28,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 import static org.scada_lts.utils.ValidationUtils.checkArgsIfEmptyThenBadRequest;
 import static org.scada_lts.utils.ValidationUtils.checkArgsIfTwoEmptyThenBadRequest;
 
@@ -158,12 +159,13 @@ public class ReportsApiService implements CrudService<ReportVO> {
             throw new BadRequestException(LocalizableMessage.getMessage(Common.getBundle(),"js.email.noRecipForEmail"), request.getRequestURI());
         else {
            List<String> errors = new ArrayList<>();
-           SendUtils.sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
+           sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
                @Override
                public void workFail(Exception exception) {
                    errors.add(LocalizableMessage.getMessage(Common.getBundle(),"common.default", exception.getMessage()));
                }
-           });
+           }, () -> "sendTestEmail from: " + this.getClass().getName()
+                   + ", " + userInfo(Common.getUser(request)));
            if(!errors.isEmpty())
                throw new InternalServerErrorException(errors, request.getRequestURI());
         }

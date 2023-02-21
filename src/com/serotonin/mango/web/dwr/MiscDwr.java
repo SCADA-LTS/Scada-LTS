@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.util.SendUtils;
-import com.serotonin.mango.web.dwr.util.AnonymousUserUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
@@ -44,7 +42,6 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
-import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 import com.serotonin.io.StreamUtils;
@@ -71,6 +68,8 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 import static com.serotonin.mango.util.ViewControllerUtils.*;
 
 public class MiscDwr extends BaseDwr {
@@ -223,7 +222,9 @@ public class MiscDwr extends BaseDwr {
 				IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
-				SendUtils.sendMsgTestSync(toAddrs, cnt, response);
+				User user = Common.getUser();
+				sendMsgTestSync(toAddrs, cnt, response, () -> "sendTestEmail from: " + this.getClass().getName() +
+						", " + userInfo(user));
 			} catch (Exception e) {
 				response.addGenericMessage("common.default", e.getMessage());
 			}

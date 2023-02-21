@@ -9,7 +9,6 @@ import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -30,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
 
 /**
@@ -279,7 +280,8 @@ public class SystemSettingsService {
         model.put("message", new LocalizableMessage("systemSettings.testEmail"));
         IMsgSubjectContent cnt = IMsgSubjectContent.newInstance(
                 "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
-        SendUtils.sendMsgTestSync(user.getEmail(), cnt, model);
+        sendMsgTestSync(user.getEmail(), cnt, model, () -> "sendTestEmail from: " + this.getClass().getName()
+                + ", " + userInfo(user));
 
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
