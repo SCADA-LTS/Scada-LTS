@@ -25,6 +25,12 @@ public final class WorkItemsUtils {
                 .collect(Collectors.toList());
     }
 
+    public static List<WorkItems.Execute> getExecutedLonger() {
+        return AbstractBeforeAfterWorkItem.executedLongerWorkItems().get().stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
+
     public static List<WorkItems.Execute> getRunning() {
         return AbstractBeforeAfterWorkItem.runningWorkItems().get().stream()
                 .filter(a -> a.getWorkItem().isRunning())
@@ -63,6 +69,12 @@ public final class WorkItemsUtils {
 
     public static List<WorkItems.Execute> getByExecutedLongerThan(int executedMs) {
         return getAll().stream()
+                .filter(a -> a.getWorkItem().isExecuted() && a.getWorkItem().getExecutedMs() > executedMs)
+                .collect(Collectors.toList());
+    }
+
+    public static List<WorkItems.Execute> getByExecutedLongerThanHistory(int executedMs) {
+        return getExecutedLonger().stream()
                 .filter(a -> a.getWorkItem().isExecuted() && a.getWorkItem().getExecutedMs() > executedMs)
                 .collect(Collectors.toList());
     }

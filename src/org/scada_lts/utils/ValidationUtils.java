@@ -23,12 +23,22 @@ public final class ValidationUtils {
         return msgIfNull("Correct id;", id);
     }
 
+    public static String validXid(String xid) {
+        return msgIfNullOrInvalid("Correct xid;", xid, StringUtils::isEmpty);
+    }
+
     public static String validXid(String xidExpected, String xid) {
         return msgIfNonNullAndInvalid("Correct xid;", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
     }
 
     public static String validId(Integer id, String xid) {
-        return msgIfNullAndInvalid("Correct id or xid;", id, a -> StringUtils.isEmpty(xid));
+        String errorId = validId(id);
+        if(errorId.isEmpty())
+            return "";
+        String errorXid = validXid(xid);
+        if (errorXid.isEmpty())
+            return "";
+        return "Correct id or xid;";
     }
 
     static <T> String msgIfNull(String msg, T value) {
@@ -55,15 +65,6 @@ public final class ValidationUtils {
         }
         return "";
     }
-
-    @Deprecated
-    static <T> String msgIfNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
-        if(Objects.isNull(value) && invalidIf.test(value)) {
-            return MessageFormat.format(msg, String.valueOf(value));
-        }
-        return "";
-    }
-
 
     public static String formatErrorsJson(String errors) {
         return "{\"errors\": \"" + errors + "\"}";
@@ -94,7 +95,7 @@ public final class ValidationUtils {
 
     public static void checkIfNonAdminThenUnauthorized(HttpServletRequest request) {
         User user = Common.getUser(request);
-        if (!user.isAdmin()) {
+        if (user == null || !user.isAdmin()) {
             throw new UnauthorizedException(request.getRequestURI());
         }
     }

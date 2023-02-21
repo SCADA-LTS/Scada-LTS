@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
+import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
@@ -146,5 +147,12 @@ public final class LoggingUtils {
             return "";
         String info =  "reportInstance: {0} (id: {1}, userId: {2})";
         return MessageFormat.format(info, reportInstance.getName(), reportInstance.getId(), reportInstance.getUserId());
+    }
+
+    public static String mailingListInfo(MailingList mailingList) {
+        if(mailingList == null)
+            return "";
+        String info =  "mailingList: {0} (id: {1}, xid: {2})";
+        return MessageFormat.format(info, mailingList.getName(), mailingList.getId(), mailingList.getXid());
     }
 }

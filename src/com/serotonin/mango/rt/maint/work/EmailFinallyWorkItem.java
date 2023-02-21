@@ -11,14 +11,15 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     protected EmailFinallyWorkItem(SendEmailData sendEmailData,
                                    SendEmailConfig sendEmailConfig,
                                    AfterWork afterWork,
-                                   AfterWork.WorkFinally workFinally) {
-        super(sendEmailData, sendEmailConfig, afterWork);
+                                   AfterWork.WorkFinally workFinally,
+                                   WorkItemDetails workItemDetails) {
+        super(sendEmailData, sendEmailConfig, afterWork, workItemDetails);
         this.workFinally = workFinally;
     }
 
     public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
-                                       AfterWork afterWork, AfterWork.WorkFinally workFinally) {
-        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, afterWork, workFinally);
+                                       AfterWork afterWork, AfterWork.WorkFinally workFinally, WorkItemDetails workItemDetails) {
+        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, afterWork, workFinally, workItemDetails);
     }
 
     @Override

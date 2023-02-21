@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +31,14 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/group-by/")
-    public ResponseEntity<Map<String, Long>> getNotExecutedWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getNotExecutedWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getNotExecutedWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getNotExecutedWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getNotExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getNotExecutedWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -44,8 +49,14 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/executed/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/executed/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -56,8 +67,14 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/success/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedSuccessWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedSuccessWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedSuccessWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedSuccessWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/success/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedSuccessWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedSuccessWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -68,8 +85,14 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/failed/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedFailWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedFailedWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedFailWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedFailedWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/failed/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedFailWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedFailedWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -80,8 +103,14 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/running/group-by/")
-    public ResponseEntity<Map<String, Long>> getRunningFailWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getRunningWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getRunningFailWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getRunningWorkItemsGroupBy(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/running/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getRunningFailWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getRunningWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -92,35 +121,56 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/all/group-by/")
-    public ResponseEntity<Map<String, Long>> getWorkItemsGroupBy(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getWorkItemsGroupBy(request);
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getWorkItemsGroupBy(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @Deprecated
-    @GetMapping(value = "/group-by/all/")
-    public ResponseEntity<Map<String, Long>> getWorkItemsGroupBy2(HttpServletRequest request) {
-        Map<String, Long> response = workItemInfoApiService.getWorkItemsGroupBy(request);
+    @GetMapping(value = "/all/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getWorkItemsGroupByCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @Deprecated
-    @GetMapping(value = "/limit/{limit}/")
-    public ResponseEntity<List<WorkItemInfo>> setWorkItemsLimit(@PathVariable(value = "limit", required = true) Integer limit) {
-        return new ResponseEntity<>(Collections.emptyList(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @GetMapping(value = "/longer/{executedMs}/")
     public ResponseEntity<WorkItemInfoList> getExecutedLongerWorkItems(HttpServletRequest request,
                                                                        @PathVariable("executedMs") int executedMs) {
-        List<WorkItemInfo> response = workItemInfoApiService.getExecutedLongerWorkItems(request, executedMs);
+        List<WorkItemInfo> response = workItemInfoApiService.getExecutedLongerWorkItems(request, executedMs, false);
         return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/longer/{executedMs}/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedLongerWorkItemsGroupBy(HttpServletRequest request,
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedLongerWorkItemsGroupBy(HttpServletRequest request,
                                                                                @PathVariable("executedMs") int executedMs) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedLongerWorkItemsGroupBy(request, executedMs);
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedLongerWorkItemsGroupBy(request, executedMs, false);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/longer/{executedMs}/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedLongerWorkItemsGroupByCount(HttpServletRequest request,
+                                                                               @PathVariable("executedMs") int executedMs) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedLongerWorkItemsGroupByCount(request, executedMs, false);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/longer/{executedMs}/history/")
+    public ResponseEntity<WorkItemInfoList> getExecutedLongerWorkItemsHistory(HttpServletRequest request,
+                                                                              @PathVariable("executedMs") int executedMs) {
+        List<WorkItemInfo> response = workItemInfoApiService.getExecutedLongerWorkItems(request, executedMs, true);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/longer/{executedMs}/history/group-by/")
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedLongerWorkItemsGroupByHistory(HttpServletRequest request,
+                                                                                                    @PathVariable("executedMs") int executedMs) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedLongerWorkItemsGroupBy(request, executedMs, true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/longer/{executedMs}/history/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedLongerWorkItemsGroupByCountHistory(HttpServletRequest request,
+                                                                                    @PathVariable("executedMs") int executedMs) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedLongerWorkItemsGroupByCount(request, executedMs, true);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -132,9 +182,16 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/less/{executedMs}/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedLessWorkItemsGroupBy(HttpServletRequest request,
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedLessWorkItemsGroupBy(HttpServletRequest request,
                                                                              @PathVariable("executedMs") int executedMs) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedLessWorkItemsGroupBy(request, executedMs);
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedLessWorkItemsGroupBy(request, executedMs);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/less/{executedMs}/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedLessWorkItemsGroupByCount(HttpServletRequest request,
+                                                                             @PathVariable("executedMs") int executedMs) {
+        Map<String, Long> response = workItemInfoApiService.getExecutedLessWorkItemsGroupByCount(request, executedMs);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -146,9 +203,16 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/priority/{priority}/group-by/")
-    public ResponseEntity<Map<String, Long>> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request,
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request,
+                                                                                          @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getExecutedLessWorkItemsGroupByPriority(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/count/")
+    public ResponseEntity<Map<String, Long>> getExecutedLessWorkItemsGroupByPriorityCount(HttpServletRequest request,
                                                                                      @PathVariable("priority") WorkItemPriority priority) {
-        Map<String, Long> response = workItemInfoApiService.getExecutedLessWorkItemsGroupByPriority(request, priority);
+        Map<String, Long> response = workItemInfoApiService.getExecutedLessWorkItemsGroupByPriorityCount(request, priority);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -169,8 +233,14 @@ public class WorkItemInfoAPI {
         }
 
         @GetMapping(value = "/group-by/")
+        public ResponseEntity<Map<String, List<ScheduledWorkItem>>> getScheduledWorkItemsGroupByClassName(HttpServletRequest request) {
+            Map<String, List<ScheduledWorkItem>> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassName(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/group-by/count/")
         public ResponseEntity<Map<String, Long>> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request) {
-            Map<String, Long> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassName(request);
+            Map<String, Long> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassNameCount(request);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -182,9 +252,16 @@ public class WorkItemInfoAPI {
         }
 
         @GetMapping(value = "/state/{state}/group-by/")
+        public ResponseEntity<Map<String, List<ScheduledWorkItem>>> getScheduledWorkItemsGroupByClassName(HttpServletRequest request,
+                                                                                            @PathVariable("state")TimerTaskState state) {
+            Map<String, List<ScheduledWorkItem>> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassName(request, state);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/state/{state}/group-by/count/")
         public ResponseEntity<Map<String, Long>> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request,
                                                                                             @PathVariable("state")TimerTaskState state) {
-            Map<String, Long> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassName(request, state);
+            Map<String, Long> response = scheduledWorkItemInfoApiService.getScheduledWorkItemsGroupByClassNameCount(request, state);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }

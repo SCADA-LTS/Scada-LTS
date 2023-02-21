@@ -23,7 +23,6 @@ import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.MsgContentUtils;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -42,6 +41,7 @@ import java.util.Set;
 
 import static com.serotonin.mango.util.LoggingUtils.eventHandlerInfo;
 import static com.serotonin.mango.util.LoggingUtils.eventInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsg;
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
@@ -49,16 +49,16 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private TimerTask escalationTask;
 
     private Set<String> activeRecipients;
-    private ScheduledExecuteInactiveEventService service;
-    private MailingListService mailingListService;
+    private final ScheduledExecuteInactiveEventService service;
+    private final MailingListService mailingListService;
 
     public enum EmailNotificationType implements NotificationType {
         ACTIVE("active", "ftl.subject.active"), //
         ESCALATION("escalation", "ftl.subject.escalation"), //
         INACTIVE("inactive", "ftl.subject.inactive");
 
-        String file;
-        String key;
+        private final String file;
+        private final String key;
 
         EmailNotificationType(String file, String key) {
             this.file = file;
@@ -165,13 +165,13 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
-        SendUtils.sendMsg(evt, EmailNotificationType.ACTIVE, addresses, null, new AfterWork() {
+        sendMsg(evt, EmailNotificationType.ACTIVE, addresses, null, new AfterWork() {
             @Override
             public void workFail(Exception exception) {
                 LOG.error("Failed sending email for " + eventInfo(evt)
                         + ", error: " + exception.getMessage());
             }
-        });
+        }, () -> "sendActiveEmail from: " + EmailHandlerRT.class.getName() + ", " + eventInfo(evt));
     }
 
     protected Set<String> getActiveRecipients(EventInstance evt) {
@@ -197,12 +197,12 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
-        SendUtils.sendMsg(evt, notificationType, addresses, vo.getAlias(), new AfterWork() {
+        sendMsg(evt, notificationType, addresses, vo.getAlias(), new AfterWork() {
             @Override
             public void workFail(Exception exception) {
                 LOG.error("Failed sending email for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
                         + ", error: " + exception.getMessage());
             }
-        });
+        }, () -> eventHandlerInfo(getVo()) + ", " + eventInfo(evt));
     }
 }

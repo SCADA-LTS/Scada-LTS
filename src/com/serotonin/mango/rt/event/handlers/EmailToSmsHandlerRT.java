@@ -3,7 +3,6 @@ package com.serotonin.mango.rt.event.handlers;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.MsgContentUtils;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import freemarker.template.TemplateException;
@@ -20,6 +19,7 @@ import java.util.Set;
 
 import static com.serotonin.mango.util.LoggingUtils.eventHandlerInfo;
 import static com.serotonin.mango.util.LoggingUtils.eventInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsg;
 
 public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
@@ -30,8 +30,8 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
         MSG_FROM_EVENT("msgFromEventSms", "ftl.subject.active"),
         LIMIT("limitSms", "ftl.subject.active");
 
-        String file;
-        String key;
+        private final String file;
+        private final String key;
 
         SmsNotificationType(String file, String key) {
             this.file = file;
@@ -87,13 +87,13 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     @Override
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        SendUtils.sendMsg(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias(), new AfterWork() {
+        sendMsg(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias(), new AfterWork() {
             @Override
             public void workFail(Exception exception) {
                 LOG.error("Failed sending sms for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
                         + ", error: " + exception.getMessage());
             }
-        });
+        }, () -> eventHandlerInfo(getVo()) + ", " + eventInfo(evt));
     }
 
     private Set<String> formatAddresses(Set<String> addresses) {

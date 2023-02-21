@@ -40,10 +40,13 @@ public class WorkItemInfoApiService {
     public List<WorkItemInfo> getNotExecutedWorkItems(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getByNotExecuted);
     }
-
-    public List<WorkItemInfo> getExecutedLongerWorkItems(HttpServletRequest request, int executedMs) {
+    public List<WorkItemInfo> getExecutedLongerWorkItems(HttpServletRequest request, int executedMs, boolean history) {
         return get(request, WorkItemInfoApiService::getWorkItems, byExecuteMsComparator(),
-                WorkItemsUtils::getByExecutedLongerThan, executedMs);
+                executed -> {
+                    if(history)
+                        return WorkItemsUtils.getByExecutedLongerThanHistory(executed);
+                    return WorkItemsUtils.getByExecutedLongerThan(executed);
+                }, executedMs);
     }
 
     public List<WorkItemInfo> getExecutedWorkItemsByPriority(HttpServletRequest request, WorkItemPriority priority) {
@@ -56,37 +59,85 @@ public class WorkItemInfoApiService {
                 WorkItemsUtils::getByExecutedLessThan, executedMs);
     }
 
-    public Map<String, Long> getExecutedWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, Long> getExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByExecuted);
+    }
+
+    public Map<String, Long> getExecutedSuccessWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getBySuccess);
+    }
+
+    public Map<String, Long> getExecutedFailedWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByFailed);
+    }
+
+    public Map<String, Long> getWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getAll);
+    }
+
+    public Map<String, Long> getNotExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByNotExecuted);
+    }
+
+    public Map<String, Long> getExecutedLongerWorkItemsGroupByCount(HttpServletRequest request, int executedMs, boolean history) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, byExecuteMsComparator(),
+                executed -> {
+                    if(history)
+                        return WorkItemsUtils.getByExecutedLongerThanHistory(executed);
+                    return WorkItemsUtils.getByExecutedLongerThan(executed);
+                }, executedMs);
+    }
+
+    public Map<String, Long> getExecutedLessWorkItemsGroupByCount(HttpServletRequest request, int executedMs) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, byExecuteMsComparator(),
+                WorkItemsUtils::getByExecutedLessThan, executedMs);
+    }
+
+    public Map<String, Long> getExecutedLessWorkItemsGroupByPriorityCount(HttpServletRequest request,
+                                                                     WorkItemPriority priority) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting,
+                byExecuteMsComparator(), WorkItemsUtils::getByPriority, priority);
+    }
+
+    public Map<String, Long> getRunningWorkItemsGroupByCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getRunning);
+    }
+
+    public Map<String, List<WorkItemInfo>> getExecutedWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByExecuted);
     }
 
-    public Map<String, Long> getExecutedSuccessWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, List<WorkItemInfo>> getExecutedSuccessWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getBySuccess);
     }
 
-    public Map<String, Long> getExecutedFailedWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, List<WorkItemInfo>> getExecutedFailedWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByFailed);
     }
 
-    public Map<String, Long> getWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, List<WorkItemInfo>> getWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getAll);
     }
 
-    public Map<String, Long> getNotExecutedWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, List<WorkItemInfo>> getNotExecutedWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getByNotExecuted);
     }
 
-    public Map<String, Long> getExecutedLongerWorkItemsGroupBy(HttpServletRequest request, int executedMs) {
+    public Map<String, List<WorkItemInfo>> getExecutedLongerWorkItemsGroupBy(HttpServletRequest request, int executedMs, boolean history) {
         return get(request, WorkItemInfoApiService::groupByClassName, byExecuteMsComparator(),
-                WorkItemsUtils::getByExecutedLongerThan, executedMs);
+                executed -> {
+                    if(history)
+                        return WorkItemsUtils.getByExecutedLongerThanHistory(executed);
+                    return WorkItemsUtils.getByExecutedLongerThan(executed);
+                }, executedMs);
     }
 
-    public Map<String, Long> getExecutedLessWorkItemsGroupBy(HttpServletRequest request, int executedMs) {
+    public Map<String, List<WorkItemInfo>> getExecutedLessWorkItemsGroupBy(HttpServletRequest request, int executedMs) {
         return get(request, WorkItemInfoApiService::groupByClassName, byExecuteMsComparator(),
                 WorkItemsUtils::getByExecutedLessThan, executedMs);
     }
 
-    public Map<String, Long> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request,
+    public Map<String, List<WorkItemInfo>> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request,
                                                                      WorkItemPriority priority) {
         return get(request, WorkItemInfoApiService::groupByClassName,
                 byExecuteMsComparator(), WorkItemsUtils::getByPriority, priority);
@@ -96,7 +147,7 @@ public class WorkItemInfoApiService {
         return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getRunning);
     }
 
-    public Map<String, Long> getRunningWorkItemsGroupBy(HttpServletRequest request) {
+    public Map<String, List<WorkItemInfo>> getRunningWorkItemsGroupBy(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getRunning);
     }
 
@@ -124,14 +175,25 @@ public class WorkItemInfoApiService {
         }
     }
 
-    private static Map<String, Long> groupByClassName(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
+    private static Map<String, Long> groupByClassNameCounting(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
         return workItems.stream()
                 .sorted(comparator)
                 .map(WorkItemInfo::new)
                 .collect(Collectors.groupingBy(a -> a.getWorkItemExecute().getClassName(), Collectors.counting()));
     }
 
-    private static Map<String, Long> groupByClassName(List<WorkItems.Execute> workItems) {
+    private static Map<String, List<WorkItemInfo>> groupByClassName(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
+        return workItems.stream()
+                .sorted(comparator)
+                .map(WorkItemInfo::new)
+                .collect(Collectors.groupingBy(a -> a.getWorkItemExecute().getClassName(), Collectors.toList()));
+    }
+
+    private static Map<String, Long> groupByClassNameCounting(List<WorkItems.Execute> workItems) {
+        return groupByClassNameCounting(workItems, Comparator.reverseOrder());
+    }
+
+    private static Map<String, List<WorkItemInfo>> groupByClassName(List<WorkItems.Execute> workItems) {
         return groupByClassName(workItems, Comparator.reverseOrder());
     }
 
