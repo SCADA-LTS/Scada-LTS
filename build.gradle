@@ -139,6 +139,11 @@ task buildRunDebugDev(type: GradleBuild) {
     tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
 }
 
+task buildRunDebugProd(type: GradleBuild) {
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'war', 'deployTomcat', 'runDebug']
+}
+
+
 task clearProject (type: Delete) {
     delete "build"
 }

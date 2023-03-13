@@ -23,10 +23,10 @@ public final class SystemSettingsUtils {
     private static final String PROCESSING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.limit";
     private static final String PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.failed.limit";
     private static final String PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.running.limit";
+    private static final String PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY = "processing.workitems.running.repeat";
 
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_THAN_MS_KEY = "processing.workitems.history.longer.thanMs";
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.longer.limit";
-    private static final String PROCESSING_REPEAT_ADD_WORK_ITEMS_SAFE_KEY = "processing.workitems.add.repeat.safe";
     private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
     private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = "scadalts.security.js.access.denied.class.regexes";
     private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
@@ -131,9 +131,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static int getRepeatAddWorkItemsSafe() {
+    public static int getRepeatRunningWorkItems() {
         try {
-            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_REPEAT_ADD_WORK_ITEMS_SAFE_KEY, "0");
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY, "0");
             return Integer.parseInt(limit);
         } catch (Exception e) {
             LOG.error(e.getMessage());

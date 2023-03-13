@@ -52,14 +52,14 @@ public class WorkItems {
         if(limit == 0) {
             return;
         }
-        add(item, repeatAddIf, safe);
+        add(item, repeatAddIf, safe, -1);
     }
 
-    private void add(WorkItem item, Predicate<WorkItem> repeatAddIf, int safe) {
+    private void add(WorkItem item, Predicate<WorkItem> repeatAddIf, int safe, long identifier) {
         if(safe < 0 || !repeatAddIf.test(item)) {
             return;
         }
-        Execute execute = new Execute(item, serial.incrementAndGet());
+        Execute execute = new Execute(item, identifier == -1 ? serial.incrementAndGet() : identifier);
         int index = counter.incrementAndGet();
         if(index >= limit) {
             counter.set(0);
@@ -75,7 +75,7 @@ public class WorkItems {
         if (execute != null) {
             WorkItem workItem = execute.getWorkItem();
             if (workItem != null && repeatAddIf.test(workItem)) {
-                add(workItem, repeatAddIf, --safe);
+                add(workItem, repeatAddIf, --safe, execute.getSerial());
             }
         }
     }
