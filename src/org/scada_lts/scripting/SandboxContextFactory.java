@@ -18,6 +18,8 @@
 
 package org.scada_lts.scripting;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -28,6 +30,8 @@ import org.scada_lts.utils.SystemSettingsUtils;
  * @author Zuzana Maczek, grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class SandboxContextFactory extends ContextFactory {
+
+	private static final Log LOG = LogFactory.getLog(SandboxContextFactory.class);
 	
 	@Override
 	protected Context makeContext() {
@@ -36,6 +40,8 @@ public class SandboxContextFactory extends ContextFactory {
 		cx.setClassShutter(className -> {
 			for(String classNameRegex: SystemSettingsUtils.getSecurityJsAccessDeniedClassRegexes()) {
 				if (className.matches(classNameRegex)) {
+					if(LOG.isWarnEnabled())
+						LOG.warn("access denied for class: " + className);
 					return false;
 				}
 			}
@@ -44,6 +50,8 @@ public class SandboxContextFactory extends ContextFactory {
 					return true;
 				}
 			}
+			if(LOG.isWarnEnabled())
+				LOG.warn("access denied for class: " + className);
 			return false;
 		});
 		return cx;

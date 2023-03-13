@@ -18,6 +18,8 @@
 
 package org.scada_lts.scripting;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -30,23 +32,28 @@ import org.scada_lts.utils.SystemSettingsUtils;
 public class SandboxNativeJavaObject extends NativeJavaObject  {
 
 	private static final long serialVersionUID = -7251515169121482423L;
+	private static final Log LOG = LogFactory.getLog(SandboxNativeJavaObject.class);
 
 	public SandboxNativeJavaObject(Scriptable scope, Object javaObject, @SuppressWarnings("rawtypes") Class staticType) {
 		super(scope, javaObject, staticType);
 	}
  
 	@Override
-	public Object get(String name, Scriptable start) {
+	public Object get(String methodName, Scriptable start) {
 		for(String methodNameRegex: SystemSettingsUtils.getSecurityJsAccessDeniedMethodRegexes()) {
-			if (name.matches(methodNameRegex)) {
+			if (methodName.matches(methodNameRegex)) {
+				if(LOG.isWarnEnabled())
+					LOG.warn("access denied for method: " + methodName);
 				return NOT_FOUND;
 			}
 		}
 		for(String methodNameRegex: SystemSettingsUtils.getSecurityJsAccessGrantedMethodRegexes()) {
-			if (name.matches(methodNameRegex)) {
-				return super.get(name, start);
+			if (methodName.matches(methodNameRegex)) {
+				return super.get(methodName, start);
 			}
 		}
+		if(LOG.isWarnEnabled())
+			LOG.warn("access denied for method: " + methodName);
 		return NOT_FOUND;
 	}
 
