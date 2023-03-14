@@ -20,6 +20,18 @@ public final class SystemSettingsUtils {
     private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
     private static final String HTTP_RESPONSE_HEADERS_KEY = "systemsettings.http.response.headers";
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
+    private static final String PROCESSING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.limit";
+    private static final String PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.failed.limit";
+    private static final String PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.running.limit";
+    private static final String PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY = "processing.workitems.running.repeat";
+
+    private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_THAN_MS_KEY = "processing.workitems.history.longer.thanMs";
+    private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.longer.limit";
+    private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
+    private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = "scadalts.security.js.access.denied.class.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES = "scadalts.security.js.access.granted.class.regexes";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -66,6 +78,106 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return -1;
+        }
+    }
+
+    public static int getWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getFailedWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryExecutedLongerWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryExecutedLongerWorkItemsThan() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_THAN_MS_KEY, "1500");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 1500;
+        }
+    }
+
+    public static int getRunningWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getRepeatRunningWorkItems() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY, "0");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 0;
+        }
+    }
+
+    public static String[] getSecurityJsAccessGrantedClassRegexes() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessDeniedClassRegexes() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessDeniedMethodRegexes() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getSecurityJsAccessGrantedMethodRegexes() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
         }
     }
 }

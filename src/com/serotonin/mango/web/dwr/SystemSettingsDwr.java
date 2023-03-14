@@ -23,7 +23,6 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -52,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 import static com.serotonin.mango.web.mvc.controller.ControllerUtils.setLocale;
 
 
@@ -254,7 +255,8 @@ public class SystemSettingsDwr extends BaseDwr {
 			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail", model,
 					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
 					Common.UTF8);
-			SendUtils.sendMsgTestSync(user.getEmail(), cnt, result);
+			sendMsgTestSync(user.getEmail(), cnt, result, () -> "sendTestEmail from: " + this.getClass().getName() +
+					", " + userInfo(user));
 
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());

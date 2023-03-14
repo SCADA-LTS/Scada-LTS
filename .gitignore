@@ -7,7 +7,6 @@ target/
 #   Static web content    #
 ###########################
 /WebContent/resources/node_modules/
-/WebContent/resources/package-lock.json
 /WebContent/resources/js-ui/
 /WebContent/img/
 # OS Files #

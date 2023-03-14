@@ -19,6 +19,7 @@ import com.serotonin.mango.vo.dataSource.virtual.ChangeTypeVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.web.ContextWrapper;
+import com.serotonin.timer.RealTimeTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.RunWith;
@@ -165,29 +166,8 @@ public class ConfigDataPointRtTest {
                 .withAnyArguments()
                 .thenReturn(dao);
 
-        dataSourceVO = new VirtualDataSourceVO();
-        dataSourceVO.setEnabled(true);
-        dataSourceVO.setId(567);
-        dataSourceVO.setName("test_ds");
-        dataSourceVO.setXid("test_ds_xid");
-
-        VirtualPointLocatorVO virtualPointLocatorVO = new VirtualPointLocatorVO();
-        virtualPointLocatorVO.setDataTypeId(dataTypeId);
-        virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
-        virtualPointLocatorVO.getNoChange().setStartValue(startValue);
-
-        dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        dataPointVO.setId(321);
-        dataPointVO.setName("test_dp");
-        dataPointVO.setXid("test_dp_xid");
-        dataPointVO.setDefaultCacheSize(defaultCacheSize);
-        dataPointVO.setTolerance(tolerance);
-        dataPointVO.setPointLocator(virtualPointLocatorVO);
-        dataPointVO.setEventDetectors(new ArrayList<>());
-        dataPointVO.setEnabled(true);
-        dataPointVO.setDataSourceId(dataSourceVO.getId());
-        dataPointVO.setDataSourceName(dataSourceVO.getName());
-        dataPointVO.setDeviceName(dataSourceVO.getName());
+        dataSourceVO = createDataSource();
+        dataPointVO = createDataPoint(defaultCacheSize, tolerance, startValue, dataTypeId, dataSourceVO);
 
         PointValueAdnnotationsDAO pointValueAdnnotationsDAOMock = mock(PointValueAdnnotationsDAO.class);
         when(pointValueAdnnotationsDAOMock.create(any(PointValueAdnnotation.class))).thenAnswer(a -> {
@@ -213,6 +193,9 @@ public class ConfigDataPointRtTest {
 
         mockStatic(PointValueDAO.class);
         when(PointValueDAO.getInstance()).thenReturn(pointValueDAOMock);
+
+        RealTimeTimer realTimeTimerMock = mock(RealTimeTimer.class);
+        whenNew(RealTimeTimer.class).withNoArguments().thenReturn(realTimeTimerMock);
 
         ContextWrapper contextWrapper = mock(ContextWrapper.class);
         Common.ctx = contextWrapper;
@@ -265,6 +248,38 @@ public class ConfigDataPointRtTest {
         mockStatic(ApplicationBeans.class);
         DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
+    }
+
+    protected DataPointVO createDataPoint(int defaultCacheSize,
+                                          double tolerance, String startValue,
+                                          int dataTypeId, DataSourceVO<?> dataSourceVO) {
+        VirtualPointLocatorVO virtualPointLocatorVO = new VirtualPointLocatorVO();
+        virtualPointLocatorVO.setDataTypeId(dataTypeId);
+        virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
+        virtualPointLocatorVO.getNoChange().setStartValue(startValue);
+
+        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPointVO.setId(321);
+        dataPointVO.setName("test_dp");
+        dataPointVO.setXid("test_dp_xid");
+        dataPointVO.setDefaultCacheSize(defaultCacheSize);
+        dataPointVO.setTolerance(tolerance);
+        dataPointVO.setPointLocator(virtualPointLocatorVO);
+        dataPointVO.setEventDetectors(new ArrayList<>());
+        dataPointVO.setEnabled(true);
+        dataPointVO.setDataSourceId(dataSourceVO.getId());
+        dataPointVO.setDataSourceName(dataSourceVO.getName());
+        dataPointVO.setDeviceName(dataSourceVO.getName());
+        return dataPointVO;
+    }
+
+    protected DataSourceVO<?> createDataSource() {
+        DataSourceVO<?> dataSourceVO = new VirtualDataSourceVO();
+        dataSourceVO.setEnabled(true);
+        dataSourceVO.setId(567);
+        dataSourceVO.setName("test_ds");
+        dataSourceVO.setXid("test_ds_xid");
+        return dataSourceVO;
     }
 
     public void clear() {
@@ -347,6 +362,22 @@ public class ConfigDataPointRtTest {
         return pointValuesExpected;
     }
 
+    protected List<PointValueTime> getPointValuesWithUserDaoTestExpected() {
+        return getPointValuesWithUserExpected();
+    }
+
+    protected List<PointValueTime> getPointValuesDaoTestExpected() {
+        return getPointValuesExpected();
+    }
+
+    protected List<PointValueTime> getPointValuesDaoTestExpected(List<Double> exepected) {
+        return getPointValuesExpected(exepected);
+    }
+
+    protected List<PointValueTime> getPointValuesWithUserDaoTestExpected(List<Double> exepected) {
+        return getPointValuesDaoTestExpected(exepected);
+    }
+
     protected void initValueByUser(DataPointRT dataPointRT) {
         dataPointRT.setPointValue(getOldValue(), getUser());
     }
@@ -405,5 +436,13 @@ public class ConfigDataPointRtTest {
 
     public PointValueDAO getPointValueDAOMock() {
         return pointValueDAOMock;
+    }
+
+    public DataSourceVO getDataSourceVO() {
+        return dataSourceVO;
+    }
+
+    public DataPointVO getDataPointVO() {
+        return dataPointVO;
     }
 }

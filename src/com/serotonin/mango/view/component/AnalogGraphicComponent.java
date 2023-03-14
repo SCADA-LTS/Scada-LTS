@@ -21,6 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -42,6 +43,15 @@ public class AnalogGraphicComponent extends ImageSetComponent {
     @JsonRemoteProperty
     private double max;
 
+    public AnalogGraphicComponent() {
+    }
+
+    private AnalogGraphicComponent(AnalogGraphicComponent analogGraphicComponent) {
+        super(analogGraphicComponent);
+        this.min = analogGraphicComponent.getMin();
+        this.max = analogGraphicComponent.getMax();
+    }
+
     public double getMin() {
         return min;
     }
@@ -56,6 +66,11 @@ public class AnalogGraphicComponent extends ImageSetComponent {
 
     public void setMax(double max) {
         this.max = max;
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new AnalogGraphicComponent(this);
     }
 
     @Override
@@ -108,6 +123,28 @@ public class AnalogGraphicComponent extends ImageSetComponent {
             min = in.readDouble();
             max = in.readDouble();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnalogGraphicComponent)) return false;
+        if (!super.equals(o)) return false;
+        AnalogGraphicComponent that = (AnalogGraphicComponent) o;
+        return Double.compare(that.getMin(), getMin()) == 0 && Double.compare(that.getMax(), getMax()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getMin(), getMax());
+    }
+
+    @Override
+    public String toString() {
+        return "AnalogGraphicComponent{" +
+                "min=" + min +
+                ", max=" + max +
+                "} " + super.toString();
     }
 }
 

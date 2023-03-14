@@ -9,16 +9,19 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     private final SendEmailData sendEmailData;
     private final SendEmailConfig sendEmailConfig;
     private final AfterWork afterWork;
+    private final WorkItemDetails workItemDetails;
 
-    protected EmailAfterWorkItem(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig, AfterWork afterWork) {
+    protected EmailAfterWorkItem(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig, AfterWork afterWork,
+                                 WorkItemDetails workItemDetails) {
         this.afterWork = afterWork;
         this.sendEmailData = sendEmailData;
         this.sendEmailConfig = sendEmailConfig;
+        this.workItemDetails = workItemDetails;
     }
 
     public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
-                                       AfterWork afterWork) {
-        return new EmailAfterWorkItem(sendEmailData, sendEmailConfig, afterWork);
+                                       AfterWork afterWork, WorkItemDetails workItemDetails) {
+        return new EmailAfterWorkItem(sendEmailData, sendEmailConfig, afterWork, workItemDetails);
     }
 
     @Override
@@ -41,5 +44,19 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     @Override
     public int getPriority() {
         return WorkItem.PRIORITY_MEDIUM;
+    }
+
+    @Override
+    public String toString() {
+        return "EmailAfterWorkItem{" +
+                "sendEmailData=" + sendEmailData +
+                ", sendEmailConfig=" + sendEmailConfig +
+                ", details='" + workItemDetails.getDetails() +
+                "'}";
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
     }
 }

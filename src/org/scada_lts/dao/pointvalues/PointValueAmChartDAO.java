@@ -1,6 +1,7 @@
 package org.scada_lts.dao.pointvalues;
 
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -105,7 +106,7 @@ public class PointValueAmChartDAO {
             return Collections.emptyList();
         }
         if(dataPoint.getPointLocator() == null) {
-            LOG.warn(dataPointInfo(dataPoint));
+            LOG.warn(LoggingUtils.dataPointInfo(dataPoint));
             return Collections.emptyList();
         }
         QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit);
@@ -284,6 +285,7 @@ public class PointValueAmChartDAO {
         return new QueryArgs(sqlQuery, args.toArray());
     }
 
+    @Deprecated
     public static String dataPointInfo(DataPointVO dataPoint) {
         return MessageFormat.format("PointLocator is null for dataPoint: {0} (id: {1}, xid: {2}, dataSource: {3} (id:{4}))", dataPoint.getName(), dataPoint.getId(), dataPoint.getXid(), dataPoint.getDataSourceName(), dataPoint.getDataSourceId());
     }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -44,6 +45,15 @@ abstract public class ImageSetComponent extends PointComponent {
     protected ImageSet imageSet;
     @JsonRemoteProperty
     private boolean displayText;
+
+    protected ImageSetComponent() {
+    }
+
+    protected ImageSetComponent(ImageSetComponent imageSetComponent) {
+        super(imageSetComponent);
+        this.imageSet = imageSetComponent.tgetImageSet();
+        this.displayText = imageSetComponent.isDisplayText();
+    }
 
     public ImageSet tgetImageSet() {
         return imageSet;
@@ -163,5 +173,27 @@ abstract public class ImageSetComponent extends PointComponent {
             map.put("imageSet", null);
         else
             map.put("imageSet", imageSet.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ImageSetComponent)) return false;
+        if (!super.equals(o)) return false;
+        ImageSetComponent that = (ImageSetComponent) o;
+        return isDisplayText() == that.isDisplayText() && Objects.equals(imageSet, that.imageSet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), imageSet, isDisplayText());
+    }
+
+    @Override
+    public String toString() {
+        return "ImageSetComponent{" +
+                "imageSet=" + imageSet +
+                ", displayText=" + displayText +
+                "} " + super.toString();
     }
 }

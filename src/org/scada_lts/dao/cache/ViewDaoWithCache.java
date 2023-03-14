@@ -66,7 +66,7 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public View findById(Integer id) {
-        return findAll().stream().filter(a -> a.getId() == id).findAny().orElse(null);
+        return viewCache.findById(id);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public View findByXid(String xid) {
-        return findAll().stream().filter(a -> a.getXid().equals(xid)).findAny().orElse(null);
+        return viewCache.findByXid(xid);
     }
 
     @Override
@@ -102,8 +102,11 @@ public class ViewDaoWithCache implements IViewDAO {
     }
 
     @Override
+    @Deprecated
     public void deleteViewForUser(int viewId) {}
 
     @Override
-    public void deleteViewForUser(int viewId, int userId) {}
+    public void deleteViewForUser(int viewId, int userId) {
+        viewCache.deleteViewForUser(viewId, userId);
+    }
 }

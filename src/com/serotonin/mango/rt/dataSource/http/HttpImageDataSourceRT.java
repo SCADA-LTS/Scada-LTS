@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -138,7 +140,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
     }
 
-    class ImageRetriever implements WorkItem {
+    static class ImageRetriever extends AbstractBeforeAfterWorkItem {
         private final ImageRetrieverMonitor monitor;
         private final DataPointRT dp;
         private final long time;
@@ -151,7 +153,8 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             this.time = time;
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 executeImpl();
             }
@@ -217,6 +220,22 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         public int getPriority() {
             return WorkItem.PRIORITY_HIGH;
         }
+
+        @Override
+        public String toString() {
+            return "ImageRetriever{" +
+                    "monitor=" + monitor +
+                    ", " + (dp == null ? null : LoggingUtils.dataPointInfo(dp.getVO())) +
+                    ", time=" + time +
+                    ", retrievalFailure=" + retrievalFailure +
+                    ", saveFailure=" + saveFailure +
+                    '}';
+        }
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
+
     }
 
     public static byte[] getData(String url, int timeoutSeconds, int retries, int readLimitKb)

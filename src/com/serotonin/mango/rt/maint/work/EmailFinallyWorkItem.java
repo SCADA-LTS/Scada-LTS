@@ -11,19 +11,15 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     protected EmailFinallyWorkItem(SendEmailData sendEmailData,
                                    SendEmailConfig sendEmailConfig,
                                    AfterWork afterWork,
-                                   AfterWork.WorkFinally workFinally) {
-        super(sendEmailData, sendEmailConfig, afterWork);
+                                   AfterWork.WorkFinally workFinally,
+                                   WorkItemDetails workItemDetails) {
+        super(sendEmailData, sendEmailConfig, afterWork, workItemDetails);
         this.workFinally = workFinally;
     }
 
     public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
-                                       AfterWork.WorkFinally workFinally) {
-        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, new AfterWork() {}, workFinally);
-    }
-
-    public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
-                                       AfterWork afterWork, AfterWork.WorkFinally workFinally) {
-        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, afterWork, workFinally);
+                                       AfterWork afterWork, AfterWork.WorkFinally workFinally, WorkItemDetails workItemDetails) {
+        return new EmailFinallyWorkItem(sendEmailData, sendEmailConfig, afterWork, workFinally, workItemDetails);
     }
 
     @Override
@@ -34,5 +30,15 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     @Override
     public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
         this.workFinally.workFinallyFail(finallyException, exceptions);
+    }
+
+    @Override
+    public String toString() {
+        return "EmailFinallyWorkItem{" + super.toString() + '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
     }
 }

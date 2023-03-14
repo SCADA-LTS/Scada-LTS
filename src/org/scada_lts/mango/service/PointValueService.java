@@ -34,6 +34,7 @@ import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -228,7 +229,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
-                    dvalue, time), this);
+                    dvalue, time));
             return -1;
         }
 
@@ -257,7 +258,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
-                    dvalue, time), this);
+                    dvalue, time));
             return -1;
         }
 
@@ -482,10 +483,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             params[index++] = dvalue;
             params[index++] = time;
         }
+
+        @Override
+        public String toString() {
+            return "BatchWriteBehindEntry{" +
+                    "pointId=" + pointId +
+                    ", dataType=" + dataType +
+                    ", dvalue=" + dvalue +
+                    ", time=" + time +
+                    '}';
+        }
     }
 
     //TODO (gb) In my opinion it must rewrite
-    static class BatchWriteBehind implements WorkItem {
+    static class BatchWriteBehind extends AbstractBeforeAfterWorkItem {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
         private static final CopyOnWriteArrayList<BatchWriteBehind> instances = new CopyOnWriteArrayList<BatchWriteBehind>();
         private static Log LOG = LogFactory.getLog(BatchWriteBehind.class);
@@ -505,13 +516,18 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
         }
 
+        @Deprecated
         static void add(BatchWriteBehindEntry e, PointValueService pointValueService) {
+            add(e);
+        }
+
+        static void add(BatchWriteBehindEntry e) {
             synchronized (ENTRIES) {
                 ENTRIES.push(e);
                 ENTRIES_MONITOR.setValue(ENTRIES.size());
                 if (ENTRIES.size() > instances.size() * SPAWN_THRESHOLD) {
                     if (instances.size() < MAX_INSTANCES) {
-                        BatchWriteBehind bwb = new BatchWriteBehind(pointValueService);
+                        BatchWriteBehind bwb = new BatchWriteBehind();
                         instances.add(bwb);
                         INSTANCES_MONITOR.setValue(instances.size());
                         try {
@@ -527,13 +543,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             }
         }
 
+        @Deprecated
         private final PointValueService pointValueService;
 
+        public BatchWriteBehind() {
+            this.pointValueService = null;
+        }
+
+        @Deprecated
         public BatchWriteBehind(PointValueService pointValueService) {
             this.pointValueService = pointValueService;
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 BatchWriteBehindEntry[] inserts;
                 while (true) {
@@ -597,6 +620,18 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         public int getPriority() {
             return WorkItem.PRIORITY_HIGH;
+        }
+
+        @Override
+        public String toString() {
+            return "BatchWriteBehind{" +
+                    "ENTRIES=" + ENTRIES +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
         }
     }
 

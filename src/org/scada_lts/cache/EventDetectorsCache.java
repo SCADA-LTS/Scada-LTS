@@ -32,7 +32,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.EventDetectorsCacheDAO;
-import org.scada_lts.dao.model.PointEventDetectorCache;
+import org.scada_lts.dao.model.PointEventDetectorCacheEntry;
 import org.scada_lts.quartz.UpdateEventDetectors;
 
 import com.serotonin.mango.vo.DataPointVO;
@@ -44,6 +44,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
+@Deprecated
 public class EventDetectorsCache extends EventDetectorsCacheDAO{
 	
 	public static final Log LOG = LogFactory.getLog(EventDetectorsCache.class);
@@ -110,7 +111,7 @@ public class EventDetectorsCache extends EventDetectorsCacheDAO{
 		if (LOG.isTraceEnabled()) {
 		  LOG.trace("Create EventDetectorsCache");
 		}
-		List<PointEventDetectorCache> listEventDetector = getAll();
+		List<PointEventDetectorCacheEntry> listEventDetector = getAll();
 		TreeMap<Integer, List<PointEventDetectorVO>> mapEventDetector = getMapEventDetectors(listEventDetector);
 		setMapEventDetectorForDataPoint(mapEventDetector);
 		cacheInitialize();

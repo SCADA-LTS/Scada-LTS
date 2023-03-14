@@ -142,7 +142,7 @@ public abstract class AbstractDataPointRtToleranceMultiTest extends ConfigDataPo
         PointValueTime oldValue = getOldValueWithUser();
         PointValueTime newValue = getNewValueWithUser();
         PointValueTime newValue2 = getNewValueWithUser2();
-        List<PointValueTime> pointValuesExpected = getPointValuesWithUserExpected(exepected);
+        List<PointValueTime> pointValuesExpected = getPointValuesWithUserDaoTestExpected(exepected);
 
         //when:
         TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, oldValue, getUser());
@@ -161,7 +161,7 @@ public abstract class AbstractDataPointRtToleranceMultiTest extends ConfigDataPo
         PointValueTime oldValue = getOldValue();
         PointValueTime newValue = getNewValue();
         PointValueTime newValue2 = getNewValue2();
-        List<PointValueTime> pointValuesExpected = getPointValuesExpected(exepected);
+        List<PointValueTime> pointValuesExpected = getPointValuesDaoTestExpected(exepected);
 
         //when:
         TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, oldValue, null);

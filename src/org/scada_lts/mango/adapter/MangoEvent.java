@@ -127,4 +127,6 @@ public interface MangoEvent {
 
 	EventInstance getEvent(int eventId);
 
+	String generateUniqueXid();
+
 }

@@ -21,6 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import com.serotonin.json.JsonRemoteEntity;
@@ -53,6 +54,11 @@ public class SimpleCompoundComponent extends CompoundComponent {
 
     public SimpleCompoundComponent() {
         initialize();
+    }
+
+    public SimpleCompoundComponent(SimpleCompoundComponent simpleCompoundComponent) {
+        super(simpleCompoundComponent);
+        this.backgroundColour = simpleCompoundComponent.getBackgroundColour();
     }
 
     @Override
@@ -124,6 +130,11 @@ public class SimpleCompoundComponent extends CompoundComponent {
         return null;
     }
 
+    @Override
+    public ViewComponent copy() {
+        return new SimpleCompoundComponent(this);
+    }
+
     //
     // /
     // / Serialization
@@ -143,5 +154,26 @@ public class SimpleCompoundComponent extends CompoundComponent {
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1)
             backgroundColour = SerializationHelper.readSafeUTF(in);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SimpleCompoundComponent)) return false;
+        if (!super.equals(o)) return false;
+        SimpleCompoundComponent that = (SimpleCompoundComponent) o;
+        return Objects.equals(getBackgroundColour(), that.getBackgroundColour());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getBackgroundColour());
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleCompoundComponent{" +
+                "backgroundColour='" + backgroundColour + '\'' +
+                "} " + super.toString();
     }
 }

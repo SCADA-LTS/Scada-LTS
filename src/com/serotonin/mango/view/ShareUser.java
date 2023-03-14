@@ -60,6 +60,11 @@ public class ShareUser implements JsonSerializable {
         this.accessType = accessType;
     }
 
+    private ShareUser(ShareUser shareUser) {
+        this.userId = shareUser.getUserId();
+        this.accessType = shareUser.getAccessType();
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -74,6 +79,10 @@ public class ShareUser implements JsonSerializable {
 
     public void setAccessType(int accessType) {
         this.accessType = accessType;
+    }
+
+    public ShareUser copy() {
+        return new ShareUser(this);
     }
 
     @Override

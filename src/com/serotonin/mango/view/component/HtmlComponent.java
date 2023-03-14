@@ -21,6 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -38,12 +39,24 @@ public class HtmlComponent extends ViewComponent {
     @JsonRemoteProperty
     private String content;
 
+    public HtmlComponent() {}
+
+    protected HtmlComponent(HtmlComponent htmlComponent) {
+        super(htmlComponent);
+        this.content = htmlComponent.getContent();
+    }
+
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new HtmlComponent(this);
     }
 
     @Override
@@ -95,5 +108,26 @@ public class HtmlComponent extends ViewComponent {
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1)
             content = SerializationHelper.readSafeUTF(in);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof HtmlComponent)) return false;
+        if (!super.equals(o)) return false;
+        HtmlComponent that = (HtmlComponent) o;
+        return Objects.equals(getContent(), that.getContent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getContent());
+    }
+
+    @Override
+    public String toString() {
+        return "HtmlComponent{" +
+                "content='" + content + '\'' +
+                "} " + super.toString();
     }
 }

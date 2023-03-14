@@ -224,4 +224,17 @@
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
 
   <bean id="alarmsDAO" class="org.scada_lts.dao.alarms.PlcAlarmsDAO" />
+
+  <!-- Point Event Detectors Cache -->
+  <bean id="pointEventDetectorDAO" class="org.scada_lts.dao.PointEventDetectorDAO" />
+
+  <bean id="pointEventDetectorCache" class="org.scada_lts.dao.cache.PointEventDetectorCache">
+    <constructor-arg ref="pointEventDetectorDAO"/>
+  </bean>
+
+  <bean id="pointEventDetectorDaoWithCache" class="org.scada_lts.dao.cache.PointEventDetectorDaoWithCache" >
+    <constructor-arg ref="pointEventDetectorCache"/>
+  </bean>
+  <!-- -->
+
 </beans>

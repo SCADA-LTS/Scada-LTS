@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +43,10 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.util.LoggingUtils.mailingListInfo;
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 
 
 public class MailingListsDwr extends BaseDwr {
@@ -130,7 +134,9 @@ public class MailingListsDwr extends BaseDwr {
 			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 					model, bundle,
 					I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
-			SendUtils.sendMsgTestSync(toAddrs, cnt, response);
+			User user = Common.getUser();
+			sendMsgTestSync(toAddrs, cnt, response, () -> "sendTestEmail from: " + this.getClass().getName() + ", "
+					+ userInfo(user) + ", " + mailingListInfo(ml));
 		} catch (Exception e) {
 			response.addGenericMessage("mailingLists.testerror", e.getMessage());
 			log.warn("", e);

@@ -26,7 +26,9 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.view.stats.AnalogStatistics;
@@ -298,6 +300,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		case DataPointVO.LoggingTypes.INTERVAL:
 			if (!backdated)
 				intervalSave(newValue);
+			//Always is 'logValue = false' because in INTERVAL Logging Mode individual values are not saved before aggregation
+			logValue = false;
+			break;
 		default:
 			logValue = false;
 		}
@@ -484,7 +489,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		if (l != null)
 			Common.ctx.getBackgroundProcessing().addWorkItem(
 					new EventNotifyWorkItem(l, oldValue, newValue, set,
-							backdate));
+							backdate, LoggingUtils.dataPointInfo(vo)));
 	}
 
 	@Override
@@ -496,13 +501,15 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		dataPointServiceWebSocket.notifyStateSubscribers(enabled, this.vo.getId());
 	}
 
-	class EventNotifyWorkItem implements WorkItem {
+	static class EventNotifyWorkItem extends AbstractBeforeAfterWorkItem {
 		private final DataPointListener listener;
 		private final PointValueTime oldValue;
 		private final PointValueTime newValue;
 		private final boolean set;
 		private final boolean backdate;
+		private final String details;
 
+		@Deprecated
 		EventNotifyWorkItem(DataPointListener listener,
 				PointValueTime oldValue, PointValueTime newValue, boolean set,
 				boolean backdate) {
@@ -511,10 +518,22 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			this.newValue = newValue;
 			this.set = set;
 			this.backdate = backdate;
+			this.details = null;
+		}
+
+		EventNotifyWorkItem(DataPointListener listener,
+							PointValueTime oldValue, PointValueTime newValue, boolean set,
+							boolean backdate, String details) {
+			this.listener = listener;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+			this.set = set;
+			this.backdate = backdate;
+			this.details = details;
 		}
 
 		@Override
-		public void execute() {
+		public void work() {
 			if (backdate)
 				listener.pointBackdated(newValue);
 			else {
@@ -534,6 +553,23 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		@Override
 		public int getPriority() {
 			return WorkItem.PRIORITY_MEDIUM;
+		}
+
+		@Override
+		public String toString() {
+			return "EventNotifyWorkItem{" +
+					"listener=" + listener +
+					", oldValue=" + oldValue +
+					", newValue=" + newValue +
+					", set=" + set +
+					", backdate=" + backdate +
+					", details='" + details + '\'' +
+					"} " + super.toString();
+		}
+
+		@Override
+		public String getDetails() {
+			return this.toString();
 		}
 	}
 

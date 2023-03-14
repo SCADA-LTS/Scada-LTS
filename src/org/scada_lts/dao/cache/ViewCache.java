@@ -3,15 +3,15 @@ package org.scada_lts.dao.cache;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.IViewDAO;
+import org.scada_lts.dao.ViewDAO;
 
 import java.util.List;
 
 public class ViewCache implements ViewCachable {
 
-    private final IViewDAO viewDAO;
+    private final ViewDAO viewDAO;
 
-    public ViewCache(IViewDAO viewDAO) {
+    public ViewCache(ViewDAO viewDAO) {
         this.viewDAO = viewDAO;
     }
 
@@ -58,6 +58,16 @@ public class ViewCache implements ViewCachable {
     @Override
     public int[] deletePermissions(int userId, List<ViewAccess> toRemove) {
         return viewDAO.deletePermissions(userId, toRemove);
+    }
+
+    @Override
+    public View findById(int viewId) {
+        return viewDAO.findById(viewId);
+    }
+
+    @Override
+    public View findByXid(String viewXid) {
+        return viewDAO.findByXid(viewXid);
     }
 
     @Override

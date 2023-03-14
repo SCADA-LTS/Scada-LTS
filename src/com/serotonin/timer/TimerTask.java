@@ -164,4 +164,19 @@ public abstract class TimerTask implements Runnable {
     AbstractTimer getTimer() {
         return trigger.getTimer();
     }
+
+    int getState() {
+        return state;
+    }
+
+    @Override
+    public String toString() {
+        return "TimerTask{" +
+                "state=" + state +
+                ", trigger=" + trigger +
+                ", name='" + name + '\'' +
+                ", completeBeforeCancel=" + completeBeforeCancel +
+                ", cancelLock=" + cancelLock +
+                '}';
+    }
 }

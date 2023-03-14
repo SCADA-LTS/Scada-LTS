@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.AbstractEmailAttachment;
 import com.serotonin.mango.web.email.AbstractEmailInline;
@@ -55,6 +56,9 @@ import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
+
+import static com.serotonin.mango.util.LoggingUtils.*;
+import static com.serotonin.mango.util.SendUtils.sendMsg;
 
 /**
  * @author Matthew Lohbihler
@@ -272,14 +276,14 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 			LocalizableMessage lm = new LocalizableMessage(
 					"ftl.scheduledReport", reportConfig.getName());
 
-			SendUtils.sendMsg(toAddrs, lm.getLocalizedMessage(bundle),
+			sendMsg(toAddrs, lm.getLocalizedMessage(bundle),
 					emailContent, new AfterWork() {
 						@Override
 						public void workFail(Exception exception) {
 							LOG.error("Failed sending report with id " + reportConfig.getId()
 									+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 						}
-					}, workFinally);
+					}, workFinally, () -> userInfo(user) + ", " + reportInfo(reportConfig) + ", " + reportInstanceInfo(reportInstance));
 			// Delete the report instance.
 			// reportDao.deleteReportInstance(reportInstance.getId(),
 			// user.getId());
@@ -292,5 +296,20 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	public void workSuccessFail(Exception exception) {
 		LOG.error("Failed sending report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
+	}
+
+	@Override
+	public String toString() {
+		return "ReportWorkItem{" +
+				"" + reportInfo(reportConfig) +
+				", " + userInfo(user) +
+				", " + reportInstanceInfo(reportInstance) +
+				", filesToDelete=" + filesToDelete +
+				"}";
+	}
+
+	@Override
+	public String getDetails() {
+		return this.toString();
 	}
 }

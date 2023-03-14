@@ -28,7 +28,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 /**
  * @author Matthew Lohbihler
  */
-public class SetPointWorkItem implements WorkItem {
+public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
     private static final ThreadLocal<List<String>> threadLocal = new ThreadLocal<List<String>>();
     private static final int MAX_RECURSION = 10;
 
@@ -49,7 +49,7 @@ public class SetPointWorkItem implements WorkItem {
     }
 
     @Override
-    public void execute() {
+    public void work() {
         String sourceId = Integer.toString(source.getSetPointSourceType()) + "-"
                 + Integer.toString(source.getSetPointSourceId());
 
@@ -78,5 +78,20 @@ public class SetPointWorkItem implements WorkItem {
     @Override
     public int getPriority() {
         return WorkItem.PRIORITY_HIGH;
+    }
+
+    @Override
+    public String toString() {
+        return "SetPointWorkItem{" +
+                "targetPointId=" + targetPointId +
+                ", pvt=" + pvt +
+                ", source=" + source +
+                ", sourceIds=" + sourceIds +
+                '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
     }
 }
