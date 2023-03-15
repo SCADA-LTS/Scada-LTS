@@ -1,5 +1,4 @@
 .DS_Store
-node_modules
 /dist
 
 /tests/e2e/videos/
@@ -24,3 +23,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+node_modules/*
+!@min-gb/
+
