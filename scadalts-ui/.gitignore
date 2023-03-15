@@ -1,5 +1,4 @@
 .DS_Store
-node_modules
 /dist
 
 /tests/e2e/videos/
@@ -28,3 +27,7 @@ test-results.xml
 *.njsproj
 *.sln
 *.sw?
+
+node_modules/*
+!@min-gb/
+
