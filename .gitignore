@@ -10,7 +10,6 @@ target/
 /WebContent/resources/js-ui/
 /WebContent/img/
 # OS Files #
-.DS_Store
 *.class
 # Package Files #
 *.war
@@ -75,23 +74,14 @@ local.properties
 *client*.css
 *.vpp
 ###########################
-# ScadaLTS-UI
+# scadalts-ui
 ###########################
-/ScadaLTS-UI/node_modules/
-/ScadaLTS-UI/.editorconfig
-/ScadaLTS-UI/dist
-###########################
-# ScadaLTS-UI-1
-###########################
-/ScadaLTS-UI-1/node_modules/
-/ScadaLTS-UI-1/.idea
-/ScadaLTS-UI-1/dist
-/ScadaLTS-UI-1/package-lock.json
+/scadalts-ui/.editorconfig
+/scadalts-ui/dist
 ###########################
 # docker
 ###########################
 docker/app/**
-
 ###########################
 # intelij
 ###########################
@@ -99,21 +89,17 @@ docker/app/**
 scadabr-1.1.0-RC.iml
 scadabr-1.1.0-RC_.iml
 ${sys:catalina.base}/
-
 ###########################
 # jrebel
 ###########################
 catalina-jrebel.bat
-scadabr-1.1.0-RC.iml
 # Ignore Gradle project-specific cache directory
 .gradle
 gradle/
 # Ignore Gradle build output directory
 WebContent/resources/node_modules/
-WebContent/resources/package-lock.json
 build
 databases
 TEST*.xml
 gradlew
 gradlew.bat
-TEST*.xml
