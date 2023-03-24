@@ -71,7 +71,12 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		return new LocalizableMessage("common.default", connectionUrl);
+		if(jndiResource) {
+			return new LocalizableMessage("common.tp.description", Common.getPeriodDescription(updatePeriodType, updatePeriods),
+					new LocalizableMessage("common.default", jndiResourceName));
+		}
+		return new LocalizableMessage("common.tp.description", Common.getPeriodDescription(updatePeriodType, updatePeriods),
+				new LocalizableMessage("common.default", connectionUrl));
 	}
 
 	@Override
