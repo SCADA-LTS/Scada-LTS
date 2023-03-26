@@ -205,6 +205,7 @@ public class ImportTask extends ProgressiveTask {
 							vo.setXid(xid);
 							vo.setDataSourceId(dsvo.getId());
 							vo.setDataSourceXid(dsxid);
+							vo.setName(name);
 							vo.setPointLocator(createPointLocator(dsvo, xid));
 							vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(
 									0));
@@ -230,7 +231,7 @@ public class ImportTask extends ProgressiveTask {
 							}
 
 							DwrResponseI18n dataPointResponse = new DwrResponseI18n();
-							vo.validate(dataPointResponse);
+							vo.validateIdentifier(dataPointResponse);
 							if(dataPointResponse.getHasMessages()) {
 								copyValidationMessages(dataPointResponse, "emport.dataPoint.prefix", xid);
 							} else {
