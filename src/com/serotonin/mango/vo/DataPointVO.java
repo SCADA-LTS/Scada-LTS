@@ -48,6 +48,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.model.DataPointIdentifier;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -720,6 +721,23 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         // Check event renderer type
         if (eventTextRenderer != null && !eventTextRenderer.getDef().supports(pointLocator.getDataTypeId()))
             response.addGenericMessage("validate.event.incompatible");
+    }
+
+    public void validateIdentifier(DwrResponseI18n response) {
+        if (StringUtils.isEmpty(xid))
+            response.addContextualMessage("xid", "validate.required");
+        else if (StringUtils.isLengthGreaterThan(xid, 50))
+            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
+        else if (!new DataPointDao().isXidUnique(xid, id))
+            response.addContextualMessage("xid", "validate.xidUsed");
+        if (StringUtils.isEmpty(name))
+            response.addContextualMessage("name", "validate.required");
+
+        if(pointLocator instanceof MqttPointLocatorVO) {
+            MqttPointLocatorVO mqttPointLocatorVO = (MqttPointLocatorVO) pointLocator;
+            if (StringUtils.isEmpty(mqttPointLocatorVO.getDataPointXid()))
+                response.addContextualMessage("dataPointXid", "validate.required");
+        }
     }
 
     //

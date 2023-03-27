@@ -112,7 +112,7 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 	@JsonRemoteProperty
 	private String jndiResourceName;
 	@JsonRemoteProperty
-	private boolean jndiResource = true;
+	private boolean jndiResource = false;
 
 	public String getDriverClassname() {
 		return driverClassname;
