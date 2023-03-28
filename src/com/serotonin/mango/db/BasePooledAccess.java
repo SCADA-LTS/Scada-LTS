@@ -164,7 +164,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
         log.info("Stopping database");
         try
         {
-            if(dataSourceFound)
+            if(dataSourceFound && (dataSource instanceof BasicDataSource))
                 ((BasicDataSource) dataSource).close();
         }
         catch(SQLException e)

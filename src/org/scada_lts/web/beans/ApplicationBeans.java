@@ -153,7 +153,6 @@ public class ApplicationBeans {
         return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
     }
 
-    @Deprecated
     public static class Lazy {
 
         private Lazy() {}
@@ -174,7 +173,7 @@ public class ApplicationBeans {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
             } catch (NoSuchBeanDefinitionException ex) {
-                LOG.error(ex);
+                LOG.warn(ex);
                 return Optional.empty();
             } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);
