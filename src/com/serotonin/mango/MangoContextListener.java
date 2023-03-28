@@ -170,6 +170,10 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	public void contextDestroyed(ServletContextEvent evt) {
+		if(Common.ctx == null) {
+			log.warn("Scada-LTS context terminated");
+			return;
+		}
 		log.info("Scada-LTS context terminating");
 
 		if (Common.ctx.getEventManager() != null) {
