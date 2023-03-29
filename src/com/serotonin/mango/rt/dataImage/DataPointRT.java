@@ -77,14 +77,12 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	 * determining whether to log numeric values.
 	 */
 	private double toleranceOrigin;
-	private final DataPointServiceWebSocket dataPointServiceWebSocket;
 	private final PointValueService pointValueService;
 
 	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator) {
 		this.vo = vo;
 		this.pointLocator = pointLocator;
 		valueCache = new PointValueCache(vo.getId(), vo.getDefaultCacheSize());
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 		pointValueService = new PointValueService();
 	}
 	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator,int cacheSize,int maxSize) {
@@ -92,7 +90,6 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		this.pointLocator = pointLocator;
 		valueCache = new PointValueCache(cacheSize);
 		valueCache.setMaxSize(maxSize);
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 		pointValueService = new PointValueService();
 	}
 
@@ -100,7 +97,6 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		this.vo = vo;
 		this.pointLocator = null;
 		valueCache = new PointValueCache();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 		pointValueService = new PointValueService();
 	}
 	public PointValueCache getPointValueCache(){
@@ -494,11 +490,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 	@Override
 	public void notifyWebSocketSubscribers(MangoValue message) {
-		dataPointServiceWebSocket.notifyValueSubscribers(message, this.vo.getId());
+		ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyValueSubscribers(message, this.vo.getId()));
 	}
 
 	public void notifyWebSocketStateSubscribers(boolean enabled) {
-		dataPointServiceWebSocket.notifyStateSubscribers(enabled, this.vo.getId());
+		ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyStateSubscribers(enabled, this.vo.getId()));
 	}
 
 	static class EventNotifyWorkItem extends AbstractBeforeAfterWorkItem {

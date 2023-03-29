@@ -932,14 +932,24 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setName(name);
         ds.setUpdatePeriods(updatePeriods);
         ds.setUpdatePeriodType(updatePeriodType);
-        ds.setDriverClassname(driverClassname);
-        ds.setConnectionUrl(connectionUrl);
-        ds.setUsername(username);
-        ds.setPassword(password);
+
+        if(jndiResource) {
+            ds.setDriverClassname("");
+            ds.setConnectionUrl("");
+            ds.setUsername("");
+            ds.setPassword("");
+            ds.setJndiResourceName(jndiResourceName);
+        } else {
+            ds.setDriverClassname(driverClassname);
+            ds.setConnectionUrl(connectionUrl);
+            ds.setUsername(username);
+            ds.setPassword(password);
+            ds.setJndiResourceName("");
+        }
+
         ds.setSelectStatement(selectStatement);
         ds.setRowBasedQuery(rowBasedQuery);
         ds.setJndiResource(jndiResource);
-        ds.setJndiResourceName(jndiResourceName);
 
         return tryDataSourceSave(ds);
     }

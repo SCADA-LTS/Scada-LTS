@@ -18,8 +18,8 @@ public class ScadaContextClosedEvent implements ApplicationListener<ContextClose
     }
 
     @Override
-    public void onApplicationEvent(ContextClosedEvent contextRefreshedEvent) {
-        WebApplicationContext webApplicationContext = (WebApplicationContext)contextRefreshedEvent.getSource();
+    public void onApplicationEvent(ContextClosedEvent contextClosedEvent) {
+        WebApplicationContext webApplicationContext = (WebApplicationContext)contextClosedEvent.getSource();
         ServletContextEvent servletContextEvent = new ServletContextEvent(webApplicationContext.getServletContext());
         mangoContextListener.contextDestroyed(servletContextEvent);
     }
