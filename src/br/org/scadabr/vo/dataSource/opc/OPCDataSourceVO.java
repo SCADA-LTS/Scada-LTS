@@ -68,8 +68,7 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.server);
 	}
 
 	@Override

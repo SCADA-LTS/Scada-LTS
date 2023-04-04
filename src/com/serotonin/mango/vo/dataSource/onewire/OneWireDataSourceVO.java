@@ -76,7 +76,7 @@ public class OneWireDataSourceVO extends DataSourceVO<OneWireDataSourceVO> {
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        return new LocalizableMessage("common.default", commPortId);
+        return new LocalizableMessage("common.default", this.commPortId);
     }
 
     @Override

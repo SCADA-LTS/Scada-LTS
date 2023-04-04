@@ -73,8 +73,7 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", commPortId);
 	}
 
 	@Override
