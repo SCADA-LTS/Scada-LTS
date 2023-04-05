@@ -74,8 +74,7 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.filePath);
 	}
 
 	@Override

@@ -74,8 +74,7 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.commPortId);
 	}
 
 	@Override
