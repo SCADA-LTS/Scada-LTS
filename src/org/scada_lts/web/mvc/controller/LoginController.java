@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,7 +42,7 @@ public class LoginController {
     @RequestMapping(method = RequestMethod.GET)
     protected ModelAndView createForm(HttpServletRequest request) throws Exception {
         LOG.trace("/login.htm");
-
+        request.setAttribute("toYear", DateTime.now().getYear());
         return new ModelAndView("login");
     }
 }
