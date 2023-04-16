@@ -4,8 +4,7 @@ import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.web.i18n.I18NUtils;
-import com.serotonin.web.i18n.Utf8ResourceBundle;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -21,15 +20,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 public final class ScadaLocaleUtils {
 
     private ScadaLocaleUtils() {}
-
-    private static ResourceBundle systemBundle;
-    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private static final Log LOG = LogFactory.getLog(ScadaLocaleUtils.class);
 
@@ -57,16 +52,12 @@ public final class ScadaLocaleUtils {
     }
 
     public static String getMessage(String key) {
-        return I18NUtils.getMessage(getBundle(), key);
+        return LocalizableMessage.getMessage(getBundle(), key);
     }
 
     public static ResourceBundle getBundle(HttpServletRequest request) {
         if(request == null) {
-            ResourceBundle bundle = getSystemBundle();
-            if(bundle == null) {
-                return getResourceBundleByLocale(getLocale(null, false));
-            }
-            return bundle;
+            return getResourceBundleByLocale(getLocale(null, false));
         }
         return getResourceBundleByLocale(getLocale(request, true));
     }
@@ -90,7 +81,7 @@ public final class ScadaLocaleUtils {
 
     public static List<KeyValuePair> getLanguages() {
         List<KeyValuePair> languages = new ArrayList<>();
-        ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
+        ResourceBundle i18n = ResourceBundle.getBundle("i18n");
         for (String key : i18n.keySet())
             languages.add(new KeyValuePair(key, i18n.getString(key)));
         return languages;
@@ -104,24 +95,6 @@ public final class ScadaLocaleUtils {
         return null;
     }
 
-    private static void setLanguage(ResourceBundle resourceBundle) {
-        lock.writeLock().lock();
-        try {
-            systemBundle = resourceBundle;
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
-    private static ResourceBundle getSystemBundle() {
-        lock.readLock().lock();
-        try {
-            return systemBundle;
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
     private static boolean setLocaleInSession(HttpServletRequest request, HttpServletResponse response, String localeCode) {
         try {
             LocaleEditor localeEditor = new LocaleEditor();
@@ -129,7 +102,6 @@ public final class ScadaLocaleUtils {
             LocaleResolver localeResolver = getLocaleResolver(request);
             Locale locale = (Locale) localeEditor.getValue();
             localeResolver.setLocale(request, response, locale);
-            setLanguage(getResourceBundleByLocale(locale));
             return true;
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
