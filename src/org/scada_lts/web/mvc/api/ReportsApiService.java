@@ -156,13 +156,13 @@ public class ReportsApiService implements CrudService<ReportVO> {
         checkArgsIfEmptyThenBadRequest(request, "body cannot be null", body);
         List<String> addresses = body.get("emails");
         if (addresses == null || addresses.isEmpty())
-            throw new BadRequestException(LocalizableMessage.getMessage(Common.getBundle(),"js.email.noRecipForEmail"), request.getRequestURI());
+            throw new BadRequestException(LocalizableMessage.getMessage(Common.getBundle(request),"js.email.noRecipForEmail"), request.getRequestURI());
         else {
            List<String> errors = new ArrayList<>();
            sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
                @Override
                public void workFail(Exception exception) {
-                   errors.add(LocalizableMessage.getMessage(Common.getBundle(),"common.default", exception.getMessage()));
+                   errors.add(LocalizableMessage.getMessage(Common.getBundle(request),"common.default", exception.getMessage()));
                }
            }, () -> "sendTestEmail from: " + this.getClass().getName()
                    + ", " + userInfo(Common.getUser(request)));

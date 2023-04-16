@@ -21,6 +21,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.scada_lts.exception.PasswordMismatchException;
 
+import java.util.IllformedLocaleException;
 import java.util.List;
 
 /**
@@ -69,4 +70,6 @@ public interface MangoUser {
 	void updateUserPassword(int userId, String newPassword);
 
 	void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException;
+
+	void updateUserLang(int userId, String lang) throws IllformedLocaleException;
 }

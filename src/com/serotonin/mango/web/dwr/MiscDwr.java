@@ -34,14 +34,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
 import com.serotonin.io.StreamUtils;
@@ -236,7 +238,12 @@ public class MiscDwr extends BaseDwr {
 	}
 
 	public void setLocale(String locale) {
-		ControllerUtils.setLocale(locale);
+		Permissions.ensureValidUser();
+		User user = Common.getUser();
+		if(user != null) {
+			new UserService().updateUserLang(user.getId(), locale);
+			ScadaLocaleUtils.setLocaleInSession(locale);
+		}
 	}
 
 	@MethodFilter

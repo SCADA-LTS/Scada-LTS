@@ -37,7 +37,7 @@ public class EventsController  {
     @SuppressWarnings("unchecked")
     protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging, BindException errors)
             throws Exception {
-        ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
+        ResourceBundle bundle = Common.getBundle(request);
         List<EventInstance> data = new EventDao().getPendingEvents(Common.getUser(request).getId());
         sortData(bundle, data, paging);
         return new PaginatedData<EventInstance>(data, data.size());
