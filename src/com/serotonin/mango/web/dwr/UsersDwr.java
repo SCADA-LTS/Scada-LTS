@@ -47,6 +47,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
 
@@ -148,10 +149,10 @@ public class UsersDwr extends BaseDwr {
 		user.setHideMenu(hideMenu);
 		user.setTheme(theme);
 		user.setHomeUrl(homeUrl);
-    if(usersProfileId == Common.NEW_ID) {
-        user.setDataSourcePermissions(dataSourcePermissions);
-        user.setDataPointPermissions(dataPointPermissions);
-    } else {
+		if(usersProfileId == Common.NEW_ID) {
+			user.setDataSourcePermissions(dataSourcePermissions);
+			user.setDataPointPermissions(dataPointPermissions);
+		} else {
 			user.setDataSourcePermissions(new ArrayList<>());
 			user.setDataPointPermissions(new ArrayList<>());
 		}
@@ -160,6 +161,7 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user.setUserProfileId(usersProfileId);
 		}
+		user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);

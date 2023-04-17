@@ -22,18 +22,16 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Arrays;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -488,94 +486,29 @@ public class Common {
 	//
 	// i18n
 	//
-	private static String systemLanguage;
-	private static ResourceBundle systemBundle;
-
-	private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	public static String getMessage(String key) {
-		ensureI18n();
-		return I18NUtils.getMessage(getSystemBundle(), key);
+		return ScadaLocaleUtils.getMessage(key);
 	}
 
 	public static ResourceBundle getBundle() {
-		ensureI18n();
-		return getSystemBundle();
+		return ScadaLocaleUtils.getBundle();
 	}
 
-	private static void ensureI18n() {
-		if(isNull()) {
-			updateLanguage();
-		}
-	}
-
-	public static String updateLanguage() {
-		String language = SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE);
-		Locale locale = findLocale(language);
-		if (locale == null)
-			throw new IllegalArgumentException(
-					"Locale for given language not found: "
-							+ language);
-		ResourceBundle resourceBundle = Utf8ResourceBundle.getBundle("messages", locale);
-		setLanguage(language, resourceBundle);
-		return language;
-	}
-
-	private static void setLanguage(String language, ResourceBundle resourceBundle) {
-		lock.writeLock().lock();
-		try {
-			systemLanguage = language;
-			systemBundle = resourceBundle;
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	private static boolean isNull() {
-		lock.readLock().lock();
-		try {
-			return systemLanguage == null || systemBundle == null;
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	private static ResourceBundle getSystemBundle() {
-		lock.readLock().lock();
-		try {
-			return systemBundle;
-		} finally {
-			lock.readLock().unlock();
-		}
+	public static ResourceBundle getBundle(HttpServletRequest request) {
+		return ScadaLocaleUtils.getBundle(request);
 	}
 
 	public static String getMessage(String key, Object... args) {
-		String pattern = getMessage(key);
-		return MessageFormat.format(pattern, args);
+		return ScadaLocaleUtils.getMessage(key, args);
 	}
 
 	public static void setSystemLanguage(String language) {
-		if (findLocale(language) == null)
-			throw new IllegalArgumentException(
-					"Locale for given language not found: " + language);
-		new SystemSettingsDAO().setValue(SystemSettingsDAO.LANGUAGE, language);
-		setLanguage(null, null);
-	}
-
-	private static Locale findLocale(String language) {
-		for (Locale locale : Locale.getAvailableLocales()) {
-			if (locale.getLanguage().equals(language))
-				return locale;
-		}
-		return null;
+		ScadaLocaleUtils.setSystemLanguage(language);
 	}
 
 	public static List<KeyValuePair> getLanguages() {
-		List<KeyValuePair> languages = new ArrayList<KeyValuePair>();
-		ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
-		for (String key : i18n.keySet())
-			languages.add(new KeyValuePair(key, i18n.getString(key)));
-		return languages;
+		return ScadaLocaleUtils.getLanguages();
 	}
 
 	public static String generateXid(String prefix) {

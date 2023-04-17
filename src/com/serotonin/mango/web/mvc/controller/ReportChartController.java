@@ -51,7 +51,7 @@ public class ReportChartController extends AbstractController {
         User user = Common.getUser(request);
         Permissions.ensureReportInstancePermission(user, instance);
 
-        ReportChartCreator creator = new ReportChartCreator(ControllerUtils.getResourceBundle(request));
+        ReportChartCreator creator = new ReportChartCreator(Common.getBundle(request));
         creator.createContent(instance, reportDao, null, false);
 
         Map<String, byte[]> imageData = new HashMap<String, byte[]>();

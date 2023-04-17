@@ -25,7 +25,7 @@ import com.serotonin.mango.vo.ListParent;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.ACLConfig;
@@ -93,7 +93,7 @@ public class DataSourceListController extends ParameterizableViewController {
             }
         }
 
-        List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ControllerUtils.getResourceBundle(request), dataSources, sortFieldName, desc);
+        List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ScadaLocaleUtils.getBundle(request), dataSources, sortFieldName, desc);
         
         //PaginatedData pd = new PaginatedData<ListParent<DataSourceVO<?>, DataPointVO>>(dataSources, data.size());
         return ds1;

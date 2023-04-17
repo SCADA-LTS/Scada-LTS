@@ -16,4 +16,5 @@ public interface IUserDAO {
     void updateLogin(int userId);
     void delete(int userId);
     int insert(User user);
+    void updateUserLang(int userId, String lang);
 }

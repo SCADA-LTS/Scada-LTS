@@ -68,4 +68,9 @@ public class UserDaoWithCache implements IUserDAO {
     public void updateUserPassword(int userId, String newPassword) {
         userCache.updateUserPassword(userId, newPassword);
     }
+
+    @Override
+    public void updateUserLang(int userId, String lang) {
+        userCache.updateLang(userId, lang);
+    }
 }

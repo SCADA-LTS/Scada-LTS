@@ -46,7 +46,7 @@ public class UserDAO implements IUserDAO {
 	private final static String COLUMN_NAME_THEME = "theme";
 	private static final String COLUMN_NAME_FIRST_NAME = "firstName";
 	private static final String COLUMN_NAME_LAST_NAME = "lastName";
-
+	private static final String COLUMN_NAME_LANG = "lang";
 	private static final String TABLE_NAME = "users";
 
 	private static final int DAO_EMPTY_RESULT = 0;
@@ -75,6 +75,7 @@ public class UserDAO implements IUserDAO {
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
 				+ COLUMN_NAME_HIDE_MENU + ", "
+				+ COLUMN_NAME_LANG + ", "
 				+ COLUMN_NAME_THEME + " "
 			+ "from users ";
 
@@ -111,8 +112,9 @@ public class UserDAO implements IUserDAO {
 			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
 			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
 			+ COLUMN_NAME_HIDE_MENU + ", "
+			+ COLUMN_NAME_LANG + ", "
 			+ COLUMN_NAME_THEME + ") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
@@ -128,6 +130,7 @@ public class UserDAO implements IUserDAO {
 			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
 			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
 			+ COLUMN_NAME_HIDE_MENU + "=?, "
+			+ COLUMN_NAME_LANG + "=?, "
 			+ COLUMN_NAME_THEME + "=? "
 			+ "where "
 			+ COLUMN_NAME_ID + "=? ";
@@ -153,6 +156,12 @@ public class UserDAO implements IUserDAO {
 			COLUMN_NAME_PASSWORD + "=? " +
 			" WHERE " + COLUMN_NAME_ID + "=?";
 
+	private static final String USER_UPDATE_LANG = ""
+			+ "update users set "
+			+ COLUMN_NAME_LANG + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
+
 	// @formatter:on
 
 	private class UserRowMapper implements RowMapper<User> {
@@ -176,6 +185,7 @@ public class UserDAO implements IUserDAO {
 			user.setTheme(rs.getString(COLUMN_NAME_THEME));
 			user.setFirstName(rs.getString(COLUMN_NAME_FIRST_NAME));
 			user.setLastName(rs.getString(COLUMN_NAME_LAST_NAME));
+			user.setLang(rs.getString(COLUMN_NAME_LANG));
 			return user;
 		}
 	}
@@ -289,6 +299,7 @@ public class UserDAO implements IUserDAO {
 						user.getReceiveAlarmEmails(),
 						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 						user.isHideMenu(),
+						user.getLang(),
 						user.getTheme()
 				}).setValues(preparedStatement);
 				return preparedStatement;
@@ -317,6 +328,7 @@ public class UserDAO implements IUserDAO {
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.isHideMenu(),
+				user.getLang(),
 				user.getTheme(),
 				user.getId());
 	}
@@ -339,5 +351,15 @@ public class UserDAO implements IUserDAO {
 			LOG.trace("updateUserPassword(int userId, String newPassword) userId:" + userId);
 		}
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_PASSWORD, newPassword, userId);
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateUserLang(int userId, String lang) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateUserPassword(int userId, String newPassword) userId:" + userId);
+		}
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_LANG, lang, userId);
 	}
 }

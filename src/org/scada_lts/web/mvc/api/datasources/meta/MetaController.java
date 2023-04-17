@@ -38,11 +38,11 @@ public class MetaController {
 
         checkIfNonAdminThenUnauthorized(request);
         Map<Object, Object> response = new HashMap<>();
-        validateScript(data.getScript(), data.getContext(), data.getDataTypeId(), response);
+        validateScript(data.getScript(), data.getContext(), data.getDataTypeId(), response, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public void validateScript(String script, List<IntValuePair> context, int dataTypeId, Map<Object, Object> response) {
+    public void validateScript(String script, List<IntValuePair> context, int dataTypeId, Map<Object, Object> response, HttpServletRequest request) {
         ScriptExecutor executor = new ScriptExecutor();
         try {
             Map<String, IDataPoint> convertedContext = executor
@@ -52,21 +52,21 @@ public class MetaController {
             if(pvt.getTime() == -1) {
                 response.put("success", true);
                 response.put("result", pvt.getStringValue());
-                response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.success", pvt.getValue()));
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.success", pvt.getValue()));
             } else {
                 response.put("success", true);
                 response.put("result", pvt.getStringValue());
-                response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
             }
         } catch (DataPointStateException | ResultTypeException e) {
             response.put("success", false);
             response.put("result", "failed");
-            response.put("message", e.getLocalizableMessage() != null ? e.getLocalizableMessage().getLocalizedMessage(Common.getBundle()) : e.getMessage());
+            response.put("message", e.getLocalizableMessage() != null ? e.getLocalizableMessage().getLocalizedMessage(Common.getBundle(request)) : e.getMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
             response.put("success", false);
             response.put("result", "failed");
-            response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.scriptError", e.getMessage()));
+            response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.scriptError", e.getMessage()));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         }
     }

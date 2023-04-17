@@ -50,6 +50,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
@@ -96,7 +97,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private String theme;
 	@JsonRemoteProperty
 	private boolean hideMenu;
-
+	@JsonRemoteProperty
+	private String lang;
 
 
 	//
@@ -182,6 +184,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.uploadedProject = user.uploadedProject;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
+		this.lang = user.lang;
 	}
 
 	public static User onlyId(int userId) {
@@ -194,6 +197,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return user;
 	}
 
+	@Deprecated
 	public static User onlyIdUsername(ScadaPrincipal principal) {
 		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
 	}
@@ -225,33 +229,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@Override
 	public void raiseRecursionFailureEvent() {
 		throw new ShouldNeverHappenException("");
-	}
-
-	//
-	// /
-	// / HttpSessionBindingListener implementation
-	// /
-	//
-	@Deprecated
-	public void valueBound(HttpSessionBindingEvent evt) {
-		// User is bound to a session when logged in. Notify the event manager.
-		/*SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis(), true, new LocalizableMessage(
-				"event.login", username));*/
-	}
-
-	@Deprecated
-	public void valueUnbound(HttpSessionBindingEvent evt) {
-		// User is unbound from a session when logged out or the session
-		// expires.
-		/*SystemEventType.returnToNormal(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis());
-
-		// Terminate any testing utility
-		if (testingUtility != null)
-			testingUtility.cancel();*/
 	}
 
 	// Convenience method for JSPs
@@ -737,25 +714,54 @@ public class User implements SetPointSource, HttpSessionBindingListener,
         this.viewProfilePermissions = viewProfilePermissions;
     }
 
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
 				"id=" + id +
 				", username='" + username + '\'' +
 				", password='" + password + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
 				", email='" + email + '\'' +
 				", phone='" + phone + '\'' +
 				", admin=" + admin +
 				", disabled=" + disabled +
+				", dataSourcePermissions=" + dataSourcePermissions +
+				", dataPointPermissions=" + dataPointPermissions +
+				", dataSourceProfilePermissions=" + dataSourceProfilePermissions +
+				", dataPointProfilePermissions=" + dataPointProfilePermissions +
+				", watchListProfilePermissions=" + watchListProfilePermissions +
+				", viewProfilePermissions=" + viewProfilePermissions +
+				", selectedWatchList=" + selectedWatchList +
 				", homeUrl='" + homeUrl + '\'' +
 				", lastLogin=" + lastLogin +
 				", receiveAlarmEmails=" + receiveAlarmEmails +
 				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
 				", theme='" + theme + '\'' +
 				", hideMenu=" + hideMenu +
+				", lang='" + lang + '\'' +
 				", userProfile=" + userProfile +
+				", watchList=" + watchList +
+				", editPoint=" + editPoint +
+				", editDataSource=" + editDataSource +
+				", testingUtility=" + testingUtility +
+				", reportImageData=" + reportImageData +
+				", editPublisher=" + editPublisher +
+				", importTask=" + importTask +
 				", muted=" + muted +
+				", dataExportDefinition=" + dataExportDefinition +
+				", eventExportDefinition=" + eventExportDefinition +
 				", attributes=" + attributes +
+				", hideHeader=" + hideHeader +
+				", uploadedProject=" + uploadedProject +
 				'}';
 	}
 }

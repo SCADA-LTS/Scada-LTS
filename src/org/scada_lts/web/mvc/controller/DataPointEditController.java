@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
+import com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,6 +92,8 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
+        CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
+        commonDataInterceptor.preHandle(request, null, null);
         User user = Common.getUser(request);
         Permissions.ensureAdmin(user);
         int id;
@@ -123,7 +126,8 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
+        CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
+        commonDataInterceptor.preHandle(request, null, null);
         User user = Common.getUser(request);
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
@@ -133,7 +137,7 @@ public class DataPointEditController {
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
         binder.bind(request);
         Map<String, String> errors = new HashMap<String, String>();
-        validate(dataPoint, errors);
+        validate(dataPoint, errors, request);
         
         if (errors.isEmpty()) {
             setDefaultPurgeValuesWhenIncorrect(dataPoint);
@@ -183,7 +187,7 @@ public class DataPointEditController {
     	}
     }
     
-    private void validate(DataPointVO point, Map<String, String> errors){
+    private void validate(DataPointVO point, Map<String, String> errors, HttpServletRequest request){
         if (StringUtils.isEmpty(point.getName()))
             errors.put("name", "validate.required");
 
@@ -233,13 +237,13 @@ public class DataPointEditController {
 
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
             if (StringUtils.isEmpty(ped.getXid())) {
-            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(),"validate.ped.xidMissing"));
+            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidMissing"));
                 break;
             }
 
             if (xids.contains(ped.getXid()) || !dataPointService
                     .isEventDetectorXidUnique(point.getId(), ped.getXid(), ped.getId())) {
-            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(),"validate.ped.xidUsed", ped.getXid()));
+            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidUsed", ped.getXid()));
                 break;
             }
             xids.add(ped.getXid());

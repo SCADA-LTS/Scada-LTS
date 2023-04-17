@@ -225,7 +225,7 @@ public class ViewEditController {
     private void uploadFile(HttpServletRequest request, ViewEditForm form, Map<String, String> errors)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             MultipartFile file = form.getBackgroundImageMP();
-            String errorMessage = LocalizableMessage.getMessage(Common.getBundle(),"viewEdit.upload.failed");
+            String errorMessage = LocalizableMessage.getMessage(Common.getBundle(request),"viewEdit.upload.failed");
             if (file != null) {
                 if(isToUploads(file))
                     upload(request, form, file);
