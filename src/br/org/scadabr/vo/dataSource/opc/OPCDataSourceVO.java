@@ -178,10 +178,10 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 			response.addContextualMessage("host", "validate.required");
 		// if (StringUtils.isEmpty(domain))
 		// response.addContextualMessage("domain", "validate.required");
-		//if (StringUtils.isEmpty(user))
-		//	response.addContextualMessage("user", "validate.required");
-		//if (StringUtils.isEmpty(password))
-		//	response.addContextualMessage("password", "validate.required");
+		if (StringUtils.isEmpty(user))
+			response.addContextualMessage("user", "validate.required");
+		if (StringUtils.isEmpty(password))
+			response.addContextualMessage("password", "validate.required");
 		if (StringUtils.isEmpty(server))
 			response.addContextualMessage("server", "validate.required");
 		if (updatePeriods <= 0)
