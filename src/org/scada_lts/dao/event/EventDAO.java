@@ -1275,7 +1275,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
-		if(ref2 > 0)
+		if(ref2 > 0 && (typeId == EventType.EventSources.DATA_POINT || typeId == EventType.EventSources.DATA_SOURCE))
 			return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_REF2, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_N, new Object[] {typeId, ref1}, new EventHandlerRowMapper());
 	}
