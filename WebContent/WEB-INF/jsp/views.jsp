@@ -194,11 +194,18 @@
 
 	function openFullScreen() {
 		setCookie("fullScreen","yes");
-		document.getElementById('fsOut').style.display = "block";
+        var displayShortcutDisableFullScreen = document.getElementById('displayShortcutDisableFullScreen').checked;
+		if(displayShortcutDisableFullScreen) {
+            document.getElementById('fsOut').style.display = "block";
+            jQuery('#fsOut').fadeOut(5000, function(){});
+		} else {
+		    document.getElementById('fsOut').style.display = "none";
+		}
 		document.getElementById('mainHeader').style.display = "none";
 		document.getElementById('subHeader').style.display = "none";
 		document.getElementById('graphical').style.display = "none";
-		jQuery('#fsOut').fadeOut(5000, function(){});
+		document.getElementById('sltsContent').style = "padding-top: 0px !important;";
+		document.getElementById('fullScreenOut').style = "padding: 0px !important;";
 	}
 
 	function closeFullScreen() {
@@ -206,6 +213,8 @@
 		document.getElementById('mainHeader').style.display = "flex";
 		document.getElementById('subHeader').style.display = "flex";
 		document.getElementById('graphical').style.display = "table";
+		document.getElementById('sltsContent').style = "";
+		document.getElementById('fullScreenOut').style = "";
 	}
 		
 	function keyListen(e) {
@@ -232,8 +241,9 @@
 			<td width="50"></td>
 			<c:if test="${fn:length(views) != 0}">
 				<td>
+				    <input id="displayShortcutDisableFullScreen" type="checkbox" />
+				    <label for="displayShortcutDisableFullScreen"><fmt:message key="views.displayShortcutDisableFullScreen"/></label>
 					<tag:img png="arrow_out" title="viewEdit.fullScreen" onclick="fullScreen()" />
-					<!-- <input type="button" name="buttonFull" value="Full Screen" onClick="fullScreen();" /> -->
 				</td>
 			</c:if>
 			<td align="right"><sst:select value="${currentView.id}"
@@ -259,7 +269,7 @@
 		
 	</table>
 	
-	<table>
+	<table id="fullScreenOut">
 		<tr>
 			<td class="smallTitle" id="fsOut">
 				<fmt:message key="fullScreenOut"/>
