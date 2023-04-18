@@ -63,6 +63,26 @@
               $get("maxWriteRegisterCount"), $get("transportType"), $get("host"), $get("port"), $get("encapsulated"), $get("createSocketMonitorPoint"),
               saveDataSourceCB);
   }
+
+    function savePointImpl(locator) {
+        delete locator.settable;
+        delete locator.rangeMessage;
+        delete locator.dataTypeId;
+        delete locator.relinquishable;
+
+        locator.slaveId = $get("slaveId");
+        locator.range = $get("range");
+        locator.modbusDataType = $get("modbusDataType");
+        locator.offset = $get("offset");
+        locator.bit = $get("bit");
+        locator.registerCount = $get("registerCount");
+        locator.charset = $get("charset");
+        locator.settableOverride = $get("settableOverride");
+        locator.multiplier = $get("multiplier");
+        locator.additive = $get("additive");
+
+        DataSourceEditDwr.saveModbusPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
+    }
 </script>
 
 <tr>

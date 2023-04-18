@@ -71,7 +71,7 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 
 	@Override
 	public PointLocatorVO createPointLocator() {
-		return new ModbusPointLocatorVO();
+		return ModbusPointLocatorFactory.locator(this);
 	}
 
 	private int updatePeriodType = Common.TimePeriods.MINUTES;

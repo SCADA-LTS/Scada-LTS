@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -122,7 +123,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					dp.setLoggingType(LoggingTypes.ON_CHANGE);
 					dp.setEventDetectors(new ArrayList<PointEventDetectorVO>());
 
-					ModbusPointLocatorVO locator = new ModbusPointLocatorVO();
+					ModbusPointLocatorVO locator = ModbusPointLocatorFactory.locator(this.vo);
 					locator.setSlaveId(slaveId);
 					locator.setSlaveMonitor(true);
 					dp.setPointLocator(locator);

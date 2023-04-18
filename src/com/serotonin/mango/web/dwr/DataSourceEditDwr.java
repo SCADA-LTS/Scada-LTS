@@ -44,6 +44,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialPointLocatorVO;
 import com.serotonin.mango.web.dwr.beans.*;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
@@ -504,6 +505,12 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    @MethodFilter
+    public DwrResponseI18n saveModbusSerialPointLocator(int id, String xid,
+                                                  String name, ModbusSerialPointLocatorVO locator) {
+        return validatePoint(id, xid, name, locator, null);
+    }
+
     private void testModbusPointLocator(ModbusMaster modbusMaster,
                                         ModbusPointLocatorVO locator, boolean serial,
                                         DwrResponseI18n response) {
@@ -657,7 +664,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n testModbusSerialLocator(int timeout, int retries,
                                                    String commPortId, int baudRate, int flowControlIn,
                                                    int flowControlOut, int dataBits, int stopBits, int parity,
-                                                   String encoding, int concurrency, ModbusPointLocatorVO locator) {
+                                                   String encoding, int concurrency, ModbusSerialPointLocatorVO locator) {
         DwrResponseI18n response = new DwrResponseI18n();
         ModbusMaster modbusMaster;
         try {

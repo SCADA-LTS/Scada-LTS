@@ -188,6 +188,24 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 	@JsonRemoteProperty
 	private double additive = 0;
 
+	public ModbusPointLocatorVO() {
+	}
+
+	public ModbusPointLocatorVO(ModbusPointLocatorVO pointLocator) {
+		this.range = pointLocator.getRange();
+		this.modbusDataType = pointLocator.getModbusDataType();
+		this.slaveId = pointLocator.getSlaveId();
+		this.slaveMonitor = pointLocator.isSlaveMonitor();
+		this.socketMonitor = pointLocator.isSocketMonitor();
+		this.offset = pointLocator.getOffset();
+		this.bit = pointLocator.getBit();
+		this.registerCount = pointLocator.getRegisterCount();
+		this.charset = pointLocator.getCharset();
+		this.settableOverride = pointLocator.isSettableOverride();
+		this.multiplier = pointLocator.getMultiplier();
+		this.additive = pointLocator.getAdditive();
+	}
+
 	public double getAdditive() {
 		return additive;
 	}
@@ -291,8 +309,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType))
 			response.addContextualMessage("modbusDataType",
 					"validate.invalidValue");
-		if (!StringUtils.isBetweenInc(slaveId, 1, 240) && !socketMonitor)
-			response.addContextualMessage("slaveId", "validate.1to240");
+		validateSlaveId(response);
 
 		if (!slaveMonitor && !socketMonitor) {
 			int maxEndOffset = 65536 - DataType
@@ -323,6 +340,11 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 			if (multiplier == 0)
 				response.addContextualMessage("multiplier", "validate.not0");
 		}
+	}
+
+	public void validateSlaveId(DwrResponseI18n response) {
+		if (!StringUtils.isBetweenInc(slaveId, 1, 255) && !socketMonitor)
+			response.addContextualMessage("slaveId", "validate.1to255");
 	}
 
 	private boolean settableRange() {

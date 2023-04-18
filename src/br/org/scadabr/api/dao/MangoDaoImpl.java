@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO.TransportTy
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO.EncodingType;
+import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorFactory;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -1209,7 +1210,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		if (point.getId() == Common.NEW_ID) {
 			mangoPoint = new DataPointVO();
 			mangoPoint.setXid(new DataPointDao().generateUniqueXid());
-			mangoLocator = new ModbusPointLocatorVO();
+			mangoLocator = ModbusPointLocatorFactory.locator(dataSourceType);
 			mangoPoint
 					.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 
