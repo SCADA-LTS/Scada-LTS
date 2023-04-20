@@ -99,8 +99,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean hideMenu;
 	@JsonRemoteProperty
 	private String lang;
-
-
+	@JsonRemoteProperty
+	private boolean enableFullScreen;
+	@JsonRemoteProperty
+	private boolean hideShortcutForDisableFullScreen;
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -185,6 +187,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
 		this.lang = user.lang;
+		this.enableFullScreen = user.enableFullScreen;
+		this.hideShortcutForDisableFullScreen = user.hideShortcutForDisableFullScreen;
 	}
 
 	public static User onlyId(int userId) {
@@ -720,6 +724,38 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setLang(String lang) {
 		this.lang = lang;
+	}
+
+	public boolean isEnableFullScreen() {
+		return enableFullScreen;
+	}
+
+	public void setEnableFullScreen(boolean enableFullScreen) {
+		this.enableFullScreen = enableFullScreen;
+	}
+
+	public boolean isHideShortcutForDisableFullScreen() {
+		return hideShortcutForDisableFullScreen;
+	}
+
+	public void setHideShortcutForDisableFullScreen(boolean hideShortcutForDisableFullScreen) {
+		this.hideShortcutForDisableFullScreen = hideShortcutForDisableFullScreen;
+	}
+
+	public void setUserProfile(int userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public TestingUtility getTestingUtility() {
+		return testingUtility;
+	}
+
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
 	}
 
 	@Override

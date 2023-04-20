@@ -120,7 +120,7 @@ public class UsersDwr extends BaseDwr {
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
 			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
-		    String theme, String homeUrl) {
+		    String theme, String homeUrl, boolean enableFullScreen, boolean hideShortcutForDisableFullScreen) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -162,6 +162,8 @@ public class UsersDwr extends BaseDwr {
 			user.setUserProfileId(usersProfileId);
 		}
 		user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+		user.setEnableFullScreen(enableFullScreen);
+		user.setHideShortcutForDisableFullScreen(hideShortcutForDisableFullScreen);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -208,7 +210,7 @@ public class UsersDwr extends BaseDwr {
 	public DwrResponseI18n saveUser(int id, String firstName, String lastName,
 									String password, String email, String phone,
 									int receiveAlarmEmails, boolean receiveOwnAuditEvents, int usersProfileId,
-									String theme) {
+									String theme, boolean enableFullScreen, boolean hideShortcutForDisableFullScreen) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -229,6 +231,9 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
 		updateUser.setTheme(theme);
+		updateUser.setEnableFullScreen(enableFullScreen);
+		updateUser.setHideShortcutForDisableFullScreen(hideShortcutForDisableFullScreen);
+
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 

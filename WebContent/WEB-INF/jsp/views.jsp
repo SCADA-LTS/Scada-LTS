@@ -45,11 +45,13 @@
     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
-	
+
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {
-	    closeFullScreen();
+	    var forceFullScreenMode = ${forceFullScreenMode};
+	    if(!forceFullScreenMode || ${isAdmin})
+	        closeFullScreen();
 	});
 	
 	//check replace alert
@@ -182,6 +184,9 @@
 
 	function checkFullScreen(){
 		var check = getCookie("fullScreen");
+		var forceFullScreenMode = ${forceFullScreenMode};
+        var enableFullScreenMode = ${enableFullScreenMode};
+        check = forceFullScreenMode || enableFullScreenMode ? 'yes' : check;
 		if(check!=null && check!=""){
 			if(check=="yes"){
 				openFullScreen();
@@ -194,12 +199,13 @@
 
 	function openFullScreen() {
 		setCookie("fullScreen","yes");
-        var displayShortcutDisableFullScreen = document.getElementById('displayShortcutDisableFullScreen').checked;
-		if(displayShortcutDisableFullScreen) {
-            document.getElementById('fsOut').style.display = "block";
-            jQuery('#fsOut').fadeOut(5000, function(){});
+		var hideShortcutDisableFullScreenFromSystemSettings = ${hideShortcutDisableFullScreenFromSystemSettings};
+		var hideShortcutDisableFullScreenFromUser = ${hideShortcutDisableFullScreenFromUser};
+		if(hideShortcutDisableFullScreenFromSystemSettings || hideShortcutDisableFullScreenFromUser) {
+            document.getElementById('fsOut').style.display = "none";
 		} else {
-		    document.getElementById('fsOut').style.display = "none";
+		    document.getElementById('fsOut').style.display = "block";
+            jQuery('#fsOut').fadeOut(5000, function(){});
 		}
 		document.getElementById('mainHeader').style.display = "none";
 		document.getElementById('subHeader').style.display = "none";
@@ -241,8 +247,6 @@
 			<td width="50"></td>
 			<c:if test="${fn:length(views) != 0}">
 				<td>
-				    <input id="displayShortcutDisableFullScreen" type="checkbox" />
-				    <label for="displayShortcutDisableFullScreen"><fmt:message key="views.displayShortcutDisableFullScreen"/></label>
 					<tag:img png="arrow_out" title="viewEdit.fullScreen" onclick="fullScreen()" />
 				</td>
 			</c:if>

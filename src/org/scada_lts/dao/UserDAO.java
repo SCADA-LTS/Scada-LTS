@@ -47,6 +47,8 @@ public class UserDAO implements IUserDAO {
 	private static final String COLUMN_NAME_FIRST_NAME = "firstName";
 	private static final String COLUMN_NAME_LAST_NAME = "lastName";
 	private static final String COLUMN_NAME_LANG = "lang";
+	private static final String COLUMN_NAME_ENABLE_FULL_SCREEN = "enableFullScreen";
+	private static final String COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
 	private static final String TABLE_NAME = "users";
 
 	private static final int DAO_EMPTY_RESULT = 0;
@@ -76,6 +78,8 @@ public class UserDAO implements IUserDAO {
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
 				+ COLUMN_NAME_HIDE_MENU + ", "
 				+ COLUMN_NAME_LANG + ", "
+				+ COLUMN_NAME_ENABLE_FULL_SCREEN + ", "
+				+ COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN + ", "
 				+ COLUMN_NAME_THEME + " "
 			+ "from users ";
 
@@ -113,8 +117,10 @@ public class UserDAO implements IUserDAO {
 			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
 			+ COLUMN_NAME_HIDE_MENU + ", "
 			+ COLUMN_NAME_LANG + ", "
+			+ COLUMN_NAME_ENABLE_FULL_SCREEN + ", "
+			+ COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN + ", "
 			+ COLUMN_NAME_THEME + ") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
@@ -131,6 +137,8 @@ public class UserDAO implements IUserDAO {
 			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
 			+ COLUMN_NAME_HIDE_MENU + "=?, "
 			+ COLUMN_NAME_LANG + "=?, "
+			+ COLUMN_NAME_ENABLE_FULL_SCREEN + "=?, "
+			+ COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN + "=?, "
 			+ COLUMN_NAME_THEME + "=? "
 			+ "where "
 			+ COLUMN_NAME_ID + "=? ";
@@ -186,6 +194,8 @@ public class UserDAO implements IUserDAO {
 			user.setFirstName(rs.getString(COLUMN_NAME_FIRST_NAME));
 			user.setLastName(rs.getString(COLUMN_NAME_LAST_NAME));
 			user.setLang(rs.getString(COLUMN_NAME_LANG));
+			user.setEnableFullScreen(rs.getBoolean(COLUMN_NAME_ENABLE_FULL_SCREEN));
+			user.setHideShortcutForDisableFullScreen(rs.getBoolean(COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
 			return user;
 		}
 	}
@@ -300,6 +310,8 @@ public class UserDAO implements IUserDAO {
 						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 						user.isHideMenu(),
 						user.getLang(),
+						user.isEnableFullScreen(),
+						user.isHideShortcutForDisableFullScreen(),
 						user.getTheme()
 				}).setValues(preparedStatement);
 				return preparedStatement;
@@ -329,6 +341,8 @@ public class UserDAO implements IUserDAO {
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.isHideMenu(),
 				user.getLang(),
+				user.isEnableFullScreen(),
+				user.isHideShortcutForDisableFullScreen(),
 				user.getTheme(),
 				user.getId());
 	}

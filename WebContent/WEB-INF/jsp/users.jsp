@@ -133,8 +133,10 @@
         $set("hideMenu", user.hideMenu);
         $set("homeUrl", user.homeUrl);
         $set("theme", user.theme);
+        $set("hideShortcutForDisableFullScreen", user.hideShortcutForDisableFullScreen);
+    	$set("enableFullScreen", user.enableFullScreen);
 
-    	
+
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
@@ -236,12 +238,12 @@
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
-                    saveUserCB);
+                    $get("enableFullScreen"), $get("hideShortcutForDisableFullScreen"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
-                    $get("theme"), saveUserCB);
+                    $get("theme"), $get("enableFullScreen"), $get("hideShortcutForDisableFullScreen"), saveUserCB);
      
     }
     
@@ -458,6 +460,15 @@
               <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
               <td class="formField"><select id="usersProfilesList" onchange="checkProfile()">
               </select></td>
+            </tr>
+            </tbody>
+            <tr>
+             <td class="formLabelRequired"><fmt:message key="user.view.enableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="enableFullScreen" /></td>
+            </tr>
+            <tr>
+             <td class="formLabelRequired"><fmt:message key="user.view.hideShortcutDisableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="hideShortcutForDisableFullScreen" /></td>
             </tr>
             </div>
             

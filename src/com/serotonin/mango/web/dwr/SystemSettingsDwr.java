@@ -157,6 +157,10 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
 
+		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
+		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
 		return settings;
 	}
 
@@ -303,7 +307,8 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
+	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
+											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -315,6 +320,9 @@ public class SystemSettingsDwr extends BaseDwr {
         }
 		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				String.valueOf(dataPointRtValueSynchronized));
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, viewEnableFullScreen);
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, viewHideShortcutDisableFullScreen);
 		return response;
 	}
 
