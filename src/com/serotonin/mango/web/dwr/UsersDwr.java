@@ -161,7 +161,9 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user.setUserProfileId(usersProfileId);
 		}
-		user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+		if(id == Common.NEW_ID || StringUtils.isEmpty(user.getLang())) {
+			user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+		}
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);

@@ -68,6 +68,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
         } else {
             userToSave = userInfo.toUserNonAdmin(user);
         }
+        userToSave.setLang(user.getLang());
         DwrResponseI18n response = validate(userToSave);
         if(response.getHasMessages())
             throw new BadRequestException(response, request.getRequestURI());
