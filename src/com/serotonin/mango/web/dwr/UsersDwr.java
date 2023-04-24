@@ -161,9 +161,13 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user.setUserProfileId(usersProfileId);
 		}
-		user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
-		user.setEnableFullScreen(enableFullScreen);
+    
+		if(id == Common.NEW_ID || StringUtils.isEmpty(user.getLang())) {
+			user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+		}
+    user.setEnableFullScreen(enableFullScreen);
 		user.setHideShortcutForDisableFullScreen(hideShortcutForDisableFullScreen);
+
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -199,7 +203,7 @@ public class UsersDwr extends BaseDwr {
 
 			if (currentUser.getId() == id)
 				// Update the user object in session too. Why not?
-				Common.setUser(request, user);
+				Common.updateUserInSession(request, user);
 
 			response.addData("userId", user.getId());
 		}
@@ -240,7 +244,7 @@ public class UsersDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
 			userDao.updateUserScadaTheme(updateUser);
-			Common.setUser(request, updateUser);
+			Common.updateUserInSession(request, updateUser);
 		}
 
 		return response;

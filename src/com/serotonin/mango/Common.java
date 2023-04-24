@@ -59,10 +59,9 @@ import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.RealTimeTimer;
 import com.serotonin.util.PropertiesUtils;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import com.serotonin.web.i18n.Utf8ResourceBundle;
 import org.scada_lts.serial.SerialPortUtils;
+import org.springframework.security.core.GrantedAuthority;
 
 public class Common {
 	
@@ -251,6 +250,14 @@ public class Common {
 
 	public static void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute(SESSION_USER, user);
+	}
+
+	public static void updateUserInSession(HttpServletRequest request, User user) {
+		User loggedUser = getUser(request);
+		List<GrantedAuthority> roles = loggedUser.getAttribute("roles");
+		if(roles != null)
+			user.setAttribute("roles", roles);
+		setUser(request, user);
 	}
 
 	//
