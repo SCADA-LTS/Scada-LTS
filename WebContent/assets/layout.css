@@ -142,12 +142,6 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formLong {
 	width: 250px;
 }
-
-input[type="button"] {
-    text-align:center;
-    vertical-align:middle;
-}
-
 input[type="submit"], input[type="button"] {
 	overflow: visible;
 }
