@@ -461,6 +461,8 @@
     	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
           var height = dojo.html.getContentBox($("chartContainer")).height - 80;
+          width = Math.trunc(width);
+          height = Math.trunc(height);
     	  height = height < 100 ? 100 : height;
           startImageFader($("imageChartImg"));
           WatchListDwr.getImageChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
