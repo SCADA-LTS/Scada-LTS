@@ -224,12 +224,13 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 pointHierarchyXidService.cacheRefresh();
+                result = new ResponseEntity<>("{}", HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<>("{}", HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<>("{}", HttpStatus.BAD_REQUEST);
         }
         return result;
     }
