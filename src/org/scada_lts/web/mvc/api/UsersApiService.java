@@ -7,7 +7,6 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.exception.PasswordMismatchException;
-import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.exceptions.*;
 import org.scada_lts.web.mvc.api.user.UserInfo;
@@ -79,7 +78,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         if(userInfo.getId() == user.getId()) {
-            Common.setUser(request, userToSave);
+            Common.updateUserInSession(request, userToSave);
         }
         return new UserInfo(user);
     }
