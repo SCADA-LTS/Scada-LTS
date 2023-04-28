@@ -4,11 +4,13 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.exception.PasswordMismatchException;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.utils.ApiUtils;
 import org.scada_lts.web.mvc.api.exceptions.*;
+import org.scada_lts.web.mvc.api.json.JsonSettingsSystemInfo;
 import org.scada_lts.web.mvc.api.user.UserInfo;
 import org.scada_lts.web.mvc.api.user.UserInfoSimple;
 
@@ -18,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.scada_lts.utils.ApiUtils.setPassword;
-import static org.scada_lts.utils.ApiUtils.validate;
+import static org.scada_lts.utils.ApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.checkIfNonAdminThenUnauthorized;
 
 public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<UserInfoSimple> {
@@ -42,7 +43,9 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
     @Override
     public UserInfo create(HttpServletRequest request, UserInfo userInfo) {
         User userToSave = userInfo.toUser();
-        userToSave.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        JsonSettingsSystemInfo jsonSettingsSystemInfo = systemSettingsService.getSystemInfoSettings();
+        userToSave.setLang(jsonSettingsSystemInfo.getLanguage());
         DwrResponseI18n response = validate(userToSave);
         if(response.getHasMessages())
             throw new BadRequestException(response, request.getRequestURI());
@@ -53,7 +56,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return new UserInfo(userToSave);
+        return toUserInfo(userToSave);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
         if(userInfo.getId() == user.getId()) {
             Common.updateUserInSession(request, userToSave);
         }
-        return new UserInfo(user);
+        return toUserInfo(userToSave);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
             throw new NotFoundException("User not exists.", request.getRequestURI());
         try {
             userService.deleteUser(id);
-            return new UserInfo(user);
+            return toUserInfo(user);
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }
@@ -129,7 +132,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
         if(user == null) {
             throw new NotFoundException("User with id not exists: " + id, request.getRequestURI());
         }
-        return new UserInfo(user);
+        return toUserInfo(user);
     }
 
     @Override
@@ -138,7 +141,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
         try {
             List<User> users = userService.getUsers();
             return users.stream()
-                    .map(UserInfo::new)
+                    .map(ApiUtils::toUserInfo)
                     .collect(Collectors.toList());
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());

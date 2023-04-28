@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.User;
 
 import static org.scada_lts.login.AuthenticationUtils.authenticate;
 import static org.scada_lts.login.AuthenticationUtils.logout;
+import static org.scada_lts.utils.ApiUtils.toUserInfo;
 
 /**
  * 
@@ -153,7 +154,7 @@ public class AuthenticationAPI {
 
 		if(user != null) {
 			try {
-				UserInfo userInfo = new UserInfo(user);
+				UserInfo userInfo = toUserInfo(user);
 				return new ResponseEntity<>(userInfo, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -48,8 +48,10 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
@@ -94,13 +96,17 @@ public class UsersDwr extends BaseDwr {
 				dataSources.add(ds);
 			}
 			initData.put("dataSources", dataSources);
-		} else
+		} else {
 			initData.put("user", user);
+			JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+			initData.put("forceFullScreenMode", jsonSettingsMisc.isEnableFullScreen());
+			initData.put("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isHideShortcutDisableFullScreen());
+		}
 
 		return initData;
 	}
 
-	public User getUser(int id) {
+	public DwrResponseI18n getUser(int id) {
 		Permissions.ensureAdmin();
 		User user = null;
 		if (id == Common.NEW_ID) {
@@ -110,7 +116,12 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user = new UserDao().getUser(id);
 		}
-		return user;
+		DwrResponseI18n response = new DwrResponseI18n();
+		response.addData("user", user);
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		response.addData("forceFullScreenMode", jsonSettingsMisc.isEnableFullScreen());
+		response.addData("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isHideShortcutDisableFullScreen());
+		return response;
 
 	}
 
@@ -120,7 +131,7 @@ public class UsersDwr extends BaseDwr {
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
 			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
-		    String theme, String homeUrl, boolean enableFullScreen, boolean hideShortcutForDisableFullScreen) {
+		    String theme, String homeUrl, boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -165,8 +176,11 @@ public class UsersDwr extends BaseDwr {
 		if(id == Common.NEW_ID || StringUtils.isEmpty(user.getLang())) {
 			user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
 		}
-    user.setEnableFullScreen(enableFullScreen);
-		user.setHideShortcutForDisableFullScreen(hideShortcutForDisableFullScreen);
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		if(!jsonSettingsMisc.isEnableFullScreen())
+			user.setEnableFullScreen(enableFullScreen);
+		if(!jsonSettingsMisc.isHideShortcutDisableFullScreen())
+			user.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
 
 
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -214,7 +228,7 @@ public class UsersDwr extends BaseDwr {
 	public DwrResponseI18n saveUser(int id, String firstName, String lastName,
 									String password, String email, String phone,
 									int receiveAlarmEmails, boolean receiveOwnAuditEvents, int usersProfileId,
-									String theme, boolean enableFullScreen, boolean hideShortcutForDisableFullScreen) {
+									String theme, boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -235,8 +249,11 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
 		updateUser.setTheme(theme);
-		updateUser.setEnableFullScreen(enableFullScreen);
-		updateUser.setHideShortcutForDisableFullScreen(hideShortcutForDisableFullScreen);
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		if(!jsonSettingsMisc.isEnableFullScreen())
+			user.setEnableFullScreen(enableFullScreen);
+		if(!jsonSettingsMisc.isHideShortcutDisableFullScreen())
+			user.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);

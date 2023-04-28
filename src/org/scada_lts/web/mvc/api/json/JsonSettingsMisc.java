@@ -7,16 +7,16 @@ public class JsonSettingsMisc implements Serializable {
     private int uiPerformance;
     private String dataPointRuntimeValueSynchronized;
     public boolean enableFullScreen;
-    public boolean hideShortcutForDisableFullScreen;
+    public boolean hideShortcutDisableFullScreen;
 
     public JsonSettingsMisc() {}
 
     public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized,
-                            boolean enableFullScreen, boolean hideShortcutForDisableFullScreen) {
+                            boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
         this.uiPerformance = uiPerformance;
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
         this.enableFullScreen = enableFullScreen;
-        this.hideShortcutForDisableFullScreen = hideShortcutForDisableFullScreen;
+        this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
     }
 
     public int getUiPerformance() {
@@ -43,11 +43,11 @@ public class JsonSettingsMisc implements Serializable {
         this.enableFullScreen = enableFullScreen;
     }
 
-    public boolean isHideShortcutForDisableFullScreen() {
-        return hideShortcutForDisableFullScreen;
+    public boolean isHideShortcutDisableFullScreen() {
+        return hideShortcutDisableFullScreen;
     }
 
-    public void setHideShortcutForDisableFullScreen(boolean hideShortcutForDisableFullScreen) {
-        this.hideShortcutForDisableFullScreen = hideShortcutForDisableFullScreen;
+    public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
+        this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
     }
 }

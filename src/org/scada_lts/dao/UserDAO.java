@@ -195,7 +195,7 @@ public class UserDAO implements IUserDAO {
 			user.setLastName(rs.getString(COLUMN_NAME_LAST_NAME));
 			user.setLang(rs.getString(COLUMN_NAME_LANG));
 			user.setEnableFullScreen(rs.getBoolean(COLUMN_NAME_ENABLE_FULL_SCREEN));
-			user.setHideShortcutForDisableFullScreen(rs.getBoolean(COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
+			user.setHideShortcutDisableFullScreen(rs.getBoolean(COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
 			return user;
 		}
 	}
@@ -311,7 +311,7 @@ public class UserDAO implements IUserDAO {
 						user.isHideMenu(),
 						user.getLang(),
 						user.isEnableFullScreen(),
-						user.isHideShortcutForDisableFullScreen(),
+						user.isHideShortcutDisableFullScreen(),
 						user.getTheme()
 				}).setValues(preparedStatement);
 				return preparedStatement;
@@ -342,7 +342,7 @@ public class UserDAO implements IUserDAO {
 				user.isHideMenu(),
 				user.getLang(),
 				user.isEnableFullScreen(),
-				user.isHideShortcutForDisableFullScreen(),
+				user.isHideShortcutDisableFullScreen(),
 				user.getTheme(),
 				user.getId());
 	}

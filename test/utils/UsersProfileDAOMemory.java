@@ -24,8 +24,7 @@ public class UsersProfileDAOMemory implements IUsersProfileDAO {
                                  Map<Integer, UsersProfileVO> userProfiles) {
         super();
         this.profiles = profiles;
-        this.users = userProfiles.keySet().stream().map(userId -> new User(userId, null, null,
-                null, false, false, null, -1L)).collect(Collectors.toList());
+        this.users = userProfiles.keySet().stream().map(User::onlyId).collect(Collectors.toList());
         this.userProfiles = userProfiles;
     }
 

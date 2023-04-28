@@ -10,7 +10,10 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
+import org.scada_lts.web.mvc.api.user.UserInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -107,5 +110,10 @@ public final class ApiUtils {
                 userToSave.setPassword(userFromBase.getPassword());
             });
         }
+    }
+
+    public static UserInfo toUserInfo(User user) {
+        JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+        return new UserInfo(user, jsonSettingsMisc.isEnableFullScreen(), jsonSettingsMisc.isHideShortcutDisableFullScreen());
     }
 }
