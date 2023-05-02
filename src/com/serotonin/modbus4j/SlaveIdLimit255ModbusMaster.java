@@ -62,7 +62,7 @@ public class SlaveIdLimit255ModbusMaster extends ModbusMaster implements IModbus
 
     @Override
     public List<Integer> scanForSlaveNodes() {
-        List<Integer> result = new ArrayList();
+        List<Integer> result = new ArrayList<>();
 
         for(int i = 1; i <= 255; ++i) {
             if (modbusMaster.testSlaveNode(i)) {
@@ -79,6 +79,7 @@ public class SlaveIdLimit255ModbusMaster extends ModbusMaster implements IModbus
         ProgressiveTask task = new ProgressiveTask(l) {
             private int node = 1;
 
+            @Override
             protected void runImpl() {
                 if (modbusMaster.testSlaveNode(this.node)) {
                     l.nodeFound(this.node);
