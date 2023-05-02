@@ -708,12 +708,12 @@ export default {
 		async fetchEventList() {
 			this.loading = true;
 			const result = await this.$store.dispatch('searchEvents', { ...this.searchFilters, itemsPerPage: this.options.itemsPerPage });
-
-			if (result.length > this.options.itemsPerPage) {
-				this.eventList = result.slice(0,this.options.itemsPerPage);
+            const rows = result.rows;
+			if (rows.length > this.options.itemsPerPage) {
+				this.eventList = rows.slice(0,this.options.itemsPerPage);
 				this.totalEvents = this.options.itemsPerPage * this.options.page +1
 			} else {
-				this.eventList = result;
+				this.eventList = rows;
 				this.totalEvents = this.options.itemsPerPage * this.options.page
 			}
 			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
