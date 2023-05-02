@@ -9,6 +9,7 @@ import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
+import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
@@ -105,7 +106,7 @@ public class ModbusIpController {
             modbusMaster = new ModbusFactory().createTcpMaster(params, transportType == ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE);
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retires);
-        return modbusMaster;
+        return new SlaveIdLimit255ModbusMaster(modbusMaster);
     }
 
     private Map<String, Object> testModbusPointLocator(ModbusMaster modbusMaster, ModbusPointLocatorVO locator) {

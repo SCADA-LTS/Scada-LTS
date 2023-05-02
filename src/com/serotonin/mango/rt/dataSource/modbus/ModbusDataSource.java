@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.modbus4j.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,10 +43,6 @@ import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.modbus4j.BatchRead;
-import com.serotonin.modbus4j.BatchResults;
-import com.serotonin.modbus4j.ExceptionResult;
-import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.locator.BaseLocator;
@@ -328,7 +325,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	}
 
 	protected void initialize(ModbusMaster modbusMaster) {
-		this.modbusMaster = modbusMaster;
+		this.modbusMaster = new SlaveIdLimit255ModbusMaster(modbusMaster);
 		modbusMaster.setTimeout(vo.getTimeout());
 		modbusMaster.setRetries(vo.getRetries());
 		modbusMaster.setMaxReadBitCount(vo.getMaxReadBitCount());
