@@ -433,3 +433,8 @@ form.view-edit-form {
 textarea#cssEditor {
     white-space: pre-wrap !important;
 }
+
+#viewContent input[type='button'] {
+    text-align: center;
+    vertical-align: middle;
+}
