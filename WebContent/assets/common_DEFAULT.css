@@ -271,8 +271,6 @@ html > body .dojoTreeNodeLabelTitle {
   border-style: solid;
   padding: 1px 5px;
   color: black;
-  text-align:center;
-  vertical-align:middle;
 }
 
 @media screen and (max-width: 730px) {
