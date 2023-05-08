@@ -390,7 +390,7 @@
         </div>
       </td>
 
-      <td valign="top" style="display:none; position: fixed;" id="scriptDetails">
+      <td valign="top" style="display:none; position: auto;" id="scriptDetails">
         <div class="borderDiv">
           <table width="100%">
             <tr>

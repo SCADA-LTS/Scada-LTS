@@ -201,6 +201,8 @@ input[type="submit"], input[type="button"] {
 	position:relative;
 	margin: 0px;
 	padding: 0px;
+	overflow-x: auto;
+	max-width: 100%;
 }
 #viewContent img {
 	display: block;
