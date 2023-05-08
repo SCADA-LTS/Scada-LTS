@@ -1,5 +1,6 @@
 package org.scada_lts.login;
 
+import com.serotonin.mango.vo.User;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ public class LocalBasicAuthFilter extends BasicAuthenticationFilter {
     @Override
     protected void onSuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, Authentication authentication) {
-        authenticateLocal(request, response, authentication, new UserService());
+        User user = new UserService().getUser(authentication.getName());
+        authenticateLocal(request, response, authentication, user);
     }
 }
