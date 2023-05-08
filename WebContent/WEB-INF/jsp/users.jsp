@@ -47,7 +47,7 @@
                 var i, j;
                 for (i=0; i<data.users.length; i++) {
                     appendUser(data.users[i].id);
-                    updateUser(data.users[i]);
+                    updateUser({user: data.users[i]});
                 }
 
                 var usersProfileHtml = "", userProfileId, userProfileName;
@@ -97,7 +97,7 @@
                 // Not an admin user.
                 adminUser = false;
                 editingUserId = data.user.id;
-                showUserCB(data.user);
+                showUserCB(data);
                 hide("usersProfilesListTable");
             }
         });
@@ -117,9 +117,25 @@
     	
     }
     
-    function showUserCB(user) {
-
+    function showUserCB(response) {
+        var user = response.data ? response.data.user : response.user;
+        var forceFullScreenMode = response.data ? response.data.forceFullScreenMode : response.forceFullScreenMode;
+        var forceHideShortcutDisableFulLScreen = response.data ? response.data.forceHideShortcutDisableFulLScreen : response.forceHideShortcutDisableFulLScreen;
         show($("userDetails"));
+        if(forceFullScreenMode) {
+            document.getElementById("enableFullScreen").disabled = true;
+            document.getElementById("enableFullScreen").title = '<fmt:message key="user.view.forceAdminTitle"/>';
+        } else {
+            document.getElementById("enableFullScreen").disabled = false;
+            document.getElementById("enableFullScreen").title = '<fmt:message key="user.view.enableFullScreen"/>';
+        }
+        if(forceHideShortcutDisableFulLScreen) {
+            document.getElementById("hideShortcutDisableFullScreen").disabled = true;
+            document.getElementById("hideShortcutDisableFullScreen").title = '<fmt:message key="user.view.forceAdminTitle"/>';
+        } else {
+            document.getElementById("hideShortcutDisableFullScreen").disabled = false;
+            document.getElementById("hideShortcutDisableFullScreen").title = '<fmt:message key="user.view.hideShortcutDisableFullScreen"/>';
+        }
         $set("username", user.username);
         $set("firstName", user.firstName);
         $set("lastName", user.lastName);
@@ -133,8 +149,10 @@
         $set("hideMenu", user.hideMenu);
         $set("homeUrl", user.homeUrl);
         $set("theme", user.theme);
+        $set("hideShortcutDisableFullScreen", user.hideShortcutDisableFullScreen);
+    	$set("enableFullScreen", user.enableFullScreen);
 
-    	
+
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
@@ -236,12 +254,12 @@
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
-                    saveUserCB);
+                    $get("enableFullScreen"), $get("hideShortcutDisableFullScreen"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
-                    $get("theme"), saveUserCB);
+                    $get("theme"), $get("enableFullScreen"), $get("hideShortcutDisableFullScreen"), saveUserCB);
      
     }
     
@@ -298,7 +316,8 @@
         createFromTemplate("u_TEMPLATE_", userId, "usersTable");
     }
     
-    function updateUser(user) {
+    function updateUser(response) {
+        var user = response.data ? response.data.user : response.user;
         $("u"+ user.id +"Username").innerHTML = user.username;
         setUserImg(user.admin, user.disabled, $("u"+ user.id +"Img"));
     }
@@ -458,6 +477,15 @@
               <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
               <td class="formField"><select id="usersProfilesList" onchange="checkProfile()">
               </select></td>
+            </tr>
+            </tbody>
+            <tr>
+             <td class="formLabelRequired"><fmt:message key="user.view.enableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="enableFullScreen" /></td>
+            </tr>
+            <tr>
+             <td class="formLabelRequired"><fmt:message key="user.view.hideShortcutDisableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="hideShortcutDisableFullScreen" /></td>
             </tr>
             </div>
             

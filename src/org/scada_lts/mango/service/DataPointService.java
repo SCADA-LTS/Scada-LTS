@@ -20,7 +20,7 @@ package org.scada_lts.mango.service;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
-import java.io.IOException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,9 +43,6 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.Tuple;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;

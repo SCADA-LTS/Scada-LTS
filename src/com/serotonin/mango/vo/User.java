@@ -21,7 +21,6 @@ package com.serotonin.mango.vo;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
@@ -36,7 +35,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -50,10 +48,8 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -99,8 +95,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean hideMenu;
 	@JsonRemoteProperty
 	private String lang;
-
-
+	@JsonRemoteProperty
+	private boolean enableFullScreen;
+	@JsonRemoteProperty
+	private boolean hideShortcutDisableFullScreen;
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -124,6 +122,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public User() { }
 
+	@Deprecated
 	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
@@ -185,21 +184,21 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
 		this.lang = user.lang;
+		this.enableFullScreen = user.enableFullScreen;
+		this.hideShortcutDisableFullScreen = user.hideShortcutDisableFullScreen;
 	}
 
 	public static User onlyId(int userId) {
-		return new User(userId, null, null, null, null, null, false, false, null, 0L);
-	}
-
-	public static User onlyIdAndProfile(int userId, int profileId) {
-		User user = new User(userId, null, null, null, null, null, false, false, null, 0L);
-		user.setUserProfileId(profileId);
+		User user = new User();
+		user.setId(userId);
 		return user;
 	}
 
-	@Deprecated
-	public static User onlyIdUsername(ScadaPrincipal principal) {
-		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
+	public static User onlyIdAndProfile(int userId, int profileId) {
+		User user = new User();
+		user.setId(userId);
+		user.setUserProfileId(profileId);
+		return user;
 	}
 
 	/**
@@ -720,6 +719,38 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setLang(String lang) {
 		this.lang = lang;
+	}
+
+	public boolean isEnableFullScreen() {
+		return enableFullScreen;
+	}
+
+	public void setEnableFullScreen(boolean enableFullScreen) {
+		this.enableFullScreen = enableFullScreen;
+	}
+
+	public boolean isHideShortcutDisableFullScreen() {
+		return hideShortcutDisableFullScreen;
+	}
+
+	public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
+		this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+	}
+
+	public void setUserProfile(int userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public TestingUtility getTestingUtility() {
+		return testingUtility;
+	}
+
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
 	}
 
 	@Override

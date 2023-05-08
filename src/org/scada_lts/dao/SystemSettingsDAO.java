@@ -152,6 +152,9 @@ public class SystemSettingsDAO {
 	// Logging
 	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
 
+	public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
+	public static final String VIEW_FORCE_FULL_SCREEN_MODE = "viewForceFullScreenMode";
+
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
@@ -383,6 +386,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(HTTP_RESPONSE_HEADERS, SystemSettingsUtils.getHttpResponseHeaders());
 		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().getName());
 		DEFAULT_VALUES.put(EMAIL_TIMEOUT, String.valueOf(SystemSettingsUtils.getEmailTimeout()));
+		DEFAULT_VALUES.put(VIEW_FORCE_FULL_SCREEN_MODE, SystemSettingsUtils.isForceFullScreenMode());
+		DEFAULT_VALUES.put(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, SystemSettingsUtils.isHideShortcutDisableFullScreen());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

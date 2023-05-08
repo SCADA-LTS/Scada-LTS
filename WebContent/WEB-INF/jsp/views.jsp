@@ -45,11 +45,13 @@
     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
-	
+
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {
-	    closeFullScreen();
+	    var forceFullScreenMode = ${forceFullScreenMode};
+	    if(!forceFullScreenMode || ${isAdmin})
+	        closeFullScreen();
 	});
 	
 	//check replace alert
@@ -182,6 +184,9 @@
 
 	function checkFullScreen(){
 		var check = getCookie("fullScreen");
+		var forceFullScreenMode = ${forceFullScreenMode};
+        var enableFullScreenMode = ${enableFullScreenMode};
+        check = forceFullScreenMode || enableFullScreenMode ? 'yes' : check;
 		if(check!=null && check!=""){
 			if(check=="yes"){
 				openFullScreen();
@@ -194,11 +199,19 @@
 
 	function openFullScreen() {
 		setCookie("fullScreen","yes");
-		document.getElementById('fsOut').style.display = "block";
+		var hideShortcutDisableFullScreenFromSystemSettings = ${hideShortcutDisableFullScreenFromSystemSettings};
+		var hideShortcutDisableFullScreenFromUser = ${hideShortcutDisableFullScreenFromUser};
+		if(hideShortcutDisableFullScreenFromSystemSettings || hideShortcutDisableFullScreenFromUser) {
+            document.getElementById('fsOut').style.display = "none";
+		} else {
+		    document.getElementById('fsOut').style.display = "block";
+            jQuery('#fsOut').fadeOut(5000, function(){});
+		}
 		document.getElementById('mainHeader').style.display = "none";
 		document.getElementById('subHeader').style.display = "none";
 		document.getElementById('graphical').style.display = "none";
-		jQuery('#fsOut').fadeOut(5000, function(){});
+		document.getElementById('sltsContent').style = "padding-top: 0px !important;";
+		document.getElementById('fullScreenOut').style = "padding: 0px !important;";
 	}
 
 	function closeFullScreen() {
@@ -206,6 +219,8 @@
 		document.getElementById('mainHeader').style.display = "flex";
 		document.getElementById('subHeader').style.display = "flex";
 		document.getElementById('graphical').style.display = "table";
+		document.getElementById('sltsContent').style = "";
+		document.getElementById('fullScreenOut').style = "";
 	}
 		
 	function keyListen(e) {
@@ -233,7 +248,6 @@
 			<c:if test="${fn:length(views) != 0}">
 				<td>
 					<tag:img png="arrow_out" title="viewEdit.fullScreen" onclick="fullScreen()" />
-					<!-- <input type="button" name="buttonFull" value="Full Screen" onClick="fullScreen();" /> -->
 				</td>
 			</c:if>
 			<td align="right"><sst:select value="${currentView.id}"
@@ -259,7 +273,7 @@
 		
 	</table>
 	
-	<table>
+	<table id="fullScreenOut">
 		<tr>
 			<td class="smallTitle" id="fsOut">
 				<fmt:message key="fullScreenOut"/>

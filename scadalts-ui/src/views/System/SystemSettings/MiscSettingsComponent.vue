@@ -31,6 +31,20 @@
                             dense
                         ></v-select>
                     </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.enableFullScreen"
+                            :label="$t('systemsettings.view.forceFullScreen')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.hideShortcutDisableFullScreen"
+                            :label="$t('systemsettings.view.hideShortcutDisableFullScreen')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>

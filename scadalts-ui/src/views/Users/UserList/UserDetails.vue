@@ -112,7 +112,7 @@
 						</v-col>
 					</v-row>
 					<v-row>	
-						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+						<v-col md="2" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
 								id="user-form--admin"
 								:label="$t('userDetails.field.admin')"
@@ -120,7 +120,7 @@
 								v-model="userDetails.admin"
 							></v-checkbox>
 						</v-col>
-						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+						<v-col md="2" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
 								id="user-form--disabled"
 								:label="$t('userDetails.field.disabled')"
@@ -128,19 +128,35 @@
 								v-model="userDetails.disabled"
 							></v-checkbox>
 						</v-col>
-						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+						<v-col md="2" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
 								id="user-form--audit-events"
 								:label="$t('userDetails.field.receiveOwnAuditEvents')"
 								v-model="userDetails.receiveOwnAuditEvents"
 							></v-checkbox>
 						</v-col>
-						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+						<v-col md="2" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
 								id="user-form--hide-menu"
 								:label="$t('userDetails.field.hideMenu')"
 								v-model="userDetails.hideMenu"
 								:disabled="userDetails.admin"
+							></v-checkbox>
+						</v-col>
+						<v-col md="2" sm="6" xs="12">
+							<v-checkbox
+								id="user-form--enableFullScreen"
+								:label="$t('userDetails.view.enableFullScreen')"
+								:disabled="userDetails.forceFullScreenMode"
+								v-model="userDetails.enableFullScreen"
+							></v-checkbox>
+						</v-col>
+						<v-col md="2" sm="6" xs="12">
+							<v-checkbox
+								id="user-form--hideShortcutDisableFullScreen"
+								:label="$t('userDetails.view.hideShortcutDisableFullScreen')"
+								:disabled="userDetails.forceHideShortcutDisableFulLScreen"
+								v-model="userDetails.hideShortcutDisableFullScreen"
 							></v-checkbox>
 						</v-col>
 						<v-col cols="12" v-if="isAdmin">

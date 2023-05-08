@@ -32,6 +32,8 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
     private static final String SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES = "scadalts.security.js.access.granted.class.regexes";
 
+    public static final String VIEW_FORCE_FULL_SCREEN_MODE = "view.forceFullScreen";
+    public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "view.hideShortcutDisableFullScreen";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -178,6 +180,26 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return new String[]{};
+        }
+    }
+
+    public static boolean isHideShortcutDisableFullScreen() {
+        try {
+            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, "false");
+            return Boolean.parseBoolean(hideShortcutDisableFullScreen);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isForceFullScreenMode() {
+        try {
+            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_FORCE_FULL_SCREEN_MODE, "false");
+            return Boolean.parseBoolean(hideShortcutDisableFullScreen);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 }
