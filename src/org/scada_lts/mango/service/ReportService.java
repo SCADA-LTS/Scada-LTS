@@ -143,6 +143,11 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
+	public List<ReportInstance> getReportInstances() {
+		return reportInstanceDAO.getReportInstances();
+	}
+
+	@Override
 	public ReportInstance getReportInstance(int id) {
 		return reportInstanceDAO.getReportInstance(id);
 	}
@@ -160,6 +165,11 @@ public class ReportService implements MangoReport {
 	@Override
 	public void setReportInstancePreventPurge(int id, boolean preventPurge, int userId) {
 		reportInstanceDAO.updatePreventPurge(id, preventPurge, userId);
+	}
+
+	@Override
+	public void setReportInstancePreventPurge(int id, boolean preventPurge) {
+		reportInstanceDAO.updatePreventPurge(id, preventPurge);
 	}
 
 	/**
@@ -336,6 +346,11 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
+	public boolean hasReportSetPermission(User user, ReportVO report) {
+		return getReportsWithAccess.hasSetPermission(user, report);
+	}
+
+	@Override
 	public boolean hasReportOwnerPermission(User user, ReportVO report) {
 		return getReportsWithAccess.hasOwnerPermission(user, report);
 	}
@@ -346,21 +361,30 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
+	public boolean hasReportInstanceSetPermission(User user, ReportInstance report) {
+		return getReportInstancesWithAccess.hasSetPermission(user, report);
+	}
+
+	@Override
 	public boolean hasReportInstanceOwnerPermission(User user, ReportInstance report) {
 		return getReportInstancesWithAccess.hasOwnerPermission(user, report);
 	}
 
 	@Override
 	public boolean hasReportInstanceReadPermission(User user, int reportInstanceId) {
-		ReportInstance reportInstance = new ReportInstance();
-		reportInstance.setId(reportInstanceId);
+		ReportInstance reportInstance = getReportInstance(reportInstanceId);
 		return getReportInstancesWithAccess.hasReadPermission(user, reportInstance);
 	}
 
 	@Override
+	public boolean hasReportInstanceSetPermission(User user, int reportInstanceId) {
+		ReportInstance reportInstance = getReportInstance(reportInstanceId);
+		return getReportInstancesWithAccess.hasSetPermission(user, reportInstance);
+	}
+
+	@Override
 	public boolean hasReportInstanceOwnerPermission(User user, int reportInstanceId) {
-		ReportInstance reportInstance = new ReportInstance();
-		reportInstance.setId(reportInstanceId);
+		ReportInstance reportInstance = getReportInstance(reportInstanceId);
 		return getReportInstancesWithAccess.hasOwnerPermission(user, reportInstance);
 	}
 

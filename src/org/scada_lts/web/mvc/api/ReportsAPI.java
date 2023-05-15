@@ -97,9 +97,9 @@ public class ReportsAPI {
      * List<ReportInstance>
      */
     @GetMapping(value = "/instances")
-    public ResponseEntity<List<ReportInstance>> getInstances(HttpServletRequest request) {
+    public ResponseEntity<List<ReportInstance>> getReportInstances(HttpServletRequest request) {
         LOG.info("GET::/api/reports/instances");
-        List<ReportInstance> reportInstances = reportsApiService.getInstances(request);
+        List<ReportInstance> reportInstances = reportsApiService.getReportInstances(request);
         return new ResponseEntity<>(reportInstances, HttpStatus.OK);
     }
 

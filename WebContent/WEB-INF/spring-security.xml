@@ -116,8 +116,9 @@
         <intercept-url pattern="/api/reports/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/sendTestEmails" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/instances" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
-        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id,false)" method="DELETE" />
-        <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}/preventPurge/{preventPurge}" access="@guard.hasReportInstanceSetPermission(request,#id)" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id)" method="DELETE" />
+        <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportSetPermission(request,#id,false)" method="GET" />
         <intercept-url pattern="/api/reports/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="DELETE" />
 
         <!-- User PUT/GET -->

@@ -27,7 +27,11 @@ public class GetReportInstancesWithAccess implements GetObjectsWithAccess<Report
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        return reportInstanceDAO.getReportInstances(user.getId());
+        if(user.isAdmin())
+            return reportInstanceDAO.getReportInstances();
+        return reportInstanceDAO.getReportInstances().stream()
+                .filter(a -> hasReportInstanceReadPermission(user, a))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -56,39 +60,39 @@ public class GetReportInstancesWithAccess implements GetObjectsWithAccess<Report
         return GetReportInstancesWithAccess.hasReportInstanceOwnerPermission(user, object);
     }
 
-    public static boolean hasReportInstanceReadPermission(User user, ReportInstance report) {
+    public static boolean hasReportInstanceReadPermission(User user, ReportInstance reportInstance) {
         if(user == null) {
             LOG.warn("user is null");
             return false;
         }
-        if(report == null) {
+        if(reportInstance == null) {
             LOG.warn("report is null");
             return false;
         }
-        return user.isAdmin() || report.getUserId() == user.getId();
+        return user.isAdmin() || reportInstance.getUserId() == user.getId();
     }
 
-    public static boolean hasReportInstanceSetPermission(User user, ReportInstance report) {
+    public static boolean hasReportInstanceSetPermission(User user, ReportInstance reportInstance) {
         if(user == null) {
             LOG.warn("user is null");
             return false;
         }
-        if(report == null) {
+        if(reportInstance == null) {
             LOG.warn("report is null");
             return false;
         }
-        return user.isAdmin() || report.getUserId() == user.getId();
+        return user.isAdmin() || reportInstance.getUserId() == user.getId();
     }
 
-    public static boolean hasReportInstanceOwnerPermission(User user, ReportInstance report) {
+    public static boolean hasReportInstanceOwnerPermission(User user, ReportInstance reportInstance) {
         if(user == null) {
             LOG.warn("user is null");
             return false;
         }
-        if(report == null) {
+        if(reportInstance == null) {
             LOG.warn("report is null");
             return false;
         }
-        return user.isAdmin() || report.getUserId() == user.getId();
+        return user.isAdmin() || reportInstance.getUserId() == user.getId();
     }
 }
