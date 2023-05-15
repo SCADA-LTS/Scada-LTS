@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -187,12 +188,17 @@ public class HasPermissionOperations {
         T object;
         try {
             object = getObjectBy.apply(id);
+        } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("The object with the given id: " + id + " does not exist. If the object does not exist, then the authority cannot be established. Exception: " + ex.getMessage(), ex);
+            return true;
         } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.warn("The object with the given id: " + id + ". Exception: " + ex.getMessage(), ex);
             return false;
         }
-        if(object == null)
-            return false;
+        if(object == null) {
+            LOG.warn("The object with the given id: " + id + " is null. If the object does not exist, then the authority cannot be established.");
+            return true;
+        }
         try {
             populate.accept(object);
             return hasPermission.test(user, object);
