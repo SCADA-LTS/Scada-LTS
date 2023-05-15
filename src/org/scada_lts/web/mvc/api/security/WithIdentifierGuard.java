@@ -77,25 +77,34 @@ public class WithIdentifierGuard {
 
     public boolean hasReportInstanceOwnerPermission(HttpServletRequest request, String id, boolean isXid) {
         if(isXid) {
-            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
-            return false;
+            throw new IllegalArgumentException(ARG_IS_XID_IS_NOT_SUPPORTED);
         }
-        return doHasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, (a,b) -> false, id, false);
+        return doHasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, (a,b) -> false, id, isXid);
     }
 
     public boolean hasReportInstanceReadPermission(HttpServletRequest request, String id, boolean isXid) {
         if(isXid) {
-            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
-            return false;
+            throw new IllegalArgumentException(ARG_IS_XID_IS_NOT_SUPPORTED);
         }
-        return doHasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, (a,b) -> false, id, false);
+        return doHasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, (a,b) -> false, id, isXid);
     }
 
     public boolean hasReportInstanceSetPermission(HttpServletRequest request, String id, boolean isXid) {
         if(isXid) {
-            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
-            return false;
+            throw new IllegalArgumentException(ARG_IS_XID_IS_NOT_SUPPORTED);
         }
+        return doHasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, (a,b) -> false, id, isXid);
+    }
+
+    public boolean hasReportInstanceOwnerPermission(HttpServletRequest request, String id) {
+        return doHasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, (a,b) -> false, id, false);
+    }
+
+    public boolean hasReportInstanceReadPermission(HttpServletRequest request, String id) {
+        return doHasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, (a,b) -> false, id, false);
+    }
+
+    public boolean hasReportInstanceSetPermission(HttpServletRequest request, String id) {
         return doHasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, (a,b) -> false, id, false);
     }
 }

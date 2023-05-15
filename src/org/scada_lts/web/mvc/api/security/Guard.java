@@ -221,6 +221,18 @@ public class Guard {
         return withIdentifierGuard.hasReportInstanceSetPermission(request, id, isXid);
     }
 
+    public boolean hasReportInstanceOwnerPermission(HttpServletRequest request, String id) {
+        return withIdentifierGuard.hasReportInstanceOwnerPermission(request, id);
+    }
+
+    public boolean hasReportInstanceReadPermission(HttpServletRequest request, String id) {
+        return withIdentifierGuard.hasReportInstanceReadPermission(request, id);
+    }
+
+    public boolean hasReportInstanceSetPermission(HttpServletRequest request, String id) {
+        return withIdentifierGuard.hasReportInstanceSetPermission(request, id);
+    }
+
     public boolean hasReportInstanceOwnerPermission(HttpServletRequest request) {
         return getIdentifierFromHttpParameterGuard.hasReportInstanceOwnerPermission(request);
     }

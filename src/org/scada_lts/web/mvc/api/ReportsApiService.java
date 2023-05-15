@@ -18,9 +18,6 @@ import org.scada_lts.web.mvc.api.dto.ReportDTO;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -174,7 +171,7 @@ public class ReportsApiService implements CrudService<ReportVO> {
     public void runReport(HttpServletRequest request, String xid, Integer id) {
         ReportVO report = read(request, xid, id);
         User user = Common.getUser(request);
-        if(!reportService.hasReportOwnerPermission(user, report))
+        if(!reportService.hasReportSetPermission(user, report))
             throw new UnauthorizedException(request.getRequestURI());
         DwrResponseI18n response = new DwrResponseI18n();
         report.validate(response, user);
@@ -187,11 +184,11 @@ public class ReportsApiService implements CrudService<ReportVO> {
         }
     }
 
-    public List<ReportInstance> getInstances(HttpServletRequest request) {
+    public List<ReportInstance> getReportInstances(HttpServletRequest request) {
         User user = Common.getUser(request);
         List<ReportInstance> reportInstances;
         try {
-            reportInstances = reportService.getReportInstances(user.getId()).stream()
+            reportInstances = reportService.getReportInstances().stream()
                     .filter(a -> reportService.hasReportInstanceReadPermission(user, a))
                     .collect(Collectors.toList());
         } catch (Exception ex) {
@@ -200,17 +197,17 @@ public class ReportsApiService implements CrudService<ReportVO> {
         return reportInstances;
     }
 
-    public HttpEntity<Integer> setReportInstancePreventPurge(HttpServletRequest request, Integer id, Boolean preventPurge) {
+    public Integer setReportInstancePreventPurge(HttpServletRequest request, Integer id, Boolean preventPurge) {
         checkArgsIfTwoEmptyThenBadRequest(request, "Id and preventPurge cannot be null.", id, preventPurge);
         User user = Common.getUser(request);
-        if(!reportService.hasReportInstanceOwnerPermission(user, id))
+        if(!reportService.hasReportInstanceSetPermission(user, id))
             throw new UnauthorizedException(request.getRequestURI());
         try {
-            reportService.setReportInstancePreventPurge(id, preventPurge, user.getId());
+            reportService.setReportInstancePreventPurge(id, preventPurge);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        return id;
     }
 
     public ReportVO toReport(HttpServletRequest request, ReportDTO query) {
