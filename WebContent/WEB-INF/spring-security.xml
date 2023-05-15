@@ -17,6 +17,11 @@
         </headers>
         <csrf disabled="true"/>
         <intercept-url pattern="/services/API" access="permitAll" method="GET" requires-channel="https"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
         <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
@@ -34,7 +39,13 @@
             <header ref="headersFromSystemSettingsWriter"/>
         </headers>
         <csrf disabled="true"/>
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" requires-channel="https"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_HTTPDS')" />
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="newSession" />
@@ -195,6 +206,7 @@
                                authorities-by-username-query="SELECT username,
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
                                     WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
+                                    WHEN username = 'httpds-basic' THEN 'ROLE_HTTPDS'
                                     ELSE 'ROLE_USER'
                                END AS role FROM users WHERE username = ?"/>
         </authentication-provider>
