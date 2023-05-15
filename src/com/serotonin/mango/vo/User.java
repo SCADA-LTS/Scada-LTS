@@ -780,19 +780,9 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				", hideMenu=" + hideMenu +
 				", lang='" + lang + '\'' +
 				", userProfile=" + userProfile +
-				", watchList=" + watchList +
-				", editPoint=" + editPoint +
-				", editDataSource=" + editDataSource +
-				", testingUtility=" + testingUtility +
-				", reportImageData=" + reportImageData +
-				", editPublisher=" + editPublisher +
-				", importTask=" + importTask +
 				", muted=" + muted +
-				", dataExportDefinition=" + dataExportDefinition +
-				", eventExportDefinition=" + eventExportDefinition +
 				", attributes=" + attributes +
 				", hideHeader=" + hideHeader +
-				", uploadedProject=" + uploadedProject +
 				'}';
 	}
 }
