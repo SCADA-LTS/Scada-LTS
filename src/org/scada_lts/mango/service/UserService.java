@@ -39,8 +39,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.IllformedLocaleException;
 import java.util.List;
+import java.util.Locale;
 
+import static com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils.findLocale;
 import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataPointPermissions;
 import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataSourcePermissions;
 
@@ -265,6 +268,15 @@ public class UserService implements MangoUser {
 		} else {
 			throw new PasswordMismatchException();
 		}
+	}
+
+	@Override
+	public void updateUserLang(int userId, String lang) throws IllformedLocaleException {
+		Locale locale = findLocale(lang);
+		if (locale == null)
+			throw new IllformedLocaleException(
+					"Locale for given language not found: " + lang);
+		userDAO.updateUserLang(userId, lang);
 	}
 
 	private void updatePermissions(User user) {

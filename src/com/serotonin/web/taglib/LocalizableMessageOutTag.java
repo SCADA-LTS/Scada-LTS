@@ -1,17 +1,27 @@
 package com.serotonin.web.taglib;
 
-import com.serotonin.mango.Common;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.taglibs.standard.tag.rt.core.OutTag;
 import org.scada_lts.serorepl.utils.StringUtils;
 
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
+
 public class LocalizableMessageOutTag extends OutTag {
     public void setMessage(LocalizableMessage message) {
-        super.setValue(message.getLocalizedMessage(Common.getBundle()));
+        LocalizationContext localizationContext = (LocalizationContext) Config.get(this.pageContext, Config.FMT_LOCALIZATION_CONTEXT, 2);
+        if(localizationContext == null) {
+            localizationContext = (LocalizationContext) Config.find(this.pageContext, Config.FMT_LOCALIZATION_CONTEXT);
+        }
+        super.setValue(message.getLocalizedMessage(localizationContext.getResourceBundle()));
     }
 
     public void setKey(String key) {
-        super.setValue(LocalizableMessage.getMessage(Common.getBundle(), key));
+        LocalizationContext localizationContext = (LocalizationContext) Config.get(this.pageContext, Config.FMT_LOCALIZATION_CONTEXT, 2);
+        if(localizationContext == null) {
+            localizationContext = (LocalizationContext) Config.find(this.pageContext, Config.FMT_LOCALIZATION_CONTEXT);
+        }
+        super.setValue(LocalizableMessage.getMessage(localizationContext.getResourceBundle(), key));
     }
 
     public void setEscapeQuotes(boolean escapeQuotes) {

@@ -17,7 +17,35 @@
         </headers>
         <csrf disabled="true"/>
         <intercept-url pattern="/services/API" access="permitAll" method="GET" requires-channel="https"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
         <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="newSession" />
+    </http>
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds/**"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_HTTPDS')" />
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="newSession" />
@@ -88,8 +116,9 @@
         <intercept-url pattern="/api/reports/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/sendTestEmails" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/instances" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
-        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id,false)" method="DELETE" />
-        <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}/preventPurge/{preventPurge}" access="@guard.hasReportInstanceSetPermission(request,#id)" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id)" method="DELETE" />
+        <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportSetPermission(request,#id,false)" method="GET" />
         <intercept-url pattern="/api/reports/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="DELETE" />
 
         <!-- User PUT/GET -->
@@ -178,6 +207,7 @@
                                authorities-by-username-query="SELECT username,
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
                                     WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
+                                    WHEN username = 'httpds-basic' THEN 'ROLE_HTTPDS'
                                     ELSE 'ROLE_USER'
                                END AS role FROM users WHERE username = ?"/>
         </authentication-provider>

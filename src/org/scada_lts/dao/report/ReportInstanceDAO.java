@@ -139,6 +139,12 @@ public class ReportInstanceDAO {
 			+ "order by "
 				+ COLUMN_NAME_RUN_START_TIME + " "
 			+ "desc ";
+
+	private static final String REPORT_INSTANCE_UPDATE_PREVENT_PURGE_BY_ID = ""
+			+ "update reportInstances set "
+			+ COLUMN_NAME_PREVENT_PURGE + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
 	// @formatter:on
 
 	private class ReportInstanceRowMapper implements RowMapper<ReportInstance> {
@@ -308,6 +314,28 @@ public class ReportInstanceDAO {
 
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new ReportEventRowMapper());
+	}
+
+	public List<ReportInstance> getReportInstances() {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getReportInstances()");
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_SELECT, new ReportInstanceRowMapper());
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void updatePreventPurge(int id, boolean preventPurge) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updatePreventPurge(int id, boolean preventPurge) id:" + id + ", preventPurge:" + preventPurge);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_UPDATE_PREVENT_PURGE_BY_ID, new Object[]{
+				DAO.boolToChar(preventPurge),
+				id
+		});
 	}
 
 	private static class ReportEventRowMapper implements RowMapper<EventInstance> {

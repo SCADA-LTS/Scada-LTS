@@ -17,6 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@page import="org.scada_lts.dao.SystemSettingsDAO"%>
+<%@page import="org.scada_lts.utils.SystemSettingsUtils"%>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.rt.event.AlarmLevels"%>
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
@@ -93,6 +94,9 @@
             $set("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>);
 
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>);
 
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
@@ -263,6 +267,8 @@
         SystemSettingsDwr.saveMiscSettings(
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
@@ -852,6 +858,18 @@
              <option value="PARTIAL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
              <option value="ALL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
            </select>
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.view.forceFullScreen"/></td>
+         <td class="formField">
+           <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>" />
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.view.hideShortcutDisableFullScreen"/></td>
+         <td class="formField">
+           <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
          </td>
         </tr>
         <tr>

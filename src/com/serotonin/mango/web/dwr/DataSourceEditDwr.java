@@ -45,6 +45,7 @@ import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.web.dwr.beans.*;
+import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -718,7 +719,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
-        return modbusMaster;
+        return new SlaveIdLimit255ModbusMaster(modbusMaster);
     }
 
     //
@@ -815,7 +816,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
-        return modbusMaster;
+        return new SlaveIdLimit255ModbusMaster(modbusMaster);
     }
 
     //

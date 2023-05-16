@@ -73,8 +73,7 @@ public class NodaveS7DataSourceVO<T extends NodaveS7DataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.filePath);
 	}
 
 	@Override

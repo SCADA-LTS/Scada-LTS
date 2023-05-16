@@ -21,7 +21,6 @@ package com.serotonin.mango.vo;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
@@ -36,7 +35,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -52,7 +50,6 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -96,9 +93,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private String theme;
 	@JsonRemoteProperty
 	private boolean hideMenu;
-
-
-
+	@JsonRemoteProperty
+	private String lang;
+	@JsonRemoteProperty
+	private boolean enableFullScreen;
+	@JsonRemoteProperty
+	private boolean hideShortcutDisableFullScreen;
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -122,6 +122,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public User() { }
 
+	@Deprecated
 	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
@@ -182,20 +183,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.uploadedProject = user.uploadedProject;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
+		this.lang = user.lang;
+		this.enableFullScreen = user.enableFullScreen;
+		this.hideShortcutDisableFullScreen = user.hideShortcutDisableFullScreen;
 	}
 
 	public static User onlyId(int userId) {
-		return new User(userId, null, null, null, null, null, false, false, null, 0L);
-	}
-
-	public static User onlyIdAndProfile(int userId, int profileId) {
-		User user = new User(userId, null, null, null, null, null, false, false, null, 0L);
-		user.setUserProfileId(profileId);
+		User user = new User();
+		user.setId(userId);
 		return user;
 	}
 
-	public static User onlyIdUsername(ScadaPrincipal principal) {
-		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
+	public static User onlyIdAndProfile(int userId, int profileId) {
+		User user = new User();
+		user.setId(userId);
+		user.setUserProfileId(profileId);
+		return user;
 	}
 
 	/**
@@ -225,33 +228,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@Override
 	public void raiseRecursionFailureEvent() {
 		throw new ShouldNeverHappenException("");
-	}
-
-	//
-	// /
-	// / HttpSessionBindingListener implementation
-	// /
-	//
-	@Deprecated
-	public void valueBound(HttpSessionBindingEvent evt) {
-		// User is bound to a session when logged in. Notify the event manager.
-		/*SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis(), true, new LocalizableMessage(
-				"event.login", username));*/
-	}
-
-	@Deprecated
-	public void valueUnbound(HttpSessionBindingEvent evt) {
-		// User is unbound from a session when logged out or the session
-		// expires.
-		/*SystemEventType.returnToNormal(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis());
-
-		// Terminate any testing utility
-		if (testingUtility != null)
-			testingUtility.cancel();*/
 	}
 
 	// Convenience method for JSPs
@@ -737,25 +713,76 @@ public class User implements SetPointSource, HttpSessionBindingListener,
         this.viewProfilePermissions = viewProfilePermissions;
     }
 
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	public boolean isEnableFullScreen() {
+		return enableFullScreen;
+	}
+
+	public void setEnableFullScreen(boolean enableFullScreen) {
+		this.enableFullScreen = enableFullScreen;
+	}
+
+	public boolean isHideShortcutDisableFullScreen() {
+		return hideShortcutDisableFullScreen;
+	}
+
+	public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
+		this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+	}
+
+	public void setUserProfile(int userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public TestingUtility getTestingUtility() {
+		return testingUtility;
+	}
+
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
 				"id=" + id +
 				", username='" + username + '\'' +
 				", password='" + password + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
 				", email='" + email + '\'' +
 				", phone='" + phone + '\'' +
 				", admin=" + admin +
 				", disabled=" + disabled +
+				", dataSourcePermissions=" + dataSourcePermissions +
+				", dataPointPermissions=" + dataPointPermissions +
+				", dataSourceProfilePermissions=" + dataSourceProfilePermissions +
+				", dataPointProfilePermissions=" + dataPointProfilePermissions +
+				", watchListProfilePermissions=" + watchListProfilePermissions +
+				", viewProfilePermissions=" + viewProfilePermissions +
+				", selectedWatchList=" + selectedWatchList +
 				", homeUrl='" + homeUrl + '\'' +
 				", lastLogin=" + lastLogin +
 				", receiveAlarmEmails=" + receiveAlarmEmails +
 				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
 				", theme='" + theme + '\'' +
 				", hideMenu=" + hideMenu +
+				", lang='" + lang + '\'' +
 				", userProfile=" + userProfile +
 				", muted=" + muted +
 				", attributes=" + attributes +
+				", hideHeader=" + hideHeader +
 				'}';
 	}
 }

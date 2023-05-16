@@ -27,11 +27,11 @@ import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IViewDAO;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
-import org.scada_lts.utils.HttpParameterUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
@@ -104,6 +104,13 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("currentView", currentView);
 			model.put("owner",
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
+			model.put("forceFullScreenMode",
+					SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
+			model.put("hideShortcutDisableFullScreenFromSystemSettings",
+					SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
+			model.put("enableFullScreenMode", user.isEnableFullScreen());
+			model.put("hideShortcutDisableFullScreenFromUser", user.isHideShortcutDisableFullScreen());
+			model.put("isAdmin", user.isAdmin());
 		}
 		return new ModelAndView(getViewName(), model);
 	}

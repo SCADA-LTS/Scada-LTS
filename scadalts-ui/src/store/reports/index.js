@@ -49,9 +49,9 @@ const storeReports = {
 			.then((r) => { commit(SET_REPORT_TEMPLATES, r)})
 			.catch(() => { dispatch('showErrorNotification', 'Reports not loaded')});
 		},
-		setPreventPurge({ dispatch }, payload) {
+		setPreventPurge({ commit, dispatch }, payload) {
 			dispatch('requestGet', `/reports/instances/${payload.id}/preventPurge/${payload.preventPurge}`)
-				.then(() => { commit(TOGGLE_PURGE, payload.id)})
+				.then((r) => { commit(TOGGLE_PURGE, r)})
 				.catch(() => { dispatch('showErrorNotification', 'Failed to save this property')});
 		},
 		

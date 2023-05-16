@@ -16,6 +16,10 @@ const storeUsers = {
 			theme: 'DEFAULT',
 			hideMenu: false,
 			userProfile: -1,
+			enableFullScreen: false,
+			hideShortcutDisableFullScreen: false,
+			forceFullScreenMode: false,
+			forceHideShortcutDisableFulLScreen: false
 		}
 	},
 

@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
@@ -212,11 +211,6 @@ public class PublisherEditDwr extends BaseDwr {
         HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
 
         return p.isUseJSON();
-    }
-
-    public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
-        Common.getUser().setTestingUtility(new HttpSenderTester(url, usePost, staticHeaders, staticParameters));
     }
 
     public String httpSenderTestUpdate() {

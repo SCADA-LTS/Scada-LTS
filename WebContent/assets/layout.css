@@ -201,6 +201,8 @@ input[type="submit"], input[type="button"] {
 	position:relative;
 	margin: 0px;
 	padding: 0px;
+	overflow-x: auto;
+	max-width: 100%;
 }
 #viewContent img {
 	display: block;
@@ -432,4 +434,9 @@ form.view-edit-form {
 }
 textarea#cssEditor {
     white-space: pre-wrap !important;
+}
+
+#viewContent input[type='button'] {
+    text-align: center;
+    vertical-align: middle;
 }

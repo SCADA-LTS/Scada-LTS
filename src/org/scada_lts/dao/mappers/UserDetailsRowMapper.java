@@ -25,6 +25,8 @@ public class UserDetailsRowMapper implements RowMapper<UserInfo> {
     private static final String COLUMN_NAME_THEME = "theme";
     private static final String COLUMN_NAME_USERPROFILE_ID = "userProfileId";
     private static final String COLUMN_NAME_USER_ID = "userId";
+    private static final String COLUMN_NAME_ENABLE_FULL_SCREEN = "enableFullScreen";
+    private static final String COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
 
     private static final String TABLE_NAME = "users";
     private static final String TABLE_NAME_PROFILE = "usersUsersProfiles";
@@ -47,8 +49,9 @@ public class UserDetailsRowMapper implements RowMapper<UserInfo> {
                 resultSet.getBoolean(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS),
                 resultSet.getString(COLUMN_NAME_THEME),
                 resultSet.getBoolean(COLUMN_NAME_HIDE_MENU),
-                resultSet.getInt(COLUMN_NAME_USERPROFILE_ID)
-
+                resultSet.getInt(COLUMN_NAME_USERPROFILE_ID),
+                resultSet.getBoolean(COLUMN_NAME_ENABLE_FULL_SCREEN),
+                resultSet.getBoolean(COLUMN_NAME_HIDE_SHORTCUT_DISABLE_FULL_SCREEN)
         );
     }
 

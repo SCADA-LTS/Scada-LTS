@@ -282,4 +282,9 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 	public void updateUserPassword(int userId, String newPassword) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void updateUserLang(int userId, String lang) {
+		throw new UnsupportedOperationException();
+	}
 }

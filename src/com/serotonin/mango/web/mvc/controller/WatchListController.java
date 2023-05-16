@@ -101,7 +101,7 @@ public class WatchListController extends ParameterizableViewController {
 			// Add a default watch list if none exist.
 			WatchList watchList = new WatchList();
 			watchList.setName(I18NUtils.getMessage(
-					ControllerUtils.getResourceBundle(request),
+					Common.getBundle(request),
 					"common.newName"));
 			watchLists.add(watchListDao.createNewWatchList(watchList,
 					user.getId()));

@@ -47,4 +47,9 @@ public class UserCache implements UserCachable {
     public void updateUserPassword(int userId, String newPassword) {
         userDAO.updateUserPassword(userId, newPassword);
     }
+
+    @Override
+    public void updateLang(int userId, String lang) {
+        userDAO.updateUserLang(userId, lang);
+    }
 }

@@ -83,7 +83,7 @@ public class PublisherEditController extends ParameterizableViewController {
             List<EventInstance> events = new EventDao().getPendingEventsForPublisher(publisherVO.getId(), user.getId());
             List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
             if (events != null) {
-                ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
+                ResourceBundle bundle = Common.getBundle(request);
                 for (EventInstance event : events)
                     beans.add(new EventInstanceBean(event.isActive(), event.getAlarmLevel(), DateFunctions
                             .getTime(event.getActiveTimestamp()), event.getMessage().getLocalizedMessage(bundle)));

@@ -66,7 +66,7 @@ public class PointPropertiesAPI {
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
-                ResourceBundle bundle = Common.getBundle();
+                ResourceBundle bundle = Common.getBundle(request);
 
                 class PropertiesPointToJSON implements Serializable {
 
@@ -360,7 +360,7 @@ public class PointPropertiesAPI {
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
-                ResourceBundle bundle = Common.getBundle();
+                ResourceBundle bundle = Common.getBundle(request);
 
                 class PropertiesPointToJSON implements Serializable {
 

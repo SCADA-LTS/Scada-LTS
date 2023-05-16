@@ -135,14 +135,17 @@ public class OPCDataSource extends PollingDataSource {
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
 		} catch (Exception e) {
-			e.printStackTrace();
+			String message = e.getMessage();
+			if(e.getMessage() != null && e.getMessage().contains("Unknown Error")) {
+				message = "The OPC DA Server for the data source settings may not be found. ";
+			}
+			message = "Error while initializing data source: " +  message;
+			LOG.error(message + e.getMessage(), e);
 			raiseEvent(
 					DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
 					true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			LOG.debug("Error while initializing data source", e);
+					new LocalizableMessage("event.exception2", vo.getName(), message));
 			return;
 		}
 		super.initialize();
@@ -154,12 +157,17 @@ public class OPCDataSource extends PollingDataSource {
 		try {
 			opcMaster.terminate();
 		} catch (Exception e) {
+			String message = e.getMessage();
+			if(e instanceof NullPointerException) {
+				message = "The client may not have been properly initialized. ";
+			}
+			message = "Error while terminating data source: " +  message;
+			LOG.error(message + e.getMessage(), e);
 			raiseEvent(
 					DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
 					true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
+					new LocalizableMessage("event.exception2", vo.getName(), message));
 		}
 	}
 

@@ -4,7 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,7 +73,7 @@ public final class AuthenticationUtils {
         crowd(user);
         Common.setUser(request, user);
         putLogOnIpAddr(request);
-        ControllerUtils.setLocaleSession(request, response);
+        ScadaLocaleUtils.setLocaleInSession(request, response);
     }
 
     private static void setRoles(Authentication authentication, User user) {

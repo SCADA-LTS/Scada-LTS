@@ -23,6 +23,8 @@ public interface UserCachable {
     @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
     void updateUserPassword(int userId, String newPassword);
     void updateLogin(int userId);
+    @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
+    void updateLang(int userId, String lang);
 
     @Caching (
             evict = {

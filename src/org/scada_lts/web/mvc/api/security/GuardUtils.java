@@ -55,7 +55,7 @@ public final class GuardUtils {
         try {
             return Integer.parseInt(value);
         } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.warn("Trying to convert the value of " + value + " to int, failed. Exception: " + ex.getMessage(), ex);
             return Common.NEW_ID;
         }
     }

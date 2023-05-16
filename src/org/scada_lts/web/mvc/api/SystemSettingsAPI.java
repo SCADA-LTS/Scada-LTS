@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -427,7 +428,7 @@ public class SystemSettingsAPI {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 systemSettingsService.saveSystemInfoSettings(jsonSettingsSystemInfo);
-                ControllerUtils.setLocale(request, response, jsonSettingsSystemInfo.getLanguage());
+                ScadaLocaleUtils.setLocale(request, response, jsonSettingsSystemInfo.getLanguage());
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

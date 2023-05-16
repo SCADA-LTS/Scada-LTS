@@ -181,7 +181,7 @@
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.User">
-      <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions,userProfile,homeUrl,hideMenu,theme,firstName,lastName"/>
+      <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions,userProfile,homeUrl,hideMenu,theme,firstName,lastName,enableFullScreen,hideShortcutDisableFullScreen"/>
     </convert>
     <convert converter="bean" match="br.org.scadabr.vo.permission.WatchListAccess">
      	<param name="include" value="id,permission"/>
