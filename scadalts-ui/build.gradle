@@ -16,7 +16,7 @@ task bundle(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
 }
 
-task testUi(type: NpmTask) {
+task testUi(type: NpmTask, dependsOn: bundle) {
     args = ['run-script', 'test:unit']
 }
 
@@ -61,8 +61,8 @@ task copyNewUiFonts(type: Copy, dependsOn: copyPointHierarchyJs) {
 }
 
 task copyNewUiImages(type: Copy, dependsOn: copyNewUiFonts) {
-    from "dist/resources"
-    into "../WebContent/resources"
+    from "dist/img"
+    into "../WebContent/img"
 }
 
 task copyNewUiWithSourceMap(dependsOn: copyNewUiImages) {
