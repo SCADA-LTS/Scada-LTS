@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+@Deprecated
 public final class SendMsgUtils {
 
     private static final Log LOG = LogFactory.getLog(SendMsgUtils.class);

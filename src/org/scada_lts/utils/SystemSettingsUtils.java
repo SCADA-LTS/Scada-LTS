@@ -12,6 +12,7 @@ public final class SystemSettingsUtils {
     private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
 
     private static final String BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY = "bp.workitems.limit";
+    private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -38,6 +39,15 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 100;
+        }
+    }
+
+    public static int getEmailTimeout() {
+        try {
+            return Integer.parseInt(ScadaConfig.getInstance().getConf().getProperty(EMAIL_TIMEOUT_KEY, "10001"));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return -1;
         }
     }
 }
