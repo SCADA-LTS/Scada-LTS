@@ -38,6 +38,7 @@ import java.io.IOException;
  * @author Matthew Lohbihler
  * 
  */
+@Deprecated
 public class EmailWorkItem implements WorkItem {
 
     private static final Log LOG = LogFactory.getLog(EmailWorkItem.class);

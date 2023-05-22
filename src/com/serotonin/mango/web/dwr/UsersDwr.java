@@ -27,17 +27,16 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
-
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -45,7 +44,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
@@ -247,12 +245,10 @@ public class UsersDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message", new LocalizableMessage("ftl.userTestEmail",
 					username));
-			MangoEmailContent cnt = new MangoEmailContent("testEmail", model,
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail", model,
 					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
 					Common.UTF8);
-			EmailWorkItem.queueEmail(email, cnt);
-			result.put("message", new LocalizableMessage(
-					"common.testEmailSent", email));
+			SendUtils.sendMsgTestSync(email, cnt, result);
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());
 		}

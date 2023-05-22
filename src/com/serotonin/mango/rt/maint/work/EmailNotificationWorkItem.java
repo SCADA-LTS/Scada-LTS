@@ -8,6 +8,7 @@ import com.serotonin.web.email.EmailSender;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 
+@Deprecated
 public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
 
     private final AfterWork afterWork;

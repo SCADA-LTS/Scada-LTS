@@ -8,11 +8,11 @@ import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
-import com.serotonin.mango.web.email.MangoEmailContent;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.config.ScadaConfig;
@@ -258,9 +258,9 @@ public class SystemSettingsService {
         ResourceBundle bundle = Common.getBundle();
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("message", new LocalizableMessage("systemSettings.testEmail"));
-        MangoEmailContent cnt = new MangoEmailContent(
+        IMsgSubjectContent cnt = IMsgSubjectContent.newInstance(
                 "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
-        EmailWorkItem.queueEmail(user.getEmail(), cnt);
+        SendUtils.sendMsgTestSync(user.getEmail(), cnt, model);
 
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
