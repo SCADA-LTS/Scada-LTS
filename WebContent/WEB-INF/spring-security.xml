@@ -98,7 +98,6 @@
         <intercept-url pattern="/data_source_edit.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/emport.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/event_handlers.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/events.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/mailing_lists.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/maintenance_events.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/point_links.shtm" access="hasRole('ROLE_ADMIN')" />
