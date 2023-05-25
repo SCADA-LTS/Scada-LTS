@@ -50,7 +50,7 @@ public class DataSourceListDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceListDwr.class);
 
 	public DwrResponseI18n init() {
-		Permissions.ensureAdmin();
+		//Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		if (Common.getUser().isAdmin()) {

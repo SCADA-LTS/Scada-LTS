@@ -51,7 +51,7 @@ public class CompoundEventsDwr extends BaseDwr {
     //
     public Map<String, Object> getInitData() {
         User user = Common.getUser();
-        Permissions.ensureAdmin(user);
+        //Permissions.ensureAdmin(user);
 
         Map<String, Object> model = new HashMap<String, Object>();
 

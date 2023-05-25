@@ -65,7 +65,7 @@ public class SqlController {
 			throws Exception {
 		LOG.trace("/sql.shtm");
 		
-		Permissions.ensureAdmin(request);
+		//Permissions.ensureAdmin(request);
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("form", new SqlForm());
@@ -77,7 +77,7 @@ public class SqlController {
 	@PostMapping
     public ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/sql.shtm");
-		Permissions.ensureAdmin(request);
+		//Permissions.ensureAdmin(request);
 
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));
 		executeCommand(form, request);

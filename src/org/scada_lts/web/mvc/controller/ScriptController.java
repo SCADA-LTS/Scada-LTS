@@ -60,7 +60,7 @@ public class ScriptController {
 		// TODO ta metoda powinna przyjmowac jako argument tresc skryptu z
 		// odpowiednimi argumentami nie powinno to isc przez baze danych !!!.
 		User user = Common.getUser(request);
-		Permissions.ensureAdmin(user);
+		//Permissions.ensureAdmin(user);
 		String result = "";
 		if (user == null) {
 			response.setStatus(ErrorCode.USER_NOT_LOGGED);

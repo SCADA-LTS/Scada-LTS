@@ -75,7 +75,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public Map<String, Object> getInitData() {
 		User user = Common.getUser();
-		Permissions.ensureAdmin(user);
+		//Permissions.ensureAdmin(user);
 
 		EventService eventDao = new EventService();
 		Map<String, Object> model = new HashMap<String, Object>();

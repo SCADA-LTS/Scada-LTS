@@ -47,7 +47,7 @@ public class DataSourceEditController extends ParameterizableViewController {
             throws Exception {
         DataSourceVO<?> dataSourceVO = null;
         User user = Common.getUser(request);
-        Permissions.ensureAdmin(user);
+        //Permissions.ensureAdmin(user);
 
         // Get the id.
         int id = Common.NEW_ID;

@@ -51,6 +51,28 @@
         <session-management session-fixation-protection="newSession" />
     </http>
 
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/public_view.htm"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ANONYMOUS')" />
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="newSession" />
+    </http>
+
     <http use-expressions="true" disable-url-rewriting="true"
           authentication-manager-ref="authenticationManager">
         <headers>
@@ -67,9 +89,29 @@
         <intercept-url pattern="/login.htm" access="permitAll" />
 
         <!-- DWR -->
-        <intercept-url pattern="/dwr/*.js" access="permitAll" />
+        <!--intercept-url pattern="/dwr/*.js" access="permitAll" />
         <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
-        <intercept-url pattern="/dwr/**" access="permitAll" />
+        <intercept-url pattern="/dwr/**" access="permitAll" /-->
+
+        <intercept-url pattern="/compound_events.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_point_details.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_source_edit.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/emport.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/event_handlers.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/events.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/mailing_lists.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/maintenance_events.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/point_links.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/publisher_edit.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/publishers.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/scheduled_events.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/scripting.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/system_settings.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/usersProfiles.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/webcam_live_feed.htm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/export_project.htm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/import_project.htm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_sources.shtm" access="hasRole('ROLE_ADMIN')" />
 
         <!-- Static resources -->
         <intercept-url pattern="/graphics/**" access="permitAll" />
@@ -84,7 +126,7 @@
         <intercept-url pattern="/uploads/**" access="permitAll" />
 
         <!-- Anonymous -->
-        <intercept-url pattern="/public_view.htm" access="permitAll" />
+        <!--intercept-url pattern="/public_view.htm" access="permitAll" /-->
 
         <!-- Monitoring -->
         <intercept-url pattern="/monitoring/**" access="permitAll" />
@@ -208,6 +250,7 @@
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
                                     WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
                                     WHEN username = 'httpds-basic' THEN 'ROLE_HTTPDS'
+                                    WHEN username = 'anonymous-user' THEN 'ROLE_ANONYMOUS'
                                     ELSE 'ROLE_USER'
                                END AS role FROM users WHERE username = ?"/>
         </authentication-provider>
