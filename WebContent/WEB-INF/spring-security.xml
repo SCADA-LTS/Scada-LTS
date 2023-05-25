@@ -89,9 +89,9 @@
         <intercept-url pattern="/login.htm" access="permitAll" />
 
         <!-- DWR -->
-        <!--intercept-url pattern="/dwr/*.js" access="permitAll" />
+        <intercept-url pattern="/dwr/*.js" access="permitAll" />
         <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
-        <intercept-url pattern="/dwr/**" access="permitAll" /-->
+        <intercept-url pattern="/dwr/**" access="permitAll" />
 
         <intercept-url pattern="/compound_events.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/data_point_details.shtm" access="hasRole('ROLE_ADMIN')" />
