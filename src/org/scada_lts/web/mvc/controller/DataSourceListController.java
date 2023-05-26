@@ -51,7 +51,7 @@ public class DataSourceListController extends ParameterizableViewController {
     @Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/data_sources.shtm");
-        //Permissions.ensureAdmin(request);
+        Permissions.ensureAdmin(request);
 		
 		//PagingDataForm paging = new PagingDataForm();
 		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);

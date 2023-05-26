@@ -54,7 +54,7 @@ public class MailingListsDwr extends BaseDwr {
 	private static final String DEFAULT_CRON = "1 */15 * * * ?";
 
 	public DwrResponseI18n init() {
-		//Permissions.ensureAdmin();
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("lists", new MailingListDao().getMailingLists());
 		response.addData("users", new UserDao().getUsers());

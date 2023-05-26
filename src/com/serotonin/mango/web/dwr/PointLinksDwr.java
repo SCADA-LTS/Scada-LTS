@@ -56,7 +56,7 @@ public class PointLinksDwr extends BaseDwr {
     private static final Log LOG = LogFactory.getLog(PointLinksDwr.class);
     public Map<String, Object> init() {
         User user = Common.getUser();
-        //Permissions.ensureAdmin(user);
+        Permissions.ensureAdmin(user);
         Map<String, Object> data = new HashMap<String, Object>();
 
         // Get the points that this user can access.

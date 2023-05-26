@@ -36,7 +36,7 @@ import org.scada_lts.mango.service.PublisherService;
  */
 public class PublisherListDwr extends BaseDwr {
     public DwrResponseI18n init() {
-        //Permissions.ensureAdmin();
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         List<IntMessagePair> translatedTypes = new ArrayList<IntMessagePair>();

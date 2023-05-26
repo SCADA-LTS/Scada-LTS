@@ -95,7 +95,7 @@ public class DataPointEditController {
         CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
         commonDataInterceptor.preHandle(request, null, null);
         User user = Common.getUser(request);
-        //Permissions.ensureAdmin(user);
+        Permissions.ensureAdmin(user);
         int id;
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
