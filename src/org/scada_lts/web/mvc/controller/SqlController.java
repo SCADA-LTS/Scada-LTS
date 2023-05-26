@@ -65,7 +65,7 @@ public class SqlController {
 			throws Exception {
 		LOG.trace("/sql.shtm");
 		
-		//Permissions.ensureAdmin(request);
+		Permissions.ensureAdmin(request);
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("form", new SqlForm());
