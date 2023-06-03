@@ -38,7 +38,7 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.web.dwr.beans.EventExportDefinition;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
+//import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 public class EventsDwr extends BaseDwr {
@@ -95,7 +95,7 @@ public class EventsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	//@MethodFilter
 	public DwrResponseI18n search(int eventId, int eventSourceType,
 			String status, int alarmLevel, String keywordStr,
 			int dateRangeType, int relativeDateType, int previousPeriodCount,
@@ -189,7 +189,7 @@ public class EventsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	//@MethodFilter
 	public void exportEvents(int eventId, int eventSourceType, String status,
 			int alarmLevel, String keywordStr, int dateRangeType,
 			int relativeDateType, int previousPeriodCount,

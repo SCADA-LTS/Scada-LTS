@@ -18,19 +18,16 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.rt.dataImage.PointValueCache;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -60,7 +57,7 @@ import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.content.ContentGenerator;
-import com.serotonin.web.dwr.MethodFilter;
+//import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
@@ -188,7 +185,7 @@ abstract public class BaseDwr {
      * @param valueStr
      * @return
      */
-    @MethodFilter
+    //@MethodFilter
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -213,7 +210,7 @@ abstract public class BaseDwr {
         }
     }
 
-    @MethodFilter
+    //@MethodFilter
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
