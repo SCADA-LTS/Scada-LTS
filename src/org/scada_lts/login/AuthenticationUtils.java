@@ -55,6 +55,19 @@ public final class AuthenticationUtils {
         getUser(authentication, mangoUser).ifPresent(user -> {
             authenticateLocal(request, response, authentication, user);
             mangoUser.recordLogin(user.getId());
+        });
+        User user = Common.getUser(request);
+        if(user == null) {
+            throw new IllegalStateException();
+        }
+        return user;
+    }
+
+    public static User authenticateLocalRaiseEvent(HttpServletRequest request, HttpServletResponse response,
+                                                   Authentication authentication, MangoUser mangoUser) {
+        getUser(authentication, mangoUser).ifPresent(user -> {
+            authenticateLocal(request, response, authentication, user);
+            mangoUser.recordLogin(user.getId());
             SystemEventType.raiseEvent(new SystemEventType(
                     SystemEventType.TYPE_USER_LOGIN, user.getId()), System
                     .currentTimeMillis(), true, new LocalizableMessage(

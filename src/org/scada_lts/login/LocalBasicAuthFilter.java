@@ -20,7 +20,6 @@ public class LocalBasicAuthFilter extends BasicAuthenticationFilter {
     @Override
     protected void onSuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, Authentication authentication) {
-        User user = new UserService().getUser(authentication.getName());
-        authenticateLocal(request, response, authentication, user);
+        authenticateLocal(request, response, authentication, new UserService());
     }
 }
