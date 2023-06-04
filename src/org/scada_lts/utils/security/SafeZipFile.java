@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipFile;
 
-import static org.scada_lts.utils.PathSecureUtils.validateFilename;
-
 public class SafeZipFile {
     private final ZipFile zipFile;
 
@@ -30,6 +28,8 @@ public class SafeZipFile {
 
     private boolean validate() {
         String name = zipFile.getName();
-        return validateFilename(name);
+        if(name.startsWith(System.getProperty("java.io.tmpdir")))
+            return true;
+        return SafeZipFileUtils.valid(name);
     }
 }
