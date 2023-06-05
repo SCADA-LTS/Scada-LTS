@@ -37,7 +37,6 @@ import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import com.serotonin.util.DirectoryInfo;
 import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-//import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -56,7 +55,7 @@ import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 
 
 public class SystemSettingsDwr extends BaseDwr {
-	//@MethodFilter
+	
 	public Map<String, Object> getSettings() {
 		Permissions.ensureAdmin();
 		Map<String, Object> settings = new HashMap<String, Object>();
@@ -164,7 +163,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return settings;
 	}
 
-	//@MethodFilter
+	
 	public Map<String, Object> getDatabaseSize() {
 		Permissions.ensureAdmin();
 
@@ -215,7 +214,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return data;
 	}
 
-	//@MethodFilter
+	
 	public void saveEmailSettings(String host, int port, String from,
 			String name, boolean auth, String username, String password,
 			boolean tls, int contentType) {
@@ -236,7 +235,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				contentType);
 	}
 
-	//@MethodFilter
+	
 	public Map<String, Object> sendTestEmail(String host, int port,
 			String from, String name, boolean auth, String username,
 			String password, boolean tls, int contentType) {
@@ -267,7 +266,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return result;
 	}
 
-	//@MethodFilter
+	
 	public void saveSystemEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -275,7 +274,7 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	//@MethodFilter
+	
 	public void saveAuditEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -283,7 +282,7 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	//@MethodFilter
+	
 	public DwrResponseI18n saveHttpSettings(boolean useProxy, String host, int port,
 			String username, String password, String httpStaticHeaders) {
 		Permissions.ensureAdmin();
@@ -306,7 +305,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	//@MethodFilter
+	
 	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
 											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen) {
 		Permissions.ensureAdmin();
@@ -326,7 +325,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	//@MethodFilter
+	
 	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
@@ -354,7 +353,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	}
 
-	//@MethodFilter
+	
 	public DwrResponseI18n saveColourSettings(String chartBackgroundColour,
 			String plotBackgroundColour, String plotGridlineColour) {
 		Permissions.ensureAdmin();
@@ -400,7 +399,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	//@MethodFilter
+	
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription) {
 		Permissions.ensureAdmin();
@@ -412,7 +411,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				instanceDescription);
 	}
 
-	//@MethodFilter
+	
 	public String newVersionCheck(String newVersionNotificationLevel) {
 		Permissions.ensureAdmin();
 		try {
@@ -427,50 +426,50 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 	}
 
-	//@MethodFilter
+	
 	public void saveLanguageSettings(String language) {
 		Permissions.ensureAdmin();
 		ScadaLocaleUtils.setLocale(language);
 	}
 
-	//@MethodFilter
+	
 	public void purgeNow() {
 		Permissions.ensureAdmin();
 		DataPurge dataPurge = new DataPurge();
 		dataPurge.execute(System.currentTimeMillis());
 	}
 
-	//@MethodFilter
+	
 	public LocalizableMessage purgeAllData() {
 		Permissions.ensureAdmin();
 		long cnt = Common.ctx.getRuntimeManager().purgeDataPointValues();
 		return new LocalizableMessage("systemSettings.purgeDataComplete", cnt);
 	}
 
-	//@MethodFilter
+	
 	public void useDerbyDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useDerbyDB();
 	}
 
-	//@MethodFilter
+	
 	public void useMysqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMysqlDB();
 	}
 
-	//@MethodFilter
+	
 	public void useMssqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMssqlDB();
 	}
 
-	//@MethodFilter
+	
 	public String checkTypeDB() {
 		return Common.getEnvironmentProfile().getString("db.type", "derby");
 	}
 
-	//@MethodFilter
+	
 	public String getAppServer() {
 		return Common.ctx.getServletContext().getServerInfo();
 	}

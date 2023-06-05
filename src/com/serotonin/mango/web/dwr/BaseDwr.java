@@ -57,7 +57,6 @@ import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.content.ContentGenerator;
-//import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
@@ -185,7 +184,7 @@ abstract public class BaseDwr {
      * @param valueStr
      * @return
      */
-    //@MethodFilter
+    
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -210,7 +209,7 @@ abstract public class BaseDwr {
         }
     }
 
-    //@MethodFilter
+    
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
