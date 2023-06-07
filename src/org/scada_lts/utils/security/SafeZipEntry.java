@@ -2,8 +2,6 @@ package org.scada_lts.utils.security;
 
 import java.util.zip.ZipEntry;
 
-import static org.scada_lts.utils.PathSecureUtils.validateFilename;
-
 public class SafeZipEntry {
 
     private final ZipEntry zipEntry;
@@ -29,6 +27,6 @@ public class SafeZipEntry {
 
     private boolean validate() {
         String zipEntryName = zipEntry.getName();
-        return validateFilename(zipEntryName);
+        return SafeZipFileUtils.valid(zipEntryName);
     }
 }
