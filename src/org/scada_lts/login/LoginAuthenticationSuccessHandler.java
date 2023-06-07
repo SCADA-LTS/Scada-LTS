@@ -12,14 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.scada_lts.login.AuthenticationUtils.authenticateLocal;
+import static org.scada_lts.login.AuthenticationUtils.authenticateLocalRaiseEvent;
 
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        User user = authenticateLocal(request, response, authentication, new UserService());
+        User user = authenticateLocalRaiseEvent(request, response, authentication, new UserService());
         redirect(request, response, user);
     }
 
