@@ -86,7 +86,17 @@ import java.util.concurrent.TimeUnit;
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
+	@Override
 	public void contextInitialized(ServletContextEvent evt) {
+		try {
+			initialized(evt);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			throw ex;
+		}
+	}
+
+	private void initialized(ServletContextEvent evt) {
 		log.info("Scada-LTS context starting at: " + Common.getStartupTime());
 		
 		// Get a handle on the context.
