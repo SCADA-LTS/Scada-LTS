@@ -26,11 +26,16 @@ public class UserCommentCache implements UserCommentCachable {
     }
 
     @Override
+    public List<UserComment> findByEventAll() {
+        return userCommentDAO.getEventComments();
+    }
+
+    @Override
     public void removeAll() {}
 
     @Override
     public void removeByDataPoint(int dataPointId) {}
 
     @Override
-    public void removeByEvent(long eventId) {}
+    public void removeByEvent(int eventId) {}
 }

@@ -34,6 +34,7 @@ public class UserCommentService {
         c.setTs(System.currentTimeMillis());
         c.setUserId(user.getId());
         c.setUsername(user.getUsername());
+        c.setTypeKey(referenceId);
         return userCommentDAO.insert(c, typeComment, referenceId);
     }
 

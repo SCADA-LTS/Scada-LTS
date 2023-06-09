@@ -218,4 +218,8 @@ public final class OnlyMigrationUserCommentDAO implements IUserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
+	@Override
+	public List<UserComment> getEventComments() {
+		throw new UnsupportedOperationException();
+	}
 }

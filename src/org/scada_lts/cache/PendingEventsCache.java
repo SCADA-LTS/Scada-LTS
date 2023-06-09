@@ -31,7 +31,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.mango.service.PendingEventService;
 import org.scada_lts.quartz.UpdatePendingEvents;
 
 import com.serotonin.mango.rt.event.EventInstance;
@@ -42,12 +42,13 @@ import com.serotonin.mango.rt.event.EventInstance;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PendingEventsCache extends PendingEventsDAO{
+public class PendingEventsCache {
 	
 	private static final Log LOG = LogFactory.getLog(PendingEventsCache.class);
 	private static PendingEventsCache instance = null;
 	private int countBuffer;
 	private Map<Integer, List<EventInstance>> mapPendingEvents;
+	private final PendingEventService eventService;
 
 	public static PendingEventsCache getInstance() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
@@ -110,7 +111,8 @@ public class PendingEventsCache extends PendingEventsDAO{
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Create PendingEventsCache");
 		}
-		mapPendingEvents = getPendingEvents();
+		eventService = new PendingEventService();
+		mapPendingEvents = eventService.getPendingEvents();
 		cacheInitialize();
 	}
 

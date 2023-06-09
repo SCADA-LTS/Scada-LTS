@@ -31,10 +31,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.SerializationData;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -1009,6 +1011,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		
 	}
 
+	@Deprecated
 	public void attachRelationalInfo(EventInstance event) {
 		List<UserComment> lstUserComments = (List<UserComment>) DAO.getInstance().getJdbcTemp().query(EVENT_COMMENT_SELECT, new Object[] { event.getId() }, new UserCommentRowMapper() );
 		event.setEventComments(lstUserComments); 
@@ -1087,10 +1090,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			@Override
 			public Object extractData(ResultSet rs) throws SQLException,
 					DataAccessException {
+				IUserCommentDAO userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 				while (rs.next()) {
 					EventInstance e = rowMapper.mapRow(rs, 0);
 					//TODO
-					attachRelationalInfo(e);
+					e.setEventComments(userCommentDAO.getEventComments(e));
 					boolean add = true;
 					if (keywords != null) {
 						// Do the text search. If the instance has a match, put
@@ -1208,11 +1212,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				int row = 0;
 				long dateTs = date == null ? -1 : date.getTime();
 				int startRow = -1;
-
+				IUserCommentDAO userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 				while (rs.next()) {
 					EventInstance e = rowMapper.mapRow(rs, 0);
 					//TODO comments
-					attachRelationalInfo(e);
+					e.setEventComments(userCommentDAO.getEventComments(e));
 					boolean add = true;
 
 					if (keywords != null) {

@@ -27,6 +27,7 @@
         <Property name="apiLoggingLevel">ERROR</Property>
         <Property name="springLoggingLevel">ERROR</Property>
         <Property name="databaseLoggingLevel">ERROR</Property>
+        <Property name="springCacheLoggingLevel">ERROR</Property>
 
         <!-- Functional Logging-->
         <Property name="scriptLoggingLevel">ERROR</Property>
@@ -165,6 +166,9 @@
 
         <!-- Spring Logging-->
         <Logger name="org.springframework.web.servlet.FrameworkServlet" level="${springLoggingLevel}"/>
+
+        <!-- Spring Cache Logging-->
+        <Logger name="org.springframework.cache" level="${springCacheLoggingLevel}" />
 
         <!-- Database Logging-->
         <Logger name="com.serotonin.db.spring.ExtendedJdbcTemplate" level="${databaseLoggingLevel}"/>

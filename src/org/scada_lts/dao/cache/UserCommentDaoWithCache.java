@@ -76,6 +76,11 @@ public class UserCommentDaoWithCache implements IUserCommentDAO {
         }
     }
 
+    @Override
+    public List<UserComment> getEventComments() {
+        return cache.findByEventAll();
+    }
+
     private int toInt(String a) {
         try {
             return Integer.parseInt(a);
