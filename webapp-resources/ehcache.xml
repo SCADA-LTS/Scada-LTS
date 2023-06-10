@@ -115,6 +115,17 @@
         <heap>200</heap>
     </cache-template>
 
+    <cache-template name="string_list_cache_heap_max_bytes_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="MB">100</heap>
+        </resources>
+    </cache-template>
+
     <!-- user -->
     <cache alias="user_list" uses-template="string_list_cache_template"/>
 
@@ -143,7 +154,8 @@
 
     <!-- user comment -->
     <cache alias="comment_list_by_pointid" uses-template="integer_list_exp_ttl_heap_max_bytes_cache_template"/>
-    <cache alias="comment_list_by_eventid" uses-template="long_list_exp_ttl_heap_max_bytes_cache_template"/>
+    <cache alias="comment_list_by_eventid" uses-template="integer_list_exp_ttl_heap_max_bytes_cache_template"/>
+    <cache alias="comment_event_list" uses-template="string_list_cache_heap_max_bytes_template"/>
 
     <!-- view -->
     <cache alias="view_list" uses-template="string_list_cache_template"/>

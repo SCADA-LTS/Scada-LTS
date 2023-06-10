@@ -21,13 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.UserCommentCache;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;
 
 
@@ -64,12 +60,6 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private final static String  COLUMN_NAME_EVENT_SILENCED = "silenced";
 
-	private final static String  COLUMN_NAME_COMMENT_USER_ID = "userId";
-	private final static String  COLUMN_NAME_COMMENT_USER_NAME = "username";
-	private final static String  COLUMN_NAME_COMMENT_TS = "ts";
-	private final static String  COLUMN_NAME_COMMENT_COMMENT_TEXT = "commentText";
-	private final static String  COLUMN_NAME_COMMENT_TYPE_KEY = "typeKey";
-
 	// @formatter:off
 	private static final String SQL_EVENTS = ""
 			+ "select "
@@ -99,60 +89,9 @@ public class PendingEventsDAO {
 			+ "order by e.activeTs desc "
 			+ "LIMIT 100";
 
-
-	private static final String SQL_USER_COMMENTS = ""
-			+ "select "
-			    + "uc.userId, "
-			    + "u.username, "
-			    + "uc.ts, "
-			    + "uc.commentText, "
-			    + "uc.typeKey "
-			+ "from "
-				+ "userComments uc "
-				+ "left join users u on uc.userId = u.id "
-			+ "where "
-				+ "uc.commentType= 1 "
-			+ "order by uc.ts";
-
 	// @formatter:on
 
-	private IUserDAO userDAO;
-
-	public PendingEventsDAO() {
-		this.userDAO = ApplicationBeans.getUserDaoBean();
-	}
-
-	public PendingEventsDAO(IUserDAO userDAO) {
-		this.userDAO = userDAO;
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected  List<UserCommentCache> getUserComents() {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("SQL UserComents");
-		}
-
-		try {
-			@SuppressWarnings("unchecked")
-			List<UserCommentCache> listUserComents = DAO.getInstance().getJdbcTemp().query(SQL_USER_COMMENTS,
-				(rs, rownumber) -> {
-					UserCommentCache user = new UserCommentCache();
-					user.setUserId(rs.getInt(COLUMN_NAME_COMMENT_USER_ID));
-					user.setUserName(rs.getString(COLUMN_NAME_COMMENT_USER_NAME));
-					user.setTs(rs.getLong(COLUMN_NAME_COMMENT_TS));
-					user.setCommentText(rs.getString(COLUMN_NAME_COMMENT_COMMENT_TEXT));
-					user.setTypeKey(rs.getInt(COLUMN_NAME_COMMENT_TYPE_KEY));
-					return user;
-				});
-
-			return listUserComents;
-		} catch (Exception e) {
-			LOG.error(e);
-		}
-		return null;
-	}
-
-	private List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments ) {
+	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments ) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL PendingEvents userId:"+userId);
 		}
@@ -216,44 +155,8 @@ public class PendingEventsDAO {
 			event.setUserNotified(true);
 		}
 
-		attachRelationalInfo(event, comments);
+		event.setEventComments(comments.get(event.getId()));
 		
 		return event;
-	}
-
-
-	protected Map<Integer, List<EventInstance>> getPendingEvents() {
-
-		List<Integer> users = userDAO.getAll();
-
-		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
-
-		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
-		for (int userId: users) {
-			List<EventInstance> events = new CopyOnWriteArrayList<>(getPendingEvents(userId, comments));
-			cacheEvents.put(userId, events);
-		}
-		return cacheEvents;
-	}
-
-	private void attachRelationalInfo(EventInstance event, Map<Integer, List<UserComment>> comments){
-		event.setEventComments(comments.get(event.getId()));
-	}
-
-	protected Map<Integer, List<UserComment>> getCacheUserComments(List<UserCommentCache> commentsCache) {
-
-		Map<Integer, List<UserComment>> mappedUserCommentForEvent = new ConcurrentHashMap<>();
-
-		for (UserCommentCache u: commentsCache) {
-			int key = u.getTypeKey();
-			mappedUserCommentForEvent.putIfAbsent(key, new CopyOnWriteArrayList<>());
-			UserComment uc = new UserComment();
-			uc.setComment(u.getCommentText());
-			uc.setTs(u.getTs());
-			uc.setUserId(u.getUserId());
-			uc.setUsername(u.getUserName());
-			mappedUserCommentForEvent.get(key).add(uc);
-		}
-		return mappedUserCommentForEvent;
 	}
 }

@@ -34,6 +34,7 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -62,12 +63,14 @@ public class EventService implements MangoEvent {
 	private static final Log LOG = LogFactory.getLog(EventService.class);
 	private static final int MAX_PENDING_EVENTS = 100;
 	
-	private EventDAO eventDAO;
-	private UserEventDAO userEventDAO;
+	private final EventDAO eventDAO;
+	private final UserEventDAO userEventDAO;
+	private final IUserCommentDAO userCommentDAO;
 	
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
+		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 	}
 
 	class UserPendingEventRetriever implements Runnable {
@@ -265,7 +268,7 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		ApplicationBeans.getUserCommentDaoBean().insert(comment, UserComment.TYPE_EVENT, eventId);
+		userCommentDAO.insert(comment, UserComment.TYPE_EVENT, eventId);
 		return eventDAO.findById(new Object[]{eventId});
 	}
 	
@@ -403,7 +406,8 @@ public class EventService implements MangoEvent {
 	@Override
 	public void attachRelationalInfo(EventInstance event) {
 		//TODO very slow We not use
-		eventDAO.attachRelationalInfo(event);
+		List<UserComment> lstUserComments = userCommentDAO.getEventComments(event);
+		event.setEventComments(lstUserComments);
 	}
 
 	@Override
@@ -421,9 +425,9 @@ public class EventService implements MangoEvent {
 	}
 		
 	@Override
-	public void attachRelationInfo(List<EventInstance> list) {
-		for (EventInstance e:list) {
-			eventDAO.attachRelationalInfo(e);
+	public void attachRelationInfo(List<EventInstance>  events) {
+		for (EventInstance event: events) {
+			attachRelationalInfo(event);
 		}
 		
 	}

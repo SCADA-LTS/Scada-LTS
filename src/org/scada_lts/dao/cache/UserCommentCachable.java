@@ -19,19 +19,24 @@ public interface UserCommentCachable {
     @Cacheable(cacheNames = "comment_list_by_eventid", key = "#p0.id")
     List<UserComment> findByEvent(EventInstance event);
 
+    @Cacheable(cacheNames = "comment_event_list", key = "'eventUserComments'")
+    List<UserComment> findByEventAll();
+
     @Caching(evict = {
             @CacheEvict(cacheNames = "comment_list_by_pointid", key = "#p0")
     })
     void removeByDataPoint(int pointId);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "comment_list_by_eventid", key = "#p0")
+            @CacheEvict(cacheNames = "comment_list_by_eventid", key = "#p0"),
+            @CacheEvict(cacheNames = "comment_event_list", allEntries = true)
     })
-    void removeByEvent(long eventId);
+    void removeByEvent(int eventId);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "comment_list_by_pointid", allEntries = true),
-            @CacheEvict(cacheNames = "comment_list_by_eventid", allEntries = true)
+            @CacheEvict(cacheNames = "comment_list_by_eventid", allEntries = true),
+            @CacheEvict(cacheNames = "comment_event_list", allEntries = true)
     })
     void removeAll();
 }

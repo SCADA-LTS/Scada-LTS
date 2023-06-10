@@ -63,6 +63,7 @@ public class UserCommentDAO implements IUserCommentDAO {
 			+ "select "
 				+ "uc." + COLUMN_NAME_USER_ID + ", "
 				+ "u." + COLUMN_NAME_U_USERNAME + ", "
+				+ "uc." + COLUMN_NAME_TYPE_KEY + ", "
 				+ "uc." + COLUMN_NAME_TS + ", "
 				+ "uc." + COLUMN_NAME_COMMENT_TEXT + " "
 			+ "from userComments uc left join users u on "
@@ -74,9 +75,16 @@ public class UserCommentDAO implements IUserCommentDAO {
 				+ "uc." + COLUMN_NAME_COMMENT_TYPE + "="
 				+ UserComment.TYPE_EVENT + " "
 			+ "and "
-				+ "us." + COLUMN_NAME_TYPE_KEY + "=? "
+				+ "uc." + COLUMN_NAME_TYPE_KEY + "=? "
 			+ "order by "
 				+ "uc." + COLUMN_NAME_TS;
+
+	private static final String ALL_EVENT_COMMENT_SELECT = USER_COMMENT_SELECT
+			+ "where "
+			+ "uc." + COLUMN_NAME_COMMENT_TYPE + "="
+			+ UserComment.TYPE_EVENT + " "
+			+ "order by "
+			+ "uc." + COLUMN_NAME_TS;
 
 	private static final String POINT_COMMENT_SELECT = USER_COMMENT_SELECT
 			+ "where "
@@ -125,6 +133,7 @@ public class UserCommentDAO implements IUserCommentDAO {
 			uC.setUsername(rs.getString(COLUMN_NAME_U_USERNAME));
 			uC.setTs(rs.getLong(COLUMN_NAME_TS));
 			uC.setComment(rs.getString(COLUMN_NAME_COMMENT_TEXT));
+			uC.setTypeKey(rs.getInt(COLUMN_NAME_TYPE_KEY));
 			return uC;
 		}
 	}
@@ -187,19 +196,6 @@ public class UserCommentDAO implements IUserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_COMMENT_UPDATE_ID_TO_NULL, new Object[] {userId});
 	}
 
-	@Deprecated
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void deleteUserCommentEvent() {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("deleteUserCommentEvent()");
-		}
-
-		String templateDeleteTypeEvent = USER_COMMENT_DELETE + "not in (select id from events)";
-
-		DAO.getInstance().getJdbcTemp().update(templateDeleteTypeEvent, new Object[] {UserComment.TYPE_EVENT});
-	}
-
 	@Override
 	public int deleteUserComment(int userId, int typeId, int referenceId, long ts) {
 		if(LOG.isTraceEnabled()) {
@@ -230,4 +226,8 @@ public class UserCommentDAO implements IUserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
+	@Override
+	public List<UserComment> getEventComments() {
+		return DAO.getInstance().getJdbcTemp().query(ALL_EVENT_COMMENT_SELECT, new UserCommentRowMapper());
+	}
 }
