@@ -6,11 +6,12 @@ import org.scada_lts.mango.service.UserService;
 
 import java.util.Optional;
 
-
+@Deprecated
 public final class AnonymousUserUtils {
 
     private AnonymousUserUtils() {}
 
+    @Deprecated
     public static Optional<User> getUser(UserService userService) {
         User user = Common.getUser();
         if (user == null) {
@@ -19,6 +20,7 @@ public final class AnonymousUserUtils {
         return Optional.ofNullable(user);
     }
 
+    @Deprecated
     private static User getAnonymousUser(UserService userService) {
         User user = userService.getUser("anonymous-user");
         if(user != null) {

@@ -47,7 +47,6 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 public class WatchListDwr extends BaseDwr {
@@ -429,7 +428,7 @@ public class WatchListDwr extends BaseDwr {
 	//
 	// Share users
 	//
-	@MethodFilter
+	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType) {
 		WatchList watchList = Common.getUser().getWatchList();
 		boolean found = false;
@@ -453,7 +452,7 @@ public class WatchListDwr extends BaseDwr {
 		return watchList.getWatchListUsers();
 	}
 
-	@MethodFilter
+	
 	public List<ShareUser> removeSharedUser(int userId) {
 		WatchList watchList = Common.getUser().getWatchList();
 
@@ -469,7 +468,7 @@ public class WatchListDwr extends BaseDwr {
 		return watchList.getWatchListUsers();
 	}
 
-	@MethodFilter
+	
 	public void getChartData(int[] pointIds, int fromYear, int fromMonth,
 			int fromDay, int fromHour, int fromMinute, int fromSecond,
 			boolean fromNone, int toYear, int toMonth, int toDay, int toHour,

@@ -87,7 +87,6 @@ import com.serotonin.mango.web.dwr.beans.EnhancedPointComponentProperties;
 import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -118,6 +117,7 @@ public class ViewDwr extends BaseDwr {
 	//
 	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
 
+	@Deprecated
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -127,6 +127,7 @@ public class ViewDwr extends BaseDwr {
 				.orElse(new ArrayList<>());
 	}
 
+	@Deprecated
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -141,7 +142,7 @@ public class ViewDwr extends BaseDwr {
 		return viewComponentId;
 	}
 
-	@MethodFilter
+	
 	public List<IntValuePair> getViews() {
 		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess(ApplicationBeans.getViewDaoBean());
 		User user = Common.getUser();
@@ -150,12 +151,12 @@ public class ViewDwr extends BaseDwr {
 				.collect(Collectors.toList());
 	}
 
-	@MethodFilter
+	
 	public List<ScriptVO<?>> getScripts() {
 		return new ScriptService().getScripts();
 	}
 
-	@MethodFilter
+	
 	public List<FlexProject> getFlexProjects() {
 		return new FlexProjectDao().getFlexProjects();
 	}
@@ -167,7 +168,7 @@ public class ViewDwr extends BaseDwr {
 	 * @param edit
 	 * @return
 	 */
-	@MethodFilter
+	
 	public List<ViewComponentState> getViewPointData(boolean edit, int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), edit);
@@ -320,7 +321,7 @@ public class ViewDwr extends BaseDwr {
 	//
 	// View users
 	//
-	@MethodFilter
+	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		boolean found = false;
@@ -342,7 +343,7 @@ public class ViewDwr extends BaseDwr {
 		return view.getViewUsers();
 	}
 
-	@MethodFilter
+	
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 
@@ -356,14 +357,14 @@ public class ViewDwr extends BaseDwr {
 		return view.getViewUsers();
 	}
 
-	@MethodFilter
+	
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
-	@MethodFilter
+	
 	public String getLoggedUser() {
 		return Common.getUser().getUsername();
 	}
@@ -373,7 +374,7 @@ public class ViewDwr extends BaseDwr {
 	// / View editing
 	// /
 	//
-	@MethodFilter
+	
 	public Map<String, Object> editInit(int viewId) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		User user = Common.getUser();
@@ -403,7 +404,7 @@ public class ViewDwr extends BaseDwr {
 		return result;
 	}
 
-	@MethodFilter
+	
 	public ViewComponent addComponent(String componentName, int viewId) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
 		// System.out.println(componentName);
@@ -417,28 +418,28 @@ public class ViewDwr extends BaseDwr {
 		return viewComponent;
 	}
 
-	@MethodFilter
+	
 	public void setViewComponentLocation(String viewComponentId, int x, int y, int viewId) {
 		getViewComponent(viewComponentId, viewId).setLocation(x, y);
 	}
 
-	@MethodFilter
+	
 	public void setViewComponentZIndex(String viewComponentId, int zIndex, int viewId) {
 		getViewComponent(viewComponentId, viewId).setZ(zIndex);
 	}
 
-	@MethodFilter
+	
 	public int getViewComponentZIndex(String viewComponentId, int viewId) {
 		return getViewComponent(viewComponentId, viewId).getZ();
 	}
 
-	@MethodFilter
+	
 	public void deleteViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId, viewId);
@@ -461,7 +462,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public List<String> getViewComponentIds(int viewId) {
 		List<String> result = new ArrayList<String>();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
@@ -478,7 +479,7 @@ public class ViewDwr extends BaseDwr {
 	 * @param valueStr
 	 * @return
 	 */
-	@MethodFilter
+	
 	public String setViewPoint(String viewComponentId, String valueStr, int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), false);
@@ -500,14 +501,14 @@ public class ViewDwr extends BaseDwr {
 	//
 	// Save view component
 	//
-	@MethodFilter
+	
 	public void saveHtmlComponent(String viewComponentId, String content, int positionX, int positionY, int viewId) {
 		HtmlComponent c = (HtmlComponent) getViewComponent(viewComponentId, viewId);
 		c.setContent(content);
 		c.setLocation(positionX, positionY);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
@@ -525,7 +526,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
@@ -543,7 +544,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveAnalogGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -567,7 +568,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveBinaryGraphicComponent(String viewComponentId, int zeroImage, int oneImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -594,7 +595,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveDynamicGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String dynamicImageId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -618,7 +619,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntValuePair> imageStates, int defaultImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -639,7 +640,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveScriptComponent(String viewComponentId, String script, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -655,7 +656,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveSimplePointComponent(String viewComponentId, boolean displayPointName, String styleAttribute, int viewId) {
 		SimplePointComponent c = (SimplePointComponent) getViewComponent(viewComponentId, viewId);
 		c.setDisplayPointName(displayPointName);
@@ -665,7 +666,7 @@ public class ViewDwr extends BaseDwr {
 		return new DwrResponseI18n();
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveThumbnailComponent(String viewComponentId, int scalePercent, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -682,7 +683,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -710,7 +711,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -730,7 +731,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList, int positionX, int positionY, int viewId) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -754,7 +755,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -770,7 +771,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveButtonComponent(String viewComponentId, String whenOnLabel, String whenOffLabel, int width, int height, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -796,7 +797,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	// @MethodFilter
+	// 
 	// public DwrResponseI18n saveFlexBuilderComponent(String viewComponentId,
 	// int width, int height, boolean projectDefined,
 	// String projectsSource, int projectId, boolean runtimeMode) {
@@ -830,7 +831,7 @@ public class ViewDwr extends BaseDwr {
 	// return response;
 	// }
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -851,7 +852,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -883,7 +884,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -948,7 +949,7 @@ public class ViewDwr extends BaseDwr {
 		return Common.ctx.getDynamicImage(id);
 	}
 
-	@MethodFilter
+	
 	public ViewComponent getViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		return getViewComponent(view, viewComponentId);

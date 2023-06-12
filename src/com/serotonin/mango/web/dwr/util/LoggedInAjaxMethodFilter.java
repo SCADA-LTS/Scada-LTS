@@ -32,6 +32,7 @@ import com.serotonin.web.dwr.MethodFilter;
 /**
  * @author Matthew Lohbihler
  */
+@Deprecated
 public class LoggedInAjaxMethodFilter implements AjaxFilter {
     private static final Log LOG = LogFactory.getLog(LoggedInAjaxFilter.class);
 

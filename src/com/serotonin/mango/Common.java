@@ -273,22 +273,25 @@ public class Common {
 
 	//
 	// Anonymous views
+	@Deprecated
 	public static View getAnonymousView(int id) {
 		return getAnonymousView(
 				WebContextFactory.get().getHttpServletRequest(), id);
 	}
 
+	@Deprecated
 	public static View getAnonymousView(HttpServletRequest request, int id) {
 		List<View> views = getAnonymousViews(request);
 		if (views == null)
 			return null;
 		for (View view : views) {
-			if (view.getId() == id)
+			if (view != null && view.getId() == id)
 				return view;
 		}
 		return null;
 	}
 
+	@Deprecated
 	public static void addAnonymousView(HttpServletRequest request, View view) {
 		List<View> views = getAnonymousViews(request);
 		if (views == null) {
@@ -303,6 +306,7 @@ public class Common {
 		views.add(view);
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	private static List<View> getAnonymousViews(HttpServletRequest request) {
 		return (List<View>) request.getSession().getAttribute(ANON_VIEW_KEY);

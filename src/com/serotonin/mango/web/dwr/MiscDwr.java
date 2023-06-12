@@ -66,7 +66,6 @@ import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
 import com.serotonin.mango.web.dwr.longPoll.LongPollState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -100,7 +99,7 @@ public class MiscDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n silenceAll() {
 		List<Integer> silenced = new ArrayList<Integer>();
 		User user = Common.getUser();
@@ -204,7 +203,7 @@ public class MiscDwr extends BaseDwr {
 				+ "   osName: " + osName + "\r\n" + "   location: " + location);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n sendTestEmail(
 			List<RecipientListEntryBean> recipientList, String prefix,
 			String message) {
@@ -246,7 +245,7 @@ public class MiscDwr extends BaseDwr {
 		}
 	}
 
-	@MethodFilter
+	
 	public void setHomeUrl(String url) {
 		// Remove the scheme, domain, and context if there.
 		HttpServletRequest request = WebContextFactory.get()
@@ -274,7 +273,7 @@ public class MiscDwr extends BaseDwr {
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
-	@MethodFilter
+	
 	public String getHomeUrl() {
 		String url = Common.getUser().getHomeUrl();
 		if (StringUtils.isEmpty(url))
@@ -365,19 +364,19 @@ public class MiscDwr extends BaseDwr {
 			}
 
 			if ((pollRequest.isView() && user != null)
-					|| (pollRequest.isViewEdit() && user != null)
-					|| pollRequest.getAnonViewId() > 0) {
+					|| (pollRequest.isViewEdit() && user != null)) {
+					//|| pollRequest.getAnonViewId() > 0) {
 				List<ViewComponentState> newStates = new ArrayList<>();
-				if (pollRequest.getAnonViewId() > 0)
+				/*if (pollRequest.getAnonViewId() > 0)
 					newStates = viewDwr.getViewPointDataAnon(pollRequest
 							.getAnonViewId());
-				else {
+				else {*/
 					int viewId = pollRequest.getViewId();
 					View view = getView(viewId, httpRequest, new ViewService(), pollRequest.isViewEdit());
 					view.validateViewComponents(user);
 					newStates = viewDwr.getViewPointData(user, view, pollRequest
 							.isViewEdit());
-				}
+				//}
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
 
 				for (ViewComponentState newState : newStates) {

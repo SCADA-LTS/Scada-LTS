@@ -46,12 +46,11 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.servlet.ImageValueServlet;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
 public class DataPointDetailsDwr extends BaseDwr {
-	@MethodFilter
+	
 	public WatchListState getPointData() {
 		// Get the point from the user's session. It should have been set by the
 		// controller.
@@ -116,7 +115,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 		return renderedData;
 	}
-	@MethodFilter
+	
 	public DwrResponseI18n getHistoryTableData(int limit) {
 		DataPointVO pointVO = Common.getUser().getEditPoint();
 		PointValueFacade facade = new PointValueFacade(pointVO.getId());
@@ -148,7 +147,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getImageChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute,
 			int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute,
 			int toSecond, boolean toNone, int width, int height) {
@@ -176,7 +175,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public void getChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, int fromSecond,
 			boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, int toSecond,
 			boolean toNone) {
@@ -186,7 +185,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		Common.getUser().setDataExportDefinition(def);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getStatsChartData(int periodType, int period, boolean includeSum) {
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO pointVO = Common.getUser(request).getEditPoint();
@@ -202,12 +201,12 @@ public class DataPointDetailsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	private DataPointVO getDataPointVO() {
 		return Common.getUser().getEditPoint();
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getFlipbookData(int limit) {
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO vo = Common.getUser(request).getEditPoint();

@@ -40,6 +40,7 @@ import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 /**
  * @author Matthew Lohbihler
  */
+@Deprecated
 public class PublicViewController extends ParameterizableViewController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
