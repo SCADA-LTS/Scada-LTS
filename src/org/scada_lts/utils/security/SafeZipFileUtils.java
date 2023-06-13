@@ -12,8 +12,8 @@ public final class SafeZipFileUtils {
             int index = absolutePath.lastIndexOf("/");
             String path = absolutePath.substring(0, index);
             String name = absolutePath.length() < index + 1 ? "" : absolutePath.substring(index + 1);
-            return validatePath(absolutePath)
-                    && validatePath(path)
+            return validatePath(absolutePath, a -> true)
+                    && validatePath(path, a -> true)
                     && validateFilename(name);
         } else {
             return validateFilename(absolutePath);

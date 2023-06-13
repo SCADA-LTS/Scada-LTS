@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public final class PathSecureUtils {
 
@@ -45,7 +46,10 @@ public final class PathSecureUtils {
             return false;
         if(!decoded.equals(name))
             return false;
-        if(!validatePath(decoded))
+        if(!validatePath(decoded, path -> true))
+            return false;
+        String ext = FilenameUtils.getExtension(name);
+        if(ext.isEmpty())
             return false;
         String withoutExt = FilenameUtils.removeExtension(name);
         if(withoutExt.isEmpty())
@@ -59,7 +63,7 @@ public final class PathSecureUtils {
         return name.length() < 256;
     }
 
-    public static boolean validatePath(String name) {
+    public static boolean validatePath(String name, Predicate<Path> exists) {
         String decoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
         if(StringUtils.isEmpty(decoded))
             return false;
@@ -68,7 +72,7 @@ public final class PathSecureUtils {
         try {
             Path path = Paths.get(decoded).normalize();
             String normalizedPath = path.toString();
-            return normalizedPath.equals(decoded);
+            return exists.test(path) && normalizedPath.equals(decoded);
         } catch (Exception ex) {
             LOG.error("Path is invalid! " + ex.getMessage());
             return false;

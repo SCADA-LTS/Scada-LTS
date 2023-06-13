@@ -41,7 +41,7 @@ public class SafeMultipartFile {
     private boolean validate() {
         String name = multipartFile.getName();
         String originalName = multipartFile.getOriginalFilename();
-        return validatePath(name) && validateFilename(originalName);
+        return validatePath(name, path -> true) && validateFilename(originalName);
     }
 }
 
