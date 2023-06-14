@@ -35,6 +35,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.util.EmailValidator;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -510,7 +511,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (StringUtils.isEmpty(username))
 			response.addMessage("username", new LocalizableMessage(
 					"validate.required"));
-		if (StringUtils.isEmpty(email))
+		if (StringUtils.isEmpty(email) || !EmailValidator.isValidEmail(email))
 			response.addMessage("email", new LocalizableMessage(
 					"validate.required"));
 		if (id == Common.NEW_ID && StringUtils.isEmpty(password))
