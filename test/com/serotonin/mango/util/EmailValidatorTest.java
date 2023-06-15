@@ -57,7 +57,6 @@ public class EmailValidatorTest {
 
     @Test
     public void when_isValidEmail() {
-        //given:
         //when:
         boolean result = EmailValidator.isValidEmail(email);
         //then:
