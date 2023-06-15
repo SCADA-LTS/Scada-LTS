@@ -8,11 +8,15 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class EmailValidatorTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name= "{index}: email: {0}, valid: {1}")
     public static Object[][] data() {
         return new Object[][] {
-                new Object[] {"email@com.com", true},
-                new Object[] {"email@com.co", true},
+                new Object[] {"", false},
+                new Object[] {"\t", false},
+                new Object[] {" ", false},
+                new Object[] {null, false},
+                new Object[] {"Email@com.com", true},
+                new Object[] {"email@Com.co", true},
                 new Object[] {"email@com.c", true},
                 new Object[] {"email@com.", false},
                 new Object[] {"email@co.com", true},
@@ -35,6 +39,11 @@ public class EmailValidatorTest {
                 new Object[] {"@ac.cm", false},
                 new Object[] {"ac.cm", false},
                 new Object[] {"ac.@cm", false},
+                new Object[] {"test2@test", false},
+                new Object[] {"Email@com.com", true},
+                new Object[] {"Email@Com.com", true},
+                new Object[] {"Email@com.Com", true},
+                new Object[] {"eMAil@com.com", true},
         };
     }
 
