@@ -38,21 +38,21 @@ public class UsersAPI {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<UserInfoSimple>> getAll(HttpServletRequest request) {
-        LOG.info("/api/users/");
+        LOG.debug("/api/users/");
         List<UserInfoSimple> response = usersApiService.getIdentifiers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserInfo> getUserDetails(@PathVariable("id") Integer userId, HttpServletRequest request) {
-        LOG.info("/api/users/"+userId);
+        LOG.debug("/api/users/"+userId);
         UserInfo response = usersApiService.read(request, null, userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/validate")
     public ResponseEntity<Map<String, Object>> isUsernameUnique(@RequestParam String username, HttpServletRequest request) {
-        LOG.info(  "/api/datapoint/validate");
+        LOG.debug(  "/api/users/validate");
         Map<String, Object> response = new HashMap<>();
         boolean isUnique = usersApiService.isUnique(request, username);
         response.put("unique", isUnique);
@@ -79,7 +79,7 @@ public class UsersAPI {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Integer userId, HttpServletRequest request) {
-        LOG.info("/api/users/"+userId);
+        LOG.debug("/api/users/"+userId);
         usersApiService.delete(request, null, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.api.security;
 
+import org.springframework.util.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class Guard {
@@ -13,8 +15,16 @@ public class Guard {
         this.getIdentifierFromHttpParameterGuard = getIdentifierFromHttpParameterGuard;
     }
 
-    public boolean hasUserOwnerPermission(HttpServletRequest request, int id) {
-        return withIdentifierGuard.hasUserOwnerPermission(request, id);
+    public boolean hasUserOwnerPermission(HttpServletRequest request, String identifier) {
+        if(StringUtils.isEmpty(identifier)) {
+            return false;
+        }
+        try {
+            int id = Integer.parseInt(identifier);
+            return withIdentifierGuard.hasUserOwnerPermission(request, id);
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public boolean hasWatchListOwnerPermission(HttpServletRequest request, String id, boolean isXid) {

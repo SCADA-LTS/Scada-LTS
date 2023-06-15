@@ -230,6 +230,7 @@
         <!-- User PUT/GET -->
         <intercept-url pattern="/api/users/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
         <intercept-url pattern="/api/users/password" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/users/validate" access="hasRole('ROLE_ADMIN')" method="GET" />
         <intercept-url pattern="/api/users/{id}" access="@guard.hasUserOwnerPermission(request,#id)" method="GET" />
 
         <!-- DataPoint GET -->
