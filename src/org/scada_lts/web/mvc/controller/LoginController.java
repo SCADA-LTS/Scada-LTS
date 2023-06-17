@@ -21,7 +21,10 @@ package org.scada_lts.web.mvc.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -44,8 +47,16 @@ public class LoginController {
     @RequestMapping(method = RequestMethod.GET)
     protected ModelAndView createForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LOG.trace("/login.htm");
-        request.setAttribute("toYear", DateTime.now().getYear());
-        ScadaLocaleUtils.setLocaleInSession(request, response);
-        return new ModelAndView("login");
+        User user = Common.getUser(request);
+        if(user != null) {
+            if (!StringUtils.isEmpty(user.getHomeUrl())) {
+                return new ModelAndView("redirect:" + (user.getHomeUrl().startsWith("/") ? user.getHomeUrl() : "/" + user.getHomeUrl()));
+            } else
+                return new ModelAndView("redirect:watch_list.shtm");
+        } else {
+            request.setAttribute("toYear", DateTime.now().getYear());
+            ScadaLocaleUtils.setLocaleInSession(request, response);
+            return new ModelAndView("login");
+        }
     }
 }
