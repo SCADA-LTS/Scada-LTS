@@ -412,7 +412,10 @@
         </div>
       </td>
     </tr>
-    
+
+    <c:set var="isRoles" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+    <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+    <c:if test="!isRolePublic">
     <tr>
       <td valign="top">
         <div class="borderDiv marR">
@@ -465,6 +468,7 @@
         </div>
       </td>
     </tr>
+    </c:if>
   </table>
   
   <%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>

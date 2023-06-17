@@ -100,6 +100,9 @@ import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getResponse;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -117,17 +120,18 @@ public class ViewDwr extends BaseDwr {
 	//
 	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
 
-	@Deprecated
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			return new ArrayList<>();
-		return getUser(new UserService())
-				.map(user -> getViewPointData(user, view, false))
-				.orElse(new ArrayList<>());
+		return getRequest()
+				.map(request -> getUser(new UserService(), request).stream()
+							.peek(user -> getResponse().ifPresent(response -> authenticateAnonymousUser(user, request, response)))
+							.flatMap(user -> getViewPointData(user, view, false).stream())
+							.collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 
-	@Deprecated
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -137,7 +141,7 @@ public class ViewDwr extends BaseDwr {
 			throw new PermissionException("Point is not anonymously settable", null);
 
 		// Allow the set.
-		setPointImpl(view.findDataPoint(viewComponentId), valueStr, new AnonymousUser());
+		setPointImpl(view.findDataPoint(viewComponentId), valueStr, Common.getUser());
 
 		return viewComponentId;
 	}
