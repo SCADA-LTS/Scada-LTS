@@ -133,6 +133,10 @@
     }
     
     function showUserProfile(userProfileId) {
+        if (userProfileId == -1)
+            hide("deleteButton");
+        else
+            show("deleteButton");
         if (editingUserProfileId)
             stopImageFader($("u"+ editingUserProfileId +"Img"));
         editingUserProfileId = userProfileId;
@@ -141,7 +145,7 @@
     }
     
     function showUserProfileCB(userProfile) {
-        show($("deleteButton"));
+        //show($("deleteButton"));
         show($("userProfileDetails"));
         $set("userProfileName", userProfile.name);
 
@@ -192,7 +196,6 @@
     
     function saveUserProfile() {
 		startImageFader($("saveButton"));
-    	
     	setUserProfileMessage();
         // Create the list of allowed data sources and data point permissions.
         var i, j;
@@ -256,6 +259,7 @@
                 appendUserProfile(editingUserProfileId);
                 startImageFader($("u"+ editingUserProfileId +"Img"));
                 setUserProfileMessage("<fmt:message key="userProfiles.added"/>");
+                show($("deleteButton"));
             } else {
                 setUserProfileMessage("<fmt:message key="userProfiles.saved"/>");
                 stopImageFader($("u"+ editingUserProfileId +"Img"));
