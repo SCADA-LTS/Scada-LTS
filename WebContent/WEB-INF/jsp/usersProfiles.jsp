@@ -196,7 +196,6 @@
     
     function saveUserProfile() {
 		startImageFader($("saveButton"));
-    	show("deleteButton");
     	setUserProfileMessage();
         // Create the list of allowed data sources and data point permissions.
         var i, j;
@@ -260,6 +259,7 @@
                 appendUserProfile(editingUserProfileId);
                 startImageFader($("u"+ editingUserProfileId +"Img"));
                 setUserProfileMessage("<fmt:message key="userProfiles.added"/>");
+                show($("deleteButton"));
             } else {
                 setUserProfileMessage("<fmt:message key="userProfiles.saved"/>");
                 stopImageFader($("u"+ editingUserProfileId +"Img"));
