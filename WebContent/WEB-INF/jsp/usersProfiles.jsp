@@ -81,9 +81,8 @@
            watchlists = data.watchlists;
            if (watchlists != null){
 	           for (i=0; i<watchlists.length; i++) {
-	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
-	        		   continue;
-	        	   
+	        	   if(validateWatchList(watchlists[i].name))
+	        	        continue;
 	        	   id = watchlists[i].id;
 	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
 	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
@@ -169,8 +168,8 @@
 
         if(watchlists != null) {
             for (i=0; i<watchlists.length; i++) {
-                if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
-                    continue;
+	        	if(validateWatchList(watchlists[i].name))
+	        	    continue;
                 $set("wl"+ watchlists[i].id, "0");
             }
 
@@ -220,7 +219,7 @@
         var wlval;
         if (watchlists != null ){
 	      	for (i=0; i<watchlists.length; i++) {
-	      	    if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
+                if(validateWatchList(watchlists[i].name))
                     continue;
 	 			wlval = $get("wl"+ watchlists[i].id);
 	              
@@ -313,6 +312,11 @@
               
             });
         }
+    }
+
+    function validateWatchList(wl) {
+        if(wl == '<fmt:message key="common.newName"/>') // skip unnamed lists
+            return true;
     }
   </script>
   
