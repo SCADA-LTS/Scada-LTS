@@ -280,7 +280,7 @@
           display("watchListDeleteImg", false);
           if(isOwner(data) || isAdmin) {
              var wlselect = $("watchListSelect");
-             display("watchListDeleteImg", wlselect.options.length > 0);
+             display("watchListDeleteImg", wlselect.options.length > 1);
           }
       }
 
