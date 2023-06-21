@@ -76,7 +76,6 @@ import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ThumbnailComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -328,6 +327,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -350,7 +350,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
 				view.getViewUsers().remove(su);
@@ -365,6 +365,7 @@ public class ViewDwr extends BaseDwr {
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
@@ -416,7 +417,7 @@ public class ViewDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
@@ -440,6 +441,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public void deleteViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -491,9 +493,7 @@ public class ViewDwr extends BaseDwr {
 
 		if (point != null) {
 			// Check that setting is allowed.
-			int access = view.getUserAccess(user);
-			if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
-				throw new PermissionException("Not allowed to set this point", user);
+			GetViewsWithAccess.ensureViewSetPermission(user, view);
 
 			// Try setting the point.
 			setPointImpl(point, valueStr, user);

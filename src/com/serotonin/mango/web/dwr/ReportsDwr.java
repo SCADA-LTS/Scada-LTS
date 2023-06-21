@@ -33,6 +33,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.*;
+import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
+import org.scada_lts.permissions.service.GetReportsWithAccess;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -200,20 +202,24 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void deleteReport(int id) {
-        MangoReport reportDao = new ReportService();
+        MangoReport reportService = new ReportService();
 
-        ReportVO report = reportDao.getReport(id);
+        ReportVO report = reportService.getReport(id);
         if (report != null) {
-            Permissions.ensureReportPermission(Common.getUser(), report);
+            GetReportsWithAccess.ensureReportOwnerPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            reportDao.deleteReport(id);
+            reportService.deleteReport(id);
         }
     }
 
     public List<ReportInstance> deleteReportInstance(int instanceId) {
         User user = Common.getUser();
-        MangoReport reportDao = new ReportService();
-        reportDao.deleteReportInstance(instanceId, user.getId());
+        MangoReport reportService = new ReportService();
+        ReportInstance reportInstance = reportService.getReportInstance(instanceId);
+        if(reportInstance != null) {
+            GetReportInstancesWithAccess.ensureReportInstanceOwnerPermission(user, reportInstance);
+            reportService.deleteReportInstance(instanceId, user.getId());
+        }
         return getReportInstances(user);
     }
 
