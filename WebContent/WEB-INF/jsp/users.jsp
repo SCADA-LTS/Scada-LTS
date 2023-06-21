@@ -104,7 +104,12 @@
     }
     
     function showUser(userId, hideMsg) {
-    	
+
+    	if (userId == -1)
+    	    hide($('deleteImg'));
+    	else
+    	    show($('deleteImg'));
+
     	if (hideMsg)
             setUserMessage();
     	
