@@ -251,9 +251,9 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setTheme(theme);
 		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
 		if(!jsonSettingsMisc.isEnableFullScreen())
-			user.setEnableFullScreen(enableFullScreen);
+			updateUser.setEnableFullScreen(enableFullScreen);
 		if(!jsonSettingsMisc.isHideShortcutDisableFullScreen())
-			user.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
+			updateUser.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
