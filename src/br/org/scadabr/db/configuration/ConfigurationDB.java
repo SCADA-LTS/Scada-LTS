@@ -51,7 +51,6 @@ public class ConfigurationDB {
 
 			if (win) {
 				File derbyFile = new File(path + "\\" + "env.properties.derby");
-
 				if (derbyFile.exists()) {
 					try {
 						ConfigurationDB.copy(derbyFile, envFile);
