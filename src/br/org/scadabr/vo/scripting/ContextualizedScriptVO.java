@@ -175,6 +175,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		map.put("pointsOnContext", pointList);
 
 		List<Map<String, Object>> objectsList = new ArrayList<Map<String, Object>>();
+
 		for (IntValuePair p : objectsOnContext) {
 			Map<String, Object> point = new HashMap<String, Object>();
 			objectsList.add(point);
