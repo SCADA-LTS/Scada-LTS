@@ -20,7 +20,7 @@ services:
             - ./db_conf:/etc/mysql:ro
         command: --log_bin_trust_function_creators=1
     scadalts:
-        image: scadalts/scadalts:pr-2564
+        image: scadalts/scadalts:latest
         environment:
             - CATALINA_OPTS=-Xmx512m -Xms512m
             - JPDA_ADDRESS=0.0.0.0:8000
