@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
-import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
