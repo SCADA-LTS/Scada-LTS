@@ -21,6 +21,8 @@ package com.serotonin.mango.web.mvc.controller;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.ui.Model;
@@ -78,5 +80,12 @@ public final class ControllerUtils {
         	model.addAttribute("prevId", userPoints.get(pointIndex - 1).getId());
         if (pointIndex < userPoints.size() - 1)
             model.addAttribute("nextId", userPoints.get(pointIndex + 1).getId());
+    }
+
+    public static String getHomeUrl(User user) {
+        if(StringUtils.isEmpty(user.getHomeUrl())) {
+            return "/watch_list.shtm";
+        }
+        return user.getHomeUrl().startsWith("/") ? user.getHomeUrl() : "/" + user.getHomeUrl();
     }
 }

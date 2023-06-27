@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import static com.serotonin.mango.web.mvc.controller.ControllerUtils.getHomeUrl;
+
 /**
  * Controller for login system
  * Based on LoginController from Mango by Matthew Lohbihler
@@ -49,10 +51,7 @@ public class LoginController {
         LOG.trace("/login.htm");
         User user = Common.getUser(request);
         if(user != null) {
-            if (!StringUtils.isEmpty(user.getHomeUrl())) {
-                return new ModelAndView("redirect:" + (user.getHomeUrl().startsWith("/") ? user.getHomeUrl() : "/" + user.getHomeUrl()));
-            } else
-                return new ModelAndView("redirect:watch_list.shtm");
+            return new ModelAndView("redirect:" + getHomeUrl(user));
         } else {
             request.setAttribute("toYear", DateTime.now().getYear());
             ScadaLocaleUtils.setLocaleInSession(request, response);
