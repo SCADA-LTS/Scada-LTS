@@ -30,6 +30,7 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -43,8 +44,6 @@ import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 import org.scada_lts.web.ws.model.WsEventMessage;
-import org.scada_lts.web.ws.services.EventsServiceWebSocket;
-import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -210,7 +209,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 
 			evt.returnToNormal(time, cause);
 			eventService.saveEvent(evt);
-
+			notifyEventAck(evt.getId());
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
 
@@ -227,7 +226,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
-
+		notifyEventAck(evt.getId());
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
 	}
@@ -392,6 +391,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 			evt.setHandlers(rts);
 	}
 
+	@Deprecated
 	public void handleRaiseEvent(EventInstance evt) {
 		handleRaiseEvent(evt, Collections.emptySet());
 	}
@@ -471,7 +471,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventRaise(EventInstance evt, User user) {
-		if(evt.getAlarmLevel() > AlarmLevels.NONE) {
+		if((evt.getAlarmLevel() > AlarmLevels.NONE) && (evt.getRtnCause() == 0 && !isChangeType(evt))) {
 			ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 				highestAlarmLevelService.doUpdateAlarmLevel(user, evt, userEventService::sendAlarmLevel);
 			});
@@ -510,6 +510,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		}
 	}
 
+	@Deprecated
 	public void notifyEventToggle(int eventId, User user) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -541,5 +542,23 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	@Override
 	public void notifyWebSocketSubscribers(String message) {
 		ApplicationBeans.Lazy.getEventsServiceWebSocketBean().ifPresent(ws -> ws.notifyEventsSubscribers(message));
+	}
+
+	private static boolean isChangeType(EventInstance evt) {
+		return getType(evt) == PointEventDetectorVO.TYPE_POINT_CHANGE;
+	}
+
+	private static int getType(EventInstance event) {
+		Map<String,Object> context = event.getContext();
+		if(context == null)
+			return -2;
+		Object obj = context.get("pointEventDetector");
+		if(obj == null)
+			return -3;
+		if(obj instanceof PointEventDetectorVO) {
+			PointEventDetectorVO detector = (PointEventDetectorVO) obj;
+			return detector.getDetectorType();
+		}
+		return -4;
 	}
 }

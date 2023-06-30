@@ -177,8 +177,7 @@
                     }
                 })
                 stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-            } );
-            stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+            });
         };
 
         function connect(url, headers, errorCallback, connectCallback) {
