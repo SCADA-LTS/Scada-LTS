@@ -122,7 +122,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	//TODO rewrite to another class
 	private static final String COLUMN_NAME_USER_EVENTS_ID="id";
 
-	private static String EVENT_FIELDS = "e." + COLUMN_NAME_ID + ", " +
+	private static final String EVENT_FIELDS = "e." + COLUMN_NAME_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
