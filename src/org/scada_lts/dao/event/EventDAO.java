@@ -506,6 +506,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				"LEFT JOIN userComments uc ON uc.typeKey=e.id " +
 				"LEFT JOIN users u ON uc.userId=u.id " +
 			"WHERE e.id=? AND uc.commentType=1";
+
+	private static final String STATUS_ACTIVE_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is null or e.rtnTs = 0)";
+	private static final String STATUS_RTN_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is not null and e.rtnTs <> 0)";
+	private static final String STATUS_NORTN_CONDITION_SQL = "e.rtnApplicable='N'";
+
 	// @formatter:on
 	
 	//TODO rewrite
@@ -1060,14 +1065,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 
 		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
-			where.add("e.rtnApplicable=? and e.rtnTs is null");
-			params.add(DAO.boolToChar(true));
+			where.add(STATUS_ACTIVE_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_RTN.equals(status)) {
-			where.add("e.rtnApplicable=? and e.rtnTs is not null");
-			params.add(DAO.boolToChar(true));
+			where.add(STATUS_RTN_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
-			where.add("e.rtnApplicable=?");
-			params.add(DAO.boolToChar(false));
+			where.add(STATUS_NORTN_CONDITION_SQL);
 		}
 
 		if (alarmLevel != -1) {
@@ -1167,14 +1169,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 
 		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
-			where.add("e.rtnApplicable=? and e.rtnTs is null");
-			params.add(DAO.boolToChar(true));
+			where.add(STATUS_ACTIVE_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_RTN.equals(status)) {
-			where.add("e.rtnApplicable=? and e.rtnTs is not null");
-			params.add(DAO.boolToChar(true));
+			where.add(STATUS_RTN_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
-			where.add("e.rtnApplicable=?");
-			params.add(DAO.boolToChar(false));
+			where.add(STATUS_NORTN_CONDITION_SQL);
 		}
 
 		if (alarmLevel != -1) {
