@@ -57,7 +57,7 @@
       
       <c:when test="${vc.defName == 'imageChart'}">
         <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;z-index:${vc.z};"
-                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}, ${vc.z}');">
+                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}', ${vc.z});">
           <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
           <div id="c${vc.id}Controls" class="controlContent">
             <div id="c${vc.id}Info">
