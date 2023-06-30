@@ -30,7 +30,6 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -231,6 +230,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		handleInactiveEvent(evt);
 	}
 
+	@Deprecated
 	public long getLastAlarmTimestamp() {
 		return lastAlarmTimestamp;
 	}
@@ -471,7 +471,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventRaise(EventInstance evt, User user) {
-		if((evt.getAlarmLevel() > AlarmLevels.NONE) && (evt.getRtnCause() == 0 && !isChangeType(evt))) {
+		if((evt.getAlarmLevel() > AlarmLevels.NONE) && isActiveStatus(evt)) {
 			ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 				highestAlarmLevelService.doUpdateAlarmLevel(user, evt, userEventService::sendAlarmLevel);
 			});
@@ -544,21 +544,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		ApplicationBeans.Lazy.getEventsServiceWebSocketBean().ifPresent(ws -> ws.notifyEventsSubscribers(message));
 	}
 
-	private static boolean isChangeType(EventInstance evt) {
-		return getType(evt) == PointEventDetectorVO.TYPE_POINT_CHANGE;
-	}
-
-	private static int getType(EventInstance event) {
-		Map<String,Object> context = event.getContext();
-		if(context == null)
-			return -2;
-		Object obj = context.get("pointEventDetector");
-		if(obj == null)
-			return -3;
-		if(obj instanceof PointEventDetectorVO) {
-			PointEventDetectorVO detector = (PointEventDetectorVO) obj;
-			return detector.getDetectorType();
-		}
-		return -4;
+	private static boolean isActiveStatus(EventInstance evt) {
+		return evt.isRtnApplicable() && evt.getRtnTimestamp() == 0;
 	}
 }
