@@ -335,7 +335,7 @@
         this.viewSelectChanged = function(value) {
         	$set("linkLink","");
             if(value!=0) {
-            	link = getAbsolutePath()+"views.shtm?viewId="+value;
+            	link = "views.shtm?viewId="+value;
                 $set("linkLink",link);
             }
         };
