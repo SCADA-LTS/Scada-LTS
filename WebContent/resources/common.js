@@ -116,26 +116,6 @@ mango.longPoll.pollCB = function(response, stopIntervalTimeoutId, pollStartTime,
     if (response.terminated)
         return;
 
-    try {
-        if (typeof(response.highestUnsilencedAlarmLevel) != "undefined") {
-                if (response.highestUnsilencedAlarmLevel > 0) {
-                    setAlarmLevelImg(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelImg"));
-                    setAlarmLevelText(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelText"));
-                    if (!mango.header.evtVisualizer.started)
-                        mango.header.evtVisualizer.start();
-                    show("__header__alarmLevelDiv");
-                    mango.soundPlayer.play("level"+ response.highestUnsilencedAlarmLevel);
-                }
-                else {
-                	mango.header.evtVisualizer.stop();
-                    hide("__header__alarmLevelDiv");
-                    mango.soundPlayer.stop();
-                }
-        }
-    } catch (e) {
-        console.error(e);
-    }
-
     if (response.runtime) {
       lasTimeUpdate = response.runtime;
     }

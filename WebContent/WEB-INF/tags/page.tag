@@ -159,6 +159,8 @@
 
         var stompClient = null;
 
+        var maxAlarmLevel = -1;
+
         var connectCallback = function(frame) {
             //console.log('Connected: ' + frame);
 
@@ -169,6 +171,7 @@
                     var alarmLevel = parseInt(response.alarmlevel);
                     //console.log("response.alarmLevel: "+response.alarmlevel);
                     if (alarmLevel > 0) {
+                        maxAlarmLevel = alarmLevel;
                         document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
                         setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
                         setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
@@ -184,6 +187,26 @@
                 stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
             } );
             stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+
+            stompClient.subscribe("/app/event/update/register", function(message) {
+                stompClient.subscribe("/topic/event/update/"+message.body, function(message) {
+                    var response = JSON.parse(message.body);
+                    var alarmLevel = parseInt(response.alarmLevel);
+                    if (alarmLevel > 0) {
+                        if(!response.silenced && response.action == 'CREATE') {
+                            if(alarmLevel >= maxAlarmLevel) {
+                                mango.soundPlayer.playOnce("level"+ alarmLevel);
+                                if(!mango.header.evtVisualizer.started) {
+                                    mango.header.evtVisualizer.start();
+                                    setTimeout(function() {mango.header.evtVisualizer.stop()}, 5000);
+                                }
+                            }
+                        }
+                    }
+                })
+                stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my alarmLevel");
+            } );
+            stompClient.send("/app/event/update", {priority: 9}, "STOMP");
         };
 
         function connect(url, headers, errorCallback, connectCallback) {
