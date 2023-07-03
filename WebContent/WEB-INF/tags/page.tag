@@ -185,8 +185,7 @@
                     }
                 })
                 stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-            } );
-            stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+            });
 
             stompClient.subscribe("/app/event/update/register", function(message) {
                 stompClient.subscribe("/topic/event/update/"+message.body, function(message) {
@@ -205,8 +204,8 @@
                     }
                 })
                 stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my alarmLevel");
-            } );
-            stompClient.send("/app/event/update", {priority: 9}, "STOMP");
+            });
+
         };
 
         function connect(url, headers, errorCallback, connectCallback) {

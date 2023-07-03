@@ -39,6 +39,6 @@ public class ResetCacheHighestAlarmLevel implements StatefulJob {
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		long time = System.currentTimeMillis();
 		Common.ctx.getEventManager().resetHighestAlarmLevels();
-		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed: " + (System.currentTimeMillis() - time)/1000.0 + "[ms]");
+		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed: [" + (System.currentTimeMillis() - time)+ "] ms");
 	}
 }

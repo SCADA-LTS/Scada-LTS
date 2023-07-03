@@ -112,8 +112,6 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         this.lock.writeLock().lock();
         try {
             highestAlarmLevelCache.resetAlarmLevels();
-            List<UserAlarmLevel> userAlarmLevels = highestAlarmLevelDAO.selectAlarmLevels();
-            userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(userService.getUser(a.getUserId()), a));
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -137,7 +135,10 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
 
     private void reload() {
         List<UserAlarmLevel> userAlarmLevels = highestAlarmLevelDAO.selectAlarmLevels();
-        userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(userService.getUser(a.getUserId()), a));
+        userAlarmLevels.forEach(userAlarmLevel -> {
+            User user = userService.getUser(userAlarmLevel.getUserId());
+            highestAlarmLevelCache.putAlarmLevel(user, userAlarmLevel);
+        });
         LOG.info(HighestAlarmLevelServiceWithCache.class.getSimpleName() + " reloaded");
     }
 }

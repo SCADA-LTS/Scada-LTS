@@ -43,8 +43,6 @@ import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 import org.scada_lts.web.ws.model.WsEventMessage;
-import org.scada_lts.web.ws.services.EventsServiceWebSocket;
-import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -210,7 +208,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 
 			evt.returnToNormal(time, cause);
 			eventService.saveEvent(evt);
-
+			notifyEventAck(evt.getId());
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
 
@@ -227,11 +225,12 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
-
+		notifyEventAck(evt.getId());
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
 	}
 
+	@Deprecated
 	public long getLastAlarmTimestamp() {
 		return lastAlarmTimestamp;
 	}
@@ -392,6 +391,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 			evt.setHandlers(rts);
 	}
 
+	@Deprecated
 	public void handleRaiseEvent(EventInstance evt) {
 		handleRaiseEvent(evt, Collections.emptySet());
 	}
@@ -471,7 +471,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventRaise(EventInstance evt, User user) {
-		if(evt.getAlarmLevel() > AlarmLevels.NONE) {
+		if((evt.getAlarmLevel() > AlarmLevels.NONE) && isActiveStatus(evt)) {
 			ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 				highestAlarmLevelService.doUpdateAlarmLevel(user, evt, userEventService::sendAlarmLevel);
 			});
@@ -510,6 +510,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		}
 	}
 
+	@Deprecated
 	public void notifyEventToggle(int eventId, User user) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -541,5 +542,9 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	@Override
 	public void notifyWebSocketSubscribers(String message) {
 		ApplicationBeans.Lazy.getEventsServiceWebSocketBean().ifPresent(ws -> ws.notifyEventsSubscribers(message));
+	}
+
+	private static boolean isActiveStatus(EventInstance evt) {
+		return evt.isRtnApplicable() && evt.getRtnTimestamp() == 0;
 	}
 }
