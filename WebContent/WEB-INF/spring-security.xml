@@ -45,12 +45,33 @@
 
         <!-- Other -->
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_HTTPDS')" />
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="newSession" />
     </http>
-    
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds-secure/**"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" requires-channel="https"/>
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="newSession"/>
+    </http>
+
     <http use-expressions="true" disable-url-rewriting="true"
           authentication-manager-ref="authenticationManager">
         <headers>
