@@ -192,7 +192,7 @@
                     var response = JSON.parse(message.body);
                     var alarmLevel = parseInt(response.alarmLevel);
                     if (alarmLevel > 0) {
-                        if(!response.silenced && response.action == 'CREATE') {
+                        if(!response.silenced && response.action == 'CREATE' && response.active) {
                             if(alarmLevel >= maxAlarmLevel) {
                                 mango.soundPlayer.playOnce("level"+ alarmLevel);
                                 if(!mango.header.evtVisualizer.started) {
@@ -203,9 +203,8 @@
                         }
                     }
                 })
-                stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my alarmLevel");
+                stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my event");
             });
-
         };
 
         function connect(url, headers, errorCallback, connectCallback) {
