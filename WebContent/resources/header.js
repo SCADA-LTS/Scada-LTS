@@ -136,6 +136,13 @@ function SoundPlayer() {
         if (!this.mute)
         	this._repeat();
     };
+
+    this.playOnce = function(soundId) {
+        this.stop();
+        this.soundId = soundId;
+        if (!this.mute)
+            this._once();
+    };
     
     this.stop = function() {
         if (this.soundId) {
@@ -187,6 +194,28 @@ function SoundPlayer() {
         else
             // Wait for the sound manager to load.
             setTimeout(self._repeat, 500);
+    };
+
+    this._once = function() {
+        if (soundManager.onloadFinished) {
+          if (self.soundId && !self.mute) {
+              var snd = soundManager.getSoundById(self.soundId);
+              if (snd) {
+                  if (snd.readyState == 0 || snd.readyState == 1) {
+                      if (snd.readyState == 0)
+                          // Load the sound
+                          snd.load(snd.options);
+                      setTimeout(self._once, 500);
+                  } else if (snd.readyState == 3) {
+                      // The sound exists, so play it.
+                      soundManager.play(self.soundId, {} );
+                  }
+              }
+          }
+        }
+        else
+          // Wait for the sound manager to load.
+          setTimeout(self._once, 500);
     };
     
     this._repeatDelay = function() {

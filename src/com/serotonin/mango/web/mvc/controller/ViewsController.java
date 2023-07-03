@@ -23,7 +23,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IViewDAO;
@@ -93,7 +92,7 @@ public class ViewsController extends ParameterizableViewController {
 
 		if (currentView != null) {
 			if (!user.isAdmin())
-				Permissions.ensureViewPermission(user, currentView);
+				GetViewsWithAccess.ensureViewReadPermission(user, currentView);
 
 			// Make sure the owner still has permission to all of the points in
 			// the view, and that components are

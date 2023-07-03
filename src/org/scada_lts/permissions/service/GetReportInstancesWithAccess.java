@@ -1,6 +1,7 @@
 package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.report.ReportInstance;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,5 +95,23 @@ public class GetReportInstancesWithAccess implements GetObjectsWithAccess<Report
             return false;
         }
         return user.isAdmin() || reportInstance.getUserId() == user.getId();
+    }
+
+    public static void ensureReportInstanceReadPermission(User user, ReportInstance reportInstance) {
+        if(!hasReportInstanceReadPermission(user, reportInstance)) {
+            throw new PermissionException("User does not have permission to access the report instance", user);
+        }
+    }
+
+    public static void ensureReportInstanceSetPermission(User user, ReportInstance reportInstance) {
+        if(!hasReportInstanceSetPermission(user, reportInstance)) {
+            throw new PermissionException("User does not have permission to access the report instance", user);
+        }
+    }
+
+    public static void ensureReportInstanceOwnerPermission(User user, ReportInstance reportInstance) {
+        if(!hasReportInstanceOwnerPermission(user, reportInstance)) {
+            throw new PermissionException("User does not have permission to access the report instance", user);
+        }
     }
 }

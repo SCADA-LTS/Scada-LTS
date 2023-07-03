@@ -250,6 +250,11 @@
     <async-supported>true</async-supported>
   </servlet>
   <servlet>
+    <servlet-name>httpDataSourceSecure</servlet-name>
+    <servlet-class>com.serotonin.mango.web.servlet.HttpDataSourceServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet>
     <servlet-name>imageValue</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ImageValueServlet</servlet-class>
     <async-supported>true</async-supported>
@@ -364,6 +369,10 @@
   <servlet-mapping>
     <servlet-name>httpDataSource</servlet-name>
     <url-pattern>/httpds</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>httpDataSourceSecure</servlet-name>
+    <url-pattern>/httpds-secure</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>imageValue</servlet-name>
