@@ -21,9 +21,6 @@ public class V2_7_5_4_1__UpdateAbsoluteToRelativeUrlInLinkComponent extends Base
 
     private static final Log LOG = LogFactory.getLog(V2_7_5_4_1__UpdateAbsoluteToRelativeUrlInLinkComponent.class);
 
-    private static final int Z_INDEX_DEFAULT = 2;
-    private static final int Z_INDEX_MIN = 1;
-
     @Override
     public void migrate(Context context) throws Exception {
 
@@ -64,7 +61,7 @@ public class V2_7_5_4_1__UpdateAbsoluteToRelativeUrlInLinkComponent extends Base
                     if(link != null) {
                         int index = link.lastIndexOf("/");
                         if(index != -1)
-                            linkComponent.setLink(link.substring(index));
+                            linkComponent.setLink(link.substring(index + 1));
                     }
                 }
             }
