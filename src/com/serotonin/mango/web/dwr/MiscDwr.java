@@ -364,19 +364,19 @@ public class MiscDwr extends BaseDwr {
 			}
 
 			if ((pollRequest.isView() && user != null)
-					|| (pollRequest.isViewEdit() && user != null)) {
-					//|| pollRequest.getAnonViewId() > 0) {
+					|| (pollRequest.isViewEdit() && user != null)
+					|| pollRequest.getAnonViewId() > 0) {
 				List<ViewComponentState> newStates = new ArrayList<>();
-				/*if (pollRequest.getAnonViewId() > 0)
+				if (pollRequest.getAnonViewId() > 0)
 					newStates = viewDwr.getViewPointDataAnon(pollRequest
 							.getAnonViewId());
-				else {*/
+				else {
 					int viewId = pollRequest.getViewId();
 					View view = getView(viewId, httpRequest, new ViewService(), pollRequest.isViewEdit());
 					view.validateViewComponents(user);
 					newStates = viewDwr.getViewPointData(user, view, pollRequest
 							.isViewEdit());
-				//}
+				}
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
 
 				for (ViewComponentState newState : newStates) {

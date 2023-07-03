@@ -76,7 +76,6 @@ import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ThumbnailComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -100,6 +99,9 @@ import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getResponse;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -117,17 +119,18 @@ public class ViewDwr extends BaseDwr {
 	//
 	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
 
-	@Deprecated
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			return new ArrayList<>();
-		return getUser(new UserService())
-				.map(user -> getViewPointData(user, view, false))
-				.orElse(new ArrayList<>());
+		return getRequest()
+				.map(request -> getUser(new UserService(), request).stream()
+							.peek(user -> getResponse().ifPresent(response -> authenticateAnonymousUser(user, request, response)))
+							.flatMap(user -> getViewPointData(user, view, false).stream())
+							.collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 
-	@Deprecated
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -137,7 +140,7 @@ public class ViewDwr extends BaseDwr {
 			throw new PermissionException("Point is not anonymously settable", null);
 
 		// Allow the set.
-		setPointImpl(view.findDataPoint(viewComponentId), valueStr, new AnonymousUser());
+		setPointImpl(view.findDataPoint(viewComponentId), valueStr, Common.getUser());
 
 		return viewComponentId;
 	}
@@ -324,6 +327,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -346,7 +350,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
 				view.getViewUsers().remove(su);
@@ -361,6 +365,7 @@ public class ViewDwr extends BaseDwr {
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
@@ -412,7 +417,7 @@ public class ViewDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
@@ -436,6 +441,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public void deleteViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -487,9 +493,7 @@ public class ViewDwr extends BaseDwr {
 
 		if (point != null) {
 			// Check that setting is allowed.
-			int access = view.getUserAccess(user);
-			if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
-				throw new PermissionException("Not allowed to set this point", user);
+			GetViewsWithAccess.ensureViewSetPermission(user, view);
 
 			// Try setting the point.
 			setPointImpl(point, valueStr, user);

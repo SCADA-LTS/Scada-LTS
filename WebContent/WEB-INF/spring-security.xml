@@ -65,6 +65,8 @@
 
         <!-- Login Form -->
         <intercept-url pattern="/login.htm" access="permitAll" />
+        <!-- Logout -->
+        <intercept-url pattern="/logout.htm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
         <!-- Static resources -->
         <intercept-url pattern="/graphics/**" access="permitAll" />
@@ -81,124 +83,188 @@
         <!-- Monitoring -->
         <intercept-url pattern="/monitoring/**" access="permitAll" />
 
-        <!-- REST API User -->
+        <!-- Anonymous -->
+        <intercept-url pattern="/public_view.htm" access="permitAll" />
 
-        <!-- Auth -->
-        <intercept-url pattern="/api/auth/**" access="permitAll" />
+        <!-- Websocket -->
+        <!--intercept-url pattern="/ws-scada/alarmLevel/info" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" /-->
+        <intercept-url pattern="/ws-scada/alarmLevel/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
-        <!-- DWR -->
+        <!-- New UI (vue) -->
+        <intercept-url pattern="/app.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+
+        <!-- DWR Resources -->
         <intercept-url pattern="/dwr/*.js" access="permitAll" />
         <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
 
+        <!-- DWR/JSP User -->
         <!-- MiscDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/*.doLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.terminateLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.initializeLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.notifyLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.doLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.terminateLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.initializeLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.notifyLongPoll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.setLocale.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.jsError.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.resetWatchlistState.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.addUserComment.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeAllPendingEvents.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.toggleSilence.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
-        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.setLocale.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.jsError.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.silenceAll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.sendTestEmail.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.setHomeUrl.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.getHomeUrl.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.forcePointRead.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.toggleUserMuted.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.getDocumentationItem.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
-        <intercept-url pattern="/dwr/call/plaincall/*.silenceAll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.sendTestEmail.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.setHomeUrl.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.getHomeUrl.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.setPoint.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.forcePointRead.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/dwr/call/plaincall/*.toggleUserMuted.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <!-- WatchLists -->
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.init.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.getDateRangeDefaults.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.addNewWatchList.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.setSelectedWatchList.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.deleteWatchList.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.updateWatchListName.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.addToWatchList.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.removeFromWatchList.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.moveDown.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.moveUp.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.setPoint.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.getImageChartData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/watch_list.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
-        <!-- WatchListDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.deleteWatchList.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/WatchListDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <!-- Events -->
+        <intercept-url pattern="/dwr/call/plaincall/EventsDwr.searchOld.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/EventsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/events.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
-        <!-- DataPointDetailsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- DataSourceEditDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/DataSourceEditDwr.deletePoint.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/DataSourceEditDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- EventsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/EventsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- ReportsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.deleteReport.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- ViewDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/ViewDwr.deleteViewComponent.dwr" access="hasRole('ROLE_ADMIN')" />
+        <!-- Views -->
+        <intercept-url pattern="/dwr/call/plaincall/ViewDwr.setViewPoint.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/ViewDwr.executeScript.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/ViewDwr.setViewPointAnon.dwr" access="hasRole('ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/ViewDwr.getChartData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/dwr/call/plaincall/ViewDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/views.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/view_edit.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/enhChart" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/achart/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
-        <!-- UsersDwr -->
+        <!-- Reports -->
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.init.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.getReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.getReportInstances.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.createReportFromWatchlist.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.runReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.saveReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.deleteReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.deleteReportInstance.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.setPreventPurge.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/export/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/eventExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/userCommentExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/userCommentExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/reportImageChart/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/reportChart.shtm" access="@guard.hasReportInstanceReadPermission(request,false,'instanceId')" />
+        <intercept-url pattern="/reports.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+
+        <!-- Users -->
+        <intercept-url pattern="/dwr/call/plaincall/UsersDwr.getInitData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/UsersDwr.saveUser.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/UsersDwr.saveUserAdmin.dwr" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/dwr/call/plaincall/UsersDwr.deleteUser.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/UsersDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- CompoundEventsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/CompoundEventsDwr.deleteCompoundEvent.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/CompoundEventsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- DataPointEditDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/DataPointEditDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- DataSourceListDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/DataSourceListDwr.deleteDataSource.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/DataSourceListDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- EventHandlersDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/EventHandlersDwr.deleteEventHandler.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/EventHandlersDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- ScheduledEventsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/ScheduledEventsDwr.deleteScheduledEvent.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/ScheduledEventsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- PointLinksDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/PointLinksDwr.deletePointLink.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/PointLinksDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- UsersProfilesDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/UsersProfilesDwr.deleteUsersProfile.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/UsersProfilesDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <!-- ScriptsDwr -->
-        <intercept-url pattern="/dwr/call/plaincall/ScriptsDwr.deleteScript.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/ScriptsDwr.*.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-
-        <intercept-url pattern="/dwr/call/plaincall/EmportDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/MailingListsDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/MaintenanceEventsDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/PointHierarchyDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/PublisherEditDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/PublisherListDwr*" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/SystemSettingsDwr*" access="hasRole('ROLE_ADMIN')" />
-
-        <intercept-url pattern="/data_point_details.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/watch_list.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/views.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/events.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/reports.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/UsersDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/users.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/help.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/logout.htm" access="permitAll" />
 
-        <intercept-url pattern="/compound_events.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/data_source_edit.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/emport.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/event_handlers.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/mailing_lists.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/maintenance_events.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/point_links.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/publisher_edit.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/publishers.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/scheduled_events.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/scripting.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/system_settings.shtm" access="hasRole('ROLE_ADMIN')" />
+        <!-- Data Point Details -->
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.getHistoryTableData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.getDateRangeDefaults.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.getStatsChartData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.getImageChartData.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.setPoint.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_point_details.shtm" access="@guard.hasDataPointReadPermission(request,false,'dpid')" />
+        <intercept-url pattern="/chart/*.png" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+
+        <!-- Help -->
+        <intercept-url pattern="/help.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+
+        <!-- DWR/JSP Admin only -->
+        <!-- UserProfiles -->
+        <intercept-url pattern="/dwr/call/plaincall/UsersProfilesDwr.deleteUsersProfile.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/UsersProfilesDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/usersProfiles.shtm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/webcam_live_feed.htm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- DataSources and DataPoints -->
+        <intercept-url pattern="/dwr/call/plaincall/DataSourceEditDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointEditDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_source_edit.shtm" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/data_sources.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- CompoundEvents -->
+        <intercept-url pattern="/dwr/call/plaincall/CompoundEventsDwr.deleteCompoundEvent.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/CompoundEventsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/compound_events.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- EventHandlers -->
+        <intercept-url pattern="/dwr/call/plaincall/EventHandlersDwr.deleteEventHandler.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/EventHandlersDwr.testProcessCommand.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/EventHandlersDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/event_handlers.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- EventHandlers -->
+        <intercept-url pattern="/dwr/call/plaincall/ScheduledEventsDwr.deleteScheduledEvent.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/ScheduledEventsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/scheduled_events.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- PointLinks -->
+        <intercept-url pattern="/dwr/call/plaincall/PointLinksDwr.deletePointLink.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/PointLinksDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/point_links.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- Scripts -->
+        <intercept-url pattern="/dwr/call/plaincall/ScriptsDwr.deleteScript.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/dwr/call/plaincall/ScriptsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/scripting.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- Export/Import -->
+        <intercept-url pattern="/dwr/call/plaincall/EmportDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/emport.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/export_project.htm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/import_project.htm" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/data_sources.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- MailingLists -->
+        <intercept-url pattern="/dwr/call/plaincall/MailingListsDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/mailing_lists.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- MaintenanceEvents -->
+        <intercept-url pattern="/dwr/call/plaincall/MaintenanceEventsDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/maintenance_events.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- PointHierarchy -->
+        <intercept-url pattern="/dwr/call/plaincall/PointHierarchyDwr*" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- PublisherEdit -->
+        <intercept-url pattern="/dwr/call/plaincall/PublisherEditDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/publisher_edit.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- PublisherList -->
+        <intercept-url pattern="/dwr/call/plaincall/PublisherListDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/publishers.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- SystemSettings -->
+        <intercept-url pattern="/dwr/call/plaincall/SystemSettingsDwr*" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/system_settings.shtm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- Webcam Live -->
+        <intercept-url pattern="/webcam_live_feed.htm" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- REST API User -->
+        <!-- Auth -->
+        <intercept-url pattern="/api/auth/**" access="permitAll" />
 
         <!-- WatchList POST/PUT/GET -->
         <intercept-url pattern="/api/watch-lists" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
@@ -248,24 +314,24 @@
         <intercept-url pattern="/api/point_value/getValue/{xid}" access="@guard.hasDataPointReadPermission(request,#xid,true)" method="GET" />
 
         <!-- Event POST/GET -->
-        <intercept-url pattern="/api/events/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
-        <intercept-url pattern="/api/events/highestUnsilencedLevelAlarm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/events/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="POST" />
+        <intercept-url pattern="/api/events/highestUnsilencedLevelAlarm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
         <intercept-url pattern="/api/events/datapoint/{id}" access="@guard.hasDataPointReadPermission(request,#id,false)" method="GET" />
 
         <!-- Alarm GET -->
-        <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasRole('ROLE_ADMIN')" method="GET" />
 
         <!-- Chart GET -->
         <intercept-url pattern="/api/amcharts/by-id" access="@guard.hasDataPointReadPermission(request,false,'ids')" method="GET" />
         <intercept-url pattern="/api/amcharts/by-xid" access="@guard.hasDataPointReadPermission(request,true,'ids')" method="GET" />
 
         <!-- Config GET -->
-        <intercept-url pattern="/api/config/replacealert" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/config/replacealert" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
 
         <!-- IsAlive POST/GET -->
-        <intercept-url pattern="/api/is_alive/watchdog" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
-        <intercept-url pattern="/api/is_alive/time" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
-        <intercept-url pattern="/api/is_alive/time2" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/is_alive/watchdog" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="POST" />
+        <intercept-url pattern="/api/is_alive/time" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
+        <intercept-url pattern="/api/is_alive/time2" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
 
         <!-- Cmp GET -->
         <intercept-url pattern="/api/cmp/get/{xids}" access="@guard.hasDataPointReadPermission(request,#xids,true)" method="GET" />
@@ -287,12 +353,12 @@
         <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
 
         <!-- Other -->
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
                     password-parameter="password" username-parameter="username"
-                    login-processing-url="/login.htm" />
+                    login-processing-url="/login.htm"/>
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
         <session-management session-fixation-protection="newSession" />
@@ -315,6 +381,7 @@
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
                                     WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
                                     WHEN username = 'httpds-basic' THEN 'ROLE_HTTPDS'
+                                    WHEN username = 'anonymous-user' THEN 'ROLE_PUBLIC'
                                     ELSE 'ROLE_USER'
                                END AS role FROM users WHERE username = ?"/>
         </authentication-provider>

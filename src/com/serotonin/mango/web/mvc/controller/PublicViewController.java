@@ -36,23 +36,36 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
 
 /**
  * @author Matthew Lohbihler
  */
-@Deprecated
 public class PublicViewController extends ParameterizableViewController {
+
+    public final ViewService viewService;
+    public final UserService userService;
+
+    public PublicViewController() {
+        this.viewService = new ViewService();
+        this.userService = new UserService();
+    }
+
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
-        return getUser(new UserService())
-                .map(user -> getView(request, new ViewService())
-                        .filter(view -> hasPermissions(view, user))
-                        .map(view -> {
+        return getView(request, viewService).stream()
+                .filter(this::hasPermissions)
+                .flatMap(view -> getUser(userService, request).stream()
+                        .peek(user -> authenticateAnonymousUser(user, request, response))
+                        .filter(user -> hasPermissions(view, user))
+                        .map(user -> {
                             applyPermissions(view, user);
                             Common.addAnonymousView(request, view);
                             return createModel(view);
-                        }).orElse(new HashMap<>()))
+                        })
+                )
                 .map(model -> new ModelAndView(getViewName(), model))
+                .findAny()
                 .orElse(new ModelAndView(getViewName(), new HashMap<>()));
     }
 
@@ -87,8 +100,11 @@ public class PublicViewController extends ParameterizableViewController {
     }
 
     private boolean hasPermissions(View view, User user) {
-        return view.getAnonymousAccess() > ShareUser.ACCESS_NONE
-                && view.getUserAccess(user) > ShareUser.ACCESS_NONE;
+        return view.getUserAccess(user) > ShareUser.ACCESS_NONE;
+    }
+
+    private boolean hasPermissions(View view) {
+        return view.getAnonymousAccess() > ShareUser.ACCESS_NONE;
     }
 
     private void applyPermissions(View view, User user) {

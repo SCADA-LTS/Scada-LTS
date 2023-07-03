@@ -3,6 +3,7 @@ package org.scada_lts.permissions.service;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.PermissionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IViewDAO;
@@ -92,5 +93,23 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
             return false;
         }
         return user.isAdmin() || view.getUserId() == user.getId() || view.getUserAccess(user) >= ShareUser.ACCESS_OWNER;
+    }
+
+    public static void ensureViewReadPermission(User user, View view) {
+        if(!hasViewReadPermission(user, view)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
+    }
+
+    public static void ensureViewSetPermission(User user, View view) {
+        if(!hasViewSetPermission(user, view)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
+    }
+
+    public static void ensureViewOwnerPermission(User user, View view) {
+        if(!hasViewOwnerPermission(user, view)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
     }
 }

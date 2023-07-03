@@ -45,7 +45,10 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
-  <c:set var="isLoggedToScadaUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && (sessionUser.getAttribute('roles').size() != 1 || !sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+  <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+  <c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isLoggedToScadaUser" value="${isRoles && !isRoleService && !isRolePublic}" />
   <c:choose>
     <c:when test="${isLoggedToScadaUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
@@ -119,8 +122,10 @@
 		};
 
       dwr.util.setEscapeHtml(false);
-      <c:if test="${isLoggedToScadaUser}">
+      <c:if test="${isLoggedToScadaUser || isRolePublic}">
         dojo.addOnLoad(mango.header.onLoad);
+      </c:if>
+      <c:if test="${isLoggedToScadaUser}">
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
@@ -343,6 +348,16 @@
           </div>
         </c:if>
 
+        <div class="spacer">
+          <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnect()">
+          <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
+          <tag:menuItem href="help.shtm" png="help" key="header.help"/>
+        </div>
+      </c:if>
+
+      <c:if test="${isRolePublic}">
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <span onclick="disconnect()">
