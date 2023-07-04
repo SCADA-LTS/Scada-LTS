@@ -18,12 +18,16 @@
 
 package org.scada_lts.quartz;
 
-import com.serotonin.mango.Common;
+import com.serotonin.mango.util.NotifyEventUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 /** 
  * Update data job for unsilenced alarm level in cache.
@@ -31,14 +35,25 @@ import org.quartz.StatefulJob;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
+
 public class ResetCacheHighestAlarmLevel implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(ResetCacheHighestAlarmLevel.class);
 
+	private final IHighestAlarmLevelService highestAlarmLevelService;
+	private final UserEventServiceWebSocket userEventServiceWebSocket;
+	private final UserService userService;
+
+	public ResetCacheHighestAlarmLevel() {
+		this.highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+		this.userService = new UserService();
+		this.userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
+	}
+
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		long time = System.currentTimeMillis();
-		Common.ctx.getEventManager().resetHighestAlarmLevels();
-		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed: [" + (System.currentTimeMillis() - time)+ "] ms");
+		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userService, userEventServiceWebSocket);
+		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed in [" + (System.currentTimeMillis() - time)+ "] ms");
 	}
 }

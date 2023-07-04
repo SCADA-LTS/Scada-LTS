@@ -153,22 +153,23 @@ public class ApplicationBeans {
         return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
     }
 
+    @Deprecated
     public static class Lazy {
 
         private Lazy() {}
-
+        @Deprecated
         public static Optional<UserEventServiceWebSocket> getUserEventServiceWebsocketBean() {
             return getBeanFromContext("userEventServiceWebSocket", UserEventServiceWebSocket.class);
         }
-
+        @Deprecated
         public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
             return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
         }
-
+        @Deprecated
         public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
             return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
         }
-
+        @Deprecated
         private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
