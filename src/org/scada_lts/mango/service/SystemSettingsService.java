@@ -23,7 +23,6 @@ import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +37,6 @@ import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
  *
  * @author Radoslaw Jajko
  */
-@Service
 public class SystemSettingsService {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);

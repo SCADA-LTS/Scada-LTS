@@ -34,7 +34,6 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.exception.PointHierarchyDaoException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +47,6 @@ import com.serotonin.mango.vo.DataPointVO;
  * person supporting and coreecting translation Jerzy Piejko
  */
 
-@Repository
 public class PointHierarchyDAO {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyDAO.class);

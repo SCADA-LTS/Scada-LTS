@@ -69,7 +69,6 @@ public class ApplicationBeans {
                 getBeanFromContext("dataPointUserPermissionsService", PermissionsService.class));
     }
 
-    @Deprecated
     public static GetShareUsers<View> getViewGetShareUsersBean() {
         return new ViewGetShareUsers(getViewDaoBean());
     }

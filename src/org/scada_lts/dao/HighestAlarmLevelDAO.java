@@ -4,13 +4,11 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserAlarmLevel;
-import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
     private static final Log LOG = LogFactory.getLog(HighestAlarmLevelDAO.class);
 

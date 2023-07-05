@@ -2,13 +2,11 @@ package org.scada_lts.web.ws.config;
 
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.springframework.security.web.header.HeaderWriter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-@Component
 public class HeadersFromSystemSettingsWriter implements HeaderWriter {
 
     private final SystemSettingsService systemSettingsService;

@@ -3,14 +3,12 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.scada_lts.dao.IUserCommentDAO;
-import org.springframework.stereotype.Service;
 
 /**
  * Service for Comments
  *
  * @author Radoslaw Jajko, rjajko@softq.pl
  */
-@Service
 public class UserCommentService {
 
     private final IUserCommentDAO userCommentDAO;

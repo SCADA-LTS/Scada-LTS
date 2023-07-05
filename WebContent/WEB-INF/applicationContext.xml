@@ -97,6 +97,10 @@
     <constructor-arg ref="dataSourceDAO"/>
   </bean>
 
+  <bean id="watchListUserPermissionsService" class="org.scada_lts.permissions.service.WatchListUserPermissionsService">
+    <constructor-arg ref="watchListDAO"/>
+  </bean>
+
   <!-- User Cachable -->
 
   <bean id="watchListGetShareUsersWithCache" class="org.scada_lts.permissions.cache.WatchListGetShareUsersWithCache">
@@ -134,6 +138,10 @@
 
   <bean id="dataPointUserPermissionsServiceWithCache" class="org.scada_lts.permissions.cache.DataPointUserPermissionsServiceWithCache">
     <constructor-arg ref="dataPointUserPermissionsService"/>
+  </bean>
+
+  <bean id="watchListUserPermissionsServiceWithCache" class="org.scada_lts.permissions.cache.WatchListUserPermissionsServiceWithCache">
+    <constructor-arg ref="watchListUserPermissionsService"/>
   </bean>
   <!-- -->
 
@@ -219,6 +227,9 @@
   <bean id="databaseSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="expectedType" value="javax.sql.DataSource"/>
     <property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
+    <!--property name="cache" value="true" />
+    <property name="lookupOnStartup" value="true" />
+    <property name="exposeAccessContext" value="false" /-->
   </bean>
 
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
@@ -236,5 +247,4 @@
     <constructor-arg ref="pointEventDetectorCache"/>
   </bean>
   <!-- -->
-
 </beans>

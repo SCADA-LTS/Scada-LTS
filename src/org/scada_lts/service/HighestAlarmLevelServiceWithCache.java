@@ -13,13 +13,11 @@ import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 
-@Service
 public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelService {
 
     private static final Log LOG = LogFactory.getLog(HighestAlarmLevelServiceWithCache.class);
