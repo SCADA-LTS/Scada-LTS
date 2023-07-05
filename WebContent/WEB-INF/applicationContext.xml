@@ -227,9 +227,6 @@
   <bean id="databaseSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="expectedType" value="javax.sql.DataSource"/>
     <property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
-    <!--property name="cache" value="true" />
-    <property name="lookupOnStartup" value="true" />
-    <property name="exposeAccessContext" value="false" /-->
   </bean>
 
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
