@@ -25,7 +25,7 @@
         <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="newSession" />
+        <session-management session-fixation-protection="none" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds/**"
@@ -47,7 +47,7 @@
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_HTTPDS')" />
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="newSession" />
+        <session-management session-fixation-protection="none" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds-secure/**"
@@ -69,7 +69,7 @@
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="newSession"/>
+        <session-management session-fixation-protection="none"/>
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true"
@@ -108,8 +108,12 @@
         <intercept-url pattern="/public_view.htm" access="permitAll" />
 
         <!-- Websocket -->
-        <!--intercept-url pattern="/ws-scada/alarmLevel/info" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" /-->
         <intercept-url pattern="/ws-scada/alarmLevel/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/ws-scada/event/update/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/ws-scada/queue/errors" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/ws-scada/session" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/ws-scada/listusers" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/ws-scada/websocketStats" access="hasRole('ROLE_ADMIN')" />
 
         <!-- New UI (vue) -->
         <intercept-url pattern="/app.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
@@ -382,7 +386,7 @@
                     login-processing-url="/login.htm"/>
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
-        <session-management session-fixation-protection="newSession" />
+        <session-management session-fixation-protection="none" />
         <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
