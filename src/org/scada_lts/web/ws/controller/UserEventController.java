@@ -5,7 +5,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.model.WsEventMessage;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -30,11 +29,12 @@ public class UserEventController {
     }
 
     @MessageMapping("/event/update")
-    public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) {
-        String user = principal.getName();
-        LOG.debug("process[" + user + "]" + "message: " + message);
-        userEventServiceWebSocket.sendEventUpdate(principal.getUser(), WsEventMessage.reset());
-        return "user: " + user + ", message: " + message;
+    public String process(String message, UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
+        String username = principal.getName();
+        User user = userService.getUser(username);
+        LOG.debug("process[" + username + "]" + "message: " + message);
+        userEventServiceWebSocket.sendEventUpdate(user, WsEventMessage.reset());
+        return "user: " + username + ", message: " + message;
     }
 
     @SubscribeMapping("/event/update/register")
