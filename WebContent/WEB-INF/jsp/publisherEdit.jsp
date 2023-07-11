@@ -68,8 +68,8 @@
             <c:forEach items="${publisherEvents}" var="event">
               <tr><td class="formError">
                 <tag:eventIcon eventBean="${event}"/>
-                ${event.prettyActiveTimestamp}:
-                ${event.message}
+                <c:out value="${event.prettyActiveTimestamp}" />:
+                <c:out value="${event.message}" />
               </td></tr>
             </c:forEach>
           </table>
