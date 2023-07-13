@@ -8,15 +8,17 @@ public class JsonSettingsMisc implements Serializable {
     private String dataPointRuntimeValueSynchronized;
     public boolean enableFullScreen;
     public boolean hideShortcutDisableFullScreen;
+    public int eventPendingLimit;
 
     public JsonSettingsMisc() {}
 
-    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized,
-                            boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
+    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen,
+                            boolean hideShortcutDisableFullScreen, int eventPendingLimit) {
         this.uiPerformance = uiPerformance;
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
         this.enableFullScreen = enableFullScreen;
         this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+        this.eventPendingLimit = eventPendingLimit;
     }
 
     public int getUiPerformance() {
@@ -49,5 +51,13 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
         this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+    }
+
+    public int getEventPendingLimit() {
+        return eventPendingLimit;
+    }
+
+    public void setEventPendingLimit(int eventPendingLimit) {
+        this.eventPendingLimit = eventPendingLimit;
     }
 }

@@ -142,6 +142,7 @@ public class SystemSettingsDAO {
 	private static final String DELETE_POINT_VALUES = "delete from pointValues";
 	private static final String DELETE_MAINTENANCE_EVENTS = "delete from maintenanceEvents";
 	private static final String DELETE_MAILING_LISTS = "delete from mailingLists";
+	@Deprecated
 	private static final String DELETE_USERS = "delete from users";
 	private static final String DELETE_PUBLISHERS = "delete from publishers";
 	private static final String DELETE_DATA_POINT_USERS = "delete from dataPointUsers";
@@ -154,7 +155,7 @@ public class SystemSettingsDAO {
 
 	public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
 	public static final String VIEW_FORCE_FULL_SCREEN_MODE = "viewForceFullScreenMode";
-
+	public static final String EVENT_PENDING_LIMIT = "eventPendingLimit";
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
@@ -388,6 +389,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(EMAIL_TIMEOUT, String.valueOf(SystemSettingsUtils.getEmailTimeout()));
 		DEFAULT_VALUES.put(VIEW_FORCE_FULL_SCREEN_MODE, SystemSettingsUtils.isForceFullScreenMode());
 		DEFAULT_VALUES.put(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, SystemSettingsUtils.isHideShortcutDisableFullScreen());
+		DEFAULT_VALUES.put(EVENT_PENDING_LIMIT, SystemSettingsUtils.getEventPendingLimit());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

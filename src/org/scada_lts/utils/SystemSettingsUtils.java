@@ -34,6 +34,7 @@ public final class SystemSettingsUtils {
 
     public static final String VIEW_FORCE_FULL_SCREEN_MODE = "view.forceFullScreen";
     public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "view.hideShortcutDisableFullScreen";
+    public static final String EVENT_PENDING_LIMIT = "event.pending.limit";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -200,6 +201,16 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return false;
+        }
+    }
+
+    public static int getEventPendingLimit() {
+        try {
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_LIMIT, "100");
+            return Integer.parseInt(eventPendingLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
         }
     }
 }

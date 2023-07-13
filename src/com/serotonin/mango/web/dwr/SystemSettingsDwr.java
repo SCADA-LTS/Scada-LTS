@@ -22,7 +22,6 @@ import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -39,6 +38,8 @@ import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
@@ -153,13 +154,14 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
-		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsDAO
-				.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
+		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
 
 		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
-				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
+				systemSettingsService.getMiscSettings().isHideShortcutDisableFullScreen());
 		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
-				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
+				systemSettingsService.getMiscSettings().isEnableFullScreen());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
+				systemSettingsService.getMiscSettings().getEventPendingLimit());
 		return settings;
 	}
 
@@ -209,7 +211,8 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		data.put("historyCount", sum);
 		data.put("topPoints", counts);
-		data.put("eventCount", new EventDao().getEventCount());
+		MangoEvent eventService = new EventService();
+		data.put("eventCount", eventService.getEventCount());
 
 		return data;
 	}
@@ -307,7 +310,8 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	
 	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
-											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen) {
+											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
+											int eventPendingLimit) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -322,6 +326,11 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, viewEnableFullScreen);
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, viewHideShortcutDisableFullScreen);
+		if(eventPendingLimit < 0) {
+			response.addContextualMessage(SystemSettingsDAO.EVENT_PENDING_LIMIT, "validate.invalidValue");
+		} else {
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
+		}
 		return response;
 	}
 

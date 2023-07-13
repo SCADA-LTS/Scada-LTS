@@ -27,12 +27,13 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
@@ -80,7 +81,8 @@ public class PublisherEditController extends ParameterizableViewController {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("publisher", publisherVO);
         if (publisherVO.getId() != Common.NEW_ID) {
-            List<EventInstance> events = new EventDao().getPendingEventsForPublisher(publisherVO.getId(), user.getId());
+            MangoEvent eventService = new EventService();
+            List<EventInstance> events = eventService.getPendingEventsForPublisher(publisherVO.getId(), user.getId());
             List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
             if (events != null) {
                 ResourceBundle bundle = Common.getBundle(request);

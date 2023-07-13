@@ -10,9 +10,11 @@ import java.util.List;
 
 public interface PointEventDetectorCacheable {
 
+    String CACHE_ENABLED_KEY = "eventdetector.cache.enabled";
+
     @Caching(cacheable = {
             @Cacheable(cacheNames = "point_event_detector_list_by_data_point_id", key = "#dataPoint.id",
-                    unless = "#result.isEmpty()", condition = "#dataPoint != null")
+                    condition = "#dataPoint != null")
     })
     List<PointEventDetectorVO> selectPointEventDetectors(DataPointVO dataPoint);
 
