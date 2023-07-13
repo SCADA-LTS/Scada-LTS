@@ -258,11 +258,11 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
-	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean disabledCache) {
+	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean forceDisabledCache) {
 		List<EventInstance> results = null;
 		try {
 			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (!disabledCache && cacheEnable) {
+			if (!forceDisabledCache && cacheEnable) {
 				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
 						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp))
 						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
