@@ -68,19 +68,18 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
 
     @Override
     public boolean doUpdateAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
-        if(event.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
-            this.lock.writeLock().lock();
-            try {
-                if(event.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
-                    highestAlarmLevelCache.putAlarmLevel(user, new UserAlarmLevel(user, event.getAlarmLevel()));
-                    send.accept(user, new AlarmLevelMessage(event.getAlarmLevel()));
-                    return true;
-                }
-            } finally {
-                this.lock.writeLock().unlock();
+        this.lock.writeLock().lock();
+        try {
+            UserAlarmLevel userAlarmLevel = highestAlarmLevelCache.getAlarmLevel(user);
+            if(event.getAlarmLevel() > userAlarmLevel.getAlarmLevel()) {
+                highestAlarmLevelCache.putAlarmLevel(user, UserAlarmLevel.fromEvent(user, event));
+                send.accept(user, AlarmLevelMessage.alarmLevelFromEvent(event));
+                return true;
             }
+            return false;
+        } finally {
+            this.lock.writeLock().unlock();
         }
-        return false;
     }
 
     @Override
@@ -90,19 +89,18 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
 
     @Override
     public boolean doRemoveAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
-        if(event.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
-            this.lock.writeLock().lock();
-            try {
-                if (event.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
-                    highestAlarmLevelCache.removeAlarmLevel(user);
-                    send.accept(user, new AlarmLevelMessage(highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()));
-                    return true;
-                }
-            } finally {
-                this.lock.writeLock().unlock();
+        this.lock.writeLock().lock();
+        try {
+            UserAlarmLevel userAlarmLevel = highestAlarmLevelCache.getAlarmLevel(user);
+            if (event.getAlarmLevel() == userAlarmLevel.getAlarmLevel()) {
+                highestAlarmLevelCache.removeAlarmLevel(user);
+                send.accept(user, highestAlarmLevelCache.getAlarmLevel(user).toAlarmLevelMessage());
+                return true;
             }
+            return false;
+        } finally {
+            this.lock.writeLock().unlock();
         }
-        return false;
     }
 
     @Override
@@ -122,7 +120,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         try {
             UserAlarmLevel alarmLevel = highestAlarmLevelCache.getAlarmLevel(user);
             if(alarmLevel.getAlarmLevel() >= AlarmLevels.NONE) {
-                send.accept(user, new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
+                send.accept(user, alarmLevel.toAlarmLevelMessage());
                 return true;
             }
             return false;
