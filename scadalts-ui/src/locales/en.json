@@ -199,7 +199,7 @@
 	"datapointDetails.valueHistory.stats.max": "Maximum Value:",
 	"datapointDetails.valueHistory.stats.min": "Minimum Value:",
 	"datapointDetails.valueHistory.stats.sum": "Summary Value:",
-	"datapointDetails.valueHistory.stats.timeperiod": "Show history form",
+	"datapointDetails.valueHistory.stats.timeperiod": "Show history from",
 	"datapointDetails.valueHistory.subtitle": "History",
 	"datapointDetails.valueHistory.table.count": "Count",
 	"datapointDetails.valueHistory.table.date": "Date",

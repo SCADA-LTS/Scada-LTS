@@ -71,9 +71,9 @@ public class DataPointDetailsDwr extends BaseDwr {
 		PointValueTime pointValue = prepareBasePointState(Integer.toString(pointVO.getId()), state, pointVO, pointRT,
 				model);
 		setPrettyTextWithoutEqual(state, pointVO, model, pointValue);
+		model.put("hideClosingHint", true);
 		if (state.getValue() != null)
 			setChange(pointVO, state, pointRT, request, model, user);
-
 		setEvents(pointVO, user, model);
 		setMessages(state, request, "watchListMessages", model);
 
