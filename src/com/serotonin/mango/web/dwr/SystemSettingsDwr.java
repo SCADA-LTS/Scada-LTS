@@ -162,6 +162,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().isEnableFullScreen());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
 				systemSettingsService.getMiscSettings().getEventPendingLimit());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
+				systemSettingsService.getMiscSettings().isEventPendingCacheEnabled());
 		return settings;
 	}
 
@@ -311,7 +313,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	
 	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
 											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
-											int eventPendingLimit) {
+											int eventPendingLimit, boolean eventPendingCacheEnabled) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -331,6 +333,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		} else {
 			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
 		}
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, eventPendingCacheEnabled);
 		return response;
 	}
 

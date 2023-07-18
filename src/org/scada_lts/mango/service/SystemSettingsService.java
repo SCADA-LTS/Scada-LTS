@@ -134,6 +134,7 @@ public class SystemSettingsService {
         json.setHideShortcutDisableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
         json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
         json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, 100));
+        json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, false));
         return json;
     }
 
@@ -143,6 +144,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isHideShortcutDisableFullScreen());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isEnableFullScreen());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, json.getEventPendingLimit());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, json.isEventPendingCacheEnabled());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {

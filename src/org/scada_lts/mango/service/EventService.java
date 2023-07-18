@@ -185,7 +185,7 @@ public class EventService implements MangoEvent {
 		
 	}
 
-	@Deprecated
+	@Deprecated(since = "2.7.5.4")
 	@Override
 	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
 
@@ -261,13 +261,16 @@ public class EventService implements MangoEvent {
 	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean forceDisabledCache) {
 		List<EventInstance> results = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
+			boolean cacheEnable = systemSettingsService.getMiscSettings().isEventPendingCacheEnabled();
 			if (!forceDisabledCache && cacheEnable) {
+				PendingEventsCache.getInstance().startUpdate();
 				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
 						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp))
 						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
 						.collect(Collectors.toList());
 			} else {
+				if(!forceDisabledCache)
+					PendingEventsCache.getInstance().stopUpdate();
 				int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
 				int calcLimit = limit > -1 ? limit : fromSystemSettingsLimit;
 				if(alarmLevelMin > 0) {

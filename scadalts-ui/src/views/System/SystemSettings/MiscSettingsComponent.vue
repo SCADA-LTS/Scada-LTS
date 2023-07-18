@@ -46,6 +46,13 @@
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.eventPendingCacheEnabled"
+                            :label="$t('systemsettings.event.pendingCacheEnabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
                         <v-text-field
                             v-model="miscSettings.eventPendingLimit"
                             :label="$t('systemsettings.event.pendingLimit')"
