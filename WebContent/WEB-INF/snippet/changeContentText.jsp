@@ -22,5 +22,7 @@
         onkeypress="if (event.keyCode==13) $('txtSet${componentId}').onclick();"/>
 <a id="txtSet${componentId}" class="ptr"
         onclick="mango.view.setPoint(${point.id}, '${componentId}', $('txtChange${componentId}').value);"><fmt:message key="common.set"/></a>
-        </br>Double click to close
+<c:if test="${!hideClosingHint}" >
+    </br>Double click to close
+</c:if>
 <tag:relinquish/>
