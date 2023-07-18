@@ -99,8 +99,9 @@ public class AnnotatedPointValueTime extends PointValueTime {
             return "annotation.user";
         case SetPointSource.Types.POINT_LINK:
             return "annotation.pointLink";
+        default:
+            return "annotation.unknown";
         }
-        return null;
     }
 
     public String getSourceDescriptionArgument() {
