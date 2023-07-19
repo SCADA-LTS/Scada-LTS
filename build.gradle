@@ -96,7 +96,13 @@ task clearTomcat(type: Delete) {
     delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
 }
 
-task deployTomcat(type: Copy) {
+task doesScadaLTSWarFileExists {
+    doLast {
+        assert file("build/libs/Scada-LTS.war").exists()
+    }
+}
+
+task deployTomcat(type: Copy, dependsOn: fileExistScadaLTS) {
     from "build/libs/"
     into System.getenv("CATALINA_HOME")+ "/webapps"
     include('Scada-LTS.war')
