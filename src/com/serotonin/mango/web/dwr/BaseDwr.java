@@ -299,7 +299,7 @@ abstract public class BaseDwr {
     }
 
     protected String getMessage(String key) {
-        return I18NUtils.getMessage(getResourceBundle(), key);
+        return I18NUtils.getMessage(getResourceBundle(), key == null ? "" : key);
     }
 
     protected String getMessage(LocalizableMessage message) {
