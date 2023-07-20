@@ -317,14 +317,26 @@
 									</table>
 								</v-col>
 							</v-row>
-							 
-							<v-textarea :rules="[ruleNotNull]"
+							<v-textarea
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="datapoint.pointLocator.script"
 								rows=3
+                @input="validateScript"
+                :rules="[ruleValidScript, ruleNotNull]"
 								ref="scriptBodyTextarea"
 							></v-textarea>
+            <v-col>
+              <v-btn block color="primary" @click="validateScript"
+              >{{ $t('script.runScript') }}
+              </v-btn>
+            </v-col>
+            <div v-if = "this.validScript">
+              <v-alert title="Script is valid" type="success">
+                Script results: {{this.resultMessage}}
+              </v-alert>
+            </div>
+            <p v-else></p>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -443,7 +455,10 @@ export default {
 					executionDelayPeriodType: "SECONDS"
 				}
 			},
+      validScript: false,
+      resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+      ruleValidScript: () => this.validScript || this.resultMessage,
 		};
 	},
 
@@ -535,6 +550,21 @@ export default {
 				return;
 			}
 		},
+
+    async validateScript() {
+      try {
+        let resp = await this.$store.dispatch('requestPost', {
+          url:  `/datapoint/meta/test`,
+          data: this.datapoint.pointLocator
+        });
+        this.validScript = resp.success;
+        this.resultMessage = resp.message;
+        this.$refs.scriptBodyTextarea.validate();
+        this.$t(resp);
+      } catch (e) {
+        console.log('error:' + e);
+      }
+    },
 	},
 };
 </script>

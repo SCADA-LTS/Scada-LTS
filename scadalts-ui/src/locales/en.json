@@ -333,7 +333,6 @@
 	"event.audit.recip.list.9": "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}",
 	"event.audit.recip.mailingList": "mailing list '{0}'",
 	"event.audit.recip.user": "user '{0}'",
-	"event.audit.scheduledEvent": "Scheduled event",
 	"event.bacnet.covFailed": "COV subscription failed at {0}, point disabled: {1}",
 	"event.bacnet.deviceError": "No response from device at {0}, point init failed",
 	"event.bacnet.iamError": "IAm broadcast failure: {0}",
@@ -1053,5 +1052,6 @@
 	"systemsettings.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
 	"userDetails.view.forceAdminTitle": "The function is enforced by the Admin",
 	"userDetails.view.enableFullScreen": "Enable full screen mode",
-	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen"
+	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
+	"script.runScript": "Run script"
 }
