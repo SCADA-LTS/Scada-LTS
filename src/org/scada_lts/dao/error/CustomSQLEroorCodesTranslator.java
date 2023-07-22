@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 
+@Deprecated(since = "2.7.5.4")
 public class CustomSQLEroorCodesTranslator extends SQLErrorCodeSQLExceptionTranslator {
 	
 	@Resource
