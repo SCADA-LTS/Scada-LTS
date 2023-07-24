@@ -428,7 +428,7 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS All rights reserved. <fmt:message
+				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <fmt:message
 						key="footer.rightsReserved" /></td>
 			</tr>
 		</table>
@@ -609,13 +609,11 @@ var messages = {
   newTitle: "<fmt:message key="pointHierarchySLTS.newTitle"/>",
   folderNotEdit: "<fmt:message key="pointHierarchySLTS.folderNotEdit"/>",
   errorThrown: "<fmt:message key="pointHierarchySLTS.errorThrown"/>",
-  move: "<fmt:message key="pointHierarchySLTS.move"/>",
   keyParent: "<fmt:message key="pointHierarchySLTS.keyParent"/>",
   parent: "<fmt:message key="pointHierarchySLTS.parent"/>",
   folderNotRemove: "<fmt:message key="pointHierarchySLTS.folderNotRemove"/>",
   removeFolder: "<fmt:message key="pointHierarchySLTS.removeFolder"/>",
   warning: "<fmt:message key="pointHierarchySLTS.warning"/>",
-  pleaseSelectElement: "<fmt:message key="pointHierarchySLTS.pleaseSelectElement"/>",
   info: "<fmt:message key="pointHierarchySLTS.info"/>",
   isFolder: "<fmt:message key="pointHierarchySLTS.isFolder"/>",
   dataSource: "<fmt:message key="pointHierarchySLTS.dataSource"/>",

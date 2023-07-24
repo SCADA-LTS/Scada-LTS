@@ -111,6 +111,11 @@ public class DateUtils {
         return new LocalizableMessage("common.duration.hours", duration);
     }
 
+    public static String getCurrentYearInt() {
+        return String.valueOf(DateTime.now().getYear());
+    }
+
+    @Deprecated(since = "2.7.5.4")
     public static void main(String[] args) {
         long time = System.currentTimeMillis();
         System.out.println(new DateTime(time));
