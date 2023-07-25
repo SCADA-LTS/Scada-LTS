@@ -197,6 +197,8 @@
   
   <script type="text/javascript">
       var viewId = mango.longPoll.pollRequest.viewId;
+      var lastHighlightedElementIdSetZero = null;
+      var lastHighlightedElementIdSetOne = null;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -393,8 +395,8 @@
             for (var i=0; i<imageSet.imageFilenames.length; i++) {
                 html += "<a\
                   href='javascript:void(0)' onclick='graphicRendererEditor.set"+ type +"Image("+ i +")'><img\
-                    id='graphicRendererBinaryImageSet"+ type + i +"' src='"+ imageSet.imageFilenames[i] +"'\
-                    style='display:inline;' border='0'/></a>&nbsp;";
+                    id='graphicRendererBinaryImageSet"+ type + i +"' src='"+ imageSet.imageFilenames[i] +"' \
+                    onclick = highlightSelectedElement(this.id); style='display:inline;' border='0' /></a>&nbsp;";
             }
             return html;
         };
@@ -491,6 +493,41 @@
             return null;
         };
     }
+
+      this.highlightSelectedElement = function (elementId) {
+        if (elementId.includes("SetZero")) {
+          var elementToHighlightSetZero = document.getElementById(elementId);
+          var isHighlightedSetZero = elementToHighlightSetZero.classList.contains('highlighted');
+
+          if (lastHighlightedElementIdSetZero !== null) {
+            var lastHighlightedElementSetZero = document.getElementById(lastHighlightedElementIdSetZero);
+            document.getElementById(lastHighlightedElementIdSetZero).style.backgroundColor = "transparent";
+            lastHighlightedElementSetZero.classList.remove('highlighted');
+          }
+
+          if (!isHighlightedSetZero) {
+            elementToHighlightSetZero.classList.add('highlighted');
+            document.getElementById(elementId).style.backgroundColor = "grey";
+            lastHighlightedElementIdSetZero = elementId;
+          }
+        }
+        else if (elementId.includes("SetOne")) {
+          var elementToHighlightSetOne = document.getElementById(elementId);
+          var isHighlightedSetOne = elementToHighlightSetOne.classList.contains('highlighted');
+
+          if (lastHighlightedElementIdSetOne !== null) {
+            var lastHighlightedElementSetOne = document.getElementById(lastHighlightedElementIdSetOne);
+            document.getElementById(lastHighlightedElementIdSetOne).style.backgroundColor = "transparent";
+            lastHighlightedElementSetOne.classList.remove('highlighted');
+          }
+
+          if (!isHighlightedSetOne) {
+            elementToHighlightSetOne.classList.add('highlighted');
+            document.getElementById(elementId).style.backgroundColor = "grey";
+            lastHighlightedElementIdSetOne = elementId;
+          }
+        }
+      };
     var graphicRendererEditor = new GraphicRendererEditor();
   </script>
 </div>
