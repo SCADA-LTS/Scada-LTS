@@ -18,7 +18,7 @@
 				<v-col>
 					<v-select
 						label="Change Type"
-						v-model="datapoint.pointLocator.changeTypeId"
+						v-model="defaultSelectedChangeType"
 						:items="changeTypes"
 					></v-select>
 				</v-col>
@@ -360,6 +360,10 @@ export default {
 
 	data() {
 		return {
+      defaultSelectedChangeType:  Object.freeze({
+        value: DataChangeTypes.NO_CHANGE,
+        text: 'No Change',
+      }),
 			msValues: ['1', '2'],
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
