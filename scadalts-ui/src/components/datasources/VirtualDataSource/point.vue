@@ -11,6 +11,7 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
+          @change="handleDefaultChangeType(); handleNoChangeStartValue();"
 				></v-select>
 			</template>
 
@@ -18,7 +19,7 @@
 				<v-col>
 					<v-select
 						label="Change Type"
-						v-model="defaultSelectedChangeType"
+						v-model="datapoint.pointLocator.changeTypeId"
 						:items="changeTypes"
 					></v-select>
 				</v-col>
@@ -75,9 +76,7 @@
 							<v-text-field type="Number" label="Values" v-model="multistateValue">
 								<v-icon
 									slot="append"
-									@click="
-										addMsValue(datapoint.pointLocator.incrementMultistateChange.values)
-									"
+									@click="addMsValue(datapoint.pointLocator.incrementMultistateChange.values)"
 									>mdi-plus</v-icon
 								>
 							</v-text-field>
@@ -94,6 +93,7 @@
 								label="Initail Value"
 								v-model="datapoint.pointLocator.incrementMultistateChange.startValue"
 								:items="datapoint.pointLocator.incrementMultistateChange.values"
+                :rules="[ruleNotNull]"
 							></v-select>
 						</v-col>
 						<v-col
@@ -141,6 +141,7 @@
 								label="Initail Value"
 								v-model="datapoint.pointLocator.randomMultistateChange.startValue"
 								:items="datapoint.pointLocator.randomMultistateChange.values"
+                :rules="[ruleNotNull]"
 							></v-select>
 						</v-col>
 						<v-col
@@ -166,6 +167,7 @@
 								label="Start Value"
 								type="number"
 								v-model="datapoint.pointLocator.noChange.startValue"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -188,6 +190,7 @@
 								type="Number"
 								label="Maximum"
 								v-model="datapoint.pointLocator.brownianChange.max"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -195,6 +198,7 @@
 								type="Number"
 								label="Maximum Change"
 								v-model="datapoint.pointLocator.brownianChange.maxChange"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -202,6 +206,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.brownianChange.startValue"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -223,6 +228,7 @@
 								type="Number"
 								label="Maximum"
 								v-model="datapoint.pointLocator.incrementAnalogChange.max"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -230,6 +236,7 @@
 								type="Number"
 								label="Maximum Change"
 								v-model="datapoint.pointLocator.incrementAnalogChange.change"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -243,6 +250,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.incrementAnalogChange.startValue"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -253,6 +261,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.noChange.startValue"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -294,8 +303,9 @@
 						<v-col>
 							<v-text-field
 								type="Number"
-								label="attractionPointId"
+								label="Attraction Point ID"
 								v-model="datapoint.pointLocator.analogAttractorChange.attractionPointId"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -303,6 +313,7 @@
 								type="Number"
 								label="volatility"
 								v-model="datapoint.pointLocator.analogAttractorChange.volatility"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -310,6 +321,7 @@
 								type="Number"
 								label="maxChange"
 								v-model="datapoint.pointLocator.analogAttractorChange.maxChange"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -317,6 +329,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.analogAttractorChange.startValue"
+                :rules="[ruleNotNull]"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -329,6 +342,7 @@
 					<v-text-field
 						label="Initial Value"
 						v-model="datapoint.pointLocator.noChange.startValue"
+            :rules="[ruleNotNull]"
 					></v-text-field>
 				</v-col>
 			</v-row>
@@ -360,10 +374,6 @@ export default {
 
 	data() {
 		return {
-      defaultSelectedChangeType:  Object.freeze({
-        value: DataChangeTypes.NO_CHANGE,
-        text: 'No Change',
-      }),
 			msValues: ['1', '2'],
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
@@ -433,6 +443,20 @@ export default {
 				return;
 			}
 		},
+
+    handleDefaultChangeType() {
+      this.datapoint.pointLocator.changeTypeId = 5;
+    },
+
+    handleNoChangeStartValue() {
+      if (this.datapoint.pointLocator.dataTypeId == DataTypes.BINARY) {
+        this.datapoint.pointLocator.noChange.startValue = true;
+      }
+      else {
+        this.datapoint.pointLocator.noChange.startValue = "";
+    }
+    }
+
 	},
 };
 </script>
