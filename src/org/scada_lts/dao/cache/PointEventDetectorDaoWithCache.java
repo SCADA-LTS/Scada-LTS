@@ -26,7 +26,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
     @Override
     public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
-        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(xid);
+        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(xid, dataPointId);
         if(pointEventDetectorVO == null)
             return true;
         if(pointEventDetectorVO.getId() == Common.NEW_ID)
@@ -65,8 +65,8 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     }
 
     @Override
-    public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid) {
-        return pointEventDetectorCache.selectPointEventDetector(pointEventDetectorXid);
+    public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid, int dataPointId) {
+        return pointEventDetectorCache.selectPointEventDetector(pointEventDetectorXid, dataPointId);
     }
 
     @Override

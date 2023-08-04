@@ -424,22 +424,22 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 	}
 
 	@Override
-	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid) {
+	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid, int dataPointId) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("getPointEventDetector(String pointEventDetectorXid) pointEventDetectorXid:" +pointEventDetectorXid);
+			LOG.trace("getPointEventDetector(String pointEventDetectorXid, int dataPointId) pointEventDetectorXid:" +pointEventDetectorXid + ", dataPointId:" + dataPointId);
 		}
 
-		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? "
-				+ "order by " + COLUMN_NAME_ID;
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? and " + COLUMN_NAME_DATA_POINT_ID + "=?"
+				+ " order by " + COLUMN_NAME_ID;
 
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
-					new Object[]{pointEventDetectorXid}, new PointEventDetectorRowMapper(null));
+					new Object[]{pointEventDetectorXid, dataPointId}, new PointEventDetectorRowMapper(null));
 		} catch (EmptyResultDataAccessException ex) {
 			return null;
 		} catch (IncorrectResultSizeDataAccessException ex) {
-			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", msg: " +ex.getMessage(), ex);
+			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", dataPointId:" + dataPointId + ", msg: " +ex.getMessage(), ex);
 			return new PointEventDetectorVO(Common.NEW_ID, null);
 		} catch (Exception ex) {
 			LOG.warn(ex.getMessage(), ex);
