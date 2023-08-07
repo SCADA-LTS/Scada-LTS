@@ -88,8 +88,8 @@ public abstract class TimerTask implements Runnable {
             boolean result = (state == SCHEDULED);
 
             if (completeBeforeCancel) {
+                cancelLock.writeLock().lock();
                 try {
-                    cancelLock.writeLock().lock();
                     state = CANCELLED;
                 }
                 finally {
