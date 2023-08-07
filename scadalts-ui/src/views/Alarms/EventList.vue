@@ -618,7 +618,7 @@ export default {
 	
 	methods: {
 		getFlagByEvent(event) {
-			return ((event.rtnApplicable && !!event.rtnTs) ? this.alarmFlags : this.alarmFlagsOff)[event.alarmLevel].image
+			return ((event.rtnApplicable && !event.rtnTs) ? this.alarmFlags : this.alarmFlagsOff)[event.alarmLevel].image
 		},
 		eventMessageI18n(eventMessage) {
 			const [key, ...args ]= eventMessage.split('|')
