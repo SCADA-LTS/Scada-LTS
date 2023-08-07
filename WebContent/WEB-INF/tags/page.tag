@@ -45,7 +45,10 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
-  <c:set var="isLoggedToScadaUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && (sessionUser.getAttribute('roles').size() != 1 || !sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+  <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+  <c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isLoggedToScadaUser" value="${isRoles && !isRoleService && !isRolePublic}" />
   <c:choose>
     <c:when test="${isLoggedToScadaUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
@@ -119,8 +122,10 @@
 		};
 
       dwr.util.setEscapeHtml(false);
-      <c:if test="${isLoggedToScadaUser}">
+      <c:if test="${isLoggedToScadaUser || isRolePublic}">
         dojo.addOnLoad(mango.header.onLoad);
+      </c:if>
+      <c:if test="${isLoggedToScadaUser}">
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
@@ -154,6 +159,8 @@
 
         var stompClient = null;
 
+        var maxAlarmLevel = -1;
+
         var connectCallback = function(frame) {
             //console.log('Connected: ' + frame);
 
@@ -164,6 +171,7 @@
                     var alarmLevel = parseInt(response.alarmlevel);
                     //console.log("response.alarmLevel: "+response.alarmlevel);
                     if (alarmLevel > 0) {
+                        maxAlarmLevel = alarmLevel;
                         document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
                         setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
                         setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
@@ -177,8 +185,26 @@
                     }
                 })
                 stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-            } );
-            stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+            });
+
+            stompClient.subscribe("/app/event/update/register", function(message) {
+                stompClient.subscribe("/topic/event/update/"+message.body, function(message) {
+                    var response = JSON.parse(message.body);
+                    var alarmLevel = parseInt(response.alarmLevel);
+                    if (alarmLevel > 0) {
+                        if(!response.silenced && response.action == 'CREATE' && response.active) {
+                            if(alarmLevel >= maxAlarmLevel) {
+                                mango.soundPlayer.playOnce("level"+ alarmLevel);
+                                if(!mango.header.evtVisualizer.started) {
+                                    mango.header.evtVisualizer.start();
+                                    setTimeout(function() {mango.header.evtVisualizer.stop()}, 5000);
+                                }
+                            }
+                        }
+                    }
+                })
+                stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my event");
+            });
         };
 
         function connect(url, headers, errorCallback, connectCallback) {
@@ -343,6 +369,16 @@
           </div>
         </c:if>
 
+        <div class="spacer">
+          <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnect()">
+          <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
+          <tag:menuItem href="help.shtm" png="help" key="header.help"/>
+        </div>
+      </c:if>
+
+      <c:if test="${isRolePublic}">
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <span onclick="disconnect()">

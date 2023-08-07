@@ -37,8 +37,8 @@ public class V2_7_5_3__AddLangToUser extends BaseJavaMigration {
         String defaultLangSql = "SELECT settingValue FROM systemSettings WHERE settingName='" + SystemSettingsDAO.LANGUAGE + "'";
         try {
             return jdbcTemplate.queryForObject(defaultLangSql, String.class);
-        } catch (EmptyResultDataAccessException ex) {
-            LOG.warn(ex.getMessage(), ex);
+        } catch (Exception ex) {
+            LOG.debug(ex.getMessage(), ex);
             return "en";
         }
     }

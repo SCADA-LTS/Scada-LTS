@@ -96,7 +96,13 @@ task clearTomcat(type: Delete) {
     delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
 }
 
-task deployTomcat(type: Copy) {
+task existsScadaLTSWarFile {
+    doLast {
+        assert file("build/libs/Scada-LTS.war").exists()
+    }
+}
+
+task deployTomcat(type: Copy, dependsOn: existsScadaLTSWarFile) {
     from "build/libs/"
     into System.getenv("CATALINA_HOME")+ "/webapps"
     include('Scada-LTS.war')
@@ -190,5 +196,6 @@ test {
         includeTestsMatching "com.serotonin.mango.view.CopyViewTest"
         includeTestsMatching "org.scada_lts.dao.IsEventDetectorXidUniqueTest"
         includeTestsMatching "com.serotonin.mango.view.export.CsvWriterTest"
+        includeTestsMatching "com.serotonin.mango.util.EmailValidatorTest"
     }
 }

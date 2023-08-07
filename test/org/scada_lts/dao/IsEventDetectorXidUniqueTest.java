@@ -22,6 +22,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_126",
                         0,
                         true
@@ -30,6 +31,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_126",
                         0,
                         true
@@ -38,6 +40,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_125",
                         0,
                         false
@@ -46,6 +49,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_125",
                         0,
                         false
@@ -54,6 +58,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_126",
                         1,
                         true
@@ -62,6 +67,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_126",
                         1,
                         true
@@ -70,6 +76,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_123",
                         1,
                         true
@@ -78,6 +85,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_123",
                         1,
                         true
@@ -86,6 +94,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_123",
                         2,
                         false
@@ -94,6 +103,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, "PED_124"),
                         new PointEventDetectorVO(3, "PED_125"),
+                        1,
                         "PED_123",
                         2,
                         false
@@ -102,6 +112,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, null),
                         new PointEventDetectorVO(2, null),
                         new PointEventDetectorVO(3, null),
+                        1,
                         "PED_126",
                         1,
                         true
@@ -110,6 +121,7 @@ public class IsEventDetectorXidUniqueTest {
                         new PointEventDetectorVO(1, "PED_123"),
                         new PointEventDetectorVO(2, null),
                         new PointEventDetectorVO(3, null),
+                        1,
                         "PED_123",
                         2,
                         false
@@ -121,15 +133,18 @@ public class IsEventDetectorXidUniqueTest {
     private final PointEventDetectorVO pointEventDetector1;
     private final PointEventDetectorVO pointEventDetector2;
     private final PointEventDetectorVO pointEventDetector3;
+    private final int dataPointId;
     private final String xid;
     private final int exclusiveId;
     private final boolean expected;
 
     public IsEventDetectorXidUniqueTest(PointEventDetectorVO pointEventDetector1, PointEventDetectorVO pointEventDetector2,
-                                        PointEventDetectorVO pointEventDetector3, String xid, int exclusiveId, boolean expected) {
+                                        PointEventDetectorVO pointEventDetector3, int dataPointId,
+                                        String xid, int exclusiveId, boolean expected) {
         this.pointEventDetector1 = pointEventDetector1;
         this.pointEventDetector2 = pointEventDetector2;
         this.pointEventDetector3 = pointEventDetector3;
+        this.dataPointId = dataPointId;
         this.xid = xid;
         this.exclusiveId = exclusiveId;
         this.expected = expected;
@@ -143,16 +158,16 @@ public class IsEventDetectorXidUniqueTest {
         PointEventDetectorCache pointEventDetectorCache = new PointEventDetectorCache(pointEventDetectorDaoMock);
         subject = new PointEventDetectorDaoWithCache(pointEventDetectorCache);
 
-        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector1.getXid()))).thenReturn(pointEventDetector1);
-        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector2.getXid()))).thenReturn(pointEventDetector2);
-        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector3.getXid()))).thenReturn(pointEventDetector3);
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector1.getXid()), eq(dataPointId))).thenReturn(pointEventDetector1);
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector2.getXid()), eq(dataPointId))).thenReturn(pointEventDetector2);
+        when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector3.getXid()), eq(dataPointId))).thenReturn(pointEventDetector3);
     }
 
     @Test
     public void when_isEventDetectorXidUnique() {
 
         //when
-        boolean result = subject.isEventDetectorXidUnique(-1, xid, exclusiveId);
+        boolean result = subject.isEventDetectorXidUnique(dataPointId, xid, exclusiveId);
 
         //then:
         assertEquals(expected, result);

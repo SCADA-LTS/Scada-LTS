@@ -28,6 +28,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 /**
  * @author Matthew Lohbihler
  */
+@Deprecated
 public class AdminAjaxFilter implements AjaxFilter {
     public Object doFilter(Object obj, Method method, Object[] params, AjaxFilterChain chain) throws Exception {
         Permissions.ensureAdmin();

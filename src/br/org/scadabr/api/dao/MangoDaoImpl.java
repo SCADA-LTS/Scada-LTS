@@ -33,7 +33,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.ds.state.ApiChangeEnableStateDs;
-
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import java.util.*;
 
 public class MangoDaoImpl implements ScadaBRAPIDao {
@@ -51,6 +52,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	}
 
 	private PointHierarchy pH;
+	private final MangoEvent eventService = new EventService();
 
 	@Override
 	public List<ItemValue> getItemValueList(String[] itemList,
@@ -537,7 +539,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	public List<EventNotification> getEventNotifications(
 			AlarmLevel minimumAlarmLevel) throws ScadaBRAPIException {
 		List<EventNotification> alarms = new ArrayList<EventNotification>();
-		List<EventInstance> events = new EventDao().getPendingEvents(1);
+		List<EventInstance> events = eventService.getPendingEvents(1);
 		checkUser();
 		if (events == null || events.size() == 0) {
 			APIError error = new APIError();
@@ -565,7 +567,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 		if (eventInstance != null) {
 			// alternateAckSource? - REM
-			new EventDao().ackEvent(eventId, 1, 0, 0);
+			eventService.ackEvent(eventId, 1, 0, 0);
 			// new EventDao().ackEvent(eventId, 1);
 			return APIUtils.toEventNotification(eventInstance);
 		} else {
@@ -577,7 +579,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	}
 
 	private EventInstance getEvent(int eventId) {
-		List<EventInstance> events = new EventDao().getPendingEvents(1);
+		List<EventInstance> events = eventService.getPendingEvents(1);
 		for (EventInstance eventInstance : events) {
 			if (eventInstance.getId() == eventId)
 				return eventInstance;
@@ -588,7 +590,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 	private List<EventInstance> getAcknowledgedEvents() {
 		// Adicionados parametros novos (?)
 		// return new EventDao().search(0, -1, null, -1, null, 20000, 1, null);
-		return new EventDao().search(0, -1, null, -1, null, 1, null, 0, 5000,
+		return eventService.search(0, -1, null, -1, null, 1, null, 0, 5000,
 				null);
 	}
 
@@ -632,7 +634,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		checkUser();
 		EventInstance event = getEvent(eventId);
 		if (event != null) {
-			new EventDao().insertEventComment(eventId,
+			eventService.insertEventComment(eventId,
 					APIUtils.toUserComment(message));
 
 			event = getEvent(eventId);

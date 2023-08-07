@@ -81,9 +81,8 @@
            watchlists = data.watchlists;
            if (watchlists != null){
 	           for (i=0; i<watchlists.length; i++) {
-	        	   if(watchlists[i].name == '<fmt:message key="common.newName"/>') // skip unnamed lists
-	        		   continue;
-	        	   
+	        	   if(isUnnamedWatchList(watchlists[i].name))
+	        	        continue;
 	        	   id = watchlists[i].id;
 	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
 	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
@@ -133,6 +132,10 @@
     }
     
     function showUserProfile(userProfileId) {
+        if (userProfileId == -1)
+            hide("deleteButton");
+        else
+            show("deleteButton");
         if (editingUserProfileId)
             stopImageFader($("u"+ editingUserProfileId +"Img"));
         editingUserProfileId = userProfileId;
@@ -141,7 +144,7 @@
     }
     
     function showUserProfileCB(userProfile) {
-        show($("deleteButton"));
+        //show($("deleteButton"));
         show($("userProfileDetails"));
         $set("userProfileName", userProfile.name);
 
@@ -169,6 +172,8 @@
 
         if(watchlists != null) {
             for (i=0; i<watchlists.length; i++) {
+	        	if(isUnnamedWatchList(watchlists[i].name))
+	        	    continue;
                 $set("wl"+ watchlists[i].id, "0");
             }
 
@@ -187,12 +192,11 @@
         }
         
         setUserProfileMessage();
-        updateUserProfileImg();
+        //updateUserProfileImg();
     }
     
     function saveUserProfile() {
 		startImageFader($("saveButton"));
-    	
     	setUserProfileMessage();
         // Create the list of allowed data sources and data point permissions.
         var i, j;
@@ -216,8 +220,10 @@
       //populate watchlist permissions paremeters
         var wlPermis = new Array();
         var wlval;
-        if (watchlists != null){
+        if (watchlists != null ){
 	      	for (i=0; i<watchlists.length; i++) {
+                if(isUnnamedWatchList(watchlists[i].name))
+                    continue;
 	 			wlval = $get("wl"+ watchlists[i].id);
 	              
 		          if (wlval == "1" || wlval == "2") {
@@ -256,6 +262,7 @@
                 appendUserProfile(editingUserProfileId);
                 startImageFader($("u"+ editingUserProfileId +"Img"));
                 setUserProfileMessage("<fmt:message key="userProfiles.added"/>");
+                show($("deleteButton"));
             } else {
                 setUserProfileMessage("<fmt:message key="userProfiles.saved"/>");
                 stopImageFader($("u"+ editingUserProfileId +"Img"));
@@ -283,11 +290,11 @@
         setUserImg(true, userProfile.disabled, $("u"+ userProfile.id +"Img"));
         console.log("u"+ editingUserProfileId +"Img")
     }
-    
-    function updateUserProfileImg() {
+
+    /*function updateUserProfileImg() {
         setUserImg(true, $get("disabled"), $("userImg"));
-    }
-    
+    }*/
+
     function dataSourceChange(dscb) {
         display("dsps"+ dscb.id.substring(2), !dscb.checked);
     }
@@ -309,6 +316,10 @@
               
             });
         }
+    }
+
+    function isUnnamedWatchList(wl) {
+        return wl == '<fmt:message key="common.newName"/>' // skip unnamed lists
     }
   </script>
   

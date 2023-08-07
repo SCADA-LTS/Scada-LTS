@@ -34,14 +34,17 @@ public class UserComment {
     // Relational fields
     private String username;
 
+    private int typeKey;
+
     public UserComment() {
     }
 
-    public UserComment(int userId, long ts, String comment, String username) {
+    public UserComment(int userId, long ts, String comment, String username, int typeKey) {
         this.userId = userId;
         this.ts = ts;
         this.comment = comment;
         this.username = username;
+        this.typeKey = typeKey;
     }
 
     public String getPrettyTime() {
@@ -84,16 +87,24 @@ public class UserComment {
         return typeId == UserComment.TYPE_EVENT || typeId == UserComment.TYPE_POINT;
     }
 
+    public int getTypeKey() {
+        return typeKey;
+    }
+
+    public void setTypeKey(int typeKey) {
+        this.typeKey = typeKey;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserComment)) return false;
         UserComment that = (UserComment) o;
-        return getUserId() == that.getUserId() && getTs() == that.getTs() && Objects.equals(getComment(), that.getComment()) && Objects.equals(getUsername(), that.getUsername());
+        return getUserId() == that.getUserId() && getTs() == that.getTs() && getTypeKey() == that.getTypeKey() && Objects.equals(getComment(), that.getComment()) && Objects.equals(getUsername(), that.getUsername());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getTs(), getComment(), getUsername());
+        return Objects.hash(getUserId(), getTs(), getComment(), getUsername(), getTypeKey());
     }
 }

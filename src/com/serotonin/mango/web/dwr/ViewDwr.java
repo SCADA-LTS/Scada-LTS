@@ -76,7 +76,6 @@ import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ThumbnailComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -87,7 +86,6 @@ import com.serotonin.mango.web.dwr.beans.EnhancedPointComponentProperties;
 import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -101,6 +99,9 @@ import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getResponse;
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -122,9 +123,12 @@ public class ViewDwr extends BaseDwr {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			return new ArrayList<>();
-		return getUser(new UserService())
-				.map(user -> getViewPointData(user, view, false))
-				.orElse(new ArrayList<>());
+		return getRequest()
+				.map(request -> getUser(new UserService(), request).stream()
+							.peek(user -> getResponse().ifPresent(response -> authenticateAnonymousUser(user, request, response)))
+							.flatMap(user -> getViewPointData(user, view, false).stream())
+							.collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
@@ -136,12 +140,12 @@ public class ViewDwr extends BaseDwr {
 			throw new PermissionException("Point is not anonymously settable", null);
 
 		// Allow the set.
-		setPointImpl(view.findDataPoint(viewComponentId), valueStr, new AnonymousUser());
+		setPointImpl(view.findDataPoint(viewComponentId), valueStr, Common.getUser());
 
 		return viewComponentId;
 	}
 
-	@MethodFilter
+	
 	public List<IntValuePair> getViews() {
 		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess(ApplicationBeans.getViewDaoBean());
 		User user = Common.getUser();
@@ -150,12 +154,12 @@ public class ViewDwr extends BaseDwr {
 				.collect(Collectors.toList());
 	}
 
-	@MethodFilter
+	
 	public List<ScriptVO<?>> getScripts() {
 		return new ScriptService().getScripts();
 	}
 
-	@MethodFilter
+	
 	public List<FlexProject> getFlexProjects() {
 		return new FlexProjectDao().getFlexProjects();
 	}
@@ -167,7 +171,7 @@ public class ViewDwr extends BaseDwr {
 	 * @param edit
 	 * @return
 	 */
-	@MethodFilter
+	
 	public List<ViewComponentState> getViewPointData(boolean edit, int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), edit);
@@ -320,9 +324,10 @@ public class ViewDwr extends BaseDwr {
 	//
 	// View users
 	//
-	@MethodFilter
+	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -342,10 +347,10 @@ public class ViewDwr extends BaseDwr {
 		return view.getViewUsers();
 	}
 
-	@MethodFilter
+	
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
 				view.getViewUsers().remove(su);
@@ -356,14 +361,15 @@ public class ViewDwr extends BaseDwr {
 		return view.getViewUsers();
 	}
 
-	@MethodFilter
+	
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
-	@MethodFilter
+	
 	public String getLoggedUser() {
 		return Common.getUser().getUsername();
 	}
@@ -373,7 +379,7 @@ public class ViewDwr extends BaseDwr {
 	// / View editing
 	// /
 	//
-	@MethodFilter
+	
 	public Map<String, Object> editInit(int viewId) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		User user = Common.getUser();
@@ -403,7 +409,7 @@ public class ViewDwr extends BaseDwr {
 		return result;
 	}
 
-	@MethodFilter
+	
 	public ViewComponent addComponent(String componentName, int viewId) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
 		// System.out.println(componentName);
@@ -411,34 +417,35 @@ public class ViewDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
-
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
 	}
 
-	@MethodFilter
+	
 	public void setViewComponentLocation(String viewComponentId, int x, int y, int viewId) {
 		getViewComponent(viewComponentId, viewId).setLocation(x, y);
 	}
 
-	@MethodFilter
+	
 	public void setViewComponentZIndex(String viewComponentId, int zIndex, int viewId) {
 		getViewComponent(viewComponentId, viewId).setZ(zIndex);
 	}
 
-	@MethodFilter
+	
 	public int getViewComponentZIndex(String viewComponentId, int viewId) {
 		return getViewComponent(viewComponentId, viewId).getZ();
 	}
 
-	@MethodFilter
+	
 	public void deleteViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(Common.getUser(), view);
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId, viewId);
@@ -461,7 +468,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public List<String> getViewComponentIds(int viewId) {
 		List<String> result = new ArrayList<String>();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
@@ -478,7 +485,7 @@ public class ViewDwr extends BaseDwr {
 	 * @param valueStr
 	 * @return
 	 */
-	@MethodFilter
+	
 	public String setViewPoint(String viewComponentId, String valueStr, int viewId) {
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), false);
@@ -486,9 +493,7 @@ public class ViewDwr extends BaseDwr {
 
 		if (point != null) {
 			// Check that setting is allowed.
-			int access = view.getUserAccess(user);
-			if (!(access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET))
-				throw new PermissionException("Not allowed to set this point", user);
+			GetViewsWithAccess.ensureViewSetPermission(user, view);
 
 			// Try setting the point.
 			setPointImpl(point, valueStr, user);
@@ -500,14 +505,14 @@ public class ViewDwr extends BaseDwr {
 	//
 	// Save view component
 	//
-	@MethodFilter
+	
 	public void saveHtmlComponent(String viewComponentId, String content, int positionX, int positionY, int viewId) {
 		HtmlComponent c = (HtmlComponent) getViewComponent(viewComponentId, viewId);
 		c.setContent(content);
 		c.setLocation(positionX, positionY);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
@@ -525,7 +530,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
@@ -543,7 +548,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveAnalogGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -567,7 +572,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveBinaryGraphicComponent(String viewComponentId, int zeroImage, int oneImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -594,7 +599,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveDynamicGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String dynamicImageId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -618,7 +623,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntValuePair> imageStates, int defaultImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -639,7 +644,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveScriptComponent(String viewComponentId, String script, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -655,7 +660,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveSimplePointComponent(String viewComponentId, boolean displayPointName, String styleAttribute, int viewId) {
 		SimplePointComponent c = (SimplePointComponent) getViewComponent(viewComponentId, viewId);
 		c.setDisplayPointName(displayPointName);
@@ -665,7 +670,7 @@ public class ViewDwr extends BaseDwr {
 		return new DwrResponseI18n();
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveThumbnailComponent(String viewComponentId, int scalePercent, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -682,7 +687,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -710,7 +715,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -730,7 +735,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList, int positionX, int positionY, int viewId) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -754,7 +759,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -770,7 +775,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveButtonComponent(String viewComponentId, String whenOnLabel, String whenOffLabel, int width, int height, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -796,7 +801,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	// @MethodFilter
+	// 
 	// public DwrResponseI18n saveFlexBuilderComponent(String viewComponentId,
 	// int width, int height, boolean projectDefined,
 	// String projectsSource, int projectId, boolean runtimeMode) {
@@ -830,7 +835,7 @@ public class ViewDwr extends BaseDwr {
 	// return response;
 	// }
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -851,7 +856,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode, int positionX, int positionY, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -883,7 +888,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
@@ -948,7 +953,7 @@ public class ViewDwr extends BaseDwr {
 		return Common.ctx.getDynamicImage(id);
 	}
 
-	@MethodFilter
+	
 	public ViewComponent getViewComponent(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		return getViewComponent(view, viewComponentId);

@@ -14,6 +14,6 @@ public interface IPointEventDetectorDAO {
     void delete(int dataPointId, PointEventDetectorVO pointEventDetector);
     void deleteWithId(String dataPointIds);
     PointEventDetectorVO getPointEventDetector(int pointEventDetectorId);
-    PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid);
+    PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid, int dataPointId);
     int getDataPointId(int pointEventDetectorId);
 }

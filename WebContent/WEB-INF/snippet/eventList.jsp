@@ -104,9 +104,7 @@
           </td>
         </c:if>
         <td style="white-space:nowrap;">
-          <c:if test="${pendingEvents}">
-            <tag:alarmAck event="${event}"/>
-          </c:if>
+          <tag:alarmAck event="${event}"/>
           <c:choose>
             <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_POINT']}">
               <a href="data_point_details.shtm?dpid=${event.eventType.dataPointId}"><tag:img png="icon_comp" title="events.pointDetails"/></a>

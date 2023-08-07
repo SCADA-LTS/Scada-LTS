@@ -18,19 +18,16 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.rt.dataImage.PointValueCache;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
@@ -39,7 +36,6 @@ import org.joda.time.IllegalFieldValueException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -60,20 +56,21 @@ import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.content.ContentGenerator;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
     public static final String MODEL_ATTR_HAS_UNACKED_EVENT = "hasUnacknowledgedEvent";
     public static final String MODEL_ATTR_RESOURCE_BUNDLE = "bundle";
 
-    protected static EventDao EVENT_DAO;
+    protected static MangoEvent EVENT_SERVICE;
 
     public static void initialize() {
-        EVENT_DAO = new EventDao();
+        EVENT_SERVICE = new EventService();
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -85,8 +82,8 @@ abstract public class BaseDwr {
      * @param componentId
      *            a unique id for the browser side component. Required for set point snippets.
      * @param state
+     * @param pointVO
      * @param point
-     * @param status
      * @param model
      * @return
      */
@@ -114,7 +111,7 @@ abstract public class BaseDwr {
         int userId = 0;
         if (user != null)
             userId = user.getId();
-        List<EventInstance> events = EVENT_DAO.getPendingEventsForDataPoint(pointVO.getId(), userId);
+        List<EventInstance> events = EVENT_SERVICE.getPendingEventsForDataPoint(pointVO.getId(), userId);
         if (events != null) {
             model.put(MODEL_ATTR_EVENTS, events);
             for (EventInstance event : events) {
@@ -188,7 +185,7 @@ abstract public class BaseDwr {
      * @param valueStr
      * @return
      */
-    @MethodFilter
+    
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -213,7 +210,7 @@ abstract public class BaseDwr {
         }
     }
 
-    @MethodFilter
+    
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -227,7 +224,8 @@ abstract public class BaseDwr {
     /**
      * Logs a user comment after validation.
      * 
-     * @param eventId
+     * @param typeId
+     * @param referenceId
      * @param comment
      * @return
      */
@@ -243,7 +241,7 @@ abstract public class BaseDwr {
         c.setUsername(user.getUsername());
 
         if (typeId == UserComment.TYPE_EVENT)
-            EVENT_DAO.insertEventComment(referenceId, c);
+            EVENT_SERVICE.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
             new UserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
@@ -303,7 +301,7 @@ abstract public class BaseDwr {
     }
 
     protected String getMessage(String key) {
-        return I18NUtils.getMessage(getResourceBundle(), key);
+        return I18NUtils.getMessage(getResourceBundle(), key == null ? "" : key);
     }
 
     protected String getMessage(LocalizableMessage message) {

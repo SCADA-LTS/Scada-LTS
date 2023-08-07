@@ -36,7 +36,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +49,6 @@ import com.serotonin.mango.view.View;
  *
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class ViewDAO implements IViewDAO {
 	
 	private Log LOG = LogFactory.getLog(ViewDAO.class);

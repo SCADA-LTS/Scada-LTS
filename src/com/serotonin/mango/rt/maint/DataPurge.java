@@ -30,7 +30,6 @@ import org.joda.time.DateTime;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -40,6 +39,7 @@ import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.TimerTask;
+import org.scada_lts.mango.service.EventService;
 
 public class DataPurge {
     private final Log log = LogFactory.getLog(DataPurge.class);
@@ -132,7 +132,7 @@ public class DataPurge {
         cutoff = DateUtils.minus(cutoff, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE),
                 SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
 
-        int deleteCount = new EventDao().purgeEventsBefore(cutoff.getMillis());
+        int deleteCount = new EventService().purgeEventsBefore(cutoff.getMillis());
         if (deleteCount > 0)
             log.info("Event purge ended, " + deleteCount + " events deleted");
     }

@@ -37,7 +37,6 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.service.model.PointHierarchyConsistency;
 import org.scada_lts.utils.PointHierarchyUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
@@ -50,7 +49,6 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchyEventDispatcher;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-@Service
 public class PointHierarchyService {
 	// cache
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);

@@ -26,7 +26,6 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
  *
  * @author grzegorz.bylica@gmail.com
  */
-@Service
 public class PointHierarchyXidService extends PointHierarchyService {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);

@@ -3,17 +3,15 @@ package org.scada_lts.dao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface IUserCommentDAO {
     List<UserComment> getEventComments(EventInstance event);
 
     List<UserComment> getPointComments(DataPointVO dataPoint);
+
+    List<UserComment> getEventComments();
 
     int insert(UserComment userComment, int typeId, int referenceId);
 

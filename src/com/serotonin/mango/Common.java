@@ -283,7 +283,7 @@ public class Common {
 		if (views == null)
 			return null;
 		for (View view : views) {
-			if (view.getId() == id)
+			if (view != null && view.getId() == id)
 				return view;
 		}
 		return null;

@@ -22,7 +22,6 @@ import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -37,9 +36,10 @@ import com.serotonin.mango.web.dwr.beans.IntegerPair;
 import com.serotonin.util.DirectoryInfo;
 import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
@@ -56,7 +56,7 @@ import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 
 
 public class SystemSettingsDwr extends BaseDwr {
-	@MethodFilter
+	
 	public Map<String, Object> getSettings() {
 		Permissions.ensureAdmin();
 		Map<String, Object> settings = new HashMap<String, Object>();
@@ -154,17 +154,20 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
-		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsDAO
-				.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
+		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
 
 		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
-				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
+				systemSettingsService.getMiscSettings().isHideShortcutDisableFullScreen());
 		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
-				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
+				systemSettingsService.getMiscSettings().isEnableFullScreen());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
+				systemSettingsService.getMiscSettings().getEventPendingLimit());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
+				systemSettingsService.getMiscSettings().isEventPendingCacheEnabled());
 		return settings;
 	}
 
-	@MethodFilter
+	
 	public Map<String, Object> getDatabaseSize() {
 		Permissions.ensureAdmin();
 
@@ -210,12 +213,13 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		data.put("historyCount", sum);
 		data.put("topPoints", counts);
-		data.put("eventCount", new EventDao().getEventCount());
+		MangoEvent eventService = new EventService();
+		data.put("eventCount", eventService.getEventCount());
 
 		return data;
 	}
 
-	@MethodFilter
+	
 	public void saveEmailSettings(String host, int port, String from,
 			String name, boolean auth, String username, String password,
 			boolean tls, int contentType) {
@@ -236,7 +240,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				contentType);
 	}
 
-	@MethodFilter
+	
 	public Map<String, Object> sendTestEmail(String host, int port,
 			String from, String name, boolean auth, String username,
 			String password, boolean tls, int contentType) {
@@ -267,7 +271,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return result;
 	}
 
-	@MethodFilter
+	
 	public void saveSystemEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -275,7 +279,7 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	@MethodFilter
+	
 	public void saveAuditEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -283,7 +287,7 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveHttpSettings(boolean useProxy, String host, int port,
 			String username, String password, String httpStaticHeaders) {
 		Permissions.ensureAdmin();
@@ -306,9 +310,10 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
-											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen) {
+											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
+											int eventPendingLimit, boolean eventPendingCacheEnabled) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -323,10 +328,16 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, viewEnableFullScreen);
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, viewHideShortcutDisableFullScreen);
+		if(eventPendingLimit < 0) {
+			response.addContextualMessage(SystemSettingsDAO.EVENT_PENDING_LIMIT, "validate.invalidValue");
+		} else {
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
+		}
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, eventPendingCacheEnabled);
 		return response;
 	}
 
-	@MethodFilter
+	
 	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
@@ -354,7 +365,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveColourSettings(String chartBackgroundColour,
 			String plotBackgroundColour, String plotGridlineColour) {
 		Permissions.ensureAdmin();
@@ -400,7 +411,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription) {
 		Permissions.ensureAdmin();
@@ -412,7 +423,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				instanceDescription);
 	}
 
-	@MethodFilter
+	
 	public String newVersionCheck(String newVersionNotificationLevel) {
 		Permissions.ensureAdmin();
 		try {
@@ -427,50 +438,50 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 	}
 
-	@MethodFilter
+	
 	public void saveLanguageSettings(String language) {
 		Permissions.ensureAdmin();
 		ScadaLocaleUtils.setLocale(language);
 	}
 
-	@MethodFilter
+	
 	public void purgeNow() {
 		Permissions.ensureAdmin();
 		DataPurge dataPurge = new DataPurge();
 		dataPurge.execute(System.currentTimeMillis());
 	}
 
-	@MethodFilter
+	
 	public LocalizableMessage purgeAllData() {
 		Permissions.ensureAdmin();
 		long cnt = Common.ctx.getRuntimeManager().purgeDataPointValues();
 		return new LocalizableMessage("systemSettings.purgeDataComplete", cnt);
 	}
 
-	@MethodFilter
+	
 	public void useDerbyDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useDerbyDB();
 	}
 
-	@MethodFilter
+	
 	public void useMysqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMysqlDB();
 	}
 
-	@MethodFilter
+	
 	public void useMssqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMssqlDB();
 	}
 
-	@MethodFilter
+	
 	public String checkTypeDB() {
 		return Common.getEnvironmentProfile().getString("db.type", "derby");
 	}
 
-	@MethodFilter
+	
 	public String getAppServer() {
 		return Common.ctx.getServletContext().getServerInfo();
 	}

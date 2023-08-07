@@ -25,13 +25,11 @@ import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.mango.service.PendingEventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.quartz.UpdatePendingEvents;
 
 import com.serotonin.mango.rt.event.EventInstance;
@@ -42,12 +40,17 @@ import com.serotonin.mango.rt.event.EventInstance;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PendingEventsCache extends PendingEventsDAO{
+public class PendingEventsCache {
 	
 	private static final Log LOG = LogFactory.getLog(PendingEventsCache.class);
 	private static PendingEventsCache instance = null;
 	private int countBuffer;
 	private Map<Integer, List<EventInstance>> mapPendingEvents;
+	private final PendingEventService eventService;
+	private final Scheduler scheduler;
+	private final SystemSettingsService systemSettingsService;
+	private final JobDetail job;
+	private final SimpleTrigger trigger;
 
 	public static PendingEventsCache getInstance() throws SchedulerException, IOException {
 		if (LOG.isTraceEnabled()) {
@@ -110,7 +113,12 @@ public class PendingEventsCache extends PendingEventsDAO{
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Create PendingEventsCache");
 		}
-		mapPendingEvents = getPendingEvents();
+		eventService = new PendingEventService();
+		mapPendingEvents = eventService.getPendingEvents();
+		scheduler = new StdSchedulerFactory().getScheduler();
+		systemSettingsService = new SystemSettingsService();
+		trigger = createTrigger();
+		job = createJob();
 		cacheInitialize();
 	}
 
@@ -118,10 +126,44 @@ public class PendingEventsCache extends PendingEventsDAO{
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
 		}
+		scheduler.start();
+		startUpdate();
+	}
+
+	public void startUpdate() {
+		try {
+			if(!isScheduled(scheduler, job.getName()))
+				scheduler.scheduleJob(job, trigger);
+		} catch (SchedulerException e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+
+	public void stopUpdate() {
+		try {
+			if(isScheduled(scheduler, job.getName()))
+				scheduler.deleteJob(job.getName(), job.getGroup());
+		} catch (SchedulerException e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+
+	public void resetUpdate() {
+		boolean cacheEnable = systemSettingsService.getMiscSettings().isEventPendingCacheEnabled();
+		if(cacheEnable)
+			startUpdate();
+		else
+			stopUpdate();
+	}
+
+	private static JobDetail createJob() {
 		JobDetail job = new JobDetail();
 		job.setName("UpdatePendingEvents");
 		job.setJobClass(UpdatePendingEvents.class);
+		return job;
+	}
 
+	private static SimpleTrigger createTrigger() throws IOException {
 		SimpleTrigger trigger = new SimpleTrigger();
 		Date startTime = new Date(System.currentTimeMillis()
 				+ ScadaConfig.getInstance().getLong(ScadaConfig.START_UPDATE_PENDING_EVENTS, 10_000_000));
@@ -136,10 +178,15 @@ public class PendingEventsCache extends PendingEventsDAO{
 		}
 		trigger.setRepeatInterval(interval);
 		trigger.setName("Quartz - trigger-UpdatePendingEvents");
-
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-		scheduler.start();
-		scheduler.scheduleJob(job, trigger);
+		return trigger;
 	}
 
+	private static boolean isScheduled(Scheduler scheduler, String jobName) throws SchedulerException {
+		for (String groupName : scheduler.getJobGroupNames()) {
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, groupName);
+			if(triggers.length > 0)
+				return true;
+		}
+		return false;
+	}
 }

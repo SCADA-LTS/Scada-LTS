@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.mvc.form.ViewEditForm;
 import org.scada_lts.web.mvc.validator.ViewEditValidator;
 import org.springframework.stereotype.Controller;
@@ -49,7 +50,6 @@ import org.springframework.web.util.WebUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 
 import static com.serotonin.mango.util.ViewControllerUtils.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
@@ -102,7 +102,7 @@ public class ViewEditController {
 
         if (view != null) {
             // An existing view.
-            Permissions.ensureViewEditPermission(user, view);
+            GetViewsWithAccess.ensureViewOwnerPermission(user, view);
             view.validateViewComponents(false);
             request.getSession().setAttribute("view_" + view.getId(), view);
             request.getSession().setAttribute("view_" + view.getXid(), view);
@@ -137,7 +137,7 @@ public class ViewEditController {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             view = getOrEmptyView(request, viewService, true);
-            Permissions.ensureViewPermission(user, view);
+            GetViewsWithAccess.ensureViewOwnerPermission(user, view);
 
             form.setView(view);
             view.setBackgroundFilename(null);
@@ -146,7 +146,7 @@ public class ViewEditController {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             User user = Common.getUser(request);
             view = getOrEmptyView(request, viewService, true);
-            Permissions.ensureViewPermission(user, view);
+            GetViewsWithAccess.ensureViewOwnerPermission(user, view);
 
             form.setView(view);
             uploadFile(request, form, errors);
@@ -165,7 +165,7 @@ public class ViewEditController {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser();
         View view = getOrEmptyView(request, viewService, true);
-        Permissions.ensureViewPermission(user, view);
+        GetViewsWithAccess.ensureViewOwnerPermission(user, view);
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -196,7 +196,7 @@ public class ViewEditController {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
         View view = getOrEmptyView(request, viewService, false);
-        Permissions.ensureViewPermission(user, view);
+        GetViewsWithAccess.ensureViewReadPermission(user, view);
         form.setView(view);
         request.getSession().removeAttribute(EMPTY_VIEW_KEY);
         request.getSession().removeAttribute("view_" + view.getId());
@@ -209,7 +209,7 @@ public class ViewEditController {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
         View view = getOrEmptyView(request, viewService, true);
-        Permissions.ensureViewPermission(user, view);
+        GetViewsWithAccess.ensureViewOwnerPermission(user, view);
         form.setView(view);
 
         new ViewService().removeView(form.getView().getId());

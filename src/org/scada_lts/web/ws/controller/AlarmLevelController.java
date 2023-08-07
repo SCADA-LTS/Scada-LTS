@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.config.WebSocketStatsMonitor;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -29,10 +30,9 @@ public class AlarmLevelController {
     private final WebSocketStatsMonitor webSocketStatsMonitor;
     private final MangoUser userService;
 
-    public AlarmLevelController(IHighestAlarmLevelService highestAlarmLevelService,
-                                UserEventServiceWebSocket userEventService,
+    public AlarmLevelController(UserEventServiceWebSocket userEventService,
                                 WebSocketStatsMonitor webSocketStatsMonitor) {
-        this.highestAlarmLevelService = highestAlarmLevelService;
+        this.highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
         this.userEventService = userEventService;
         this.webSocketStatsMonitor = webSocketStatsMonitor;
         this.userService = new UserService();

@@ -3,6 +3,7 @@ package org.scada_lts.login;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.web.integration.CrowdUtils;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -55,6 +56,19 @@ public final class AuthenticationUtils {
         getUser(authentication, mangoUser).ifPresent(user -> {
             authenticateLocal(request, response, authentication, user);
             mangoUser.recordLogin(user.getId());
+        });
+        User user = Common.getUser(request);
+        if(user == null) {
+            throw new IllegalStateException();
+        }
+        return user;
+    }
+
+    public static User authenticateLocalRaiseEvent(HttpServletRequest request, HttpServletResponse response,
+                                                   Authentication authentication, MangoUser mangoUser) {
+        getUser(authentication, mangoUser).ifPresent(user -> {
+            authenticateLocal(request, response, authentication, user);
+            mangoUser.recordLogin(user.getId());
             SystemEventType.raiseEvent(new SystemEventType(
                     SystemEventType.TYPE_USER_LOGIN, user.getId()), System
                     .currentTimeMillis(), true, new LocalizableMessage(
@@ -62,7 +76,7 @@ public final class AuthenticationUtils {
         });
         User user = Common.getUser(request);
         if(user == null) {
-            throw new IllegalStateException();
+            throw new PermissionException("Not logged in", null);
         }
         return user;
     }

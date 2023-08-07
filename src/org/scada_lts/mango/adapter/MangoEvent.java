@@ -129,4 +129,9 @@ public interface MangoEvent {
 
 	String generateUniqueXid();
 
+	boolean isXidUnique(String xid, int excludeId);
+
+	List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit);
+
+	List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean disabledCache);
 }

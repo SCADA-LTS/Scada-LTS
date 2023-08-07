@@ -3,13 +3,11 @@ package org.scada_lts.permissions.service;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.scada_lts.dao.IViewDAO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 
-@Service
 public class ViewGetShareUsers implements GetShareUsers<View> {
 
     private final IViewDAO viewDAO;

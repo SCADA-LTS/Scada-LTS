@@ -121,10 +121,10 @@
       $set("incrementAnalogChange.min", locator.incrementAnalogChange.min);
       $set("incrementAnalogChange.max", locator.incrementAnalogChange.max);
       $set("incrementAnalogChange.change", locator.incrementAnalogChange.change);
-      $set("incrementAnalogChange.roll", locator.incrementAnalogChange.roll == "true");
+      $set("incrementAnalogChange.roll", locator.incrementAnalogChange.roll);
       $set("incrementAnalogChange.startValue", locator.incrementAnalogChange.startValue);
       refreshValueList("incrementMultistate", locator.incrementMultistateChange.values);
-      $set("incrementMultistateChange.roll", locator.incrementMultistateChange.roll == "true");
+      $set("incrementMultistateChange.roll", locator.incrementMultistateChange.roll);
       $set("incrementMultistateChange.startValue", locator.incrementMultistateChange.startValue);
       $set("noChange.startValue", locator.noChange.startValue);
       $set("randomAnalogChange.min", locator.randomAnalogChange.min);

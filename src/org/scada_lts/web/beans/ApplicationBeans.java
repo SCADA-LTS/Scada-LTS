@@ -10,14 +10,9 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.*;
-import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
-import org.scada_lts.dao.cache.UserCachable;
-import org.scada_lts.dao.cache.UserCommentCachable;
-import org.scada_lts.dao.cache.UsersProfileCacheable;
+import org.scada_lts.dao.cache.*;
 import org.scada_lts.mango.service.UserCommentService;
-import org.scada_lts.dao.cache.ViewCachable;
 
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
@@ -69,7 +64,6 @@ public class ApplicationBeans {
                 getBeanFromContext("dataPointUserPermissionsService", PermissionsService.class));
     }
 
-    @Deprecated
     public static GetShareUsers<View> getViewGetShareUsersBean() {
         return new ViewGetShareUsers(getViewDaoBean());
     }
@@ -131,7 +125,7 @@ public class ApplicationBeans {
     }
 
     public static IPointEventDetectorDAO getPointEventDetectorDaoBean() {
-        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ScadaConfig.ENABLE_CACHE, true);
+        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(PointEventDetectorCacheable.CACHE_ENABLED_KEY, true);
         return viewCacheEnabled ?
                 getBeanFromContext("pointEventDetectorDaoWithCache", IPointEventDetectorDAO.class) :
                 getBeanFromContext("pointEventDetectorDAO", IPointEventDetectorDAO.class);
@@ -153,22 +147,23 @@ public class ApplicationBeans {
         return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
     }
 
+    @Deprecated
     public static class Lazy {
 
         private Lazy() {}
-
+        @Deprecated
         public static Optional<UserEventServiceWebSocket> getUserEventServiceWebsocketBean() {
             return getBeanFromContext("userEventServiceWebSocket", UserEventServiceWebSocket.class);
         }
-
+        @Deprecated
         public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
             return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
         }
-
+        @Deprecated
         public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
             return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
         }
-
+        @Deprecated
         private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
             try {
                 return Optional.ofNullable(get(beanName, clazz));

@@ -48,7 +48,6 @@ import org.scada_lts.mango.service.ViewService;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -66,7 +65,6 @@ import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
 import com.serotonin.mango.web.dwr.longPoll.LongPollState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -100,14 +98,14 @@ public class MiscDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n silenceAll() {
 		List<Integer> silenced = new ArrayList<Integer>();
 		User user = Common.getUser();
-		MangoEvent eventDao = new EventService();
-		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
+		MangoEvent eventService = new EventService();
+		for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
-				eventDao.toggleSilence(evt.getId(), user.getId());
+				eventService.toggleSilence(evt.getId(), user.getId());
 				silenced.add(evt.getId());
 			}
 		}
@@ -121,8 +119,9 @@ public class MiscDwr extends BaseDwr {
 
 	public int acknowledgeEvent(int eventId) {
 		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
 		if (user != null) {
-			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
+			eventService.ackEvent(eventId, System.currentTimeMillis(),
 					user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
@@ -132,10 +131,10 @@ public class MiscDwr extends BaseDwr {
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {
-			MangoEvent eventDao = new EventService();
+			MangoEvent eventService = new EventService();
 			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
-				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
+			for (EventInstance evt : eventService.getPendingEvents(user.getId()))
+				eventService.ackEvent(evt.getId(), now, user.getId(), 0);
 			resetLastAlarmLevelChange();
 		}
 	}
@@ -204,7 +203,7 @@ public class MiscDwr extends BaseDwr {
 				+ "   osName: " + osName + "\r\n" + "   location: " + location);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n sendTestEmail(
 			List<RecipientListEntryBean> recipientList, String prefix,
 			String message) {
@@ -246,7 +245,7 @@ public class MiscDwr extends BaseDwr {
 		}
 	}
 
-	@MethodFilter
+	
 	public void setHomeUrl(String url) {
 		// Remove the scheme, domain, and context if there.
 		HttpServletRequest request = WebContextFactory.get()
@@ -274,7 +273,7 @@ public class MiscDwr extends BaseDwr {
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
-	@MethodFilter
+	
 	public String getHomeUrl() {
 		String url = Common.getUser().getHomeUrl();
 		if (StringUtils.isEmpty(url))
@@ -299,7 +298,7 @@ public class MiscDwr extends BaseDwr {
 		HttpServletRequest httpRequest = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
-		MangoEvent eventDao = new EventService();
+		MangoEvent eventService = new EventService();
 
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
@@ -426,7 +425,7 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("events", eventDao.getPendingEvents(user.getId()));
+				model.put("events", eventService.getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
 				String currentContent = generateContent(httpRequest,

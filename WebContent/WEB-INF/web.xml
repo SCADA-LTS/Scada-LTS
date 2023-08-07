@@ -250,6 +250,11 @@
     <async-supported>true</async-supported>
   </servlet>
   <servlet>
+    <servlet-name>httpDataSourceSecure</servlet-name>
+    <servlet-class>com.serotonin.mango.web.servlet.HttpDataSourceServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet>
     <servlet-name>imageValue</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ImageValueServlet</servlet-class>
     <async-supported>true</async-supported>
@@ -366,6 +371,10 @@
     <url-pattern>/httpds</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>httpDataSourceSecure</servlet-name>
+    <url-pattern>/httpds-secure</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>imageValue</servlet-name>
     <url-pattern>/imageValue/*</url-pattern>
   </servlet-mapping>
@@ -385,9 +394,6 @@
   </listener>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>com.serotonin.mango.MangoContextListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>

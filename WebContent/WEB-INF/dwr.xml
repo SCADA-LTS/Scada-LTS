@@ -33,113 +33,89 @@
   
     <create creator="spring" javascript="CompoundEventsDwr">
       <param name="beanName" value="CompoundEventsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="CustomViewDwr">
       <param name="beanName" value="CustomViewDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
     </create>
     <create creator="spring" javascript="DataPointDetailsDwr">
       <param name="beanName" value="DataPointDetailsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="DataPointEditDwr">
       <param name="beanName" value="DataPointEditDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="DataSourceEditDwr">
       <param name="beanName" value="DataSourceEditDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="DataSourceListDwr">
       <param name="beanName" value="DataSourceListDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="EmportDwr">
       <param name="beanName" value="EmportDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="EventHandlersDwr">
       <param name="beanName" value="EventHandlersDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="EventsDwr">
       <param name="beanName" value="EventsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="MailingListsDwr">
       <param name="beanName" value="MailingListsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="MaintenanceEventsDwr">
       <param name="beanName" value="MaintenanceEventsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="MiscDwr">
       <param name="beanName" value="MiscDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
     </create>
     <create creator="spring" javascript="PointHierarchyDwr">
       <param name="beanName" value="PointHierarchyDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="PointLinksDwr">
       <param name="beanName" value="PointLinksDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="PublisherEditDwr">
       <param name="beanName" value="PublisherEditDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="PublisherListDwr">
       <param name="beanName" value="PublisherListDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="ReportsDwr">
       <param name="beanName" value="ReportsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="ScheduledEventsDwr">
       <param name="beanName" value="ScheduledEventsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="SystemSettingsDwr">
       <param name="beanName" value="SystemSettingsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.AdminAjaxFilter"/>
     </create>
     <create creator="spring" javascript="UsersDwr">
       <param name="beanName" value="UsersDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="ViewDwr">
       <param name="beanName" value="ViewDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxMethodFilter"/>
     </create>
     <create creator="spring" javascript="WatchListDwr">
       <param name="beanName" value="WatchListDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="ScriptsDwr">
       <param name="beanName" value="ScriptsDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
     <create creator="spring" javascript="UsersProfilesDwr">
       <param name="beanName" value="UsersProfilesDwr"/>
-      <filter class="com.serotonin.mango.web.dwr.util.LoggedInAjaxFilter"/>
     </create>
-    
+
     <convert converter="bean" match="br.org.scadabr.OPCItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
-    
+
     <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
     <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerInfo"/>
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.onewire.OneWireContainerAttribute"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.util.IntMessagePair"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.view.chart.*"/>
     <convert converter="bean" match="com.serotonin.mango.view.component.*"/>
     <convert converter="bean" match="br.org.scadabr.view.component.*"/>
@@ -149,7 +125,7 @@
     <convert converter="bean" match="com.serotonin.mango.view.ImageSet"/>
     <convert converter="bean" match="com.serotonin.mango.view.ImplDefinition"/>
     <convert converter="bean" match="com.serotonin.mango.view.ShareUser"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.vo.bean.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO">
       <param name="exclude" value="dataPointSaveHandler"/>
@@ -157,7 +133,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.DataSourceVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.galil.PointTypeVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.virtual.*"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.vo.event.handlers.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
@@ -199,14 +175,14 @@
       <param name="include" value="id,name"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.UserComment"/>
-    
+
     <convert converter="bean" match="com.serotonin.mango.web.dwr.beans.*"/>
     <convert converter="bean" match="com.serotonin.mango.web.dwr.longPoll.LongPollRequest"/>
     <convert converter="bean" match="com.serotonin.mango.web.mvc.form.PointViewForm"/>
-    
+
     <convert converter="bean" match="com.serotonin.web.dwr.DwrMessageI18n"/>
     <convert converter="bean" match="com.serotonin.web.dwr.DwrResponseI18n"/>
-    
+
     <convert converter="localizableMessage" match="com.serotonin.web.i18n.LocalizableMessage"/>
     <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
     	<param name="exclude" value="type"/>

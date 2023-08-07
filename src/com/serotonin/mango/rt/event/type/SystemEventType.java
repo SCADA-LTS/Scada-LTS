@@ -18,15 +18,18 @@
  */
 package com.serotonin.mango.rt.event.type;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ExportCodes;
@@ -40,6 +43,7 @@ public class SystemEventType extends EventType {
 	// / Static stuff
 	// /
 	//
+	private static final Log LOG = LogFactory.getLog(SystemEventType.class);
 	private static final String SYSTEM_SETTINGS_PREFIX = "systemEventAlarmLevel";
 
 	public static final int TYPE_SYSTEM_STARTUP = 1;
@@ -74,7 +78,7 @@ public class SystemEventType extends EventType {
 
 	public static List<EventTypeVO> getSystemEventTypes() {
 		if (systemEventTypes == null) {
-			systemEventTypes = new ArrayList<EventTypeVO>();
+			systemEventTypes = new CopyOnWriteArrayList<>();
 
 			addEventTypeVO(TYPE_SYSTEM_STARTUP, "event.system.startup",
 					AlarmLevels.INFORMATION);
@@ -118,18 +122,26 @@ public class SystemEventType extends EventType {
 
 	public static void setEventTypeAlarmLevel(int type, int alarmLevel) {
 		EventTypeVO et = getEventType(type);
-		et.setAlarmLevel(alarmLevel);
+		if(et != null) {
+			et.setAlarmLevel(alarmLevel);
 
-		SystemSettingsDAO dao = new SystemSettingsDAO();
-		dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
+			SystemSettingsDAO dao = new SystemSettingsDAO();
+			dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
+		} else {
+			LOG.warn(LoggingUtils.eventTypeInfo(type, alarmLevel));
+		}
 	}
 
 	public static void raiseEvent(SystemEventType type, long time, boolean rtn,
 			LocalizableMessage message) {
 		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
-		int alarmLevel = vo.getAlarmLevel();
-		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
-				message, null);
+		if(vo != null) {
+			int alarmLevel = vo.getAlarmLevel();
+			Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
+					message, null);
+		} else {
+			LOG.warn(LoggingUtils.systemEventTypInfo(type));
+		}
 	}
 
 	public static void returnToNormal(SystemEventType type, long time) {

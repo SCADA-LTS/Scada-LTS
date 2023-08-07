@@ -33,7 +33,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +47,6 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointEventDetectorDAO.class);
@@ -426,22 +424,22 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 	}
 
 	@Override
-	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid) {
+	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid, int dataPointId) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("getPointEventDetector(String pointEventDetectorXid) pointEventDetectorXid:" +pointEventDetectorXid);
+			LOG.trace("getPointEventDetector(String pointEventDetectorXid, int dataPointId) pointEventDetectorXid:" +pointEventDetectorXid + ", dataPointId:" + dataPointId);
 		}
 
-		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? "
-				+ "order by " + COLUMN_NAME_ID;
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? and " + COLUMN_NAME_DATA_POINT_ID + "=?"
+				+ " order by " + COLUMN_NAME_ID;
 
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
-					new Object[]{pointEventDetectorXid}, new PointEventDetectorRowMapper(null));
+					new Object[]{pointEventDetectorXid, dataPointId}, new PointEventDetectorRowMapper(null));
 		} catch (EmptyResultDataAccessException ex) {
 			return null;
 		} catch (IncorrectResultSizeDataAccessException ex) {
-			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", msg: " +ex.getMessage(), ex);
+			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", dataPointId:" + dataPointId + ", msg: " +ex.getMessage(), ex);
 			return new PointEventDetectorVO(Common.NEW_ID, null);
 		} catch (Exception ex) {
 			LOG.warn(ex.getMessage(), ex);

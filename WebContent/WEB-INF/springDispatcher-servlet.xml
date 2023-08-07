@@ -144,7 +144,7 @@
   <bean id="publicViewController" class="com.serotonin.mango.web.mvc.controller.PublicViewController">
     <property name="viewName"><value>publicView</value></property>
   </bean>
-  
+
   <bean id="publisherEditController" class="com.serotonin.mango.web.mvc.controller.PublisherEditController">
     <property name="viewName"><value>publisherEdit</value></property>
   </bean>
