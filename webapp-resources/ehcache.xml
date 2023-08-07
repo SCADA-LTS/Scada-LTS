@@ -165,6 +165,6 @@
 
     <cache alias="point_event_detector_list_by_data_point_id" uses-template="integer_point_event_detector_list_template"/>
     <cache alias="point_event_detector" uses-template="integer_point_event_detector_template"/>
-    <cache alias="point_event_detector_by_xid" uses-template="string_point_event_detector_template"/>
+    <cache alias="point_event_detector_by_xid_and_data_point_id" uses-template="string_point_event_detector_template"/>
     <cache alias="data_point_id_by_point_event_detector_id" uses-template="integer_integer_cache_template"/>
 </config>

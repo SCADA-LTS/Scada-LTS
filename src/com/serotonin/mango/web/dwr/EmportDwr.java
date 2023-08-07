@@ -39,7 +39,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -60,10 +59,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.mango.service.ReportService;
-import org.scada_lts.mango.service.ScriptService;
-import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 /**
  * @author Matthew Lohbihler
@@ -161,7 +157,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(POINT_HIERARCHY, new DataPointDao().getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, new EventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, new EventService().getEventHandlers());
 		if (watchLists) {
 			WatchListDao watchListDao = new WatchListDao();
 			List<WatchList> wls = watchListDao.getWatchLists();

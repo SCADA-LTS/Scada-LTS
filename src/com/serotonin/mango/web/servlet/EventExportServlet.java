@@ -9,11 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.EventCsvStreamer;
 import com.serotonin.mango.web.dwr.beans.EventExportDefinition;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 
 public class EventExportServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -29,7 +30,8 @@ public class EventExportServlet extends HttpServlet {
             return;
 
         final ResourceBundle bundle = Common.getBundle(request);
-        List<EventInstance> events = new EventDao().search(def.getEventId(), def.getEventSourceType(), def.getStatus(),
+        MangoEvent eventService = new EventService();
+        List<EventInstance> events = eventService.search(def.getEventId(), def.getEventSourceType(), def.getStatus(),
                 def.getAlarmLevel(), def.getKeywords(), def.getDateFrom(), def.getDateTo(), user.getId(), bundle, 0,
                 Integer.MAX_VALUE, null);
 

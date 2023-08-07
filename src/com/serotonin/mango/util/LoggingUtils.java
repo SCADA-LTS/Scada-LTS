@@ -6,11 +6,13 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
@@ -163,5 +165,28 @@ public final class LoggingUtils {
             return "";
         String info =  "mailingList: {0} (id: {1}, xid: {2})";
         return MessageFormat.format(info, mailingList.getName(), mailingList.getId(), mailingList.getXid());
+    }
+
+    public static String eventTypeInfo(EventTypeVO event) {
+        if(event == null)
+            return "";
+        String info = "event type: {0} (typeId: {1}, typeRef1: {2}, typeRef2: {3}, alarmLevel: {4}, eventDetectorKey: {4})";
+        return MessageFormat.format(info, event.getDescription(), event.getTypeId(), event.getTypeRef1(), event.getTypeRef2(), event.getAlarmLevel(), event.getEventDetectorKey());
+    }
+
+    public static String systemEventTypInfo(SystemEventType event) {
+        if(event == null)
+            return "";
+        String info = "system event type (systemEventTypeId: {0}, dataSourceId: {1}, dataPointId: {2}, eventSourceId: {3}, " +
+                "duplicateHandling: {4}, referenceId1: {5}, referenceId2: {6}, compoundEventDetectorId: {7}, scheduleId: {8}, " +
+                "publisherId: {9}, systemMessage: {10})";
+        return MessageFormat.format(info, event.getSystemEventTypeId(), event.getDataSourceId(), event.getDataPointId(),
+                event.getEventSourceId(), event.getDuplicateHandling(), event.getReferenceId1(), event.getReferenceId2(),
+                event.getCompoundEventDetectorId(), event.getScheduleId(), event.getPublisherId(), event.isSystemMessage());
+    }
+
+    public static String eventTypeInfo(int type, int alarmLevel) {
+        String info = "event type: {0} (alarmLevel: {1})";
+        return MessageFormat.format(info, type, alarmLevel);
     }
 }

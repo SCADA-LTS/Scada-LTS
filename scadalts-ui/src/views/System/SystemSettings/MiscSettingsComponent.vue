@@ -45,7 +45,23 @@
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
-				</v-row>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.eventPendingCacheEnabled"
+                            :label="$t('systemsettings.event.pendingCacheEnabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.eventPendingLimit"
+                            :label="$t('systemsettings.event.pendingLimit')"
+                            @change="watchDataChange()"
+                            type="number"
+                            dense
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
 			</v-card-text>
 		</v-card>
 	</v-col>

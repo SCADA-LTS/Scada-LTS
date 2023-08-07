@@ -53,8 +53,8 @@ public class PointEventDetectorCache implements PointEventDetectorCacheable {
     }
 
     @Override
-    public PointEventDetectorVO selectPointEventDetector(String pointEventDetectorXid) {
-        return pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid);
+    public PointEventDetectorVO selectPointEventDetector(String pointEventDetectorXid, int dataPointId) {
+        return pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid, dataPointId);
     }
 
     @Override
