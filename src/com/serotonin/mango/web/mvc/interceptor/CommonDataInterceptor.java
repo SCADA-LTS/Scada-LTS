@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.SystemSettingsDAO;
 
+import com.serotonin.mango.util.DateUtils;
 /**
  * @author Matthew Lohbihler
  */
@@ -40,7 +41,7 @@ public class CommonDataInterceptor implements HandlerInterceptor {
         request.setAttribute("instanceDescriptionHeader", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
         request.setAttribute("NEW_ID", Common.NEW_ID);
         request.setAttribute("scadaVersion", ScadaVersion.getInstance());
-        request.setAttribute("toYear", DateTime.now().getYear());
+        request.setAttribute("toYear", DateUtils.getCurrentYearInt());
         return true;
     }
 
