@@ -181,7 +181,7 @@
                            $(currentEventTextRenderer)
                        );
 
-                       jQuery("#eventTextRendererSelect").val(properties.def.name);
+                       jQuery("#eventTextRendererSelect").val(properties.eventTextRenderer.def.name);
 
                        currentEventTextRenderer = $("eventTextRendererSelect").value;
 
