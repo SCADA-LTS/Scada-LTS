@@ -1053,6 +1053,5 @@
 	"userDetails.view.forceAdminTitle": "The function is enforced by the Admin",
 	"userDetails.view.enableFullScreen": "Enable full screen mode",
 	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
-	"script.runScript": "Run script",
-	"script.Results": "Script results: "
+	"script.runScript": "Run script"
 }

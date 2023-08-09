@@ -318,25 +318,22 @@
 								</v-col>
 							</v-row>
 							<v-textarea
-                  tabindex="0"
-                  style="width: 100%; font-family: monospace"
-                  :label="$t('scriptList.script')"
-                  v-model="datapoint.pointLocator.script"
-                  rows=3
-                  @focusout="validateScript"
-                  @focus="validateScript"
-                  @input="delayedValidateScript"
-                  :rules="[ruleNotNull]"
-                  ref="scriptBodyTextarea"
+								style="width: 100%; font-family: monospace"
+								:label="$t('scriptList.script')"
+								v-model="datapoint.pointLocator.script"
+								rows=3
+                @input="validateScript"
+                :rules="[ruleValidScript, ruleNotNull]"
+								ref="scriptBodyTextarea"
 							></v-textarea>
             <v-col>
               <v-btn block color="primary" @click="validateScript"
               >{{ $t('script.runScript') }}
               </v-btn>
             </v-col>
-            <div v-if = "this.validScript && ruleNotNull">
+            <div v-if = "this.validScript">
               <v-alert title="Script is valid" type="success">
-                <div v-if = "this.validScript"> {{$t('script.Results')}} {{this.resultMessage}}</div>
+                Script results: {{this.resultMessage}}
               </v-alert>
             </div>
             <p v-else></p>
@@ -426,7 +423,6 @@ export default {
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
 			multistateValue: 0,
-      timer: null,
 			booleanSelectBox: [
 				{
 					text: 'False',
@@ -462,6 +458,7 @@ export default {
       validScript: false,
       resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+      ruleValidScript: () => this.validScript || this.resultMessage,
 		};
 	},
 
@@ -560,17 +557,14 @@ export default {
           url:  `/datapoint/meta/test`,
           data: this.datapoint.pointLocator
         });
-          this.validScript = resp.success;
-          this.resultMessage = resp.message;
-          this.$refs.scriptBodyTextarea.validate();
+        this.validScript = resp.success;
+        this.resultMessage = resp.message;
+        this.$refs.scriptBodyTextarea.validate();
+        this.$t(resp);
       } catch (e) {
         console.log('error:' + e);
       }
     },
-    delayedValidateScript(){
-      clearTimeout(this.timer);
-      this.timer = setTimeout(this.validateScript,1400);
-    }
 	},
 };
 </script>

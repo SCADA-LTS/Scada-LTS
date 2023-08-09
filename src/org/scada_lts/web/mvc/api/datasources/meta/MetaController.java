@@ -50,27 +50,13 @@ public class MetaController {
             PointValueTime pvt = executor.execute(script, convertedContext,
                     System.currentTimeMillis(), dataTypeId, -1);
             if(pvt.getTime() == -1) {
-                if (script == "") {
-                    response.put("success", false);
-                    response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.failure", pvt.getValue()));
-                }
-                else {
-                    response.put("success", true);
-                    response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.success", pvt.getValue()));
-                }
+                response.put("success", true);
                 response.put("result", pvt.getStringValue());
-
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.success", pvt.getValue()));
             } else {
-                if (script == "") {
-                    response.put("success", false);
-                    response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.failure", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
-                }
-                else {
-                    response.put("success", true);
-                    response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
-                }
+                response.put("success", true);
                 response.put("result", pvt.getStringValue());
-
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(request), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
             }
         } catch (DataPointStateException | ResultTypeException e) {
             response.put("success", false);
