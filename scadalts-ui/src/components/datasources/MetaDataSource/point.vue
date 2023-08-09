@@ -317,28 +317,29 @@
 									</table>
 								</v-col>
 							</v-row>
-
-							<v-textarea :rules="[ruleNotNull]"
-								style="width: 100%; font-family: monospace"
-								:label="$t('scriptList.script')"
-								v-model="datapoint.pointLocator.script"
-								rows=3
-								ref="scriptBodyTextarea"
-                tabindex="0"
-                @focusout="validateScript"
-                @focus="validateScript"
+							<v-textarea
+                  tabindex="0"
+                  style="width: 100%; font-family: monospace"
+                  :label="$t('scriptList.script')"
+                  v-model="datapoint.pointLocator.script"
+                  rows=3
+                  @focusout="validateScript"
+                  @focus="validateScript"
+                  @input="delayedValidateScript"
+                  :rules="[ruleNotNull]"
+                  ref="scriptBodyTextarea"
 							></v-textarea>
-              <v-col>
-                <v-btn block color="primary" @click="validateScript"
-                >{{ $t('script.runScript') }}
-                </v-btn>
-              </v-col>
-              <div v-if = "this.validScript && ruleNotNull">
-                <v-alert title="Script is valid" type="success">
-                  <div v-if = "this.validScript"> {{$t('script.Results')}} {{this.resultMessage}}</div>
-                </v-alert>
-              </div>
-              <p v-else></p>
+            <v-col>
+              <v-btn block color="primary" @click="validateScript"
+              >{{ $t('script.runScript') }}
+              </v-btn>
+            </v-col>
+            <div v-if = "this.validScript && ruleNotNull">
+              <v-alert title="Script is valid" type="success">
+                <div v-if = "this.validScript"> {{$t('script.Results')}} {{this.resultMessage}}</div>
+              </v-alert>
+            </div>
+            <p v-else></p>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -425,7 +426,7 @@ export default {
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
 			multistateValue: 0,
-			timer: null,
+      timer: null,
 			booleanSelectBox: [
 				{
 					text: 'False',
@@ -458,8 +459,8 @@ export default {
 					executionDelayPeriodType: "SECONDS"
 				}
 			},
-			validScript: false,
-			resultMessage: "",
+      validScript: false,
+      resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 		};
 	},
@@ -553,20 +554,23 @@ export default {
 			}
 		},
 
-		async validateScript() {
-			try {
-				let resp = await this.$store.dispatch('requestPost', {
-					url:  `/datapoint/meta/test`,
-					data: this.datapoint.pointLocator
+    async validateScript() {
+      try {
+        let resp = await this.$store.dispatch('requestPost', {
+          url:  `/datapoint/meta/test`,
+          data: this.datapoint.pointLocator
         });
-					this.validScript = resp.success;
-					this.resultMessage = resp.message;
-					this.$refs.scriptBodyTextarea.validate();
-			} catch (e) {
-				console.log('error:' + e);
-			}
-		},
-
+          this.validScript = resp.success;
+          this.resultMessage = resp.message;
+          this.$refs.scriptBodyTextarea.validate();
+      } catch (e) {
+        console.log('error:' + e);
+      }
+    },
+    delayedValidateScript(){
+      clearTimeout(this.timer);
+      this.timer = setTimeout(this.validateScript,1400);
+    }
 	},
 };
 </script>
