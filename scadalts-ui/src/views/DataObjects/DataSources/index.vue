@@ -43,7 +43,7 @@
 				:sort-by="[]"
 				:sort-desc="[]"
 				:search="search"
-				item-key="name"
+				item-key="xid"
 				multi-sort
 				show-expand
 				@item-expanded="fetchDataPointList"
