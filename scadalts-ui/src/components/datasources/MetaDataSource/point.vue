@@ -11,6 +11,7 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
+          @change="validateScript"
 				></v-select>
 				
 			</template>
@@ -317,13 +318,12 @@
 									</table>
 								</v-col>
 							</v-row>
-							<v-textarea
+							<v-textarea :rules="[ruleNotNull, ruleValidScript]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="datapoint.pointLocator.script"
 								rows=3
-                @input="validateScript"
-                :rules="[ruleValidScript, ruleNotNull]"
+                @focusout="validateScript"
 								ref="scriptBodyTextarea"
 							></v-textarea>
             <v-col>
@@ -550,17 +550,22 @@ export default {
 				return;
 			}
 		},
-
     async validateScript() {
       try {
-        let resp = await this.$store.dispatch('requestPost', {
-          url:  `/datapoint/meta/test`,
-          data: this.datapoint.pointLocator
-        });
-        this.validScript = resp.success;
-        this.resultMessage = resp.message;
-        this.$refs.scriptBodyTextarea.validate();
-        this.$t(resp);
+        if (this.datapoint.pointLocator.script === ""){
+          this.validScript = false;
+          this.resultMessage = this.$t('validation.rule.notNull');
+          this.$refs.scriptBodyTextarea.validate();
+        }
+        else {
+          let resp = await this.$store.dispatch('requestPost', {
+            url:  `/datapoint/meta/test`,
+            data: this.datapoint.pointLocator
+          });
+          this.validScript = resp.success;
+          this.resultMessage = resp.message;
+          this.$refs.scriptBodyTextarea.validate();
+        }
       } catch (e) {
         console.log('error:' + e);
       }
