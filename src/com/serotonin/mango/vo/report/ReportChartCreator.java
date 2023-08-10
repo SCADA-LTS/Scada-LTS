@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
+import com.serotonin.mango.util.DateUtils;
 
 import java.awt.*;
 import java.io.*;
@@ -116,6 +117,7 @@ public class ReportChartCreator {
         model.put("MULTISTATE", DataTypes.MULTISTATE);
         model.put("NUMERIC", DataTypes.NUMERIC);
         model.put("IMAGE", DataTypes.IMAGE);
+        model.put("toYear", DateUtils.getCurrentYearInt());
 
         // Create the individual point charts
         for (PointStatistics pointStat : pointStatistics) {

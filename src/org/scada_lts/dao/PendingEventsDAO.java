@@ -87,18 +87,22 @@ public class PendingEventsDAO {
 				+ "ue.userId=? and "
 				+ "(e.ackTs is null or e.ackTs = 0) "
 			+ "order by e.activeTs desc "
-			+ "LIMIT 100";
+			+ "LIMIT ? ";
 
 	// @formatter:on
 
-	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments ) {
+	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments) {
+		return getPendingEvents(userId, comments, 100);
+	}
+
+	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments, int limit) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL PendingEvents userId:"+userId);
 		}
 
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId},
+			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId, limit},
 					(rs, rownumber) -> mapToEvent(comments, rs));
 
 			return listEvents;

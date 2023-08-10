@@ -36,6 +36,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
  *
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */
+@Deprecated
 public class EventDao  {
 	
 	private MangoEvent eventService = new EventService();

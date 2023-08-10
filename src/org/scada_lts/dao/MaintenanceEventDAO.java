@@ -188,7 +188,7 @@ public class MaintenanceEventDAO {
 			maintenanceEvent.setAlias(rs.getString(COLUMN_NAME_ALIAS));
 			maintenanceEvent.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			maintenanceEvent.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
-			maintenanceEvent.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
+			maintenanceEvent.setDisabled(DAO.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
 			maintenanceEvent.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
 			maintenanceEvent.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
 			maintenanceEvent.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));

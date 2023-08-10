@@ -42,20 +42,24 @@ public class PendingEventService {
 
 	private final IUserDAO userDAO;
 
+	private final SystemSettingsService systemSettingsService;
+
 	public PendingEventService() {
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		pendingEventsDAO = new PendingEventsDAO();
 		userDAO = ApplicationBeans.getUserDaoBean();
+		systemSettingsService = new SystemSettingsService();
 	}
 
 	public Map<Integer, List<EventInstance>> getPendingEvents() {
 
 		List<Integer> users = userDAO.getAll();
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(userCommentDAO.getEventComments());
+		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
 
 		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
 		for (int userId: users) {
-			List<EventInstance> events = new CopyOnWriteArrayList<>(pendingEventsDAO.getPendingEvents(userId, comments));
+			List<EventInstance> events = new CopyOnWriteArrayList<>(pendingEventsDAO.getPendingEvents(userId, comments, limit));
 			cacheEvents.put(userId, events);
 		}
 		return cacheEvents;

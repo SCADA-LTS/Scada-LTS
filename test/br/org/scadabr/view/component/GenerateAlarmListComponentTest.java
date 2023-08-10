@@ -1,7 +1,6 @@
 package br.org.scadabr.view.component;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.BaseDwr;
@@ -30,8 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BaseDwr.class, WebContextFactory.class, Common.class,
-        AlarmListComponent.class, LogFactory.class, EventService.class,
-        EventDao.class})
+        AlarmListComponent.class, LogFactory.class, EventService.class})
 public class GenerateAlarmListComponentTest {
 
     private final static String CONTENT_EXPECTED = "test";

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
@@ -52,7 +53,7 @@ public class LoginController {
         if(user != null) {
             return new ModelAndView("redirect:" + getHomeUrl(user));
         } else {
-            request.setAttribute("toYear", DateTime.now().getYear());
+            request.setAttribute("toYear", DateUtils.getCurrentYearInt());
             ScadaLocaleUtils.setLocaleInSession(request, response);
             return new ModelAndView("login");
         }

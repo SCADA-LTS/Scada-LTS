@@ -98,6 +98,8 @@
             $set("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>);
 
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>);
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
@@ -269,6 +271,8 @@
                 $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
@@ -870,6 +874,18 @@
          <td class="formLabelRequired"><fmt:message key="systemsettings.view.hideShortcutDisableFullScreen"/></td>
          <td class="formField">
            <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.event.pendingCacheEnabled"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>" type="checkbox" />
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.event.pendingLimit"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
          </td>
         </tr>
         <tr>

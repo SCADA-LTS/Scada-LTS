@@ -199,7 +199,7 @@
 	"datapointDetails.valueHistory.stats.max": "Maximum Value:",
 	"datapointDetails.valueHistory.stats.min": "Minimum Value:",
 	"datapointDetails.valueHistory.stats.sum": "Summary Value:",
-	"datapointDetails.valueHistory.stats.timeperiod": "Show history form",
+	"datapointDetails.valueHistory.stats.timeperiod": "Show history from",
 	"datapointDetails.valueHistory.subtitle": "History",
 	"datapointDetails.valueHistory.table.count": "Count",
 	"datapointDetails.valueHistory.table.date": "Date",
@@ -1054,4 +1054,6 @@
 	"userDetails.view.enableFullScreen": "Enable full screen mode",
 	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
 	"script.runScript": "Run script"
+	"systemsettings.event.pendingLimit": "Event Pending Limit",
+	"systemsettings.event.pendingCacheEnabled": "Enabled Event Pending Cache"
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.util.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -75,7 +76,7 @@ public class PointHierarchyController {
 				
 				model.put("appName", request.getContextPath());
 				model.put("appPort", request.getLocalPort());
-				model.put("toYear",  DateTime.now().getYear());
+				model.put("toYear", DateUtils.getCurrentYearInt());
 				return new ModelAndView("pointHierarchySLTS", model);
 			} 
 		}

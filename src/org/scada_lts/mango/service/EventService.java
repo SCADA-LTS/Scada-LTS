@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
@@ -61,16 +62,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
-	private static final int MAX_PENDING_EVENTS = 100;
 	
 	private final EventDAO eventDAO;
 	private final UserEventDAO userEventDAO;
 	private final IUserCommentDAO userCommentDAO;
+	private final SystemSettingsService systemSettingsService;
 	
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
+		systemSettingsService = new SystemSettingsService();
 	}
 
 	class UserPendingEventRetriever implements Runnable {
@@ -171,10 +173,11 @@ public class EventService implements MangoEvent {
 	public List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
 		
 		List<EventInstance> lst;
+		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
 		if (typeRef1 == -1) {
-			lst = eventDAO.getPendingEvents(typeId, userId);
+			lst = eventDAO.getPendingEventsLimit(typeId, userId, limit);
 		} else {
-			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
+			lst = eventDAO.getPendingEventsLimit(typeId, typeRef1, userId, limit);
 		}
 		attachRelationInfo(lst);
 		
@@ -182,6 +185,7 @@ public class EventService implements MangoEvent {
 		
 	}
 
+	@Deprecated(since = "2.7.5.4")
 	@Override
 	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
 
@@ -194,10 +198,11 @@ public class EventService implements MangoEvent {
 		return lst;
 
 	}
-	
+
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
-		return eventDAO.getEventsForDataPoint(dataPointId, userId);
+		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+		return eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
 	}
 
 	@Override
@@ -229,6 +234,7 @@ public class EventService implements MangoEvent {
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
 	}
 
+	@Deprecated
 	@Override
 	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
 		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
@@ -243,14 +249,35 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public List<EventInstance> getPendingEvents(int userId) {
+		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+		return getPendingEventsAlarmLevelMin(userId, -1, limit, false);
+	}
+	@Override
+	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit) {
+		return getPendingEventsAlarmLevelMin(userId, alarmLevelMin, limit, false);
+	}
+
+	@Override
+	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean forceDisabledCache) {
 		List<EventInstance> results = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-			  results = PendingEventsCache.getInstance().getPendingEvents(userId);
+			boolean cacheEnable = systemSettingsService.getMiscSettings().isEventPendingCacheEnabled();
+			if (!forceDisabledCache && cacheEnable) {
+				PendingEventsCache.getInstance().startUpdate();
+				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
+						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp))
+						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
+						.collect(Collectors.toList());
 			} else {
-			
-				results = eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);				
+				if(!forceDisabledCache)
+					PendingEventsCache.getInstance().stopUpdate();
+				int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+				int calcLimit = limit > -1 ? limit : fromSystemSettingsLimit;
+				if(alarmLevelMin > 0) {
+					results = eventDAO.getPendingEventsLimitAlarmLevelMin(userId, alarmLevelMin, calcLimit);
+				} else {
+					results = eventDAO.getPendingEventsLimit(userId, calcLimit);
+				}
 				attachRelationalInfo(results);
 			}
 		} catch (SchedulerException | IOException e) {
@@ -524,6 +551,11 @@ public class EventService implements MangoEvent {
 	@Override
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(EventHandlerVO.XID_PREFIX, "eventHandlers");
+	}
+
+	@Override
+	public boolean isXidUnique(String xid, int excludeId) {
+		return DAO.getInstance().isXidUnique(xid, excludeId, "eventHandlers");
 	}
 
 	private void _ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {

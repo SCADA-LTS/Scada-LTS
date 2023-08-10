@@ -386,7 +386,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         List<EventInstance> events = new EventService()
-                .getPendingSimpleEventsForDataSource(ds.getId(), Common.getUser()
+                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
                         .getId());
         Collections.sort(events, new Comparator<EventInstance>() {
             @Override

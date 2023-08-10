@@ -267,6 +267,8 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                if(jsonSettingsMisc.getEventPendingLimit() < 0)
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 systemSettingsService.saveMiscSettings(jsonSettingsMisc);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {

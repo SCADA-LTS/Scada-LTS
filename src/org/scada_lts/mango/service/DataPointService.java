@@ -473,7 +473,7 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public int getDetectorId(String pointEventDetectorXid, int dataPointId) {
-		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid, dataPointId);
 		if(pointEventDetectorVO == null)
 			return 0;
 		return pointEventDetectorVO.getId();

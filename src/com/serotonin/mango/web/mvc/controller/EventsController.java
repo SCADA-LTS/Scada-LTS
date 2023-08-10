@@ -24,21 +24,24 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.springframework.validation.BindException;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.web.comparators.EventInstanceComparator;
 import com.serotonin.web.util.PaginatedData;
 import com.serotonin.web.util.PagingDataForm;
 
+@Deprecated
 public class EventsController  {
     @SuppressWarnings("unchecked")
     protected PaginatedData getData(HttpServletRequest request, PagingDataForm paging, BindException errors)
             throws Exception {
         ResourceBundle bundle = Common.getBundle(request);
-        List<EventInstance> data = new EventDao().getPendingEvents(Common.getUser(request).getId());
+        MangoEvent eventService = new EventService();
+        List<EventInstance> data = eventService.getPendingEvents(Common.getUser(request).getId());
         sortData(bundle, data, paging);
         return new PaginatedData<EventInstance>(data, data.size());
     }

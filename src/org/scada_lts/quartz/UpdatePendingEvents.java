@@ -48,6 +48,7 @@ public class UpdatePendingEvents implements StatefulJob {
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		LOG.trace("UpdatePendingEvents");		
 		try {
+			PendingEventsCache.getInstance().resetUpdate();
 			PendingEventsCache.getInstance().setMapPendingEvents(pendingEventService.getPendingEvents());
 			PendingEventsCache.getInstance().resetCountBuffer();
 		} catch (SchedulerException | IOException e) {

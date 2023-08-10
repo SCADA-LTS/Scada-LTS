@@ -227,14 +227,15 @@ public class DataSourceService implements MangoDataSource {
 				MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
 				pointLocator.setClientId(MqttUtils.generateUniqueClientId());
 			}
+			dataPointService.saveDataPoint(dataPointCopy);
 
 			//Copy event detectors
 			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
 				pointEventDetector.setId(Common.NEW_ID);
+				pointEventDetector.setXid(new DataPointService().generateEventDetectorUniqueXid(dataPointCopy.getId()));
 				pointEventDetector.njbSetDataPoint(dataPointCopy);
 			}
 			dataPointService.saveDataPoint(dataPointCopy);
-
 			//Copy permissions
 			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
 		}
