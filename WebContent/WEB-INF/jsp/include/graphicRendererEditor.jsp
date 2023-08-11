@@ -197,8 +197,6 @@
   
   <script type="text/javascript">
       var viewId = mango.longPoll.pollRequest.viewId;
-      var lastHighlightedElementIdSetZero = null;
-      var lastHighlightedElementIdSetOne = null;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -396,7 +394,7 @@
                 html += "<a\
                   href='javascript:void(0)' onclick='graphicRendererEditor.set"+ type +"Image("+ i +")'><img\
                     id='graphicRendererBinaryImageSet"+ type + i +"' src='"+ imageSet.imageFilenames[i] +"' \
-                    onclick = highlightSelectedElement(this.id); style='display:inline;' border='0' /></a>&nbsp;";
+                    style='display:inline;' border='0' /></a>&nbsp;";
             }
             return html;
         };
@@ -439,20 +437,28 @@
         this.setZeroImage = function(imageId) {
             var image;
             var exists = imageId != -1;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "0";
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.zeroImage = imageId;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "2";
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         this.setOneImage = function(imageId) {
             var image;
             var exists = imageId != -1;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "0";
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.oneImage = imageId;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "2";
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         
         this.updateSampleImageSet = function(selectComp) {
@@ -493,41 +499,6 @@
             return null;
         };
     }
-
-      this.highlightSelectedElement = function (elementId) {
-        if (elementId.includes("SetZero")) {
-          var elementToHighlightSetZero = document.getElementById(elementId);
-          var isHighlightedSetZero = elementToHighlightSetZero.classList.contains('highlighted');
-
-          if (lastHighlightedElementIdSetZero !== null) {
-            var lastHighlightedElementSetZero = document.getElementById(lastHighlightedElementIdSetZero);
-            document.getElementById(lastHighlightedElementIdSetZero).style.backgroundColor = "transparent";
-            lastHighlightedElementSetZero.classList.remove('highlighted');
-          }
-
-          if (!isHighlightedSetZero) {
-            elementToHighlightSetZero.classList.add('highlighted');
-            document.getElementById(elementId).style.backgroundColor = "grey";
-            lastHighlightedElementIdSetZero = elementId;
-          }
-        }
-        else if (elementId.includes("SetOne")) {
-          var elementToHighlightSetOne = document.getElementById(elementId);
-          var isHighlightedSetOne = elementToHighlightSetOne.classList.contains('highlighted');
-
-          if (lastHighlightedElementIdSetOne !== null) {
-            var lastHighlightedElementSetOne = document.getElementById(lastHighlightedElementIdSetOne);
-            document.getElementById(lastHighlightedElementIdSetOne).style.backgroundColor = "transparent";
-            lastHighlightedElementSetOne.classList.remove('highlighted');
-          }
-
-          if (!isHighlightedSetOne) {
-            elementToHighlightSetOne.classList.add('highlighted');
-            document.getElementById(elementId).style.backgroundColor = "grey";
-            lastHighlightedElementIdSetOne = elementId;
-          }
-        }
-      };
     var graphicRendererEditor = new GraphicRendererEditor();
   </script>
 </div>
