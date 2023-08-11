@@ -393,8 +393,8 @@
             for (var i=0; i<imageSet.imageFilenames.length; i++) {
                 html += "<a\
                   href='javascript:void(0)' onclick='graphicRendererEditor.set"+ type +"Image("+ i +")'><img\
-                    id='graphicRendererBinaryImageSet"+ type + i +"' src='"+ imageSet.imageFilenames[i] +"' \
-                    style='display:inline;' border='0' /></a>&nbsp;";
+                    id='graphicRendererBinaryImageSet"+ type + i +"' src='"+ imageSet.imageFilenames[i] +"'\
+                    style='display:inline;' border='0'/></a>&nbsp;";
             }
             return html;
         };
