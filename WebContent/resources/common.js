@@ -1095,4 +1095,8 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
+function removeScriptTag(text) {
+    return text.replace("<script>", "").replace("<\\/script>", "");
+}
+
 

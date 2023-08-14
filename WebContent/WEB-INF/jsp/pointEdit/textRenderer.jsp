@@ -185,34 +185,34 @@
           // Figure out which fields to populate with data.
           <c:choose>
             <c:when test='${form.textRenderer.typeName == "textRendererAnalog"}'>
-              $set("textRendererAnalogFormat", "${form.textRenderer.format}");
-              $set("textRendererAnalogSuffix", "${form.textRenderer.suffix}");
+              $set("textRendererAnalogFormat", removeScriptTag("${form.textRenderer.format}"));
+              $set("textRendererAnalogSuffix", removeScriptTag("${form.textRenderer.suffix}"));
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererBinary"}'>
-              $set("textRendererBinaryZero", "${form.textRenderer.zeroLabel}");
+              $set("textRendererBinaryZero", removeScriptTag("${form.textRenderer.zeroLabel}"));
               textRendererEditor.handlerBinaryZeroColour("${form.textRenderer.zeroColour}");
-              $set("textRendererBinaryOne", "${form.textRenderer.oneLabel}");
+              $set("textRendererBinaryOne", removeScriptTag("${form.textRenderer.oneLabel}"));
               textRendererEditor.handlerBinaryOneColour("${form.textRenderer.oneColour}");
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererMultistate"}'>
               <c:forEach items="${form.textRenderer.multistateValues}" var="msValue">
-                textRendererEditor.addMultistateValue("${msValue.key}", "${msValue.text}", "${msValue.colour}");
+                textRendererEditor.addMultistateValue("${msValue.key}", removeScriptTag("${msValue.text}"), "${msValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererNone"}'>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererPlain"}'>
-              $set("textRendererPlainSuffix", "${form.textRenderer.suffix}");
+              $set("textRendererPlainSuffix", removeScriptTag("${form.textRenderer.suffix}"));
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererRange"}'>
-              $set("textRendererRangeFormat", "${form.textRenderer.format}");
+              $set("textRendererRangeFormat", removeScriptTag("${form.textRenderer.format}"));
               <c:forEach items="${form.textRenderer.rangeValues}" var="rgValue">
-                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}",
+                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", removeScriptTag("${rgValue.text}"),
                         "${rgValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererTime"}'>
-              $set("textRendererTimeFormat", "${form.textRenderer.format}");
+              $set("textRendererTimeFormat", removeScriptTag("${form.textRenderer.format}"));
               $set("textRendererTimeConversionExponent", "${form.textRenderer.conversionExponent}");
             </c:when>
             <c:otherwise>
@@ -289,9 +289,9 @@
           var theValue = new this.MultistateValue();
           theValue.key = theNumericKey;
           if (text)
-              theValue.text = text;
+              theValue.text = removeScriptTag(text);
           else
-              theValue.text = $get("textRendererMultistateText");
+              theValue.text = removeScriptTag($get("textRendererMultistateText"));
           if (colour)
               theValue.colour = colour;
           else
@@ -367,9 +367,9 @@
           theValue.from = theFrom;
           theValue.to = theTo;
           if (text)
-              theValue.text = text;
+              theValue.text = removeScriptTag(text);
           else
-              theValue.text = $get("textRendererRangeText");
+              theValue.text = removeScriptTag($get("textRendererRangeText"));
           if (colour)
               theValue.colour = colour;
           else

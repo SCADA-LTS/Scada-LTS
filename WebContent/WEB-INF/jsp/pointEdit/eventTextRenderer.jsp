@@ -120,19 +120,19 @@
       // Figure out which fields to populate with data.
       <c:choose>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZero", "${form.eventTextRenderer.zeroLabel}");
-      $set("eventTextRendererBinaryOne", "${form.eventTextRenderer.oneLabel}");
+      $set("eventTextRendererBinaryZero", removeScriptTag("${form.eventTextRenderer.zeroLabel}"));
+      $set("eventTextRendererBinaryOne", removeScriptTag("${form.eventTextRenderer.oneLabel}"));
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
-      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.text}");
+      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", removeScriptTag("${msValue.text}"));
       </c:forEach>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
       <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
-      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}");
+      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", removeScriptTag("${rgValue.text}"));
       </c:forEach>
       </c:when>
       <c:otherwise>
@@ -197,9 +197,9 @@
       var theValue = new this.MultistateEventValue();
       theValue.key = theNumericKey;
       if (text)
-        theValue.text = text;
+        theValue.text = removeScriptTag(text);
       else
-        theValue.text = $get("eventTextRendererMultistateText");
+        theValue.text = removeScriptTag($get("eventTextRendererMultistateText"));
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
       this.refreshMultistateEventList();
@@ -269,9 +269,9 @@
       theValue.from = theFrom;
       theValue.to = theTo;
       if (text)
-        theValue.text = text;
+        theValue.text = removeScriptTag(text);
       else
-        theValue.text = $get("eventTextRendererRangeText");
+        theValue.text = removeScriptTag($get("eventTextRendererRangeText"));
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();
       this.refreshRangeList();

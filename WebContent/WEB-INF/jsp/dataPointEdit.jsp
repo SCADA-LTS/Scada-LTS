@@ -890,7 +890,7 @@
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
                                     <c:forEach items="${userPoints}" var="point">
-                                        <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                        <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
                                     </c:forEach>
                                 </select>
                             </td>

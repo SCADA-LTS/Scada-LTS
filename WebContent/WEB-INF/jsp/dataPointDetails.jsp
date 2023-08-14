@@ -167,7 +167,7 @@
         <fmt:message key="pointDetails.goto"/>:&nbsp;
         <sst:select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
           <c:forEach items="${userPoints}" var="point">
-            <sst:option value="${point.id}">${point.extendedName}</sst:option>
+            <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
           </c:forEach>
         </sst:select>
 
@@ -192,7 +192,7 @@
             <tr>
               <td class="smallTitle" colspan="2">
                 <tag:img png="icon_comp" title="common.point"/>
-                ${point.name}
+                <c:out value="${point.name}"/>
                 <c:if test="${pointEditor}">
                   <a href="data_point_edit.shtm?dpid=${point.id}"><tag:img png="icon_comp_edit" title="pointDetails.editPoint"/></a>
                   <a href="data_source_edit.shtm?dsid=${point.dataSourceId}&pid=${point.id}"><tag:img png="icon_ds_edit"
@@ -427,7 +427,7 @@
             </tr>
             <c:forEach items="${views}" var="view" varStatus="status">
               <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
-                <td>${view.name}</td>
+                <td><c:out value="${view.name}"/></td>
                 <td align="center"><a href="views.shtm?viewId=${view.id}"><tag:img png="icon_view"
                         title="pointDetails.gotoView"/></a></td>
               </tr>
