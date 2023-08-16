@@ -96,7 +96,7 @@ export const dataPointMock = {
 	chartColour: null,
 	pointLocator: {
 		dataTypeId: 3,
-		changeTypeId: 6,
+		changeTypeId: 5,
 		settable: true,
 		alternateBooleanChange: {
 			startValue: 'true',

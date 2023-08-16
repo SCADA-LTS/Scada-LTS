@@ -11,7 +11,6 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
-          @change="handleDefaultChangeType(); handleNoChangeStartValue();"
 				></v-select>
 			</template>
 
@@ -443,21 +442,19 @@ export default {
 				return;
 			}
 		},
-
-    handleDefaultChangeType() {
-      this.datapoint.pointLocator.changeTypeId = 5;
-    },
-
-    handleNoChangeStartValue() {
-      if (this.datapoint.pointLocator.dataTypeId == DataTypes.BINARY) {
-        this.datapoint.pointLocator.noChange.startValue = true;
-      }
-      else {
-        this.datapoint.pointLocator.noChange.startValue = "";
-    }
-    }
-
 	},
+
+  watch: {
+    'datapoint.pointLocator.dataTypeId': {
+      handler(newValue) {
+        if (newValue === DataTypes.BINARY)
+          this.datapoint.pointLocator.noChange.startValue = true;
+        else
+          this.datapoint.pointLocator.noChange.startValue = "";
+        this.datapoint.pointLocator.changeTypeId = 5;
+      },
+    },
+  },
 };
 </script>
 <style>
