@@ -11,6 +11,7 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
+          @change="resetPointLocatorToDefault"
 				></v-select>
 			</template>
 
@@ -37,6 +38,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.alternateBooleanChange.startValue"
 								:items="booleanSelectBox"
+                :rules = "ruleSelectNotNull"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -48,6 +50,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.randomBooleanChange.startValue"
 								:items="booleanSelectBox"
+                :rules = "ruleSelectNotNull"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -57,6 +60,8 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.noChange.startValue"
 								:items="booleanSelectBox"
+                :rules = "ruleSelectNotNull"
+                required
 							></v-select>
 						</v-col>
 					</v-row>
@@ -351,6 +356,7 @@
 <script>
 import DataPointCreation from '../DataPointCreation';
 import { DataTypes, DataChangeTypes } from '@/store/dataSource/constants';
+import ScadaVirtualDataPoint from "@c/datasources/VirtualDataSource/VirtualDataPoint";
 export default {
 	components: {
 		DataPointCreation,
@@ -410,6 +416,10 @@ export default {
 		datapointTypes() {
 			return this.$store.state.dataSourceState.datapointTypes;
 		},
+
+    ruleSelectNotNull: function() {
+      return [v => !!v || this.$t('validation.rule.notNull')]
+    },
 	},
 
 	methods: {
@@ -442,17 +452,11 @@ export default {
 				return;
 			}
 		},
-	},
 
-  watch: {
-    'datapoint.pointLocator.dataTypeId': {
-      handler(newValue) {
-        if (newValue === DataTypes.BINARY)
-          this.datapoint.pointLocator.noChange.startValue = true;
-        else
-          this.datapoint.pointLocator.noChange.startValue = "";
-        this.datapoint.pointLocator.changeTypeId = 5;
-      },
+    resetPointLocatorToDefault() {
+      var oldValue = this.datapoint.pointLocator.dataTypeId;
+      this.datapoint.pointLocator = new ScadaVirtualDataPoint().pointLocator;
+      this.datapoint.pointLocator.dataTypeId = oldValue;
     },
   },
 };
