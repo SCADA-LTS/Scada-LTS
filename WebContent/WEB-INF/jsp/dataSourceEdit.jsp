@@ -96,6 +96,12 @@
     }
 
     function initCB(response) {
+        for(var i=0;i<response.data.points.length;i++) {
+            var point = response.data.points[i];
+            var spanNode = document.createElement("span");
+            spanNode.textContent = point.name;
+            point.name = spanNode.innerHTML;
+        }
         writePointList(response.data.points);
         writeAlarms(response.data.alarms);
 
@@ -263,6 +269,12 @@
         if (response.hasMessages)
             showDwrMessages(response.messages);
         else {
+            for(var i=0;i<response.data.points.length;i++) {
+                var point = response.data.points[i];
+                var spanNode = document.createElement("span");
+                spanNode.textContent = point.name;
+                point.name = spanNode.innerHTML;
+            }
             writePointList(response.data.points);
             editPoint(response.data.id);
             showMessage("pointMessage", "<fmt:message key="dsEdit.pointSaved"/>");

@@ -120,19 +120,19 @@
       // Figure out which fields to populate with data.
       <c:choose>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZero", removeScriptTag("${form.eventTextRenderer.zeroLabel}"));
-      $set("eventTextRendererBinaryOne", removeScriptTag("${form.eventTextRenderer.oneLabel}"));
+      $set("eventTextRendererBinaryZero", '<c:out value="${form.eventTextRenderer.zeroLabel}"/>');
+      $set("eventTextRendererBinaryOne", '<c:out value="${form.eventTextRenderer.oneLabel}"/>');
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
-      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", removeScriptTag("${msValue.text}"));
+      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.text}");
       </c:forEach>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
       <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
-      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", removeScriptTag("${rgValue.text}"));
+      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}");
       </c:forEach>
       </c:when>
       <c:otherwise>
@@ -197,9 +197,12 @@
       var theValue = new this.MultistateEventValue();
       theValue.key = theNumericKey;
       if (text)
-        theValue.text = removeScriptTag(text);
-      else
-        theValue.text = removeScriptTag($get("eventTextRendererMultistateText"));
+        theValue.text = text;
+      else {
+        var spanNode = document.createElement("span");
+        spanNode.textContent = $get("eventTextRendererMultistateText");
+        theValue.text = spanNode.innerHTML;
+      }
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
       this.refreshMultistateEventList();
@@ -269,9 +272,12 @@
       theValue.from = theFrom;
       theValue.to = theTo;
       if (text)
-        theValue.text = removeScriptTag(text);
-      else
-        theValue.text = removeScriptTag($get("eventTextRendererRangeText"));
+        theValue.text = text;
+      else {
+        var spanNode = document.createElement("span");
+        spanNode.textContent = $get("eventTextRendererRangeText");
+        theValue.text = spanNode.innerHTML;
+      }
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();
       this.refreshRangeList();

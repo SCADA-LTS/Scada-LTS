@@ -60,13 +60,13 @@ public class DataPointEditDwr extends BaseDwr {
     //
 
     public void setBinaryEventTextRenderer(String zeroValue, String oneValue) {
-        setEventTextRenderer(new BinaryEventTextRenderer(removeScriptTag(zeroValue), removeScriptTag(oneValue)));
+        setEventTextRenderer(new BinaryEventTextRenderer(zeroValue, oneValue));
     }
 
     public void setMultistateEventRenderer(List<MultistateEventValue> values) {
         MultistateEventRenderer r = new MultistateEventRenderer();
         for (MultistateEventValue v : values)
-            r.addMultistateEventValue(v.getKey(), removeScriptTag(v.getText()));
+            r.addMultistateEventValue(v.getKey(), v.getText());
         setEventTextRenderer(r);
     }
 
@@ -77,7 +77,7 @@ public class DataPointEditDwr extends BaseDwr {
     public void setRangeEventRenderer(List<RangeEventValue> values) {
         RangeEventRenderer r = new RangeEventRenderer();
         for (RangeEventValue v : values)
-            r.addRangeEventValues(v.getFrom(), v.getTo(), removeScriptTag(v.getText()));
+            r.addRangeEventValues(v.getFrom(), v.getTo(), v.getText());
         setEventTextRenderer(r);
     }
 
@@ -89,17 +89,17 @@ public class DataPointEditDwr extends BaseDwr {
     // Set text renderer
     //
     public void setAnalogTextRenderer(String format, String suffix) {
-        setTextRenderer(new AnalogRenderer(removeScriptTag(format), removeScriptTag(suffix)));
+        setTextRenderer(new AnalogRenderer(format, suffix));
     }
 
     public void setBinaryTextRenderer(String zeroLabel, String zeroColour, String oneLabel, String oneColour) {
-        setTextRenderer(new BinaryTextRenderer(removeScriptTag(zeroLabel), zeroColour, removeScriptTag(oneLabel), oneColour));
+        setTextRenderer(new BinaryTextRenderer(zeroLabel, zeroColour, oneLabel, oneColour));
     }
 
     public void setMultistateRenderer(List<MultistateValue> values) {
         MultistateRenderer r = new MultistateRenderer();
         for (MultistateValue v : values)
-            r.addMultistateValue(v.getKey(), removeScriptTag(v.getText()), v.getColour());
+            r.addMultistateValue(v.getKey(), v.getText(), v.getColour());
         setTextRenderer(r);
     }
 
@@ -108,18 +108,18 @@ public class DataPointEditDwr extends BaseDwr {
     }
 
     public void setPlainRenderer(String suffix) {
-        setTextRenderer(new PlainRenderer(removeScriptTag(suffix)));
+        setTextRenderer(new PlainRenderer(suffix));
     }
 
     public void setRangeRenderer(String format, List<RangeValue> values) {
         RangeRenderer r = new RangeRenderer(format);
         for (RangeValue v : values)
-            r.addRangeValues(v.getFrom(), v.getTo(), removeScriptTag(v.getText()), v.getColour());
+            r.addRangeValues(v.getFrom(), v.getTo(), v.getText(), v.getColour());
         setTextRenderer(r);
     }
 
     public void setTimeTextRenderer(String format, int conversionExponent) {
-        setTextRenderer(new TimeRenderer(removeScriptTag(format), conversionExponent));
+        setTextRenderer(new TimeRenderer(format, conversionExponent));
     }
 
     private void setTextRenderer(TextRenderer renderer) {
@@ -247,8 +247,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateHighLimitDetector(int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
@@ -258,8 +258,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateLowLimitDetector(int pedId, String xid, String alias, double limit, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
@@ -269,8 +269,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateBinaryStateDetector(int pedId, String xid, String alias, boolean state, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setBinaryState(state);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
@@ -280,8 +280,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateMultistateStateDetector(int pedId, String xid, String alias, int state, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setMultistateState(state);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
@@ -290,16 +290,16 @@ public class DataPointEditDwr extends BaseDwr {
 
     public void updatePointChangeDetector(int pedId, String xid, String alias, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setAlarmLevel(alarmLevel);
     }
 
     public void updateStateChangeCountDetector(int pedId, String xid, String alias, int count, int duration,
             int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setChangeCount(count);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
@@ -309,8 +309,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateNoChangeDetector(int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
         ped.setAlarmLevel(alarmLevel);
@@ -319,8 +319,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateNoUpdateDetector(int pedId, String xid, String alias, int duration, int durationType,
             int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setDuration(duration);
         ped.setDurationType(durationType);
         ped.setAlarmLevel(alarmLevel);
@@ -340,8 +340,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updatePositiveCusumDetector(int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setWeight(weight);
         ped.setDuration(duration);
@@ -352,8 +352,8 @@ public class DataPointEditDwr extends BaseDwr {
     public void updateNegativeCusumDetector(int pedId, String xid, String alias, double limit, double weight,
             int duration, int durationType, int alarmLevel) {
         PointEventDetectorVO ped = getEventDetector(pedId);
-        ped.setXid(removeScriptTag(xid));
-        ped.setAlias(removeScriptTag(alias));
+        ped.setXid(xid);
+        ped.setAlias(alias);
         ped.setLimit(limit);
         ped.setWeight(weight);
         ped.setDuration(duration);
@@ -369,9 +369,5 @@ public class DataPointEditDwr extends BaseDwr {
             }
         }
         return null;
-    }
-
-    private static String removeScriptTag(String format) {
-        return format.replace("<script>", "").replace("</script>", "");
     }
 }

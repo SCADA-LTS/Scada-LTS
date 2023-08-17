@@ -185,34 +185,34 @@
           // Figure out which fields to populate with data.
           <c:choose>
             <c:when test='${form.textRenderer.typeName == "textRendererAnalog"}'>
-              $set("textRendererAnalogFormat", removeScriptTag("${form.textRenderer.format}"));
-              $set("textRendererAnalogSuffix", removeScriptTag("${form.textRenderer.suffix}"));
+              $set("textRendererAnalogFormat", '<c:out value="${form.textRenderer.format}"/>');
+              $set("textRendererAnalogSuffix", '<c:out value="${form.textRenderer.suffix}"/>');
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererBinary"}'>
-              $set("textRendererBinaryZero", removeScriptTag("${form.textRenderer.zeroLabel}"));
+              $set("textRendererBinaryZero", '<c:out value="${form.textRenderer.zeroLabel}"/>');
               textRendererEditor.handlerBinaryZeroColour("${form.textRenderer.zeroColour}");
-              $set("textRendererBinaryOne", removeScriptTag("${form.textRenderer.oneLabel}"));
+              $set("textRendererBinaryOne", '<c:out value="${form.textRenderer.oneLabel}"/>');
               textRendererEditor.handlerBinaryOneColour("${form.textRenderer.oneColour}");
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererMultistate"}'>
               <c:forEach items="${form.textRenderer.multistateValues}" var="msValue">
-                textRendererEditor.addMultistateValue("${msValue.key}", removeScriptTag("${msValue.text}"), "${msValue.colour}");
+                textRendererEditor.addMultistateValue("${msValue.key}", "${msValue.text}", "${msValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererNone"}'>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererPlain"}'>
-              $set("textRendererPlainSuffix", removeScriptTag("${form.textRenderer.suffix}"));
+              $set("textRendererPlainSuffix", '<c:out value="${form.textRenderer.suffix}"/>');
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererRange"}'>
-              $set("textRendererRangeFormat", removeScriptTag("${form.textRenderer.format}"));
+              $set("textRendererRangeFormat", '<c:out value="${form.textRenderer.format}"/>');
               <c:forEach items="${form.textRenderer.rangeValues}" var="rgValue">
-                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", removeScriptTag("${rgValue.text}"),
+                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}",
                         "${rgValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererTime"}'>
-              $set("textRendererTimeFormat", removeScriptTag("${form.textRenderer.format}"));
+              $set("textRendererTimeFormat", '<c:out value="${form.textRenderer.format}"/>');
               $set("textRendererTimeConversionExponent", "${form.textRenderer.conversionExponent}");
             </c:when>
             <c:otherwise>
@@ -289,9 +289,12 @@
           var theValue = new this.MultistateValue();
           theValue.key = theNumericKey;
           if (text)
-              theValue.text = removeScriptTag(text);
-          else
-              theValue.text = removeScriptTag($get("textRendererMultistateText"));
+              theValue.text = text;
+          else {
+              var spanNode = document.createElement("span");
+              spanNode.textContent = $get("textRendererMultistateText");
+              theValue.text = spanNode.innerHTML;
+          }
           if (colour)
               theValue.colour = colour;
           else
@@ -367,9 +370,12 @@
           theValue.from = theFrom;
           theValue.to = theTo;
           if (text)
-              theValue.text = removeScriptTag(text);
-          else
-              theValue.text = removeScriptTag($get("textRendererRangeText"));
+              theValue.text = text;
+          else {
+              var spanNode = document.createElement("span");
+              spanNode.textContent = $get("textRendererRangeText");
+              theValue.text = spanNode.innerHTML;
+          }
           if (colour)
               theValue.colour = colour;
           else
