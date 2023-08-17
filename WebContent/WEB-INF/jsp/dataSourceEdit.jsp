@@ -96,7 +96,6 @@
     }
 
     function initCB(response) {
-        escapePoints(response.data.points);
         writePointList(response.data.points);
         writeAlarms(response.data.alarms);
 
@@ -178,6 +177,7 @@
 
         if (currentPoint)
             stopImageFader("editImg"+ currentPoint.id);
+        escapePoints(points);
         dwr.util.removeAllRows("pointsList");
         dwr.util.addRows("pointsList", points, pointListColumnFunctions, pointListOptions);
     }
@@ -264,7 +264,6 @@
         if (response.hasMessages)
             showDwrMessages(response.messages);
         else {
-            escapePoints(response.data.points);
             writePointList(response.data.points);
             editPoint(response.data.id);
             showMessage("pointMessage", "<fmt:message key="dsEdit.pointSaved"/>");

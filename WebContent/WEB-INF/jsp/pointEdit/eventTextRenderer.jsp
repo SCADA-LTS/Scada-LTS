@@ -42,7 +42,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.zeroLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -52,7 +52,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.oneLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -120,8 +120,6 @@
       // Figure out which fields to populate with data.
       <c:choose>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZero", '<c:out value="${form.eventTextRenderer.zeroLabel}"/>');
-      $set("eventTextRendererBinaryOne", '<c:out value="${form.eventTextRenderer.oneLabel}"/>');
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">

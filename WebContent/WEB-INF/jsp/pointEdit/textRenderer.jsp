@@ -40,13 +40,13 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
         <td class="formField">
-          <input id="textRendererAnalogFormat" type="text"/>
+          <input id="textRendererAnalogFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>"/>
           <tag:help id="numberFormats"/>
         </td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="pointEdit.text.suffix"/></td>
-        <td class="formField"><input id="textRendererAnalogSuffix" type="text"/></td>
+        <td class="formField"><input id="textRendererAnalogSuffix" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.suffix}" /></c:catch>"/></td>
       </tr>
     </tbody>
     <tbody id="textRendererBinary" style="display:none;">
@@ -55,7 +55,7 @@
         <td class="formField">
           <table cellspacing="0" cellpadding="0">
             <tr>
-              <td valign="top"><input id="textRendererBinaryZero" type="text"/></td>
+              <td valign="top"><input id="textRendererBinaryZero" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.zeroLabel}" /></c:catch>"/></td>
               <td width="10"></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryZeroColour"></div>
@@ -70,7 +70,7 @@
         <td class="formField">
           <table cellspacing="0" cellpadding="0">
             <tr>
-              <td valign="top"><input id="textRendererBinaryOne" type="text"/></td>
+              <td valign="top"><input id="textRendererBinaryOne" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.oneLabel}" /></c:catch>"/></td>
               <td width="10"></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryOneColour"></div>
@@ -112,13 +112,13 @@
     <tbody id="textRendererPlain" style="display:none;">
       <tr>
         <td class="formLabel"><fmt:message key="pointEdit.text.suffix"/></td>
-        <td class="formField"><input id="textRendererPlainSuffix" type="text"/></td>
+        <td class="formField"><input id="textRendererPlainSuffix" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.suffix}" /></c:catch>" /></td>
       </tr>
     </tbody>
     <tbody id="textRendererRange" style="display:none;">
       <tr>
         <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
-        <td class="formField"><input id="textRendererRangeFormat" type="text"/></td>
+        <td class="formField"><input id="textRendererRangeFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>" /></td>
       </tr>
       <tr>
         <td colspan="2">
@@ -151,13 +151,13 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
         <td class="formField">
-          <input id="textRendererTimeFormat" type="text"/>
+          <input id="textRendererTimeFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>"/>
           <tag:help id="datetimeFormats"/>
         </td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="pointEdit.text.conversionExponent"/></td>
-        <td class="formField"><input id="textRendererTimeConversionExponent" type="text"/></td>
+        <td class="formField"><input id="textRendererTimeConversionExponent" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.conversionExponent}" /></c:catch>"/></td>
       </tr>
     </tbody>
   </table>
@@ -185,13 +185,9 @@
           // Figure out which fields to populate with data.
           <c:choose>
             <c:when test='${form.textRenderer.typeName == "textRendererAnalog"}'>
-              $set("textRendererAnalogFormat", '<c:out value="${form.textRenderer.format}"/>');
-              $set("textRendererAnalogSuffix", '<c:out value="${form.textRenderer.suffix}"/>');
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererBinary"}'>
-              $set("textRendererBinaryZero", '<c:out value="${form.textRenderer.zeroLabel}"/>');
               textRendererEditor.handlerBinaryZeroColour("${form.textRenderer.zeroColour}");
-              $set("textRendererBinaryOne", '<c:out value="${form.textRenderer.oneLabel}"/>');
               textRendererEditor.handlerBinaryOneColour("${form.textRenderer.oneColour}");
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererMultistate"}'>
@@ -202,18 +198,14 @@
             <c:when test='${form.textRenderer.typeName == "textRendererNone"}'>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererPlain"}'>
-              $set("textRendererPlainSuffix", '<c:out value="${form.textRenderer.suffix}"/>');
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererRange"}'>
-              $set("textRendererRangeFormat", '<c:out value="${form.textRenderer.format}"/>');
               <c:forEach items="${form.textRenderer.rangeValues}" var="rgValue">
                 textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}",
                         "${rgValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererTime"}'>
-              $set("textRendererTimeFormat", '<c:out value="${form.textRenderer.format}"/>');
-              $set("textRendererTimeConversionExponent", "${form.textRenderer.conversionExponent}");
             </c:when>
             <c:otherwise>
               dojo.debug("Unknown text renderer: ${form.textRenderer.typeName}");
