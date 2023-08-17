@@ -291,9 +291,7 @@
           if (text)
               theValue.text = text;
           else {
-              var spanNode = document.createElement("span");
-              spanNode.textContent = $get("textRendererMultistateText");
-              theValue.text = spanNode.innerHTML;
+              theValue.text = convertToText($get("textRendererMultistateText"));
           }
           if (colour)
               theValue.colour = colour;
@@ -372,9 +370,7 @@
           if (text)
               theValue.text = text;
           else {
-              var spanNode = document.createElement("span");
-              spanNode.textContent = $get("textRendererRangeText");
-              theValue.text = spanNode.innerHTML;
+              theValue.text = convertToText($get("textRendererRangeText"));
           }
           if (colour)
               theValue.colour = colour;

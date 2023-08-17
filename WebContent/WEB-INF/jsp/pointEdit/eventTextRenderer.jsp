@@ -199,9 +199,7 @@
       if (text)
         theValue.text = text;
       else {
-        var spanNode = document.createElement("span");
-        spanNode.textContent = $get("eventTextRendererMultistateText");
-        theValue.text = spanNode.innerHTML;
+        theValue.text = convertToText($get("eventTextRendererMultistateText"));
       }
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
@@ -274,9 +272,7 @@
       if (text)
         theValue.text = text;
       else {
-        var spanNode = document.createElement("span");
-        spanNode.textContent = $get("eventTextRendererRangeText");
-        theValue.text = spanNode.innerHTML;
+        theValue.text = convertToText($get("eventTextRendererRangeText"));
       }
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();

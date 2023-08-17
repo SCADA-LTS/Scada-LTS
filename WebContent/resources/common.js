@@ -1095,4 +1095,10 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
+function convertToText(content) {
+    var node = document.createElement("span");
+    node.textContent = content;
+    return node.innerHTML;
+}
+
 
