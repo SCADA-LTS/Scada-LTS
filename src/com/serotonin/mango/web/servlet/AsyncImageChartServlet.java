@@ -8,8 +8,6 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.db.MappedRowCallback;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.stats.*;
@@ -22,6 +20,8 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.utils.ColorUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,8 +34,8 @@ import java.util.List;
 public class AsyncImageChartServlet extends BaseInfoServlet {
     private static final long serialVersionUID = -1;
 
-    final DataPointDao dataPointDao = new DataPointDao();
-    final PointValueDao pointValueDao = new PointValueDao();
+    private final DataPointService dataPointService = new DataPointService();
+    private final PointValueService pointValueService = new PointValueService();
 
     /**
      * @TODO(security): Validate the point access against the user. If anonymous, make sure the view allows public
@@ -116,7 +116,8 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                     }
 
                     dataPointIds.add(dataPointId);
-                    PointDataRetriever pdr = new PointDataRetriever(dataPointId, colour, width * 10);
+                    PointDataRetriever pdr = new PointDataRetriever(dataPointId, colour, width * 10,
+                            dataPointService, pointValueService);
                     tasks.addTask(pdr);
                 }
             }
@@ -125,14 +126,14 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 return null;
 
             if (from == -1 && to == -1) {
-                LongPair sae = pointValueDao.getStartAndEndTime(dataPointIds);
+                LongPair sae = pointValueService.getStartAndEndTime(dataPointIds);
                 from = sae.getL1();
                 to = sae.getL2();
             }
             else if (from == -1)
-                from = pointValueDao.getStartTime(dataPointIds);
+                from = pointValueService.getStartTime(dataPointIds);
             else if (to == -1)
-                to = pointValueDao.getEndTime(dataPointIds);
+                to = pointValueService.getEndTime(dataPointIds);
 
             for (PointDataRetriever pdr : tasks.getTasks())
                 pdr.setRange(from, to);
@@ -158,7 +159,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
         return null;
     }
 
-    class PointDataRetriever implements Runnable, MappedRowCallback<PointValueTime>, DataQuantizerCallback {
+    static class PointDataRetriever implements Runnable, MappedRowCallback<PointValueTime>, DataQuantizerCallback {
         private final int dataPointId;
         private Color colour;
         private final int imageWidth;
@@ -167,11 +168,16 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
         private TimeSeries ts;
         private AbstractDataQuantizer quantizer;
         private DiscreteTimeSeries dts;
+        private final DataPointService dataPointService;
+        private final PointValueService pointValueService;
 
-        public PointDataRetriever(int dataPointId, Color colour, int imageWidth) {
+        public PointDataRetriever(int dataPointId, Color colour, int imageWidth, DataPointService dataPointService,
+                                  PointValueService pointValueService) {
             this.dataPointId = dataPointId;
             this.colour = colour;
             this.imageWidth = imageWidth;
+            this.dataPointService = dataPointService;
+            this.pointValueService = pointValueService;
         }
 
         public void setRange(long from, long to) {
@@ -181,7 +187,7 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
         @Override
         public void run() {
-            DataPointVO dp = dataPointDao.getDataPoint(dataPointId);
+            DataPointVO dp = dataPointService.getDataPoint(dataPointId);
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());
@@ -195,20 +201,17 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
             if (dataType == DataTypes.NUMERIC) {
                 ts = new TimeSeries(dp.getName(), null, null, Second.class);
                 quantizer = new NumericDataQuantizer(from, to, imageWidth, this);
+                loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.MULTISTATE) {
                 quantizer = new MultistateDataQuantizer(from, to, imageWidth, this);
                 dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.BINARY) {
                 quantizer = new BinaryDataQuantizer(from, to, imageWidth, this);
                 dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
-            }
-
-            List<PointValueTime> data = pointValueDao.getPointValuesBetween(dataPointId, from, to);
-            for (PointValueTime pv : data) {
-                quantizer.data(pv.getValue(), pv.getTime());
-                quantizer.done();
+                loadData(quantizer, pointValueService, dataPointId, from, to);
             }
         }
 
@@ -231,6 +234,14 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
                 ptsc.addNumericTimeSeries(ts, colour);
             else
                 ptsc.addDiscreteTimeSeries(dts);
+        }
+
+        private static void loadData(AbstractDataQuantizer quantizer, PointValueService pointValueService,
+                                     int dataPointId, long from, long to) {
+            List<PointValueTime> data = pointValueService.getPointValuesBetween(dataPointId, from, to);
+            for (PointValueTime pv : data) {
+                quantizer.data(pv.getValue(), pv.getTime());
+            }
         }
     }
 }
