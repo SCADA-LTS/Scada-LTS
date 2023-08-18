@@ -192,30 +192,24 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
 
             int dataType = dp.getPointLocator().getDataTypeId();
 
-            List<PointValueTime> data = pointValueDao.getPointValuesBetween(dataPointId, from, to);
             if (dataType == DataTypes.NUMERIC) {
                 ts = new TimeSeries(dp.getName(), null, null, Second.class);
                 quantizer = new NumericDataQuantizer(from, to, imageWidth, this);
-                for (PointValueTime pv : data)
-                    ImageChartUtils.addSecond(ts, pv.getTime(), pv.getValue().numberValue());
             }
             else if (dataType == DataTypes.MULTISTATE) {
                 quantizer = new MultistateDataQuantizer(from, to, imageWidth, this);
                 dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
-                for (PointValueTime pv : data)
-                    dts.addValueTime(pv);
             }
             else if (dataType == DataTypes.BINARY) {
                 quantizer = new BinaryDataQuantizer(from, to, imageWidth, this);
                 dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
-                for (PointValueTime pv : data)
-                    dts.addValueTime(pv);
             }
 
-         // Get the data.
-            //TODO rewrite seroUtils
-            //pointValueDao.getPointValuesBetween(dataPointId, from, to, this);
-
+            List<PointValueTime> data = pointValueDao.getPointValuesBetween(dataPointId, from, to);
+            for (PointValueTime pv : data) {
+                quantizer.data(pv.getValue(), pv.getTime());
+                quantizer.done();
+            }
         }
 
         @Override
