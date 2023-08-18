@@ -6,6 +6,7 @@
 			:datapoint="datapoint"
 			@cancel="cancel()"
 			@accept="save()"
+      @textarea-focusout="validateScript"
 		>
 			<template v-slot:selector>
 				<v-select
@@ -66,9 +67,7 @@
 							<v-text-field type="Number" label="Values" v-model="multistateValue">
 								<v-icon
 									slot="append"
-									@click="
-										addMsValue(datapoint.pointLocator.incrementMultistateChange.values)
-									"
+									@click="addMsValue(datapoint.pointLocator.incrementMultistateChange.values)"
 									>mdi-plus</v-icon
 								>
 							</v-text-field>
@@ -295,7 +294,7 @@
 										:placeholder="$t('scriptList.selectDatapoint')"
 										item-text="name"
 										v-model="selectedDatapointId"
-										@change="addDatapoint"
+										@change="addDatapoint(); validateScript();"
 										:items="filteredDatapoints"
 									></v-select>
 								</v-col>
