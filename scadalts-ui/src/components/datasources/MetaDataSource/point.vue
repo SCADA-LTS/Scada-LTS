@@ -309,7 +309,7 @@
 												<v-icon
 													color="red"
 													style="cursor: pointer; border: 0"
-													@click="removeDatapoint(p.dataPointXid)"
+													@click="removeDatapoint(p.dataPointXid); validateScript();"
 													>mdi-close</v-icon
 												>
 											</td>
@@ -324,6 +324,8 @@
 								rows=3
                 @focusout="validateScript"
 								ref="scriptBodyTextarea"
+                required
+                error-count="0"
 							></v-textarea>
             <v-col>
               <v-btn block color="primary" @click="validateScript"
@@ -335,7 +337,11 @@
                 Script results: {{this.resultMessage}}
               </v-alert>
             </div>
-            <p v-else></p>
+            <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
+              <v-alert title = "Script error" type="error">
+                Script error: {{this.resultMessage}}
+              </v-alert>
+            </v-div>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -384,6 +390,7 @@ export default {
 		DataPointCreation,
 	},
 	async mounted() {
+    this.validateScript();
 		this.fetchScriptList();
 		this.datapoints = await this.$store.dispatch('getAllDatapoints');
 	},
@@ -527,7 +534,8 @@ export default {
 
 		save() {
 			console.debug('VirtualDataSource.point.vue::save()');
-			this.$emit('saved', this.datapoint);
+      if (this.validScript)
+        this.$emit('saved', this.datapoint);
 		},
 
 		addMsValue(array) {
