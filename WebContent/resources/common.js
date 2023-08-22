@@ -1095,4 +1095,13 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
+function isInt32(state) {
+    if(!(/^([+-]?[1-9]\d*|0).[0]$/.test(state))
+        && !(/^([+-]?[1-9]\d*|0)$/.test(state))) {
+        return false;
+    }
+    const view = new DataView(new ArrayBuffer(32));
+    view.setInt32(1, state);
+    return Number.parseInt(state) === view.getInt32(1);
+}
 
