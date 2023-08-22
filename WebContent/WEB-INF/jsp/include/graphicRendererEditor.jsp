@@ -437,20 +437,28 @@
         this.setZeroImage = function(imageId) {
             var image;
             var exists = imageId != -1;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "0";
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.zeroImage = imageId;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "2";
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         this.setOneImage = function(imageId) {
             var image;
             var exists = imageId != -1;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "0";
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.oneImage = imageId;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "2";
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         
         this.updateSampleImageSet = function(selectComp) {
