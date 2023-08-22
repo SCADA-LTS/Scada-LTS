@@ -18,6 +18,7 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.utils.security.ScadaEscapeUtils;
 
 @JsonRemoteEntity
 public class ChartComparatorComponent extends HtmlComponent {
@@ -109,7 +110,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<option value='0'> &nbsp; </option>");
 
 		for (DataPointVO dp : dataPoints) {
-			sb.append("<option value='" + dp.getId() + "'> " + dp.getName()
+			sb.append("<option value='" + dp.getId() + "'> " + ScadaEscapeUtils.escapeXml(dp.getName())
 					+ "</option>");
 		}
 		sb.append("</select>");
