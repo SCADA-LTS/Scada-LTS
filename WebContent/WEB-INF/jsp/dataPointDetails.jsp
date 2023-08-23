@@ -415,7 +415,7 @@
 
     <c:set var="isRoles" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null}" />
     <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
-    <c:if test="!isRolePublic">
+    <c:if test="${!isRolePublic}">
     <tr>
       <td valign="top">
         <div class="borderDiv marR">
