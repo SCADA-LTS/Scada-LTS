@@ -6,7 +6,6 @@
 			:datapoint="datapoint"
 			@cancel="cancel()"
 			@accept="save()"
-      @textarea-focusout="validateScript"
 		>
 			<template v-slot:selector>
 				<v-select

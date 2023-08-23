@@ -27,7 +27,6 @@
 							label="Data Point Name"
 							:rules="[ruleNotNull]"
 							required
-              @focusout = 'handleFocusOut'
 						></v-text-field>
 					</v-col>
 					<v-col cols="6" :sm="4">
@@ -37,7 +36,6 @@
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
 							required
-              @focusout = 'handleFocusOut'
 						></v-text-field>
 					</v-col>
 					<v-col cols="6" :sm="2">
@@ -51,7 +49,6 @@
 						<v-text-field
 							v-model="datapoint.description"
 							label="Description"
-              @focusout = 'handleFocusOut'
 						></v-text-field>
 					</v-col>
 				</v-row>
@@ -132,9 +129,6 @@ export default {
 				console.error('Failed to fetch data');
 			}
 		},
-    async handleFocusOut(){
-      this.$emit('textarea-focusout');
-    }
 	},
 };
 </script>
