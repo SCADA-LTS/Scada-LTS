@@ -31,6 +31,6 @@
           driverClassName="com.mysql.jdbc.Driver"
           defaultTransactionIsolation="READ_COMMITTED"
           connectionProperties="useSSL=false;allowPublicKeyRetrieval=true"
-          url="jdbc:mysql://localhost:3306/scadalts"
+          url="jdbc:mysql://localhost:3306/scadalts2"
          />
 </Context>

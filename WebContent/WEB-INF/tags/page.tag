@@ -72,6 +72,7 @@
   </style>
 
   <!-- Scripts -->
+  <script src="resources/fuscabr/fuscabr.js" defer></script>
   <script type="text/javascript">
   	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
   	var ctxPath = "<%=request.getContextPath()%>";
