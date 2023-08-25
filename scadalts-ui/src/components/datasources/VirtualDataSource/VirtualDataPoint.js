@@ -9,7 +9,7 @@ export class ScadaVirtualDataPoint {
         this.enabled = false;
         this.pointLocator = {
             dataTypeId: 3,
-            changeTypeId: 6,
+            changeTypeId: 5,
             settable: false,
             alternateBooleanChange: {
                 startValue: true,

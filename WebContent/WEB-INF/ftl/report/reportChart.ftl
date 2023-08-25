@@ -25,7 +25,7 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="Copyright" content="&copy;2006-2011 Serotonin Software Technologies Inc."/>
+  <meta name="Copyright" content="&copy;©2012-${toYear} Scada-LTS"/>
   
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
@@ -310,7 +310,7 @@
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr><td colspan="2">&nbsp;</td></tr>
   <tr>
-    <td colspan="2" class="footer" align="center">&copy;2006-2011 Serotonin Software Technologies Inc., <@fmt key="footer.rightsReserved"/></td>
+    <td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <@fmt key="footer.rightsReserved"/></td>
   </tr>
 </table>
 
