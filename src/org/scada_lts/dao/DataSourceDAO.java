@@ -456,6 +456,7 @@ public class DataSourceDAO {
 		return entity;
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> getSimpleList() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 

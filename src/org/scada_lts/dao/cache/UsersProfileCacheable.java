@@ -25,8 +25,7 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "profile_list_by_userid", key = "#p0"),
             @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int deleteUserProfileByUserId(int userId);
 
@@ -34,8 +33,7 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "profile_list_by_userid", key = "#p0"),
             @CacheEvict(cacheNames = "userid_list_by_profileid", key = "#p1"),
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int insertUserProfile(int userId, int profileId);
 
@@ -49,8 +47,7 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int insertProfile(String profileXid, String profileName);
 
@@ -63,8 +60,7 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "permission_watchlist_list_by_profile", key = "#p0"),
             @CacheEvict(cacheNames = "permission_view_list_by_profile", key = "#p0"),
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
 
     })
     int deleteProfile(int profileId);
@@ -95,15 +91,13 @@ public interface UsersProfileCacheable {
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_profile", key = "#p0"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int[] insertViewUsersProfile(int profileId, List<ViewAccess> toInsert);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_profile", key = "#p0"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int[] deleteViewUsersProfile(int profileId, List<ViewAccess> toDelete);
 
@@ -147,8 +141,7 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_profile", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
-            @CacheEvict(cacheNames = "view_list", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     default void resetCacheViewPermissions() {}
 

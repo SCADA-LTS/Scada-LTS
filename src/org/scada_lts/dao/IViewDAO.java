@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface IViewDAO extends ScadaRepository<View, Integer> {
 
+    default void init() {}
+
     View findByName(String name);
 
     @Deprecated
