@@ -360,15 +360,6 @@ public class DataPointDAO {
 		return entity;
 	}
 
-	@Deprecated
-	public List<ScadaObjectIdentifier> getSimpleList() {
-		return findIdentifiers();
-	}
-
-	public List<DataPointVO> getAll() {
-		return null;
-	}
-
 	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
 		return getDataPoint(id);
 	}
