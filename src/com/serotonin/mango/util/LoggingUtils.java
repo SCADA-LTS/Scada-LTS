@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -188,5 +189,12 @@ public final class LoggingUtils {
     public static String eventTypeInfo(int type, int alarmLevel) {
         String info = "event type: {0} (alarmLevel: {1})";
         return MessageFormat.format(info, type, alarmLevel);
+    }
+
+    public static String viewInfo(View view) {
+        if(view == null)
+            return "";
+        String info =  "view: {0} (id: {1}, xid: {2}, userId: {3})";
+        return MessageFormat.format(info, view.getName(), view.getId(), view.getXid(), view.getUserId());
     }
 }

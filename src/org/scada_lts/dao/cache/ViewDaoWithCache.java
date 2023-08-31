@@ -1,13 +1,17 @@
 package org.scada_lts.dao.cache;
 
 import br.org.scadabr.vo.permission.ViewAccess;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IViewDAO;
+import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.permissions.service.ViewGetShareUsers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +21,15 @@ public class ViewDaoWithCache implements IViewDAO {
 
     public ViewDaoWithCache(ViewCachable viewCache) {
         this.viewCache = viewCache;
+    }
+
+    @Override
+    public void init() {
+        List<View> views = new ViewDAO().findAll();
+        for(View view: views) {
+            applyShareUsers(view);
+            viewCache.put(view);
+        }
     }
 
     @Override
@@ -36,7 +49,14 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public List<View> findAll() {
-        return viewCache.findAll();
+        List<ScadaObjectIdentifier> identifiers = viewCache.findIdentifiers();
+        List<View> views = new ArrayList<>();
+        for(ScadaObjectIdentifier identifier: identifiers) {
+            View view = viewCache.findById(identifier.getId());
+            applyShareUsers(view);
+            views.add(view);
+        }
+        return views;
     }
 
     @Override
@@ -65,25 +85,38 @@ public class ViewDaoWithCache implements IViewDAO {
     }
 
     @Override
-    public View findById(Integer id) {
-        return viewCache.findById(id);
+    public View findById(Integer viewId) {
+        if(viewId == null || viewId == Common.NEW_ID || viewId == 0) {
+            return null;
+        }
+        return viewCache.findById(viewId);
     }
 
     @Override
     public View findByName(String name) {
-        return findAll().stream().filter(a -> a.getName().equals(name)).findAny().orElse(null);
+        if(name == null) {
+            return null;
+        }
+        return findAll().stream()
+                .filter(a -> a.getName() != null)
+                .filter(a -> a.getName().equals(name))
+                .findAny().orElse(null);
     }
 
     @Override
     public View findByXid(String xid) {
-        return viewCache.findByXid(xid);
+        if(xid == null) {
+            return null;
+        }
+        return findAll().stream()
+                .filter(a -> a.getXid() != null)
+                .filter(a -> a.getXid().equals(xid))
+                .findAny().orElse(null);
     }
 
     @Override
     public List<ScadaObjectIdentifier> findIdentifiers() {
-        return findAll().stream()
-                .map(a -> new ScadaObjectIdentifier(a.getId(), a.getXid(), a.getName()))
-                .collect(Collectors.toList());
+        return viewCache.findIdentifiers();
     }
 
     @Override
@@ -108,5 +141,10 @@ public class ViewDaoWithCache implements IViewDAO {
     @Override
     public void deleteViewForUser(int viewId, int userId) {
         viewCache.deleteViewForUser(viewId, userId);
+    }
+
+    private void applyShareUsers(View view) {
+        ViewGetShareUsers viewGetShareUsers = new ViewGetShareUsers(this);
+        view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
     }
 }
