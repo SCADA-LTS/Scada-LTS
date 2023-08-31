@@ -177,9 +177,7 @@ public class ViewEditController {
             model.put(FORM_OBJECT_NAME, form);
             model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
             model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-            request.getSession().removeAttribute(EMPTY_VIEW_KEY);
-            request.getSession().removeAttribute("view_" + view.getId());
-            request.getSession().removeAttribute("view_" + view.getXid());
+            model.put("currentView", view);
             return new ModelAndView(FORM_VIEW, model);
         }
 
