@@ -20,55 +20,55 @@ public class PointEventDetectorCache implements PointEventDetectorCacheable {
 
     @Override
     public int insert(int dataPointId, PointEventDetectorVO pointEventDetector) {
-        LOG.error("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
+        LOG.info("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
         return pointEventDetectorDAO.insert(dataPointId, pointEventDetector);
     }
 
     @Override
     public void update(int dataPointId, PointEventDetectorVO pointEventDetector) {
-        LOG.error("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
+        LOG.info("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
         pointEventDetectorDAO.update(dataPointId, pointEventDetector);
     }
 
     @Override
     public void updateWithType(int dataPointId, PointEventDetectorVO pointEventDetector) {
-        LOG.error("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
+        LOG.info("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
         pointEventDetectorDAO.updateWithType(dataPointId, pointEventDetector);
     }
 
     @Override
     public List<PointEventDetectorVO> selectPointEventDetectors(DataPointVO dataPoint) {
-        LOG.error("no cache: " + LoggingUtils.dataPointInfo(dataPoint));
+        LOG.info("no cache: " + LoggingUtils.dataPointInfo(dataPoint));
         return pointEventDetectorDAO.getPointEventDetectors(dataPoint);
     }
 
     @Override
     public void delete(int dataPointId, PointEventDetectorVO pointEventDetector) {
-        LOG.error("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
+        LOG.info("no cache: dataPointId: " + dataPointId + ", pointEventDetector: " + LoggingUtils.pointEventDetectorInfo(pointEventDetector));
         pointEventDetectorDAO.delete(dataPointId, pointEventDetector);
     }
 
     @Override
     public void deleteWithId(String dataPointIds) {
-        LOG.error("no cache: dataPointIds: " + dataPointIds);
+        LOG.info("no cache: dataPointIds: " + dataPointIds);
         pointEventDetectorDAO.deleteWithId(dataPointIds);
     }
 
     @Override
     public PointEventDetectorVO selectPointEventDetector(int pointEventDetectorId) {
-        LOG.error("no cache: pointEventDetectorId: " + pointEventDetectorId);
+        LOG.info("no cache: pointEventDetectorId: " + pointEventDetectorId);
         return pointEventDetectorDAO.getPointEventDetector(pointEventDetectorId);
     }
 
     @Override
     public PointEventDetectorVO selectPointEventDetector(String pointEventDetectorXid, int dataPointId) {
-        LOG.error("no cache: dataPointId: " + dataPointId + ", pointEventDetectorXid: " + pointEventDetectorXid);
+        LOG.info("no cache: dataPointId: " + dataPointId + ", pointEventDetectorXid: " + pointEventDetectorXid);
         return pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid, dataPointId);
     }
 
     @Override
     public int selectDataPointIdByEventDetectorId(int pointEventDetectorId) {
-        LOG.error("no cache: pointEventDetectorId: " + pointEventDetectorId);
+        LOG.info("no cache: pointEventDetectorId: " + pointEventDetectorId);
         return pointEventDetectorDAO.getDataPointId(pointEventDetectorId);
     }
 }
