@@ -210,7 +210,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		}
 	}
 
-	private class PointEventDetectorRowMapper2 implements RowMapper<PointEventDetectorVO> {
+	private class PointEventDetectorDataPointIdRowMapper implements RowMapper<PointEventDetectorVO> {
 
 		@Override
 		public PointEventDetectorVO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -482,7 +482,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID + " LIMIT ? OFFSET ?";
 
 		try {
-			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, new Object[]{limit, offset}, new PointEventDetectorRowMapper2());
+			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, new Object[]{limit, offset}, new PointEventDetectorDataPointIdRowMapper());
 		} catch (EmptyResultDataAccessException ex) {
 			return Collections.emptyList();
 		} catch (IncorrectResultSizeDataAccessException ex) {
