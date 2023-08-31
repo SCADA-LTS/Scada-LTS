@@ -3,6 +3,7 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 
@@ -85,4 +86,9 @@ public interface PointEventDetectorCacheable {
             @CacheEvict(cacheNames = "data_point_id_by_point_event_detector_id", allEntries = true)
     })
     default void deleteWithId(String dataPointIds) {}
+
+    @CachePut(cacheNames = "point_event_detector_list_by_data_point_id", key = "#p0", condition = "#p0 != -1 && #p1 != null")
+    default List<PointEventDetectorVO> put(int dataPointId, List<PointEventDetectorVO> detectors) {
+        return detectors;
+    }
 }

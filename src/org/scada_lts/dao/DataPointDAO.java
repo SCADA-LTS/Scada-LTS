@@ -485,7 +485,11 @@ public class DataPointDAO {
 	}
 
 	public List<ScadaObjectIdentifier> findIdentifiers() {
-		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		ScadaObjectIdentifierRowMapper mapper = new ScadaObjectIdentifierRowMapper.Builder()
+				.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+				.idColumnName(COLUMN_NAME_ID)
+				.xidColumnName(COLUMN_NAME_XID)
+				.build();
 		return DAO.getInstance().getJdbcTemp()
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}

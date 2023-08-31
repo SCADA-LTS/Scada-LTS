@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import com.serotonin.mango.Common;
@@ -85,6 +86,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 				+ COLUMN_NAME_MULTISTATE_STATE + ", "
 				+ COLUMN_NAME_CHANGE_COUNT + ", "
 				+ COLUMN_NAME_ALPHANUMERIC_STATE + ", "
+			    + COLUMN_NAME_DATA_POINT_ID + ", "
 				+ COLUMN_NAME_WEIGHT + " "
 			+ "from pointEventDetectors ";
 
@@ -204,6 +206,31 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
 			pointEventDetector.njbSetDataPoint(dataPoint);
+			return pointEventDetector;
+		}
+	}
+
+	private class PointEventDetectorRowMapper2 implements RowMapper<PointEventDetectorVO> {
+
+		@Override
+		public PointEventDetectorVO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
+			pointEventDetector.setId(rs.getInt(COLUMN_NAME_ID));
+			pointEventDetector.setXid(rs.getString(COLUMN_NAME_XID));
+			pointEventDetector.setAlias(rs.getString(COLUMN_NAME_ALIAS));
+			pointEventDetector.setDetectorType(rs.getInt(COLUMN_NAME_DETECTOR_TYPE));
+			pointEventDetector.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
+			pointEventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
+			pointEventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
+			pointEventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
+			pointEventDetector.setBinaryState(DAO.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
+			pointEventDetector.setMultistateState(rs.getInt(COLUMN_NAME_MULTISTATE_STATE));
+			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
+			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
+			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
+			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+			dataPointVO.setId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+			pointEventDetector.njbSetDataPoint(dataPointVO);
 			return pointEventDetector;
 		}
 	}
@@ -444,6 +471,26 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		} catch (Exception ex) {
 			LOG.warn(ex.getMessage(), ex);
 			return new PointEventDetectorVO(Common.NEW_ID, null);
+		}
+	}
+
+	public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointEventDetector(long limit, int offset) limit:" +limit + ", offset:" + offset);
+		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID + " LIMIT ? OFFSET ?";
+
+		try {
+			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, new Object[]{limit, offset}, new PointEventDetectorRowMapper2());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (IncorrectResultSizeDataAccessException ex) {
+			LOG.warn("There is more than one detector with limit:" + limit + ", offset:" + offset + ", msg: " +ex.getMessage(), ex);
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return Collections.emptyList();
 		}
 	}
 }

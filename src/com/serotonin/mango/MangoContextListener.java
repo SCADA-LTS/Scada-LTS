@@ -135,7 +135,14 @@ public class MangoContextListener implements ServletContextListener {
 
 		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
-		
+
+		try {
+			ApplicationBeans.getPointEventDetectorDaoBean().init();
+			log.info("Cache event detectors initialized");
+		} catch (Exception e) {
+			log.error(e);
+		}
+
 		try {
 			DataSourcePointsCache.getInstance().cacheInitialize();
 			log.info("Cache data points initialized");
