@@ -552,4 +552,25 @@ public class ScriptExecutorTest {
         boolean result = pointValueTime.getBooleanValue();
         Assert.assertEquals(expected, result);
     }
+
+    @Test
+    public void test_execute_js_with_point_context_alphanumeric_return_value_length() throws Exception {
+
+        //given:
+        String value = "abc";
+        String expected = String.valueOf(value.length());
+        DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new AlphanumericValue(value));
+        Map<String, IDataPoint> context = new HashMap<>();
+        context.put("p1", p1);
+
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute(
+                "return p1.value.length();", context, 0, DataTypes.ALPHANUMERIC, 0);
+
+        //then:
+        String result = pointValueTime.getStringValue();
+        Assert.assertEquals(expected, result);
+    }
 }

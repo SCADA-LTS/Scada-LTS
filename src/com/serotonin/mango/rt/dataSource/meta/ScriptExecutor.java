@@ -31,6 +31,7 @@ import javax.script.ScriptException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -166,7 +167,10 @@ public class ScriptExecutor {
 					if (o == null)
 						result = null;
 					else {
-						if (!(o instanceof AbstractPointWrapper)) {
+						if (o instanceof NativeJavaObject) {
+							NativeJavaObject nativeJavaObject = (NativeJavaObject)o;
+							result = nativeJavaObject.getDefaultValue(String.class);
+						} else if (!(o instanceof AbstractPointWrapper)) {
 							result = o.toString();
 						} else {
 							result = o;
