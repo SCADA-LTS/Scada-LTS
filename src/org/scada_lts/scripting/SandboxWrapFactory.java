@@ -29,6 +29,11 @@ import org.mozilla.javascript.WrapFactory;
  * @author Zuzana Maczek, grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class SandboxWrapFactory extends WrapFactory {
+
+	public SandboxWrapFactory() {
+		super.setJavaPrimitiveWrap(false);
+	}
+
 	@Override
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, @SuppressWarnings("rawtypes") Class staticType) {
 		return new SandboxNativeJavaObject(scope, javaObject, staticType);
