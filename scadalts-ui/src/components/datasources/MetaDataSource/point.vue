@@ -326,21 +326,21 @@
                 required
                 error-count="0"
 							></v-textarea>
-            <v-col>
-              <v-btn block color="primary" @click="validateScript"
-              >{{ $t('script.runScript') }}
-              </v-btn>
-            </v-col>
-            <div v-if = "this.validScript">
-              <v-alert title="Script is valid" type="success">
-                Script results: {{this.resultMessage}}
-              </v-alert>
-            </div>
-            <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
-              <v-alert title = "Script error" type="error">
-                Script error: {{this.resultMessage}}
-              </v-alert>
-            </v-div>
+              <v-col>
+                <v-btn block color="primary" @click="validateScript"
+                >{{ $t('script.runScript') }}
+                </v-btn>
+              </v-col>
+              <div v-if = "this.validScript && this.resultMessage !== '' ">
+                <v-alert title="Script is valid" type="success">
+                  Script results: {{this.resultMessage}}
+                </v-alert>
+              </div>
+              <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
+                <v-alert title = "Script error" type="error">
+                  Script error: {{this.resultMessage}}
+                </v-alert>
+              </v-div>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -389,7 +389,6 @@ export default {
 		DataPointCreation,
 	},
 	async mounted() {
-    this.validateScript();
 		this.fetchScriptList();
 		this.datapoints = await this.$store.dispatch('getAllDatapoints');
 	},
@@ -460,7 +459,7 @@ export default {
 					executionDelayPeriodType: "SECONDS"
 				}
 			},
-      validScript: false,
+      validScript: true,
       resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
       ruleValidScript: () => this.validScript || this.resultMessage,
@@ -561,7 +560,6 @@ export default {
         if (this.datapoint.pointLocator.script === ""){
           this.validScript = false;
           this.resultMessage = this.$t('validation.rule.notNull');
-          this.$refs.scriptBodyTextarea.validate();
         }
         else {
           let resp = await this.$store.dispatch('requestPost', {
@@ -570,7 +568,6 @@ export default {
           });
           this.validScript = resp.success;
           this.resultMessage = resp.message;
-          this.$refs.scriptBodyTextarea.validate();
         }
       } catch (e) {
         console.log('error:' + e);
