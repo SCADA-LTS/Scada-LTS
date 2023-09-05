@@ -71,4 +71,8 @@ public class SandboxNativeJavaObject extends NativeJavaObject  {
 		return NOT_FOUND;
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(super.getDefaultValue(String.class));
+	}
 }
