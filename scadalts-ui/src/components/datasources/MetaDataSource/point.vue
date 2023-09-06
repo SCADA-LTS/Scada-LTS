@@ -286,98 +286,96 @@
 			</v-row>
 
 			<!-- Alphanumeric -->
-      <v-row>
-        <v-col cols="6">
-          <v-select
-              item-value="id"
-              :placeholder="$t('scriptList.selectDatapoint')"
-              item-text="name"
-              v-model="selectedDatapointId"
-              @change="addDatapoint(); validateScript();"
-              :items="filteredDatapoints"
-          ></v-select>
-        </v-col>
-        <v-col cols="6">
-          <table style="width: 100%">
-            <tr v-for="p in datapoint.pointLocator.context">
-              <td style="width: 20%">{{ p.dataPointXid }}</td>
-              <td style="width: 70%">
-                <v-text-field style="width: 100%" v-model="p.value" />
-              </td>
-              <td style="width: 10%">
-                <v-icon
-                    color="red"
-                    style="cursor: pointer; border: 0"
-                    @click="removeDatapoint(p.dataPointXid); validateScript();"
-                >mdi-close</v-icon
-                >
-              </td>
-            </tr>
-          </table>
-        </v-col>
-      </v-row>
-      <v-textarea :rules="[ruleNotNull, ruleValidScript]"
-                  style="width: 100%; font-family: monospace"
-                  :label="$t('scriptList.script')"
-                  v-model="datapoint.pointLocator.script"
-                  rows=3
-                  @focusout="validateScript"
-                  ref="scriptBodyTextarea"
-                  required
-                  error-count="0"
-      ></v-textarea>
-      <v-col>
-        <v-btn block color="primary" @click="validateScript"
-        >{{ $t('script.runScript') }}
-        </v-btn>
-      </v-col>
-      <div v-if = "this.validScript">
-        <v-alert title="Script is valid" type="success">
-          Script results: {{this.resultMessage}}
-        </v-alert>
-      </div>
-      <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
-        <v-alert title = "Script error" type="error">
-          Script error: {{this.resultMessage}}
-        </v-alert>
-      </v-div>
-      <v-row>
-        <v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
-          <v-select
-              label="Update event"
-              v-model="datapoint.pointLocator.updateEvent"
-              item-text="label"
-              item-value="id"
-
-              :items="eventTypes"
-          >
-          </v-select>
-        </v-col>
-        <v-col cols=3 v-if="datapoint.pointLocator.updateEvent === 'START_OF_CRON'">
-          <v-text-field
-              label="cron pattern"
-              v-model="datapoint.pointLocator.updateCronPattern"
-          ></v-text-field>
-        </v-col>
-        <v-col>
-          <v-text-field
-              v-model="datapoint.pointLocator.executionDelaySeconds"
-              label="Execution delay"
-          ></v-text-field>
-        </v-col>
-        <v-col>
-          <v-select
-              v-model="datapoint.pointLocator.executionDelayPeriodType"
-              item-text="label"
-              item-value="id"
-              :items="[
-							{id: 'MILLISECONDS', label:$t('executionDelayPeriodType.8')},
-							{id: 'SECONDS', label:$t('executionDelayPeriodType.1')},
-							{id: 'MINUTES', label:$t('executionDelayPeriodType.2')},
-						]"
-          ></v-select>
-        </v-col>
-      </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-select
+                item-value="id"
+                :placeholder="$t('scriptList.selectDatapoint')"
+                item-text="name"
+                v-model="selectedDatapointId"
+                @change="addDatapoint(); validateScript();"
+                :items="filteredDatapoints"
+              ></v-select>
+            </v-col>
+            <v-col cols="6">
+              <table style="width: 100%">
+                <tr v-for="p in datapoint.pointLocator.context">
+                  <td style="width: 20%">{{ p.dataPointXid }}</td>
+                  <td style="width: 70%">
+                    <v-text-field style="width: 100%" v-model="p.value" />
+                  </td>
+                  <td style="width: 10%">
+                    <v-icon
+                      color="red"
+                      style="cursor: pointer; border: 0"
+                      @click="removeDatapoint(p.dataPointXid); validateScript();"
+                      >mdi-close
+                    </v-icon>
+                  </td>
+                </tr>
+              </table>
+            </v-col>
+          </v-row>
+          <v-textarea :rules="[ruleNotNull, ruleValidScript]"
+            style="width: 100%; font-family: monospace"
+            :label="$t('scriptList.script')"
+            v-model="datapoint.pointLocator.script"
+            rows=3
+            @focusout="validateScript"
+            ref="scriptBodyTextarea"
+            required
+            error-count="0"
+          ></v-textarea>
+          <v-col>
+            <v-btn block color="primary" @click="validateScript"
+              >{{ $t('script.runScript') }}
+            </v-btn>
+          </v-col>
+          <div v-if = "this.validScript && this.resultMessage !== '' ">
+            <v-alert title="Script is valid" type="success">
+              Script results: {{this.resultMessage}}
+            </v-alert>
+          </div>
+          <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
+            <v-alert title = "Script error" type="error">
+              Script error: {{this.resultMessage}}
+            </v-alert>
+          </v-div>
+          <v-row>
+            <v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
+              <v-select
+                label="Update event"
+                v-model="datapoint.pointLocator.updateEvent"
+                item-text="label"
+                item-value="id"
+                :items="eventTypes"
+              ></v-select>
+            </v-col>
+            <v-col cols=3 v-if="datapoint.pointLocator.updateEvent === 'START_OF_CRON'">
+              <v-text-field
+                label="cron pattern"
+                v-model="datapoint.pointLocator.updateCronPattern"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                v-model="datapoint.pointLocator.executionDelaySeconds"
+                label="Execution delay"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-select
+                v-model="datapoint.pointLocator.executionDelayPeriodType"
+                item-text="label"
+                item-value="id"
+                :items="[
+                  {id: 'MILLISECONDS', label:$t('executionDelayPeriodType.8')},
+                  {id: 'SECONDS', label:$t('executionDelayPeriodType.1')},
+                  {id: 'MINUTES', label:$t('executionDelayPeriodType.2')},
+                ]"
+              ></v-select>
+            </v-col>
+          </v-row>
 		</DataPointCreation>
 	</div>
 </template>
@@ -558,6 +556,7 @@ export default {
 		},
     async validateScript() {
       try {
+        console.log("validation happened");
         if (this.datapoint.pointLocator.script === ""){
           this.validScript = false;
           this.resultMessage = this.$t('validation.rule.notNull');
