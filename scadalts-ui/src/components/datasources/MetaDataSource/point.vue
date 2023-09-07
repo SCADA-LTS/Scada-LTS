@@ -11,7 +11,7 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
-          @change="validateScript"
+					@change="validateScript"
 				></v-select>
 				
 			</template>
@@ -326,21 +326,21 @@
 								required
 								error-count="0"
 							></v-textarea>
-              <v-col>
-                <v-btn block color="primary" @click="validateScript"
-                >{{ $t('script.runScript') }}
-                </v-btn>
-              </v-col>
-              <div v-if = "this.validScript && this.resultMessage !== '' ">
-                <v-alert title="Script is valid" type="success">
-                  Script results: {{this.resultMessage}}
-                </v-alert>
-              </div>
-              <v-div v-if = "!this.validScript && this.resultMessage !== '' ">
-                <v-alert title = "Script error" type="error">
-                  Script error: {{this.resultMessage}}
-                </v-alert>
-              </v-div>
+							<v-col>
+								<v-btn block color="primary" @click="validateScript"
+									>{{ $t('script.runScript') }}
+								</v-btn>
+							</v-col>
+							<div v-if = "this.validScript && this.resultMessage !== '' ">
+								<v-alert title="Script is valid" type="success">
+									Script results: {{this.resultMessage}}
+								</v-alert>
+							</div>
+							<v-div v-if = "!this.validScript && this.resultMessage !== '' ">
+								<v-alert title = "Script error" type="error">
+									Script error: {{this.resultMessage}}
+								</v-alert>
+							</v-div>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -459,10 +459,10 @@ export default {
 					executionDelayPeriodType: "SECONDS"
 				}
 			},
-      validScript: true,
-      resultMessage: "",
+			validScript: true,
+			resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
-      ruleValidScript: () => this.validScript || this.resultMessage,
+			ruleValidScript: () => this.validScript || this.resultMessage,
 		};
 	},
 
@@ -530,10 +530,11 @@ export default {
 			this.$emit('canceled');
 		},
 
-		save() {
+		async save() {
 			console.debug('VirtualDataSource.point.vue::save()');
-      if (this.validScript)
-        this.$emit('saved', this.datapoint);
+			await this.validateScript();
+			if (this.validScript)
+				this.$emit('saved', this.datapoint);
 		},
 
 		addMsValue(array) {
@@ -555,24 +556,25 @@ export default {
 				return;
 			}
 		},
-    async validateScript() {
-      try {
-        if (this.datapoint.pointLocator.script === ""){
-          this.validScript = false;
-          this.resultMessage = this.$t('validation.rule.notNull');
-        }
-        else {
-          let resp = await this.$store.dispatch('requestPost', {
-            url:  `/datapoint/meta/test`,
-            data: this.datapoint.pointLocator
-          });
-          this.validScript = resp.success;
-          this.resultMessage = resp.message;
-        }
-      } catch (e) {
-        console.log('error:' + e);
-      }
-    },
+		async validateScript() {
+			try {
+				if (this.datapoint.pointLocator.script === ""){
+					this.validScript = false;
+					this.resultMessage = this.$t('validation.rule.notNull');
+			}
+			else {
+				let resp = await this.$store.dispatch('requestPost', {
+					url:  `/datapoint/meta/test`,
+					data: this.datapoint.pointLocator
+				});
+				this.validScript = resp.success;
+				this.resultMessage = resp.message;
+				this.$refs.scriptBodyTextarea.validate();
+			}
+			} catch (e) {
+			console.log('error:' + e);
+			}
+		},
 	},
 };
 </script>
