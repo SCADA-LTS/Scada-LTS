@@ -321,10 +321,10 @@
 								:label="$t('scriptList.script')"
 								v-model="datapoint.pointLocator.script"
 								rows=3
-                                @focusout="validateScript"
+								@focusout="validateScript"
 								ref="scriptBodyTextarea"
-                required
-                error-count="0"
+								required
+								error-count="0"
 							></v-textarea>
               <v-col>
                 <v-btn block color="primary" @click="validateScript"
