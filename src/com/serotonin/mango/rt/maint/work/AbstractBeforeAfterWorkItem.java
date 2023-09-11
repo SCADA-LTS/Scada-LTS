@@ -2,7 +2,9 @@ package com.serotonin.mango.rt.maint.work;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.utils.ThreadUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +22,10 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     private volatile boolean workFailed = false;
     private volatile boolean running = false;
     private volatile int executedMs = -1;
-
-    private volatile String errorMessage = "";
+    private volatile String threadName = "";
+    private volatile String failedMessage = "";
+    private volatile String workFailedMessage = "";
+    private final String suffixThreadName = ThreadUtils.reduceName(" - " + WorkItemPriority.priorityOf(getPriority()) + " - " + this.getDetails());
 
     public static WorkItems failedWorkItems() {
         return FAILED_WORK_ITEMS;
@@ -50,23 +54,27 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     @Override
     public final void execute() {
         long startMs = System.currentTimeMillis();
+        this.threadName = Thread.currentThread().getName();
+        if(!StringUtils.isEmpty(this.suffixThreadName))
+            Thread.currentThread().setName(this.threadName + this.suffixThreadName);
         boolean runningNow = this.running;
         this.running = true;
         this.executedMs = -1;
         this.workFailed = false;
         this.executed = false;
         this.success = false;
-        this.errorMessage = "";
+        this.failedMessage = "";
+        this.workFailedMessage = "";
         addWorkItemIfNotRunning(this, runningNow);
         boolean failed = false;
-        boolean workFailed = false;
+        boolean workFailedTemp = false;
         String msg = "";
         Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
             } catch (Exception beforeWorkException) {
-                workFailed = true;
+                workFailedTemp = true;
                 failed = true;
                 msg = beforeWorkException.getMessage();
                 exceptions.put("beforeWork", beforeWorkException);
@@ -81,7 +89,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             try {
                 work();
             } catch (Exception workException) {
-                workFailed = true;
+                workFailedTemp = true;
                 failed = true;
                 msg = workException.getMessage();
                 exceptions.put("work", workException);
@@ -112,7 +120,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 workFinally(exceptions);
             } catch (Exception workFinallyException) {
                 failed = true;
-                msg = workFinallyException.getMessage();
+                this.failedMessage = workFinallyException.getMessage();
                 exceptions.put("workFinally", workFinallyException);
                 try {
                     workFinallyFail(workFinallyException, exceptions);
@@ -122,12 +130,14 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
             }
             this.success = !failed;
-            this.workFailed = workFailed;
+            this.workFailed = workFailedTemp;
             this.executedMs = (int)(System.currentTimeMillis() - startMs);
             this.executed = true;
-            this.errorMessage = msg;
+            this.workFailedMessage = msg;
             addWorkItemAfterExecuted(this, failed, executedMs);
             this.running = false;
+            if(!StringUtils.isEmpty(this.suffixThreadName))
+                Thread.currentThread().setName(this.threadName);
         }
     }
 
@@ -185,7 +195,17 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     @Override
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getFailedMessage() {
+        return failedMessage;
+    }
+
+    @Override
+    public String getWorkFailedMessage() {
+        return workFailedMessage;
+    }
+
+    @Override
+    public String getThreadName() {
+        return threadName;
     }
 }

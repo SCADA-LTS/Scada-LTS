@@ -23,7 +23,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/:
+  /work-items/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -32,7 +32,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/count/:
+  /work-items/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -50,7 +50,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/:
+  /work-items/executed/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -59,7 +59,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/count/:
+  /work-items/executed/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -77,7 +77,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/failed/group-by/:
+  /work-items/failed/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -86,7 +86,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/failed/group-by/count/:
+  /work-items/failed/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -104,7 +104,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/:
+  /work-items/running/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -113,7 +113,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/count/:
+  /work-items/running/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -131,7 +131,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/success/group-by/:
+  /work-items/success/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -140,7 +140,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/success/group-by/count/:
+  /work-items/success/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -158,7 +158,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/all/group-by/:
+  /work-items/all/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -167,7 +167,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/all/group-by/count/:
+  /work-items/all/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -191,7 +191,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/group-by/:
+  /work-items/longer/{executedMs}/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -206,7 +206,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/group-by/count/:
+  /work-items/longer/{executedMs}/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -221,7 +221,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/history/:
+  /work-items/history/longer/{executedMs}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -236,7 +236,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/history/group-by/:
+  /work-items/history/longer/{executedMs}/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -251,7 +251,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/history/group-by/count/:
+  /work-items/history/longer/{executedMs}/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -281,7 +281,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/less/{executedMs}/group-by/:
+  /work-items/less/{executedMs}/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -296,7 +296,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/less/{executedMs}/group-by/count/:
+  /work-items/less/{executedMs}/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -327,7 +327,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/priority/{priority}/group-by/:
+  /work-items/priority/{priority}/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -343,7 +343,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/priority/{priority}/group-by/count/:
+  /work-items/priority/{priority}/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -368,7 +368,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/:
+  /work-items/scheduled/group-by-classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -377,7 +377,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/count/:
+  /work-items/scheduled/group-by-classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -386,7 +386,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/state/{state}/:
+  /work-items/scheduled/states/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Get active scheduled work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/scheduled/states/{state}/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -402,7 +411,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/state/{state}/group-by/:
+  /work-items/scheduled/states/{state}/group-by-classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -418,7 +427,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/state/{state}/group-by/count/:
+  /work-items/scheduled/states/{state}/group-by-classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI

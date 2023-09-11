@@ -50,6 +50,7 @@ import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
@@ -173,7 +174,7 @@ public class ImportTask extends ProgressiveTask {
 		usersProfiles = nonNullList(root, EmportDwr.USERS_PROFILES);
 		reports = nonNullList(root, EmportDwr.REPORTS);
 
-		Common.timer.execute(this);
+		Common.timer.execute(this, WorkItemPriority.HIGH + " - " + this.getClass().getName());
 
 	}
 

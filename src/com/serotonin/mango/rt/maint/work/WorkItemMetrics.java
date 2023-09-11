@@ -6,5 +6,7 @@ public interface WorkItemMetrics {
     boolean isWorkFailed();
     boolean isRunning();
     int getExecutedMs();
-    String getErrorMessage();
+    String getFailedMessage();
+    String getWorkFailedMessage();
+    String getThreadName();
 }

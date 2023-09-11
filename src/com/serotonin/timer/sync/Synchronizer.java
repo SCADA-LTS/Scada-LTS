@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.lang3.StringUtils;
 
 import com.serotonin.timer.AbstractTimer;
@@ -54,7 +55,7 @@ public class Synchronizer<T extends Runnable> {
         if (maxConcurrent <= 0 || tasks.size() <= maxConcurrent) {
             // Start all of the tasks.
             for (TaskWrapper tw : tasks)
-                timer.execute(tw);
+                timer.execute(tw, WorkItemPriority.HIGH + " - " + this.getClass().getName());
             running = tasks;
         }
         else {
@@ -66,7 +67,7 @@ public class Synchronizer<T extends Runnable> {
                 // Start tasks
                 while (running.size() < maxConcurrent && !remaining.isEmpty()) {
                     TaskWrapper tw = remaining.remove(remaining.size() - 1);
-                    timer.execute(tw);
+                    timer.execute(tw, WorkItemPriority.HIGH + " - " +  this.getClass().getName());
                     running.add(tw);
                 }
 
