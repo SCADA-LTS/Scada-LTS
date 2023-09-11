@@ -4,6 +4,7 @@
  */
 package com.serotonin.timer.sync;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.timer.AbstractTimer;
 
 /**
@@ -39,7 +40,7 @@ public class SingleExecutorSingleWaiter {
     }
 
     void executeImpl() {
-        timer.execute(new TaskWrapper(executing));
+        timer.execute(new TaskWrapper(executing), WorkItemPriority.HIGH + " - " + this.getClass().getName());
     }
 
     class TaskWrapper implements Runnable {

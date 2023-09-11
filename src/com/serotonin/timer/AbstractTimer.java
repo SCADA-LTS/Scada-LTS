@@ -1,6 +1,7 @@
 package com.serotonin.timer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.scada_lts.utils.ThreadUtils;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ abstract public class AbstractTimer {
         if (StringUtils.isBlank(name))
             execute(command);
         else
-            execute(new NamedRunnable(command, name));
+            execute(new NamedRunnable(command, ThreadUtils.reduceName(name)));
     }
 
     abstract public void execute(ScheduledRunnable command, long fireTime);
@@ -24,7 +25,7 @@ abstract public class AbstractTimer {
         if (StringUtils.isBlank(name))
             execute(command, fireTime);
         else
-            execute(new ScheduledNamedRunnable(command, name), fireTime);
+            execute(new ScheduledNamedRunnable(command, ThreadUtils.reduceName(name)), fireTime);
     }
 
     final public TimerTask schedule(TimerTask task) {

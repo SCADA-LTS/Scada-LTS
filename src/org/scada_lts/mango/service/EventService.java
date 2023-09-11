@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -32,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
-import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
@@ -214,7 +214,8 @@ public class EventService implements MangoEvent {
 			userEvents = Collections.emptyList();
 			addToCache(userId, userEvents);
 			//TODO rewrite to delete relation of seroUtils
-			Common.timer.execute(new UserPendingEventRetriever(userId));
+			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId);
+			Common.timer.execute(userPendingEventRetriever, WorkItemPriority.HIGH + " - dataPointId: " + dataPointId + ", userId: " + userId + " - " + userPendingEventRetriever.getClass().getName());
 		}
 		List<EventInstance> list = null;
 		for (EventInstance e : userEvents) {

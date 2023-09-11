@@ -44,24 +44,13 @@ public class StateThreadInfoApiService {
         }
     }
 
-    public Long getThreadsCountForState(Thread.State state, HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            Map<Value, Long> map = groupByAndSort(getThreadStack(), groupByStatesCounting(),
-                    Map.Entry.comparingByValue(Comparator.reverseOrder()));
-            Long result = map.get(new Value(state.name()));
-            return result == null ? 0 : result;
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
-    }
-
     public List<Value> getThreadClassesForState(Thread.State state, HttpServletRequest request) {
         checkIfNonAdminThenUnauthorized(request);
         try {
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesClass(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
-            return map.get(new Value(state.name()));
+            List<Value> response = map.get(new Value(state.name()));
+            return response == null ? new ArrayList<>() :  response;
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }
@@ -72,7 +61,8 @@ public class StateThreadInfoApiService {
         try {
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesName(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
-            return map.get(new Value(state.name()));
+            List<Value> response = map.get(new Value(state.name()));
+            return response == null ? new ArrayList<>() :  response;
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }

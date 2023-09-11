@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -395,7 +396,7 @@ class PersistentSendThread extends SendThread {
         }
 
         syncHandler = new SyncHandler(this);
-        Common.timer.execute(syncHandler);
+        Common.timer.execute(syncHandler, WorkItemPriority.HIGH + " - name: " + this.getName() + ", id: " + this.getId() + " - " + this.getClass().getName() + ".startSync");
 
         return true;
     }
@@ -418,7 +419,7 @@ class PersistentSendThread extends SendThread {
             public void run() {
                 writePointHierarchy(new DataPointDao().getPointHierarchy());
             }
-        });
+        }, WorkItemPriority.HIGH + " - name: " + this.getName() + ", id: " + this.getId() + " - " + this.getClass().getName() + ".writePointHierarchy");
     }
 
     synchronized void writePointHierarchy(PointHierarchy hierarchy) {

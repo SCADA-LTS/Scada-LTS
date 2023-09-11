@@ -30,6 +30,13 @@ public class ScheduledWorkItemInfoApiService {
                 .collect(Collectors.toList());
     }
 
+    public List<TimerTaskState> getScheduledWorkItemsStates(HttpServletRequest request) {
+        checkIfNonAdminThenUnauthorized(request);
+        return Common.timer.getTasks().stream()
+                .map(a -> TimerTaskState.stateOf(a))
+                .collect(Collectors.toList());
+    }
+
     public Map<String, Long> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request) {
         checkIfNonAdminThenUnauthorized(request);
         return Common.timer.getTasks().stream()
@@ -40,7 +47,7 @@ public class ScheduledWorkItemInfoApiService {
         checkIfNonAdminThenUnauthorized(request);
         return Common.timer.getTasks().stream()
                 .map(ScheduledWorkItem::new)
-                .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.toList()));
+                .collect(Collectors.groupingBy(ScheduledWorkItem::getClassName, Collectors.toList()));
     }
 
     public Map<String, Long> getScheduledWorkItemsGroupByClassNameCount(HttpServletRequest request, TimerTaskState state) {
@@ -55,6 +62,6 @@ public class ScheduledWorkItemInfoApiService {
         return Common.timer.getTasks().stream()
                 .filter(a -> TimerTaskState.stateOf(a) == state)
                 .map(ScheduledWorkItem::new)
-                .collect(Collectors.groupingBy(a -> a.getClass().getName(), Collectors.toList()));
+                .collect(Collectors.groupingBy(ScheduledWorkItem::getClassName, Collectors.toList()));
     }
 }

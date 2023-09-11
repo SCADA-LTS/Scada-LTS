@@ -59,27 +59,27 @@ public class WorkItemInfoApiService {
                 WorkItemsUtils::getByExecutedLessThan, executedMs);
     }
 
-    public Map<String, Long> getExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getExecutedWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByExecuted);
     }
 
-    public Map<String, Long> getExecutedSuccessWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getExecutedSuccessWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getBySuccess);
     }
 
-    public Map<String, Long> getExecutedFailedWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getExecutedFailedWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByFailed);
     }
 
-    public Map<String, Long> getWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getAll);
     }
 
-    public Map<String, Long> getNotExecutedWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getNotExecutedWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getByNotExecuted);
     }
 
-    public Map<String, Long> getExecutedLongerWorkItemsGroupByCount(HttpServletRequest request, int executedMs, boolean history) {
+    public Map<String, Long> getExecutedLongerWorkItemsGroupByClassName(HttpServletRequest request, int executedMs, boolean history) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, byExecuteMsComparator(),
                 executed -> {
                     if(history)
@@ -88,18 +88,18 @@ public class WorkItemInfoApiService {
                 }, executedMs);
     }
 
-    public Map<String, Long> getExecutedLessWorkItemsGroupByCount(HttpServletRequest request, int executedMs) {
+    public Map<String, Long> getExecutedLessWorkItemsGroupByClassName(HttpServletRequest request, int executedMs) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, byExecuteMsComparator(),
                 WorkItemsUtils::getByExecutedLessThan, executedMs);
     }
 
-    public Map<String, Long> getExecutedLessWorkItemsGroupByPriorityCount(HttpServletRequest request,
-                                                                     WorkItemPriority priority) {
+    public Map<String, Long> getExecutedLessWorkItemsGroupByPriorityClassName(HttpServletRequest request,
+                                                                              WorkItemPriority priority) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting,
                 byExecuteMsComparator(), WorkItemsUtils::getByPriority, priority);
     }
 
-    public Map<String, Long> getRunningWorkItemsGroupByCount(HttpServletRequest request) {
+    public Map<String, Long> getRunningWorkItemsGroupByClassName(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getRunning);
     }
 
