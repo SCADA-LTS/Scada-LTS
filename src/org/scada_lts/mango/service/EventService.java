@@ -185,20 +185,6 @@ public class EventService implements MangoEvent {
 		
 	}
 
-	@Deprecated(since = "2.7.5.4")
-	@Override
-	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
-
-		List<EventInstance> lst;
-		if (typeRef1 == -1) {
-			lst = eventDAO.getPendingEvents(typeId, userId);
-		} else {
-			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
-		}
-		return lst;
-
-	}
-
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
@@ -235,13 +221,6 @@ public class EventService implements MangoEvent {
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
 	}
 
-	@Deprecated
-	@Override
-	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
-		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}
-
-
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
 		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
@@ -251,29 +230,24 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEvents(int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-		return getPendingEventsAlarmLevelMin(userId, -1, limit, false);
+		return getPendingEventsAlarmLevelMin(userId, -1, limit);
 	}
 	@Override
 	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit) {
-		return getPendingEventsAlarmLevelMin(userId, alarmLevelMin, limit, false);
-	}
-
-	@Override
-	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean forceDisabledCache) {
 		List<EventInstance> results = null;
 		try {
 			boolean cacheEnable = systemSettingsService.getMiscSettings().isEventPendingCacheEnabled();
-			if (!forceDisabledCache && cacheEnable) {
+			int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+			int calcLimit = limit > -1 && limit <= fromSystemSettingsLimit ? limit : fromSystemSettingsLimit;
+			if (cacheEnable) {
 				PendingEventsCache.getInstance().startUpdate();
 				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
-						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp))
+						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).reversed())
 						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
+						.limit(calcLimit)
 						.collect(Collectors.toList());
 			} else {
-				if(!forceDisabledCache)
-					PendingEventsCache.getInstance().stopUpdate();
-				int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-				int calcLimit = limit > -1 ? limit : fromSystemSettingsLimit;
+				PendingEventsCache.getInstance().stopUpdate();
 				if(alarmLevelMin > 0) {
 					results = eventDAO.getPendingEventsLimitAlarmLevelMin(userId, alarmLevelMin, calcLimit);
 				} else {
