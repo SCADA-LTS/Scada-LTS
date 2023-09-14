@@ -21,6 +21,7 @@ package com.serotonin.mango.vo;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
@@ -51,6 +52,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -122,18 +124,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient boolean hideHeader = false;
 
 	public User() { }
-
-	@Deprecated
-	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
-		this.id = id;
-		this.username = username;
-		this.email = email;
-		this.phone = phone;
-		this.admin = admin;
-		this.disabled = disabled;
-		this.homeUrl = homeUrl;
-		this.lastLogin = lastLogin;
-	}
 
 	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
@@ -229,6 +219,16 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@Override
 	public void raiseRecursionFailureEvent() {
 		throw new ShouldNeverHappenException("");
+	}
+
+	@Override
+	public void valueBound(HttpSessionBindingEvent event) {
+		ApplicationBeans.getLoggedUsersBean().addUser(this, event.getSession());
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		ApplicationBeans.getLoggedUsersBean().removeUser(this, event.getSession());
 	}
 
 	// Convenience method for JSPs
@@ -674,6 +674,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void resetUserProfile() {
 		this.userProfile = Common.NEW_ID;
+		this.dataPointProfilePermissions.clear();
+		this.dataSourceProfilePermissions.clear();
+		this.watchListProfilePermissions.clear();
+		this.viewProfilePermissions.clear();
 	}
 
 	@Override

@@ -244,4 +244,6 @@
     <constructor-arg ref="pointEventDetectorCache"/>
   </bean>
   <!-- -->
+
+  <bean id="loggedUsers" class="org.scada_lts.login.LoggedUsers" />
 </beans>

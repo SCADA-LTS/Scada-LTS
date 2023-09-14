@@ -19,9 +19,11 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.rt.event.type.AlarmLevelType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.EventTypeUtil;
@@ -85,31 +87,32 @@ public class PendingEventsDAO {
 				+ "left join userEvents ue on e.id=ue.eventId "
 			+ "where "
 				+ "ue.userId=? and "
-				+ "(e.ackTs is null or e.ackTs = 0) "
+				+ "(e.ackTs is null or e.ackTs = 0) and "
+			    + "e.alarmLevel >= ? "
 			+ "order by e.activeTs desc "
-			+ "LIMIT ? ";
+			+ "LIMIT ? OFFSET ?";
 
 	// @formatter:on
 
-	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments) {
-		return getPendingEvents(userId, comments, 100);
+	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments, AlarmLevelType minAlarmLevel) {
+		return getPendingEvents(userId, comments, minAlarmLevel, 100, 0);
 	}
 
-	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments, int limit) {
+	public List<EventInstance> getPendingEvents(int userId, final Map<Integer, List<UserComment>> comments, AlarmLevelType minAlarmLevel, int limit, int offset) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL PendingEvents userId:"+userId);
 		}
 
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId, limit},
+			List<EventInstance> listEvents = DAO.getInstance().getJdbcTemp().query(SQL_EVENTS,new Integer[]{userId, minAlarmLevel.getCode(), limit, offset},
 					(rs, rownumber) -> mapToEvent(comments, rs));
 
 			return listEvents;
 		} catch (Exception e) {
 			LOG.error(e);
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	private EventInstance mapToEvent(Map<Integer, List<UserComment>> comments, ResultSet rs) throws SQLException {

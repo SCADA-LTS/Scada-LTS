@@ -5,6 +5,8 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
+import org.scada_lts.login.ILoggedUsers;
+import org.scada_lts.login.LoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -145,6 +147,10 @@ public class ApplicationBeans {
 
     public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
         return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+    }
+
+    public static ILoggedUsers getLoggedUsersBean() {
+        return getBeanFromContext("loggedUsers", LoggedUsers.class);
     }
 
     @Deprecated
