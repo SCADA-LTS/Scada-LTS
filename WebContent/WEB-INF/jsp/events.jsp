@@ -61,19 +61,22 @@
     
     function doSearchOld() {
     	setDisabled("searchBtn", true);
-    	   $set("searchMessage", "<fmt:message key="events.search.searching"/>");
-    		        EventsDwr.searchOld($get("eventId"), $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
-    		                $get("keywords"), $get("maxResults"), function(results) {
-    		            $set("searchResults", results.data.content);
-    		            setDisabled("searchBtn", false);
-    		            $set("searchMessage", results.data.resultCount);
-    		        });
-    		    }
-    
+    	$set("searchMessage", "<fmt:message key="events.search.searching"/>");
+    	var eventId = parseInt($get("eventId"));
+    	var maxResults = parseInt($get("maxResults"));
+        EventsDwr.searchOld(eventId, $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
+                $get("keywords"), maxResults, function(results) {
+            $set("searchResults", results.data.content);
+            setDisabled("searchBtn", false);
+            $set("searchMessage", results.data.resultCount);
+        });
+    }
+
     function doSearch(page, date) {
         setDisabled("searchBtn", true);
         $set("searchMessage", "<fmt:message key="events.search.searching"/>");
-        EventsDwr.search($get("eventId"), $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
+    	var eventId = parseInt($get("eventId"));
+        EventsDwr.search(eventId, $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
                 $get("keywords"), page.value, date.value, function(results) {
             $set("searchResults", results.data.content);
             setDisabled("searchBtn", false);
@@ -120,19 +123,21 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(isIntAndShorterThan11Characters(eventId.value) && isIntAndShorterThan11Characters(maxResults.value)) {
-            doSearchOld();
+        if(!isValid(eventId.value)) {
+            $set("searchMessage", $get("eventIdLabel") + " - Incorrect input data type");
+        } else if(!isValid(maxResults.value)) {
+            $set("searchMessage", $get("maxResultsLabel") + " - Incorrect input data type");
         } else {
-            $set("searchMessage", "Incorrect input data type");
+            doSearchOld();
         }
     }
 
-    function isIntAndShorterThan11Characters(value) {
-      if(value == "") return true;
-      if(value.length > 10) return false;
-      return !isNaN(value) &&
-             parseInt(Number(value)) == value &&
-             !isNaN(parseInt(value, 10));
+    function isValid(value) {
+      return value == "" || isPositiveInt(value);
+    }
+
+    function isPositiveInt(value) {
+      return isInt32(value) && value >= 0;
     }
 
     function silenceAll() {
@@ -141,6 +146,10 @@
     		for (var i=0; i<silenced.length; i++)
     			setSilenced(silenced[i], true);
     	});
+    }
+
+    function parseInt(value) {
+        return value == "" ? 0 : Number.parseInt(value);
     }
 
 //     dojo.addOnLoad(function() {
@@ -174,7 +183,7 @@
     <div>
       <table>
         <tr>
-          <td class="formLabel"><fmt:message key="events.id"/></td>
+          <td id="eventIdLabel" class="formLabel"><fmt:message key="events.id"/></td>
           <td class="formField"><input id="eventId" type="text"></td>
         </tr>
         <tr>
@@ -222,7 +231,7 @@
 <!--         </tr> -->
 
 		<tr>
-          <td class="formLabel"><fmt:message key="events.search.maxResults"/></td>
+          <td id="maxResultsLabel" class="formLabel"><fmt:message key="events.search.maxResults"/></td>
           <td class="formField"><input id="maxResults" type="text" value="100"/></td>
         </tr>
 		

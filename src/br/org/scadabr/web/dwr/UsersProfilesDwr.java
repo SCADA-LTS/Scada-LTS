@@ -9,8 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import com.serotonin.mango.vo.User;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -34,6 +34,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 public class UsersProfilesDwr {
 
@@ -124,6 +125,7 @@ public class UsersProfilesDwr {
 
 		try {
 			usersProfileService.saveUsersProfile(profile);
+			ApplicationBeans.getLoggedUsersBean().updateUsers(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"userProfiles.validate.nameUnique"));
