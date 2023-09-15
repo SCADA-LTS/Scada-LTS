@@ -53,6 +53,8 @@ class MangoEmailContentImpl extends TemplateEmailContentImpl implements IMsgSubj
 
     @Override
     public String getSubject() {
+        if(subjectDirective == null)
+            return defaultSubject;
         String subject = subjectDirective.getSubject();
         if (subject == null)
             return defaultSubject;
