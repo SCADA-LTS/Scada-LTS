@@ -174,6 +174,45 @@ public class WorkItemInfoAPI {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/history/priority/{priority}")
+    public ResponseEntity<WorkItemInfoList> getExecutedWorkPriority(HttpServletRequest request,
+                                                                    @PathVariable("priority") WorkItemPriority priority) {
+        List<WorkItemInfo> response = workItemInfoApiService.getWorkItemsByPriority(request, priority);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history/priority/{priority}/group-by-classes")
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getExecutedWorkPriorityGroupBy(HttpServletRequest request,
+                                                                                          @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getWorkItemsByPriorityGroupByClassName(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history/priority/{priority}/group-by-classes/count")
+    public ResponseEntity<Map<String, Long>> getExecutedWorkPriorityGroupByCount(HttpServletRequest request,
+                                                                                 @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, Long>response = workItemInfoApiService.getWorkItemsByPriorityGroupByClassNameCount(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history/process")
+    public ResponseEntity<WorkItemInfoList> getProcessWorkItems(HttpServletRequest request) {
+        List<WorkItemInfo> response = workItemInfoApiService.getProcessWorkItems(request);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history/process/group-by-classes")
+    public ResponseEntity<Map<String, List<WorkItemInfo>>> getProcessWorkItemsGroupBy(HttpServletRequest request) {
+        Map<String, List<WorkItemInfo>> response = workItemInfoApiService.getProcessWorkItemsGroupByClassName(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history/process/group-by-classes/count")
+    public ResponseEntity<Map<String, Long>> getProcessWorkItemsGroupByCount(HttpServletRequest request) {
+        Map<String, Long> response = workItemInfoApiService.getProcessWorkItemsGroupByClassNameCount(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/less/{executedMs}")
     public ResponseEntity<WorkItemInfoList> getExecutedLessWorkItems(HttpServletRequest request,
                                                                      @PathVariable("executedMs") int executedMs) {
@@ -226,7 +265,7 @@ public class WorkItemInfoAPI {
             this.scheduledWorkItemInfoApiService = scheduledWorkItemInfoApiService;
         }
 
-        @GetMapping(value = "/")
+        @GetMapping(value = "")
         public ResponseEntity<ScheduledWorkItemInfoList<ScheduledWorkItem>> getScheduledWorkItems(HttpServletRequest request) {
             List<ScheduledWorkItem> response = scheduledWorkItemInfoApiService.getScheduledWorkItems(request);
             return new ResponseEntity<>(new ScheduledWorkItemInfoList<>(response), HttpStatus.OK);

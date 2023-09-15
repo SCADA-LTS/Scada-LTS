@@ -24,7 +24,10 @@ public final class SystemSettingsUtils {
     private static final String PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.failed.limit";
     private static final String PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.running.limit";
     private static final String PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY = "processing.workitems.running.repeat";
-
+    private static final String PROCESSING_HISTORY_PROCESS_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.process.limit";
+    private static final String PROCESSING_HISTORY_HIGH_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.high.limit";
+    private static final String PROCESSING_HISTORY_MEDIUM_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.medium.limit";
+    private static final String PROCESSING_HISTORY_LOW_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.low.limit";
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_THAN_MS_KEY = "processing.workitems.history.longer.thanMs";
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.longer.limit";
     private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
@@ -129,6 +132,46 @@ public final class SystemSettingsUtils {
     public static int getRunningWorkItemsLimit() {
         try {
             String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryProcessWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_PROCESS_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryHighPriorityWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_HIGH_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryMediumPriorityWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_MEDIUM_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static int getHistoryLowPriorityWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_LOW_WORK_ITEMS_LIMIT_KEY, "100");
             return Integer.parseInt(limit);
         } catch (Exception e) {
             LOG.error(e.getMessage());

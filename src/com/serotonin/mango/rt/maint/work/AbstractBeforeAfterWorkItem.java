@@ -6,6 +6,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.ThreadUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,10 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
     private static final WorkItems FAILED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getFailedWorkItemsLimit());
+    private static final WorkItems HISTORY_PROCESS_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryProcessWorkItemsLimit());
+    private static final WorkItems HISTORY_HIGH_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryHighPriorityWorkItemsLimit());
+    private static final WorkItems HISTORY_MEDIUM_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryMediumPriorityWorkItemsLimit());
+    private static final WorkItems HISTORY_LOW_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryLowPriorityWorkItemsLimit());
     private static final WorkItems RUNNING_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getRunningWorkItemsLimit(), SystemSettingsUtils.getRepeatRunningWorkItems());
     private static final WorkItems EXECUTED_LONGER_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryExecutedLongerWorkItemsLimit());
     private static final int EXECUTED_LONGER_WORK_ITEMS_THAN = SystemSettingsUtils.getHistoryExecutedLongerWorkItemsThan();
@@ -25,6 +30,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     private volatile String threadName = "";
     private volatile String failedMessage = "";
     private volatile String workFailedMessage = "";
+    private volatile LocalDateTime executedDate = null;
+    private final LocalDateTime createdDate = LocalDateTime.now();
     private final String suffixThreadName = ThreadUtils.reduceName(" - " + WorkItemPriority.priorityOf(getPriority()) + " - " + this.getDetails());
 
     public static WorkItems failedWorkItems() {
@@ -36,12 +43,38 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     public static WorkItems executedLongerWorkItems() {
         return EXECUTED_LONGER_WORK_ITEMS;
     }
+    public static WorkItems processWorkItems() {
+        return HISTORY_PROCESS_WORK_ITEMS;
+    }
+    public static WorkItems highPriorityWorkItems() {
+        return HISTORY_HIGH_PRIORITY_WORK_ITEMS;
+    }
+    public static WorkItems mediumPriorityWorkItems() {
+        return HISTORY_MEDIUM_PRIORITY_WORK_ITEMS;
+    }
+    public static WorkItems lowPriorityWorkItems() {
+        return HISTORY_LOW_PRIORITY_WORK_ITEMS;
+    }
 
     private static void addWorkItemAfterExecuted(WorkItem workItem, boolean failed, int executedMs) {
         if(failed)
             FAILED_WORK_ITEMS.add(workItem);
         if(executedMs > EXECUTED_LONGER_WORK_ITEMS_THAN)
             EXECUTED_LONGER_WORK_ITEMS.add(workItem);
+        if(workItem instanceof ProcessWorkItem || workItem instanceof ProcessWorkItem.InputReader
+                || workItem instanceof ProcessWorkItem.ProcessTimeout)
+            HISTORY_PROCESS_WORK_ITEMS.add(workItem);
+        switch (WorkItemPriority.priorityOf(workItem.getPriority())) {
+            case HIGH:
+                HISTORY_HIGH_PRIORITY_WORK_ITEMS.add(workItem);
+                break;
+            case MEDIUM:
+                HISTORY_MEDIUM_PRIORITY_WORK_ITEMS.add(workItem);
+                break;
+            case LOW:
+                HISTORY_LOW_PRIORITY_WORK_ITEMS.add(workItem);
+                break;
+        }
     }
     private static void addWorkItemIfNotRunning(WorkItem workItem, boolean running) {
         if(running) {
@@ -138,6 +171,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             this.running = false;
             if(!StringUtils.isEmpty(this.suffixThreadName))
                 Thread.currentThread().setName(this.threadName);
+            this.executedDate = LocalDateTime.now();
         }
     }
 
@@ -207,5 +241,14 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     @Override
     public String getThreadName() {
         return threadName;
+    }
+
+    @Override
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+    @Override
+    public LocalDateTime getExecutedDate() {
+        return executedDate;
     }
 }

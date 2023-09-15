@@ -90,4 +90,28 @@ public final class WorkItemsUtils {
                 .filter(a -> a.getWorkItem().isExecuted() && a.getPriority() == priority)
                 .collect(Collectors.toList());
     }
+
+    public static List<WorkItems.Execute> getHistoryProcess() {
+        return AbstractBeforeAfterWorkItem.processWorkItems().get().stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
+
+    public static List<WorkItems.Execute> getHistoryHighPriority() {
+        return AbstractBeforeAfterWorkItem.highPriorityWorkItems().get().stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
+
+    public static List<WorkItems.Execute> getHistoryMediumPriority() {
+        return AbstractBeforeAfterWorkItem.mediumPriorityWorkItems().get().stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
+
+    public static List<WorkItems.Execute> getHistoryLowPriority() {
+        return AbstractBeforeAfterWorkItem.lowPriorityWorkItems().get().stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
 }

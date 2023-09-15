@@ -266,6 +266,81 @@ paths:
           required: true
           schema:
             type: 'integer'
+  /history/priority/{priority}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /history/priority/{priority}/group-by-classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /history/priority/{priority}/group-by-classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /history/process/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get process work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /history/process/group-by-classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get process work items and group by classes'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /history/process/group-by-classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get process work items and group by classes then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
   /work-items/less/{executedMs}/:
     get:
       tags:

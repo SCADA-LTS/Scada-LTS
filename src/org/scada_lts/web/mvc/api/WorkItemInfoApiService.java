@@ -8,6 +8,7 @@ import org.scada_lts.web.mvc.api.json.WorkItemInfo;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,57 @@ public class WorkItemInfoApiService {
 
     public List<WorkItemInfo> getWorkItems(HttpServletRequest request) {
         return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getAll);
+    }
+
+    public List<WorkItemInfo> getProcessWorkItems(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getHistoryProcess);
+    }
+
+    public Map<String, List<WorkItemInfo>> getProcessWorkItemsGroupByClassName(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getHistoryProcess);
+    }
+
+    public Map<String, Long> getProcessWorkItemsGroupByClassNameCount(HttpServletRequest request) {
+        return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getHistoryProcess);
+    }
+
+    public List<WorkItemInfo> getWorkItemsByPriority(HttpServletRequest request, WorkItemPriority priority) {
+        switch (priority) {
+            case HIGH:
+                return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getHistoryHighPriority);
+            case MEDIUM:
+                return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getHistoryMediumPriority);
+            case LOW:
+                return get(request, WorkItemInfoApiService::getWorkItems, WorkItemsUtils::getHistoryLowPriority);
+            default:
+                return Collections.emptyList();
+        }
+    }
+
+    public Map<String, List<WorkItemInfo>> getWorkItemsByPriorityGroupByClassName(HttpServletRequest request, WorkItemPriority priority) {
+        switch (priority) {
+            case HIGH:
+                return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getHistoryHighPriority);
+            case MEDIUM:
+                return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getHistoryMediumPriority);
+            case LOW:
+                return get(request, WorkItemInfoApiService::groupByClassName, WorkItemsUtils::getHistoryLowPriority);
+            default:
+                return Collections.emptyMap();
+        }
+    }
+
+    public Map<String, Long> getWorkItemsByPriorityGroupByClassNameCount(HttpServletRequest request, WorkItemPriority priority) {
+        switch (priority) {
+            case HIGH:
+                return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getHistoryHighPriority);
+            case MEDIUM:
+                return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getHistoryMediumPriority);
+            case LOW:
+                return get(request, WorkItemInfoApiService::groupByClassNameCounting, WorkItemsUtils::getHistoryLowPriority);
+            default:
+                return Collections.emptyMap();
+        }
     }
 
     public List<WorkItemInfo> getExecutedWorkItems(HttpServletRequest request) {
@@ -179,14 +231,14 @@ public class WorkItemInfoApiService {
         return workItems.stream()
                 .sorted(comparator)
                 .map(WorkItemInfo::new)
-                .collect(Collectors.groupingBy(a -> a.getWorkItemExecute().getClassName(), Collectors.counting()));
+                .collect(Collectors.groupingBy(WorkItemInfo::getClassName, Collectors.counting()));
     }
 
     private static Map<String, List<WorkItemInfo>> groupByClassName(List<WorkItems.Execute> workItems, Comparator<WorkItems.Execute> comparator) {
         return workItems.stream()
                 .sorted(comparator)
                 .map(WorkItemInfo::new)
-                .collect(Collectors.groupingBy(a -> a.getWorkItemExecute().getClassName(), Collectors.toList()));
+                .collect(Collectors.groupingBy(WorkItemInfo::getClassName, Collectors.toList()));
     }
 
     private static Map<String, Long> groupByClassNameCounting(List<WorkItems.Execute> workItems) {
