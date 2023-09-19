@@ -71,6 +71,8 @@
 	</v-card>
 </template>
 <script>
+import Vue from "vue";
+
 export default {
 	props: {
 		title: {
@@ -95,8 +97,13 @@ export default {
 		},
 	},
 
+	async mounted(){
+		this.initialState = JSON.parse(JSON.stringify(this.datapoint));
+	},
+
 	data() {
 		return {
+			initialState: null,
 			formValid: false,
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
@@ -107,6 +114,11 @@ export default {
 	methods: {
 		cancel() {
 			console.debug('datasources.DataPointCreation.vue::cancel()');
+			for (const key in this.initialState) {
+				if (this.initialState.hasOwnProperty(key)) {
+					Vue.set(this.datapoint, key, this.initialState[key]);
+				}
+			}
 			this.$emit('cancel');
 		},
 
