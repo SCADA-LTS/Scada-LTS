@@ -56,7 +56,7 @@
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
-        <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong"/></td>
+        <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
         <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
