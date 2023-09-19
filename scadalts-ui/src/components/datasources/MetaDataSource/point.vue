@@ -309,7 +309,7 @@
 												<v-icon
 													color="red"
 													style="cursor: pointer; border: 0"
-													@click="removeDatapoint(p.key)"
+													@click="removeDatapoint(p.dataPointXid)"
 													>mdi-close</v-icon
 												>
 											</td>
@@ -476,21 +476,14 @@ export default {
 	},
 
 	methods: {
-		removeDatapoint(key) {
+		removeDatapoint(dataPointXid) {
 			this.datapoint.pointLocator.context = this.datapoint.pointLocator.context.filter(
-				(p) => p.key !== key,
+				(p) => p.dataPointXid != dataPointXid,
 			);
 		},
 		addDatapoint() {
 			const p = this.datapoints.find((x) => x.id === this.selectedDatapointId);
 			if (!this.datapoint.pointLocator.context.find((x) => p.xid === x.dataPointXid)) {
-				if (this.datapoint.pointLocator.context.find((x) => p.id === x.key)) {
-					let newId = p.id;
-					while (this.datapoint.pointLocator.context.find((x) => newId === x.key)) {
-						newId++;
-					}
-					p.id = newId;
-				}
 				this.datapoint.pointLocator.context.push({
 					key: p.id,
 					value: `p${p.id}`,
