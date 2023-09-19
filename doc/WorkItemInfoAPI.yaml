@@ -266,7 +266,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /history/priority/{priority}/:
+  /work-items/history/priority/{priority}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -282,7 +282,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /history/priority/{priority}/group-by-classes/:
+  /work-items/history/priority/{priority}/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -298,7 +298,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /history/priority/{priority}/group-by-classes/count/:
+  /work-items/history/priority/{priority}/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -314,7 +314,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /history/process/:
+  /work-items/history/process/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -323,7 +323,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /history/process/group-by-classes/:
+  /work-items/history/process/group-by-classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -332,7 +332,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /history/process/group-by-classes/count/:
+  /work-items/history/process/group-by-classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
