@@ -90,9 +90,11 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -996,17 +998,20 @@ public class ViewDwr extends BaseDwr {
 			Date fromDate2 = (Date) formatter.parseObject(fromDateString2);
 			Date toDate2 = (Date) formatter.parseObject(toDateString2);
 
-			List<DataPointVO> dps = new ArrayList<DataPointVO>();
+			List<DataPointVO> dps = new ArrayList<>();
+			User user = Common.getUser();
+			DataPointService dataPointService = new DataPointService();
 			for (Integer dpId : dataPoints) {
-				DataPointVO dp = new DataPointDao().getDataPoint(dpId);
-				dps.add(dp);
+				DataPointVO dp = dataPointService.getDataPoint(dpId);
+				if(GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
+					dps.add(dp);
 			}
 
 			String src1 = createChartSrc(fromDate, toDate, dps, width, height);
 			String src2 = createChartSrc(fromDate2, toDate2, dps, width, height);
 			return new String[] { src1, src2 };
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage(), e);
 		}
 		return new String[] { "", "" };
 	}
@@ -1035,7 +1040,7 @@ public class ViewDwr extends BaseDwr {
 			htmlData.append("&h=");
 			htmlData.append(height);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage(), e);
 		}
 
 		return htmlData.toString();
