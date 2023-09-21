@@ -41,7 +41,7 @@ public class SerializationHelper {
             try {
                 return (String) in.readObject();
             } catch (Exception ex2) {
-                LOG.warn(ex2.getMessage(), ex2);
+                LOG.error(ex2.getMessage(), ex2);
                 return null;
             }
         }
