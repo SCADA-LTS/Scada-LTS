@@ -241,8 +241,6 @@ public class DataPointEditController {
             	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidUsed", ped.getXid()));
                 break;
             }
-
-
             xids.add(ped.getXid());
         }		
     }
