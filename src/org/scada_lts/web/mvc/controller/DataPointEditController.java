@@ -247,18 +247,6 @@ public class DataPointEditController {
         }		
     }
 
-    /*public static boolean _validate(Map<String, String> errors, ResourceBundle resourceBundle, PointEventDetectorVO ped) {
-        if (StringUtils.isEmpty(ped.getXid())) {
-            errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle,"validate.ped.xidMissing"));
-            return false;
-        }
-        if (ped.getXid().length() > 50) {
-            errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle,"validate.ped.xidTooLong"));
-            return false;
-        }
-        return true;
-    }*/
-
     private void setDefaultPurgeValuesWhenIncorrect(DataPointVO point) {
         if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
             if (point.getPurgeValuesLimit() < 2)
