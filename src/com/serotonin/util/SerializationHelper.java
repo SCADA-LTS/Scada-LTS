@@ -26,11 +26,8 @@ public class SerializationHelper {
             long utf8Length = utf.getBytes(StandardCharsets.UTF_8).length;
             if (utf8Length <= 0xFFFFL) {
                 out.writeUTF(utf);
-            } else if (utf.length() == utf8Length) {
+            } else {;
                 out.writeObject(utf);
-            } else {
-                String utf2 = new String(utf.getBytes(), StandardCharsets.UTF_8);
-                out.writeObject(utf2);
             }
         }
     }
@@ -42,7 +39,7 @@ public class SerializationHelper {
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
             try {
-                return exists ? (String) in.readObject() : null;
+                return (String) in.readObject();
             } catch (Exception ex2) {
                 LOG.warn(ex2.getMessage(), ex2);
                 return null;
