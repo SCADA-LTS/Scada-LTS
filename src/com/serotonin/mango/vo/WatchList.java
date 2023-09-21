@@ -42,6 +42,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -125,11 +127,8 @@ public class WatchList implements JsonSerializable {
         else if (StringUtils.isLengthGreaterThan(name, 50))
             response.addMessage("name", new LocalizableMessage("validate.notLongerThan", 50));
 
-        if (StringUtils.isEmpty(xid))
-            response.addMessage("xid", new LocalizableMessage("validate.required"));
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new WatchListDao().isXidUnique(xid, id))
+        validateXid(response,xid);
+        if (!new WatchListDao().isXidUnique(xid, id))
             response.addMessage("xid", new LocalizableMessage("validate.xidUsed"));
 
         for (DataPointVO dpVO : pointList)

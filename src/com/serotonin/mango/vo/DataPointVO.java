@@ -58,6 +58,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 @JsonRemoteEntity
 public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO> {
     private static final long serialVersionUID = -1;
@@ -655,11 +657,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public void validate(DwrResponseI18n response) {
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
+        validateXid(response,xid);
+        if (!new DataPointDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
 
         if (StringUtils.isEmpty(name))
@@ -724,11 +723,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public void validateIdentifier(DwrResponseI18n response) {
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
+        validateXid(response,xid);
+        if (!new DataPointDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "validate.required");

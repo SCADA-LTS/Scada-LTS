@@ -49,6 +49,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -261,12 +263,9 @@ abstract public class PublisherVO<T extends PublishedPointVO> implements Seriali
         if (StringUtils.isLengthGreaterThan(name, 40))
             response.addContextualMessage("name", "validate.nameTooLong");
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!new PublisherDao().isXidUnique(xid, id))
+        validateXid(response,xid);
+        if (!new PublisherDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
 
         if (sendSnapshot) {
             if (snapshotSendPeriods <= 0)

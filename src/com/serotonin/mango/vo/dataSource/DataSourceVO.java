@@ -85,6 +85,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
 		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
 	public enum Type {
@@ -493,12 +495,9 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	}
 
 	public void validate(DwrResponseI18n response) {
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataSourceDao().isXidUnique(xid, id))
+		validateXid(response,xid);
+		if (!new DataSourceDao().isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addContextualMessage("xid", "validate.notLongerThan", 50);
 
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("dataSourceName",

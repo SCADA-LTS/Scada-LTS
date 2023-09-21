@@ -18,10 +18,7 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.utils.XidUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -236,10 +234,7 @@ public class DataPointEditController {
         List<String> xids = new ArrayList<>();
 
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
-            if (StringUtils.isEmpty(ped.getXid())) {
-            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidMissing"));
-                break;
-            }
+            if (XidUtils.validateXid(errors,  Common.getBundle(request), ped)) break;
 
             if (xids.contains(ped.getXid()) || !dataPointService
                     .isEventDetectorXidUnique(point.getId(), ped.getXid(), ped.getId())) {
@@ -247,14 +242,22 @@ public class DataPointEditController {
                 break;
             }
 
-	        if (ped.getXid().length() > 50) {
-		        errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidTooLong"));
-		        break;
-	        }
 
             xids.add(ped.getXid());
         }		
     }
+
+    /*public static boolean _validate(Map<String, String> errors, ResourceBundle resourceBundle, PointEventDetectorVO ped) {
+        if (StringUtils.isEmpty(ped.getXid())) {
+            errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle,"validate.ped.xidMissing"));
+            return false;
+        }
+        if (ped.getXid().length() > 50) {
+            errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle,"validate.ped.xidTooLong"));
+            return false;
+        }
+        return true;
+    }*/
 
     private void setDefaultPurgeValuesWhenIncorrect(DataPointVO point) {
         if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {

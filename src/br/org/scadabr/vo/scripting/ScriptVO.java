@@ -22,6 +22,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UserService;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		JsonSerializable {
 	abstract public Type getType();
@@ -123,12 +125,9 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	}
 
 	public void validate(DwrResponseI18n response) {
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!new ScriptService().isXidUnique(xid, id))
+		validateXid(response,xid);
+		if (!new ScriptService().isXidUnique(xid, id))
 			response.addContextualMessage("xid", "validate.xidUsed");
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addContextualMessage("xid", "validate.notLongerThan", 50);
 
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("name", "validate.nameRequired");

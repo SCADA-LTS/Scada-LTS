@@ -215,6 +215,7 @@ import org.scada_lts.serial.SerialPortWrapperAdapter;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
  * @author Matthew Lohbihler
@@ -335,12 +336,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         dp.setName(name);
         dp.setPointLocator(locator);
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!new DataPointDao().isXidUnique(xid, id))
+        validateXid(response,xid);
+        if (!new DataPointDao().isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
 
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "dsEdit.validate.required");
