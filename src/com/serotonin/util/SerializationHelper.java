@@ -26,7 +26,7 @@ public class SerializationHelper {
             long utf8Length = utf.getBytes(StandardCharsets.UTF_8).length;
             if (utf8Length <= 0xFFFFL) {
                 out.writeUTF(utf);
-            } else {;
+            } else {
                 out.writeObject(utf);
             }
         }
