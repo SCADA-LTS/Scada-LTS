@@ -125,9 +125,9 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	}
 
 	public void validate(DwrResponseI18n response) {
-		validateXid(response,xid);
-		if (!new ScriptService().isXidUnique(xid, id))
-			response.addContextualMessage("xid", "validate.xidUsed");
+
+		ScriptService scriptService = new ScriptService();
+		validateXid(response, scriptService::isXidUnique, xid, id);
 
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("name", "validate.nameRequired");

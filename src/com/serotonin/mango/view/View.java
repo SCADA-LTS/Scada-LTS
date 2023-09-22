@@ -388,10 +388,8 @@ public class View implements Serializable, JsonSerializable {
 			response.addMessage("name", new LocalizableMessage(
 					"validate.notLongerThan", 100));
 
-		validateXid(response,xid);
-		if (!new ViewService().isXidUnique(xid, id))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.xidUsed"));
+		ViewService viewService = new ViewService();
+		validateXid(response, viewService::isXidUnique, xid, id);
 
 		for (ViewComponent vc : viewComponents)
 			vc.validate(response);

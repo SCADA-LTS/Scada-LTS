@@ -55,6 +55,8 @@ import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 /**
  * Controller for data point edition
  * Based on DataPointEditController from Mango by Matthew Lohbihler
@@ -234,7 +236,11 @@ public class DataPointEditController {
         List<String> xids = new ArrayList<>();
 
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
-            if (XidUtils.validateXid(errors,  Common.getBundle(request), ped)) break;
+
+            validateXid(errors, ped.getXid(), Common.getBundle(request));
+
+            if(!errors.isEmpty())
+                break;
 
             if (xids.contains(ped.getXid()) || !dataPointService
                     .isEventDetectorXidUnique(point.getId(), ped.getXid(), ped.getId())) {
