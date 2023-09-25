@@ -237,7 +237,7 @@ public class DataPointEditController {
 
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
 
-            validateXid(errors, ped.getXid(), Common.getBundle(request));
+            validateXid(errors, ped.getXid(), Common.getBundle(request), "eventDetector" + ped.getId() + "ErrorMessage");
 
             if(!errors.isEmpty())
                 break;

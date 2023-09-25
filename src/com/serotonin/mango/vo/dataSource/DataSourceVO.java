@@ -495,11 +495,8 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	public void validate(DwrResponseI18n response) {
 
 		DataSourceService dataSourceService = new DataSourceService();
-		validateXid(response, dataSourceService::isXidUnique, xid, id);
-		if (response.getHasMessages()) {
-			var contextMsg = response.getMessages();
-			response.addContextualMessage("dataSourceXid", contextMsg.get(0).getContextualMessage().getKey(), 50); //datasource is using dataSourceXid context field instead of xid
-		}
+		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
+
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("dataSourceName",
 					"validate.nameRequired");

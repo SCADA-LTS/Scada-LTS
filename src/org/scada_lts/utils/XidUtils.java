@@ -26,39 +26,36 @@ public class XidUtils {
         return sb.toString();
     }
 
-	public static boolean validateXid(Map<String, String> errors, ResourceBundle resourceBundle, PointEventDetectorVO ped) {
-		if (StringUtils.isEmpty(ped.getXid())) {
-			errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle, "validate.ped.xidMissing"));
-			return true;
-		}
-		if (ped.getXid().length() > 50) {
-			errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(resourceBundle, "validate.ped.xidTooLong"));
-			return true;
-		}
-		return false;
-	}
-	public static void validateXid(Map<String, String> errors, String xid, ResourceBundle resourceBundle) {
+	public static void validateXid(Map<String, String> errors, String xid, ResourceBundle resourceBundle, String contextKey) {
 		validateXid(errors::put,
 				LocalizableMessage.getMessage(resourceBundle,"validate.required"),
 				LocalizableMessage.getMessage(resourceBundle,"validate.notLongerThan", 50),
 				null,
-				(a,b) -> true, xid, -1);
+				(a,b) -> true, xid, -1, contextKey);
 	}
+	public static void validateXid(DwrResponseI18n response, BiPredicate<String, Integer> isUnique, String xid, int id, String contextKey) {
+		validateXid(response::addMessage,
+				new LocalizableMessage("validate.required"),
+				new LocalizableMessage("validate.notLongerThan", 50),
+				new LocalizableMessage("validate.xidUsed"),
+				isUnique, xid, id, contextKey);
+	}
+
 	public static void validateXid(DwrResponseI18n response, BiPredicate<String, Integer> isUnique, String xid, int id) {
 		validateXid(response::addMessage,
 				new LocalizableMessage("validate.required"),
 				new LocalizableMessage("validate.notLongerThan", 50),
 				new LocalizableMessage("validate.xidUsed"),
-				isUnique, xid, id);
+				isUnique, xid, id, "xid");
 	}
 
     private static <T> void validateXid(BiConsumer<String, T> ifNotValidate, T ifEmpty, T ifLengthGreater, T ifUsed,
-                                        BiPredicate<String, Integer> isUnique, String xid, int id) {
+                                        BiPredicate<String, Integer> isUnique, String xid, int id, String contextKey) {
         if (StringUtils.isEmpty(xid))
-            ifNotValidate.accept("xid", ifEmpty);
+            ifNotValidate.accept(contextKey, ifEmpty);
         else if (StringUtils.isLengthGreaterThan(xid, 50))
-            ifNotValidate.accept("xid", ifLengthGreater);
+            ifNotValidate.accept(contextKey, ifLengthGreater);
         else if (isUnique.negate().test(xid, id))
-            ifNotValidate.accept("xid", ifUsed);
+            ifNotValidate.accept(contextKey, ifUsed);
     }
 }
