@@ -396,8 +396,10 @@ public class View implements Serializable, JsonSerializable {
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.xidUsed"));
 
-		for (ViewComponent vc : viewComponents)
-			vc.validate(response);
+		for (int i = 0; i < viewComponents.size(); i++) {
+			var vc = viewComponents.get(i);
+			vc.validate("viewComponents[" + i + "].", response);
+		}
 	}
 
 	//
