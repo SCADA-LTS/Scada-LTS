@@ -516,11 +516,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
         }
 
-        @Deprecated
-        static void add(BatchWriteBehindEntry e, PointValueService pointValueService) {
-            add(e);
-        }
-
         static void add(BatchWriteBehindEntry e) {
             synchronized (ENTRIES) {
                 ENTRIES.push(e);
@@ -543,17 +538,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             }
         }
 
-        @Deprecated
-        private final PointValueService pointValueService;
-
-        public BatchWriteBehind() {
-            this.pointValueService = null;
-        }
-
-        @Deprecated
-        public BatchWriteBehind(PointValueService pointValueService) {
-            this.pointValueService = pointValueService;
-        }
+        public BatchWriteBehind() {}
 
         @Override
         public void work() {

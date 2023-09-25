@@ -197,6 +197,9 @@
             <AppenderRef ref="ASYNC_API"/>
         </Logger>
 
+        <Logger name="org.scada_lts.web.mvc.api" level="${apiLoggingLevel}">
+            <AppenderRef ref="ASYNC_API"/>
+        </Logger>
 
         <!-- Functional Logging-->
         <!-- Event Logging-->

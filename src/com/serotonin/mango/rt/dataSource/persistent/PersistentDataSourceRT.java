@@ -12,13 +12,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
@@ -165,9 +166,10 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                 try {
                     Socket socket = serverSocket.accept();
                     log.info("Received socket from " + socket.getRemoteSocketAddress());
-                    ConnectionHandler ch = new ConnectionHandler(socket);
+                    String name = WorkItemPriority.HIGH + " - " + LoggingUtils.dataSourceInfo(this);
+                    ConnectionHandler ch = new ConnectionHandler(socket, name);
                     connectionHandlers.add(ch);
-                    Common.timer.execute(ch);
+                    Common.timer.execute(ch, name + " - " + ch.getClass().getName());
                 }
                 catch (SocketTimeoutException e) {
                     // no op
@@ -186,12 +188,20 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         int version = 3;
         private final ByteQueue writeBuffer = new ByteQueue();
         private final List<String> indexedXids = new ArrayList<String>();
-        final PointValueDao pointValueDao = new PointValueDao();
+        final String details;
         private final long connectionTime;
         private long packetsReceived;
 
+        @Deprecated
         public ConnectionHandler(Socket socket) {
             this.socket = socket;
+            this.details = "";
+            connectionTime = System.currentTimeMillis();
+        }
+
+        public ConnectionHandler(Socket socket, String details) {
+            this.socket = socket;
+            this.details = details;
             connectionTime = System.currentTimeMillis();
         }
 
@@ -373,7 +383,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                         continue;
 
                     if (packet.getType() == PacketType.RANGE_COUNT) {
-                        Common.timer.execute(new RangeCountHandler(packet, out));
+                        Common.timer.execute(new RangeCountHandler(packet, out), details);
                         continue;
                     }
 

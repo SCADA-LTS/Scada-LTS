@@ -181,7 +181,7 @@
                            $(currentEventTextRenderer)
                        );
 
-                       jQuery("#eventTextRendererSelect").val(properties.def.name);
+                       jQuery("#eventTextRendererSelect").val(properties.eventTextRenderer.def.name);
 
                        currentEventTextRenderer = $("eventTextRendererSelect").value;
 
@@ -203,8 +203,8 @@
                                    }
                                    for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                        eventTextRendererEditor.addMultistateEventValue(
-                                           String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                           String( properties.eventTextRenderer.multistateValues[multistate].text ));
+                                           String( properties.eventTextRenderer.multistateEventValues[multistate].key ),
+                                           String( properties.eventTextRenderer.multistateEventValues[multistate].text ));
                                    }
                                } catch (err) {
                                    console.log(err);
@@ -214,8 +214,8 @@
                            } else {
                                for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                    eventTextRendererEditor.addMultistateEventValue(
-                                       String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                       String( properties.eventTextRenderer.multistateValues[multistate].text ));
+                                       String( properties.eventTextRenderer.multistateEventValues[multistate].key ),
+                                       String( properties.eventTextRenderer.multistateEventValues[multistate].text ));
                                }
                            }
                        }
@@ -636,7 +636,7 @@
 
                       let eventTextRenderer = "";
 
-                      if (properties.def.name == "eventTextRendererBinary") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererBinary") {
                           eventTextRenderer = ""
                               + "<li>Event text renderer properties: Binary"
                               + "<ul class='scada-swal-ul2'>"
@@ -644,21 +644,21 @@
                               + "<li>one: " +  properties.eventTextRenderer.oneLabel + "</li></ul></li>";
                       }
 
-                      if (properties.def.name == "eventTextRendererMultistate") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererMultistate") {
 
                           eventTextRenderer = ""
                               + "<li>Event text renderer properties: Multistate "
                               + "<ul class='scada-swal-ul2'>";
 
-                          for (var multistate in properties.eventTextRenderer.multistateValues) {
-                              eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateValues[multistate].key
-                                  + " text: " + properties.eventTextRenderer.multistateValues[multistate].text + "</li>";
+                          for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                              eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateEventValues[multistate].key
+                                  + " text: " + properties.eventTextRenderer.multistateEventValues[multistate].text + "</li>";
                           }
 
                           eventTextRenderer = eventTextRenderer + "</ul></li>";
                       }
 
-                      if (properties.def.name == "eventTextRendererRange") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
 
                           eventTextRenderer = ""
                               + "<li>Text renderer properties: Range "

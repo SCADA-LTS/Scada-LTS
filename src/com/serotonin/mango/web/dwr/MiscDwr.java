@@ -121,9 +121,12 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser();
 		MangoEvent eventService = new EventService();
 		if (user != null) {
-			eventService.ackEvent(eventId, System.currentTimeMillis(),
-					user.getId(), 0);
-			resetLastAlarmLevelChange();
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null && !evt.isActive()) {
+				eventService.ackEvent(evt.getId(), System.currentTimeMillis(),
+						user.getId(), 0);
+				resetLastAlarmLevelChange();
+			}
 		}
 		return eventId;
 	}
@@ -133,8 +136,10 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			MangoEvent eventService = new EventService();
 			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventService.getPendingEvents(user.getId()))
-				eventService.ackEvent(evt.getId(), now, user.getId(), 0);
+			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
+				if(!evt.isActive())
+					eventService.ackEvent(evt.getId(), now, user.getId(), 0);
+			}
 			resetLastAlarmLevelChange();
 		}
 	}

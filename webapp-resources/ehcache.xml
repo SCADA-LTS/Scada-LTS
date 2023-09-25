@@ -85,7 +85,9 @@
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
+        <resources>
+            <heap unit="MB">100</heap>
+        </resources>
     </cache-template>
 
     <cache-template name="integer_point_event_detector_template">
@@ -94,7 +96,9 @@
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
+        <resources>
+            <heap unit="MB">100</heap>
+        </resources>
     </cache-template>
 
     <cache-template name="string_point_event_detector_template">
@@ -103,7 +107,9 @@
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
+        <resources>
+            <heap unit="MB">100</heap>
+        </resources>
     </cache-template>
 
     <cache-template name="integer_integer_cache_template">
@@ -112,7 +118,9 @@
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
+        <resources>
+            <heap unit="MB">100</heap>
+        </resources>
     </cache-template>
 
     <cache-template name="string_list_cache_heap_max_bytes_template">
@@ -159,9 +167,7 @@
 
     <!-- view -->
     <cache alias="view_list" uses-template="string_list_cache_template"/>
-
     <cache alias="view_by_id" uses-template="integer_view_template"/>
-    <cache alias="view_by_xid" uses-template="string_view_template"/>
 
     <cache alias="point_event_detector_list_by_data_point_id" uses-template="integer_point_event_detector_list_template"/>
     <cache alias="point_event_detector" uses-template="integer_point_event_detector_template"/>

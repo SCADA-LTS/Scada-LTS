@@ -58,7 +58,7 @@ public class AlarmListComponent extends CustomComponent {
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
 		List<EventInstance> toViewEvents = new EventService().getPendingEventsAlarmLevelMin(Common
-				.getUser().getId(), minAlarmLevel, maxListSize, true);
+				.getUser().getId(), minAlarmLevel, maxListSize);
 
 		model.put("nome", "marlon");
 		model.put("events",toViewEvents);

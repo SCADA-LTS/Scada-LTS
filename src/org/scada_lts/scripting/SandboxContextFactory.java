@@ -24,6 +24,10 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.utils.SystemSettingsUtils;
 
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /** 
  * Set new protected context 
  * 
@@ -32,21 +36,31 @@ import org.scada_lts.utils.SystemSettingsUtils;
 public class SandboxContextFactory extends ContextFactory {
 
 	private static final Log LOG = LogFactory.getLog(SandboxContextFactory.class);
+
+	private static final Pattern[] SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = Stream.of(SystemSettingsUtils.getSecurityJsAccessDeniedClassRegexes())
+			.map(Pattern::compile)
+			.collect(Collectors.toList())
+			.toArray(new Pattern[]{});
+
+	private static final Pattern[] SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES = Stream.of(SystemSettingsUtils.getSecurityJsAccessGrantedClassRegexes())
+			.map(Pattern::compile)
+			.collect(Collectors.toList())
+			.toArray(new Pattern[]{});
 	
 	@Override
 	protected Context makeContext() {
 		Context cx = super.makeContext();
 		cx.setWrapFactory(new SandboxWrapFactory());
 		cx.setClassShutter(className -> {
-			for(String classNameRegex: SystemSettingsUtils.getSecurityJsAccessDeniedClassRegexes()) {
-				if (className.matches(classNameRegex)) {
+			for(Pattern pattern: SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES) {
+				if (pattern.matcher(className).matches()) {
 					if(LOG.isWarnEnabled())
 						LOG.warn("access denied for class: " + className);
 					return false;
 				}
 			}
-			for(String classNameRegex: SystemSettingsUtils.getSecurityJsAccessGrantedClassRegexes()) {
-				if (className.matches(classNameRegex)) {
+			for(Pattern pattern: SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES) {
+				if (pattern.matcher(className).matches()) {
 					return true;
 				}
 			}

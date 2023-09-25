@@ -3,9 +3,13 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.IPointEventDetectorDAO;
+import org.scada_lts.dao.PointEventDetectorDAO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
@@ -14,6 +18,25 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
     public PointEventDetectorDaoWithCache(PointEventDetectorCacheable pointEventDetectorCache) {
         this.pointEventDetectorCache = pointEventDetectorCache;
+    }
+
+    @Override
+    public void init() {
+        List<DataPointVO> dataPoints = new DataPointDAO().getDataPoints();
+        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = new PointEventDetectorDAO()
+                .getPointEventDetectors(Integer.MAX_VALUE, 0)
+                .stream()
+                .collect(Collectors.groupingBy(a -> a.njbGetDataPoint().getId()));
+        for(DataPointVO dataPoint: dataPoints) {
+            List<PointEventDetectorVO> detectors = pointEventDetectors.get(dataPoint.getId());
+            if(detectors != null && !detectors.isEmpty()) {
+                dataPoint.setEventDetectors(detectors);
+                for(PointEventDetectorVO detector: detectors) {
+                    detector.njbSetDataPoint(dataPoint);
+                }
+            }
+            pointEventDetectorCache.put(dataPoint.getId(), detectors == null ? new ArrayList<>() : detectors);
+        }
     }
 
     @Override

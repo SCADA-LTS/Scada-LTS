@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import java.util.List;
 
 public interface IPointEventDetectorDAO {
+    default void init() {};
     List<PointEventDetectorVO> getPointEventDetectors(DataPointVO dataPoint);
     boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId);
     int insert(int dataPointId, PointEventDetectorVO pointEventDetector);

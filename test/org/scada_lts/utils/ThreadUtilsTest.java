@@ -1,0 +1,55 @@
+package org.scada_lts.utils;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ThreadUtilsTest {
+
+    @Test
+    public void when_reduceName_for_abc12345_and_limit_5_then_abc12_() {
+        //given:
+        String expected = "abc12..";
+
+        //when:
+        String result = ThreadUtils.reduceName("abc12345");
+
+        //then:
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void when_reduceName_for_abc123_and_limit_5_then_abc12_() {
+        //given:
+        String expected = "abc12..";
+
+        //when:
+        String result = ThreadUtils.reduceName("abc123");
+
+        //then:
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void when_reduceName_for_abc12_and_limit_5_then_abc12() {
+        //given:
+        String expected = "abc12";
+
+        //when:
+        String result = ThreadUtils.reduceName("abc12");
+
+        //then:
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void when_reduceName_for_abc1_and_limit_5_then_abc1() {
+        //given:
+        String expected = "abc1";
+
+        //when:
+        String result = ThreadUtils.reduceName("abc1");
+
+        //then:
+        Assert.assertEquals(expected, result);
+    }
+}
