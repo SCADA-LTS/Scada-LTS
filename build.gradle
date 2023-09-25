@@ -197,5 +197,9 @@ test {
         includeTestsMatching "org.scada_lts.dao.IsEventDetectorXidUniqueTest"
         includeTestsMatching "com.serotonin.mango.view.export.CsvWriterTest"
         includeTestsMatching "com.serotonin.mango.util.EmailValidatorTest"
+        includeTestsMatching "com.serotonin.mango.vo.LoggedUserTestsSuite"
+        includeTestsMatching "org.scada_lts.utils.ThreadUtilsTest"
+        includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
+        includeTestsMatching "com.serotonin.util.SerializationHelperTest"
     }
 }

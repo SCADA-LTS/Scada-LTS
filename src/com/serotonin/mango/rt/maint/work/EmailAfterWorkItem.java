@@ -51,7 +51,7 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
         return "EmailAfterWorkItem{" +
                 "sendEmailData=" + sendEmailData +
                 ", sendEmailConfig=" + sendEmailConfig +
-                ", details='" + workItemDetails.getDetails() +
+                ", details='" + (workItemDetails == null ? "null" : workItemDetails.getDetails()) +
                 "'}";
     }
 

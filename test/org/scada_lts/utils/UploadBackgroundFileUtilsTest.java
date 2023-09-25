@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import utils.UploadFileTestUtils;
+import utils.FileTestUtils;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -92,7 +92,7 @@ public class UploadBackgroundFileUtilsTest {
     private final boolean expected;
 
     public UploadBackgroundFileUtilsTest(String fileName, boolean expected) {
-        this.filePath = UploadFileTestUtils.getResourcesPath("svg", fileName);
+        this.filePath = FileTestUtils.getResourcesPath("svg", fileName);
         this.expected = expected;
     }
 

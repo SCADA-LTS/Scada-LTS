@@ -190,7 +190,6 @@
         <intercept-url pattern="/export/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/eventExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/userCommentExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
-        <intercept-url pattern="/userCommentExport/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/reportImageChart/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/reportChart.shtm" access="@guard.hasReportInstanceReadPermission(request,false,'instanceId')" />
         <intercept-url pattern="/reports.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
@@ -225,7 +224,6 @@
         <!-- DataSources and DataPoints -->
         <intercept-url pattern="/dwr/call/plaincall/DataSourceEditDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/dwr/call/plaincall/DataPointEditDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/dwr/call/plaincall/DataPointDetailsDwr.*.dwr" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/data_source_edit.shtm" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/data_sources.shtm" access="hasRole('ROLE_ADMIN')" />
 

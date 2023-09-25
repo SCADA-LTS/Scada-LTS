@@ -402,7 +402,7 @@ public class ReportService implements MangoReport {
 				userComment.setComment(rs.getString(ReportInstanceUserCommentDAO.COLUMN_NAME_COMMENT_TEXT));
 
 				// Find the event and add the comment
-				int eventId = rs.getInt(ReportInstanceUserCommentDAO.COLUMN_NAME_COMMENT_TYPE);
+				int eventId = rs.getInt(ReportInstanceUserCommentDAO.COLUMN_NAME_TYPE_KEY);
 				for (EventInstance event : events) {
 					if (event.getId() == eventId) {
 						if (event.getEventComments() == null) {

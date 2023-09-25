@@ -56,54 +56,25 @@ public class ThreadInfoApiService {
         }
     }
 
+    public List<Value> getThreadClasses(HttpServletRequest request) {
+        checkIfNonAdminThenUnauthorized(request);
+        try {
+            return getThreadStack().keySet().stream()
+                    .map(a -> a.getClass().getName())
+                    .map(Value::new)
+                    .sorted(Comparator.comparing(Value::getValue))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e, request.getRequestURI());
+        }
+    }
+
     public Map<Value, Long> getThreadsGroupByClassCount(HttpServletRequest request) {
         checkIfNonAdminThenUnauthorized(request);
         try {
             return groupByAndSort(getThreadStack(),
                     Collectors.groupingBy(thread -> new Value(thread.getKey().getClass().getName()), Collectors.counting()),
                     Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
-    }
-
-    public Map<ThreadInfo, ThreadInfo.StackInfo[]> getThreadsGroupByThreadStack(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            return sorted(getThreadStack().entrySet().stream()
-                    .collect(Collectors
-                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
-                                    Stream.of(entry.getValue())
-                                            .map(ThreadInfo.StackInfo::new)
-                                            .toArray(ThreadInfo.StackInfo[]::new))
-                    ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder()));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
-    }
-
-    public Map<ThreadInfo, String[]> getThreadsGroupByThreadStackClasses(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            return sorted(getThreadStack().entrySet().stream()
-                    .collect(Collectors
-                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
-                                    Stream.of(entry.getValue())
-                                            .map(ThreadInfo.StackInfo::new)
-                                            .map(ThreadInfo.StackInfo::getClassName)
-                                            .toArray(String[]::new))
-                    ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder()));
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
-        }
-    }
-
-    public Map<ThreadInfo, Integer> getThreadsGroupByThreadStackCount(HttpServletRequest request) {
-        checkIfNonAdminThenUnauthorized(request);
-        try {
-            return sorted(getThreadStack().entrySet().stream().collect(Collectors
-                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry -> entry.getValue().length)),
-                    Comparator.comparing(entry -> entry.getValue(), Comparator.reverseOrder()));
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
         }
