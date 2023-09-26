@@ -280,6 +280,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		if (y < 0)
 			response.addMessage("y", new LocalizableMessage(
 					"validate.cannotBeNegative"));
+		if (z < 0)
+			response.addMessage("z", new LocalizableMessage(
+					"validate.cannotBeNegative"));
 	}
 
 	public void validate(String prefix, DwrResponseI18n response) {
@@ -288,6 +291,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 					"validate.cannotBeNegative"));
 		if (y < 0)
 			response.addMessage(prefix + "y", new LocalizableMessage(
+					"validate.cannotBeNegative"));
+		if (z < 0)
+			response.addMessage(prefix + "z", new LocalizableMessage(
 					"validate.cannotBeNegative"));
 	}
 
