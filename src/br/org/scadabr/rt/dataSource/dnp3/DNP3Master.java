@@ -18,8 +18,8 @@ public class DNP3Master {
 	private DNPUser user;
 	private int relativePollingPeriod = 10;
 	private int pollingCount = 0;
-	private int timeoutCount = 0;
-	private int timeoutsToReconnect = 3;
+	private volatile int timeoutCount = 0;
+	private final int timeoutsToReconnect = 3;
 
 	public void initEthernet(int sourceAddress, int slaveAddress, String host,
 			int port, int relativePollingPeriod) throws Exception {
@@ -39,8 +39,13 @@ public class DNP3Master {
 		DNPConfig config = new DNPConfig(parameters, sourceAddress,
 				slaveAddress);
 		user = new DNPUser(config);
-
-		user.init();
+		try {
+			user.init();
+		} catch (Error e) {
+			log.fatal(e.getMessage(), e);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 	private boolean reconnecting = false;
@@ -54,17 +59,17 @@ public class DNP3Master {
 					user.init();
 					reconnecting = false;
 					log.debug("[DNP3Master] Reconnected!");
-				} catch (Exception e) {
+				} catch (Exception | Error e) {
+					log.warn(e.getMessage(), e);
 					terminate();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw e;
 			}
 		} else {
 			if (reconnectNeeded()) {
 				reconnecting = true;
-				System.out
-						.println("[DNP3Master] Conexão falhou. Terminar Conexão.");
+				log.debug("[DNP3Master] Conexão falhou. Terminar Conexão.");
 				terminate();
 				log.debug("[DNP3Master] Conexão terminada.");
 				throw new Exception("[DNP3Master] Poll failed!");
@@ -106,7 +111,13 @@ public class DNP3Master {
 	}
 
 	public void terminate() throws Exception {
-		user.stop();
+		try {
+			user.stop();
+		} catch (Exception ex) {
+			if(ex instanceof NullPointerException)
+				throw new Exception(this.getClass().getSimpleName() + " error terminate. It probably failed to initialize." , ex);
+			throw ex;
+		}
 	}
 
 	public void sendAnalogCommand(int index, int value) throws Exception {

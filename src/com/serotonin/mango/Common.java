@@ -23,15 +23,13 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import gnu.io.CommPortIdentifier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -402,6 +400,26 @@ public class Common {
 			}
 		} catch (ParseException e) {
 			throw new ShouldNeverHappenException(e);
+		}
+	}
+
+	public static List<CommPortProxy> getCommPorts()
+			throws CommPortConfigException {
+		try {
+			List<CommPortProxy> ports = new LinkedList<CommPortProxy>();
+			Enumeration<?> portEnum = CommPortIdentifier.getPortIdentifiers();
+			CommPortIdentifier cpid;
+			while (portEnum.hasMoreElements()) {
+				cpid = (CommPortIdentifier) portEnum.nextElement();
+				if (cpid.getPortType() == CommPortIdentifier.PORT_SERIAL)
+					ports.add(new CommPortProxy(cpid));
+			}
+			return ports;
+		} catch (UnsatisfiedLinkError e) {
+			throw new CommPortConfigException(e.getMessage());
+		} catch (NoClassDefFoundError e) {
+			throw new CommPortConfigException(
+					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
 		}
 	}
 
