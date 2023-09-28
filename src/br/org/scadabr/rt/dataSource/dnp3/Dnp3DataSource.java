@@ -45,10 +45,11 @@ public class Dnp3DataSource extends PollingDataSource {
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.warn(e.getMessage(), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
+			return;
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -85,7 +86,7 @@ public class Dnp3DataSource extends PollingDataSource {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
