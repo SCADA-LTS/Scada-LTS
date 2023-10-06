@@ -63,7 +63,11 @@ public final class PointValueStateUtils {
     public static boolean isBackdated(PointValueTime newValue, PointValueState oldState, SetPointSource source) {
         return newValue != null && !oldState.isEmpty()
                 && newValue.getTime() < oldState.getNewValue().getTime()
-                && !(source instanceof SetPointHandlerRT);
+                && !isSetPointHandler(source);
+    }
+
+    public static boolean isSetPointHandler(SetPointSource source) {
+        return source instanceof SetPointHandlerRT;
     }
 
     private static boolean isChange(PointValueTime newValue, PointValueState oldState,

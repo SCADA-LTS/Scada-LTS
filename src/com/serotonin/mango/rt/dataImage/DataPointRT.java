@@ -43,13 +43,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.PointValueService;
-import org.scada_lts.utils.PointValueStateUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.scada_lts.utils.PointValueStateUtils.isSetPointHandler;
 
 public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
@@ -251,8 +252,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			return;
 		}
 
-		boolean backdated = PointValueStateUtils.isBackdated(newValue,
-				PointValueState.newState(pointValue, PointValueState.empty(), getVO()), source);
+		boolean isSetPointHandler = isSetPointHandler(source);
+		boolean backdated = pointValue != null
+				&& newValue.getTime() < pointValue.getTime()
+				&& !isSetPointHandler;
 
 		// Determine whether the new value qualifies for logging.
 		boolean logValue;
@@ -315,7 +318,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 
 		// Ignore historical values.
-		if (!PointValueStateUtils.isBackdated(newValue, PointValueState.newState(pointValue, PointValueState.empty(), getVO()), source)) {
+		if (pointValue == null || newValue.getTime() >= pointValue.getTime() || isSetPointHandler) {
 			PointValueTime oldValue = pointValue;
 			pointValue = newValue;
 			fireEvents(oldValue, newValue, source != null, false);
