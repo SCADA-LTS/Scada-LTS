@@ -34,6 +34,7 @@ import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.utils.PointValueStateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,8 +115,8 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
         PointValueTime oldValue = getOldAndSetNew(newValue);
 
-        boolean backdated = oldValue != null
-                && newValue.getTime() < oldValue.getTime();
+        boolean backdated = PointValueStateUtils.isBackdated(newValue,
+                PointValueState.newState(oldValue, PointValueState.empty(), getVO()), source);
 
         // Determine whether the new value qualifies for logging.
         boolean logValue;
@@ -169,7 +170,7 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
 
         // Ignore historical values.
-        if (oldValue == null || newValue.getTime() >= oldValue.getTime()) {
+        if (!backdated) {
             fireEvents(oldValue, newValue, source != null, false);
         } else
             fireEvents(null, newValue, false, true);
