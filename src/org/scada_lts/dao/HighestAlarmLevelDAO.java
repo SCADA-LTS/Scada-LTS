@@ -24,7 +24,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "where "
             + "(e.ackTs is null or e.ackTs = 0) "
             + "and u.silenced='N' and " + COLUMN_NAME_USERID + "=? "
-            + "and e.rtnCause = 0 "
+            + "and (e.rtnCause is null or e.rtnCause = 0) "
             + "and e.rtnApplicable = 'Y'";
 
     // @formatter:off
@@ -38,7 +38,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "where "
             + "(e.ackTs is null or e.ackTs = 0) "
             + "and u.silenced='N' "
-            + "and e.rtnCause = 0 "
+            + "and (e.rtnCause is null or e.rtnCause = 0) "
             + "and e.rtnApplicable = 'Y' "
             + "group by "
             + COLUMN_NAME_USERID;

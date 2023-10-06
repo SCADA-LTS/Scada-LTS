@@ -768,8 +768,6 @@
       </div>
     </td></tr>
 
-    <tag:newPageNotification href="./app.shtm#/watch-list" ref="watchListNotification"/>
-
     </table>
   </jsp:body>
 </tag:page>
