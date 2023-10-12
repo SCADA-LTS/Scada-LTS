@@ -15,12 +15,12 @@ public class DataPointRtToleranceTest extends AbstractDataPointRtToleranceTest {
     @Parameterized.Parameters(name = "{index}: old: {0}, new: {1}, new2: {2}, tolerance: {3}, expected values: {4}")
     public static List<Object[]> data() {
         List<Object[]> datas = new ArrayList<>();
-        datas.add(new Object[] {2.0, 3.0, 4.0, 1.1, Arrays.asList(2.0, 4.0)});
-        datas.add(new Object[] {2.0, 3.0, 4.0, 1.0, Arrays.asList(2.0, 4.0)});
+        datas.add(new Object[] {2.0, 3.0, 4.0, 1.1, Arrays.asList(2.0, 3.0)});
+        datas.add(new Object[] {2.0, 3.0, 4.0, 1.0, Arrays.asList(2.0, 3.0)});
         datas.add(new Object[] {2.0, 3.0, 4.0, 0.9, Arrays.asList(2.0, 3.0, 4.0)});
         datas.add(new Object[] {2.0, 3.0, 4.0, 0.9999, Arrays.asList(2.0, 3.0, 4.0)});
-        datas.add(new Object[] {-2.0, -3.0, -4.0, 1.1, Arrays.asList(-2.0, -4.0)});
-        datas.add(new Object[] {-2.0, -3.0, -4.0, 1.0, Arrays.asList(-2.0, -4.0)});
+        datas.add(new Object[] {-2.0, -3.0, -4.0, 1.1, Arrays.asList(-2.0, -3.0)});
+        datas.add(new Object[] {-2.0, -3.0, -4.0, 1.0, Arrays.asList(-2.0, -3.0)});
         datas.add(new Object[] {-2.0, -3.0, -4.0, 0.9, Arrays.asList(-2.0, -3.0, -4.0)});
         datas.add(new Object[] {-2.0, -3.0, -4.0, 0.9999, Arrays.asList(-2.0, -3.0, -4.0)});
 

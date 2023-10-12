@@ -103,7 +103,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 		// Queue a work item to perform the set point.
 		Common.ctx.getBackgroundProcessing().addWorkItem(
 				new SetPointWorkItem(vo.getTargetPointId(), new PointValueTime(
-						value, evt.getActiveTimestamp()), this));
+						value, System.currentTimeMillis()), this));
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 
 		Common.ctx.getBackgroundProcessing().addWorkItem(
 				new SetPointWorkItem(vo.getTargetPointId(), new PointValueTime(
-						value, evt.getRtnTimestamp()), this));
+						value, System.currentTimeMillis()), this));
 	}
 
 	private void raiseFailureEvent(LocalizableMessage message, EventType et) {
