@@ -615,116 +615,116 @@ public class V1__BaseVersion extends BaseJavaMigration {
        jdbcTemplate.execute("alter table maintenanceEvents add constraint maintenanceEventsUn1 unique (xid);");
        jdbcTemplate.execute("alter table maintenanceEvents add constraint maintenanceEventsFk1 foreign key (dataSourceId) references dataSources(id);");
 
-		// Event Detector Templates
+       // Event Detector Templates
 
-		final String eventDetectorTemplatesSQL = ""
-				+ "CREATE TABLE eventDetectorTemplates ("
-				+ "id int NOT NULL auto_increment,"
-				+ "name varchar(255) NOT NULL,"
-				+ "primary key (id)"
-				+ ") ENGINE=InnoDB;";
+       final String eventDetectorTemplatesSQL = ""
+       		+ "CREATE TABLE eventDetectorTemplates ("
+       			+ "id int NOT NULL auto_increment,"
+       			+ "name varchar(255) NOT NULL,"
+       			+ "primary key (id)"
+       		+ ") ENGINE=InnoDB;";
+       
+       jdbcTemplate.execute(eventDetectorTemplatesSQL);
+       
+       final String templatesDetectorsSQL = ""
+       		+ "CREATE TABLE templatesDetectors ("
+       			+ "id int NOT NULL auto_increment,"
+       			+ "xid varchar(50) NOT NULL,"
+       			+ "alias varchar(255),"
+       			+ "detectorType int NOT NULL,"
+       			+ "alarmLevel int NOT NULL,"
+       			+ "stateLimit FLOAT,"
+       			+ "duration int,"
+       			+ "durationType int,"
+       			+ "binaryState char(1),"
+       			+ "multistateState int,"
+       			+ "changeCount int,"
+       			+ "alphanumericState varchar(128),"
+       			+ "weight float,"
+       			+ "threshold double,"
+       			+ "eventDetectorTemplateId int NOT NULL,"
+       			+ "primary key (id)"
+       		+ ");";
+       
+       jdbcTemplate.execute(templatesDetectorsSQL);
+       jdbcTemplate.execute("ALTER TABLE templatesDetectors ADD CONSTRAINT templatesDetectorsFk1 FOREIGN KEY (eventDetectorTemplateId) REFERENCES eventDetectorTemplates (id);");
+       
+       final String usersProfilesSQL = ""
+       		+ "CREATE TABLE usersProfiles ("
+       			+ "id int NOT NULL auto_increment,"
+       			+ "xid varchar(50) not null,"
+       			+ "name varchar(255) NOT NULL,"
+       			+ "primary key (id)"
+       		+ ") ENGINE=InnoDB;";
 
-		jdbcTemplate.execute(eventDetectorTemplatesSQL);
+       jdbcTemplate.execute(usersProfilesSQL);
+       jdbcTemplate.execute("alter table usersProfiles add constraint usersProfilesUn1 unique (xid);");
 
-		final String templatesDetectorsSQL = ""
-				+ "CREATE TABLE templatesDetectors ("
-				+ "id int NOT NULL auto_increment,"
-				+ "xid varchar(50) NOT NULL,"
-				+ "alias varchar(255),"
-				+ "detectorType int NOT NULL,"
-				+ "alarmLevel int NOT NULL,"
-				+ "stateLimit FLOAT,"
-				+ "duration int,"
-				+ "durationType int,"
-				+ "binaryState char(1),"
-				+ "multistateState int,"
-				+ "changeCount int,"
-				+ "alphanumericState varchar(128),"
-				+ "weight float,"
-				+ "threshold double,"
-				+ "eventDetectorTemplateId int NOT NULL,"
-				+ "primary key (id)"
-				+ ");";
+       // Data source permissions
+       
+       final String dataSourceUsersProfilesSQL = ""
+       		+ "create table dataSourceUsersProfiles ("
+       			+ "dataSourceId int not null,"
+       			+ "userProfileId int not null"
+       		+ ") ENGINE=InnoDB;";
+       
+       jdbcTemplate.execute(dataSourceUsersProfilesSQL);
+       jdbcTemplate.execute("alter table dataSourceUsersProfiles add constraint dataSourceUsersProfilesFk1 foreign key (dataSourceId) references dataSources(id) on delete cascade;");
+       jdbcTemplate.execute("alter table dataSourceUsersProfiles add constraint dataSourceUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
 
-		jdbcTemplate.execute(templatesDetectorsSQL);
-		jdbcTemplate.execute("ALTER TABLE templatesDetectors ADD CONSTRAINT templatesDetectorsFk1 FOREIGN KEY (eventDetectorTemplateId) REFERENCES eventDetectorTemplates (id);");
+       // Data point permissions
+       
+       final String dataPointUsersProfilesSQL = ""
+       		+ "create table dataPointUsersProfiles ("
+       			+ "dataPointId int not null,"
+       			+ "userProfileId int not null,"
+       			+ "permission int not null"
+       		+ ") ENGINE=InnoDB;";
+       
+       jdbcTemplate.execute(dataPointUsersProfilesSQL);
+       jdbcTemplate.execute("alter table dataPointUsersProfiles add constraint dataPointUsersProfilesFk1 foreign key (dataPointId) references dataPoints(id) on delete cascade;");
+       jdbcTemplate.execute("alter table dataPointUsersProfiles add constraint dataPointUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
 
-		final String usersProfilesSQL = ""
-				+ "CREATE TABLE usersProfiles ("
-				+ "id int NOT NULL auto_increment,"
-				+ "xid varchar(50) not null,"
-				+ "name varchar(255) NOT NULL,"
-				+ "primary key (id)"
-				+ ") ENGINE=InnoDB;";
+       //Data source permissions
+       
+       final String usersUsersProfilesSQL = ""
+       		+ "create table usersUsersProfiles ("
+       			+ "userProfileId int not null,"
+       			+ "userId int not null"
+       		+ ") ENGINE=InnoDB;";
+       
+       jdbcTemplate.execute(usersUsersProfilesSQL);
+       jdbcTemplate.execute("alter table usersUsersProfiles add constraint usersUsersProfilesFk1 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
+       jdbcTemplate.execute("alter table usersUsersProfiles add constraint usersUsersProfilesFk2 foreign key (userId) references users(id) on delete cascade;");
+       
+       // Watchlist permissions
+       
+       final String watchListUsersProfilesSQL = ""
+       		+ "create table watchListUsersProfiles ("
+       			+ "watchlistId int not null,"
+       			+ "userProfileId int not null,"
+       			+ "permission int not null"
+       		+ ") ENGINE=InnoDB;";
+       		
+       jdbcTemplate.execute(watchListUsersProfilesSQL);
+       jdbcTemplate.execute("alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;");
+       jdbcTemplate.execute("alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
 
-		jdbcTemplate.execute(usersProfilesSQL);
-		jdbcTemplate.execute("alter table usersProfiles add constraint usersProfilesUn1 unique (xid);");
+       // View Users Profiles 
 
-		// Data source permissions
-
-		final String dataSourceUsersProfilesSQL = ""
-				+ "create table dataSourceUsersProfiles ("
-				+ "dataSourceId int not null,"
-				+ "userProfileId int not null"
-				+ ") ENGINE=InnoDB;";
-
-		jdbcTemplate.execute(dataSourceUsersProfilesSQL);
-		jdbcTemplate.execute("alter table dataSourceUsersProfiles add constraint dataSourceUsersProfilesFk1 foreign key (dataSourceId) references dataSources(id) on delete cascade;");
-		jdbcTemplate.execute("alter table dataSourceUsersProfiles add constraint dataSourceUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
-
-		// Data point permissions
-
-		final String dataPointUsersProfilesSQL = ""
-				+ "create table dataPointUsersProfiles ("
-				+ "dataPointId int not null,"
-				+ "userProfileId int not null,"
-				+ "permission int not null"
-				+ ") ENGINE=InnoDB;";
-
-		jdbcTemplate.execute(dataPointUsersProfilesSQL);
-		jdbcTemplate.execute("alter table dataPointUsersProfiles add constraint dataPointUsersProfilesFk1 foreign key (dataPointId) references dataPoints(id) on delete cascade;");
-		jdbcTemplate.execute("alter table dataPointUsersProfiles add constraint dataPointUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
-
-		//Data source permissions
-
-		final String usersUsersProfilesSQL = ""
-				+ "create table usersUsersProfiles ("
-				+ "userProfileId int not null,"
-				+ "userId int not null"
-				+ ") ENGINE=InnoDB;";
-
-		jdbcTemplate.execute(usersUsersProfilesSQL);
-		jdbcTemplate.execute("alter table usersUsersProfiles add constraint usersUsersProfilesFk1 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
-		jdbcTemplate.execute("alter table usersUsersProfiles add constraint usersUsersProfilesFk2 foreign key (userId) references users(id) on delete cascade;");
-
-		// Watchlist permissions
-
-		final String watchListUsersProfilesSQL = ""
-				+ "create table watchListUsersProfiles ("
-				+ "watchlistId int not null,"
-				+ "userProfileId int not null,"
-				+ "permission int not null"
-				+ ") ENGINE=InnoDB;";
-
-		jdbcTemplate.execute(watchListUsersProfilesSQL);
-		jdbcTemplate.execute("alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk1 foreign key (watchlistId) references watchLists(id) on delete cascade;");
-		jdbcTemplate.execute("alter table watchListUsersProfiles add constraint watchlistUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
-
-		// View Users Profiles
-
-		final String viewUsersProfilesSQL = ""
-				+ "create table viewUsersProfiles ("
-				+ "viewId int not null,"
-				+ "userProfileId int not null,"
-				+ "permission int not null"
-				+ ") ENGINE=InnoDB;";
-
-		jdbcTemplate.execute(viewUsersProfilesSQL);
-		jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk1 foreign key (viewId) references mangoViews(id) on delete cascade;");
-		jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
-
-
-		if (!DAO.getInstance().isTest()) {
+       final String viewUsersProfilesSQL = ""
+       		+ "create table viewUsersProfiles ("
+       			+ "viewId int not null,"
+       			+ "userProfileId int not null,"
+       			+ "permission int not null"
+       		+ ") ENGINE=InnoDB;";
+       
+       jdbcTemplate.execute(viewUsersProfilesSQL);
+       jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk1 foreign key (viewId) references mangoViews(id) on delete cascade;");
+       jdbcTemplate.execute("alter table viewUsersProfiles add constraint viewUsersProfilesFk2 foreign key (userProfileId) references usersProfiles(id) on delete cascade;");
+       
+       
+       if (!DAO.getInstance().isTest()) {
     	   // Create User
 		   String userInsert = "insert into users (username, password, email, homeUrl, phone, " +
 				   "admin, disabled, receiveAlarmEmails, receiveOwnAuditEvents) " +
