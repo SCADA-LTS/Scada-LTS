@@ -58,23 +58,6 @@ public class Dnp3PointLocatorVO extends AbstractPointLocatorVO implements
 		return DataTypes.NUMERIC;
 	}
 
-	public String getDnp3DataTypeKey() {
-		switch (dnp3DataType) {
-			case BINARY_INPUT:
-				return "dsEdit.dnp3.binaryInput";
-			case BINARY_OUTPUT:
-				return "dsEdit.dnp3.binaryOutput";
-			case ANALOG_INPUT:
-				return "dsEdit.dnp3.analogInput";
-			case ANALOG_OUTPUT:
-				return "dsEdit.dnp3.analogOutput";
-			case RUNNING_COUNTER:
-				return "dsEdit.dnp3.runningCounter";
-			default:
-				return "common.unknown";
-		}
-	}
-
 	@JsonRemoteProperty
 	private int dnp3DataType = BINARY_INPUT;
 	@JsonRemoteProperty
@@ -257,6 +240,23 @@ public class Dnp3PointLocatorVO extends AbstractPointLocatorVO implements
 
 	public void setSettable(boolean settable) {
 		this.settable = settable;
+	}
+
+	private String getDnp3DataTypeKey() {
+		switch (dnp3DataType) {
+			case BINARY_INPUT:
+				return "dsEdit.dnp3.binaryInput";
+			case BINARY_OUTPUT:
+				return "dsEdit.dnp3.binaryOutput";
+			case ANALOG_INPUT:
+				return "dsEdit.dnp3.analogInput";
+			case ANALOG_OUTPUT:
+				return "dsEdit.dnp3.analogOutput";
+			case RUNNING_COUNTER:
+				return "dsEdit.dnp3.runningCounter";
+			default:
+				return "common.unknown";
+		}
 	}
 
 }
