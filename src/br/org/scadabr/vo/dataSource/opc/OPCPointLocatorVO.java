@@ -31,7 +31,7 @@ public class OPCPointLocatorVO extends AbstractPointLocatorVO implements
 
 	@Override
 	public LocalizableMessage getConfigurationDescription() {
-		return null;
+		return new LocalizableMessage("common.tp.description", new LocalizableMessage("dsEdit.opc.tag"), this.tag);
 	}
 
 	@Override
