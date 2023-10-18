@@ -18,21 +18,18 @@
  */
 package com.serotonin.mango.view;
 
-import java.awt.Container;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.*;
+
+import static br.org.scadabr.vo.exporter.util.FileUtil.normalizePathSeparators;
 import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ViewGraphicLoader {
@@ -47,16 +44,19 @@ public class ViewGraphicLoader {
         this.path = path;
         viewGraphics = new ArrayList<ViewGraphic>();
 
-        File graphicsPath = new File(path, GRAPHICS_PATH);
+        File graphicsPath = new File(path);
         File[] dirs = graphicsPath.listFiles();
-        for (File dir : dirs) {
-            try {
-                if (dir.isDirectory())
-                    loadDirectory(dir, "");
+        if(dirs != null) {
+            for (File dir : dirs) {
+                try {
+                    if (dir.isDirectory())
+                        loadDirectory(dir, "");
+                } catch (Exception e) {
+                    LOG.warn("Failed to load image set at " + dir, e);
+                }
             }
-            catch (Exception e) {
-                LOG.warn("Failed to load image set at " + dir, e);
-            }
+        } else {
+            LOG.warn("Not exists: " + path);
         }
         viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
         return viewGraphics;
@@ -79,8 +79,7 @@ public class ViewGraphicLoader {
                 loadDirectory(file, id + ".");
             else if (isThumbsFile(file)) {
                 // no op
-            }
-            else if (isInfoFile(file)) {
+            } else if(isInfoFile(file)) {
                 // Info file
                 Properties props = new Properties();
                 try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -92,18 +91,22 @@ public class ViewGraphicLoader {
                     textX = getIntProperty(props, "text.x", textX);
                     textY = getIntProperty(props, "text.y", textY);
                 }
-            }
-            else if(isImageBitmap(file)) {
+            } else if(isImageBitmap(file)) {
+	            Path basePath = new File("../static" ).getAbsoluteFile().toPath().normalize();
+				Path filePath = Paths.get(file.toURI());
+				Path relativePath = basePath.relativize(filePath);
+				String finalPath = relativePath.toString();
+				finalPath = normalizePathSeparators(finalPath);
                 // Image file. Subtract the load path from the image path
-                String imagePath = file.getPath().substring(path.length());
-                if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
-                    imagePath=imagePath.substring(1);
-                }
+                //String imagePath = file.getPath().substring(path.length());
+                //if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
+                //    imagePath = imagePath.substring(1);
+                //}
                 // Replace Windows-style '\' path separators with '/'
-                imagePath = imagePath.replaceAll("\\\\", "/");
-                imageFiles.add(imagePath);
-            }
-            else {
+                //imagePath = imagePath.replaceAll("\\\\", File.pathSeparator)
+                //        .replaceAll("/", File.pathSeparator);
+                imageFiles.add(finalPath);
+            } else {
                 LOG.warn("File is not supported type: " + file);
             }
         }

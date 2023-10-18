@@ -17,11 +17,9 @@
  */
 package org.scada_lts.service;
 
-import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.mango.view.ViewGraphicLoader;
 import com.serotonin.mango.web.ContextWrapper;
 import org.springframework.stereotype.Service;
@@ -29,6 +27,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 /**
  * Create by at Grzesiek Bylica
@@ -44,16 +44,7 @@ public class ResourcesService {
         List<DynamicImage> dynamicImages = new ArrayList<DynamicImage>();
 
         ServletContext ctx = Common.ctx.getCtx();
-
-        for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath(""))) {
-            if (g.isImageSet())
-                imageSets.add((ImageSet) g);
-            else if (g.isDynamicImage())
-                dynamicImages.add((DynamicImage) g);
-            else
-                throw new ShouldNeverHappenException(
-                        "Unknown view graphic type");
-        }
+        loadGraphics(loader, imageSets, dynamicImages);
 
         ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
         ctx.setAttribute(Common.ContextKeys.DYNAMIC_IMAGES, dynamicImages);
@@ -61,5 +52,4 @@ public class ResourcesService {
         Common.ctx = new ContextWrapper(ctx);
 
     }
-
 }

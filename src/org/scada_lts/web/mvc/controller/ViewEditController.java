@@ -17,17 +17,9 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.serotonin.mango.Common;
+import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.User;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -35,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.form.ViewEditForm;
 import org.scada_lts.web.mvc.validator.ViewEditValidator;
 import org.springframework.stereotype.Controller;
@@ -47,12 +40,21 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.User;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.serotonin.mango.util.ViewControllerUtils.*;
+import static br.org.scadabr.vo.exporter.util.FileUtil.normalizePathSeparators;
+import static com.serotonin.mango.util.ViewControllerUtils.getOrEmptyView;
+import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.SystemSettingsUtils.getAbsoluteResourcePath;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 
@@ -242,11 +244,13 @@ public class ViewEditController {
         byte[] bytes = file.getBytes();
         if (bytes != null && bytes.length > 0) {
             // Create the path to the upload directory.
-            String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-            LOG.info("ViewEditController:uploadFile: realpath="+path);
+            String path = SystemSettingsUtils.getWebResourceUploadsWritePaths()[0];
+	        String basePath = new File("../" ).getAbsoluteFile().toPath().normalize().toString() + "\\" + path;
+			basePath = normalizePathSeparators(basePath);
+            LOG.info("ViewEditController:uploadFile: realpath="+basePath);
 
             // Make sure the directory exists.
-            File dir = new File(path);
+            File dir = new File(basePath);
             dir.mkdirs();
 
             String fileName = file.getOriginalFilename();

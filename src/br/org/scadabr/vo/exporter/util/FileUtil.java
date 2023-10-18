@@ -87,4 +87,7 @@ public class FileUtil {
 		}
 		return files;
 	}
+	public static String normalizePathSeparators(String path){
+		return path.replace("/", File.separator).replace("\\", File.separator);
+	}
 }

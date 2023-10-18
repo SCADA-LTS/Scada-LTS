@@ -36,7 +36,6 @@ import com.serotonin.mango.rt.maint.WorkItemMonitor;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.mango.view.ViewGraphicLoader;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
@@ -55,6 +54,8 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
@@ -67,8 +68,11 @@ import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -82,6 +86,9 @@ import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static org.scada_lts.utils.SystemSettingsUtils.getAbsoluteResourcePath;
+import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
@@ -554,19 +561,11 @@ public class MangoContextListener implements ServletContextListener {
 	// Image sets
 	//
 	private void imageSetInitialize(ServletContext ctx) {
+		addStaticResources(ctx);
 		ViewGraphicLoader loader = new ViewGraphicLoader();
 		List<ImageSet> imageSets = new ArrayList<ImageSet>();
 		List<DynamicImage> dynamicImages = new ArrayList<DynamicImage>();
-
-		for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath(""))) {
-			if (g.isImageSet())
-				imageSets.add((ImageSet) g);
-			else if (g.isDynamicImage())
-				dynamicImages.add((DynamicImage) g);
-			else
-				throw new ShouldNeverHappenException(
-						"Unknown view graphic type");
-		}
+		loadGraphics(loader, imageSets, dynamicImages);
 
 		ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
 		ctx.setAttribute(Common.ContextKeys.DYNAMIC_IMAGES, dynamicImages);
@@ -645,6 +644,31 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e);
 		}
+	}
+
+	private void addStaticResources(ServletContext servletContext) {
+		try {
+			ObjectName name = new ObjectName("Catalina", "type", "Server");
+			Server server = (Server) MBeanServerFactory.findMBeanServer(null).get(0).getAttribute(name, "managedResource");
+			Service service = server.findService("Catalina");
+			Engine engine = service.getContainer();
+			Container hostContainer = engine.findChild(engine.getDefaultHost());
+
+			StandardContext standardContext = (StandardContext) hostContainer.findChild(servletContext.getContextPath());
+			for(String path: SystemSettingsUtils.getWebResourceUploadsWritePaths()) {
+				standardContext.getResources().createWebResourceSet(WebResourceRoot.ResourceSetType.POST, "/uploads", getAbsoluteResourcePath(path), null, "/");
+			}
+			for(String path: SystemSettingsUtils.getWebResourceUploadsReadPaths()) {
+				standardContext.getResources().createWebResourceSet(WebResourceRoot.ResourceSetType.POST, "/uploads", getAbsoluteResourcePath(path), null, "/");
+			}
+			for(String path: SystemSettingsUtils.getWebResourceGraphicsReadPaths()) {
+				standardContext.getResources().createWebResourceSet(WebResourceRoot.ResourceSetType.POST, "/graphics", getAbsoluteResourcePath(path), null, "/");
+			}
+
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+		}
+
 	}
 
 }

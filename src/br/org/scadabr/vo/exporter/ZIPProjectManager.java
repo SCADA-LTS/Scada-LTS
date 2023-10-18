@@ -1,47 +1,37 @@
 package br.org.scadabr.vo.exporter;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import br.org.scadabr.vo.exporter.util.FileToPack;
+import br.org.scadabr.vo.exporter.util.FileUtil;
+import br.org.scadabr.web.mvc.controller.ProjectExporterController;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.json.ExportConfig;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import br.org.scadabr.vo.exporter.util.FileToPack;
-import br.org.scadabr.vo.exporter.util.FileUtil;
-import br.org.scadabr.web.mvc.controller.ProjectExporterController;
-
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.dwr.EmportDwr;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static org.scada_lts.utils.PathSecureUtils.getRealPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.SystemSettingsUtils.getAbsoluteResourcePath;
 import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ZIPProjectManager {
@@ -92,10 +82,16 @@ public class ZIPProjectManager {
 
 		List<FileToPack> filesToZip = new ArrayList<>();
 		if (includeUploadsFolder)
-			filesToZip.addAll(getUploadsFolderFiles());
+			for(String path: SystemSettingsUtils.getWebResourceUploadsReadPaths()) {
+				path = getAbsoluteResourcePath(path);
+				filesToZip.addAll(getUploadsFolderFiles(path));
+			}
 
 		if (includeGraphicsFolder)
-			filesToZip.addAll(getGraphicsFolderFiles());
+			for(String path: SystemSettingsUtils.getWebResourceGraphicsReadPaths()) {
+				path = getAbsoluteResourcePath(path);
+				filesToZip.addAll(getGraphicsFolderFiles(path));
+			}
 
 		filesToZip.addAll(tempFiles);
 
@@ -156,11 +152,18 @@ public class ZIPProjectManager {
 	}
 
 	public void importProject() throws Exception {
-
-		List<ZipEntry> graphicsFiles = getGraphicsFiles();
+		List<ZipEntry> graphicsFiles = new ArrayList<>();
+		for(String path: SystemSettingsUtils.getWebResourceGraphicsReadPaths()) {
+			path = getAbsoluteResourcePath(path);
+			graphicsFiles.addAll(getGraphicsFiles(path));
+		}
 		restoreFiles(graphicsFiles);
 
-		List<ZipEntry> uploadFiles = getUploadFiles();
+		List<ZipEntry> uploadFiles = new ArrayList<>();
+		for(String path: SystemSettingsUtils.getWebResourceUploadsReadPaths()) {
+			path = getAbsoluteResourcePath(path);
+			uploadFiles.addAll(getUploadFiles(path));
+		}
 		restoreFiles(uploadFiles);
 
 		String jsonContent = getJsonContent();
@@ -176,7 +179,7 @@ public class ZIPProjectManager {
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
 			if(!entryName.isEmpty()) {
-				toSecurePath(Paths.get(appPath + File.separator + entryName))
+				toSecurePath(Paths.get(entryName))
 						.ifPresent(file -> writeToFile(zipEntry, file));
 			} else {
 				LOG.error("entryName is empty");
@@ -208,11 +211,11 @@ public class ZIPProjectManager {
 		}
 	}
 
-	private List<ZipEntry> getUploadFiles() {
+	private List<ZipEntry> getUploadFiles(String uploadsFolder) {
 		return filteringUploadFiles(filterZipFiles(uploadsFolder), zipFile);
 	}
 
-	private List<ZipEntry> getGraphicsFiles() {
+	private List<ZipEntry> getGraphicsFiles(String graphicsFolder) {
 		return filteringGraphicsFiles(filterZipFiles(graphicsFolder), zipFile);
 	}
 
@@ -241,42 +244,33 @@ public class ZIPProjectManager {
 		return file;
 	}
 
-	private List<FileToPack> getUploadsFolderFiles() {
-		String uploadFolder = Common.ctx.getServletContext().getRealPath(
-				FILE_SEPARATOR)
-				+ "uploads";
-
+	private List<FileToPack> getUploadsFolderFiles(String uploadFolder) {
 		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 		for (File file : files) {
 
-			String filePartialPath = uploadsFolder + file.getName();
+			//String filePartialPath = uploadFolder + FILE_SEPARATOR + file.getName();
 
-			pack.add(new FileToPack(filePartialPath.substring(0, 7)
-					+ FILE_SEPARATOR + filePartialPath.substring(8), file));
+			pack.add(new FileToPack(file.toString(), file));
 		}
 		return pack;
 	}
 
-	private List<FileToPack> getGraphicsFolderFiles() {
-		String graphicFolder = Common.ctx.getServletContext().getRealPath(
-				FILE_SEPARATOR)
-				+ "graphics";
-
+	private List<FileToPack> getGraphicsFolderFiles(String graphicFolder) {
 		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 
 		for (File file : files) {
 
-			String[] pathDivided = null;
+			//String[] pathDivided = null;
 
-			pathDivided = file.getAbsolutePath().split("graphics");
+			//pathDivided = file.getAbsolutePath().split("graphics");
 
-			String filePartialPath = "graphics" + pathDivided[1];
+			//String filePartialPath = "graphics" + pathDivided[1];
 
-			pack.add(new FileToPack(filePartialPath, file));
+			pack.add(new FileToPack(file.toString(), file));
 		}
 
 		return pack;

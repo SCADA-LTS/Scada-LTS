@@ -31,7 +31,7 @@ public final class PathSecureUtils {
     }
 
     public static String getRealPath() {
-        return Common.ctx.getServletContext().getRealPath(File.separator);
+        return getRealPath(File.separator);
     }
 
     public static String getPartialPath(File file) {
@@ -90,6 +90,25 @@ public final class PathSecureUtils {
         Path normalizedPath = path.normalize();
         if(normalizedPath.startsWith(appPath)) {
             return Optional.of(normalizedPath);
+        }
+	    String basePath = new File("../" ).getAbsoluteFile().toPath().normalize().toString(); // for windows: C:\path\to\Scada-LTS\tomcat
+		if (normalizedPath.startsWith(basePath)){
+			return Optional.of(normalizedPath);
+	    }
+        for(String uploadsWritePath: SystemSettingsUtils.getWebResourceUploadsWritePaths()) {
+            if(normalizedPath.startsWith(uploadsWritePath)) {
+                return Optional.of(normalizedPath);
+            }
+        }
+        for(String uploadsReadPath: SystemSettingsUtils.getWebResourceUploadsReadPaths()) {
+            if(normalizedPath.startsWith(uploadsReadPath)) {
+                return Optional.of(normalizedPath);
+            }
+        }
+        for(String graphicsReadPath: SystemSettingsUtils.getWebResourceGraphicsReadPaths()) {
+            if(normalizedPath.startsWith(graphicsReadPath)) {
+                return Optional.of(normalizedPath);
+            }
         }
         LOG.warn("Path is invalid!");
         return Optional.empty();

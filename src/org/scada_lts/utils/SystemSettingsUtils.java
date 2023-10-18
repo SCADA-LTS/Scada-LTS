@@ -8,10 +8,13 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static br.org.scadabr.vo.exporter.util.FileUtil.normalizePathSeparators;
 
 public final class SystemSettingsUtils {
 
@@ -40,6 +43,10 @@ public final class SystemSettingsUtils {
     public static final String EVENT_PENDING_LIMIT = "event.pending.limit";
     public static final String EVENT_PENDING_UPDATE_LIMIT = "event.pending.update.limit";
     public static final String EVENT_PENDING_CACHE_ENABLED = "abilit.cacheEnable";
+    public static final String WEB_RESOURCE_UPLOADS_WRITE_PATHS = "webresource.uploads.write.paths";
+    public static final String WEB_RESOURCE_UPLOADS_READ_PATHS = "webresource.uploads.read.paths";
+    public static final String WEB_RESOURCE_GRAPHICS_READ_PATHS = "webresource.graphics.read.paths";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -276,6 +283,47 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return true;
+        }
+    }
+
+    public static String[] getWebResourceUploadsWritePaths() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WEB_RESOURCE_UPLOADS_WRITE_PATHS, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getWebResourceUploadsReadPaths() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WEB_RESOURCE_UPLOADS_READ_PATHS, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String[] getWebResourceGraphicsReadPaths() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WEB_RESOURCE_GRAPHICS_READ_PATHS, "");
+            return config.split(";");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return new String[]{};
+        }
+    }
+
+    public static String getAbsoluteResourcePath(String path) {
+
+        if (!path.equals(new File(normalizePathSeparators(path)).getAbsoluteFile().toPath().normalize().toString())) {
+            String file = new File("../" ).getAbsoluteFile().toPath().normalize().toString() + "/" + path;
+            return normalizePathSeparators(file);
+        }
+        else {
+            return path;
         }
     }
 }

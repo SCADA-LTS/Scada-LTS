@@ -1,12 +1,20 @@
 package org.scada_lts.utils;
 
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.view.DynamicImage;
+import com.serotonin.mango.view.ImageSet;
+import com.serotonin.mango.view.ViewGraphic;
+import com.serotonin.mango.view.ViewGraphicLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.security.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -17,6 +25,7 @@ import java.util.zip.ZipFile;
 
 import static org.scada_lts.svg.SvgUtils.isSvg;
 import static org.scada_lts.utils.ScadaMimeTypeUtils.*;
+import static org.scada_lts.utils.SystemSettingsUtils.getAbsoluteResourcePath;
 import static org.scada_lts.utils.xml.XmlUtils.isXml;
 
 public final class UploadFileUtils {
@@ -143,6 +152,21 @@ public final class UploadFileUtils {
             return false;
         }
         return isImageBitmap(safeFile);
+    }
+
+    public static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages) {
+        for(String path: SystemSettingsUtils.getWebResourceGraphicsReadPaths()) {
+            path = getAbsoluteResourcePath(path);
+            for (ViewGraphic graphic : loader.loadViewGraphics(path)) {
+                if (graphic.isImageSet())
+                    imageSets.add((ImageSet) graphic);
+                else if (graphic.isDynamicImage())
+                    dynamicImages.add((DynamicImage) graphic);
+                else
+                    throw new ShouldNeverHappenException(
+                            "Unknown view graphic type");
+            }
+        }
     }
 
     private static boolean isThumbsFile(SafeFile file) {
