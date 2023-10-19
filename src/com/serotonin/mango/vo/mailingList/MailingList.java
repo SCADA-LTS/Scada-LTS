@@ -37,23 +37,26 @@ import com.serotonin.mango.Common;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
 public class MailingList extends EmailRecipient {
     public static final String XID_PREFIX = "ML_";
 
     private int id = Common.NEW_ID;
+    @JsonRemoteProperty
     private String xid;
     @JsonRemoteProperty
     private String name;
     @JsonRemoteProperty(innerType = EmailRecipient.class)
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
     private List<EmailRecipient> entries;
-
+    @JsonRemoteProperty
     private String cronPattern;
+    @JsonRemoteProperty
     private boolean collectInactiveEmails;
+    @JsonRemoteProperty
     private int dailyLimitSentEmailsNumber;
+    @JsonRemoteProperty
     private boolean dailyLimitSentEmails;
 
     /**

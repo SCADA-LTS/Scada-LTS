@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.Caching;
 
 import java.util.List;
 
-public interface UserCachable {
+public interface UserCacheable {
 
     String CACHE_ENABLED_KEY = "user.cache.enabled";
 
@@ -47,4 +47,16 @@ public interface UserCachable {
             }
     )
     int insert(User user);
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "user_list", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datasource_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datapoint_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_watchlist_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true)
+
+    })
+    default void resetCache() {}
 }

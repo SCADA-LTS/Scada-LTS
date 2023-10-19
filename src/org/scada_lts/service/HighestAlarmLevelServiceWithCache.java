@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.IHighestAlarmLevelDAO;
-import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
+import org.scada_lts.dao.cache.HighestAlarmLevelCacheable;
 import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
@@ -25,13 +25,13 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     private static final String RESET_CRON_KEY = "alarmlevel.highest.cache.reset.cron";
     private static final String RESET_ENABLED_KEY = "alarmlevel.highest.cache.reset.enabled";
 
-    private final HighestAlarmLevelCachable highestAlarmLevelCache;
+    private final HighestAlarmLevelCacheable highestAlarmLevelCache;
     private final IHighestAlarmLevelDAO highestAlarmLevelDAO;
     private final ReentrantReadWriteLock lock;
     private final CronTriggerScheduler resetHighestAlarmLevelScheduler;
     private final MangoUser userService;
 
-    public HighestAlarmLevelServiceWithCache(HighestAlarmLevelCachable highestAlarmLevelCache,
+    public HighestAlarmLevelServiceWithCache(HighestAlarmLevelCacheable highestAlarmLevelCache,
                                              IHighestAlarmLevelDAO highestAlarmLevelDAO,
                                              CronTriggerScheduler resetHighestAlarmLevelScheduler) {
         this.highestAlarmLevelCache = highestAlarmLevelCache;
@@ -107,7 +107,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     public void doResetAlarmLevels(BiConsumer<User, AlarmLevelMessage> send) {
         this.lock.writeLock().lock();
         try {
-            highestAlarmLevelCache.resetAlarmLevels();
+            highestAlarmLevelCache.resetCache();
         } finally {
             this.lock.writeLock().unlock();
         }

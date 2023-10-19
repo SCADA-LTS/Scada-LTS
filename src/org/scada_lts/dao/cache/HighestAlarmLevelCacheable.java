@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 
-public interface HighestAlarmLevelCachable {
+public interface HighestAlarmLevelCacheable {
 
     String CACHE_ENABLED_KEY = "alarmlevel.highest.cache.enabled";
 
@@ -21,5 +21,5 @@ public interface HighestAlarmLevelCachable {
     void removeAlarmLevel(User user);
 
     @Caching(evict = {@CacheEvict(cacheNames = "alarmlevel_highest_by_user", allEntries = true)})
-    void resetAlarmLevels();
+    void resetCache();
 }

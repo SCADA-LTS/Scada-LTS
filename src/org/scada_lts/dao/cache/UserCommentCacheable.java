@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Caching;
 
 import java.util.List;
 
-public interface UserCommentCachable {
+public interface UserCommentCacheable {
 
     String CACHE_ENABLED_KEY = "usercomment.cache.enabled";
 
@@ -38,5 +38,5 @@ public interface UserCommentCachable {
             @CacheEvict(cacheNames = "comment_list_by_eventid", allEntries = true),
             @CacheEvict(cacheNames = "comment_event_list", allEntries = true)
     })
-    void removeAll();
+    void resetCache();
 }
