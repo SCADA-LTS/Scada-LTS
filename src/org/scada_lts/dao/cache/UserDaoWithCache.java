@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class UserDaoWithCache implements IUserDAO {
 
-    private final UserCachable userCache;
+    private final UserCacheable userCache;
 
-    public UserDaoWithCache(UserCachable userCache) {
+    public UserDaoWithCache(UserCacheable userCache) {
         this.userCache = userCache;
     }
 

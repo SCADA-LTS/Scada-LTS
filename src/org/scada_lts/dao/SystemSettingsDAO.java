@@ -21,9 +21,9 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.cache.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -142,13 +142,14 @@ public class SystemSettingsDAO {
 	private static final String DELETE_POINT_VALUES = "delete from pointValues";
 	private static final String DELETE_MAINTENANCE_EVENTS = "delete from maintenanceEvents";
 	private static final String DELETE_MAILING_LISTS = "delete from mailingLists";
-	@Deprecated(since = "2.7.5.4")
 	private static final String DELETE_USERS = "delete from users";
 	private static final String DELETE_PUBLISHERS = "delete from publishers";
 	private static final String DELETE_DATA_POINT_USERS = "delete from dataPointUsers";
 	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+	private static final String DELETE_USERS_PROFILES = "delete from usersProfiles";
+	private static final String DELETE_USER_COMMENTS = "delete from userComments";
 
 	// Logging
 	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
@@ -411,20 +412,21 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUES);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAINTENANCE_EVENTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAILING_LISTS);
-		resetUsers();
+		DAO.getInstance().getJdbcTemp().update(DELETE_USER_COMMENTS);
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_PUBLISHERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINT_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCES);
-	}
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS_PROFILES);
 
-	private void resetUsers() {
-		IUserDAO userDAO = ApplicationBeans.getUserDaoBean();
-		List<User> users = userDAO.getUsers();
-		for (User user : users) {
-			userDAO.delete(user.getId());
-		}
+		ApplicationBeans.getBean("userCache", UserCacheable.class).resetCache();
+		ApplicationBeans.getBean("viewCache", ViewCachable.class).resetCache();
+		ApplicationBeans.getBean("pointEventDetectorCache", PointEventDetectorCacheable.class).resetCache();
+		ApplicationBeans.getBean("usersProfileCache", UsersProfileCacheable.class).resetCache();
+		ApplicationBeans.getBean("highestAlarmLevelCache", HighestAlarmLevelCacheable.class).resetCache();
+		ApplicationBeans.getBean("userCommentCache", UserCommentCacheable.class).resetCache();
 	}
 
 	public double getDataBaseSize() {

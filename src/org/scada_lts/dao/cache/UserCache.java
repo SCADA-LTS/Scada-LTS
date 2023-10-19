@@ -5,7 +5,7 @@ import org.scada_lts.dao.UserDAO;
 
 import java.util.List;
 
-public class UserCache implements UserCachable {
+public class UserCache implements UserCacheable {
 
     private final UserDAO userDAO;
 

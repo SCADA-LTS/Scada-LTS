@@ -78,11 +78,19 @@ public interface ViewCachable {
     @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0", condition = "#p0 > 0")
     List<ShareUser> selectShareUsersFromProfile(int viewId);
 
-    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#p0 > 0")
+    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#p0 > 0", unless="#result == null")
     View findById(int viewId);
 
     @CachePut(cacheNames = "view_by_id", key = "#view.id", condition = "#view != null && #view.id > 0")
     default View put(View view) {
         return view;
     }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "view_list", allEntries = true),
+            @CacheEvict(cacheNames = "view_by_id", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
+    })
+    default void resetCache() {}
 }
