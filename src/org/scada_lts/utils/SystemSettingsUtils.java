@@ -281,7 +281,7 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static boolean getEventPendingCacheEnabled() {
+    public static boolean isEventPendingCacheEnabled() {
         try {
             String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_CACHE_ENABLED_KEY, "true");
             return Boolean.parseBoolean(eventPendingCache);

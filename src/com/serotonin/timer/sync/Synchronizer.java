@@ -138,7 +138,7 @@ public class Synchronizer<T extends Runnable> {
         return result;
     }
 
-    class TaskWrapper extends AbstractBeforeAfterWorkItem {
+    class TaskWrapper extends AbstractBeforeAfterWorkItem implements Runnable {
         final String name;
         final T task;
         private volatile boolean complete;
@@ -150,6 +150,11 @@ public class Synchronizer<T extends Runnable> {
 
         public String getName() {
             return name;
+        }
+
+        @Override
+        public void run() {
+            super.execute();
         }
 
         @Override

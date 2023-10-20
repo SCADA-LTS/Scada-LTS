@@ -17,7 +17,7 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-class SyncHandler extends AbstractBeforeAfterWorkItem {
+class SyncHandler extends AbstractBeforeAfterWorkItem implements Runnable {
     static final Log LOG = LogFactory.getLog(SyncHandler.class);
     private static final String START_TIMES_KEY = "startTimes";
 
@@ -59,6 +59,11 @@ class SyncHandler extends AbstractBeforeAfterWorkItem {
                 }
             }
         }
+    }
+
+    @Override
+    public void run() {
+        super.execute();
     }
 
     @SuppressWarnings({ "unchecked" })

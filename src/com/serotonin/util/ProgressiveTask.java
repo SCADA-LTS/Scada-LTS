@@ -3,7 +3,7 @@ package com.serotonin.util;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 
-public abstract class ProgressiveTask extends AbstractBeforeAfterWorkItem {
+public abstract class ProgressiveTask extends AbstractBeforeAfterWorkItem implements Runnable {
 
     private volatile boolean cancelled = false;
     protected volatile boolean completed = false;
@@ -25,6 +25,11 @@ public abstract class ProgressiveTask extends AbstractBeforeAfterWorkItem {
 
     public boolean isCompleted() {
         return this.completed;
+    }
+
+    @Override
+    public void run() {
+        super.execute();
     }
 
     @Override

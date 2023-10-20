@@ -45,7 +45,7 @@ public class SingleExecutorSingleWaiter {
         Common.ctx.getBackgroundProcessing().addWorkItem(new TaskWrapper(executing, this.getClass().getName()));
     }
 
-    class TaskWrapper extends AbstractBeforeAfterWorkItem {
+    class TaskWrapper extends AbstractBeforeAfterWorkItem implements Runnable {
         private final Runnable command;
         private final String details;
 
@@ -58,6 +58,11 @@ public class SingleExecutorSingleWaiter {
         public TaskWrapper(Runnable command, String details) {
             this.command = command;
             this.details = details;
+        }
+
+        @Override
+        public void run() {
+            super.execute();
         }
 
         @Override

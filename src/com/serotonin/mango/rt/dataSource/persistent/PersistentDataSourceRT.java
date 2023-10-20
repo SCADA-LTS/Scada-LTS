@@ -182,7 +182,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         }
     }
 
-    class ConnectionHandler extends AbstractBeforeAfterWorkItem {
+    class ConnectionHandler extends AbstractBeforeAfterWorkItem implements Runnable {
         private final Socket socket;
         private InputStream in;
         private OutputStream out;
@@ -204,6 +204,11 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             this.socket = socket;
             this.details = details;
             connectionTime = System.currentTimeMillis();
+        }
+
+        @Override
+        public void run() {
+            super.execute();
         }
 
         public String getSocketAddress() {
@@ -589,7 +594,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
         }
 
-        class RangeCountHandler extends AbstractBeforeAfterWorkItem {
+        class RangeCountHandler extends AbstractBeforeAfterWorkItem implements Runnable {
             private final int requestId;
             private final int index;
             private final long from;
@@ -615,6 +620,11 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                 to = packet.popLong();
                 this.out = out;
                 this.details = details;
+            }
+
+            @Override
+            public void run() {
+                super.execute();
             }
 
             @Override

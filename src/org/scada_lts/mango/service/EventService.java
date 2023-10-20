@@ -76,7 +76,7 @@ public class EventService implements MangoEvent {
 		systemSettingsService = new SystemSettingsService();
 	}
 
-	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem {
+	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem implements Runnable {
 		private final int userId;
 		private final String details;
 
@@ -89,6 +89,11 @@ public class EventService implements MangoEvent {
 		UserPendingEventRetriever(int userId, String details) {
 			this.userId = userId;
 			this.details = details;
+		}
+
+		@Override
+		public void run() {
+			super.execute();
 		}
 
 		@Override
