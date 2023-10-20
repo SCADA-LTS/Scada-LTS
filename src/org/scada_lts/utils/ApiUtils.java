@@ -15,11 +15,9 @@ import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 import org.scada_lts.web.mvc.api.user.UserInfo;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class ApiUtils {
@@ -115,5 +113,17 @@ public final class ApiUtils {
     public static UserInfo toUserInfo(User user) {
         JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
         return new UserInfo(user, jsonSettingsMisc.isEnableFullScreen(), jsonSettingsMisc.isHideShortcutDisableFullScreen());
+    }
+
+    public static <T, R, S> Map<S, R> convertMap(Map<S, List<T>> map, Function<List<T>, R> converter) {
+        Map<S, R> result = new LinkedHashMap<>();
+        for(Map.Entry<S, List<T>> entry: map.entrySet()) {
+            result.put(entry.getKey(), converter.apply(entry.getValue()));
+        }
+        return result;
+    }
+
+    public static <T, R> R convertList(List<T> list, Function<List<T>, R> converter) {
+        return converter.apply(list);
     }
 }

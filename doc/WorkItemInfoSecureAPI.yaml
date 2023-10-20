@@ -5,7 +5,7 @@ servers:
     variables: {}
 info:
   version: 2.7.6.1
-  title: Scada-LTS API
+  title: Scada-LTS API via HTTPS
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
   contact:
@@ -14,7 +14,7 @@ info:
   license:
     name: 'GPL-2.0'
 paths:
-  /work-items/:
+  /work-items-secure/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -23,7 +23,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/metrics/:
+  /work-items-secure/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -32,7 +32,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/classes/:
+  /work-items-secure/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -41,7 +41,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/classes/metrics/:
+  /work-items-secure/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -50,7 +50,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/classes/count/:
+  /work-items-secure/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -59,7 +59,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/priority/:
+  /work-items-secure/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -68,7 +68,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/priority/metrics/:
+  /work-items-secure/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -77,7 +77,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/priority/count/:
+  /work-items-secure/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -86,7 +86,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/:
+  /work-items-secure/not-executed/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -95,7 +95,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/metrics/:
+  /work-items-secure/not-executed/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -104,7 +104,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/classes/:
+  /work-items-secure/not-executed/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -113,7 +113,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/classes/metrics/:
+  /work-items-secure/not-executed/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -122,7 +122,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/classes/count/:
+  /work-items-secure/not-executed/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -131,7 +131,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/priority/:
+  /work-items-secure/not-executed/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -140,7 +140,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/priority/metrics/:
+  /work-items-secure/not-executed/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -149,7 +149,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/not-executed/group-by/priority/count/:
+  /work-items-secure/not-executed/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -158,7 +158,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/:
+  /work-items-secure/executed/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -167,7 +167,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/metrics/:
+  /work-items-secure/executed/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -176,7 +176,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/classes/:
+  /work-items-secure/executed/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -185,7 +185,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/classes/metrics/:
+  /work-items-secure/executed/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -194,7 +194,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/classes/count/:
+  /work-items-secure/executed/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -203,7 +203,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/priority/:
+  /work-items-secure/executed/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -212,7 +212,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/priority/metrics/:
+  /work-items-secure/executed/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -221,7 +221,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by/priority/count/:
+  /work-items-secure/executed/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -230,7 +230,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/:
+  /work-items-secure/executed/success/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -239,7 +239,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/metrics/:
+  /work-items-secure/executed/success/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -248,7 +248,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/classes/:
+  /work-items-secure/executed/success/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -257,7 +257,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/classes/metrics/:
+  /work-items-secure/executed/success/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -266,7 +266,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/classes/count/:
+  /work-items-secure/executed/success/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -275,7 +275,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/priority/:
+  /work-items-secure/executed/success/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -284,7 +284,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/priority/metrics/:
+  /work-items-secure/executed/success/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -293,7 +293,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/success/group-by/priority/count/:
+  /work-items-secure/executed/success/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -302,7 +302,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/longer/{executedMs}/:
+  /work-items-secure/executed/longer/{executedMs}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -317,7 +317,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/metrics/:
+  /work-items-secure/executed/longer/{executedMs}/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -332,7 +332,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/classes/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -347,7 +347,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/classes/metrics/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -362,7 +362,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/classes/count/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -377,7 +377,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/priority/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -392,7 +392,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/priority/metrics/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -407,7 +407,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/longer/{executedMs}/group-by/priority/count/:
+  /work-items-secure/executed/longer/{executedMs}/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -422,7 +422,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/:
+  /work-items-secure/executed/less/{executedMs}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -437,7 +437,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/metrics/:
+  /work-items-secure/executed/less/{executedMs}/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -452,7 +452,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/classes/:
+  /work-items-secure/executed/less/{executedMs}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -467,7 +467,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/classes/metrics/:
+  /work-items-secure/executed/less/{executedMs}/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -482,7 +482,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/classes/count/:
+  /work-items-secure/executed/less/{executedMs}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -497,7 +497,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/priority/:
+  /work-items-secure/executed/less/{executedMs}/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -512,7 +512,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/priority/metrics/:
+  /work-items-secure/executed/less/{executedMs}/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -527,7 +527,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/less/{executedMs}/group-by/priority/count/:
+  /work-items-secure/executed/less/{executedMs}/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -542,7 +542,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/executed/priority/{priority}/:
+  /work-items-secure/executed/priority/{priority}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -558,7 +558,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/executed/priority/{priority}/metrics/:
+  /work-items-secure/executed/priority/{priority}/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -574,7 +574,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/executed/priority/{priority}/group-by/classes/:
+  /work-items-secure/executed/priority/{priority}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -590,7 +590,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/executed/priority/{priority}/group-by/classes/metrics/:
+  /work-items-secure/executed/priority/{priority}/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -606,7 +606,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/executed/priority/{priority}/group-by/classes/count/:
+  /work-items-secure/executed/priority/{priority}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -622,7 +622,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/longer/{executedMs}/:
+  /work-items-secure/history/longer/{executedMs}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -637,7 +637,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/metrics/:
+  /work-items-secure/history/longer/{executedMs}/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -652,7 +652,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/classes/:
+  /work-items-secure/history/longer/{executedMs}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -667,7 +667,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/classes/metrics/:
+  /work-items-secure/history/longer/{executedMs}/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -682,7 +682,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/classes/count/:
+  /work-items-secure/history/longer/{executedMs}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -697,7 +697,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/priority/:
+  /work-items-secure/history/longer/{executedMs}/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -712,7 +712,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/priority/metrics/:
+  /work-items-secure/history/longer/{executedMs}/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -727,7 +727,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by/priority/count/:
+  /work-items-secure/history/longer/{executedMs}/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -742,7 +742,7 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/priority/{priority}/:
+  /work-items-secure/history/priority/{priority}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -758,7 +758,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/metrics/:
+  /work-items-secure/history/priority/{priority}/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -774,7 +774,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/group-by/classes/:
+  /work-items-secure/history/priority/{priority}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -790,7 +790,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/group-by/classes/metrics/:
+  /work-items-secure/history/priority/{priority}/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -806,7 +806,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/group-by/classes/count/:
+  /work-items-secure/history/priority/{priority}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -822,7 +822,7 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/process/:
+  /work-items-secure/history/process/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -831,7 +831,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/metrics/:
+  /work-items-secure/history/process/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -840,7 +840,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/classes/:
+  /work-items-secure/history/process/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -849,7 +849,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/classes/metrics/:
+  /work-items-secure/history/process/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -858,7 +858,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/classes/count/:
+  /work-items-secure/history/process/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -867,7 +867,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/priority/:
+  /work-items-secure/history/process/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -876,7 +876,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/priority/metrics/:
+  /work-items-secure/history/process/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -885,7 +885,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by/priority/count/:
+  /work-items-secure/history/process/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -894,7 +894,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/:
+  /work-items-secure/history/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -903,7 +903,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/metrics/:
+  /work-items-secure/history/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -912,7 +912,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/classes/:
+  /work-items-secure/history/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -921,7 +921,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/classes/metrics/:
+  /work-items-secure/history/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -930,7 +930,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/classes/count/:
+  /work-items-secure/history/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -939,7 +939,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/priority/:
+  /work-items-secure/history/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -948,7 +948,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/priority/metrics/:
+  /work-items-secure/history/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -957,7 +957,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/group-by/priority/count/:
+  /work-items-secure/history/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -966,7 +966,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/:
+  /work-items-secure/history/failed/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -975,7 +975,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/metrics/:
+  /work-items-secure/history/failed/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -984,7 +984,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/classes/:
+  /work-items-secure/history/failed/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -993,7 +993,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/classes/metrics/:
+  /work-items-secure/history/failed/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1002,7 +1002,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/classes/count/:
+  /work-items-secure/history/failed/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1011,7 +1011,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/priority/:
+  /work-items-secure/history/failed/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1020,7 +1020,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/priority/metrics/:
+  /work-items-secure/history/failed/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1029,7 +1029,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/failed/group-by/priority/count/:
+  /work-items-secure/history/failed/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1038,7 +1038,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/:
+  /work-items-secure/running/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1047,7 +1047,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/metrics/:
+  /work-items-secure/running/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1056,7 +1056,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/classes/:
+  /work-items-secure/running/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1065,7 +1065,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/classes/metrics/:
+  /work-items-secure/running/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1074,7 +1074,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/classes/count/:
+  /work-items-secure/running/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1083,7 +1083,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/priority/:
+  /work-items-secure/running/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1092,7 +1092,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/priority/metrics/:
+  /work-items-secure/running/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1101,7 +1101,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by/priority/count/:
+  /work-items-secure/running/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -1110,7 +1110,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/:
+  /work-items-secure/scheduled/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1119,7 +1119,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/metrics/:
+  /work-items-secure/scheduled/metrics/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1128,7 +1128,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/classes/:
+  /work-items-secure/scheduled/group-by/classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1137,7 +1137,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/classes/metrics/:
+  /work-items-secure/scheduled/group-by/classes/metrics/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1146,7 +1146,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/classes/count/:
+  /work-items-secure/scheduled/group-by/classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1155,7 +1155,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/states/:
+  /work-items-secure/scheduled/group-by/states/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1164,7 +1164,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/states/metrics/:
+  /work-items-secure/scheduled/group-by/states/metrics/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1173,7 +1173,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by/states/count/:
+  /work-items-secure/scheduled/group-by/states/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1182,7 +1182,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/states/:
+  /work-items-secure/scheduled/states/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1191,7 +1191,7 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/states/{state}/:
+  /work-items-secure/scheduled/states/{state}/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1207,7 +1207,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/metrics/:
+  /work-items-secure/scheduled/states/{state}/metrics/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1223,7 +1223,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/group-by/classes/:
+  /work-items-secure/scheduled/states/{state}/group-by/classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1239,7 +1239,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/group-by/classes/metrics/:
+  /work-items-secure/scheduled/states/{state}/group-by/classes/metrics/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -1255,7 +1255,7 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/group-by/classes/count/:
+  /work-items-secure/scheduled/states/{state}/group-by/classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI

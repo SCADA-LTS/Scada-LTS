@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
@@ -169,7 +170,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                     String name = WorkItemPriority.HIGH + " - " + LoggingUtils.dataSourceInfo(this);
                     ConnectionHandler ch = new ConnectionHandler(socket, name);
                     connectionHandlers.add(ch);
-                    Common.timer.execute(ch, name + " - " + ch.getClass().getName());
+                    Common.ctx.getBackgroundProcessing().addWorkItem(ch);
                 }
                 catch (SocketTimeoutException e) {
                     // no op
@@ -181,7 +182,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         }
     }
 
-    class ConnectionHandler implements Runnable {
+    class ConnectionHandler extends AbstractBeforeAfterWorkItem {
         private final Socket socket;
         private InputStream in;
         private OutputStream out;
@@ -217,7 +218,8 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             return packetsReceived;
         }
 
-        public void run() {
+        @Override
+        public void work() {
             try {
                 runImpl();
             }
@@ -383,7 +385,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                         continue;
 
                     if (packet.getType() == PacketType.RANGE_COUNT) {
-                        Common.timer.execute(new RangeCountHandler(packet, out), details);
+                        Common.ctx.getBackgroundProcessing().addWorkItem(new RangeCountHandler(packet, out, details));
                         continue;
                     }
 
@@ -587,22 +589,36 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
         }
 
-        class RangeCountHandler implements Runnable {
+        class RangeCountHandler extends AbstractBeforeAfterWorkItem {
             private final int requestId;
             private final int index;
             private final long from;
             private final long to;
             private final OutputStream out;
 
+            private final String details;
+
+            @Deprecated
             RangeCountHandler(Packet packet, OutputStream out) {
                 requestId = packet.getPayload().popU3B();
                 index = packet.getPayload().popU2B();
                 from = packet.popLong();
                 to = packet.popLong();
                 this.out = out;
+                this.details = "";
             }
 
-            public void run() {
+            RangeCountHandler(Packet packet, OutputStream out, String details) {
+                requestId = packet.getPayload().popU3B();
+                index = packet.getPayload().popU2B();
+                from = packet.popLong();
+                to = packet.popLong();
+                this.out = out;
+                this.details = details;
+            }
+
+            @Override
+            public void work() {
                 long result;
 
                 DataPointRT dprt = getIndexedPoint(index);
@@ -627,6 +643,48 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
                     // no op
                 }
             }
+
+            @Override
+            public int getPriority() {
+                return WorkItemPriority.HIGH.getPriority();
+            }
+
+            @Override
+            public String getDetails() {
+                return this.toString();
+            }
+
+            @Override
+            public String toString() {
+                return "RangeCountHandler{" +
+                        "details='" + details + '\'' +
+                        ", requestId=" + requestId +
+                        ", index=" + index +
+                        ", from=" + from +
+                        ", to=" + to +
+                        '}';
+            }
+        }
+
+        @Override
+        public int getPriority() {
+            return WorkItemPriority.HIGH.getPriority();
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
+
+        @Override
+        public String toString() {
+            return "ConnectionHandler{" +
+                    ", version=" + version +
+                    ", indexedXids=" + indexedXids +
+                    ", details='" + details + '\'' +
+                    ", connectionTime=" + connectionTime +
+                    ", packetsReceived=" + packetsReceived +
+                    '}';
         }
     }
 }

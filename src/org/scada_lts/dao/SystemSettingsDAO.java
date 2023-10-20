@@ -392,7 +392,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(VIEW_FORCE_FULL_SCREEN_MODE, SystemSettingsUtils.isForceFullScreenMode());
 		DEFAULT_VALUES.put(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, SystemSettingsUtils.isHideShortcutDisableFullScreen());
 		DEFAULT_VALUES.put(EVENT_PENDING_LIMIT, SystemSettingsUtils.getEventPendingLimit());
-		DEFAULT_VALUES.put(EVENT_PENDING_CACHE_ENABLED, SystemSettingsUtils.isEventPendingCacheEnabled());
+		DEFAULT_VALUES.put(EVENT_PENDING_CACHE_ENABLED, SystemSettingsUtils.getEventPendingCacheEnabled());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

@@ -23,12 +23,12 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     }
 
     @Override
-    public void workFinally(Map<String, Exception> exceptions) {
+    public void workFinally(Map<String, Throwable> exceptions) {
         this.workFinally.workFinally(exceptions);
     }
 
     @Override
-    public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
+    public void workFinallyFail(Throwable finallyException, Map<String, Throwable> exceptions) {
         this.workFinally.workFinallyFail(finallyException, exceptions);
     }
 

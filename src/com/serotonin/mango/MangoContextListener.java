@@ -64,6 +64,7 @@ import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
+import org.scada_lts.quartz.EverySecond;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -140,7 +141,7 @@ public class MangoContextListener implements ServletContextListener {
 			ApplicationBeans.getPointEventDetectorDaoBean().init();
 			log.info("Cache event detectors initialized");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 
 		try {
@@ -150,7 +151,7 @@ public class MangoContextListener implements ServletContextListener {
 			runtimeManagerInitialize(ctx);
 			
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		} finally {
 			DataSourcePointsCache.getInstance().cacheFinalized();
 		}
@@ -173,7 +174,7 @@ public class MangoContextListener implements ServletContextListener {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 		
 		try {
@@ -181,9 +182,10 @@ public class MangoContextListener implements ServletContextListener {
 			ViewHierarchyCache.getInstance();
 			log.info("Cache views hierarchy initialized");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 
+		initSchedule();
 	}
 
 	public void contextDestroyed(ServletContextEvent evt) {
@@ -647,4 +649,12 @@ public class MangoContextListener implements ServletContextListener {
 		}
 	}
 
+	private void initSchedule() {
+		try {
+			EverySecond.init();
+			log.info("Quartz EverySecond initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
 }

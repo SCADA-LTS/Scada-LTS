@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
@@ -75,19 +76,45 @@ public class EventService implements MangoEvent {
 		systemSettingsService = new SystemSettingsService();
 	}
 
-	class UserPendingEventRetriever implements Runnable {
+	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem {
 		private final int userId;
+		private final String details;
 
-		UserPendingEventRetriever(int userId) {
+		@Deprecated
+		public UserPendingEventRetriever(int userId) {
 			this.userId = userId;
+			this.details = "";
+		}
+
+		UserPendingEventRetriever(int userId, String details) {
+			this.userId = userId;
+			this.details = details;
 		}
 
 		@Override
-		public void run() {
+		public void work() {
 			addToCache(
 					userId,
 					getPendingEvents(EventType.EventSources.DATA_POINT, -1,
 							userId));
+		}
+
+		@Override
+		public int getPriority() {
+			return WorkItemPriority.HIGH.getPriority();
+		}
+
+		@Override
+		public String toString() {
+			return "UserPendingEventRetriever{" +
+					"userId=" + userId +
+					", details='" + details + '\'' +
+					'}';
+		}
+
+		@Override
+		public String getDetails() {
+			return this.toString();
 		}
 	}
 
@@ -200,8 +227,8 @@ public class EventService implements MangoEvent {
 			userEvents = Collections.emptyList();
 			addToCache(userId, userEvents);
 			//TODO rewrite to delete relation of seroUtils
-			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId);
-			Common.timer.execute(userPendingEventRetriever, WorkItemPriority.HIGH + " - dataPointId: " + dataPointId + ", userId: " + userId + " - " + userPendingEventRetriever.getClass().getName());
+			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId, "dataPointId: " + dataPointId);
+			Common.ctx.getBackgroundProcessing().addWorkItem(userPendingEventRetriever);
 		}
 		List<EventInstance> list = null;
 		for (EventInstance e : userEvents) {

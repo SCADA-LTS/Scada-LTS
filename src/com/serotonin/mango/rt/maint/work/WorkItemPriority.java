@@ -6,7 +6,8 @@ public enum WorkItemPriority {
 
     HIGH(WorkItem.PRIORITY_HIGH),
     MEDIUM(WorkItem.PRIORITY_MEDIUM),
-    LOW(WorkItem.PRIORITY_LOW);
+    LOW(WorkItem.PRIORITY_LOW),
+    IDLE(4);
 
     private final int priority;
 

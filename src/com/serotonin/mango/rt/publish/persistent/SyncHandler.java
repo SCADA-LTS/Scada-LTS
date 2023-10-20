@@ -1,12 +1,9 @@
 package com.serotonin.mango.rt.publish.persistent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,7 +17,7 @@ import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-class SyncHandler implements Runnable {
+class SyncHandler extends AbstractBeforeAfterWorkItem {
     static final Log LOG = LogFactory.getLog(SyncHandler.class);
     private static final String START_TIMES_KEY = "startTimes";
 
@@ -66,7 +63,7 @@ class SyncHandler implements Runnable {
 
     @SuppressWarnings({ "unchecked" })
     @Override
-    public void run() {
+    public void work() {
         startTimes = (Map<Integer, Long>) sendThread.publisher.getPersistentData(START_TIMES_KEY);
         if (startTimes == null)
             startTimes = new HashMap<Integer, Long>();
@@ -130,7 +127,30 @@ class SyncHandler implements Runnable {
         sendThread.sendPacket(packet);
     }
 
-    class PointSync implements Runnable {
+    @Override
+    public int getPriority() {
+        return WorkItemPriority.HIGH.getPriority();
+    }
+
+    @Override
+    public String toString() {
+        return "SyncHandler{" +
+                ", cutoff=" + cutoff +
+                ", recordsSynced=" + recordsSynced +
+                ", responseErrors=" + responseErrors +
+                ", startTimes=" + startTimes +
+                ", requestsSent=" + requestsSent +
+                ", pointsCompleted=" + pointsCompleted +
+                ", cancelled=" + cancelled +
+                '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
+    }
+
+    class PointSync extends AbstractBeforeAfterWorkItem implements Runnable {
         private final int id;
 
         private int nextRequestId;
@@ -142,7 +162,12 @@ class SyncHandler implements Runnable {
             this.id = id;
         }
 
+        @Override
         public void run() {
+            super.execute();
+        }
+
+        public void work() {
             LOG.info("PointSync " + id + " started");
 
             while (true) {
@@ -312,6 +337,27 @@ class SyncHandler implements Runnable {
                 // Break the sync thread out of the wait.
                 notify();
             }
+        }
+
+        @Override
+        public int getPriority() {
+            return WorkItemPriority.HIGH.getPriority();
+        }
+
+        @Override
+        public String toString() {
+            return "PointSync{" +
+                    "id=" + id +
+                    ", nextRequestId=" + nextRequestId +
+                    ", responseId=" + responseId +
+                    ", responseCount=" + responseCount +
+                    ", pointUpdated=" + pointUpdated +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
         }
     }
 }

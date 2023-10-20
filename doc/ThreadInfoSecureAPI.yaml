@@ -5,7 +5,7 @@ servers:
     variables: {}
 info:
   version: 2.7.6.1
-  title: Scada-LTS API
+  title: Scada-LTS API via HTTPS
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
   contact:
@@ -14,7 +14,7 @@ info:
   license:
     name: 'GPL-2.0'
 paths:
-  /threads/:
+  /threads-secure/:
     get:
       tags:
         - ThreadInfoAPI
@@ -23,7 +23,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/metrics/:
+  /threads-secure/metrics/:
     get:
       tags:
         - ThreadInfoAPI
@@ -32,7 +32,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/stack/:
+  /threads-secure/stack/:
     get:
       tags:
         - ThreadInfoAPI
@@ -41,7 +41,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/names/:
+  /threads-secure/names/:
     get:
       tags:
         - ThreadInfoAPI
@@ -50,7 +50,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/classes/:
+  /threads-secure/classes/:
     get:
       tags:
         - ThreadInfoAPI
@@ -59,7 +59,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/classes/:
+  /threads-secure/group-by/classes/:
     get:
       tags:
         - ThreadInfoAPI
@@ -68,7 +68,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/classes/count/:
+  /threads-secure/group-by/classes/count/:
     get:
       tags:
         - ThreadInfoAPI
@@ -77,7 +77,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack/:
+  /threads-secure/group-by/stack/:
     get:
       tags:
         - ThreadInfoAPI
@@ -86,7 +86,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack/classes/:
+  /threads-secure/group-by/stack/classes/:
     get:
       tags:
         - ThreadInfoAPI
@@ -95,7 +95,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack/count/:
+  /threads-secure/group-by/stack/count/:
     get:
       tags:
         - ThreadInfoAPI
@@ -104,7 +104,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack/names/:
+  /threads-secure/group-by/stack/names/:
     get:
       tags:
         - ThreadInfoAPI
@@ -113,7 +113,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/states/:
+  /threads-secure/group-by/states/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -122,7 +122,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/states/classes/:
+  /threads-secure/group-by/states/classes/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -131,7 +131,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/states/count/:
+  /threads-secure/group-by/states/count/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -140,7 +140,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/states/names/:
+  /threads-secure/group-by/states/names/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -149,7 +149,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/states/:
+  /threads-secure/states/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -158,7 +158,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/states/{state}/:
+  /threads-secure/states/{state}/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -174,7 +174,7 @@ paths:
           schema:
             type: 'string'
             enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
-  /threads/states/{state}/metrics/:
+  /threads-secure/states/{state}/metrics/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -190,7 +190,7 @@ paths:
           schema:
             type: 'string'
             enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
-  /threads/states/{state}/classes/:
+  /threads-secure/states/{state}/classes/:
     get:
       tags:
         - StateThreadInfoAPI
@@ -206,7 +206,7 @@ paths:
           schema:
             type: 'string'
             enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
-  /threads/states/{state}/names/:
+  /threads-secure/states/{state}/names/:
     get:
       tags:
         - StateThreadInfoAPI
