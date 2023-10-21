@@ -40,7 +40,9 @@ public final class SystemSettingsUtils {
     public static final String EVENT_PENDING_LIMIT_KEY = "event.pending.limit";
     public static final String EVENT_PENDING_UPDATE_LIMIT_KEY = "event.pending.update.limit";
     public static final String EVENT_PENDING_CACHE_ENABLED_KEY = "abilit.cacheEnable";
-    public static final String WORK_ITEMS_PER_SECOND_LIMIT_KEY = "workitems.persecond.limit";
+    public static final String WORK_ITEMS_REPORTING_ENABLED_KEY = "workitems.reporting.enabled";
+    public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY = "workitems.reporting.itemspersecond.enabled";
+    public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY = "workitems.reporting.itemspersecond.limit";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -291,13 +293,33 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static int getWorkItemsPerSecondLimit() {
+    public static boolean isWorkItemsReportingEnabled() {
         try {
-            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_PER_SECOND_LIMIT_KEY, "10000");
-            return Integer.parseInt(eventPendingLimit);
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(config);
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            return 10000;
+            return true;
+        }
+    }
+
+    public static boolean isWorkItemsReportingItemsPerSecondEnabled() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static int getWorkItemsReportingItemsPerSecondLimit() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY, "20000");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 20000;
         }
     }
 }

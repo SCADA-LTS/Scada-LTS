@@ -68,6 +68,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     private static void addWorkItemAfterExecuted(WorkItem workItem, boolean failed, long executedMs) {
+        if(!SystemSettingsUtils.isWorkItemsReportingEnabled())
+            return;
         if(failed)
             HISTORY_FAILED_WORK_ITEMS.add(workItem);
         if(executedMs > EXECUTED_LONGER_WORK_ITEMS_THAN)
@@ -92,6 +94,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         HISTORY_EXECUTED_WORK_ITEMS.add(workItem);
     }
     private static void addWorkItemIfNotRunning(WorkItem workItem, boolean running) {
+        if(!SystemSettingsUtils.isWorkItemsReportingEnabled())
+            return;
         if(running) {
             LOG.warn("Work items is running! : " + workItem);
         } else {
@@ -100,7 +104,8 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     protected AbstractBeforeAfterWorkItem() {
-        ALL_WORK_ITEMS.add(this);
+        if(SystemSettingsUtils.isWorkItemsReportingEnabled())
+            ALL_WORK_ITEMS.add(this);
     }
 
     @Override

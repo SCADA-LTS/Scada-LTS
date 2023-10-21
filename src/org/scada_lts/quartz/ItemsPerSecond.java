@@ -38,7 +38,8 @@ public class ItemsPerSecond implements StatefulJob {
 
     public static ItemsPerSecond fromFifteenMinutes() {
         ItemsPerSecond itemsPerSecond = new ItemsPerSecond(60*15);
-        EverySecond.schedule(itemsPerSecond);
+        if(isEnabled())
+            EverySecond.schedule(itemsPerSecond);
         return itemsPerSecond;
     }
 
@@ -59,6 +60,8 @@ public class ItemsPerSecond implements StatefulJob {
     }
 
     public int itemsPerSecond(int fromLastSeconds) {
+        if(!isEnabled())
+            return -1;
         if (fromLastSeconds > this.fromLastSeconds) {
             throw new IllegalArgumentException("The value fromLastSeconds cannot be greater than: " + this.fromLastSeconds + ", but was: " + fromLastSeconds);
         }
@@ -78,11 +81,15 @@ public class ItemsPerSecond implements StatefulJob {
     }
 
     public void increment() {
-        update(System.currentTimeMillis(), itemsPerSecondCounter, index -> index > SystemSettingsUtils.getWorkItemsPerSecondLimit(), itemsPerSecondMap);
+        if(!isEnabled())
+            return;
+        update(System.currentTimeMillis(), itemsPerSecondCounter, index -> index >= SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit(), itemsPerSecondMap);
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        if(!isEnabled())
+            return;
         long currentTime = System.currentTimeMillis();
         itemsPerSecondMap.entrySet().removeIf(time -> currentTime - time.getValue() > 1000L);
         int result = itemsPerSecondMap.size();
@@ -92,7 +99,7 @@ public class ItemsPerSecond implements StatefulJob {
     private void updateSnapshots(int result) {
         lock.writeLock().lock();
         try {
-            this.snapshotLastIndex = update(result, snapshotCounter, index -> fromLastSeconds == 1 || index > fromLastSeconds, snapshots);
+            this.snapshotLastIndex = update(result, snapshotCounter, index -> fromLastSeconds == 1 || index >= fromLastSeconds, snapshots);
         } finally {
             lock.writeLock().unlock();
         }
@@ -123,4 +130,9 @@ public class ItemsPerSecond implements StatefulJob {
         }
         return toCalc.stream().mapToInt(a -> a).sum() / fromLastSeconds;
     }
+
+    private static boolean isEnabled() {
+        return SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled() && SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit() > 0;
+    }
+
 }

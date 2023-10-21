@@ -7,18 +7,18 @@ import org.quartz.StatefulJob;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 public class EverySecond implements StatefulJob {
-    private static final ScheduleExecutor<Job> UPDATE_ITEMS_PER_SECOND = new ScheduleExecutor<>();
+    private static final ScheduleExecutor<Job> JOB_SCHEDULE_EXECUTOR = new ScheduleExecutor<>();
 
     public static void init() {
         ApplicationBeans.getBean("everySecondScheduler", CronTriggerScheduler.class).start();
     }
 
     public static void schedule(Job job) {
-        UPDATE_ITEMS_PER_SECOND.schedule(job);
+        JOB_SCHEDULE_EXECUTOR.schedule(job);
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        UPDATE_ITEMS_PER_SECOND.execute(jobExecutionContext);
+        JOB_SCHEDULE_EXECUTOR.execute(jobExecutionContext);
     }
 }
