@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.event.handlers;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -214,5 +215,12 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 	public void pointSetComplete() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String toString() {
+		return "SetPointHandlerRT{" +
+				"vo=" + LoggingUtils.eventHandlerInfo(vo) +
+				'}';
 	}
 }

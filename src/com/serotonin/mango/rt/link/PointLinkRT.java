@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.maint.work.PointLinkSetPointWorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -252,5 +253,14 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 	public void pointSetComplete() {
 		this.ready = true;
 		LOG.trace("PointLinkRT.pointSetComplete. Ready property is set to true ");
+	}
+
+	@Override
+	public String toString() {
+		return "PointLinkRT{" +
+				"vo=" + LoggingUtils.pointLinkInfo(vo) +
+				", eventType=" + eventType +
+				", ready=" + ready +
+				'}';
 	}
 }

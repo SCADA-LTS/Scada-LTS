@@ -158,7 +158,7 @@ public class ReportsApiService implements CrudService<ReportVO> {
            List<String> errors = new ArrayList<>();
            sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
                @Override
-               public void workFail(Exception exception) {
+               public void workFail(Throwable exception) {
                    errors.add(LocalizableMessage.getMessage(Common.getBundle(request),"common.default", exception.getMessage()));
                }
            }, () -> "sendTestEmail from: " + this.getClass().getName()
