@@ -34,6 +34,41 @@ public class WorkItemInfoAPI {
         return new ResponseEntity<>(response.onlyMetrics(), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/priority/{priority}")
+    public ResponseEntity<WorkItemInfoList> getCurrentWorkItemsByPriority(HttpServletRequest request,
+                                                                          @PathVariable("priority") WorkItemPriority priority) {
+        WorkItemInfoList response = workItemInfoApiService.getCurrentWorkItemsByPriority(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/priority/{priority}/metrics")
+    public ResponseEntity<WorkItemInfoList> getCurrentWorkItemsByPriorityMetrics(HttpServletRequest request,
+                                                                                 @PathVariable("priority") WorkItemPriority priority) {
+        WorkItemInfoList response = workItemInfoApiService.getCurrentWorkItemsByPriority(request, priority);
+        return new ResponseEntity<>(response.onlyMetrics(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes")
+    public ResponseEntity<Map<String, WorkItemInfoList>> getCurrentWorkItemsByPriorityGroupByClassName(HttpServletRequest request,
+                                                                                                       @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, WorkItemInfoList> response = workItemInfoApiService.getCurrentWorkItemsByPriorityGroupByClassName(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes/metrics")
+    public ResponseEntity<Map<String, WorkItemInfoList>> getCurrentWorkItemsByPriorityGroupByClassNameMetrics(HttpServletRequest request,
+                                                                                                              @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, WorkItemInfoList> response = workItemInfoApiService.getCurrentWorkItemsByPriorityGroupByClassNameMetrics(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes/count")
+    public ResponseEntity<Map<String, Long>> getCurrentWorkItemsByPriorityGroupByClassNameCount(HttpServletRequest request,
+                                                                                                @PathVariable("priority") WorkItemPriority priority) {
+        Map<String, Long>response = workItemInfoApiService.getCurrentWorkItemsByPriorityGroupByClassNameCount(request, priority);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/group-by/classes")
     public ResponseEntity<Map<String, WorkItemInfoList>> getCurrentWorkItemsGroupByClassName(HttpServletRequest request) {
         Map<String, WorkItemInfoList> response = workItemInfoApiService.getCurrentWorkItemsGroupByClassName(request);

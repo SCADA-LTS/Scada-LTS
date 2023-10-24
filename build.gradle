@@ -203,5 +203,6 @@ test {
         includeTestsMatching "org.scada_lts.utils.ThreadUtilsTest"
         includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
         includeTestsMatching "com.serotonin.util.SerializationHelperTest"
+        includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
     }
 }

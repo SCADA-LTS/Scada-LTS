@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.json;
 
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemMetrics;
+import org.scada_lts.quartz.ReadItemsPerSecond;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,25 +12,25 @@ import java.util.function.Predicate;
 import java.util.function.ToLongFunction;
 import java.util.stream.LongStream;
 
-public class WorkItemInfoList {
+import static org.scada_lts.utils.TimeUtils.toMs;
 
+public class WorkItemInfoList {
     private final int size;
 
     private final long minExecutedMs;
     private final long avgExecutedMs;
     private final long maxExecutedMs;
-
-    private final long minTimeInitMs;
-    private final long avgTimeInitMs;
-    private final long maxTimeInitMs;
-
     private final long minExecutedNanos;
     private final long avgExecutedNanos;
     private final long maxExecutedNanos;
 
+    private final long minTimeInitMs;
+    private final long avgTimeInitMs;
+    private final long maxTimeInitMs;
     private final long minTimeInitNanos;
     private final long avgTimeInitNanos;
     private final long maxTimeInitNanos;
+
     private final long itemsPerSecond;
     private final long itemsPerSecondOneMinute;
     private final long itemsPerSecondFiveMinutes;
@@ -63,30 +64,37 @@ public class WorkItemInfoList {
         this.workItemExecutes = onlyMetrics ? new ArrayList<>() : workItemInfoList.workItemExecutes;
     }
 
-    public WorkItemInfoList(List<WorkItemInfo> workItemExecutes) {
-        this.workItemExecutes = workItemExecutes;
-        this.size = workItemExecutes.size();
+    public WorkItemInfoList(List<WorkItemInfo> workItemInfoList, ReadItemsPerSecond itemsPerSecond) {
+        this.workItemExecutes = workItemInfoList;
+        this.size = workItemInfoList.size();
 
-        this.minExecutedMs = min(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedMs));
-        this.avgExecutedMs = avg(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedMs));
-        this.maxExecutedMs = max(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedMs));
+        this.minExecutedNanos = min(longStream(workItemInfoList, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
+        this.avgExecutedNanos = avg(longStream(workItemInfoList, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
+        this.maxExecutedNanos = max(longStream(workItemInfoList, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
 
-        this.minExecutedNanos = min(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
-        this.avgExecutedNanos = avg(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
-        this.maxExecutedNanos = max(longStream(workItemExecutes, WorkItemMetrics::isExecuted, WorkItemMetrics::getExecutedNanos));
+        this.minExecutedMs = toMs(minExecutedNanos);
+        this.avgExecutedMs = toMs(avgExecutedNanos);
+        this.maxExecutedMs = toMs(maxExecutedNanos);
 
-        this.minTimeInitMs = min(longStream(workItemExecutes, workItem -> workItem.getTimeInitMs() != -1, WorkItemMetrics::getTimeInitMs));
-        this.avgTimeInitMs = avg(longStream(workItemExecutes, workItem -> workItem.getTimeInitMs() != -1, WorkItemMetrics::getTimeInitMs));
-        this.maxTimeInitMs = max(longStream(workItemExecutes, workItem -> workItem.getTimeInitMs() != -1, WorkItemMetrics::getTimeInitMs));
+        this.minTimeInitNanos = min(longStream(workItemInfoList, workItem -> workItem.getTimeInitNanos() > -1, WorkItemMetrics::getTimeInitNanos));
+        this.avgTimeInitNanos = avg(longStream(workItemInfoList, workItem -> workItem.getTimeInitNanos() > -1, WorkItemMetrics::getTimeInitNanos));
+        this.maxTimeInitNanos = max(longStream(workItemInfoList, workItem -> workItem.getTimeInitNanos() > -1, WorkItemMetrics::getTimeInitNanos));
 
-        this.minTimeInitNanos = min(longStream(workItemExecutes, workItem -> workItem.getTimeInitNanos() != -1, WorkItemMetrics::getTimeInitNanos));
-        this.avgTimeInitNanos = avg(longStream(workItemExecutes, workItem -> workItem.getTimeInitNanos() != -1, WorkItemMetrics::getTimeInitNanos));
-        this.maxTimeInitNanos = max(longStream(workItemExecutes, workItem -> workItem.getTimeInitNanos() != -1, WorkItemMetrics::getTimeInitNanos));
+        this.minTimeInitMs = toMs(minTimeInitNanos);
+        this.avgTimeInitMs = toMs(avgTimeInitNanos);
+        this.maxTimeInitMs = toMs(maxTimeInitNanos);
 
-        this.itemsPerSecond = avg(workItemExecutes.stream().filter(a -> a.getItemsPerSecondOneSecond() > -1).mapToLong(WorkItemInfo::getItemsPerSecondOneSecond));
-        this.itemsPerSecondOneMinute = avg(workItemExecutes.stream().filter(a -> a.getItemsPerSecondOneMinute() > -1).mapToLong(WorkItemInfo::getItemsPerSecondOneMinute));
-        this.itemsPerSecondFiveMinutes = avg(workItemExecutes.stream().filter(a -> a.getItemsPerSecondFiveMinutes() > -1).mapToLong(WorkItemInfo::getItemsPerSecondFiveMinutes));
-        this.itemsPerSecondFifteenMinutes = avg(workItemExecutes.stream().filter(a -> a.getItemsPerSecondFifteenMinutes() > -1).mapToLong(WorkItemInfo::getItemsPerSecondFifteenMinutes));
+        if(itemsPerSecond != null) {
+            this.itemsPerSecond = itemsPerSecond.itemsPerSecond();
+            this.itemsPerSecondOneMinute = itemsPerSecond.itemsPerSecondFromOneMinute();
+            this.itemsPerSecondFiveMinutes = itemsPerSecond.itemsPerSecondFromFiveMinutes();
+            this.itemsPerSecondFifteenMinutes = itemsPerSecond.itemsPerSecondFromFifteenMinutes();
+        } else {
+            this.itemsPerSecond = -1;
+            this.itemsPerSecondOneMinute = -1;
+            this.itemsPerSecondFiveMinutes = -1;
+            this.itemsPerSecondFifteenMinutes = -1;
+        }
     }
 
     public List<WorkItemInfo> getWorkItemExecutes() {

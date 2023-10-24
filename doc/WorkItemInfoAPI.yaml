@@ -32,6 +32,86 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
+  /work-items/priority/{priority}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
   /work-items/group-by/classes/:
     get:
       tags:

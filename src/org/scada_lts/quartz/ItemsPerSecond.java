@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,17 +13,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.IntPredicate;
 
-public class ItemsPerSecond implements StatefulJob {
+public class ItemsPerSecond implements StatefulJob, ReadItemsPerSecond {
 
-    private final Log LOG = LogFactory.getLog(ItemsPerSecond.class);
+    private static final Log LOG = LogFactory.getLog(ItemsPerSecond.class);
     private final Map<Integer, Long> itemsPerSecondMap;
     private final Map<Integer, Integer> snapshots;
     private final AtomicInteger snapshotCounter;
     private final AtomicInteger itemsPerSecondCounter;
+    private final SystemSettingsService systemSettingsService;
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final int fromLastSeconds;
     private volatile int snapshotLastIndex;
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private ItemsPerSecond(int fromLastSeconds) {
         if (fromLastSeconds < 1) {
@@ -34,34 +35,40 @@ public class ItemsPerSecond implements StatefulJob {
         this.snapshotCounter = new AtomicInteger();
         this.itemsPerSecondCounter = new AtomicInteger();
         this.fromLastSeconds = fromLastSeconds;
+        this.systemSettingsService = new SystemSettingsService();
     }
 
     public static ItemsPerSecond fromFifteenMinutes() {
         ItemsPerSecond itemsPerSecond = new ItemsPerSecond(60*15);
-        if(isEnabled())
-            EverySecond.schedule(itemsPerSecond);
+        EverySecond.schedule(itemsPerSecond);
         return itemsPerSecond;
     }
 
+    @Override
     public int itemsPerSecond() {
         return itemsPerSecond(1);
     }
 
+    @Override
     public int itemsPerSecondFromOneMinute() {
         return itemsPerSecond(60);
     }
 
+    @Override
     public int itemsPerSecondFromFiveMinutes() {
         return itemsPerSecond(60*5);
     }
 
+    @Override
     public int itemsPerSecondFromFifteenMinutes() {
         return itemsPerSecond(60*15);
     }
 
+    @Override
     public int itemsPerSecond(int fromLastSeconds) {
-        if(!isEnabled())
+        if(isDisabled(systemSettingsService, true)) {
             return -1;
+        }
         if (fromLastSeconds > this.fromLastSeconds) {
             throw new IllegalArgumentException("The value fromLastSeconds cannot be greater than: " + this.fromLastSeconds + ", but was: " + fromLastSeconds);
         }
@@ -81,15 +88,17 @@ public class ItemsPerSecond implements StatefulJob {
     }
 
     public void increment() {
-        if(!isEnabled())
+        if(isDisabled(systemSettingsService, false)) {
             return;
-        update(System.currentTimeMillis(), itemsPerSecondCounter, index -> index >= SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit(), itemsPerSecondMap);
+        }
+        update(System.currentTimeMillis(), itemsPerSecondCounter, index -> index >= systemSettingsService.getWorkItemsReportingItemsPerSecondLimit(), itemsPerSecondMap);
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        if(!isEnabled())
+        if(isDisabled(systemSettingsService, false)) {
             return;
+        }
         long currentTime = System.currentTimeMillis();
         itemsPerSecondMap.entrySet().removeIf(time -> currentTime - time.getValue() > 1000L);
         int result = itemsPerSecondMap.size();
@@ -117,22 +126,27 @@ public class ItemsPerSecond implements StatefulJob {
         }
     }
 
-    private static int itemsPerSecond(int fromLastSeconds, Map<Integer, Integer> states, int snapshotLastIndex) {
+    private static int itemsPerSecond(int fromLastSeconds, Map<Integer, Integer> snapshots, int snapshotLastIndex) {
         List<Integer> toCalc = new ArrayList<>();
         int currentIndex = snapshotLastIndex;
         for(int i = 0; i < fromLastSeconds; i++) {
             if(currentIndex < 0) {
-                currentIndex = states.size() + currentIndex;
+                currentIndex = snapshots.size() + currentIndex;
             }
-            Integer stat = states.get(currentIndex);
+            Integer stat = snapshots.get(currentIndex);
             toCalc.add(Objects.requireNonNullElse(stat, 0));
             --currentIndex;
         }
         return toCalc.stream().mapToInt(a -> a).sum() / fromLastSeconds;
     }
 
-    private static boolean isEnabled() {
-        return SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled() && SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit() > 0;
+    private static boolean isDisabled(SystemSettingsService systemSettingsService, boolean log) {
+        boolean disabled = !systemSettingsService.isWorkItemsReportingEnabled()
+                || !systemSettingsService.isWorkItemsReportingItemsPerSecondEnabled()
+                || systemSettingsService.getWorkItemsReportingItemsPerSecondLimit() <= 0;
+        if(log && disabled) {
+            LOG.warn("Reporting items per second is disabled");
+        }
+        return disabled;
     }
-
 }

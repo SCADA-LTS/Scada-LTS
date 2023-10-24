@@ -625,7 +625,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{" + entriesToString(ENTRIES, 100) + '}';
+            return "BatchWriteBehind{entries size: " + ENTRIES.size() + ", instances size: " + instances.size() + '}';
         }
 
         @Override
@@ -752,19 +752,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 .stream()
                 .forEach(dp -> updateMetaDataPointByScript(user, dp.getXid()));
 
-    }
-
-    private static String entriesToString(ObjectQueue<BatchWriteBehindEntry> entries, int limit) {
-        StringBuilder entriesString = new StringBuilder();
-        limit = Math.min(entries.size(), limit);
-        for(int i=0; i < limit; i++) {
-            try {
-                entriesString.append(entryInfo(entries.peek(i))).append(", ");
-            } catch (Exception ex) {
-
-            }
-        }
-        return entriesString.toString();
     }
 }
 

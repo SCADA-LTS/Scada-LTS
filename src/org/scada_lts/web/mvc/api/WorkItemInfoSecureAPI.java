@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/work-items-secure")
+@RequestMapping(path = "/api/secure/work-items")
 public class WorkItemInfoSecureAPI {
 
     private final WorkItemInfoAPI workItemInfoAPI;
@@ -32,6 +32,36 @@ public class WorkItemInfoSecureAPI {
     @GetMapping(value = "/metrics")
     public ResponseEntity<WorkItemInfoList> getCurrentWorkItemsMetrics(HttpServletRequest request) {
         return workItemInfoAPI.getCurrentWorkItemsMetrics(request);
+    }
+
+    @GetMapping(value = "/priority/{priority}")
+    public ResponseEntity<WorkItemInfoList> getCurrentWorkItemsByPriority(HttpServletRequest request,
+                                                                          @PathVariable("priority") WorkItemPriority priority) {
+        return workItemInfoAPI.getCurrentWorkItemsByPriority(request, priority);
+    }
+
+    @GetMapping(value = "/priority/{priority}/metrics")
+    public ResponseEntity<WorkItemInfoList> getCurrentWorkItemsByPriorityMetrics(HttpServletRequest request,
+                                                                                 @PathVariable("priority") WorkItemPriority priority) {
+        return workItemInfoAPI.getCurrentWorkItemsByPriorityMetrics(request, priority);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes")
+    public ResponseEntity<Map<String, WorkItemInfoList>> getCurrentWorkItemsByPriorityGroupByClassName(HttpServletRequest request,
+                                                                                                       @PathVariable("priority") WorkItemPriority priority) {
+        return workItemInfoAPI.getCurrentWorkItemsByPriorityGroupByClassName(request, priority);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes/metrics")
+    public ResponseEntity<Map<String, WorkItemInfoList>> getCurrentWorkItemsByPriorityGroupByClassNameMetrics(HttpServletRequest request,
+                                                                                                              @PathVariable("priority") WorkItemPriority priority) {
+        return workItemInfoAPI.getCurrentWorkItemsByPriorityGroupByClassNameMetrics(request, priority);
+    }
+
+    @GetMapping(value = "/priority/{priority}/group-by/classes/count")
+    public ResponseEntity<Map<String, Long>> getCurrentWorkItemsByPriorityGroupByClassNameCount(HttpServletRequest request,
+                                                                                                @PathVariable("priority") WorkItemPriority priority) {
+        return workItemInfoAPI.getCurrentWorkItemsByPriorityGroupByClassNameCount(request, priority);
     }
 
     @GetMapping(value = "/group-by/classes")
@@ -229,7 +259,7 @@ public class WorkItemInfoSecureAPI {
 
     @GetMapping(value = "/executed/longer/{executedMs}/group-by/priority/count")
     public ResponseEntity<Map<String, Long>> getCurrentExecutedLongerWorkItemsGroupByPriorityCount(HttpServletRequest request,
-                                                                                                    @PathVariable("executedMs") int executedMs) {
+                                                                                                   @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getCurrentExecutedLongerWorkItemsGroupByPriorityCount(request, executedMs);
     }
 
@@ -309,7 +339,7 @@ public class WorkItemInfoSecureAPI {
 
     @GetMapping(value = "/executed/priority/{priority}/group-by/classes/count")
     public ResponseEntity<Map<String, Long>> getCurrentExecutedWorkItemsByPriorityGroupByClassNameCount(HttpServletRequest request,
-                                                                                          @PathVariable("priority") WorkItemPriority priority) {
+                                                                                                        @PathVariable("priority") WorkItemPriority priority) {
         return workItemInfoAPI.getCurrentExecutedWorkItemsByPriorityGroupByClassNameCount(request, priority);
     }
 
@@ -441,37 +471,37 @@ public class WorkItemInfoSecureAPI {
 
     @GetMapping(value = "/history/longer/{executedMs}/metrics")
     public ResponseEntity<WorkItemInfoList> getHistoryExecutedLongerWorkItemsMetrics(HttpServletRequest request,
-                                                                              @PathVariable("executedMs") int executedMs) {
+                                                                                     @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsMetrics(request, executedMs);
     }
 
     @GetMapping(value = "/history/longer/{executedMs}/group-by/classes")
     public ResponseEntity<Map<String, WorkItemInfoList>> getHistoryExecutedLongerWorkItemsGroupByClassName(HttpServletRequest request,
-                                                                                                    @PathVariable("executedMs") int executedMs) {
+                                                                                                           @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsGroupByClassName(request, executedMs);
     }
 
     @GetMapping(value = "/history/longer/{executedMs}/group-by/classes/metrics")
     public ResponseEntity<Map<String, WorkItemInfoList>> getHistoryExecutedLongerWorkItemsGroupByClassNameMetrics(HttpServletRequest request,
-                                                                                                           @PathVariable("executedMs") int executedMs) {
+                                                                                                                  @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsGroupByClassNameMetrics(request, executedMs);
     }
 
     @GetMapping(value = "/history/longer/{executedMs}/group-by/classes/count")
     public ResponseEntity<Map<String, Long>> getHistoryExecutedLongerWorkItemsGroupByClassNameCount(HttpServletRequest request,
-                                                                                    @PathVariable("executedMs") int executedMs) {
+                                                                                                    @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsGroupByClassNameCount(request, executedMs);
     }
 
     @GetMapping(value = "/history/longer/{executedMs}/group-by/priority")
     public ResponseEntity<Map<String, WorkItemInfoList>> getHistoryExecutedLongerWorkItemsGroupByPriority(HttpServletRequest request,
-                                                                                                           @PathVariable("executedMs") int executedMs) {
+                                                                                                          @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsGroupByPriority(request, executedMs);
     }
 
     @GetMapping(value = "/history/longer/{executedMs}/group-by/priority/metrics")
     public ResponseEntity<Map<String, WorkItemInfoList>> getHistoryExecutedLongerWorkItemsGroupByPriorityMetrics(HttpServletRequest request,
-                                                                                                          @PathVariable("executedMs") int executedMs) {
+                                                                                                                 @PathVariable("executedMs") int executedMs) {
         return workItemInfoAPI.getHistoryExecutedLongerWorkItemsGroupByPriorityMetrics(request, executedMs);
     }
 
@@ -552,7 +582,7 @@ public class WorkItemInfoSecureAPI {
     }
 
     @RestController
-    @RequestMapping(path = "/api/work-items-secure/scheduled")
+    @RequestMapping(path = "/api/secure/work-items/scheduled")
     public static class ScheduledWorkItemInfoSecureAPI {
 
         private final WorkItemInfoAPI.ScheduledWorkItemInfoAPI scheduledWorkItemInfoAPI;

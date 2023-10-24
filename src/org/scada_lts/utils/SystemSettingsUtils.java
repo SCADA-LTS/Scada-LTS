@@ -43,6 +43,7 @@ public final class SystemSettingsUtils {
     public static final String WORK_ITEMS_REPORTING_ENABLED_KEY = "workitems.reporting.enabled";
     public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY = "workitems.reporting.itemspersecond.enabled";
     public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY = "workitems.reporting.itemspersecond.limit";
+    public static final String THREADS_NAME_ADDITIONAL_LENGTH_KEY = "threads.name.additional.length";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -320,6 +321,16 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 20000;
+        }
+    }
+
+    public static int getThreadsNameAdditionalLength() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(THREADS_NAME_ADDITIONAL_LENGTH_KEY, "255");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 255;
         }
     }
 }

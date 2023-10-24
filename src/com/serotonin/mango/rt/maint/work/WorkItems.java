@@ -1,7 +1,9 @@
 package com.serotonin.mango.rt.maint.work;
 
 import org.scada_lts.quartz.ItemsPerSecond;
+import org.scada_lts.quartz.ReadItemsPerSecond;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class WorkItems {
+class WorkItems implements ReadWorkItems {
 
     private final Map<Integer, WorkItemExecute> items;
     private final int limit;
@@ -41,7 +43,7 @@ public class WorkItems {
             return;
         }
         itemsPerSecond.increment();
-        WorkItemExecute execute = new WorkItemExecute(item, serial.incrementAndGet(), itemsPerSecond);
+        WorkItemExecute execute = new WorkItemExecute(item, serial.incrementAndGet());
         int index = counter.incrementAndGet();
         if (index >= limit) {
             counter.set(0);
@@ -51,10 +53,14 @@ public class WorkItems {
         }
     }
 
+    @Override
     public List<WorkItemExecute> get() {
-        return items.values().stream()
-                .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toList());
+        return new ArrayList<>(items.values());
+    }
+
+    @Override
+    public ReadItemsPerSecond getItemsPerSecond() {
+        return itemsPerSecond;
     }
 
     @Override
@@ -64,7 +70,7 @@ public class WorkItems {
                 '}';
     }
 
-    public static class RepeatAdd {
+    static class RepeatAdd implements ReadWorkItems {
 
         private final Map<Integer, WorkItemExecute> items;
         private final int limit;
@@ -94,7 +100,7 @@ public class WorkItems {
                 return;
             }
             itemsPerSecond.increment();
-            WorkItemExecute execute = new WorkItemExecute(item, identifier == -1 ? serial.incrementAndGet() : identifier, itemsPerSecond);
+            WorkItemExecute execute = new WorkItemExecute(item, identifier == -1 ? serial.incrementAndGet() : identifier);
             int index = counter.incrementAndGet();
             if(index >= limit) {
                 counter.set(0);
@@ -115,10 +121,14 @@ public class WorkItems {
             }
         }
 
+        @Override
         public List<WorkItemExecute> get() {
-            return items.values().stream()
-                    .sorted(Comparator.reverseOrder())
-                    .collect(Collectors.toList());
+            return new ArrayList<>(items.values());
+        }
+
+        @Override
+        public ReadItemsPerSecond getItemsPerSecond() {
+            return itemsPerSecond;
         }
 
         @Override

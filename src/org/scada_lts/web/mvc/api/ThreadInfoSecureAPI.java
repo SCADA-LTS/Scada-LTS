@@ -16,7 +16,7 @@ import static org.scada_lts.utils.ThreadInfoApiUtils.Value;
 
 
 @RestController
-@RequestMapping(path = "/api/threads-secure")
+@RequestMapping(path = "/api/secure/threads")
 public class ThreadInfoSecureAPI {
 
     private final ThreadInfoAPI threadInfoAPI;

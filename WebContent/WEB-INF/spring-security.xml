@@ -72,7 +72,7 @@
         <session-management session-fixation-protection="none"/>
     </http>
 
-    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/work-items-secure/**"
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/work-items/**"
           authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
         <headers>
             <cache-control disabled="true"/>
@@ -88,13 +88,13 @@
         <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" requires-channel="https"/>
 
         <!-- Other -->
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" requires-channel="https"/>
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none"/>
     </http>
 
-    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/threads-secure/**"
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/threads/**"
           authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
         <headers>
             <cache-control disabled="true"/>
@@ -110,7 +110,7 @@
         <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" requires-channel="https"/>
 
         <!-- Other -->
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" requires-channel="https"/>
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none"/>

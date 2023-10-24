@@ -26,17 +26,5 @@ public class WorkItemInfo {
     public WorkItemPriority getPriority() {
         return workItem.getPriority();
     }
-    public long getItemsPerSecondOneSecond() {
-        return workItem.getItemsPerSecond();
-    }
-    public long getItemsPerSecondOneMinute() {
-        return workItem.getItemsPerSecondOneMinute();
-    }
-    public long getItemsPerSecondFiveMinutes() {
-        return workItem.getItemsPerSecondFiveMinutes();
-    }
-    public long getItemsPerSecondFifteenMinutes() {
-        return workItem.getItemsPerSecondFifteenMinutes();
-    }
 
 }

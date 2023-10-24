@@ -1,6 +1,5 @@
 package com.serotonin.mango.rt.maint.work;
 
-import org.scada_lts.quartz.ItemsPerSecond;
 
 import java.util.Objects;
 
@@ -10,16 +9,13 @@ public class WorkItemExecute implements Comparable<WorkItemExecute> {
     private final long serial;
     private final WorkItem workItem;
     private final WorkItemPriority priority;
-    private final ItemsPerSecond itemsPerSecond;
 
-    public WorkItemExecute(WorkItem workItem, long serial, ItemsPerSecond itemsPerSecond) {
-        this.itemsPerSecond = itemsPerSecond;
+    public WorkItemExecute(WorkItem workItem, long serial) {
         this.className = workItem.getClass().getName();
         this.workItem = workItem;
         this.serial = serial;
         this.priority = WorkItemPriority.priorityOf(workItem.getPriority());
     }
-
     public WorkItem getWorkItem() {
         return workItem;
     }
@@ -34,22 +30,6 @@ public class WorkItemExecute implements Comparable<WorkItemExecute> {
 
     public WorkItemPriority getPriority() {
         return priority;
-    }
-
-    public long getItemsPerSecond() {
-        return itemsPerSecond.itemsPerSecond();
-    }
-
-    public long getItemsPerSecondOneMinute() {
-        return itemsPerSecond.itemsPerSecondFromOneMinute();
-    }
-
-    public long getItemsPerSecondFiveMinutes() {
-        return itemsPerSecond.itemsPerSecondFromFiveMinutes();
-    }
-
-    public long getItemsPerSecondFifteenMinutes() {
-        return itemsPerSecond.itemsPerSecondFromFifteenMinutes();
     }
 
     @Override
