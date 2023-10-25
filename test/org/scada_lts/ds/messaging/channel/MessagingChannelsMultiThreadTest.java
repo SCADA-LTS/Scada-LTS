@@ -220,16 +220,16 @@ public class MessagingChannelsMultiThreadTest {
         //given:
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned1);
 
-        TestConcurrentUtils.Action<DataPointRT, Integer> action1 =
-                new TestConcurrentUtils.Action<>((dp, timeout) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Integer> action1 =
+                new TestConcurrentUtils.BiConsumerAction<>((dp, timeout) -> {
                     try {
                         messagingChannels.initChannel(dp, () -> messagingChannelOpenned1);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }, dataPointRT1, 1000);
-        TestConcurrentUtils.Action<DataPointRT, Integer> action2 =
-                new TestConcurrentUtils.Action<>((dp, timeout) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Integer> action2 =
+                new TestConcurrentUtils.BiConsumerAction<>((dp, timeout) -> {
                     try {
                         messagingChannels.removeChannel(dp);
                     } catch (Exception e) {
@@ -250,16 +250,16 @@ public class MessagingChannelsMultiThreadTest {
 
         //given:
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned1);
-        TestConcurrentUtils.Action<DataPointRT, Integer> action1 =
-                new TestConcurrentUtils.Action<>((dp, timeout) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Integer> action1 =
+                new TestConcurrentUtils.BiConsumerAction<>((dp, timeout) -> {
                     try {
                         messagingChannels.initChannel(dp, () -> messagingChannelOpenned1);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }, dataPointRT1, 1000);
-        TestConcurrentUtils.Action<DataPointRT, Integer> action2 =
-                new TestConcurrentUtils.Action<>((dp, timeout) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Integer> action2 =
+                new TestConcurrentUtils.BiConsumerAction<>((dp, timeout) -> {
                     try {
                         messagingChannels.removeChannel(dp);
                     } catch (Exception e) {
@@ -301,24 +301,24 @@ public class MessagingChannelsMultiThreadTest {
     public void when_initChannel_with_three_dataPoints_then_size_three() throws Exception {
 
         //given:
-        TestConcurrentUtils.Action<DataPointRT, Supplier<MessagingChannel>> action1 =
-                new TestConcurrentUtils.Action<>((a, b) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Supplier<MessagingChannel>> action1 =
+                new TestConcurrentUtils.BiConsumerAction<>((a, b) -> {
                     try {
                         messagingChannels.initChannel(a, b);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, dataPointRT1, () -> messagingChannelOpenned1);
-        TestConcurrentUtils.Action<DataPointRT, Supplier<MessagingChannel>> action2 =
-                new TestConcurrentUtils.Action<>((a, b) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Supplier<MessagingChannel>> action2 =
+                new TestConcurrentUtils.BiConsumerAction<>((a, b) -> {
                     try {
                         messagingChannels.initChannel(a, b);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, dataPointRT2, () -> messagingChannelOpenned2);
-        TestConcurrentUtils.Action<DataPointRT, Supplier<MessagingChannel>> action3 =
-                new TestConcurrentUtils.Action<>((a, b) -> {
+        TestConcurrentUtils.BiConsumerAction<DataPointRT, Supplier<MessagingChannel>> action3 =
+                new TestConcurrentUtils.BiConsumerAction<>((a, b) -> {
                     try {
                         messagingChannels.initChannel(a, b);
                     } catch (Exception e) {

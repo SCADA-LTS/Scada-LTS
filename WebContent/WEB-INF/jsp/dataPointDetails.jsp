@@ -414,8 +414,9 @@
     </tr>
 
     <c:set var="isRoles" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null}" />
-    <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
-    <c:if test="!isRolePublic">
+    <c:set var="isRoleAdmin" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_ADMIN')}" />
+    <c:set var="isRoleUser" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_USER')}" />
+    <c:if test="${isRoleAdmin || isRoleUser}">
     <tr>
       <td valign="top">
         <div class="borderDiv marR">
@@ -438,7 +439,8 @@
           </table>
         </div>
       </td>
-        
+      </c:if>
+      <c:if test="${isRoleAdmin}">
       <td colspan="2" valign="top">
         <div class="borderDiv">
           <span class="smallTitle" style="margin:3px;"><fmt:message key="pointDetails.userAccess"/></span>

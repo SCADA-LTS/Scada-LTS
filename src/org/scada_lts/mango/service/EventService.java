@@ -24,6 +24,8 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -32,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
-import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
@@ -75,19 +76,50 @@ public class EventService implements MangoEvent {
 		systemSettingsService = new SystemSettingsService();
 	}
 
-	class UserPendingEventRetriever implements Runnable {
+	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem implements Runnable {
 		private final int userId;
+		private final String details;
 
-		UserPendingEventRetriever(int userId) {
+		@Deprecated
+		public UserPendingEventRetriever(int userId) {
 			this.userId = userId;
+			this.details = "";
+		}
+
+		UserPendingEventRetriever(int userId, String details) {
+			this.userId = userId;
+			this.details = details;
 		}
 
 		@Override
 		public void run() {
+			super.execute();
+		}
+
+		@Override
+		public void work() {
 			addToCache(
 					userId,
 					getPendingEvents(EventType.EventSources.DATA_POINT, -1,
 							userId));
+		}
+
+		@Override
+		public int getPriority() {
+			return WorkItemPriority.HIGH.getPriority();
+		}
+
+		@Override
+		public String toString() {
+			return "UserPendingEventRetriever{" +
+					"userId=" + userId +
+					", details='" + details + '\'' +
+					'}';
+		}
+
+		@Override
+		public String getDetails() {
+			return this.toString();
 		}
 	}
 
@@ -185,20 +217,6 @@ public class EventService implements MangoEvent {
 		
 	}
 
-	@Deprecated(since = "2.7.5.4")
-	@Override
-	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
-
-		List<EventInstance> lst;
-		if (typeRef1 == -1) {
-			lst = eventDAO.getPendingEvents(typeId, userId);
-		} else {
-			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
-		}
-		return lst;
-
-	}
-
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
@@ -214,7 +232,8 @@ public class EventService implements MangoEvent {
 			userEvents = Collections.emptyList();
 			addToCache(userId, userEvents);
 			//TODO rewrite to delete relation of seroUtils
-			Common.timer.execute(new UserPendingEventRetriever(userId));
+			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId, "dataPointId: " + dataPointId);
+			Common.ctx.getBackgroundProcessing().addWorkItem(userPendingEventRetriever);
 		}
 		List<EventInstance> list = null;
 		for (EventInstance e : userEvents) {
@@ -234,13 +253,6 @@ public class EventService implements MangoEvent {
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
 	}
 
-	@Deprecated
-	@Override
-	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
-		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}
-
-
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
 		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
@@ -250,29 +262,24 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEvents(int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-		return getPendingEventsAlarmLevelMin(userId, -1, limit, false);
+		return getPendingEventsAlarmLevelMin(userId, -1, limit);
 	}
 	@Override
 	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit) {
-		return getPendingEventsAlarmLevelMin(userId, alarmLevelMin, limit, false);
-	}
-
-	@Override
-	public List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit, boolean forceDisabledCache) {
 		List<EventInstance> results = null;
 		try {
 			boolean cacheEnable = systemSettingsService.getMiscSettings().isEventPendingCacheEnabled();
-			if (!forceDisabledCache && cacheEnable) {
+			int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+			int calcLimit = limit > -1 && limit <= fromSystemSettingsLimit ? limit : fromSystemSettingsLimit;
+			if (cacheEnable) {
 				PendingEventsCache.getInstance().startUpdate();
 				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
-						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp))
+						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).reversed())
 						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
+						.limit(calcLimit)
 						.collect(Collectors.toList());
 			} else {
-				if(!forceDisabledCache)
-					PendingEventsCache.getInstance().stopUpdate();
-				int fromSystemSettingsLimit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-				int calcLimit = limit > -1 ? limit : fromSystemSettingsLimit;
+				PendingEventsCache.getInstance().stopUpdate();
 				if(alarmLevelMin > 0) {
 					results = eventDAO.getPendingEventsLimitAlarmLevelMin(userId, alarmLevelMin, calcLimit);
 				} else {

@@ -18,18 +18,23 @@
 
 package org.scada_lts.mango.service;
 
+import com.serotonin.mango.rt.event.type.AlarmLevelType;
 import com.serotonin.mango.rt.event.EventInstance;
+import org.scada_lts.login.ILoggedUsers;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserCommentDAO;
-import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class PendingEventService {
@@ -40,27 +45,47 @@ public class PendingEventService {
 
 	private final PendingEventsDAO pendingEventsDAO;
 
-	private final IUserDAO userDAO;
-
 	private final SystemSettingsService systemSettingsService;
+
+	private final IHighestAlarmLevelService highestAlarmLevelService;
+	private final ILoggedUsers loggedUsers;
 
 	public PendingEventService() {
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
+		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+		loggedUsers = ApplicationBeans.getLoggedUsersBean();
 		pendingEventsDAO = new PendingEventsDAO();
-		userDAO = ApplicationBeans.getUserDaoBean();
 		systemSettingsService = new SystemSettingsService();
 	}
 
 	public Map<Integer, List<EventInstance>> getPendingEvents() {
 
-		List<Integer> users = userDAO.getAll();
+		Set<Integer> users = loggedUsers.getUserIds();
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(userCommentDAO.getEventComments());
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
 
 		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
 		for (int userId: users) {
-			List<EventInstance> events = new CopyOnWriteArrayList<>(pendingEventsDAO.getPendingEvents(userId, comments, limit));
-			cacheEvents.put(userId, events);
+			Set<EventInstanceEqualsById> events = pendingEventsDAO.getPendingEvents(userId, comments, AlarmLevelType.NONE,
+							SystemSettingsUtils.getEventPendingUpdateLimit(), 0).stream()
+					.map(EventInstanceEqualsById::new)
+					.collect(Collectors.toSet());
+			if(!events.isEmpty()) {
+				int highestAlarmLevelForUser = highestAlarmLevelService.getAlarmLevel(User.onlyId(userId));
+				for (AlarmLevelType alarmLevelType : AlarmLevelType.getAlarmLevelsWithoutNone()) {
+					if(alarmLevelType.getCode() <= highestAlarmLevelForUser) {
+						long count = events.stream()
+								.filter(a -> a.getEventInstance().getAlarmLevel() >= alarmLevelType.getCode())
+								.count();
+						if (count < limit) {
+							events.addAll(pendingEventsDAO.getPendingEvents(userId, comments, alarmLevelType, limit, 0).stream()
+									.map(EventInstanceEqualsById::new)
+									.collect(Collectors.toSet()));
+						}
+					}
+				}
+			}
+			cacheEvents.put(userId, events.stream().map(EventInstanceEqualsById::getEventInstance).collect(Collectors.toList()));
 		}
 		return cacheEvents;
 	}
@@ -81,5 +106,29 @@ public class PendingEventService {
 			mappedUserCommentForEvent.get(key).add(uc);
 		}
 		return mappedUserCommentForEvent;
+	}
+
+	static class EventInstanceEqualsById {
+		private final EventInstance eventInstance;
+		public EventInstanceEqualsById(EventInstance eventInstance) {
+			this.eventInstance = eventInstance;
+		}
+
+		public EventInstance getEventInstance() {
+			return eventInstance;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof EventInstanceEqualsById)) return false;
+			EventInstanceEqualsById byId = (EventInstanceEqualsById) o;
+			return eventInstance.getId() == byId.eventInstance.getId();
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(eventInstance.getId());
+		}
 	}
 }

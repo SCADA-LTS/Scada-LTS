@@ -1055,5 +1055,9 @@
 	"userDetails.view.enableFullScreen": "Enable full screen mode",
 	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
 	"systemsettings.event.pendingLimit": "Event Pending Limit",
-	"systemsettings.event.pendingCacheEnabled": "Enabled Event Pending Cache"
+	"systemsettings.event.pendingCacheEnabled": "Enabled Event Pending Cache",
+	"systemsettings.workitems.reporting.enabled": "Work items reporting enabled",
+	"systemsettings.workitems.reporting.itemspersecond.enabled": "Items per second reporting enabled",
+	"systemsettings.workitems.reporting.itemspersecond.limit": "Items per second reporting limit",
+	"systemsettings.threads.name.additional.length": "Thread name length"
 }

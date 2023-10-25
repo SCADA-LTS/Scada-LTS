@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 
 public class UserCommentDaoWithCache implements IUserCommentDAO {
 
-    public final UserCommentCachable cache;
+    public final UserCommentCacheable cache;
     public final UserCommentDAO userCommentDAO;
 
-    public UserCommentDaoWithCache(UserCommentCachable cache, UserCommentDAO userCommentDAO) {
+    public UserCommentDaoWithCache(UserCommentCacheable cache, UserCommentDAO userCommentDAO) {
         this.cache = cache;
         this.userCommentDAO = userCommentDAO;
     }
@@ -58,7 +58,7 @@ public class UserCommentDaoWithCache implements IUserCommentDAO {
         try {
             userCommentDAO.update(userId);
         } finally {
-            cache.removeAll();
+            cache.resetCache();
         }
     }
 

@@ -3,7 +3,7 @@ package org.scada_lts.utils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import utils.UploadFileTestUtils;
+import utils.FileTestUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class UploadGraphicsFileUtilsTest {
     private final boolean expected;
 
     public UploadGraphicsFileUtilsTest(String fileName, boolean expected) {
-        this.filePath = UploadFileTestUtils.getResourcesPath("svg", fileName);
+        this.filePath = FileTestUtils.getResourcesPath("svg", fileName);
         this.expected = expected;
     }
 

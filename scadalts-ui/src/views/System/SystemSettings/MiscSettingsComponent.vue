@@ -61,6 +61,38 @@
                             dense
                         ></v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.workItemsReportingEnabled"
+                            :label="$t('systemsettings.workitems.reporting.enabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.workItemsReportingItemsPerSecondEnabled"
+                            :label="$t('systemsettings.workitems.reporting.itemspersecond.enabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.workItemsReportingItemsPerSecondLimit"
+                            :label="$t('systemsettings.workitems.reporting.itemspersecond.limit')"
+                            @change="watchDataChange()"
+                            type="number"
+                            dense
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.threadsNameAdditionalLength"
+                            :label="$t('systemsettings.threads.name.additional.length')"
+                            @change="watchDataChange()"
+                            type="number"
+                            dense
+                        ></v-text-field>
+                    </v-col>
                 </v-row>
 			</v-card-text>
 		</v-card>

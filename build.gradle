@@ -10,6 +10,8 @@ plugins {
     id 'java'
 }
 
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
@@ -197,5 +199,10 @@ test {
         includeTestsMatching "org.scada_lts.dao.IsEventDetectorXidUniqueTest"
         includeTestsMatching "com.serotonin.mango.view.export.CsvWriterTest"
         includeTestsMatching "com.serotonin.mango.util.EmailValidatorTest"
+        includeTestsMatching "com.serotonin.mango.vo.LoggedUserTestsSuite"
+        includeTestsMatching "org.scada_lts.utils.ThreadUtilsTest"
+        includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
+        includeTestsMatching "com.serotonin.util.SerializationHelperTest"
+        includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
     }
 }

@@ -32,10 +32,10 @@ public class TestConcurrentUtils {
         executor.shutdownNow();
     }
 
-    public static void biConsumer(int numberOfLaunches, List<Action<?, ?>> actions) {
+    public static void biConsumer(int numberOfLaunches, List<SupplierVoid> actions) {
         ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches * actions.size());
         List<Runnable> runnables = new ArrayList<>();
-        for(Action<?, ?> action: actions) {
+        for(SupplierVoid action: actions) {
             runnables.add(action::execute);
         }
         MultiThreadEngine.execute(executor, numberOfLaunches, runnables);
@@ -92,19 +92,64 @@ public class TestConcurrentUtils {
         void execute();
     }
 
-    public static class Action<A, B> {
-        private BiConsumer<A, B> fun;
+    public static class BiConsumerAction<A, B> implements SupplierVoid {
+        private final BiConsumer<A, B> fun;
         A keyA;
         B keyB;
 
-        public Action(BiConsumer<A, B> fun, A keyA, B keyB) {
+        public BiConsumerAction(BiConsumer<A, B> fun, A keyA, B keyB) {
             this.fun = fun;
             this.keyA = keyA;
             this.keyB = keyB;
         }
 
+        @Override
         public void execute() {
             fun.accept(keyA, keyB);
+        }
+    }
+
+    public static class ConsumerAction<A> implements SupplierVoid {
+        private final Consumer<A> fun;
+        A keyA;
+
+        public ConsumerAction(Consumer<A> fun, A keyA) {
+            this.fun = fun;
+            this.keyA = keyA;
+        }
+        @Override
+        public void execute() {
+            fun.accept(keyA);
+        }
+    }
+
+    public static class FunctionAction<A, R> implements SupplierVoid {
+        private final Function<A, R> fun;
+        A keyA;
+
+        public FunctionAction(Function<A, R> fun, A keyA) {
+            this.fun = fun;
+            this.keyA = keyA;
+        }
+        @Override
+        public void execute() {
+            fun.apply(keyA);
+        }
+    }
+
+    public static class BiFunctionAction<A, B, R> implements SupplierVoid {
+        private final BiFunction<A, B, R> fun;
+        A keyA;
+        B keyB;
+
+        public BiFunctionAction(BiFunction<A, B, R> fun, A keyA, B keyB) {
+            this.fun = fun;
+            this.keyA = keyA;
+            this.keyB = keyB;
+        }
+        @Override
+        public void execute() {
+            fun.apply(keyA, keyB);
         }
     }
 }

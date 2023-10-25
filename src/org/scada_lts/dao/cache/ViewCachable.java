@@ -3,6 +3,7 @@ package org.scada_lts.dao.cache;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.springframework.cache.annotation.*;
 
 import java.util.List;
@@ -14,7 +15,6 @@ public interface ViewCachable {
     @Caching(evict = {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "view_by_id", key = "#view.id"),
-            @CacheEvict(cacheNames = "view_by_xid", key = "#view.xid"),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
@@ -24,7 +24,6 @@ public interface ViewCachable {
     @Caching(evict = {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "view_by_id", key = "#p0"),
-            @CacheEvict(cacheNames = "view_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #p0")
@@ -32,9 +31,7 @@ public interface ViewCachable {
     void delete(int viewId);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "view_by_id", key = "#view.id"),
-            @CacheEvict(cacheNames = "view_by_xid", key = "#view.xid"),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
@@ -42,7 +39,7 @@ public interface ViewCachable {
     void update(View view);
 
     @Cacheable(cacheNames = "view_list", key = "'views'")
-    List<View> findAll();
+    List<ScadaObjectIdentifier> findIdentifiers();
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
@@ -59,7 +56,7 @@ public interface ViewCachable {
     })
     void deleteViewForUser(int viewId, int userId);
 
-    @Cacheable(cacheNames = "permission_view_list_by_user", key = "#p0", condition = "#userId != 0")
+    @Cacheable(cacheNames = "permission_view_list_by_user", key = "#p0", condition = "#p0 > -1")
     List<ViewAccess> selectViewPermissions(int userId);
 
     @Caching(evict = {
@@ -75,15 +72,25 @@ public interface ViewCachable {
     int[] deletePermissions(int userId, List<ViewAccess> toRemove);
 
 
-    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #p0", condition = "#viewId != 0")
+    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #p0", condition = "#p0 > 0")
     List<ShareUser> selectShareUsers(int viewId);
 
-    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0", condition = "#viewId != 0")
+    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0", condition = "#p0 > 0")
     List<ShareUser> selectShareUsersFromProfile(int viewId);
 
-    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#viewId != 0", unless = "#result == null")
+    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#p0 > 0", unless="#result == null")
     View findById(int viewId);
 
-    @Cacheable(cacheNames = "view_by_xid", key = "#viewXid", condition = "#viewXid != null", unless = "#result == null")
-    View findByXid(String viewXid);
+    @CachePut(cacheNames = "view_by_id", key = "#view.id", condition = "#view != null && #view.id > 0")
+    default View put(View view) {
+        return view;
+    }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "view_list", allEntries = true),
+            @CacheEvict(cacheNames = "view_by_id", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
+    })
+    default void resetCache() {}
 }

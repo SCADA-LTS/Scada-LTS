@@ -360,15 +360,6 @@ public class DataPointDAO {
 		return entity;
 	}
 
-	@Deprecated
-	public List<ScadaObjectIdentifier> getSimpleList() {
-		return findIdentifiers();
-	}
-
-	public List<DataPointVO> getAll() {
-		return null;
-	}
-
 	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
 		return getDataPoint(id);
 	}
@@ -485,7 +476,11 @@ public class DataPointDAO {
 	}
 
 	public List<ScadaObjectIdentifier> findIdentifiers() {
-		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		ScadaObjectIdentifierRowMapper mapper = new ScadaObjectIdentifierRowMapper.Builder()
+				.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+				.idColumnName(COLUMN_NAME_ID)
+				.xidColumnName(COLUMN_NAME_XID)
+				.build();
 		return DAO.getInstance().getJdbcTemp()
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}

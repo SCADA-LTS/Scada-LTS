@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 
 public class MultiThreadEngine {
 
-    private static Logger logger = LoggerFactory.getLogger(MultiThreadEngine.class);
+    private static Logger LOG = LoggerFactory.getLogger(MultiThreadEngine.class);
 
     public static void execute(final Executor executor, int concurrency, final Runnable action) {
         final CountDownLatch ready = new CountDownLatch(concurrency);
@@ -24,7 +24,7 @@ public class MultiThreadEngine {
                     start.await();
                     action.run();
                 } catch (InterruptedException ex) {
-                    logger.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 } finally {
                     done.countDown();
                 }
@@ -35,9 +35,9 @@ public class MultiThreadEngine {
             long startNanos = System.nanoTime();
             start.countDown();
             done.await();
-            logger.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+            LOG.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
         }
     }
 
@@ -54,7 +54,7 @@ public class MultiThreadEngine {
                     R result = action.call();
                     results.add(result);
                 } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 } finally {
                     done.countDown();
                 }
@@ -65,9 +65,9 @@ public class MultiThreadEngine {
             long startNanos = System.nanoTime();
             start.countDown();
             done.await();
-            logger.info("time: {}", (System.nanoTime() - startNanos) / 1000000000.0);
+            LOG.info("time: {}", (System.nanoTime() - startNanos) / 1000000000.0);
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
         }
         return results;
     }
@@ -84,7 +84,7 @@ public class MultiThreadEngine {
                         start.await();
                         runnable.run();
                     } catch (InterruptedException ex) {
-                        logger.error(ex.getMessage(), ex);
+                        LOG.error(ex.getMessage(), ex);
                     } finally {
                         done.countDown();
                     }
@@ -96,9 +96,9 @@ public class MultiThreadEngine {
             long startNanos = System.nanoTime();
             start.countDown();
             done.await();
-            logger.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+            LOG.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
         }
     }
 }

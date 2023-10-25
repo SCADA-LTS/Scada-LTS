@@ -12,13 +12,17 @@ import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
-import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.utils.security.ScadaEscapeUtils;
+import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+
 
 @JsonRemoteEntity
 public class ChartComparatorComponent extends HtmlComponent {
@@ -62,11 +66,13 @@ public class ChartComparatorComponent extends HtmlComponent {
 		// sb.append("<div style='width:" + width + "px; height:" + height
 		// + "px; border: 1px solid black;'>");
 		sb.append("<div>");
-
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4"));
+		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(new DataPointDAO());
+		User user = Common.getUser();
+		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", dataPoints));
 		sb.append("<div style='float:right;'><input type='button' style='width: 100%;' value='Atualizar' onclick=\"updateChartComparatorComponent('"
 				+ idPrefix + "'," + width + "," + height + ");\" /> </div>");
 		sb.append("<div style='clear:both;'> </div>");
@@ -100,16 +106,15 @@ public class ChartComparatorComponent extends HtmlComponent {
 		return sb.toString();
 	}
 
-	private String createDataPointsSelectComponent(String idPrefix) {
-		List<DataPointVO> dataPoints = new DataPointDao().getDataPoints(null,
-				false);
+	private String createDataPointsSelectComponent(String idPrefix, List<ScadaObjectIdentifier> dataPoints) {
+
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<select style='float:left;'  id='" + idPrefix + "'>");
 
 		sb.append("<option value='0'> &nbsp; </option>");
 
-		for (DataPointVO dp : dataPoints) {
+		for (ScadaObjectIdentifier dp : dataPoints) {
 			sb.append("<option value='" + dp.getId() + "'> " + ScadaEscapeUtils.escapeXml(dp.getName())
 					+ "</option>");
 		}

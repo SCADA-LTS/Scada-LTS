@@ -1,17 +1,23 @@
 package org.scada_lts.web.mvc.api.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ScheduledWorkItemInfoList {
+public class ScheduledWorkItemInfoList<T> {
     private final int size;
-    private final List<ScheduledWorkItem> workItemScheduled;
+    private final List<T> workItemScheduled;
 
-    public ScheduledWorkItemInfoList(List<ScheduledWorkItem> workItemScheduled) {
+    public ScheduledWorkItemInfoList(List<T> workItemScheduled) {
         this.workItemScheduled = workItemScheduled;
         this.size = workItemScheduled.size();
     }
 
-    public List<ScheduledWorkItem> getWorkItemScheduled() {
+    public ScheduledWorkItemInfoList(int size) {
+        this.workItemScheduled = new ArrayList<>();
+        this.size = size;
+    }
+
+    public List<T> getWorkItemScheduled() {
         return workItemScheduled;
     }
 

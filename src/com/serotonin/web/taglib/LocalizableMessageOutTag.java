@@ -13,6 +13,9 @@ public class LocalizableMessageOutTag extends OutTag {
         if(localizationContext == null) {
             localizationContext = (LocalizationContext) Config.find(this.pageContext, Config.FMT_LOCALIZATION_CONTEXT);
         }
+        if(message == null) {
+            message = new LocalizableMessage("common.noMessage");
+        }
         super.setValue(message.getLocalizedMessage(localizationContext.getResourceBundle()));
     }
 

@@ -169,7 +169,7 @@
     <constructor-arg value="org.scada_lts.quartz.ResetCacheHighestAlarmLevel" type="java.lang.Class"/>
   </bean>
 
-  <bean id="resetHighestAlarmLevelScheduler" class="org.scada_lts.quartz.CronTriggerScheduler">
+  <bean id="resetHighestAlarmLevelScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
     <constructor-arg ref="schedulerFactory"/>
     <constructor-arg ref="resetHighestAlarmLevelTrigger"/>
     <constructor-arg ref="resetHighestAlarmLevelJob"/>
@@ -244,4 +244,24 @@
     <constructor-arg ref="pointEventDetectorCache"/>
   </bean>
   <!-- -->
+
+  <bean id="loggedUsers" class="org.scada_lts.login.LoggedUsers" />
+
+  <bean id="everySecondTrigger" class="org.quartz.CronTrigger">
+    <constructor-arg value="Quartz - trigger-EverySecondTrigger"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="0/1 * * ? * *"/>
+  </bean>
+
+  <bean id="everySecondJobDetail" class="org.quartz.JobDetail">
+    <constructor-arg value="Quartz - job-EverySecond"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="org.scada_lts.quartz.EverySecond" type="java.lang.Class"/>
+  </bean>
+
+  <bean id="everySecondScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
+    <constructor-arg ref="schedulerFactory"/>
+    <constructor-arg ref="everySecondTrigger"/>
+    <constructor-arg ref="everySecondJobDetail"/>
+  </bean>
 </beans>

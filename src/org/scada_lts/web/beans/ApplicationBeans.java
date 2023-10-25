@@ -5,6 +5,8 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
+import org.scada_lts.login.ILoggedUsers;
+import org.scada_lts.login.LoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -37,7 +39,7 @@ public class ApplicationBeans {
     }
 
     public static IUserDAO getUserDaoBean() {
-        boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCachable.CACHE_ENABLED_KEY, true);
+        boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCacheable.CACHE_ENABLED_KEY, true);
         return userCacheEnabled ?
                 getBeanFromContext("userDaoWithCache", IUserDAO.class) :
                 getBeanFromContext("userDAO", IUserDAO.class);
@@ -98,19 +100,19 @@ public class ApplicationBeans {
     }
 
     public static IHighestAlarmLevelService getHighestAlarmLevelServiceBean() {
-        boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
+        boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCacheable.CACHE_ENABLED_KEY, true);
         return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
                 getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
     }
 
     public static UserCommentService getUserCommentServiceBean() {
-        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCacheable.CACHE_ENABLED_KEY, true);
         return userCommentCacheEnabled ? getBeanFromContext("userCommentServiceWithCache", UserCommentService.class) :
                 getBeanFromContext("userCommentService", UserCommentService.class);
     }
 
     public static IUserCommentDAO getUserCommentDaoBean() {
-        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCacheable.CACHE_ENABLED_KEY, true);
         return userCommentCacheEnabled ?
                 getBeanFromContext("userCommentDaoWithCache", IUserCommentDAO.class) :
                 getBeanFromContext("userCommentDAO", IUserCommentDAO.class);
@@ -145,6 +147,10 @@ public class ApplicationBeans {
 
     public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
         return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+    }
+
+    public static ILoggedUsers getLoggedUsersBean() {
+        return getBeanFromContext("loggedUsers", LoggedUsers.class);
     }
 
     @Deprecated

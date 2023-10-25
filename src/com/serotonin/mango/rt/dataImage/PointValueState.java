@@ -15,16 +15,16 @@ public class PointValueState {
     private final boolean logValue;
     private final boolean saveValue;
     private final boolean backdated;
-    private static final PointValueState EMPTY = new PointValueState(null, null, null);
+    private static final PointValueState EMPTY = new PointValueState(null, null, null, null);
 
-    private PointValueState(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
+    private PointValueState(PointValueTime newValue, PointValueState oldState, DataPointVO vo, SetPointSource source) {
         if(oldState != null && newValue != null) {
             this.newValue = newValue;
             this.oldValue = oldState.getNewValue();
-            this.logValue = PointValueStateUtils.isLogValue(newValue, oldState, vo);
+            this.logValue = PointValueStateUtils.isLogValue(newValue, oldState, vo, source);
             this.toleranceOrigin = PointValueStateUtils.getToleranceOrigin(newValue, oldState, logValue);
             this.saveValue = PointValueStateUtils.isSaveValue(vo, logValue);
-            this.backdated = PointValueStateUtils.isBackdated(newValue, oldState);
+            this.backdated = PointValueStateUtils.isBackdated(newValue, oldState, source);
         } else {
             this.newValue = null;
             this.oldValue = null;
@@ -36,13 +36,17 @@ public class PointValueState {
     }
 
     public static PointValueState newState(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
+        return newState(newValue, oldState, vo, null);
+    }
+
+    public static PointValueState newState(PointValueTime newValue, PointValueState oldState, DataPointVO vo, SetPointSource source) {
         if(vo == null)
             throw new IllegalArgumentException(PointValueState.class.getName() + " - DataPointVO class object cannot be null.");
         if(newValue != null && oldState == null)
             throw new IllegalArgumentException(PointValueState.class.getName() + " - An object of class PointValueTime representing newValue is not null then oldState cannot be null.");
         if(newValue == null)
             return empty();
-        return new PointValueState(newValue, oldState, vo);
+        return new PointValueState(newValue, oldState, vo, source);
     }
 
     public static PointValueState empty() {

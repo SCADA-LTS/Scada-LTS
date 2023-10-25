@@ -101,7 +101,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
             return;
         }
 
-        createAndUpdateState(newValue, getVO()).ifPresent(state -> {
+        createAndUpdateState(newValue, getVO(), source).ifPresent(state -> {
             try {
                 savePointValue(source, async, state);
             } catch (Exception ex) {
@@ -124,7 +124,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     public void initialize() {
         // Get the latest value for the point from the database.
         PointValueTime lastValue = getPointValueCache().getLatestPointValue();
-        createAndUpdateState(lastValue, getVO());
+        createAndUpdateState(lastValue, getVO(), null);
         super.initialize();
     }
 
@@ -133,7 +133,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         getPointValueCache().reset();
         if (getVO().getLoggingType() != DataPointVO.LoggingTypes.NONE) {
             PointValueTime lastValue = getPointValueCache().getLatestPointValue();
-            createAndUpdateState(lastValue, getVO());
+            createAndUpdateState(lastValue, getVO(), null);
         }
     }
 
@@ -195,10 +195,10 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         return "DataPointSynchronizedRT(id=" + getId() + ", name=" + getVO().getName() + ")";
     }
 
-    private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo) {
+    private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo, SetPointSource source) {
         lock.writeLock().lock();
         try {
-            pointValueState = PointValueState.newState(newValue, pointValueState, vo);
+            pointValueState = PointValueState.newState(newValue, pointValueState, vo, source);
             return Optional.of(pointValueState);
         } catch(Exception ex) {
             LOG.error(ex.getMessage(), ex);
