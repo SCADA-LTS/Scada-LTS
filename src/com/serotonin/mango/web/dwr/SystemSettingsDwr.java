@@ -164,6 +164,14 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getEventPendingLimit());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
 				systemSettingsService.getMiscSettings().isEventPendingCacheEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED,
+				systemSettingsService.getMiscSettings().isWorkItemsReportingEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED,
+				systemSettingsService.getMiscSettings().isWorkItemsReportingItemsPerSecondEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT,
+				systemSettingsService.getMiscSettings().getWorkItemsReportingItemsPerSecondLimit());
+		settings.put(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH,
+				systemSettingsService.getMiscSettings().getThreadsNameAdditionalLength());
 		return settings;
 	}
 
@@ -313,7 +321,9 @@ public class SystemSettingsDwr extends BaseDwr {
 	
 	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
 											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
-											int eventPendingLimit, boolean eventPendingCacheEnabled) {
+											int eventPendingLimit, boolean eventPendingCacheEnabled,
+											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
+											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -334,6 +344,28 @@ public class SystemSettingsDwr extends BaseDwr {
 			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
 		}
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, eventPendingCacheEnabled);
+		if(eventPendingLimit < 0) {
+			response.addContextualMessage(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, "validate.invalidValue");
+		} else {
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, threadsNameAdditionalLength);
+		}
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, workItemsReportingEnabled);
+		if(workItemsReportingEnabled) {
+			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, workItemsReportingItemsPerSecondEnabled);
+			if(workItemsReportingItemsPerSecondEnabled) {
+				if (workItemsReportingItemsPerSecondLimit < 0) {
+					response.addContextualMessage(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, "validate.invalidValue");
+				} else {
+					systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, workItemsReportingItemsPerSecondLimit);
+				}
+			} else {
+				systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
+			}
+		} else {
+			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, false);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
+		}
+
 		return response;
 	}
 

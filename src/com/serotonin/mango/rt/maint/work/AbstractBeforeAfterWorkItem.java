@@ -2,65 +2,90 @@ package com.serotonin.mango.rt.maint.work;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.ThreadUtils;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.scada_lts.utils.TimeUtils.toMs;
 
 public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
         AfterWork, AfterWork.WorkSuccessFail, AfterWork.WorkFinally {
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
-    private static final WorkItems FAILED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getFailedWorkItemsLimit());
+    private static final WorkItems ALL_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getWorkItemsLimit());
+    private static final WorkItems HIGH_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryHighPriorityWorkItemsLimit());
+    private static final WorkItems MEDIUM_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryMediumPriorityWorkItemsLimit());
+    private static final WorkItems LOW_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryLowPriorityWorkItemsLimit());
+    private static final WorkItems HISTORY_EXECUTED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryWorkItemsLimit());
+    private static final WorkItems HISTORY_FAILED_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getFailedWorkItemsLimit());
     private static final WorkItems HISTORY_PROCESS_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryProcessWorkItemsLimit());
     private static final WorkItems HISTORY_HIGH_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryHighPriorityWorkItemsLimit());
     private static final WorkItems HISTORY_MEDIUM_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryMediumPriorityWorkItemsLimit());
     private static final WorkItems HISTORY_LOW_PRIORITY_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryLowPriorityWorkItemsLimit());
-    private static final WorkItems RUNNING_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getRunningWorkItemsLimit(), SystemSettingsUtils.getRepeatRunningWorkItems());
-    private static final WorkItems EXECUTED_LONGER_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryExecutedLongerWorkItemsLimit());
+    private static final WorkItems HISTORY_EXECUTED_LONGER_WORK_ITEMS = new WorkItems(SystemSettingsUtils.getHistoryExecutedLongerWorkItemsLimit());
+    private static final WorkItems.RepeatAdd RUNNING_WORK_ITEMS = new WorkItems.RepeatAdd(SystemSettingsUtils.getRunningWorkItemsLimit(), SystemSettingsUtils.getRepeatRunningWorkItems());
     private static final int EXECUTED_LONGER_WORK_ITEMS_THAN = SystemSettingsUtils.getHistoryExecutedLongerWorkItemsThan();
-    private volatile boolean executed = false;
+    private final SystemSettingsService systemSettingsService;
+    private final LocalDateTime createdDate = LocalDateTime.now();
     private volatile boolean success = false;
     private volatile boolean workFailed = false;
     private volatile boolean running = false;
-    private volatile int executedMs = -1;
     private volatile String threadName = "";
     private volatile String failedMessage = "";
-    private volatile String workFailedMessage = "";
+    private volatile LocalDateTime startedDate = null;
     private volatile LocalDateTime executedDate = null;
-    private final LocalDateTime createdDate = LocalDateTime.now();
-    private final String suffixThreadName = ThreadUtils.reduceName(" - " + WorkItemPriority.priorityOf(getPriority()) + " - " + this.getDetails());
 
-    public static WorkItems failedWorkItems() {
-        return FAILED_WORK_ITEMS;
-    }
-    public static WorkItems runningWorkItems() {
+    static ReadWorkItems getRunningWorkItems() {
         return RUNNING_WORK_ITEMS;
     }
-    public static WorkItems executedLongerWorkItems() {
-        return EXECUTED_LONGER_WORK_ITEMS;
+    static ReadWorkItems getHistoryFailedWorkItems() {
+        return HISTORY_FAILED_WORK_ITEMS;
     }
-    public static WorkItems processWorkItems() {
+    static ReadWorkItems getHistoryExecutedLongerWorkItems() {
+        return HISTORY_EXECUTED_LONGER_WORK_ITEMS;
+    }
+    static ReadWorkItems getHistoryProcessWorkItems() {
         return HISTORY_PROCESS_WORK_ITEMS;
     }
-    public static WorkItems highPriorityWorkItems() {
+    static ReadWorkItems getHistoryHighPriorityWorkItems() {
         return HISTORY_HIGH_PRIORITY_WORK_ITEMS;
     }
-    public static WorkItems mediumPriorityWorkItems() {
+    static ReadWorkItems getHistoryMediumPriorityWorkItems() {
         return HISTORY_MEDIUM_PRIORITY_WORK_ITEMS;
     }
-    public static WorkItems lowPriorityWorkItems() {
+    static ReadWorkItems getHistoryLowPriorityWorkItems() {
         return HISTORY_LOW_PRIORITY_WORK_ITEMS;
     }
+    static ReadWorkItems getHistoryExecutedWorkItems() {
+        return HISTORY_EXECUTED_WORK_ITEMS;
+    }
+    static ReadWorkItems getAllPriorityWorkItems() {
+        return ALL_PRIORITY_WORK_ITEMS;
+    }
+    static ReadWorkItems getLowWorkItems() {
+        return LOW_PRIORITY_WORK_ITEMS;
+    }
+    static ReadWorkItems getMediumWorkItems() {
+        return MEDIUM_PRIORITY_WORK_ITEMS;
+    }
+    static ReadWorkItems getHighWorkItems() {
+        return HIGH_PRIORITY_WORK_ITEMS;
+    }
 
-    private static void addWorkItemAfterExecuted(WorkItem workItem, boolean failed, int executedMs) {
+    private static void addWorkItemAfterExecuted(WorkItem workItem, boolean failed, long executedMs,
+                                                 SystemSettingsService systemSettingsService) {
+        if(!isEnabled(systemSettingsService))
+            return;
         if(failed)
-            FAILED_WORK_ITEMS.add(workItem);
+            HISTORY_FAILED_WORK_ITEMS.add(workItem);
         if(executedMs > EXECUTED_LONGER_WORK_ITEMS_THAN)
-            EXECUTED_LONGER_WORK_ITEMS.add(workItem);
+            HISTORY_EXECUTED_LONGER_WORK_ITEMS.add(workItem);
         if(workItem instanceof ProcessWorkItem || workItem instanceof ProcessWorkItem.InputReader
                 || workItem instanceof ProcessWorkItem.ProcessTimeout)
             HISTORY_PROCESS_WORK_ITEMS.add(workItem);
@@ -75,8 +100,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 HISTORY_LOW_PRIORITY_WORK_ITEMS.add(workItem);
                 break;
         }
+        HISTORY_EXECUTED_WORK_ITEMS.add(workItem);
     }
-    private static void addWorkItemIfNotRunning(WorkItem workItem, boolean running) {
+    private static void addWorkItemIfNotRunning(WorkItem workItem, boolean running, SystemSettingsService systemSettingsService) {
+        if(!isEnabled(systemSettingsService))
+            return;
         if(running) {
             LOG.warn("Work items is running! : " + workItem);
         } else {
@@ -84,32 +112,48 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         }
     }
 
+    protected AbstractBeforeAfterWorkItem() {
+        this.systemSettingsService = new SystemSettingsService();
+        if(isEnabled(systemSettingsService)) {
+            switch (WorkItemPriority.priorityOf(getPriority())) {
+                case HIGH:
+                    HIGH_PRIORITY_WORK_ITEMS.add(this);
+                    break;
+                case MEDIUM:
+                    MEDIUM_PRIORITY_WORK_ITEMS.add(this);
+                    break;
+                case LOW:
+                    LOW_PRIORITY_WORK_ITEMS.add(this);
+                    break;
+            }
+            ALL_PRIORITY_WORK_ITEMS.add(this);
+        }
+    }
+
     @Override
     public final void execute() {
-        long startMs = System.currentTimeMillis();
-        this.threadName = Thread.currentThread().getName();
-        if(!StringUtils.isEmpty(this.suffixThreadName))
-            Thread.currentThread().setName(this.threadName + this.suffixThreadName);
         boolean runningNow = this.running;
         this.running = true;
-        this.executedMs = -1;
+        this.threadName = Thread.currentThread().getName();
+        String suffix = suffixThreadName();
+        if(!StringUtils.isEmpty(suffix))
+            Thread.currentThread().setName(this.threadName + suffix);
+        this.startedDate = LocalDateTime.now();
+        addWorkItemIfNotRunning(this, runningNow, systemSettingsService);
         this.workFailed = false;
-        this.executed = false;
+        this.executedDate = null;
         this.success = false;
         this.failedMessage = "";
-        this.workFailedMessage = "";
-        addWorkItemIfNotRunning(this, runningNow);
         boolean failed = false;
-        boolean workFailedTemp = false;
         String msg = "";
-        Map<String, Exception> exceptions = new HashMap<>();
+        Map<String, Throwable> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
-            } catch (Exception beforeWorkException) {
-                workFailedTemp = true;
+            } catch (Throwable beforeWorkException) {
+                this.workFailed = true;
+                msg = msg + "beforeWorkException: " +  beforeWorkException.getMessage() + "; ";
                 failed = true;
-                msg = beforeWorkException.getMessage();
                 exceptions.put("beforeWork", beforeWorkException);
                 try {
                     beforeWorkFail(beforeWorkException);
@@ -121,14 +165,14 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             }
             try {
                 work();
-            } catch (Exception workException) {
-                workFailedTemp = true;
+            } catch (Throwable workException) {
+                this.workFailed = true;
+                msg = msg + "workException: " +  workException.getMessage() + "; ";
                 failed = true;
-                msg = workException.getMessage();
                 exceptions.put("work", workException);
                 try {
                     workFail(workException);
-                } catch (Exception workFailException) {
+                } catch (Throwable workFailException) {
                     LOG.error(workFailException.getMessage(), workFailException);
                     exceptions.put("workFail", workFailException);
                 }
@@ -136,13 +180,13 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             }
             try {
                 workSuccess();
-            } catch (Exception workSuccessException) {
+            } catch (Throwable workSuccessException) {
+                msg = msg + "workSuccessException: " +  workSuccessException.getMessage() + "; ";
                 failed = true;
-                msg = workSuccessException.getMessage();
                 exceptions.put("workSuccess", workSuccessException);
                 try {
                     workSuccessFail(workSuccessException);
-                } catch (Exception workSuccessFailException) {
+                } catch (Throwable workSuccessFailException) {
                     LOG.error(workSuccessFailException.getMessage(), workSuccessFailException);
                     exceptions.put("workSuccessFail", workSuccessFailException);
                 }
@@ -151,27 +195,24 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         } finally {
             try {
                 workFinally(exceptions);
-            } catch (Exception workFinallyException) {
+            } catch (Throwable workFinallyException) {
+                msg = msg + "workFinallyException: " +  workFinallyException.getMessage() + "; ";
                 failed = true;
-                this.failedMessage = workFinallyException.getMessage();
                 exceptions.put("workFinally", workFinallyException);
                 try {
                     workFinallyFail(workFinallyException, exceptions);
-                } catch (Exception workFinallyFailException) {
+                } catch (Throwable workFinallyFailException) {
                     LOG.error(workFinallyFailException.getMessage(), workFinallyFailException);
                     exceptions.put("workFinallyFail", workFinallyFailException);
                 }
             }
+            this.failedMessage = msg;
             this.success = !failed;
-            this.workFailed = workFailedTemp;
-            this.executedMs = (int)(System.currentTimeMillis() - startMs);
-            this.executed = true;
-            this.workFailedMessage = msg;
-            addWorkItemAfterExecuted(this, failed, executedMs);
-            this.running = false;
-            if(!StringUtils.isEmpty(this.suffixThreadName))
-                Thread.currentThread().setName(this.threadName);
             this.executedDate = LocalDateTime.now();
+            addWorkItemAfterExecuted(this, failed, getExecutedMs(), systemSettingsService);
+            if(!StringUtils.isEmpty(suffix))
+                Thread.currentThread().setName(this.threadName);
+            this.running = false;
         }
     }
 
@@ -179,33 +220,36 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     public void beforeWork() {}
 
     @Override
-    public void beforeWorkFail(Exception exception) {
-        LOG.error(this + " - " + exception.getMessage(), exception);
+    public void beforeWorkFail(Throwable exception) {
+        LOG.error(exception.getMessage() + " - " + this, exception);
     }
 
     public abstract void work();
 
     @Override
-    public void workFail(Exception exception) {
-        LOG.error(this + " - " + exception.getMessage(), exception);
+    public void workFail(Throwable exception) {
+        LOG.error(exception.getMessage() + " - " + this, exception);
     }
 
     @Override
-    public void workSuccessFail(Exception exception) {
-        LOG.error(this + " - " + exception.getMessage(), exception);
+    public void workSuccessFail(Throwable exception) {
+        LOG.error(exception.getMessage() + " - " + this, exception);
     }
 
     @Override
-    public void workFinally(Map<String, Exception> exceptions) {}
+    public void workFinally(Map<String, Throwable> exceptions) {
+        if(!exceptions.isEmpty())
+            LOG.error(exceptionsToString(exceptions) + " - " + this, exceptions.entrySet().iterator().next().getValue());
+    }
 
     @Override
-    public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
-        LOG.error(this + " - " + finallyException.getMessage(), finallyException);
+    public void workFinallyFail(Throwable finallyException, Map<String, Throwable> exceptions) {
+        LOG.error(exceptionsToString(exceptions) + " - " + this, finallyException);
     }
 
     @Override
     public boolean isExecuted() {
-        return executed;
+        return executedDate != null;
     }
 
     @Override
@@ -224,18 +268,45 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     @Override
-    public int getExecutedMs() {
-        return executedMs;
+    public long getTimeInitMs() {
+        return toMs(getTimeInitNanos());
+    }
+
+    @Override
+    public long getTimeInitNanos() {
+        LocalDateTime started = this.startedDate;
+        if(started == null)
+            return -1;
+        try {
+            return ChronoUnit.NANOS.between(this.createdDate, started);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage() + " - " + this, ex);
+            return -1;
+        }
+    }
+
+    @Override
+    public long getExecutedMs() {
+        return toMs(getExecutedNanos());
+    }
+
+    @Override
+    public long getExecutedNanos() {
+        LocalDateTime started = this.startedDate;
+        LocalDateTime executed = this.executedDate;
+        if(started == null || executed == null)
+            return -1;
+        try {
+            return ChronoUnit.NANOS.between(started, executed);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage() + " - " + this, ex);
+            return -1;
+        }
     }
 
     @Override
     public String getFailedMessage() {
         return failedMessage;
-    }
-
-    @Override
-    public String getWorkFailedMessage() {
-        return workFailedMessage;
     }
 
     @Override
@@ -247,8 +318,30 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
+
     @Override
     public LocalDateTime getExecutedDate() {
         return executedDate;
+    }
+
+    @Override
+    public LocalDateTime getStartedDate() {
+        return startedDate;
+    }
+
+    private String suffixThreadName() {
+        return ThreadUtils.reduceName(" - " + WorkItemPriority.priorityOf(getPriority()) + " - " + getDetails(), systemSettingsService);
+    }
+
+    private static String exceptionsToString(Map<String, Throwable> exceptions) {
+        StringBuilder sb = new StringBuilder();
+        for(Map.Entry<String, Throwable> entry: exceptions.entrySet()) {
+            sb.append(entry.getValue().getClass()).append(": ").append(entry.getValue().getMessage()).append("\n\r");
+        }
+        return sb.toString();
+    }
+
+    private static boolean isEnabled(SystemSettingsService systemSettingsService) {
+        return systemSettingsService.isWorkItemsReportingEnabled();
     }
 }

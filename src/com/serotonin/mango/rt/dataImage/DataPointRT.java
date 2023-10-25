@@ -562,12 +562,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		@Override
 		public String toString() {
 			return "EventNotifyWorkItem{" +
-					"listener=" + listener +
+					"details='" + details + '\'' +
 					", oldValue=" + oldValue +
 					", newValue=" + newValue +
 					", set=" + set +
 					", backdate=" + backdate +
-					", details='" + details + '\'' +
 					"} " + super.toString();
 		}
 

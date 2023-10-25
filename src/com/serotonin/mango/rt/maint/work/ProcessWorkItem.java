@@ -42,6 +42,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     static final Log LOG = LogFactory.getLog(ProcessWorkItem.class);
     private static final int TIMEOUT = 15000; // 15 seconds
 
+    @Deprecated
     public static void queueProcess(String command) {
         ProcessWorkItem item = new ProcessWorkItem(command);
         Common.ctx.getBackgroundProcessing().addWorkItem(item);
@@ -55,6 +56,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     final String command;
     final String details;
 
+    @Deprecated
     public ProcessWorkItem(String command) {
         this.command = command;
         this.details = null;
@@ -75,7 +77,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public void workFail(Exception e) {
+    public void workFail(Throwable e) {
         Throwable throwable = e.getCause() != null ? e.getCause() : e;
         LOG.error(this + " - " + throwable.getMessage(), throwable);
         SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
@@ -130,6 +132,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         private volatile boolean interrupted;
         private final String details;
 
+        @Deprecated
         ProcessTimeout(Process process, String command) {
             this.process = process;
             this.command = command;
@@ -172,17 +175,16 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public void workFail(Exception e) {
+        public void workFail(Throwable e) {
             LOG.error("Error in process timeout: " + this, e);
         }
 
         @Override
         public String toString() {
             return "ProcessTimeout{" +
-                    "process=" + process +
+                    "details='" + details + '\'' +
                     ", command='" + command + '\'' +
                     ", interrupted=" + interrupted +
-                    ", details='" + details + '\'' +
                     "} " + super.toString();
         }
 
@@ -198,6 +200,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         private boolean done;
         private final String details;
 
+        @Deprecated
         InputReader(InputStream is) {
             this.reader = new InputStreamReader(is);
             this.details = null;
@@ -247,17 +250,15 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public void workFail(Exception e) {
+        public void workFail(Throwable e) {
             LOG.error("Error in process input reader: " + this, e);
         }
 
         @Override
         public String toString() {
             return "InputReader{" +
-                    "reader=" + reader +
-                    ", writer=" + writer +
+                    "details='" + details + '\'' +
                     ", done=" + done +
-                    ", details='" + details + '\'' +
                     "} " + super.toString();
         }
 

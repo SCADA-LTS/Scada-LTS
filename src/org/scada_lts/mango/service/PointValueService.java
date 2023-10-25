@@ -66,6 +66,7 @@ import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingUtils.entryInfo;
 
 /**
  * Base on the PointValueDao
@@ -462,7 +463,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
-    class BatchWriteBehindEntry {
+    public class BatchWriteBehindEntry {
         private final int pointId;
         private final int dataType;
         private final double dvalue;
@@ -482,6 +483,22 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             params[index++] = dataType;
             params[index++] = dvalue;
             params[index++] = time;
+        }
+
+        public int getPointId() {
+            return pointId;
+        }
+
+        public int getDataType() {
+            return dataType;
+        }
+
+        public double getDvalue() {
+            return dvalue;
+        }
+
+        public long getTime() {
+            return time;
         }
 
         @Override
@@ -537,7 +554,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 }
             }
         }
-
         public BatchWriteBehind() {}
 
         @Override
@@ -609,9 +625,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{" +
-                    "ENTRIES=" + ENTRIES +
-                    '}';
+            return "BatchWriteBehind{entries size: " + ENTRIES.size() + ", instances size: " + instances.size() + '}';
         }
 
         @Override
@@ -739,6 +753,5 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 .forEach(dp -> updateMetaDataPointByScript(user, dp.getXid()));
 
     }
-
 }
 

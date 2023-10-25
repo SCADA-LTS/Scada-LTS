@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.json;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadInfoList<T> {
@@ -11,6 +12,11 @@ public class ThreadInfoList<T> {
     public ThreadInfoList(List<T> threadInfoList) {
         this.threadInfoList = threadInfoList;
         this.size = threadInfoList.size();
+    }
+
+    public ThreadInfoList(int size) {
+        this.threadInfoList = new ArrayList<>();
+        this.size = size;
     }
 
     public List<T> getThreadInfoList() {
