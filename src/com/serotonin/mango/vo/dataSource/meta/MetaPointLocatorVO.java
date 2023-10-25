@@ -81,7 +81,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
-    private int updateEvent = UPDATE_EVENT_CONTEXT_CHANGE;
+    private int updateEvent = UPDATE_EVENT_CONTEXT_UPDATE;
     @JsonRemoteProperty
     private String updateCronPattern;
     @JsonRemoteProperty

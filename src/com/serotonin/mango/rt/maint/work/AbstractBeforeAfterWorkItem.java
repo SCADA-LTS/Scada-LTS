@@ -237,10 +237,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     @Override
-    public void workFinally(Map<String, Throwable> exceptions) {
-        if(!exceptions.isEmpty())
-            LOG.error(exceptionsToString(exceptions) + " - " + this, exceptions.entrySet().iterator().next().getValue());
-    }
+    public void workFinally(Map<String, Throwable> exceptions) {}
 
     @Override
     public void workFinallyFail(Throwable finallyException, Map<String, Throwable> exceptions) {
