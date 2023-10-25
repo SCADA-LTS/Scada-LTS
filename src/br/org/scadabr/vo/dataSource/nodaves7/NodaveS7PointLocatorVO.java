@@ -147,7 +147,7 @@ public class NodaveS7PointLocatorVO extends AbstractPointLocatorVO implements
 
 	@Override
 	public LocalizableMessage getConfigurationDescription() {
-		return null;
+		return new LocalizableMessage("common.tp.description", new LocalizableMessage("dsEdit.nodaves7.s7writeMemoryArea"), this.s7writeMemoryArea);
 	}
 
 	private static final long serialVersionUID = -1;

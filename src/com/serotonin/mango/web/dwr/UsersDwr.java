@@ -51,6 +51,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
@@ -215,10 +216,10 @@ public class UsersDwr extends BaseDwr {
 				// set permission on all watchlists
 			}
 
-			if (currentUser.getId() == id)
+			/*if (currentUser.getId() == id)
 				// Update the user object in session too. Why not?
-				Common.updateUserInSession(request, user);
-
+				Common.updateUserInSession(request, user);*/
+			ApplicationBeans.getLoggedUsersBean().updateUser(user);
 			response.addData("userId", user.getId());
 		}
 

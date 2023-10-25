@@ -92,11 +92,6 @@ public class EventServiceMock extends EventService {
     }
 
     @Override
-    public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
         return Collections.emptyList();
     }
@@ -108,11 +103,6 @@ public class EventServiceMock extends EventService {
 
     @Override
     public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
         return Collections.emptyList();
     }
 

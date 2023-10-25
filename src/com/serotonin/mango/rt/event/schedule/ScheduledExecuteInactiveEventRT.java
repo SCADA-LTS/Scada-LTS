@@ -171,7 +171,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             }
 
             @Override
-            public void workFail(Exception exception) {
+            public void workFail(Throwable exception) {
                 LOG.error(exception.getMessage());
                 communicateLimitLock.set(0);
             }
@@ -200,7 +200,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 }
 
                 @Override
-                public void workFail(Exception exception) {
+                public void workFail(Throwable exception) {
                     LOG.error(exception.getMessage());
                     inactiveEventsProvider.repeat(scheduledEvent);
                     failsCounter.incrementAndGet();

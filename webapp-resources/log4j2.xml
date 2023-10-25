@@ -28,6 +28,7 @@
         <Property name="springLoggingLevel">ERROR</Property>
         <Property name="databaseLoggingLevel">ERROR</Property>
         <Property name="springCacheLoggingLevel">ERROR</Property>
+        <Property name="quartzLoggingLevel">ERROR</Property>
 
         <!-- Functional Logging-->
         <Property name="scriptLoggingLevel">ERROR</Property>
@@ -197,6 +198,13 @@
             <AppenderRef ref="ASYNC_API"/>
         </Logger>
 
+        <Logger name="org.scada_lts.web.mvc.api" level="${apiLoggingLevel}">
+            <AppenderRef ref="ASYNC_API"/>
+        </Logger>
+
+        <!-- Quartz Logging-->
+        <Logger name="org.scada_lts.quartz" level="${quartzLoggingLevel}"/>
+        <Logger name="org.quartz" level="${quartzLoggingLevel}"/>
 
         <!-- Functional Logging-->
         <!-- Event Logging-->

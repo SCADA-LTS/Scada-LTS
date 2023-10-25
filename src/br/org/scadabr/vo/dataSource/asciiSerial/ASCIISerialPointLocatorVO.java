@@ -100,7 +100,7 @@ public class ASCIISerialPointLocatorVO extends AbstractPointLocatorVO implements
 
 	@Override
 	public LocalizableMessage getConfigurationDescription() {
-		return null;
+		return new LocalizableMessage("common.tp.description", new LocalizableMessage("dsEdit.asciiSerial.command"), this.command);
 	}
 
 	private static final long serialVersionUID = -1;

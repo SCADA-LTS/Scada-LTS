@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -20,6 +21,7 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.PointValueService;
 
 import java.text.MessageFormat;
 
@@ -52,8 +54,10 @@ public final class LoggingUtils {
     public static String pointLinkInfo(PointLinkVO pointLink) {
         if(pointLink == null)
             return "";
-        String info = "pointLink: {0} (id: {1}, xid: {2})";
-        return MessageFormat.format(info, pointLink.getTypeKey(), String.valueOf(pointLink.getId()), pointLink.getXid());
+        String info = "pointLink: {0} (id: {1}, xid: {2}, event: {3}, sourcePointId: {4}, targetPointId: {5}, script: {6}, disabled: {7}, new: {8})";
+        return MessageFormat.format(info, pointLink.getTypeKey(), String.valueOf(pointLink.getId()), pointLink.getXid(),
+                pointLink.getEvent(), pointLink.getSourcePointId(), pointLink.getTargetPointId(), pointLink.getScript(),
+                pointLink.isDisabled(), pointLink.isNew());
     }
 
     public static String scriptInfo(ScriptVO<?> script) {
@@ -103,7 +107,7 @@ public final class LoggingUtils {
         if(eventHandler == null)
             return "";
         String info =  "eventHandler: {0} (id: {1}, xid: {2}, type: {3}, script active id: {4}, script inactive id: {5})";
-        return MessageFormat.format(info, eventHandler.getAlias(), eventHandler.getId(), eventHandler.getXid(), eventHandler.getHandlerType(),
+        return MessageFormat.format(info, msg(eventHandler), eventHandler.getId(), eventHandler.getXid(), eventHandler.getHandlerType(),
                 eventHandler.getActiveScriptCommand(), eventHandler.getInactiveScriptCommand());
     }
 
@@ -188,5 +192,24 @@ public final class LoggingUtils {
     public static String eventTypeInfo(int type, int alarmLevel) {
         String info = "event type: {0} (alarmLevel: {1})";
         return MessageFormat.format(info, type, alarmLevel);
+    }
+
+    public static String viewInfo(View view) {
+        if(view == null)
+            return "";
+        String info =  "view: {0} (id: {1}, xid: {2}, userId: {3})";
+        return MessageFormat.format(info, view.getName(), view.getId(), view.getXid(), view.getUserId());
+    }
+
+    public static String entryInfo(PointValueService.BatchWriteBehindEntry entry) {
+        if(entry == null) {
+            return "";
+        }
+        String info = "batchWriteBehindEntry: pointId: {0}, dataType: {1}, time: {2}, dvalue: {3}";
+        return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
+    }
+
+    private static String msg(EventHandlerVO eventHandler) {
+        return StringUtils.isEmpty(eventHandler.getAlias()) && eventHandler.getMessage() != null ? eventHandler.getMessage().getLocalizedMessage(Common.getBundle()) : eventHandler.getAlias();
     }
 }

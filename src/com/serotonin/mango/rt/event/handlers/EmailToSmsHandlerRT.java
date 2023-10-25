@@ -89,7 +89,7 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
         sendMsg(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias(), new AfterWork() {
             @Override
-            public void workFail(Exception exception) {
+            public void workFail(Throwable exception) {
                 LOG.error("Failed sending sms for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
                         + ", error: " + exception.getMessage());
             }

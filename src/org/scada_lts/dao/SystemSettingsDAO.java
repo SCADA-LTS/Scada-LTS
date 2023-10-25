@@ -21,9 +21,9 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.cache.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -37,10 +37,9 @@ import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -142,13 +141,14 @@ public class SystemSettingsDAO {
 	private static final String DELETE_POINT_VALUES = "delete from pointValues";
 	private static final String DELETE_MAINTENANCE_EVENTS = "delete from maintenanceEvents";
 	private static final String DELETE_MAILING_LISTS = "delete from mailingLists";
-	@Deprecated(since = "2.7.5.4")
 	private static final String DELETE_USERS = "delete from users";
 	private static final String DELETE_PUBLISHERS = "delete from publishers";
 	private static final String DELETE_DATA_POINT_USERS = "delete from dataPointUsers";
 	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+	private static final String DELETE_USERS_PROFILES = "delete from usersProfiles";
+	private static final String DELETE_USER_COMMENTS = "delete from userComments";
 
 	// Logging
 	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
@@ -156,8 +156,11 @@ public class SystemSettingsDAO {
 	public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
 	public static final String VIEW_FORCE_FULL_SCREEN_MODE = "viewForceFullScreenMode";
 	public static final String EVENT_PENDING_LIMIT = "eventPendingLimit";
-
 	public static final String EVENT_PENDING_CACHE_ENABLED = "eventPendingCacheEnabled";
+	public static final String WORK_ITEMS_REPORTING_ENABLED = "workItemsReportingEnabled";
+	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED = "workItemsReportingItemsPerSecondEnabled";
+	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT = "workItemsReportingItemsPerSecondLimit";
+	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
@@ -188,13 +191,15 @@ public class SystemSettingsDAO {
 	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
 
 	// Value cache
-	private static final Map<String, String> cache = new HashMap<String, String>();
+	private static final Map<String, String> cache = new ConcurrentHashMap<>();
 
 	public static String getValue(String key) {
 		return getValue(key, (String) DEFAULT_VALUES.get(key));
 	}
 
 	public static String getValue(String key, String defaultValue) {
+		if(key == null)
+			return null;
 		String result = cache.get(key);
 		if (result == null) {
 			if (!cache.containsKey(key)) {
@@ -203,10 +208,11 @@ public class SystemSettingsDAO {
 				} catch (EmptyResultDataAccessException e) {
 					result = null;
 				}
-				cache.put(key, result);
 				if (result == null) {
 					result = defaultValue;
 				}
+				if(result != null)
+					cache.put(key, result);
 			} else {
 				result = defaultValue;
 			}
@@ -393,6 +399,10 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, SystemSettingsUtils.isHideShortcutDisableFullScreen());
 		DEFAULT_VALUES.put(EVENT_PENDING_LIMIT, SystemSettingsUtils.getEventPendingLimit());
 		DEFAULT_VALUES.put(EVENT_PENDING_CACHE_ENABLED, SystemSettingsUtils.isEventPendingCacheEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ENABLED, SystemSettingsUtils.isWorkItemsReportingEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit());
+		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -411,20 +421,21 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUES);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAINTENANCE_EVENTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAILING_LISTS);
-		resetUsers();
+		DAO.getInstance().getJdbcTemp().update(DELETE_USER_COMMENTS);
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_PUBLISHERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINT_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCES);
-	}
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS_PROFILES);
 
-	private void resetUsers() {
-		IUserDAO userDAO = ApplicationBeans.getUserDaoBean();
-		List<User> users = userDAO.getUsers();
-		for (User user : users) {
-			userDAO.delete(user.getId());
-		}
+		ApplicationBeans.getBean("userCache", UserCacheable.class).resetCache();
+		ApplicationBeans.getBean("viewCache", ViewCachable.class).resetCache();
+		ApplicationBeans.getBean("pointEventDetectorCache", PointEventDetectorCacheable.class).resetCache();
+		ApplicationBeans.getBean("usersProfileCache", UsersProfileCacheable.class).resetCache();
+		ApplicationBeans.getBean("highestAlarmLevelCache", HighestAlarmLevelCacheable.class).resetCache();
+		ApplicationBeans.getBean("userCommentCache", UserCommentCacheable.class).resetCache();
 	}
 
 	public double getDataBaseSize() {

@@ -4,6 +4,9 @@
  */
 package com.serotonin.timer.sync;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.timer.AbstractTimer;
 
 /**
@@ -39,18 +42,31 @@ public class SingleExecutorSingleWaiter {
     }
 
     void executeImpl() {
-        timer.execute(new TaskWrapper(executing));
+        Common.ctx.getBackgroundProcessing().addWorkItem(new TaskWrapper(executing, this.getClass().getName()));
     }
 
-    class TaskWrapper implements Runnable {
+    class TaskWrapper extends AbstractBeforeAfterWorkItem implements Runnable {
         private final Runnable command;
+        private final String details;
 
+        @Deprecated
         public TaskWrapper(Runnable command) {
             this.command = command;
+            this.details = "";
+        }
+
+        public TaskWrapper(Runnable command, String details) {
+            this.command = command;
+            this.details = details;
         }
 
         @Override
         public void run() {
+            super.execute();
+        }
+
+        @Override
+        public void work() {
             try {
                 command.run();
             }
@@ -65,6 +81,24 @@ public class SingleExecutorSingleWaiter {
                         executing = null;
                 }
             }
+        }
+
+        @Override
+        public int getPriority() {
+            return WorkItemPriority.HIGH.getPriority();
+        }
+
+        @Override
+        public String toString() {
+            return "TaskWrapper{" +
+                    "command=" + command +
+                    ", details='" + details + '\'' +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
         }
     }
 

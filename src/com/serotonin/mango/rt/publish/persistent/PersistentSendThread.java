@@ -8,13 +8,15 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.publish.PublishQueueEntry;
@@ -30,6 +32,7 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.timer.TimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
+import org.scada_lts.mango.service.DataPointService;
 
 class PersistentSendThread extends SendThread {
     static final Log LOG = LogFactory.getLog(PersistentSendThread.class);
@@ -395,8 +398,7 @@ class PersistentSendThread extends SendThread {
         }
 
         syncHandler = new SyncHandler(this);
-        Common.timer.execute(syncHandler);
-
+        Common.ctx.getBackgroundProcessing().addWorkItem(syncHandler);
         return true;
     }
 
@@ -413,12 +415,24 @@ class PersistentSendThread extends SendThread {
     }
 
     void writePointHierarchy() {
-        Common.timer.execute(new Runnable() {
+        WorkItem writePointHierarchy = new AbstractBeforeAfterWorkItem() {
+
             @Override
-            public void run() {
-                writePointHierarchy(new DataPointDao().getPointHierarchy());
+            public String getDetails() {
+                return "name: " + getName() + ", id: " + getId() + " - " + this.getClass().getName() + ".writePointHierarchy";
             }
-        });
+
+            @Override
+            public int getPriority() {
+                return WorkItemPriority.HIGH.getPriority();
+            }
+
+            @Override
+            public void work() {
+                writePointHierarchy(new DataPointService().getPointHierarchy());
+            }
+        };
+        Common.ctx.getBackgroundProcessing().addWorkItem(writePointHierarchy);
     }
 
     synchronized void writePointHierarchy(PointHierarchy hierarchy) {

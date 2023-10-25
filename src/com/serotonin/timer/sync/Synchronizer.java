@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.lang3.StringUtils;
 
 import com.serotonin.timer.AbstractTimer;
@@ -54,7 +57,7 @@ public class Synchronizer<T extends Runnable> {
         if (maxConcurrent <= 0 || tasks.size() <= maxConcurrent) {
             // Start all of the tasks.
             for (TaskWrapper tw : tasks)
-                timer.execute(tw);
+                Common.ctx.getBackgroundProcessing().addWorkItem(tw);
             running = tasks;
         }
         else {
@@ -66,7 +69,7 @@ public class Synchronizer<T extends Runnable> {
                 // Start tasks
                 while (running.size() < maxConcurrent && !remaining.isEmpty()) {
                     TaskWrapper tw = remaining.remove(remaining.size() - 1);
-                    timer.execute(tw);
+                    Common.ctx.getBackgroundProcessing().addWorkItem(tw);
                     running.add(tw);
                 }
 
@@ -135,7 +138,7 @@ public class Synchronizer<T extends Runnable> {
         return result;
     }
 
-    class TaskWrapper implements Runnable {
+    class TaskWrapper extends AbstractBeforeAfterWorkItem implements Runnable {
         final String name;
         final T task;
         private volatile boolean complete;
@@ -151,6 +154,11 @@ public class Synchronizer<T extends Runnable> {
 
         @Override
         public void run() {
+            super.execute();
+        }
+
+        @Override
+        public void work() {
             try {
                 task.run();
             }
@@ -167,6 +175,25 @@ public class Synchronizer<T extends Runnable> {
 
         public boolean isComplete() {
             return complete;
+        }
+
+        @Override
+        public String toString() {
+            return "TaskWrapper{" +
+                    "name='" + name + '\'' +
+                    ", task=" + task +
+                    ", complete=" + complete +
+                    '}';
+        }
+
+        @Override
+        public int getPriority() {
+            return WorkItemPriority.HIGH.getPriority();
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
         }
     }
 
