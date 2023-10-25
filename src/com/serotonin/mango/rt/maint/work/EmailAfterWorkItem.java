@@ -37,7 +37,7 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public void workFail(Exception exception) {
+    public void workFail(Throwable exception) {
         afterWork.workFail(exception);
     }
 
@@ -49,9 +49,9 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     @Override
     public String toString() {
         return "EmailAfterWorkItem{" +
-                "sendEmailData=" + sendEmailData +
+                "details='" + (workItemDetails == null ? "null" : workItemDetails.getDetails()) + '\'' +
+                ", sendEmailData=" + sendEmailData +
                 ", sendEmailConfig=" + sendEmailConfig +
-                ", details='" + (workItemDetails == null ? "null" : workItemDetails.getDetails()) +
                 "'}";
     }
 

@@ -10,6 +10,10 @@ public class JsonSettingsMisc implements Serializable {
     public boolean hideShortcutDisableFullScreen;
     public int eventPendingLimit;
     public boolean eventPendingCacheEnabled;
+    public boolean workItemsReportingEnabled;
+    public boolean workItemsReportingItemsPerSecondEnabled;
+    public int workItemsReportingItemsPerSecondLimit;
+    public int threadsNameAdditionalLength;
 
     public JsonSettingsMisc() {}
 
@@ -68,5 +72,37 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setEventPendingCacheEnabled(boolean eventPendingCacheEnabled) {
         this.eventPendingCacheEnabled = eventPendingCacheEnabled;
+    }
+
+    public boolean isWorkItemsReportingEnabled() {
+        return workItemsReportingEnabled;
+    }
+
+    public void setWorkItemsReportingEnabled(boolean workItemsReportingEnabled) {
+        this.workItemsReportingEnabled = workItemsReportingEnabled;
+    }
+
+    public boolean isWorkItemsReportingItemsPerSecondEnabled() {
+        return workItemsReportingItemsPerSecondEnabled;
+    }
+
+    public void setWorkItemsReportingItemsPerSecondEnabled(boolean workItemsReportingItemsPerSecondEnabled) {
+        this.workItemsReportingItemsPerSecondEnabled = workItemsReportingItemsPerSecondEnabled;
+    }
+
+    public int getWorkItemsReportingItemsPerSecondLimit() {
+        return workItemsReportingItemsPerSecondLimit;
+    }
+
+    public void setWorkItemsReportingItemsPerSecondLimit(int workItemsReportingItemsPerSecondLimit) {
+        this.workItemsReportingItemsPerSecondLimit = workItemsReportingItemsPerSecondLimit;
+    }
+
+    public int getThreadsNameAdditionalLength() {
+        return threadsNameAdditionalLength;
+    }
+
+    public void setThreadsNameAdditionalLength(int threadsNameAdditionalLength) {
+        this.threadsNameAdditionalLength = threadsNameAdditionalLength;
     }
 }

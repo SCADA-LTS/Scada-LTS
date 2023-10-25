@@ -135,6 +135,10 @@ public class SystemSettingsService {
         json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
         json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, 100));
         json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, false));
+        json.setThreadsNameAdditionalLength(SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, 255));
+        json.setWorkItemsReportingEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, true));
+        json.setWorkItemsReportingItemsPerSecondEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, true));
+        json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 20000));
         return json;
     }
 
@@ -145,6 +149,10 @@ public class SystemSettingsService {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isEnableFullScreen());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, json.getEventPendingLimit());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, json.isEventPendingCacheEnabled());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, json.getThreadsNameAdditionalLength());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, json.isWorkItemsReportingEnabled());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, json.isWorkItemsReportingItemsPerSecondEnabled());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -379,6 +387,46 @@ public class SystemSettingsService {
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
             return Collections.emptyMap();
+        }
+    }
+
+    public boolean isWorkItemsReportingEnabled() {
+        boolean defaultValue = SystemSettingsUtils.isWorkItemsReportingEnabled();
+        try {
+            return SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public boolean isWorkItemsReportingItemsPerSecondEnabled() {
+        boolean defaultValue = SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled();
+        try {
+            return SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public int getWorkItemsReportingItemsPerSecondLimit() {
+        int defaultValue = SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit();
+        try {
+            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public int getThreadsNameAdditionalLength() {
+        int defaultValue = SystemSettingsUtils.getThreadsNameAdditionalLength();
+        try {
+            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
         }
     }
 

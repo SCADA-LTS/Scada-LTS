@@ -53,8 +53,10 @@ public class ViewDaoWithCache implements IViewDAO {
         List<View> views = new ArrayList<>();
         for(ScadaObjectIdentifier identifier: identifiers) {
             View view = viewCache.findById(identifier.getId());
-            applyShareUsers(view);
-            views.add(view);
+            if(view != null) {
+                applyShareUsers(view);
+                views.add(view);
+            }
         }
         return views;
     }

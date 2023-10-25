@@ -1,6 +1,5 @@
 package org.scada_lts.login;
 
-import com.serotonin.mango.vo.User;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;

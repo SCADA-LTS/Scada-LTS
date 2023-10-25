@@ -7,7 +7,7 @@ import org.scada_lts.dao.UserCommentDAO;
 
 import java.util.List;
 
-public class UserCommentCache implements UserCommentCachable {
+public class UserCommentCache implements UserCommentCacheable {
 
     private final UserCommentDAO userCommentDAO;
 
@@ -31,7 +31,7 @@ public class UserCommentCache implements UserCommentCachable {
     }
 
     @Override
-    public void removeAll() {}
+    public void resetCache() {}
 
     @Override
     public void removeByDataPoint(int dataPointId) {}

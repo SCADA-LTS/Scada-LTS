@@ -58,7 +58,7 @@ public class ScadaObjectIdentifierRowMapper implements RowMapper<ScadaObjectIden
                 idColumnName + ", " +
                 xidColumnName + ", " +
                 nameColumnName + " " +
-                "FROM " + tableName  + " order by " + idColumnName;
+                "FROM " + tableName  + " order by " + nameColumnName;
     }
     @Override
     public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {

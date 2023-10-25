@@ -43,7 +43,7 @@ public final class SendUtils {
             }
 
             @Override
-            public void workNotExecuted(Exception exception) {
+            public void workNotExecuted(Throwable exception) {
                 try {
                     afterWork.workFail(exception);
                 } catch (Exception ex) {
@@ -57,18 +57,18 @@ public final class SendUtils {
                                AfterWork.WorkFinally workFinally, WorkItemDetails workItemDetails) {
         sendMsg(toAddresses, subject, msgContent, afterWork, workFinally, new BeforeWork.NotExecuted() {
             @Override
-            public void workNotExecuted(Exception exception) {
-                Map<String, Exception> exceptions = new HashMap<>();
+            public void workNotExecuted(Throwable exception) {
+                Map<String, Throwable> exceptions = new HashMap<>();
                 exceptions.put("sendMsgException", exception);
                 try {
                     afterWork.workFail(exception);
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     exceptions.put("workFailException", ex);
                     LOG.error(ex.getMessage(), ex);
                 } finally {
                     try {
                         workFinally.workFinally(exceptions);
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         LOG.error(ex.getMessage(), ex);
                     }
                 }
@@ -79,10 +79,10 @@ public final class SendUtils {
     public static void sendMsgTestSync(Set<String> addresses, AfterWork afterWork, WorkItemDetails workItemDetails) {
         sendMsgTestSync(addresses, afterWork, new BeforeWork.NotExecuted() {
             @Override
-            public void workNotExecuted(Exception exception) {
+            public void workNotExecuted(Throwable exception) {
                 try {
                     afterWork.workFail(exception);
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
@@ -98,7 +98,7 @@ public final class SendUtils {
                                        WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, new AfterWork() {
             @Override
-            public void workFail(Exception e) {
+            public void workFail(Throwable e) {
                 LOG.error(MessageFormat.format("Info about email: {0}, error: {1}",
                         "test", e.getMessage()));
                 result.put("exception", "Send fail: " + getShortMsg(e));
@@ -115,7 +115,7 @@ public final class SendUtils {
                                        WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, new AfterWork() {
             @Override
-            public void workFail(Exception e) {
+            public void workFail(Throwable e) {
                 LOG.error(MessageFormat.format("Info about email: {0}, error: {1}",
                         "test", e.getMessage()));
                 response.addGenericMessage("common.default", "Send fail: " + getShortMsg(e));
@@ -198,10 +198,10 @@ public final class SendUtils {
                                             WorkItemDetails workItemDetails) {
         sendMsgTestSync(toAddresses, content, afterWork, handleException, object, new BeforeWork.NotExecuted() {
             @Override
-            public void workNotExecuted(Exception exception) {
+            public void workNotExecuted(Throwable exception) {
                 try {
                     afterWork.workFail(exception);
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
@@ -235,7 +235,7 @@ public final class SendUtils {
         }
     }
 
-    private static String getShortMsg(Exception ex) {
+    private static String getShortMsg(Throwable ex) {
         if(ex.getMessage() == null) {
             return ex.getClass().getSimpleName();
         }

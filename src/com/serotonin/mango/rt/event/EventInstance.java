@@ -182,7 +182,7 @@ public class EventInstance {
                 return new LocalizableMessage("events.ackedByMaintenance");
         }
 
-        return null;
+        return new LocalizableMessage("event.auto.acknowledge");
     }
 
     public LocalizableMessage getExportAckMessage() {
@@ -195,7 +195,7 @@ public class EventInstance {
                 return new LocalizableMessage("events.export.ackedByMaintenance");
         }
 
-        return null;
+        return new LocalizableMessage("event.auto.acknowledge");
     }
 
     public String getPrettyActiveTimestamp() {

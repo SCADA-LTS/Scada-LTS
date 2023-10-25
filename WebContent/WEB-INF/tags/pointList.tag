@@ -32,7 +32,7 @@
             <tag:img id="enableAllImg" png="icon_ds_go"
                       onclick="enableAllPoints()" title="common.enableAll" style="margin-right:10px;"/>
               <tag:img id="editImg${applicationScope['constants.Common.NEW_ID']}" png="icon_comp_add"
-                      onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" />
+                      onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" title="common.addPoint"/>
             </td>
           </tr>
         </table>

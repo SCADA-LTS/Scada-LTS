@@ -39,7 +39,7 @@ public class ApplicationBeans {
     }
 
     public static IUserDAO getUserDaoBean() {
-        boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCachable.CACHE_ENABLED_KEY, true);
+        boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCacheable.CACHE_ENABLED_KEY, true);
         return userCacheEnabled ?
                 getBeanFromContext("userDaoWithCache", IUserDAO.class) :
                 getBeanFromContext("userDAO", IUserDAO.class);
@@ -100,19 +100,19 @@ public class ApplicationBeans {
     }
 
     public static IHighestAlarmLevelService getHighestAlarmLevelServiceBean() {
-        boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
+        boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCacheable.CACHE_ENABLED_KEY, true);
         return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
                 getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
     }
 
     public static UserCommentService getUserCommentServiceBean() {
-        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCacheable.CACHE_ENABLED_KEY, true);
         return userCommentCacheEnabled ? getBeanFromContext("userCommentServiceWithCache", UserCommentService.class) :
                 getBeanFromContext("userCommentService", UserCommentService.class);
     }
 
     public static IUserCommentDAO getUserCommentDaoBean() {
-        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCacheable.CACHE_ENABLED_KEY, true);
         return userCommentCacheEnabled ?
                 getBeanFromContext("userCommentDaoWithCache", IUserCommentDAO.class) :
                 getBeanFromContext("userCommentDAO", IUserCommentDAO.class);

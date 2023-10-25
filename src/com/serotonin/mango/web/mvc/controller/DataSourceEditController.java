@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.CommPortProxy;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -93,7 +94,7 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         // Reference data
         try {
-            model.put("commPorts", Common.getSerialPorts());
+            model.put("commPorts", getPorts(dataSourceVO));
         }
         catch (CommPortConfigException e) {
             model.put("commPortError", e.getMessage());
@@ -113,5 +114,13 @@ public class DataSourceEditController extends ParameterizableViewController {
         model.put("analogPoints", analogPoints);
 
         return new ModelAndView(getViewName(), model);
+    }
+
+    private static List<CommPortProxy>  getPorts(DataSourceVO<?> dataSource) throws CommPortConfigException {
+        if(DataSourceVO.Type.MODBUS_SERIAL == dataSource.getType()) {
+            return Common.getSerialPorts();
+        } else {
+            return Common.getCommPorts();
+        }
     }
 }

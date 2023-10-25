@@ -27,8 +27,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
-import com.serotonin.mango.util.LoggingUtils;
-import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.AbstractEmailAttachment;
 import com.serotonin.mango.web.email.AbstractEmailInline;
 import com.serotonin.mango.web.email.IMsgContent;
@@ -65,6 +63,8 @@ import static com.serotonin.mango.util.SendUtils.sendMsg;
  */
 public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	static final Log LOG = LogFactory.getLog(ReportWorkItem.class);
+
+	public ReportWorkItem() {}
 
 	public int getPriority() {
 		return WorkItem.PRIORITY_LOW;
@@ -194,7 +194,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	}
 
 	@Override
-	public void workFail(Exception exception) {
+	public void workFail(Throwable exception) {
 		LOG.error("Failed generate report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 	}
@@ -257,7 +257,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 				// sent.
 				workFinally = new AfterWork.WorkFinally() {
 					@Override
-					public void workFinally(Map<String, Exception> exceptions) {
+					public void workFinally(Map<String, Throwable> exceptions) {
 						for (File file : filesToDelete) {
 							if (!file.delete())
 								LOG.warn("Temp file " + file.getPath()
@@ -266,7 +266,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 					}
 
 					@Override
-					public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
+					public void workFinallyFail(Throwable finallyException, Map<String, Throwable> exceptions) {
 						LOG.error("Failed deleting temp file for report with id " + reportConfig.getId()
 								+ ", instance id " + reportInstance.getId() + ", error: " + finallyException.getMessage(), finallyException);
 					}
@@ -279,7 +279,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 			sendMsg(toAddrs, lm.getLocalizedMessage(bundle),
 					emailContent, new AfterWork() {
 						@Override
-						public void workFail(Exception exception) {
+						public void workFail(Throwable exception) {
 							LOG.error("Failed sending report with id " + reportConfig.getId()
 									+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 						}
@@ -293,7 +293,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	}
 
 	@Override
-	public void workSuccessFail(Exception exception) {
+	public void workSuccessFail(Throwable exception) {
 		LOG.error("Failed sending report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 	}

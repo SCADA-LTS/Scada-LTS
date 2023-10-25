@@ -21,25 +21,30 @@ public final class SystemSettingsUtils {
     private static final String HTTP_RESPONSE_HEADERS_KEY = "systemsettings.http.response.headers";
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
     private static final String PROCESSING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.limit";
-    private static final String PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.failed.limit";
     private static final String PROCESSING_RUNNING_WORK_ITEMS_LIMIT_KEY = "processing.workitems.running.limit";
     private static final String PROCESSING_REPEAT_RUNNING_WORK_ITEMS_KEY = "processing.workitems.running.repeat";
+    private static final String PROCESSING_HISTORY_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.limit";
+    private static final String PROCESSING_HISTORY_FAILED_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.failed.limit";
     private static final String PROCESSING_HISTORY_PROCESS_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.process.limit";
     private static final String PROCESSING_HISTORY_HIGH_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.high.limit";
     private static final String PROCESSING_HISTORY_MEDIUM_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.medium.limit";
     private static final String PROCESSING_HISTORY_LOW_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.priority.low.limit";
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_THAN_MS_KEY = "processing.workitems.history.longer.thanMs";
     private static final String PROCESSING_HISTORY_EXECUTED_LONGER_WORK_ITEMS_LIMIT_KEY = "processing.workitems.history.longer.limit";
-    private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES = "scadalts.security.js.access.denied.method.regexes";
-    private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES = "scadalts.security.js.access.denied.class.regexes";
-    private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES = "scadalts.security.js.access.granted.method.regexes";
-    private static final String SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES = "scadalts.security.js.access.granted.class.regexes";
+    private static final String SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES_KEY = "scadalts.security.js.access.denied.method.regexes";
+    private static final String SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES_KEY = "scadalts.security.js.access.denied.class.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES_KEY = "scadalts.security.js.access.granted.method.regexes";
+    private static final String SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES_KEY = "scadalts.security.js.access.granted.class.regexes";
+    public static final String VIEW_FORCE_FULL_SCREEN_MODE_KEY = "view.forceFullScreen";
+    public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN_KEY = "view.hideShortcutDisableFullScreen";
+    public static final String EVENT_PENDING_LIMIT_KEY = "event.pending.limit";
+    public static final String EVENT_PENDING_UPDATE_LIMIT_KEY = "event.pending.update.limit";
+    public static final String EVENT_PENDING_CACHE_ENABLED_KEY = "abilit.cacheEnable";
+    public static final String WORK_ITEMS_REPORTING_ENABLED_KEY = "workitems.reporting.enabled";
+    public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY = "workitems.reporting.itemspersecond.enabled";
+    public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY = "workitems.reporting.itemspersecond.limit";
+    public static final String THREADS_NAME_ADDITIONAL_LENGTH_KEY = "threads.name.additional.length";
 
-    public static final String VIEW_FORCE_FULL_SCREEN_MODE = "view.forceFullScreen";
-    public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "view.hideShortcutDisableFullScreen";
-    public static final String EVENT_PENDING_LIMIT = "event.pending.limit";
-    public static final String EVENT_PENDING_UPDATE_LIMIT = "event.pending.update.limit";
-    public static final String EVENT_PENDING_CACHE_ENABLED = "abilit.cacheEnable";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -101,7 +106,7 @@ public final class SystemSettingsUtils {
 
     public static int getFailedWorkItemsLimit() {
         try {
-            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_FAILED_WORK_ITEMS_LIMIT_KEY, "100");
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_FAILED_WORK_ITEMS_LIMIT_KEY, "100");
             return Integer.parseInt(limit);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -189,9 +194,19 @@ public final class SystemSettingsUtils {
         }
     }
 
+    public static int getHistoryWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(PROCESSING_HISTORY_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
     public static String[] getSecurityJsAccessGrantedClassRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES_KEY, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -201,7 +216,7 @@ public final class SystemSettingsUtils {
 
     public static String[] getSecurityJsAccessDeniedClassRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES_KEY, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -211,7 +226,7 @@ public final class SystemSettingsUtils {
 
     public static String[] getSecurityJsAccessDeniedMethodRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES_KEY, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -221,7 +236,7 @@ public final class SystemSettingsUtils {
 
     public static String[] getSecurityJsAccessGrantedMethodRegexes() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES, "");
+            String config = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_ACCESS_GRANTED_METHOD_REGEXES_KEY, "");
             return config.split(";");
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -231,7 +246,7 @@ public final class SystemSettingsUtils {
 
     public static boolean isHideShortcutDisableFullScreen() {
         try {
-            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, "false");
+            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN_KEY, "false");
             return Boolean.parseBoolean(hideShortcutDisableFullScreen);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -241,7 +256,7 @@ public final class SystemSettingsUtils {
 
     public static boolean isForceFullScreenMode() {
         try {
-            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_FORCE_FULL_SCREEN_MODE, "false");
+            String hideShortcutDisableFullScreen = ScadaConfig.getInstance().getConf().getProperty(VIEW_FORCE_FULL_SCREEN_MODE_KEY, "false");
             return Boolean.parseBoolean(hideShortcutDisableFullScreen);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -251,7 +266,7 @@ public final class SystemSettingsUtils {
 
     public static int getEventPendingLimit() {
         try {
-            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_LIMIT, "100");
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_LIMIT_KEY, "100");
             return Integer.parseInt(eventPendingLimit);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -261,7 +276,7 @@ public final class SystemSettingsUtils {
 
     public static int getEventPendingUpdateLimit() {
         try {
-            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_UPDATE_LIMIT, "1000");
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_UPDATE_LIMIT_KEY, "1000");
             return Integer.parseInt(eventPendingLimit);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -271,11 +286,51 @@ public final class SystemSettingsUtils {
 
     public static boolean isEventPendingCacheEnabled() {
         try {
-            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_CACHE_ENABLED, "true");
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(EVENT_PENDING_CACHE_ENABLED_KEY, "true");
             return Boolean.parseBoolean(eventPendingCache);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return true;
+        }
+    }
+
+    public static boolean isWorkItemsReportingEnabled() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static boolean isWorkItemsReportingItemsPerSecondEnabled() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static int getWorkItemsReportingItemsPerSecondLimit() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY, "20000");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 20000;
+        }
+    }
+
+    public static int getThreadsNameAdditionalLength() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(THREADS_NAME_ADDITIONAL_LENGTH_KEY, "255");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 255;
         }
     }
 }

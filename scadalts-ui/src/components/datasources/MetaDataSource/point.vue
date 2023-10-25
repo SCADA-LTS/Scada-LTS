@@ -11,6 +11,7 @@
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
+					@change="validateScript"
 				></v-select>
 				
 			</template>
@@ -65,9 +66,7 @@
 							<v-text-field type="Number" label="Values" v-model="multistateValue">
 								<v-icon
 									slot="append"
-									@click="
-										addMsValue(datapoint.pointLocator.incrementMultistateChange.values)
-									"
+									@click="addMsValue(datapoint.pointLocator.incrementMultistateChange.values)"
 									>mdi-plus</v-icon
 								>
 							</v-text-field>
@@ -294,7 +293,7 @@
 										:placeholder="$t('scriptList.selectDatapoint')"
 										item-text="name"
 										v-model="selectedDatapointId"
-										@change="addDatapoint"
+										@change="addDatapoint(); validateScript();"
 										:items="filteredDatapoints"
 									></v-select>
 								</v-col>
@@ -309,7 +308,7 @@
 												<v-icon
 													color="red"
 													style="cursor: pointer; border: 0"
-													@click="removeDatapoint(p.key)"
+													@click="removeDatapoint(p.key); validateScript()"
 													>mdi-close</v-icon
 												>
 											</td>
@@ -317,14 +316,31 @@
 									</table>
 								</v-col>
 							</v-row>
-							 
-							<v-textarea :rules="[ruleNotNull]"
+							<v-textarea :rules="[ruleNotNull, ruleValidScript]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="datapoint.pointLocator.script"
 								rows=3
+								@focusout="validateScript"
 								ref="scriptBodyTextarea"
+								required
+								error-count="0"
 							></v-textarea>
+							<v-col>
+								<v-btn block color="primary" @click="validateScript"
+									>{{ $t('script.runScript') }}
+								</v-btn>
+							</v-col>
+							<div v-if = "this.validScript && this.resultMessage !== '' ">
+								<v-alert title="Script is valid" type="success">
+									Script results: {{this.resultMessage}}
+								</v-alert>
+							</div>
+							<v-div v-if = "!this.validScript && this.resultMessage !== '' ">
+								<v-alert title = "Script error" type="error">
+									Script error: {{this.resultMessage}}
+								</v-alert>
+							</v-div>
 						<v-row>
 						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
 							<v-select
@@ -443,7 +459,10 @@ export default {
 					executionDelayPeriodType: "SECONDS"
 				}
 			},
+			validScript: true,
+			resultMessage: "",
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleValidScript: () => this.validScript || this.resultMessage,
 		};
 	},
 
@@ -518,9 +537,11 @@ export default {
 			this.$emit('canceled');
 		},
 
-		save() {
+		async save() {
 			console.debug('VirtualDataSource.point.vue::save()');
-			this.$emit('saved', this.datapoint);
+			await this.validateScript();
+			if (this.validScript)
+				this.$emit('saved', this.datapoint);
 		},
 
 		addMsValue(array) {
@@ -540,6 +561,25 @@ export default {
 			} else {
 				console.log('Remove Multistate Value Failed!');
 				return;
+			}
+		},
+		async validateScript() {
+			try {
+				if (this.datapoint.pointLocator.script === ""){
+					this.validScript = false;
+					this.resultMessage = this.$t('validation.rule.notNull');
+			}
+			else {
+				let resp = await this.$store.dispatch('requestPost', {
+					url:  `/datapoint/meta/test`,
+					data: this.datapoint.pointLocator
+				});
+				this.validScript = resp.success;
+				this.resultMessage = resp.message;
+				this.$refs.scriptBodyTextarea.validate();
+			}
+			} catch (e) {
+			console.log('error:' + e);
 			}
 		},
 	},

@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduledWorkItemInfoList<T> {
@@ -9,6 +10,11 @@ public class ScheduledWorkItemInfoList<T> {
     public ScheduledWorkItemInfoList(List<T> workItemScheduled) {
         this.workItemScheduled = workItemScheduled;
         this.size = workItemScheduled.size();
+    }
+
+    public ScheduledWorkItemInfoList(int size) {
+        this.workItemScheduled = new ArrayList<>();
+        this.size = size;
     }
 
     public List<T> getWorkItemScheduled() {

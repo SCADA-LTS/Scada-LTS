@@ -94,7 +94,7 @@ public class DrStorageHt5bPointLocatorVO extends AbstractPointLocatorVO
 
 	@Override
 	public LocalizableMessage getConfigurationDescription() {
-		return null;
+		return new LocalizableMessage("common.tp.description", new LocalizableMessage("dsEdit.drStorageHt5b.pointType"), this.pointType);
 	}
 
 	@Override
