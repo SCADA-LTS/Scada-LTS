@@ -474,6 +474,14 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		}
 	}
 
+	public void notifyEventRaise(int eventId) {
+		if(eventId != Common.NEW_ID) {
+			for(int userId: ApplicationBeans.getLoggedUsersBean().getUserIds()) {
+				notifyEventRaise(eventId, userId);
+			}
+		}
+	}
+
 	public void notifyEventRaise(EventInstance evt, User user) {
 		NotifyEventUtils.notifyEventRaise(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
 	}
@@ -491,8 +499,15 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 
 	public void notifyEventAck(int eventId) {
 		if(eventId != Common.NEW_ID) {
-			for (User user : userService.getActiveUsers())
-				notifyEventAck(eventId, user);
+			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
+				notifyEventAck(eventId, userService.getUser(userId));
+		}
+	}
+
+	public void notifyEventAccept(int eventId) {
+		if(eventId != Common.NEW_ID) {
+			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
+				notifyEventAck(eventId, userService.getUser(userId));
 		}
 	}
 

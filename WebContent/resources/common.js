@@ -1105,3 +1105,11 @@ function isInt32(state) {
     return Number.parseInt(state) === view.getInt32(1);
 }
 
+function acceptEvent(eventId) {
+    hide("acceptImg"+ eventId);
+    var imgNode = $("acceptImg"+ eventId);
+    updateImg(imgNode, "images/tick_off.png", mango.i18n["events.accepted"], true, "inline");
+    imgNode.onclick = function() {};
+    dojo.html.removeClass(imgNode, "ptr");
+    MiscDwr.acceptEvent(eventId);
+}

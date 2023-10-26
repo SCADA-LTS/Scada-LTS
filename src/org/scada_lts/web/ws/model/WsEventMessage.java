@@ -42,6 +42,10 @@ public class WsEventMessage {
         return instance.getAckMessage();
     }
 
+    public LocalizableMessage getAcceptedMessage() {
+        return instance.getAcceptedMessage();
+    }
+
     public LocalizableMessage getExportAckMessage() {
         return instance.getExportAckMessage();
     }
@@ -144,5 +148,17 @@ public class WsEventMessage {
 
     public String getAction() {
         return action;
+    }
+
+    public long getAcceptedTimestamp() {
+        return instance.getAcceptedTimestamp();
+    }
+
+    public String getAcceptedByUsername() {
+        return instance.getAcceptedByUsername();
+    }
+
+    public boolean isAccepted() {
+        return instance.isAccepted();
     }
 }

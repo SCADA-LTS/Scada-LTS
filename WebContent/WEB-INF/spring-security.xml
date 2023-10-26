@@ -179,6 +179,7 @@
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeAllPendingEvents.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.toggleSilence.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acceptEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.silenceAll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.sendTestEmail.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
@@ -384,6 +385,8 @@
         <intercept-url pattern="/api/events/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="POST" />
         <intercept-url pattern="/api/events/highestUnsilencedLevelAlarm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
         <intercept-url pattern="/api/events/datapoint/{id}" access="@guard.hasDataPointReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/events/ack/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/events/accept/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
 
         <!-- Alarm GET -->
         <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasRole('ROLE_ADMIN')" method="GET" />

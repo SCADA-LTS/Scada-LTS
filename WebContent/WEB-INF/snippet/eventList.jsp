@@ -63,6 +63,7 @@
       <td><sst:i18n key="events.msg"/></td>
       <td><sst:i18n key="common.inactiveTime"/></td>
       <c:if test="${!pendingEvents}"><td><sst:i18n key="events.acknowledged"/></td></c:if>
+      <td><sst:i18n key="events.accepted"/></td>
       <td></td>
     </tr>
     <c:if test="${empty events}"><tr><td colspan="6"><b><sst:i18n key="events.emptyList"/></b></td></tr></c:if>
@@ -103,6 +104,12 @@
             </c:if>
           </td>
         </c:if>
+          <td>
+            <c:if test="${event.accepted}">
+              ${sst:time(event.acceptedTimestamp)}
+              <sst:i18n message="${event.acceptedMessage}"/>
+            </c:if>
+          </td>
         <td style="white-space:nowrap;">
           <tag:alarmAck event="${event}"/>
           <c:choose>

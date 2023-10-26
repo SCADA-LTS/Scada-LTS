@@ -61,6 +61,8 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
 	private final static String  COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private final static String  COLUMN_NAME_EVENT_SILENCED = "silenced";
+	private final static String COLUMN_NAME_EVENT_ACCEPTED_TS = "acceptedTs";
+	private final static String COLUMN_NAME_EVENT_ACCEPTED_USERNAME = "acceptedUsername";
 
 	// @formatter:off
 	private static final String SQL_EVENTS = ""
@@ -80,7 +82,9 @@ public class PendingEventsDAO {
 				+ "e.ackUserId, "
 				+ "u.username, "
 				+ "e.alternateAckSource, "
-				+ "ue.silenced "
+				+ "ue.silenced, "
+				+ "e.acceptedTs, "
+				+ "e.acceptedUsername "
 			+ "from "
 				+ "events e   "
 				+ "left join users u on e.ackUserId=u.id   "
@@ -163,6 +167,12 @@ public class PendingEventsDAO {
 		}
 
 		event.setEventComments(comments.get(event.getId()));
+
+		long acceptedTs = rs.getLong(COLUMN_NAME_EVENT_ACCEPTED_TS);
+		if (!rs.wasNull()) {
+			event.setAcceptedTimestamp(acceptedTs);
+			event.setAcceptedByUsername(rs.getString(COLUMN_NAME_EVENT_ACCEPTED_USERNAME));
+		}
 		
 		return event;
 	}

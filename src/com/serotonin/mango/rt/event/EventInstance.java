@@ -97,6 +97,9 @@ public class EventInstance {
     private String acknowledgedByUsername;
     private int alternateAckSource;
 
+    private long acceptedTimestamp;
+    private String acceptedByUsername;
+
     //
     //
     // These fields are used only in the context of access by a particular user, providing state filled in from
@@ -185,6 +188,14 @@ public class EventInstance {
         return new LocalizableMessage("event.auto.acknowledge");
     }
 
+    public LocalizableMessage getAcceptedMessage() {
+        if (isAccepted()) {
+            if (!StringUtils.isEmpty(acceptedByUsername))
+                return new LocalizableMessage("events.acceptedByUser", acceptedByUsername);
+        }
+        return new LocalizableMessage("common.noMessage");
+    }
+
     public LocalizableMessage getExportAckMessage() {
         if (isAcknowledged()) {
             if (acknowledgedByUserId != 0 || !StringUtils.isEmpty(acknowledgedByUsername))
@@ -244,6 +255,10 @@ public class EventInstance {
 
     public boolean isAcknowledged() {
         return acknowledgedTimestamp > 0;
+    }
+
+    public boolean isAccepted() {
+        return acceptedTimestamp > 0;
     }
 
     public long getActiveTimestamp() {
@@ -348,6 +363,22 @@ public class EventInstance {
 
     public void setAlternateAckSource(int alternateAckSource) {
         this.alternateAckSource = alternateAckSource;
+    }
+
+    public long getAcceptedTimestamp() {
+        return acceptedTimestamp;
+    }
+
+    public void setAcceptedTimestamp(long acceptedTimestamp) {
+        this.acceptedTimestamp = acceptedTimestamp;
+    }
+
+    public String getAcceptedByUsername() {
+        return acceptedByUsername;
+    }
+
+    public void setAcceptedByUsername(String acceptedByUsername) {
+        this.acceptedByUsername = acceptedByUsername;
     }
 
     public Map<String, Object> getContext() {
@@ -459,6 +490,8 @@ public class EventInstance {
         eventInstance.setHandlers(handlers);
         eventInstance.setSilenced(silenced);
         eventInstance.setUserNotified(userNotified);
+        eventInstance.setAcceptedTimestamp(acceptedTimestamp);
+        eventInstance.setAcceptedByUsername(acceptedByUsername);
         return eventInstance;
     }
 

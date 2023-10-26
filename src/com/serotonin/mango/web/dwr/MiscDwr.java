@@ -131,6 +131,20 @@ public class MiscDwr extends BaseDwr {
 		return eventId;
 	}
 
+	public int acceptEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				eventService.acceptEvent(evt.getId(), System.currentTimeMillis(),
+						user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return eventId;
+	}
+
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {

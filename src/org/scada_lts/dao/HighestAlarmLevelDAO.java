@@ -23,6 +23,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "join events e on u.eventId=e.id "
             + "where "
             + "(e.ackTs is null or e.ackTs = 0) "
+            + "and (e.acceptedTs is null or e.acceptedTs = 0) "
             + "and u.silenced='N' and " + COLUMN_NAME_USERID + "=? "
             + "and (e.rtnCause is null or e.rtnCause = 0) "
             + "and e.rtnApplicable = 'Y'";
@@ -37,6 +38,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "join events e on u.eventId=e.id "
             + "where "
             + "(e.ackTs is null or e.ackTs = 0) "
+            + "and (e.acceptedTs is null or e.acceptedTs = 0) "
             + "and u.silenced='N' "
             + "and (e.rtnCause is null or e.rtnCause = 0) "
             + "and e.rtnApplicable = 'Y' "

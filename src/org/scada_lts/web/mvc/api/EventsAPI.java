@@ -95,6 +95,30 @@ public class EventsAPI {
     }
 
     /**
+     * Accept specific Event Alarm from REST API
+     *
+     * @param eventId Event ID number
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PutMapping(value = "/accept/{id}")
+    public ResponseEntity<String> acceptEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/events/accept/" + eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                eventService.acceptEvent(eventId, time.getTime(), user);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Silence specific Event Alarm from REST API
      *
      * @param eventId Event ID number
