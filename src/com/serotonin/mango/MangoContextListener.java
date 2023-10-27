@@ -36,7 +36,6 @@ import com.serotonin.mango.rt.maint.WorkItemMonitor;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.mango.view.ViewGraphicLoader;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
@@ -83,6 +82,8 @@ import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
@@ -559,16 +560,7 @@ public class MangoContextListener implements ServletContextListener {
 		ViewGraphicLoader loader = new ViewGraphicLoader();
 		List<ImageSet> imageSets = new ArrayList<ImageSet>();
 		List<DynamicImage> dynamicImages = new ArrayList<DynamicImage>();
-
-		for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath(""))) {
-			if (g.isImageSet())
-				imageSets.add((ImageSet) g);
-			else if (g.isDynamicImage())
-				dynamicImages.add((DynamicImage) g);
-			else
-				throw new ShouldNeverHappenException(
-						"Unknown view graphic type");
-		}
+		loadGraphics(loader, imageSets, dynamicImages);
 
 		ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
 		ctx.setAttribute(Common.ContextKeys.DYNAMIC_IMAGES, dynamicImages);

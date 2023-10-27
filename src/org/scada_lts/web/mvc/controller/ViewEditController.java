@@ -53,6 +53,7 @@ import com.serotonin.mango.vo.User;
 
 import static com.serotonin.mango.util.ViewControllerUtils.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.UploadFileUtils.getUploadsSystemFilePathToWrite;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 
@@ -242,8 +243,8 @@ public class ViewEditController {
         byte[] bytes = file.getBytes();
         if (bytes != null && bytes.length > 0) {
             // Create the path to the upload directory.
-            String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-            LOG.info("ViewEditController:uploadFile: realpath="+path);
+            String path = getUploadsSystemFilePathToWrite();
+            LOG.info("ViewEditController:uploadFile: realpath=" + path);
 
             // Make sure the directory exists.
             File dir = new File(path);

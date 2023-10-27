@@ -74,9 +74,11 @@ public class FileUtil {
 				if (directory.isDirectory()) {
 					String[] filesOnDirectory = directory.list();
 
-					for (String fileName : filesOnDirectory) {
-						files.addAll(getFilesOnDirectory(directory
-								.getAbsolutePath() + FILE_SEPARATOR + fileName));
+					if(filesOnDirectory != null) {
+						for (String fileName : filesOnDirectory) {
+							files.addAll(getFilesOnDirectory(directory
+									.getAbsolutePath() + FILE_SEPARATOR + fileName));
+						}
 					}
 				} else if (directory.isFile()) {
 					files.add(directory);

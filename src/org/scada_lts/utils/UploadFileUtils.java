@@ -1,16 +1,25 @@
 package org.scada_lts.utils;
 
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.view.DynamicImage;
+import com.serotonin.mango.view.ImageSet;
+import com.serotonin.mango.view.ViewGraphic;
+import com.serotonin.mango.view.ViewGraphicLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.security.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -24,6 +33,9 @@ public final class UploadFileUtils {
     private static final Log LOG = LogFactory.getLog(UploadFileUtils.class);
     private static final String INFO_FILE_NAME = "info.txt";
     private static final String IGNORE_THUMBS = "Thumbs.db";
+
+    private static final String GRAPHICS_PATH = File.separator + "graphics";
+    private static final String UPLOADS_PATH =  File.separator + "uploads";
 
     private UploadFileUtils() {}
 
@@ -145,6 +157,42 @@ public final class UploadFileUtils {
         return isImageBitmap(safeFile);
     }
 
+    public static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages) {
+        for(String path: getGraphicsSystemFilePaths()) {
+            loadGraphics(loader, imageSets, dynamicImages, path);
+        }
+    }
+
+    public static List<String> getUploadsSystemFilePaths() {
+        return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
+    }
+
+    public static List<String> getGraphicsSystemFilePaths() {
+        return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
+    }
+
+    public static String getUploadsSystemFilePathToWrite() {
+        return getImageSystemFilePathToWrite(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
+    }
+
+    public static String getGraphicsSystemFilePathToWrite() {
+        return getImageSystemFilePathToWrite(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
+    }
+
+    public static String getGraphicsBaseSystemFilePath(String path) {
+        if (path.contains(GRAPHICS_PATH)) {
+            return path.replace(GRAPHICS_PATH, "");
+        }
+        return path;
+    }
+
+    public static String getUploadsBaseSystemFilePath(String path) {
+        if (path.contains(UPLOADS_PATH)) {
+            return path.replace(UPLOADS_PATH, "");
+        }
+        return path;
+    }
+
     private static boolean isThumbsFile(SafeFile file) {
         return isThumbsFile(file.getName());
     }
@@ -259,5 +307,66 @@ public final class UploadFileUtils {
         return files.stream()
                 .filter(predicate)
                 .collect(Collectors.toList());
+    }
+
+    private static List<String> getImageSystemFilePaths(Supplier<String> getLocalPath, String arg) {
+        List<String> paths = new ArrayList<>();
+        Path path = Paths.get(getAbsoluteResourcePath(getLocalPath.get()));
+        createIfNotExists(path);
+        paths.add(path.toString());
+        path = Paths.get(PathSecureUtils.getSystemFilePath(arg));
+        createIfNotExists(path);
+        paths.add(path.toString());
+        return paths;
+    }
+
+    private static String getImageSystemFilePathToWrite(Supplier<String> getLocalPath, String arg) {
+        Path path;
+        if (!StringUtils.isEmpty(getLocalPath.get())) {
+            path = Paths.get(getAbsoluteResourcePath(getLocalPath.get()));
+        } else {
+            path = Paths.get(PathSecureUtils.getSystemFilePath(arg));
+        }
+        createIfNotExists(path);
+        return path.toString();
+    }
+
+    private static void createIfNotExists(Path path) {
+        if(!Files.exists(path)) {
+            path.toFile().mkdirs();
+        }
+    }
+
+    private static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages, String path) {
+        for (ViewGraphic graphic : loader.loadViewGraphics(path)) {
+            if (graphic.isImageSet())
+                imageSets.add((ImageSet) graphic);
+            else if (graphic.isDynamicImage())
+                dynamicImages.add((DynamicImage) graphic);
+            else
+                throw new ShouldNeverHappenException(
+                        "Unknown view graphic type");
+        }
+    }
+
+    private static String getAbsoluteResourcePath(String path) {
+        Path normalizedPath = normalizePath(path);
+        if (!path.equals(normalizedPath.toString())) {
+            return basePath() + File.separator + normalizeSeparator(path);
+        } else {
+            return normalizeSeparator(path);
+        }
+    }
+
+    private static Path normalizePath(String path) {
+        return new File(normalizeSeparator(path)).getAbsoluteFile().toPath().normalize();
+    }
+
+    public static String normalizeSeparator(String path) {
+        return path.replace("/", File.separator).replace("\\", File.separator);
+    }
+
+    private static Path basePath() {
+        return new File("../").getAbsoluteFile().toPath().normalize();
     }
 }

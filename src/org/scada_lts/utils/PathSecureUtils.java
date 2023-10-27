@@ -12,7 +12,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
+
+import static org.scada_lts.utils.UploadFileUtils.getGraphicsBaseSystemFilePath;
+import static org.scada_lts.utils.UploadFileUtils.getUploadsBaseSystemFilePath;
 
 public final class PathSecureUtils {
 
@@ -21,22 +25,26 @@ public final class PathSecureUtils {
     private static final Log LOG = LogFactory.getLog(PathSecureUtils.class);
 
     public static Optional<File> toSecurePath(Path path) {
-        return normalizePath(path).map(Path::toFile);
+        return toSecurePath(path, (originPath, base) -> originPath);
     }
 
-    public static String getRealPath(String separator) {
+    public static Optional<File> toSecurePath(Path path, BinaryOperator<String> reduce) {
+        return normalizePath(path, reduce).map(Path::toFile);
+    }
+
+    public static String getSystemFilePath(String separator) {
         if(separator == null)
             throw new NullPointerException();
         return Common.ctx.getServletContext().getRealPath(separator);
     }
 
-    public static String getRealPath() {
-        return Common.ctx.getServletContext().getRealPath(File.separator);
+    public static String getSystemFilePath() {
+        return getSystemFilePath(File.separator);
     }
 
     public static String getPartialPath(File file) {
-        return toSecurePath(file.toPath())
-                .map(securePath -> securePath.getAbsolutePath().replace(getRealPath(), ""))
+        return toSecurePath(file.toPath(), (originPath, base) -> originPath.replace(base, ""))
+                .map(File::getPath)
                 .orElse("");
     }
 
@@ -79,17 +87,27 @@ public final class PathSecureUtils {
         }
     }
 
-    private static Optional<Path> normalizePath(Path path) {
+    private static Optional<Path> normalizePath(Path path, BinaryOperator<String> reduce) {
         if(path == null) {
             return Optional.empty();
         }
-        String appPath = getRealPath();
+        String appPath = getSystemFilePath();
         if(appPath == null) {
             return Optional.empty();
         }
         Path normalizedPath = path.normalize();
         if(normalizedPath.startsWith(appPath)) {
-            return Optional.of(normalizedPath);
+            return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), appPath)));
+        }
+        for(String uploadsPath: UploadFileUtils.getUploadsSystemFilePaths()) {
+            if (normalizedPath.startsWith(uploadsPath)) {
+                return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), getUploadsBaseSystemFilePath(uploadsPath))));
+            }
+        }
+        for(String graphicsPath: UploadFileUtils.getGraphicsSystemFilePaths()) {
+            if (normalizedPath.startsWith(graphicsPath)) {
+                return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), getGraphicsBaseSystemFilePath(graphicsPath))));
+            }
         }
         LOG.warn("Path is invalid!");
         return Optional.empty();

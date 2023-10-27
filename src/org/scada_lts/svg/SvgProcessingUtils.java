@@ -3,6 +3,7 @@ package org.scada_lts.svg;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.PathSecureUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +25,6 @@ import java.util.stream.Stream;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.scada_lts.svg.SvgEnvKeys.*;
-import static org.scada_lts.utils.PathSecureUtils.getRealPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.xml.XmlUtils.newValidator;
 
@@ -57,7 +57,7 @@ final class SvgProcessingUtils {
                 .map(Paths::get)
                 .filter(SvgProcessingUtils::isXsdFile)
                 .flatMap(filepath ->
-                        toSecurePath(Paths.get(getRealPath(File.separator) + File.separator + filepath))
+                        toSecurePath(Paths.get(PathSecureUtils.getSystemFilePath(File.separator) + File.separator + filepath))
                                 .stream())
                 .collect(Collectors.toList());
     }

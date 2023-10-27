@@ -38,31 +38,32 @@ import static org.scada_lts.utils.UploadFileUtils.*;
 public class ViewGraphicLoader {
     private static final Log LOG = LogFactory.getLog(ViewGraphicLoader.class);
 
-    private static final String GRAPHICS_PATH = "graphics";
-
     private String path;
-    private List<ViewGraphic> viewGraphics;
 
     public List<ViewGraphic> loadViewGraphics(String path) {
-        this.path = path;
-        viewGraphics = new ArrayList<ViewGraphic>();
+        this.path = getGraphicsBaseSystemFilePath(path);
+        List<ViewGraphic> viewGraphics = new ArrayList<>();
 
-        File graphicsPath = new File(path, GRAPHICS_PATH);
+        File graphicsPath = new File(path);
         File[] dirs = graphicsPath.listFiles();
-        for (File dir : dirs) {
-            try {
-                if (dir.isDirectory())
-                    loadDirectory(dir, "");
+        if(dirs != null) {
+            for (File dir : dirs) {
+                try {
+                    if (dir.isDirectory())
+                        viewGraphics.addAll(loadDirectory(dir, ""));
+                } catch (Exception e) {
+                    LOG.warn("Failed to load image set at " + dir, e);
+                }
             }
-            catch (Exception e) {
-                LOG.warn("Failed to load image set at " + dir, e);
-            }
+        } else {
+            LOG.warn("Not exists: " + path);
         }
         viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
         return viewGraphics;
     }
 
-    private void loadDirectory(File dir, String baseId) throws Exception {
+    private List<ViewGraphic> loadDirectory(File dir, String baseId) throws Exception {
+        List<ViewGraphic> result = new ArrayList<>();
         String id = baseId + dir.getName();
         String name = id;
         String typeStr = "imageSet";
@@ -134,8 +135,9 @@ public class ViewGraphicLoader {
             else
                 throw new Exception("Invalid type: " + typeStr);
 
-            viewGraphics.add(g);
+            result.add(g);
         }
+        return result;
     }
 
     private String getProperty(Properties props, String key, String defaultValue) {
