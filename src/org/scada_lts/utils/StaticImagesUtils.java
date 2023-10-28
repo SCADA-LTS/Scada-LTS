@@ -1,7 +1,6 @@
 package org.scada_lts.utils;
 
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.web.mvc.api.exceptions.ScadaErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,12 +22,12 @@ public final class StaticImagesUtils {
 
     private StaticImagesUtils(){}
 
-    public static ResponseEntity<String> getAndSendImage(String fileName, HttpServletRequest request, HttpServletResponse response) {
-        String path = getImageSystemFilePath(fileName, request);
-        if(StringUtils.isEmpty(path))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public static ResponseEntity<String> getAndSendImage(HttpServletRequest request, HttpServletResponse response) {
+        File file = getSystemFileByRequest(request);
+        if(!UploadFileUtils.isToUploads(file))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
-            sendFile(response, path);
+            sendFile(response, file);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -37,7 +36,7 @@ public final class StaticImagesUtils {
 
     public static String getUploadSystemFilePath(String fileName) {
         for(String path : getUploadsSystemFilePaths()) {
-            Path path1 = Paths.get(path + getSeparator() + fileName);
+            Path path1 = Paths.get(path + getSeparator() + getUploadsBaseSystemFilePath(fileName));
             if(Files.exists(path1)) {
                 return path1.toString();
             }
@@ -47,7 +46,7 @@ public final class StaticImagesUtils {
 
     public static String getGraphicSystemFilePath(String fileName) {
         for(String path : getGraphicsSystemFilePaths()) {
-            Path path1 = Paths.get(path + getSeparator() + fileName);
+            Path path1 = Paths.get(path + getSeparator() + getGraphicsBaseSystemFilePath(fileName));
             if(Files.exists(path1)) {
                 return path1.toString();
             }
@@ -55,11 +54,11 @@ public final class StaticImagesUtils {
         return "";
     }
 
-    private static void sendFile(HttpServletResponse response, String path) throws IOException {
+    private static void sendFile(HttpServletResponse response, File file) throws IOException {
         int bufferSize = 2048;
         byte[] data = new byte[bufferSize];
         int len;
-        try (InputStream inputStream = new FileInputStream(path);
+        try (InputStream inputStream = new FileInputStream(file);
              ServletOutputStream output = response.getOutputStream()) {
             while ((len = inputStream.read(data, 0, bufferSize)) != -1) {
                 output.write(data, 0, len);
@@ -67,43 +66,17 @@ public final class StaticImagesUtils {
         }
     }
 
-    private static String getImageSystemFilePath(String fileName, HttpServletRequest request) {
+    private static File getSystemFileByRequest(HttpServletRequest request) {
         String url = request.getRequestURI().replace(request.getContextPath(), "");
+        String path = null;
         if(url.startsWith("/graphics")) {
-            return getGraphicSystemFilePath(fileName);
+            path = getGraphicSystemFilePath(normalizeSeparator(url));
         } else if(url.startsWith("/uploads")) {
-            return getUploadSystemFilePath(fileName);
-        } else if(url.startsWith("/assets/images")) {
-            return getAssetsImagesSystemFilePath(fileName);
-        } else if(url.startsWith("/assets/")) {
-            return getAssetsSystemFilePath(fileName);
-        } else if(url.startsWith("/images")) {
-            return getImagesSystemFilePath(fileName);
-        } else if(url.startsWith("/img")) {
-            return getImgSystemFilePath(fileName);
-        } else {
-            return "";
+            path = getUploadSystemFilePath(normalizeSeparator(url));
         }
-    }
-
-    private static String getDetail(String fileName) {
-        return "file not exists: " + fileName;
-    }
-
-    private static String getImagesSystemFilePath(String filmName) {
-        return PathSecureUtils.getSystemFilePath(getSeparator() + "images") + getSeparator() + filmName;
-    }
-
-    private static String getImgSystemFilePath(String filmName) {
-        return PathSecureUtils.getSystemFilePath(getSeparator() + "img") + getSeparator() + filmName;
-    }
-
-    private static String getAssetsImagesSystemFilePath(String fileName) {
-        return PathSecureUtils.getSystemFilePath(getSeparator() + "assets" + getSeparator() + "images") + getSeparator() + fileName;
-    }
-
-    private static String getAssetsSystemFilePath(String filmName) {
-        return PathSecureUtils.getSystemFilePath(getSeparator() + "assets") + getSeparator() + filmName;
+        if(StringUtils.isEmpty(path))
+            path = PathSecureUtils.getSystemFilePath() + normalizeSeparator(url);
+        return new File(path);
     }
 
     private static String getSeparator() {

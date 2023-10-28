@@ -61,13 +61,13 @@ public final class UploadFileUtils {
             try {
                 safeMultipartFile = SafeMultipartFile.safe(multipartFile);
             } catch (FileNotSafeException ex) {
-                LOG.error(ex.getMessage());
+                LOG.warn(ex.getMessage());
                 return false;
             }
             return isZipMimeType(Paths.get(safeMultipartFile.getOriginalFilename()))
                     && !isXml(safeMultipartFile) && !isImageBitmap(safeMultipartFile);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
     }
@@ -79,7 +79,7 @@ public final class UploadFileUtils {
         try {
             safeMultipartFile = SafeMultipartFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         String fileName = safeMultipartFile.getOriginalFilename();
@@ -98,7 +98,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         if(isThumbsFile(safeFile))
@@ -114,7 +114,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         if(isThumbsFile(safeFile))
@@ -129,7 +129,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         return isThumbsFile(safeFile);
@@ -140,7 +140,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         return isInfoFile(safeFile);
@@ -151,7 +151,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         return isImageBitmap(safeFile);
@@ -204,9 +204,6 @@ public final class UploadFileUtils {
     private static boolean isImageBitmap(SafeFile file) {
         try {
             return ImageIO.read(file.toFile()) != null;
-        } catch (FileNotFoundException ex) {
-            LOG.error(ex.getMessage());
-            return false;
         } catch (Exception ex) {
             LOG.warn(ex.getMessage());
             return false;
@@ -220,14 +217,14 @@ public final class UploadFileUtils {
         try {
             safeZipFile = SafeZipFile.safe(zipFile);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         SafeZipEntry safeZipEntry;
         try {
             safeZipEntry = SafeZipEntry.safe(entry);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         return isToGraphics(safeZipFile, safeZipEntry);
@@ -274,9 +271,6 @@ public final class UploadFileUtils {
     private static boolean isImageBitmap(SafeMultipartFile file) {
         try(InputStream inputStream = new ByteArrayInputStream(file.getBytes())) {
             return ImageIO.read(inputStream) != null;
-        } catch (FileNotFoundException ex) {
-            LOG.error(ex.getMessage());
-            return false;
         } catch (Exception ex) {
             LOG.warn(ex.getMessage());
             return false;
@@ -286,9 +280,6 @@ public final class UploadFileUtils {
     private static boolean isImageBitmap(SafeZipFile zipFile, SafeZipEntry entry) {
         try(InputStream inputStream = zipFile.getInputStream(entry)) {
             return ImageIO.read(inputStream) != null;
-        } catch (FileNotFoundException ex) {
-            LOG.error(ex.getMessage());
-            return false;
         } catch (Exception ex) {
             LOG.warn(ex.getMessage());
             return false;
