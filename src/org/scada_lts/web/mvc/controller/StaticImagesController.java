@@ -7,53 +7,43 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import java.io.File;
-
 import static org.scada_lts.utils.StaticImagesUtils.getAndSendImage;
 
 @RestController
 public class StaticImagesController {
 
-    @GetMapping(value = "/graphics/{folder}/{fileName}.{fileExt}")
-    public ResponseEntity<String> graphics(@PathVariable("folder") String folder,
-                                           @PathVariable("fileName") String fileName,
-                                           @PathVariable("fileExt") String fileExt,
-                                           HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(folder + File.separator + fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/graphics/**")
+    public ResponseEntity<String> graphics(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 
-    @GetMapping(value = "/uploads/{fileName}.{fileExt}")
-    public ResponseEntity<String> uploads(@PathVariable("fileName") String fileName,
-                                          @PathVariable("fileExt") String fileExt,
-                                          HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/uploads/**")
+    public ResponseEntity<String> uploads(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 
-    @GetMapping(value = "/images/{fileName}.{fileExt}")
-    public ResponseEntity<String> images(@PathVariable("fileName") String fileName,
-                                         @PathVariable("fileExt") String fileExt,
-                                         HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/images/**")
+    public ResponseEntity<String> images(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 
-    @GetMapping(value = "/img/{fileName}.{fileExt}")
-    public ResponseEntity<String> img(@PathVariable("fileName") String fileName,
-                                      @PathVariable("fileExt") String fileExt,
-                                      HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/img/**")
+    public ResponseEntity<String> img(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 
-    @GetMapping(value = "/assets/images/{fileName}.{fileExt}")
-    public ResponseEntity<String> assetsImages(@PathVariable("fileName") String fileName,
-                                               @PathVariable("fileExt") String fileExt,
-                                               HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/assets/**")
+    public ResponseEntity<String> assets(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 
-    @GetMapping(value = "/assets/{fileName}.{fileExt}")
-    public ResponseEntity<String> assets(@PathVariable("fileName") String fileName,
-                                         @PathVariable("fileExt") String fileExt,
-                                         HttpServletRequest request, HttpServletResponse response) {
-        return getAndSendImage(fileName + "." + fileExt, request, response);
+    @GetMapping(value = "/resources/**")
+    public ResponseEntity<String> resources(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
+    }
+
+    @GetMapping(value = "/static/**")
+    public ResponseEntity<String> stat(HttpServletRequest request, HttpServletResponse response) {
+        return getAndSendImage(request, response);
     }
 }
