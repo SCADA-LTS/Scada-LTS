@@ -50,6 +50,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.beans.ApplicationBeans;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
 	public static final String XID_PREFIX = "GV_";
@@ -386,15 +388,8 @@ public class View implements Serializable, JsonSerializable {
 			response.addMessage("name", new LocalizableMessage(
 					"validate.notLongerThan", 100));
 
-		if (StringUtils.isEmpty(xid))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.required"));
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.notLongerThan", 50));
-		else if (!new ViewService().isXidUnique(xid, id))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.xidUsed"));
+		ViewService viewService = new ViewService();
+		validateXid(response, viewService::isXidUnique, xid, id);
 
 		for (ViewComponent vc : viewComponents)
 			vc.validate(response);

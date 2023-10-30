@@ -24,7 +24,6 @@ import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -49,6 +48,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -57,6 +57,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
 public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO> {
@@ -655,12 +657,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public void validate(DwrResponseI18n response) {
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
+
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
 
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "validate.required");
@@ -724,12 +723,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public void validateIdentifier(DwrResponseI18n response) {
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
+
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
+
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "validate.required");
 
