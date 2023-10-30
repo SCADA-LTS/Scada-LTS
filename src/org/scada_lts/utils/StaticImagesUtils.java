@@ -34,24 +34,24 @@ public final class StaticImagesUtils {
         return ResponseEntity.ok().build();
     }
 
-    public static String getUploadSystemFilePath(String fileName) {
-        for(String path : getUploadsSystemFilePaths()) {
-            Path path1 = Paths.get(path + getSeparator() + getUploadsBaseSystemFilePath(fileName));
-            if(Files.exists(path1)) {
-                return path1.toString();
+    public static Path getUploadSystemFilePath(Path fileName) {
+        for(Path path : getUploadsSystemFilePaths()) {
+            Path absolutePath = Paths.get(path + getSeparator() + getUploadsBaseSystemFilePath(fileName));
+            if(Files.exists(absolutePath)) {
+                return absolutePath;
             }
         }
-        return "";
+        return Paths.get("");
     }
 
-    public static String getGraphicSystemFilePath(String fileName) {
-        for(String path : getGraphicsSystemFilePaths()) {
-            Path path1 = Paths.get(path + getSeparator() + getGraphicsBaseSystemFilePath(fileName));
-            if(Files.exists(path1)) {
-                return path1.toString();
+    public static Path getGraphicSystemFilePath(Path fileName) {
+        for(Path path : getGraphicsSystemFilePaths()) {
+            Path absolutePath = Paths.get(path + getSeparator() + getGraphicsBaseSystemFilePath(fileName));
+            if(Files.exists(absolutePath)) {
+                return absolutePath;
             }
         }
-        return "";
+        return Paths.get("");
     }
 
     private static void sendFile(HttpServletResponse response, File file) throws IOException {
@@ -68,15 +68,15 @@ public final class StaticImagesUtils {
 
     private static File getSystemFileByRequest(HttpServletRequest request) {
         String url = request.getRequestURI().replace(request.getContextPath(), "");
-        String path = null;
+        Path path = Paths.get("");
         if(url.startsWith("/graphics")) {
-            path = getGraphicSystemFilePath(normalizeSeparator(url));
+            path = getGraphicSystemFilePath(Paths.get(url));
         } else if(url.startsWith("/uploads")) {
-            path = getUploadSystemFilePath(normalizeSeparator(url));
+            path = getUploadSystemFilePath(Paths.get(url));
         }
-        if(StringUtils.isEmpty(path))
-            path = PathSecureUtils.getSystemFilePath() + normalizeSeparator(url);
-        return new File(path);
+        if(StringUtils.isEmpty(path.toString()))
+            path = PathSecureUtils.getAppContextSystemFilePath(Paths.get(url));
+        return path.toFile();
     }
 
     private static String getSeparator() {

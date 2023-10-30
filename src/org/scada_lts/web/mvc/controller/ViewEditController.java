@@ -20,6 +20,7 @@ package org.scada_lts.web.mvc.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,7 @@ import com.serotonin.mango.vo.User;
 
 import static com.serotonin.mango.util.ViewControllerUtils.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
-import static org.scada_lts.utils.UploadFileUtils.getUploadsSystemFilePathToWrite;
+import static org.scada_lts.utils.UploadFileUtils.getUploadsSystemFileToWritePath;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 
@@ -243,11 +244,11 @@ public class ViewEditController {
         byte[] bytes = file.getBytes();
         if (bytes != null && bytes.length > 0) {
             // Create the path to the upload directory.
-            String path = getUploadsSystemFilePathToWrite();
+            Path path = getUploadsSystemFileToWritePath();
             LOG.info("ViewEditController:uploadFile: realpath=" + path);
 
             // Make sure the directory exists.
-            File dir = new File(path);
+            File dir = path.toFile();
             dir.mkdirs();
 
             String fileName = file.getOriginalFilename();

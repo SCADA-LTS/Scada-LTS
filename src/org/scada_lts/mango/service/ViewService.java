@@ -173,7 +173,7 @@ public class ViewService {
 
 	private void setWidthAndHeight(View view, String backgroundFilename) throws IOException {
 		if (backgroundFilename != null && !backgroundFilename.isEmpty()) {
-			UploadImage uploadImage = createUploadImage(new File(getUploadSystemFilePath(backgroundFilename)));
+			UploadImage uploadImage = createUploadImage(getUploadSystemFilePath(Paths.get(normalizeSeparator(backgroundFilename))).toFile());
 			view.setHeight(uploadImage.getHeight());
 			view.setWidth(uploadImage.getWidth());
 		}
@@ -210,14 +210,14 @@ public class ViewService {
 
 	public List<UploadImage> getUploadImages() {
 		List<UploadImage> files = new ArrayList<>();
-		for(String path: getUploadsSystemFilePaths()) {
+		for(Path path: getUploadsSystemFilePaths()) {
 			files.addAll(getUploadImages(path));
 		}
 		return files;
 	}
 
-	private List<UploadImage> getUploadImages(String path) {
-		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(path));
+	private List<UploadImage> getUploadImages(Path directory) {
+		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(directory));
 
 		List<UploadImage> images = new ArrayList<>();
 		for (File file : files) {
@@ -231,7 +231,7 @@ public class ViewService {
 		if(!isToUploads(multipartFile)) {
 			return Optional.empty();
 		}
-		Path path = Paths.get(getUploadsSystemFilePathToWrite() + FILE_SEPARATOR + multipartFile.getOriginalFilename());
+		Path path = Paths.get(getUploadsSystemFileToWritePath() + FILE_SEPARATOR + multipartFile.getOriginalFilename());
 		return toSecurePath(path)
 				.flatMap(dist -> transferTo(multipartFile, dist))
 				.map(this::createUploadImage);

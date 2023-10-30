@@ -24,6 +24,7 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -38,13 +39,13 @@ import static org.scada_lts.utils.UploadFileUtils.*;
 public class ViewGraphicLoader {
     private static final Log LOG = LogFactory.getLog(ViewGraphicLoader.class);
 
-    private String path;
+    private Path path;
 
-    public List<ViewGraphic> loadViewGraphics(String path) {
+    public List<ViewGraphic> loadViewGraphics(Path path) {
         this.path = getGraphicsBaseSystemFilePath(path);
         List<ViewGraphic> viewGraphics = new ArrayList<>();
 
-        File graphicsPath = new File(path);
+        File graphicsPath = path.toFile();
         File[] dirs = graphicsPath.listFiles();
         if(dirs != null) {
             for (File dir : dirs) {
@@ -74,7 +75,7 @@ public class ViewGraphicLoader {
 
         File[] files = dir.listFiles();
         Arrays.sort(files);
-        List<String> imageFiles = new ArrayList<String>();
+        List<String> imageUrls = new ArrayList<>();
         for (File file : files) {
             if (file.isDirectory())
                 loadDirectory(file, id + ".");
@@ -96,23 +97,23 @@ public class ViewGraphicLoader {
             }
             else if(isImageBitmap(file)) {
                 // Image file. Subtract the load path from the image path
-                String imagePath = file.getPath().substring(path.length());
-                if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
-                    imagePath=imagePath.substring(1);
+                String imageUrl = file.getPath().substring(path.toString().length());
+                if(imageUrl.startsWith("/") || imageUrl.startsWith("\\")) {
+                    imageUrl=imageUrl.substring(1);
                 }
                 // Replace Windows-style '\' path separators with '/'
-                imagePath = imagePath.replaceAll("\\\\", "/");
-                imageFiles.add(imagePath);
+                imageUrl = imageUrl.replaceAll("\\\\", "/");
+                imageUrls.add(imageUrl);
             }
             else {
                 LOG.warn("File is not supported type: " + file);
             }
         }
 
-        if (!imageFiles.isEmpty()) {
+        if (!imageUrls.isEmpty()) {
             if (width == -1 || height == -1) {
-                String imagePath = path + File.separator + imageFiles.get(0);
-                Image image = Toolkit.getDefaultToolkit().getImage(imagePath);
+                String imageSystemFilePath = path + File.separator + normalizeSeparator(imageUrls.get(0));
+                Image image = Toolkit.getDefaultToolkit().getImage(imageSystemFilePath);
                 MediaTracker tracker = new MediaTracker(new Container());
                 tracker.addImage(image, 0);
                 tracker.waitForID(0);
@@ -126,12 +127,12 @@ public class ViewGraphicLoader {
             if (width == -1 || height == -1)
                 throw new Exception("Unable to derive image dimensions");
 
-            String[] imageFileArr = imageFiles.toArray(new String[imageFiles.size()]);
+            String[] imageUrlsArray = imageUrls.toArray(new String[imageUrls.size()]);
             ViewGraphic g;
             if ("imageSet".equals(typeStr))
-                g = new ImageSet(id, name, imageFileArr, width, height, textX, textY);
+                g = new ImageSet(id, name, imageUrlsArray, width, height, textX, textY);
             else if ("dynamic".equals(typeStr))
-                g = new DynamicImage(id, name, imageFileArr[0], width, height, textX, textY);
+                g = new DynamicImage(id, name, imageUrlsArray[0], width, height, textX, textY);
             else
                 throw new Exception("Invalid type: " + typeStr);
 

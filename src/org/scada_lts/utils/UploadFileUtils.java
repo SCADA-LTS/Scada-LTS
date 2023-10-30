@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.scada_lts.svg.SvgUtils.isSvg;
+import static org.scada_lts.utils.PathSecureUtils.getAppContextSystemFilePath;
 import static org.scada_lts.utils.ScadaMimeTypeUtils.*;
 import static org.scada_lts.utils.xml.XmlUtils.isXml;
 
@@ -158,37 +159,37 @@ public final class UploadFileUtils {
     }
 
     public static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages) {
-        for(String path: getGraphicsSystemFilePaths()) {
+        for(Path path: getGraphicsSystemFilePaths()) {
             loadGraphics(loader, imageSets, dynamicImages, path);
         }
     }
 
-    public static List<String> getUploadsSystemFilePaths() {
+    public static List<Path> getUploadsSystemFilePaths() {
         return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
     }
 
-    public static List<String> getGraphicsSystemFilePaths() {
+    public static List<Path> getGraphicsSystemFilePaths() {
         return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
     }
 
-    public static String getUploadsSystemFilePathToWrite() {
-        return getImageSystemFilePathToWrite(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
+    public static Path getUploadsSystemFileToWritePath() {
+        return getImageSystemFileToWritePath(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
     }
 
-    public static String getGraphicsSystemFilePathToWrite() {
-        return getImageSystemFilePathToWrite(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
+    public static Path getGraphicsSystemFileToWritePath() {
+        return getImageSystemFileToWritePath(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
     }
 
-    public static String getGraphicsBaseSystemFilePath(String path) {
-        if (path.contains(GRAPHICS_PATH)) {
-            return path.replace(GRAPHICS_PATH, "");
+    public static Path getGraphicsBaseSystemFilePath(Path path) {
+        if (path.toString().startsWith(GRAPHICS_PATH) || path.toString().endsWith(GRAPHICS_PATH)) {
+            return Paths.get(path.toString().replace(GRAPHICS_PATH, ""));
         }
         return path;
     }
 
-    public static String getUploadsBaseSystemFilePath(String path) {
-        if (path.contains(UPLOADS_PATH)) {
-            return path.replace(UPLOADS_PATH, "");
+    public static Path getUploadsBaseSystemFilePath(Path path) {
+        if (path.toString().startsWith(UPLOADS_PATH) || path.toString().endsWith(UPLOADS_PATH)) {
+            return Paths.get(path.toString().replace(UPLOADS_PATH, ""));
         }
         return path;
     }
@@ -300,26 +301,30 @@ public final class UploadFileUtils {
                 .collect(Collectors.toList());
     }
 
-    private static List<String> getImageSystemFilePaths(Supplier<String> getLocalPath, String arg) {
-        List<String> paths = new ArrayList<>();
-        Path path = Paths.get(getAbsoluteResourcePath(getLocalPath.get()));
+    private static List<Path> getImageSystemFilePaths(Supplier<String> getLocalPath, String folder) {
+        List<Path> paths = new ArrayList<>();
+        String normalizeSeparator = normalizeSeparator(getLocalPath.get());
+        if (!StringUtils.isEmpty(normalizeSeparator) && normalizeSeparator.endsWith(folder)) {
+            Path path = getAbsoluteResourcePath(normalizeSeparator);
+            createIfNotExists(path);
+            paths.add(path);
+        }
+        Path path = getAppContextSystemFilePath(Paths.get(normalizeSeparator(folder)));
         createIfNotExists(path);
-        paths.add(path.toString());
-        path = Paths.get(PathSecureUtils.getSystemFilePath(arg));
-        createIfNotExists(path);
-        paths.add(path.toString());
+        paths.add(path);
         return paths;
     }
 
-    private static String getImageSystemFilePathToWrite(Supplier<String> getLocalPath, String arg) {
+    private static Path getImageSystemFileToWritePath(Supplier<String> getLocalPath, String folder) {
         Path path;
-        if (!StringUtils.isEmpty(getLocalPath.get())) {
-            path = Paths.get(getAbsoluteResourcePath(getLocalPath.get()));
+        String normalizeSeparator = normalizeSeparator(getLocalPath.get());
+        if (!StringUtils.isEmpty(normalizeSeparator) && normalizeSeparator.endsWith(folder)) {
+            path = getAbsoluteResourcePath(normalizeSeparator(normalizeSeparator));
         } else {
-            path = Paths.get(PathSecureUtils.getSystemFilePath(arg));
+            path = getAppContextSystemFilePath(Paths.get(normalizeSeparator(folder)));
         }
         createIfNotExists(path);
-        return path.toString();
+        return path;
     }
 
     private static void createIfNotExists(Path path) {
@@ -328,7 +333,10 @@ public final class UploadFileUtils {
         }
     }
 
-    private static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages, String path) {
+    private static void loadGraphics(ViewGraphicLoader loader,
+                                     List<ImageSet> imageSets,
+                                     List<DynamicImage> dynamicImages,
+                                     Path path) {
         for (ViewGraphic graphic : loader.loadViewGraphics(path)) {
             if (graphic.isImageSet())
                 imageSets.add((ImageSet) graphic);
@@ -340,17 +348,17 @@ public final class UploadFileUtils {
         }
     }
 
-    private static String getAbsoluteResourcePath(String path) {
+    private static Path getAbsoluteResourcePath(String path) {
         Path normalizedPath = normalizePath(path);
         if (!path.equals(normalizedPath.toString())) {
-            return basePath() + File.separator + normalizeSeparator(path);
+            return Path.of(basePath() + File.separator + normalizeSeparator(path));
         } else {
-            return normalizeSeparator(path);
+            return normalizedPath;
         }
     }
 
     private static Path normalizePath(String path) {
-        return new File(normalizeSeparator(path)).getAbsoluteFile().toPath().normalize();
+        return Paths.get(path).toFile().getAbsoluteFile().toPath().normalize();
     }
 
     public static String normalizeSeparator(String path) {

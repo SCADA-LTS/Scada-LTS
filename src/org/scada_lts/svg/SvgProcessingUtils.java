@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.scada_lts.svg.SvgEnvKeys.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.UploadFileUtils.normalizeSeparator;
 import static org.scada_lts.utils.xml.XmlUtils.newValidator;
 
 final class SvgProcessingUtils {
@@ -57,7 +58,7 @@ final class SvgProcessingUtils {
                 .map(Paths::get)
                 .filter(SvgProcessingUtils::isXsdFile)
                 .flatMap(filepath ->
-                        toSecurePath(Paths.get(PathSecureUtils.getSystemFilePath(File.separator) + File.separator + filepath))
+                        toSecurePath(Paths.get(PathSecureUtils.getAppContextSystemFilePath() + File.separator + normalizeSeparator(filepath.toString())))
                                 .stream())
                 .collect(Collectors.toList());
     }

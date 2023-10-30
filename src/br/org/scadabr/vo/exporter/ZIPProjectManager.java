@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,11 +93,11 @@ public class ZIPProjectManager {
 
 		List<FileToPack> filesToZip = new ArrayList<>();
 		if (includeUploadsFolder) {
-			for(String path: UploadFileUtils.getUploadsSystemFilePaths())
+			for(Path path: UploadFileUtils.getUploadsSystemFilePaths())
 				filesToZip.addAll(getUploadsFolderFiles(path));
 		}
 		if (includeGraphicsFolder) {
-			for(String path: UploadFileUtils.getGraphicsSystemFilePaths())
+			for(Path path: UploadFileUtils.getGraphicsSystemFilePaths())
 				filesToZip.addAll(getGraphicsFolderFiles(path));
 		}
 		filesToZip.addAll(tempFiles);
@@ -160,10 +161,10 @@ public class ZIPProjectManager {
 	public void importProject() throws Exception {
 
 		List<ZipEntry> graphicsFiles = getGraphicsFiles(graphicsFolder);
-		restoreFiles(graphicsFiles, getGraphicsBaseSystemFilePath(getGraphicsSystemFilePathToWrite()));
+		restoreFiles(graphicsFiles, getGraphicsBaseSystemFilePath(getGraphicsSystemFileToWritePath()));
 
 		List<ZipEntry> uploadFiles = getUploadFiles(uploadsFolder);
-		restoreFiles(uploadFiles, getUploadsBaseSystemFilePath(getUploadsSystemFilePathToWrite()));
+		restoreFiles(uploadFiles, getUploadsBaseSystemFilePath(getUploadsSystemFileToWritePath()));
 
 		String jsonContent = getJsonContent();
 
@@ -172,7 +173,7 @@ public class ZIPProjectManager {
 
 	}
 
-	private void restoreFiles(List<ZipEntry> uploadFiles, String appPath) {
+	private void restoreFiles(List<ZipEntry> uploadFiles, Path appPath) {
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
 			if(!entryName.isEmpty()) {
@@ -241,7 +242,7 @@ public class ZIPProjectManager {
 		return file;
 	}
 
-	private List<FileToPack> getUploadsFolderFiles(String uploadFolder) {
+	private List<FileToPack> getUploadsFolderFiles(Path uploadFolder) {
 		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
 		List<FileToPack> pack = new ArrayList<>();
@@ -254,7 +255,7 @@ public class ZIPProjectManager {
 		return pack;
 	}
 
-	private List<FileToPack> getGraphicsFolderFiles(String graphicFolder) {
+	private List<FileToPack> getGraphicsFolderFiles(Path graphicFolder) {
 		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
 		List<FileToPack> pack = new ArrayList<>();

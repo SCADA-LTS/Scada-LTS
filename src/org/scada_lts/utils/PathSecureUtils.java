@@ -15,8 +15,7 @@ import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
-import static org.scada_lts.utils.UploadFileUtils.getGraphicsBaseSystemFilePath;
-import static org.scada_lts.utils.UploadFileUtils.getUploadsBaseSystemFilePath;
+import static org.scada_lts.utils.UploadFileUtils.*;
 
 public final class PathSecureUtils {
 
@@ -28,22 +27,25 @@ public final class PathSecureUtils {
         return toSecurePath(path, (originPath, base) -> originPath);
     }
 
-    public static Optional<File> toSecurePath(Path path, BinaryOperator<String> reduce) {
+    public static Optional<File> toSecurePath(Path path, BinaryOperator<Path> reduce) {
         return normalizePath(path, reduce).map(Path::toFile);
     }
 
-    public static String getSystemFilePath(String separator) {
-        if(separator == null)
+    public static Path getAppContextSystemFilePath(Path folder) {
+        if(folder == null)
             throw new NullPointerException();
-        return Common.ctx.getServletContext().getRealPath(separator);
+        String realPath = Common.ctx.getServletContext().getRealPath(normalizeSeparator(folder.toString()));
+        if(realPath == null)
+            return Paths.get("");
+        return Paths.get(realPath);
     }
 
-    public static String getSystemFilePath() {
-        return getSystemFilePath(File.separator);
+    public static Path getAppContextSystemFilePath() {
+        return getAppContextSystemFilePath(Paths.get(File.separator));
     }
 
     public static String getPartialPath(File file) {
-        return toSecurePath(file.toPath(), (originPath, base) -> originPath.replace(base, ""))
+        return toSecurePath(file.toPath(), (originPath, base) -> Paths.get(normalizeSeparator(originPath.toString().replace(base.toString(), ""))))
                 .map(File::getPath)
                 .orElse("");
     }
@@ -87,26 +89,26 @@ public final class PathSecureUtils {
         }
     }
 
-    private static Optional<Path> normalizePath(Path path, BinaryOperator<String> reduce) {
+    private static Optional<Path> normalizePath(Path path, BinaryOperator<Path> reduce) {
         if(path == null) {
             return Optional.empty();
         }
-        String appPath = getSystemFilePath();
-        if(appPath == null) {
+        Path appPath = getAppContextSystemFilePath();
+        if(appPath.toString().isEmpty()) {
             return Optional.empty();
         }
         Path normalizedPath = path.normalize();
         if(normalizedPath.startsWith(appPath)) {
-            return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), appPath)));
+            return Optional.of(reduce.apply(normalizedPath, appPath));
         }
-        for(String uploadsPath: UploadFileUtils.getUploadsSystemFilePaths()) {
+        for(Path uploadsPath: UploadFileUtils.getUploadsSystemFilePaths()) {
             if (normalizedPath.startsWith(uploadsPath)) {
-                return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), getUploadsBaseSystemFilePath(uploadsPath))));
+                return Optional.of(reduce.apply(normalizedPath, getUploadsBaseSystemFilePath(uploadsPath)));
             }
         }
-        for(String graphicsPath: UploadFileUtils.getGraphicsSystemFilePaths()) {
+        for(Path graphicsPath: UploadFileUtils.getGraphicsSystemFilePaths()) {
             if (normalizedPath.startsWith(graphicsPath)) {
-                return Optional.of(Paths.get(reduce.apply(normalizedPath.toString(), getGraphicsBaseSystemFilePath(graphicsPath))));
+                return Optional.of(reduce.apply(normalizedPath, getGraphicsBaseSystemFilePath(graphicsPath)));
             }
         }
         LOG.warn("Path is invalid!");
