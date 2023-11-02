@@ -168,8 +168,7 @@ public class MangoContextListener implements ServletContextListener {
 				.currentTimeMillis(), false, new LocalizableMessage(
 				"event.system.startup"));
 
-		
-		log.info("Scada-LTS context started");
+
 		try {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
@@ -186,6 +185,8 @@ public class MangoContextListener implements ServletContextListener {
 		}
 
 		initSchedule();
+
+		log.info("Scada-LTS context started");
 	}
 
 	public void contextDestroyed(ServletContextEvent evt) {

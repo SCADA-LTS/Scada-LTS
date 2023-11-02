@@ -21,6 +21,7 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
@@ -151,25 +152,13 @@ public class RuntimeManager {
 		}
 
 		// Initialize data sources that are enabled.
-		DataSourceDao dataSourceDao = new DataSourceDao();
-		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
-		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
-		for (DataSourceVO<?> config : configs) {
-
-			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
-			boolean isToTrayEnable = false;
-			if (isCheckToTrayEnableRun) {
-				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
-			}
-
-			if (config.isEnabled() || isToTrayEnable ) {
-				if (safe) {
-					config.setEnabled(false);
-					dataSourceDao.saveDataSource(config);
-				} else if (initializeDataSource(config))
-					pollingRound.add(config);
-			}
-		}
+		DataSourceService dataSourceService = new DataSourceService();
+		List<DataSourceVO<?>> configs = dataSourceService.getDataSources();
+		List<DataSourceVO<?>> pollingRound = new ArrayList<>();
+		List<DataSourceVO<?>> nonMetaDataSources = configs.stream().filter(dataSource -> dataSource.getType() != DataSourceVO.Type.META).collect(Collectors.toList());
+		List<DataSourceVO<?>> metaDataSources = configs.stream().filter(dataSource -> dataSource.getType() == DataSourceVO.Type.META).collect(Collectors.toList());
+		initializeDataSources(safe, dataSourceService, nonMetaDataSources, pollingRound);
+		initializeDataSources(safe, dataSourceService, metaDataSources, pollingRound);
 
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
@@ -312,16 +301,16 @@ public class RuntimeManager {
 	}
 
 	public List<DataSourceVO<?>> getDataSources() {
-		return new DataSourceDao().getDataSources();
+		return new DataSourceService().getDataSources();
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
-		return new DataSourceDao().getDataSource(dataSourceId);
+		return new DataSourceService().getDataSource(dataSourceId);
 	}
 
 	public void deleteDataSource(int dataSourceId) {
 		stopDataSource(dataSourceId);
-		new DataSourceDao().deleteDataSource(dataSourceId);
+		new DataSourceService().deleteDataSource(dataSourceId);
 		Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 	}
 
@@ -334,7 +323,7 @@ public class RuntimeManager {
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
 		LOG.debug("Saving DS: " + vo.getName());
-		new DataSourceDao().saveDataSource(vo);
+		new DataSourceService().saveDataSource(vo);
 		LOG.debug("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
@@ -1055,5 +1044,25 @@ public class RuntimeManager {
 
 		reset.terminate();
 		resetDailyLimitSentEmails.remove(mailingListId);
+	}
+
+	private void initializeDataSources(boolean safe, DataSourceService dataSourceService,
+									   List<DataSourceVO<?>> configs, List<DataSourceVO<?>> pollingRound) {
+		for (DataSourceVO<?> config : configs) {
+
+			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
+			boolean isToTrayEnable = false;
+			if (isCheckToTrayEnableRun) {
+				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
+			}
+
+			if (config.isEnabled() || isToTrayEnable ) {
+				if (safe) {
+					config.setEnabled(false);
+					dataSourceService.saveDataSource(config);
+				} else if (initializeDataSource(config))
+					pollingRound.add(config);
+			}
+		}
 	}
 }
