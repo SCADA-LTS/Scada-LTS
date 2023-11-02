@@ -66,7 +66,6 @@ import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
-import static com.serotonin.mango.util.LoggingUtils.entryInfo;
 
 /**
  * Base on the PointValueDao
@@ -625,7 +624,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{entries size: " + ENTRIES.size() + ", instances size: " + instances.size() + '}';
+            return "BatchWriteBehind{instances size: " + instances.size() + '}';
         }
 
         @Override
