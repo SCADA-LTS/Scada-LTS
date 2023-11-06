@@ -303,6 +303,7 @@ public class ViewDwr extends BaseDwr {
 		}
 
 		state.setInfo(generateContent(request, "infoContent.jsp", model));
+		state.setWarningIcon(generateContent(request, "warningIcon.jsp", model));
 		setMessages(state, request, "warningContent", model);
 
 		return state;

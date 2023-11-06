@@ -58,7 +58,7 @@
       <div style="position:absolute;left:-16px;top:0px;z-index:${vc.z+1};">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
-          	  <tag:img png="warn" title="common.warning"/>
+          	  <div id="c${vc.id}WarningIcon"></div>
           <div id="c${vc.id}Messages" onmouseout="hideLayer(this);" class="controlContent"></div>
         </div>
         <div id="c${vc.id}Changing" style="display:none;"><tag:img png="icon_edit" title="common.settingValue"/></div>
@@ -74,7 +74,7 @@
       <div style="position:absolute;left:-16px;top:0px;z-index:${vc.z+1};">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
-          	  <tag:img png="warn" title="common.warning"/>
+          	  <div id="c${vc.id}WarningIcon"><tag:img png="warn" title="common.warning"/></div>
           <div id="c${vc.id}Messages" onmouseout="hideLayer(this);" class="controlContent"></div>
         </div>
         <div id="c${vc.id}Changing" style="display:none;"><tag:img png="icon_edit" title="common.settingValue"/></div>
