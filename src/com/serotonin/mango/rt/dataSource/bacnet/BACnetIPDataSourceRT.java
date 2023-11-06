@@ -90,6 +90,8 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -135,8 +137,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
             // Deactivate any existing event.
             returnToNormal(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis());
+            resetUnreliableDataPoints(dataPoints);
         }
         catch (Exception e) {
+            setUnreliableDataPoints(dataPoints);
             raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
             return;
@@ -147,8 +151,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         // Let everyone know we're here.
         try {
             localDevice.sendBroadcast(localDevice.getIAm());
+            resetUnreliableDataPoints(dataPoints);
         }
         catch (BACnetException e) {
+            setUnreliableDataPoints(dataPoints);
             fireMessageExceptionEvent("event.bacnet.iamError", e.getMessage());
         }
 
@@ -163,8 +169,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             catch (InterruptedException e) {
                 // no op
             }
+            resetUnreliableDataPoints(dataPoints);
         }
         catch (BACnetException e) {
+            setUnreliableDataPoints(dataPoints);
             fireMessageExceptionEvent("event.bacnet.whoisError", e.getMessage());
         }
 
@@ -220,8 +228,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // Send a whois to get remote device data.
             try {
                 localDevice.sendUnconfirmed(address, null, new WhoIsRequest());
+                resetUnreliableDataPoint(dataPoint);
             }
             catch (BACnetException e) {
+                setUnreliableDataPoint(dataPoint);
                 fireMessageExceptionEvent("event.bacnet.whoisPoint", dataPoint.getVO().getName(), e.getMessage());
                 disablePoint(dataPoint);
                 return;
@@ -249,17 +259,20 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // If we still don't have the device, try to get it manually.
             try {
                 d = localDevice.findRemoteDevice(address, network, locator.getRemoteDeviceInstanceNumber());
+                resetUnreliableDataPoint(dataPoint);
             }
             catch (BACnetException e) {
                 // Ignore.
             }
             catch (PropertyValueException e) {
+                setUnreliableDataPoint(dataPoint);
                 // Shouldn't happen, so just log.
                 log.error("Couldn't manually get segmentation and vendor id from device", e);
             }
         }
 
         if (d == null) {
+            setUnreliableDataPoint(dataPoint);
             // If we still don't have the device, call it in.
             fireDeviceExceptionEvent("event.bacnet.deviceError", address.toIpString());
             disablePoint(dataPoint);
@@ -273,6 +286,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             }
 
             super.addDataPoint(dataPoint);
+            resetUnreliableDataPoint(dataPoint);
         }
     }
 
@@ -368,11 +382,11 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
 
         private String getPoints() {
-            if(dataPoints == null) {
+            if(points == null) {
                 return "";
             }
             StringBuilder info = new StringBuilder();
-            for(DataPointRT dataPoint: dataPoints) {
+            for(DataPointRT dataPoint: points) {
                 info.append(LoggingUtils.dataPointInfo(dataPoint.getVO())).append("\n");
             }
             return info.toString();
@@ -390,7 +404,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         try {
             // Send the read request.
             PropertyValues values = localDevice.readProperties(d, refs);
-
+            resetUnreliableDataPoints(points);
             // Dereference the property values back into the points.
             for (DataPointRT dp : points) {
                 BACnetIPPointLocatorRT locator = dp.getPointLocator();
@@ -399,6 +413,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             }
         }
         catch (BACnetException e) {
+            setUnreliableDataPoints(points);
             fireMessageExceptionEvent("event.bacnet.readDevice", d.getAddress().toIpString(), e.getMessage());
         }
     }
@@ -420,14 +435,17 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     }
 
     private void dereferencePoint(DataPointRT dp, Encodable encodable, long time) {
-        if (encodable == null)
+        if (encodable == null) {
+            setUnreliableDataPoint(dp);
             fireDeviceExceptionEvent("event.bacnet.readError", dp.getVO().getName(), "no value returned");
-        else if (encodable instanceof BACnetError)
+        } else if (encodable instanceof BACnetError) {
+            setUnreliableDataPoint(dp);
             fireDeviceExceptionEvent("event.bacnet.readError", dp.getVO().getName(),
                     ((BACnetError) encodable).getErrorCode());
-        else {
+        } else {
             MangoValue value = encodableToValue(encodable, dp.getDataTypeId());
             dp.updatePointValue(new PointValueTime(value, time));
+            resetUnreliableDataPoint(dp);
         }
     }
 
@@ -446,8 +464,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                     new UnsignedInteger(locator.getWritePriority()));
             localDevice.send(locator.getRemoteDevice(), writeRequest);
             dataPoint.setPointValue(pvt, source);
+            resetUnreliableDataPoint(dataPoint);
         }
         catch (Throwable t) {
+            setUnreliableDataPoint(dataPoint);
             fireMessageExceptionEvent("event.setPointFailed", t.getMessage());
         }
     }
@@ -621,11 +641,13 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
         try {
             sendCovSubscriptionImpl(locator.getRemoteDevice(), locator.getOid(), locator.getCovId(), unsubscribe);
+            resetUnreliableDataPoint(dataPoint);
         }
         catch (BACnetException e) {
             // If we are unsubscribing a failure doesn't really matter since the lease will expire eventually anyway,
             // so ignore.
             if (!unsubscribe) {
+                setUnreliableDataPoint(dataPoint);
                 fireMessageExceptionEvent("event.bacnet.covFailed",
                         locator.getRemoteDevice().getAddress().toIpString(), e.getMessage());
                 disablePoint(dataPoint);

@@ -41,6 +41,8 @@ import org.scada_lts.ds.model.ReactivationDs;
 import java.util.Collections;
 import java.util.List;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -71,6 +73,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     public void removeDataPoint(DataPointRT dataPoint) {
         returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis());
         super.removeDataPoint(dataPoint);
+        resetUnreliableDataPoint(dataPoint);
     }
 
     @Override
@@ -83,7 +86,9 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         String data;
         try {
             data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop(), vo.getReactivation(), vo.getStaticHeaders());
+            resetUnreliableDataPoints(dataPoints);
         } catch (Exception e) {
+            setUnreliableDataPoints(dataPoints);
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
                 lm = ((LocalizableException) e).getLocalizableMessage();
@@ -113,14 +118,17 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
 
                 // Save the new value
                 dp.updatePointValue(new PointValueTime(value, valueTime));
+                resetUnreliableDataPoint(dp);
             } catch (NoMatchException e) {
                 if (!locator.isIgnoreIfMissing()) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = e.getLocalizableMessage();
+                    setUnreliableDataPoint(dp);
                 }
             } catch (LocalizableException e) {
                 if (parseErrorMessage == null)
                     parseErrorMessage = e.getLocalizableMessage();
+                setUnreliableDataPoint(dp);
             }
         }
 

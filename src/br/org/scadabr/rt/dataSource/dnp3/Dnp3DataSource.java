@@ -21,6 +21,8 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 public class Dnp3DataSource extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(Dnp3DataSource.class);
@@ -44,7 +46,9 @@ public class Dnp3DataSource extends PollingDataSource {
 		try {
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+			resetUnreliableDataPoints(dataPoints);
 		} catch (Exception e) {
+			setUnreliableDataPoints(dataPoints);
 			LOG.warn(e.getMessage(), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
@@ -82,7 +86,9 @@ public class Dnp3DataSource extends PollingDataSource {
 		super.terminate();
 		try {
 			dnp3Master.terminate();
+			resetUnreliableDataPoints(dataPoints);
 		} catch (Exception e) {
+			setUnreliableDataPoints(dataPoints);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
@@ -108,8 +114,10 @@ public class Dnp3DataSource extends PollingDataSource {
 				dnp3Master
 						.sendAnalogCommand(index, valueTime.getIntegerValue());
 			}
+			resetUnreliableDataPoint(dataPoint);
 		} catch (Exception e) {
-			e.printStackTrace();
+			setUnreliableDataPoint(dataPoint);
+			LOG.error(e.getMessage(), e);
 		}
 	}
 

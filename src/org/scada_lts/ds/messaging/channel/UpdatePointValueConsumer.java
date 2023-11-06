@@ -5,6 +5,8 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 public class UpdatePointValueConsumer implements Consumer<byte[]> {
 
     private final DataPointRT dataPoint;
@@ -26,10 +28,10 @@ public class UpdatePointValueConsumer implements Consumer<byte[]> {
             try {
                 String message = new String(payload, StandardCharsets.UTF_8);
                 dataPoint.updatePointValue(message);
-                dataPoint.setAttribute(updateErrorKey, false);
+                resetUnreliableDataPoint(updateErrorKey, dataPoint);
             } catch (Exception ex) {
                 exceptionHandler.accept(ex);
-                dataPoint.setAttribute(updateErrorKey, true);
+                setUnreliableDataPoint(updateErrorKey, dataPoint);
             }
         }
     }

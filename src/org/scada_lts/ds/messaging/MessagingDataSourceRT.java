@@ -16,12 +16,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 import static com.serotonin.mango.util.LoggingUtils.*;
 
 
 public class MessagingDataSourceRT extends PollingDataSource {
 
-    private static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
     private static final String ATTR_UPDATE_ERROR_KEY = "DP_UPDATE_ERROR";
 
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
@@ -52,20 +53,20 @@ public class MessagingDataSourceRT extends PollingDataSource {
             LOG.warn("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source));
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     getExceptionMessage(new RuntimeException("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", Message: Connection Closed. ")));
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+            setUnreliableDataPoint(dataPoint);
             return;
         }
         String message = valueTime.getStringValue();
         try {
             messagingService.publish(dataPoint, message);
             returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis());
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
+            resetUnreliableDataPoint(dataPoint);
         } catch (Exception e) {
             LOG.error(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", "
                     + exceptionInfo(e), e);
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()));
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+            setUnreliableDataPoint(dataPoint);
         }
     }
 
@@ -101,12 +102,12 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), ATTR_UPDATE_ERROR_KEY);
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
+            resetUnreliableDataPoint(dataPoint);
         } catch (Exception e) {
             LOG.error(exceptionInfo(e), e);
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     false, getExceptionMessage(e));
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+            setUnreliableDataPoint(dataPoint);
         }
         super.addDataPoint(dataPoint);
     }
@@ -134,14 +135,14 @@ public class MessagingDataSourceRT extends PollingDataSource {
                     messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), ATTR_UPDATE_ERROR_KEY);
                     updateAttemptsCounters.get(dataPoint.getId()).set(0);
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis());
-                    dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
+                    resetUnreliableDataPoint(dataPoint);
                 }
             } catch (Exception e) {
                 updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
                 LOG.warn(exceptionInfo(e), e);
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e));
-                dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                setUnreliableDataPoint(dataPoint);
             }
         }
     }

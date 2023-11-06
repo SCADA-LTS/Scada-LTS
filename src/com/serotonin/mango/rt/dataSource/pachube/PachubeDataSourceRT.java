@@ -59,6 +59,8 @@ import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 public class PachubeDataSourceRT extends PollingDataSource {
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
@@ -92,7 +94,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
         super.addDataPoint(dataPoint);
-        dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+        setUnreliableDataPoint(dataPoint);
     }
 
     @Override
@@ -147,7 +149,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
 
             // Mark points as unreliable.
             for (DataPointRT point : points)
-                point.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                setUnreliableDataPoint(point);
 
             return;
         }
@@ -164,7 +166,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
             if (dataValue == null) {
                 parseErrorMessage = new LocalizableMessage("event.pachube.dataStreamNotFound",
                         locator.getDataStreamId(), feedId);
-                dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                setUnreliableDataPoint(dp);
             }
             else {
                 try {
@@ -185,18 +187,18 @@ public class PachubeDataSourceRT extends PollingDataSource {
                     // Save the new value if it is new
                     if (!ObjectUtils.isEqual(dp.getPointValue(), pvt))
                         dp.updatePointValue(new PointValueTime(value, valueTime));
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, false);
+                    resetUnreliableDataPoint(dp);
                 }
                 catch (LocalizableException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = e.getLocalizableMessage();
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                    setUnreliableDataPoint(dp);
                 }
                 catch (ParseException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = new LocalizableMessage("event.valueParse.timeParsePoint",
                                 dataValue.getTimestamp(), dp.getVO().getName());
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                    setUnreliableDataPoint(dp);
                 }
             }
         }

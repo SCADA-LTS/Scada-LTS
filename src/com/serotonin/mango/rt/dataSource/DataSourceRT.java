@@ -49,6 +49,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class DataSourceRT implements ILifecycle {
+    @Deprecated(since = "2.7.7")
     public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
 
     private final DataSourceVO<?> vo;

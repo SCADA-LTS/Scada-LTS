@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -147,7 +148,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		super.addDataPoint(dataPoint);
 
 		// Mark the point as unreliable.
-		dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+		DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
 
 		// Add the point to the lookup map.
 		pointLookup.put(new PointKey(dataPoint), dataPoint);
@@ -179,7 +180,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		// Mark all points as unreliable.
 		synchronized (dataPoints) {
 			for (DataPointRT rt : dataPoints)
-				rt.setAttribute(ATTR_UNRELIABLE_KEY, true);
+				DataPointUnreliableUtils.setUnreliableDataPoint(rt);
 		}
 
 		if (online)
@@ -393,7 +394,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 							.getPointLocator();
 					if (Arrays
 							.equals(locator.getDeviceIeee(), device.getIeee()))
-						rt.setAttribute(ATTR_UNRELIABLE_KEY, true);
+						DataPointUnreliableUtils.setUnreliableDataPoint(rt);
 				}
 			}
 
@@ -472,7 +473,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			throw new ShouldNeverHappenException("Unknown point type: "
 					+ point.getClass());
 
-		rt.setAttribute(ATTR_UNRELIABLE_KEY, false);
+		DataPointUnreliableUtils.resetUnreliableDataPoint(rt);
 
 		rt.updatePointValue(new PointValueTime(mangoValue, time));
 	}
