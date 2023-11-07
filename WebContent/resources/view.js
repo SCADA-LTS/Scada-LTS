@@ -62,7 +62,10 @@ mango.view.setMessages = function(state) {
     var warningNode = $("c"+ state.id +"Warning");
     if (warningNode && state.messages != null) {
         $set("c"+ state.id +"Messages", state.messages);
-        $set("c"+ state.id +"WarningIcon", state.warningIcon);
+        var warningIconNode = $("c"+ state.id +"WarningIcon");
+        if(warningIconNode) {
+            $set("c"+ state.id +"WarningIcon", state.warningIcon);
+        }
         if (state.messages)
             show(warningNode);
         else
