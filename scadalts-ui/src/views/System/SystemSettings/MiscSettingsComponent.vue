@@ -93,17 +93,36 @@
                             dense
                         ></v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.webResourceGraphicsPath"
+                          :label="$t('systemsettings.webresource.graphics.path')"
+                          @change="watchDataChange()"
+                          :rules="[validateGraphicsPath]"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.webResourceUploadsPath"
+                          :label="$t('systemsettings.webresource.uploads.path')"
+                          @change="watchDataChange()"
+                          :rules="[validateUploadsPath]"
+                      ></v-text-field>
+                    </v-col>
                 </v-row>
 			</v-card-text>
 		</v-card>
 	</v-col>
 </template>
 <script>
+import path from "path";
+
 export default {
 	name: 'MiscSettingsComponent',
 
 	data() {
 		return {
+      valid: [],
 			miscSettings: undefined,
 			miscSettingsStore: undefined,
 			isMiscSettingsEdited: false,
@@ -175,6 +194,7 @@ export default {
 				title: 'systemsettings.misc.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+        valid: this.validateForm(this.valid)
 			});
 		},
 
@@ -224,6 +244,42 @@ export default {
 			}
 			return value;
 		},
+    validateGraphicsPath(v) {
+      const path = require('path');
+      if (v.endsWith('graphics') || v.endsWith('graphics' + path.sep)) {
+        if(this.valid.some(item => item.key === "validGraphics")){
+          this.valid = this.valid.filter(item => item.key !== "validGraphics");
+        }
+        this.valid.push({key: "validGraphics",value: true})
+        return true;
+      } else {
+        if(this.valid.some(item => item.key === "validGraphics")){
+          this.valid = this.valid.filter(item => item.key !== "validGraphics");
+        }
+        this.valid.push({key: "validGraphics",value: false})
+        return this.$t("systemsettings.wrong.graphics.path", {0: path.sep});
+      }
+    },
+    validateUploadsPath(v) {
+      if (v.endsWith('uploads') || v.endsWith('uploads' + path.sep)) {
+        if(this.valid.some(item => item.key === "validUploads")){
+          this.valid = this.valid.filter(item => item.key !== "validUploads");
+        }
+        this.valid.push({key: "validUploads", value: true});
+        return true;
+      } else {
+        if(this.valid.some(item => item.key === "validUploads")){
+          this.valid = this.valid.filter(item => item.key !== "validUploads");
+        }
+        this.valid.push({key: "validUploads", value: false})
+        return this.$t("systemsettings.wrong.uploads.path", {0: path.sep});
+      }
+    },
+    validateForm(paths){
+      const values = paths.map(item => item.value);
+      const result = values.every(value => value);
+      return result;
+    }
 	},
 };
 </script>

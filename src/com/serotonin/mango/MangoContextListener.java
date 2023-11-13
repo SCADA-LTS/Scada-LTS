@@ -117,8 +117,8 @@ public class MangoContextListener implements ServletContextListener {
 		// Create all the stuff we need.
 		constantsInitialize(ctx);
 		freemarkerInitialize(ctx);
-		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
+		imageSetInitialize(ctx);
 		highestAlarmLevelServiceInitialize();
 		dataPointsNameToIdMapping(ctx);
 

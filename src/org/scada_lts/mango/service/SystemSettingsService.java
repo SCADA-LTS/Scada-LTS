@@ -139,6 +139,8 @@ public class SystemSettingsService {
         json.setWorkItemsReportingEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, true));
         json.setWorkItemsReportingItemsPerSecondEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, true));
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 20000));
+        json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
+        json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         return json;
     }
 
@@ -153,6 +155,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, json.isWorkItemsReportingEnabled());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, json.isWorkItemsReportingItemsPerSecondEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -415,6 +419,26 @@ public class SystemSettingsService {
         try {
             return SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, defaultValue);
         } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public String getWebResourceGraphicsPath(){
+        String defaultValue = SystemSettingsUtils.getWebResourceGraphicsPath();
+        try {
+            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
+        } catch (Exception e){
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public String getWebResourceUploadsPath(){
+        String defaultValue = SystemSettingsUtils.getWebResourceUploadsPath();
+        try {
+            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
+        } catch (Exception e){
             LOG.error(e.getMessage());
             return defaultValue;
         }

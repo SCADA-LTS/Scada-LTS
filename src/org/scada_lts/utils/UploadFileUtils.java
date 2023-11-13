@@ -7,6 +7,7 @@ import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.mango.view.ViewGraphicLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.security.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -165,19 +166,23 @@ public final class UploadFileUtils {
     }
 
     public static List<Path> getUploadsSystemFilePaths() {
-        return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        return getImageSystemFilePaths(systemSettingsService::getWebResourceUploadsPath, UPLOADS_PATH);
     }
 
     public static List<Path> getGraphicsSystemFilePaths() {
-        return getImageSystemFilePaths(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        return getImageSystemFilePaths(systemSettingsService::getWebResourceGraphicsPath, GRAPHICS_PATH);
     }
 
     public static Path getUploadsSystemFileToWritePath() {
-        return getImageSystemFileToWritePath(SystemSettingsUtils::getWebResourceUploadsPath, UPLOADS_PATH);
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        return getImageSystemFileToWritePath(systemSettingsService::getWebResourceUploadsPath, UPLOADS_PATH);
     }
 
     public static Path getGraphicsSystemFileToWritePath() {
-        return getImageSystemFileToWritePath(SystemSettingsUtils::getWebResourceGraphicsPath, GRAPHICS_PATH);
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        return getImageSystemFileToWritePath(systemSettingsService::getWebResourceGraphicsPath, GRAPHICS_PATH);
     }
 
     public static Path getGraphicsBaseSystemFilePath(Path path) {

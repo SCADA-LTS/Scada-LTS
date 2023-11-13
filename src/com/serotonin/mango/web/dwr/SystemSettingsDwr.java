@@ -43,6 +43,7 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -172,6 +173,10 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWorkItemsReportingItemsPerSecondLimit());
 		settings.put(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH,
 				systemSettingsService.getMiscSettings().getThreadsNameAdditionalLength());
+		settings.put(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH,
+				systemSettingsService.getMiscSettings().getWebResourceGraphicsPath());
+		settings.put(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH,
+				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
 		return settings;
 	}
 
@@ -323,7 +328,8 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
 											int eventPendingLimit, boolean eventPendingCacheEnabled,
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
-											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength) {
+											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
+											String webResourceGraphicsPath, String webResourceUploadsPath) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -364,6 +370,18 @@ public class SystemSettingsDwr extends BaseDwr {
 		} else {
 			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, false);
 			systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
+		}
+		if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)) || (webResourceGraphicsPath.endsWith("graphics") || webResourceGraphicsPath.endsWith("graphics" + File.separator))) {
+			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, webResourceGraphicsPath);
+		}
+		else {
+			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.wrong.graphics.path", File.separator);
+		}
+		if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath) || (webResourceUploadsPath.endsWith("uploads") || webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
+			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
+		}
+		else {
+			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.wrong.uploads.path", File.separator);
 		}
 
 		return response;

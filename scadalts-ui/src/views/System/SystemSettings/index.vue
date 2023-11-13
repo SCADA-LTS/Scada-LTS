@@ -387,7 +387,9 @@ export default {
 
 		async componentChanged(object) {
 			let idx = this.componentsEdited.findIndex((x) => x.component == object.component);
-			if (idx == -1 && object.changed) {
+      if(!object.valid) {
+        this.componentsEdited = [];
+      } else if (idx == -1 && object.changed) {
 				this.componentsEdited.push(object);
 			} else if (idx != -1 && !object.changed) {
 				this.componentsEdited.splice(idx, 1);
