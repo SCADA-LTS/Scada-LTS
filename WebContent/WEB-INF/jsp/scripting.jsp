@@ -84,8 +84,8 @@
                 point = points[i];
                 pointsArray[i] = {
                         "id":point.id,
-                        "name":point.name,
-                        "type":1
+                        "name":point.extendName,
+                        "type":point.dataType,
                         };
             }
             document.getElementById("loader").style.display = "none";
