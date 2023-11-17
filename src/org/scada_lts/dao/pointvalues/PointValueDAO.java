@@ -209,7 +209,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
 	
 	public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
