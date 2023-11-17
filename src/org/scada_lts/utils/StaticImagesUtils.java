@@ -34,7 +34,7 @@ public final class StaticImagesUtils {
         return ResponseEntity.ok().build();
     }
 
-    public static Path getUploadSystemFilePath(Path fileName) {
+    public static Path getUploadsSystemFilePath(Path fileName) {
         for(Path path : getUploadsSystemFilePaths()) {
             Path absolutePath = Paths.get(path + getSeparator() + getUploadsBaseSystemFilePath(fileName));
             if(Files.exists(absolutePath)) {
@@ -72,7 +72,7 @@ public final class StaticImagesUtils {
         if(url.startsWith("/graphics")) {
             path = getGraphicSystemFilePath(Paths.get(url));
         } else if(url.startsWith("/uploads")) {
-            path = getUploadSystemFilePath(Paths.get(url));
+            path = getUploadsSystemFilePath(Paths.get(url));
         }
         if(StringUtils.isEmpty(path.toString()))
             path = PathSecureUtils.getAppContextSystemFilePath(Paths.get(url));

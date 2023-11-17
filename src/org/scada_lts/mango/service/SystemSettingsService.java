@@ -20,6 +20,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
@@ -456,8 +457,11 @@ public class SystemSettingsService {
 
     private static String getHttpResponseHeaders(JsonSettingsHttp json) {
         try {
+            String httpResponseHeaders = json.getHttpResponseHeaders();
+            if(StringUtils.isEmpty(httpResponseHeaders))
+                return "";
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> headers = SystemSettingsUtils.deserializeMap(json.getHttpResponseHeaders(), objectMapper);
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, objectMapper);
             return serializeMap(headers, objectMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -26,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.scada_lts.svg.SvgUtils.isSvg;
+import static org.scada_lts.utils.PathSecureUtils.decodePath;
 import static org.scada_lts.utils.PathSecureUtils.getAppContextSystemFilePath;
 import static org.scada_lts.utils.ScadaMimeTypeUtils.*;
 import static org.scada_lts.utils.xml.XmlUtils.isXml;
@@ -186,17 +187,19 @@ public final class UploadFileUtils {
     }
 
     public static Path getGraphicsBaseSystemFilePath(Path path) {
-        if (path.toString().startsWith(GRAPHICS_PATH) || path.toString().endsWith(GRAPHICS_PATH)) {
-            return Paths.get(path.toString().replace(GRAPHICS_PATH, ""));
+        String decoded = decodePath(path.toString());
+        if (decoded.startsWith(GRAPHICS_PATH) || decoded.endsWith(GRAPHICS_PATH)) {
+            return Paths.get(decoded.replace(GRAPHICS_PATH, ""));
         }
-        return path;
+        return Paths.get(decoded);
     }
 
     public static Path getUploadsBaseSystemFilePath(Path path) {
-        if (path.toString().startsWith(UPLOADS_PATH) || path.toString().endsWith(UPLOADS_PATH)) {
-            return Paths.get(path.toString().replace(UPLOADS_PATH, ""));
+        String decoded = decodePath(path.toString());
+        if (decoded.startsWith(UPLOADS_PATH) || decoded.endsWith(UPLOADS_PATH)) {
+            return Paths.get(decoded.replace(UPLOADS_PATH, ""));
         }
-        return path;
+        return Paths.get(decoded);
     }
 
     private static boolean isThumbsFile(SafeFile file) {
@@ -252,14 +255,14 @@ public final class UploadFileUtils {
         try {
             safeZipFile = SafeZipFile.safe(zipFile);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.warn(ex.getMessage(), ex);
             return false;
         }
         SafeZipEntry safeZipEntry;
         try {
             safeZipEntry = SafeZipEntry.safe(entry);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return false;
         }
         return isToUploads(safeZipFile, safeZipEntry);
@@ -308,13 +311,15 @@ public final class UploadFileUtils {
 
     private static List<Path> getImageSystemFilePaths(Supplier<String> getLocalPath, String folder) {
         List<Path> paths = new ArrayList<>();
-        String normalizeSeparator = normalizeSeparator(getLocalPath.get());
-        if (!StringUtils.isEmpty(normalizeSeparator) && normalizeSeparator.endsWith(folder)) {
-            Path path = getAbsoluteResourcePath(normalizeSeparator);
+        String normalizeFolder = normalizeSeparator(decodePath(folder));
+        String normalizePath = normalizeSeparator(decodePath(getLocalPath.get()));
+        if (!StringUtils.isEmpty(normalizePath) && (normalizePath.endsWith(normalizeFolder)
+                || normalizePath.endsWith(normalizeFolder + File.separator))) {
+            Path path = getAbsoluteResourcePath(normalizePath);
             createIfNotExists(path);
             paths.add(path);
         }
-        Path path = getAppContextSystemFilePath(Paths.get(normalizeSeparator(folder)));
+        Path path = getAppContextSystemFilePath(Paths.get(normalizeFolder));
         createIfNotExists(path);
         paths.add(path);
         return paths;
@@ -322,11 +327,13 @@ public final class UploadFileUtils {
 
     private static Path getImageSystemFileToWritePath(Supplier<String> getLocalPath, String folder) {
         Path path;
-        String normalizeSeparator = normalizeSeparator(getLocalPath.get());
-        if (!StringUtils.isEmpty(normalizeSeparator) && normalizeSeparator.endsWith(folder)) {
-            path = getAbsoluteResourcePath(normalizeSeparator(normalizeSeparator));
+        String normalizedFolder = normalizeSeparator(decodePath(folder));
+        String normalizedPath = normalizeSeparator(decodePath(getLocalPath.get()));
+        if (!StringUtils.isEmpty(normalizedPath) && (normalizedPath.endsWith(normalizedFolder)
+                || normalizedPath.endsWith(normalizedFolder + File.separator))) {
+            path = getAbsoluteResourcePath(normalizedPath);
         } else {
-            path = getAppContextSystemFilePath(Paths.get(normalizeSeparator(folder)));
+            path = getAppContextSystemFilePath(Paths.get(normalizedFolder));
         }
         createIfNotExists(path);
         return path;

@@ -58,7 +58,7 @@ import static java.util.stream.Collectors.toList;
 import static org.scada_lts.utils.PathSecureUtils.getPartialPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.*;
-import static org.scada_lts.utils.StaticImagesUtils.getUploadSystemFilePath;
+import static org.scada_lts.utils.StaticImagesUtils.getUploadsSystemFilePath;
 
 @Service
 public class ViewService {
@@ -173,7 +173,7 @@ public class ViewService {
 
 	private void setWidthAndHeight(View view, String backgroundFilename) throws IOException {
 		if (backgroundFilename != null && !backgroundFilename.isEmpty()) {
-			UploadImage uploadImage = createUploadImage(getUploadSystemFilePath(Paths.get(normalizeSeparator(backgroundFilename))).toFile());
+			UploadImage uploadImage = createUploadImage(getUploadsSystemFilePath(Paths.get(backgroundFilename)).toFile());
 			view.setHeight(uploadImage.getHeight());
 			view.setWidth(uploadImage.getWidth());
 		}

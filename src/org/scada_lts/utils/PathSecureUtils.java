@@ -8,6 +8,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.io.File;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,40 +52,55 @@ public final class PathSecureUtils {
     }
 
     public static boolean validateFilename(String name) {
-        String decoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
-        if(StringUtils.isEmpty(decoded))
-            return false;
-        if(!decoded.equals(name))
-            return false;
-        if(!validatePath(decoded, path -> true))
-            return false;
-        String ext = FilenameUtils.getExtension(name);
+        String decoded = decodePath(name);
+        String ext = FilenameUtils.getExtension(decoded);
         if(ext.isEmpty())
             return false;
-        String withoutExt = FilenameUtils.removeExtension(name);
+        String withoutExt = FilenameUtils.removeExtension(decoded);
         if(withoutExt.isEmpty())
             return false;
-        if(name.equals(withoutExt))
+        if(decoded.equals(withoutExt))
             return false;
-        if(name.contains("..") || name.contains("\\"))
+        if(decoded.contains("..") || decoded.contains("\\"))
             return false;
-        if(name.contains("/"))
+        if(decoded.contains("/"))
             return false;
-        return name.length() < 256;
+        if(StringUtils.isEmpty(decoded))
+            return false;
+        if(!decoded.equals(name) && !validateDecoded(name))
+            return false;
+        if(decoded.length() > 255)
+            return false;
+        try {
+            Paths.get(decoded);
+            return true;
+        } catch (Exception ex) {
+            LOG.warn("Filename is invalid! " + ex.getMessage());
+            return false;
+        }
     }
 
     public static boolean validatePath(String name, Predicate<Path> exists) {
-        String decoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
+        String decoded = decodePath(name);
         if(StringUtils.isEmpty(decoded))
             return false;
-        if(!decoded.equals(name))
+        String baseName = FilenameUtils.getFullPath(decoded);
+        if(StringUtils.isEmpty(baseName)) {
+            if(StringUtils.isEmpty(FilenameUtils.getExtension(name))) {
+                baseName = name;
+            } else {
+                return false;
+            }
+        }
+
+        if(!decoded.equals(baseName) && !validateDecoded(baseName))
             return false;
         try {
-            Path path = Paths.get(decoded).normalize();
+            Path path = Paths.get(baseName).normalize();
             String normalizedPath = path.toString();
-            return exists.test(path) && normalizedPath.equals(decoded);
+            return exists.test(path) && (baseName.equals(normalizedPath) || baseName.equals(normalizedPath + File.separator));
         } catch (Exception ex) {
-            LOG.error("Path is invalid! " + ex.getMessage());
+            LOG.warn("Path is invalid! " + ex.getMessage());
             return false;
         }
     }
@@ -113,5 +129,19 @@ public final class PathSecureUtils {
         }
         LOG.warn("Path is invalid!");
         return Optional.empty();
+    }
+
+    private static boolean validateDecoded(String name) {
+        String withoutWhitespace = name
+                .replaceAll("\\s", "")
+                .replace(File.separator, "")
+                .replace(":", "");
+        String withoutWhitespaceEncoded = URLEncoder.encode(withoutWhitespace, StandardCharsets.UTF_8);
+        String withoutWhitespaceDecoded = URLDecoder.decode(withoutWhitespaceEncoded, StandardCharsets.UTF_8);
+        return !StringUtils.isEmpty(withoutWhitespaceDecoded) && withoutWhitespaceDecoded.equals(withoutWhitespace);
+    }
+
+    public static String decodePath(String path) {
+        return URLDecoder.decode(path, StandardCharsets.UTF_8);
     }
 }

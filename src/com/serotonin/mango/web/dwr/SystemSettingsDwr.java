@@ -371,17 +371,21 @@ public class SystemSettingsDwr extends BaseDwr {
 			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, false);
 			systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
 		}
-		if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)) || (webResourceGraphicsPath.endsWith("graphics") || webResourceGraphicsPath.endsWith("graphics" + File.separator))) {
+		if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)
+				|| (webResourceGraphicsPath.endsWith("graphics")
+				|| webResourceGraphicsPath.endsWith("graphics" + File.separator)))) {
 			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, webResourceGraphicsPath);
 		}
 		else {
-			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.wrong.graphics.path", File.separator);
+			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.webresource.graphics.path.wrong", File.separator);
 		}
-		if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath) || (webResourceUploadsPath.endsWith("uploads") || webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
+		if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
+				|| (webResourceUploadsPath.endsWith("uploads")
+				|| webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
 			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
 		}
 		else {
-			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.wrong.uploads.path", File.separator);
+			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
 
 		return response;

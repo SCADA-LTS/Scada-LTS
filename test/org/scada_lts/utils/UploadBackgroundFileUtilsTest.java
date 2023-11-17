@@ -21,6 +21,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.scada_lts.utils.PathSecureUtils.decodePath;
 
 @RunWith(Parameterized.class)
 public class UploadBackgroundFileUtilsTest {
@@ -85,6 +86,8 @@ public class UploadBackgroundFileUtilsTest {
         datas.add(new Object[] {"classFile.class.jpg", false});
 
         datas.add(new Object[] {"txt" + File.separator + "info.txt", false});
+        datas.add(new Object[] { "jpg File.jpg", true});
+        datas.add(new Object[] { "jpg%20File.jpg", true});
         return datas;
     }
 
@@ -133,9 +136,10 @@ public class UploadBackgroundFileUtilsTest {
     }
 
     private static MultipartFile toMultipartFile(File file) {
-        try(FileInputStream input = new FileInputStream(file)) {
+        File to = new File(decodePath(file.getAbsolutePath()));
+        try(FileInputStream input = new FileInputStream(to)) {
             return new MockMultipartFile("fileUpload", file.getName(),
-                    Files.probeContentType(file.toPath()), IOUtils.toByteArray(input));
+                    Files.probeContentType(to.toPath()), IOUtils.toByteArray(input));
         } catch (Exception ex) {
             return null;
         }
