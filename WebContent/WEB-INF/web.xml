@@ -181,6 +181,14 @@
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/uploads/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/assets/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>monitoring</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
@@ -273,15 +281,15 @@
     <url-pattern>*.shtm</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.png</url-pattern>
   </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>default</servlet-name>
+        <servlet-name>springDispatcher</servlet-name>
         <url-pattern>*.jpg</url-pattern>
     </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.bmp</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -313,15 +321,15 @@
     <url-pattern>*.fla</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.jpeg</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.svg</url-pattern>
   </servlet-mapping>
   <servlet-mapping>

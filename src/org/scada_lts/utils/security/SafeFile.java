@@ -4,8 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.scada_lts.utils.PathSecureUtils.validateFilename;
-import static org.scada_lts.utils.PathSecureUtils.validatePath;
+import static org.scada_lts.utils.PathSecureUtils.*;
 
 public class SafeFile {
 
@@ -16,7 +15,7 @@ public class SafeFile {
     }
 
     public static SafeFile safe(File file) throws FileNotSafeException {
-        SafeFile safeFile = new SafeFile(file);
+        SafeFile safeFile = new SafeFile(new File(decodePath(file.getAbsolutePath())));
         if(safeFile.validate())
             return safeFile;
         throw new FileNotSafeException(file.getName());
@@ -31,15 +30,17 @@ public class SafeFile {
     }
 
     public Path toPath() {
-        return file.toPath();
+        if(validate())
+            return file.toPath();
+        return Path.of("");
     }
 
     private boolean validate() {
         String absolutePath = file.getAbsolutePath();
         String path = file.getPath();
         String name = file.getName();
-        return validatePath(absolutePath, Files::exists)
+        return validateFilename(name)
                 && validatePath(path, Files::exists)
-                && validateFilename(name);
+                && validatePath(absolutePath, Files::exists);
     }
 }
