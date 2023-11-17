@@ -43,6 +43,9 @@ class MessagingChannelsImpl implements MessagingChannels {
     @Override
     public void initChannel(DataPointRT dataPoint, Supplier<MessagingChannel> create) {
         try {
+            if(getChannel(dataPoint).isPresent() && !getChannel(dataPoint).get().isOpen()) {
+                removeChannel(dataPoint);
+            }
             getChannel(dataPoint).orElseGet(() -> operationChannels.createChannelIfNotExists(dataPoint.getId(), a -> create.get()));
         } catch (MessagingChannelException e) {
             throw e;

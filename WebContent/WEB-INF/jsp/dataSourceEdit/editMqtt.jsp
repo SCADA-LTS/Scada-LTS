@@ -35,7 +35,13 @@
         dataSourceToSave.cleanSession=$get("cleanSession");
         dataSourceToSave.brokerMode=$get("brokerMode");
 
-        DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+        if(!isValid(dataSourceToSave.updateAttempts)) {
+          $set("updateAttemptsMessage", $get("updateAttemptsForm") + " - Incorrect input data type");
+        }
+        else {
+          $set("updateAttemptsMessage", "");
+          DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+        }
     }
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
@@ -60,6 +66,13 @@
     DataSourceEditDwr.saveMqttPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
     }
+  function isValid(value) {
+    return value == "" || isPositiveInt(value);
+    }
+
+  function isPositiveInt(value) {
+    return isInt32(value) && value >= 0;
+    }
 </script>
 
 
@@ -76,8 +89,9 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
+    <td id="updateAttemptsForm" class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
+    <span id="updateAttemptsMessage" class="formError"></span>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
