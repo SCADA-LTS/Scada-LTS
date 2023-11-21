@@ -330,6 +330,11 @@ public class EventHandlersDwr extends BaseDwr {
 		vo.setDisabled(disabled);
 
 		DwrResponseI18n response = new DwrResponseI18n();
+
+		if (com.serotonin.util.StringUtils.isLengthGreaterThan(xid, 50)){
+			response.addContextualMessage("xid", "validate.notLongerThan", 50);
+		}
+
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {

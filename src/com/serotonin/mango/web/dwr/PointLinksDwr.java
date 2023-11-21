@@ -126,6 +126,9 @@ public class PointLinksDwr extends BaseDwr {
             response.addContextualMessage("xid", "validate.required");
         else if (!pointLinkDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
+        else if (StringUtils.isLengthGreaterThan(xid, 50)){
+            response.addContextualMessage("xid", "validate.notLongerThan", 50);
+        }
 
         vo.validate(response);
 

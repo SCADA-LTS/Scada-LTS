@@ -132,6 +132,9 @@ public class MaintenanceEventsDwr extends BaseDwr {
             response.addContextualMessage("xid", "validate.required");
         else if (!maintenanceEventDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
+        else if (StringUtils.isLengthGreaterThan(xid, 50)){
+            response.addContextualMessage("xid", "validate.notLongerThan", 50);
+        }
 
         e.validate(response);
 

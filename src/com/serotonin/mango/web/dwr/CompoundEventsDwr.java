@@ -122,6 +122,9 @@ public class CompoundEventsDwr extends BaseDwr {
             response.addContextualMessage("xid", "validate.required");
         else if (!compoundEventDetectorDao.isXidUnique(xid, id))
             response.addContextualMessage("xid", "validate.xidUsed");
+        else if (StringUtils.isLengthGreaterThan(xid, 50)){
+            response.addContextualMessage("xid", "validate.notLongerThan", 50);
+        }
 
         ced.validate(response);
 
