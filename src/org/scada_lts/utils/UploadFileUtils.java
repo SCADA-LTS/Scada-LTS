@@ -319,7 +319,7 @@ public final class UploadFileUtils {
             createIfNotExists(path);
             paths.add(path);
         }
-        Path path = getAppContextSystemFilePath(Paths.get(normalizeFolder));
+        Path path = getAppContextSystemFilePath(normalizeFolder);
         createIfNotExists(path);
         paths.add(path);
         return paths;
@@ -333,7 +333,7 @@ public final class UploadFileUtils {
                 || normalizedPath.endsWith(normalizedFolder + File.separator))) {
             path = getAbsoluteResourcePath(normalizedPath);
         } else {
-            path = getAppContextSystemFilePath(Paths.get(normalizedFolder));
+            path = getAppContextSystemFilePath(normalizedFolder);
         }
         createIfNotExists(path);
         return path;

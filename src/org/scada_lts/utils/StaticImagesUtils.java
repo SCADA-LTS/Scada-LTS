@@ -75,7 +75,7 @@ public final class StaticImagesUtils {
             path = getUploadsSystemFilePath(Paths.get(url));
         }
         if(StringUtils.isEmpty(path.toString()))
-            path = PathSecureUtils.getAppContextSystemFilePath(Paths.get(url));
+            path = PathSecureUtils.getAppContextSystemFilePath(url);
         return path.toFile();
     }
 

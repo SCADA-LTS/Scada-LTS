@@ -32,17 +32,17 @@ public final class PathSecureUtils {
         return normalizePath(path, reduce).map(Path::toFile);
     }
 
-    public static Path getAppContextSystemFilePath(Path folder) {
+    public static Path getAppContextSystemFilePath(String folder) {
         if(folder == null)
             throw new NullPointerException();
-        String realPath = Common.ctx.getServletContext().getRealPath(normalizeSeparator(folder.toString()));
+        String realPath = Common.ctx.getServletContext().getRealPath(normalizeSeparator(decodePath(folder)));
         if(realPath == null)
             return Paths.get("");
         return Paths.get(realPath);
     }
 
     public static Path getAppContextSystemFilePath() {
-        return getAppContextSystemFilePath(Paths.get(File.separator));
+        return getAppContextSystemFilePath(File.separator);
     }
 
     public static String getPartialPath(File file) {
