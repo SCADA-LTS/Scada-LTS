@@ -435,6 +435,18 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
+	public boolean assigneeEvent(int eventId, long time, User user) {
+		boolean updated = eventDAO.updateAssignee(time, user.getUsername(), eventId);
+		if (updated) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
+			Common.ctx.getEventManager().notifyEventAssignee(eventId);
+		} else {
+			Common.ctx.getEventManager().notifyEventRaise(eventId);
+		}
+		return updated;
+	}
+
+	@Override
 	public int getHighestUnsilencedAlarmLevel(int userId) {
 		return Common.ctx.getEventManager().getHighestAlarmLevel(userId);
 	}

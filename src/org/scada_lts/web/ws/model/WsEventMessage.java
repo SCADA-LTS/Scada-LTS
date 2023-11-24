@@ -42,6 +42,10 @@ public class WsEventMessage {
         return instance.getAckMessage();
     }
 
+    public LocalizableMessage getAssigneeMessage() {
+        return instance.getAssigneeMessage();
+    }
+
     public LocalizableMessage getExportAckMessage() {
         return instance.getExportAckMessage();
     }
@@ -144,5 +148,17 @@ public class WsEventMessage {
 
     public String getAction() {
         return action;
+    }
+
+    public long getAssigneeTimestamp() {
+        return instance.getAssigneeTimestamp();
+    }
+
+    public String getAssigneeByUsername() {
+        return instance.getAssigneeByUsername();
+    }
+
+    public boolean isAssignee() {
+        return instance.isAssignee();
     }
 }
