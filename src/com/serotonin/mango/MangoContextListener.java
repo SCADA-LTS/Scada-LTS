@@ -176,13 +176,19 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		
+
 		try {
 			ApplicationBeans.getViewDaoBean().init();
+			log.info("Cache views initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		
+		try {
 			ViewHierarchyCache.getInstance();
 			log.info("Cache views hierarchy initialized");
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.error(e);
 		}
 
 		initSchedule();
