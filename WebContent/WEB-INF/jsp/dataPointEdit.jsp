@@ -319,11 +319,20 @@
 
                         if (checkGetAlertError()) {
                             try {
+                                let thisRangeValues = this.textRendererEditor.getRangeValues();
                                 var alert_old = alert;
                                 alert = function (message) {
                                     console.log(message);
                                 }
                                 for (var range in properties.textRenderer.rangeValues) {
+                                    for (let i = 0; i < thisRangeValues.length; i++) {
+                                        if (
+                                            parseFloat(thisRangeValues[i].from) === parseFloat(properties.textRenderer.rangeValues[range].from) &&
+                                            parseFloat(thisRangeValues[i].to) === parseFloat(properties.textRenderer.rangeValues[range].to))
+                                        {
+                                            textRendererEditor.removeRangeValue(parseFloat(properties.textRenderer.rangeValues[range].from), parseFloat(properties.textRenderer.rangeValues[range].to));
+                                        }
+                                    }
                                     textRendererEditor.addRangeValue(
                                         String( properties.textRenderer.rangeValues[range].from ),
                                         String( properties.textRenderer.rangeValues[range].to ),
