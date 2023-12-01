@@ -35,6 +35,8 @@ import com.serotonin.web.taglib.DateFunctions;
 import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
@@ -58,6 +60,7 @@ public class ReportChartCreator {
      */
     private static final int IMAGE_WIDTH = 930;
     private static final int IMAGE_HEIGHT = 400;
+    private static final int IMAGE_HEIGHT_PX_INCREMENT_PER_POINT = 17;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -145,7 +148,7 @@ public class ReportChartCreator {
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
 
-            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, IMAGE_HEIGHT);
+            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, (IMAGE_HEIGHT+(pointStatistics.size()*IMAGE_HEIGHT_PX_INCREMENT_PER_POINT)));
         }
 
         List<EventInstance> events = null;
