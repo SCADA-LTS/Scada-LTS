@@ -35,8 +35,6 @@ import com.serotonin.web.taglib.DateFunctions;
 import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
