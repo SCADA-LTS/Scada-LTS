@@ -228,7 +228,11 @@ public class ViewEditController {
             String errorMessage = LocalizableMessage.getMessage(Common.getBundle(request),"viewEdit.upload.failed");
             if (file != null) {
                 if(isToUploads(file))
-                    upload(request, form, file);
+                    try {
+                        upload(request, form, file);
+                    } catch (Exception ex) {
+                        errors.put("errorMessage", ex.getMessage());
+                    }
                 else {
                     LOG.warn("Image file is invalid.");
                     errors.put("errorMessage", errorMessage);
@@ -249,8 +253,6 @@ public class ViewEditController {
 
             // Make sure the directory exists.
             File dir = path.toFile();
-            dir.mkdirs();
-
             String fileName = file.getOriginalFilename();
             if(fileName != null) {
                 saveFile(form, bytes, dir, fileName.toLowerCase());
@@ -291,18 +293,20 @@ public class ViewEditController {
                     nextImageId = 1;
 
                     String[] names = uploadDir.list();
-                    int index, dot;
-                    for (int i = 0; i < names.length; i++) {
-                        dot = names[i].lastIndexOf('.');
-                        try {
-                            if (dot == -1)
-                                index = Integer.parseInt(names[i]);
-                            else
-                                index = Integer.parseInt(names[i].substring(0,
-                                        dot));
-                            if (index >= nextImageId)
-                                nextImageId = index + 1;
-                        } catch (NumberFormatException e) { /* no op */
+                    if(names != null) {
+                        int index, dot;
+                        for (int i = 0; i < names.length; i++) {
+                            dot = names[i].lastIndexOf('.');
+                            try {
+                                if (dot == -1)
+                                    index = Integer.parseInt(names[i]);
+                                else
+                                    index = Integer.parseInt(names[i].substring(0,
+                                            dot));
+                                if (index >= nextImageId)
+                                    nextImageId = index + 1;
+                            } catch (NumberFormatException e) { /* no op */
+                            }
                         }
                     }
                 }

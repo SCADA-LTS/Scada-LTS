@@ -23,14 +23,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -117,7 +121,7 @@ public class RuntimeManager {
 	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
 
 
-	private boolean started = false;
+	private volatile boolean started = false;
 
 	//
 	// Lifecycle
@@ -125,9 +129,6 @@ public class RuntimeManager {
 		if (started)
 			throw new ShouldNeverHappenException(
 					"RuntimeManager already started");
-
-		// Set the started indicator to true.
-		started = true;
 
 		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
 		MailingListService mailingListService = new MailingListService();
@@ -152,13 +153,27 @@ public class RuntimeManager {
 		}
 
 		// Initialize data sources that are enabled.
-		DataSourceService dataSourceService = new DataSourceService();
-		List<DataSourceVO<?>> configs = dataSourceService.getDataSources();
-		List<DataSourceVO<?>> pollingRound = new ArrayList<>();
-		List<DataSourceVO<?>> nonMetaDataSources = configs.stream().filter(dataSource -> dataSource.getType() != DataSourceVO.Type.META).collect(Collectors.toList());
-		List<DataSourceVO<?>> metaDataSources = configs.stream().filter(dataSource -> dataSource.getType() == DataSourceVO.Type.META).collect(Collectors.toList());
-		initializeDataSources(safe, dataSourceService, nonMetaDataSources, pollingRound);
-		initializeDataSources(safe, dataSourceService, metaDataSources, pollingRound);
+		DataSourceDao dataSourceDao = new DataSourceDao();
+		List<DataSourceVO<?>> configs = dataSourceDao.getDataSources();
+		List<DataSourceVO<?>> pollingRound = new ArrayList<DataSourceVO<?>>();
+		for (DataSourceVO<?> config : configs) {
+
+			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
+			boolean isToTrayEnable = false;
+			if (isCheckToTrayEnableRun) {
+				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
+			}
+
+			if (config.isEnabled() || isToTrayEnable ) {
+				if (safe) {
+					config.setEnabled(false);
+					dataSourceDao.saveDataSource(config);
+				} else if (initializeDataSource(config))
+					pollingRound.add(config);
+			}
+		}
+
+		startPoints();
 
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
@@ -232,6 +247,9 @@ public class RuntimeManager {
 					startMaintenanceEvent(vo);
 			}
 		}
+
+		// Set the started indicator to true.
+		started = true;
 	}
 
 	synchronized public void terminate() {
@@ -356,7 +374,7 @@ public class RuntimeManager {
 			List<DataPointVO> dataSourcePoints = new DataPointDao()
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
-				if (dataPoint.isEnabled())
+				if (dataPoint.isEnabled() && started)
 					startDataPointSafe(dataPoint);
 			}
 
@@ -467,6 +485,8 @@ public class RuntimeManager {
 
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
+
+				LOG.info("Data point '" + vo.getExtendedName() + "' initialized");
 			}
 		}
 	}
@@ -1046,22 +1066,78 @@ public class RuntimeManager {
 		resetDailyLimitSentEmails.remove(mailingListId);
 	}
 
-	private void initializeDataSources(boolean safe, DataSourceService dataSourceService,
-									   List<DataSourceVO<?>> configs, List<DataSourceVO<?>> pollingRound) {
-		for (DataSourceVO<?> config : configs) {
+	public boolean isStarted() {
+		return started;
+	}
 
-			boolean isCheckToTrayEnableRun = (config instanceof ICheckReactivation);
-			boolean isToTrayEnable = false;
-			if (isCheckToTrayEnableRun) {
-				isToTrayEnable = ((ICheckReactivation) config).checkToTrayEnable();
+	private void startPoints() {
+
+		DataPointService dataPointService = new DataPointService();
+		List<DataPointVO> allPoints = dataPointService.getDataPoints(null, true);
+		List<DataPointVO> nonMetaDataPoints = allPoints.stream()
+				.filter(a -> !(a.getPointLocator() instanceof MetaPointLocatorVO))
+				.collect(Collectors.toList());
+		List<DataPointVO> metaDataPoints = allPoints.stream()
+				.filter(a -> a.getPointLocator() instanceof MetaPointLocatorVO)
+				.collect(Collectors.toList());
+
+		run(nonMetaDataPoints);
+
+		List<DataPointVO> toRunning = new ArrayList<>();
+		Set<Integer> toCheck = new HashSet<>();
+		int safe = 10;
+		for(DataPointVO dataPoint: metaDataPoints) {
+			collectMetaDataPointsFromContext(toCheck, toRunning, dataPoint, safe, allPoints);
+		}
+
+		run(toRunning);
+		run(metaDataPoints);
+	}
+
+	private void run(List<DataPointVO> dataPoints) {
+		for(DataPointVO dataPoint: dataPoints) {
+			if(dataPoint.isEnabled()) {
+				DataPointRT dataPointRT = getDataPoint(dataPoint.getId());
+				if(dataPointRT == null) {
+					startDataPointSafe(dataPoint);
+				}
 			}
+		}
+	}
 
-			if (config.isEnabled() || isToTrayEnable ) {
-				if (safe) {
-					config.setEnabled(false);
-					dataSourceService.saveDataSource(config);
-				} else if (initializeDataSource(config))
-					pollingRound.add(config);
+	private void collectMetaDataPointsFromContext(Set<Integer> toCheck, List<DataPointVO> toRunning,
+												  DataPointVO dataPoint, int safe,
+												  List<DataPointVO> allPoints) {
+		if(safe < 0) {
+			LOG.error("Recursion level exceeded: " + LoggingUtils.dataPointInfo(dataPoint));
+			return;
+		}
+		if(dataPoint.isEnabled()) {
+			PointLocatorVO pointLocator = dataPoint.getPointLocator();
+			if(pointLocator instanceof MetaPointLocatorVO) {
+				MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
+				if (metaPointLocator.getContext() != null && !metaPointLocator.getContext().isEmpty()) {
+					for (IntValuePair intValuePair : metaPointLocator.getContext()) {
+						if(intValuePair.getKey() > 0) {
+							DataPointRT dataPointRT = getDataPoint(intValuePair.getKey());
+							if (dataPointRT == null) {
+								DataPointVO fromContextDataPoint = allPoints.stream()
+										.filter(a -> a.getId() == intValuePair.getKey())
+										.findAny()
+										.orElse(null);
+								if (fromContextDataPoint != null) {
+									if (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
+										collectMetaDataPointsFromContext(toCheck, toRunning, fromContextDataPoint, --safe, allPoints);
+									}
+									if (!toCheck.contains(fromContextDataPoint.getId())) {
+										toCheck.add(fromContextDataPoint.getId());
+										toRunning.add(fromContextDataPoint);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.ViewGraphic;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -316,12 +318,13 @@ public final class UploadFileUtils {
         if (!StringUtils.isEmpty(normalizePath) && (normalizePath.endsWith(normalizeFolder)
                 || normalizePath.endsWith(normalizeFolder + File.separator))) {
             Path path = getAbsoluteResourcePath(normalizePath);
-            createIfNotExists(path);
-            paths.add(path);
+            createPath(path, notExistsPath(), paths::add);
         }
         Path path = getAppContextSystemFilePath(normalizeFolder);
-        createIfNotExists(path);
-        paths.add(path);
+        createPath(path, notExistsPath(), paths::add);
+        if(paths.isEmpty()) {
+            throw new IllegalStateException(Common.getMessage("Could not create paths!" ));
+        }
         return paths;
     }
 
@@ -335,14 +338,13 @@ public final class UploadFileUtils {
         } else {
             path = getAppContextSystemFilePath(normalizedFolder);
         }
-        createIfNotExists(path);
-        return path;
-    }
-
-    private static void createIfNotExists(Path path) {
-        if(!Files.exists(path)) {
-            path.toFile().mkdirs();
+        if(!existsPath(path)) {
+            path = getAppContextSystemFilePath(normalizedFolder);
+            createPath(path, a -> {
+                throw new IllegalStateException(Common.getMessage("Could not create paths! :" + a));
+            }, a -> {});
         }
+        return path;
     }
 
     private static void loadGraphics(ViewGraphicLoader loader,
@@ -363,7 +365,8 @@ public final class UploadFileUtils {
     private static Path getAbsoluteResourcePath(String path) {
         Path normalizedPath = normalizePath(path);
         if (!path.equals(normalizedPath.toString())) {
-            return Path.of(basePath() + File.separator + normalizeSeparator(path));
+            Path basePath = basePath();
+            return Path.of(basePath + File.separator + normalizeSeparator(path));
         } else {
             return normalizedPath;
         }
@@ -378,6 +381,31 @@ public final class UploadFileUtils {
     }
 
     private static Path basePath() {
-        return new File("../").getAbsoluteFile().toPath().normalize();
+        String catalinaHome = System.getenv("CATALINA_HOME");
+        return Paths.get(catalinaHome);
+    }
+
+    private static Consumer<Path> notExistsPath() {
+        return a -> {
+            LOG.error("Could not create path! : " + a);
+        };
+    }
+
+    private static void createPath(Path path, Consumer<Path> notExistsPath, Consumer<Path> existsPath) {
+        if(existsPath(path) || path.toFile().mkdirs()) {
+            existsPath.accept(path);
+        } else {
+            notExistsPath.accept(path);
+        }
+    }
+
+    private static boolean existsPath(Path path) {
+        if(!Files.exists(path) && Files.notExists(path)) {
+            return false;
+        } else if (!Files.exists(path) && !Files.notExists(path)) {
+            return false;
+        } else {
+            return Files.exists(path);
+        }
     }
 }
