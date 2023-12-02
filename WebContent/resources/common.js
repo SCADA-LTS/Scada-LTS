@@ -1108,7 +1108,7 @@ function isInt32(state) {
 function assigneeEvent(eventId) {
     hide("assigneeImg"+ eventId);
     var imgNode = $("assigneeImg"+ eventId);
-    updateImg(imgNode, "images/tick_off.png", mango.i18n["events.assign"], true, "inline");
+    updateImg(imgNode, "images/user_delete.png", mango.i18n["events.assign"], true, "inline");
     imgNode.onclick = function() {};
     dojo.html.removeClass(imgNode, "ptr");
     MiscDwr.assigneeEvent(eventId);

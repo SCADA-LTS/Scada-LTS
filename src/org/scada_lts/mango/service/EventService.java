@@ -440,6 +440,7 @@ public class EventService implements MangoEvent {
 		if (updated) {
 			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
 			Common.ctx.getEventManager().notifyEventAssignee(eventId);
+			removeUserIdFromCache(user.getId());
 		} else {
 			Common.ctx.getEventManager().notifyEventRaise(eventId);
 		}

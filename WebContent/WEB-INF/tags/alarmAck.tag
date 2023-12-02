@@ -23,7 +23,8 @@
     <c:when test="${event.acknowledged}"><tag:img png="tick_off" title="events.acknowledged" style="display:inline;"/></c:when>
     <c:otherwise>
       <c:if test="${not event.active}"><tag:img png="tick" id="ackImg${event.id}" onclick="ackEvent(${event.id})" title="events.acknowledge" style="display:inline;"/></c:if>
-      <c:if test="${event.active and not event.assignee}"><tag:img png="tick" id="assigneeImg${event.id}" onclick="assigneeEvent(${event.id})" title="events.assign" style="display:inline;"/></c:if>
+      <c:if test="${event.active and not event.assignee}"><tag:img png="user_add" id="assigneeImg${event.id}" onclick="assigneeEvent(${event.id})" title="events.assign" style="display:inline;"/></c:if>
+      <c:if test="${event.assignee}"><tag:img png="user_delete" title="events.assignee" style="display:inline;"/></c:if>
       <c:choose>
         <c:when test="${event.silenced}">
           <tag:img png="sound_mute" id="silenceImg${event.id}" onclick="toggleSilence(${event.id})" title="events.unsilence" style="display:inline;"/>
