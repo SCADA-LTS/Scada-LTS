@@ -58,7 +58,7 @@ public class ReportChartCreator {
      */
     private static final int IMAGE_WIDTH = 930;
     private static final int IMAGE_HEIGHT = 400;
-    private static final int IMAGE_HEIGHT_PX_INCREMENT_PER_POINT = 17;
+    private static final int ADDITIONAL_IMAGE_HEIGHT_PER_POINT = 17;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -146,7 +146,7 @@ public class ReportChartCreator {
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
 
-            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, (IMAGE_HEIGHT+(pointStatistics.size()*IMAGE_HEIGHT_PX_INCREMENT_PER_POINT)));
+            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, (IMAGE_HEIGHT+(pointStatistics.size()*ADDITIONAL_IMAGE_HEIGHT_PER_POINT)));
         }
 
         List<EventInstance> events = null;
