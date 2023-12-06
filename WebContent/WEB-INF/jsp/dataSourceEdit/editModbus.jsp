@@ -283,7 +283,9 @@
     <c:set var="dsHelpId" value="modbusIpDS"/>
   </c:when>
 </c:choose>
+<div style="width: 70%">
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
+</div>
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
           <td class="formField">
@@ -368,7 +370,7 @@
     </div>
     
     <div class="borderDiv marB marR" style="float:left;">
-      <table>
+      <table width="95%">
         <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.dataTest"/></td></tr>
         
         <tr>
@@ -410,8 +412,8 @@
       </table>
     </div>
     
-    <div class="borderDiv marB" id="locatorTestDiv" style="clear:both;">
-      <table>
+    <div class="borderDiv marB" id="locatorTestDiv" style="clear:both; width: 95%">
+      <table width="95%">
         <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.locatorTest"/></td></tr>
         
         <tr>
@@ -434,7 +436,7 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.modbusDataType"/></td>
           <td class="formField">
-            <select id="test_modbusDataType" onchange="changeDataType('test_')">
+            <select id="test_modbusDataType" onchange="changeDataType('test_')" style="width: 80%">
               <option value="<c:out value="<%= DataType.BINARY %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.binary"/></option>
               <option value="<c:out value="<%= DataType.TWO_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bUnsigned"/></option>
               <option value="<c:out value="<%= DataType.TWO_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bSigned"/></option>

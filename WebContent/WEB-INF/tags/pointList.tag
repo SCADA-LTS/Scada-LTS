@@ -21,7 +21,7 @@
 <%@tag import="com.serotonin.mango.Common"%>
 <%@attribute name="pointHelpId" required="true"%>
 
-<table cellpadding="0" cellspacing="0" id="pointProperties" style="display:none; width:60%;">
+<table cellpadding="0" cellspacing="5" id="pointProperties" style="display:none; width:70%;">
   <tr>
     <td valign="top">
       <div class="borderDiv marR marB">
@@ -44,7 +44,7 @@
     </td>
 
     <td>
-      <div id="pointDetails" class="borderDiv marB" style="display: none;">
+      <div id="pointDetails" class="borderDiv marB" style="display: none; width: 30%;position: fixed; right: 0;">
         <table width="100%">
           <tr>
             <td>
