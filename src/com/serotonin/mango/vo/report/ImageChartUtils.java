@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -210,4 +211,26 @@ public class ImageChartUtils {
         catch (SeriesException e) { /* duplicate Second. Ignore. */
         }
     }
+
+	public static int calculateHeightConsolidatedChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeight, int imageHeightForDataPointNameInLegend, int charAmountPerLine) {
+		StringBuilder subLegend = new StringBuilder();
+		int linesAmount = 0;
+		String charsForColorIndicator = "111";
+		for (ReportChartCreator.PointStatistics point : pointStatistics){
+			subLegend.append(charsForColorIndicator); //characters that replace color indicators
+            if (charsForColorIndicator.length() + point.getName().length() > charAmountPerLine){
+                throw new IllegalArgumentException("Point name is too long: " + point.getName());
+            }
+			if ((subLegend.length() + point.getName().length()) > charAmountPerLine){
+				subLegend.setLength(0);
+				linesAmount++;
+				subLegend.append(point.getName());
+			}
+			else {
+				subLegend.append(point.getName());
+			}
+		}
+		linesAmount++;
+		return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
+	}
 }

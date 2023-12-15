@@ -22,8 +22,10 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.report.ReportChartCreator;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
+import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -147,8 +149,8 @@ public class ReportInstancePointDAO {
 				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[] {
 						reportInstance.getId(),
-						point.getDeviceName(),
-						name,
+						Functions.truncate(point.getDeviceName(), ReportChartCreator.getDataSourceNameLengthForReport()),
+						Functions.truncate(name, ReportChartCreator.getDataPointNameLengthForReport()),
 						dataType,
 						DataTypes.valueToString(startValue),
 						new SerializationData().writeObject(point.getTextRenderer()),
