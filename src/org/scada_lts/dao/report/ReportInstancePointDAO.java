@@ -25,11 +25,11 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.ReportChartCreator;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
-import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -113,6 +113,10 @@ public class ReportInstancePointDAO {
 			this.consolidatedChart = consolidatedChart;
 		}
 
+		public int getId() {
+			return point.getId();
+		}
+
 		public DataPointVO getPoint() {
 			return point;
 		}
@@ -120,6 +124,20 @@ public class ReportInstancePointDAO {
 		public String getColour() {
 			return colour;
 		}
+
+		public String getName() {
+			return StringUtils.abbreviateMiddle(point.getName(), ReportChartCreator.getDataPointNameLengthForReport());
+		}
+
+		public String getDeviceName() {
+			return StringUtils.abbreviateMiddle(point.getDeviceName(), ReportChartCreator.getDataSourceNameLengthForReport());
+		}
+
+		public TextRenderer getTextRenderer() {
+			return point.getTextRenderer();
+		}
+
+
 
 		public boolean isConsolidatedChart() {
 			return consolidatedChart;
@@ -135,8 +153,14 @@ public class ReportInstancePointDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_POINT_SELECT_WHERE, new Object[]{instanceId}, new ReportPointInfoRowMapper());
 	}
 
+	@Deprecated(since = "2.7.7")
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final ReportInstance reportInstance, final DataPointVO point, final String name, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {
+		return insert(reportInstance, dataType, startValue, pointInfo);
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public int insert(final ReportInstance reportInstance, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert()");
@@ -149,11 +173,11 @@ public class ReportInstancePointDAO {
 				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[] {
 						reportInstance.getId(),
-						Functions.truncate(point.getDeviceName(), ReportChartCreator.getDataSourceNameLengthForReport()),
-						Functions.truncate(name, ReportChartCreator.getDataPointNameLengthForReport()),
+						pointInfo.getDeviceName(),
+						pointInfo.getName(),
 						dataType,
 						DataTypes.valueToString(startValue),
-						new SerializationData().writeObject(point.getTextRenderer()),
+						new SerializationData().writeObject(pointInfo.getTextRenderer()),
 						pointInfo.getColour(),
 						DAO.boolToChar(pointInfo.isConsolidatedChart())
 				}).setValues(preparedStatement);

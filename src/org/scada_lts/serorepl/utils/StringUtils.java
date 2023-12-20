@@ -133,20 +133,15 @@ public class StringUtils {
         return s.trim();
     }
 
-    public static String truncate(String s, int length){
-        return truncate(s, length, (String)null);
+    public static String abbreviateMiddle(String s, int length) {
+        return abbreviateMiddle(s, length, (String)null);
     }
 
-    public static String truncate(String s, int length, String truncateSuffix){
-        if (s == null) {
-            return null;
+    public static String abbreviateMiddle(String s, int length, String truncateSuffix) {
+        if(truncateSuffix == null) {
+            truncateSuffix = "...";
         }
-        if (s.length() <= length) {
-            return s;
-        }
-        if (truncateSuffix != null){
-            return s.substring(0,length) + truncateSuffix;
-        }
-        return s.substring(0,length);
+        return org.apache.commons.lang3.StringUtils.abbreviateMiddle(s, truncateSuffix, length);
     }
+
 }

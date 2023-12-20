@@ -16,13 +16,13 @@ import static org.springframework.test.util.AssertionErrors.fail;
 @RunWith(Parameterized.class)
 public class CalculateConsolidatedChartHeightTest {
 
-	@Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeight({0}, {1}, {2}) = {3}, expectException: {4}")
+	@Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeight(points: {0}, expected height: {1},pixels per line: {2} base height of chart: {3}, characters per line: {4}) , expectException: {5}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
 				{List.of(), 400, 20, 400, 138, false},
 				{createPointStatisticsList(pointNames), 1020, 20, 400, 138, false},
 				{createPointStatisticsList(pointNames2), 1240, 20, 400, 138, false},
-				{createPointStatisticsList(pointNames3), 1260, 20, 400, 138, false},
+				{createPointStatisticsList(pointNames3), 1280, 20, 400, 138, false},
 				{createPointStatisticsList(pointNames4), 1000, 20, 400, 138, false},
 				{createPointStatisticsList(pointNames4), 780, 20, 400, 200, false},
 				{createPointStatisticsList(pointNames4), 1180, 20, 400, 100, true},

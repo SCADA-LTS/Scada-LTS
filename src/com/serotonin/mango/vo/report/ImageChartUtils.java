@@ -218,12 +218,13 @@ public class ImageChartUtils {
 		String charsForColorIndicator = "111";
 		for (ReportChartCreator.PointStatistics point : pointStatistics){
 			subLegend.append(charsForColorIndicator); //characters that replace color indicators
-            if (charsForColorIndicator.length() + point.getName().length() > charAmountPerLine){
+            if (point.getName().length() > charAmountPerLine){
                 throw new IllegalArgumentException("Point name is too long: " + point.getName());
             }
 			if ((subLegend.length() + point.getName().length()) > charAmountPerLine){
-				subLegend.setLength(0);
+				subLegend.delete(0, subLegend.length());
 				linesAmount++;
+                subLegend.append(charsForColorIndicator);
 				subLegend.append(point.getName());
 			}
 			else {
