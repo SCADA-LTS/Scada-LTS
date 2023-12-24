@@ -20,7 +20,10 @@ services:
             - ./db_conf:/etc/mysql:ro
         command: --log_bin_trust_function_creators=1
     scadalts:
-        image: scadalts/scadalts:latest
+        image: scadalts:latest
+        build:
+          context: .
+          target: scadalts-tomcat
         environment:
             - CATALINA_OPTS=-Xmx512m -Xms512m
         ports: 
