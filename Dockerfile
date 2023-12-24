@@ -1,14 +1,18 @@
-#Create an Scada-LTS.war file and deploy it into Docker Tomcat Image.
-FROM tomcat:9.0.53
-LABEL maintainer="rjajko@softq.pl"
-COPY WebContent/WEB-INF/lib/mysql-connector-java-5.1.49.jar /usr/local/tomcat/lib/mysql-connector-java-5.1.49.jar
-COPY tomcat/lib/activation.jar /usr/local/tomcat/lib/activation.jar
-COPY tomcat/lib/jaxb-api-2.4.0-b180830.0359.jar /usr/local/tomcat/lib/jaxb-api-2.4.0-b180830.0359.jar
-COPY tomcat/lib/jaxb-core-3.0.2.jar /usr/local/tomcat/lib/jaxb-core-3.0.2.jar
-COPY tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar /usr/local/tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar
+FROM node:21.4 as scadalts-ui
+WORKDIR /src
+COPY ./scadalts-ui .
+RUN npm install
+RUN npm run build
+CMD echo "Javascript files compiled with success"
 
-COPY build/libs/Scada-LTS.war /usr/local/tomcat/webapps/
-RUN cd /usr/local/tomcat/webapps/ && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS
-COPY docker/config/context.xml /usr/local/tomcat/webapps/Scada-LTS/META-INF/context.xml
+FROM gradle:7.3 as war-compiler
+WORKDIR /home/gradle
+COPY . .
+COPY --from=scadalts-ui /src/* ./scadalts-ui/
+RUN gradle war
+CMD echo "War file compiled with success"
 
-RUN apt update && apt install wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*
+FROM scratch as war-file
+WORKDIR /
+COPY --from=war-compiler /home/gradle/build/libs/Scada-LTS.war/ Scada-LTS.war
+
