@@ -5,22 +5,8 @@ plugins {
 boolean buildVue = false
 
 apply plugin: 'base'
-apply plugin: 'com.github.node-gradle.node'
 
-node {
-    version = "21.4.0"
-    download = false
-}
-
-task bundle(type: NpmTask, dependsOn: npmInstall) {
-    args = ['run', 'build']
-}
-
-task testUi(type: NpmTask, dependsOn: bundle) {
-    args = ['run', 'test:unit']
-}
-
-task clearResources(type: Delete, dependsOn: bundle) {
+task clearResources(type: Delete) {
     delete files ("../WebContent/resources/js-ui")
 }
 
@@ -70,30 +56,29 @@ task copyNewUiWithSourceMap(dependsOn: copyNewUiImages) {
             'copyModernWatchListJsSourceMap', 'copyViewsJsSourceMap', 'copyDataSourceJsSourceMap', 'copyDataSourceJsSourceMap'
 }
 
-task copyPointHierarchyJsSourceMap(type: Copy, dependsOn: bundle) {
+task copyPointHierarchyJsSourceMap(type: Copy) {
     from "dist/js/ph.js.map"
     into "../WebContent/resources/js-ui/pointHierarchy/js"
 }
 
-task copyNewUiJsSourceMap(type: Copy, dependsOn: bundle) {
+task copyNewUiJsSourceMap(type: Copy) {
     from "dist/js/chunk-vendors.js.map", "dist/js/app.js.map"
     into "../WebContent/resources/js-ui/app/js"
 }
 
-task copyModernWatchListJsSourceMap(type: Copy, dependsOn: bundle) {
+task copyModernWatchListJsSourceMap(type: Copy) {
     from "dist/js/pdfmake.js.map", "dist/js/xlsx.js.map", "dist/js/canvg.js.map", "dist/js/example-chart-cmp.js.map"
     into "../WebContent/resources/js-ui/modernWatchList/js"
 }
 
-task copyViewsJsSourceMap(type: Copy, dependsOn: bundle) {
+task copyViewsJsSourceMap(type: Copy) {
     from "dist/js/simple-component-svg.js.map", "dist/js/live-alarms-component.js.map", "dist/js/isalive-component.js.map", "dist/js/test-component.js.map", "dist/js/cmp-component.js.map"
     into "../WebContent/resources/js-ui/views/js"
 }
 
-task copyDataSourceJsSourceMap(type: Copy, dependsOn: bundle) {
+task copyDataSourceJsSourceMap(type: Copy) {
     from "dist/js/sleep-and-reactivation-ds-component.js.map"
     into "../WebContent/resources/js-ui/ds/js"
 }
 
-bundle.onlyIf { !project.ext.get("buildUi") }
 clearResources.onlyIf { !project.ext.get("buildUi") }
