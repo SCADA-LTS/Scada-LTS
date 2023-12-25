@@ -28,5 +28,5 @@ COPY tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar ./lib/jaxb-runtime-2.4.0-b18
 COPY --from=war-file /Scada-LTS.war ./webapps
 RUN cd ./webapps/ && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS
 COPY docker/config/context.xml ./webapps/Scada-LTS/META-INF/context.xml
-RUN apt update && apt install wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*
 
