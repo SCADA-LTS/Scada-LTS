@@ -89,6 +89,7 @@
  * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0.0
  */
+var dialogVisible = False;
 export default {
 	name: 'PointValueSet',
 
@@ -96,15 +97,18 @@ export default {
 		pointDetails: {
 			type: Object,
 			required: true,
-		},
+		}
+		/*
 		dialogVisible: {
 			type: Boolean,
 			default: false,
 		},
+		*/
 	},
 
 	data() {
 		return {
+			dialogVisible: dialogVisible,
 			changedValue: false,
 			newPointValue: null,
 			oldPointValue: null,

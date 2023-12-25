@@ -337,10 +337,10 @@
 					</template>
 					<template v-slot:item.actions="{ item }">
 						<span v-if="!item.ackTs">
-							<v-icon class="mr-2" border="0" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
+							<v-icon class="mr-2" border="0" @click.stop="silenceEvent(item)" v-if="!item.silenced" title="silence">
 								mdi-volume-high
 							</v-icon>
-							<v-icon class="mr-2" border="0" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
+							<v-icon class="mr-2" border="0" @click.stop="unsilenceEvent(item)" v-if="item.silenced" title="unsilence">
 								mdi-volume-mute
 							</v-icon>
 						</span>

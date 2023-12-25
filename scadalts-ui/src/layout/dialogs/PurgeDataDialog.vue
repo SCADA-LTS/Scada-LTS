@@ -1,5 +1,8 @@
 <template>
-	<v-dialog max-width="600" v-model="dialog">
+	<v-dialog
+		v-model="dialog"
+		max-width="600"
+	>
 		<ConfirmationDialog
 			:btnvisible="false"
 			ref="purgeDialogConfrim"
@@ -65,6 +68,7 @@
 	</v-dialog>
 </template>
 <script>
+var dialog = False;
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 export default {
 	name: 'PurgeDataDialog',
@@ -75,6 +79,7 @@ export default {
 
 	data() {
 		return {
+			dialog: dialog,
 			purgeAll: false,
 			purgeType: 2,
 			purgePeriod: 1,
@@ -109,12 +114,14 @@ export default {
 		data: {
 			type: Object,
 			default: null,
-		},
+		}
 
+		/*
 		dialog: {
 			type: Boolean,
 			default: false,
 		},
+		*/
 	},
 
 	methods: {
@@ -157,11 +164,4 @@ export default {
 	},
 };
 </script>
-
-<template>
-	<input
-		:value="dialog"
-		@input="$emit('update:dialog', $event.target.value)"
-	/>
-</template>
 
