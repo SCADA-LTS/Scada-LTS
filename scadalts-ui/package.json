@@ -67,7 +67,7 @@
 		"@vue/cli-plugin-babel": "3.11.0",
 		"@vue/cli-plugin-e2e-cypress": ">=5.0.0",
 		"@vue/cli-plugin-eslint": "3.11.0",
-		"@vue/cli-plugin-unit-mocha": "3.11.0",
+		"@vue/cli-plugin-unit-mocha": "5.0.8",
 		"@vue/cli-service": "4.3.1",
 		"@vue/test-utils": "1.1.4",
 		"babel-eslint": "10.0.1",
