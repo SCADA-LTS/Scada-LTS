@@ -49,6 +49,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import '../../../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
-</style>

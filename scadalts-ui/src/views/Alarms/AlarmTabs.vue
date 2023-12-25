@@ -20,13 +20,8 @@
 </template>
 
 <script>
-import Components from '@min-gb/vuejs-components';
-
 export default {
 	name: 'alarmTabs',
-	components: {
-		...Components,
-	},
 	mounted() {
 		this.tab = 0
 		this.changeTab(this.tab)

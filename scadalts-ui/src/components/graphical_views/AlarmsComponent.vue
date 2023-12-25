@@ -88,14 +88,10 @@
 
 <script>
 import store from '../../store';
-import Components from '@min-gb/vuejs-components';
 
 export default {
 	el: '#alarms_component',
 	name: 'alarmsComponent',
-	components: {
-		...Components,
-	},
 	props: [
 		'pShowAcknowledgeBtn',
 		'pShowMainToolbar',

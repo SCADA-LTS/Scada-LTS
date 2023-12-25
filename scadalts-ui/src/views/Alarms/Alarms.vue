@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import Components from '@min-gb/vuejs-components';
 import AlarmsComponent from '../../components/graphical_views/AlarmsComponent';
 import EventList from './EventList.vue';
 
@@ -13,8 +12,7 @@ export default {
 	el: '#alarms',
 	name: 'alarms',
 	components: {
-		AlarmsComponent,
-		...Components,
+		AlarmsComponent
 	},
 	mounted() {
 		this.tab = 1
@@ -29,8 +27,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
-
 .alarms {
 	//position: absolute;
 	z-index: -1;

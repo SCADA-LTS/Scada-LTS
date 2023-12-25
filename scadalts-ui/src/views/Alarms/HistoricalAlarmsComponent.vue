@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import Components from '@min-gb/vuejs-components';
 import store from '../../store';
 import moment from 'moment';
 import Datepicker from 'vuejs-datepicker';
@@ -63,8 +62,7 @@ export default {
 	el: '#historicalAlarms_component',
 	name: 'historicalAlarmsComponent',
 	components: {
-		...Components,
-		Datepicker,
+		Datepicker
 	},
 	data() {
 		return {
