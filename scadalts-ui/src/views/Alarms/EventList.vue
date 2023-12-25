@@ -304,7 +304,7 @@
 				multi-sort
 				class="elevation-1"
 				@click:row="open"
-				>
+			>
 					<template v-slot:item.activeTs="{ item }">
 						{{ $date(item.activeTs).format('YYYY-MM-DD hh:mm:ss') }}
 					</template>
@@ -315,7 +315,7 @@
 							class="mr-2"
 							title="acknowledge"
 							border=0
-							@click.stop="acknowledgeEvent(item);return false"
+							@click.stop="acknowledgeEvent(item)"
 						>
 							mdi-checkbox-marked-circle
 						</v-icon>

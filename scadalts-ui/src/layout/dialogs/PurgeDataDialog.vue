@@ -157,4 +157,11 @@ export default {
 	},
 };
 </script>
-<style scoped></style>
+
+<template>
+	<input
+		:value="dialog"
+		@input="$emit('update:dialog', $event.target.value)"
+	/>
+</template>
+

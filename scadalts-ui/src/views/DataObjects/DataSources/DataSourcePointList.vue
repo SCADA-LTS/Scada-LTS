@@ -35,11 +35,16 @@
 								</template>
 								<span>
 									<span v-if="dp.name.length > 45">
-										{{ dp.name }}</br>
+										{{ dp.name }}
 									</span>
-									<span>{{ dp.xid }}</span
-									><br />
-									<span>{{ dp.description }}</span>
+									<br>
+									<span>
+										{{ dp.xid }}
+									</span>
+									<br>
+									<span>
+										{{ dp.description }}
+									</span>
 								</span>
 							</v-tooltip>
 						</v-col>
@@ -87,12 +92,7 @@
 				</v-menu>
 			</v-list-item-action>			
 		</v-list-item>
-		<v-list-item
-			v-if="
-				!datasource.datapoints ||
-				(!!datasource.datapoints && datasource.datapoints.length === 0)
-			"
-		>
+		<v-list-item v-if="!datasource.datapoints || (!!datasource.datapoints && datasource.datapoints.length === 0)">
 			<v-list-item-content>
 				<v-list-item-title>
 					This Data Source does not contain any DataPoints. Create the first one!
@@ -129,6 +129,7 @@
 		</v-list-item>
 	</v-col>
 </template>
+
 <script>
 import dataSourceMixin from '../../../components/datasources/DataSourcesMixin.js';
 
