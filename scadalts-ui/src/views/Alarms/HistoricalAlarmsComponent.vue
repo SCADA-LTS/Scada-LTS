@@ -55,15 +55,11 @@
 <script>
 import store from '../../store';
 import moment from 'moment';
-import Datepicker from 'vuejs-datepicker';
 import i18n from '../../i18n';
 
 export default {
 	el: '#historicalAlarms_component',
 	name: 'historicalAlarmsComponent',
-	components: {
-		Datepicker
-	},
 	data() {
 		return {
 			filterOn: false,
