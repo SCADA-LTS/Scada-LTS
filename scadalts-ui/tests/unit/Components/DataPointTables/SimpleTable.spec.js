@@ -5,8 +5,6 @@ import { prepareMountWrapper } from "../../../utils/testing-utils";
 import webSocketModule from '../../../mocks/store/websocketMock';
 import dataPoint from '../../../mocks/store/dataPointMock';
 import SimplePointTable from '../../../../src/components/graphical_views/pointTables/SimplePointTable';
-import { is } from "core-js/core/object";
-
 
 const modules = {
     webSocketModule,

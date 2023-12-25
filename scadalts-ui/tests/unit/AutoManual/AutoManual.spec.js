@@ -3,7 +3,6 @@ import { prepareMountWrapper } from "../../utils/testing-utils";
 import autoManualMock from '../../mocks/store/autoManualMock';
 
 import AutoManual from "@/components/graphical_views/cmp2/AutoManual.vue";
-import { is } from 'core-js/core/object';
 
 const modules = {
     autoManualMock
