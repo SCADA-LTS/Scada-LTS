@@ -48,7 +48,7 @@
 		"vue-color-picker-wheel": "0.4.3",
 		"vue-cookie": "1.1.4",
 		"vue-dayjs-plugin": "1.0.0",
-		"vue-i18n": "8.17.3",
+		"vue-i18n": "9.8.0",
 		"vue-jsoneditor": "1.0.13",
 		"vue-loader": "15.7.1",
 		"vue-lodash": "2.0.2",
@@ -81,7 +81,7 @@
 		"prettier": "2.2.1",
 		"sass": "1.69.5",
 		"sass-loader": "13.3.2",
-		"sinon": "11.1.1",
+		"sinon": "17.0.1",
 		"vue-cli-plugin-i18n": "1.0.1",
 		"vue-cli-plugin-vuetify": "2.0.8",
 		"vue-template-compiler": "2.6.10"
