@@ -15,7 +15,7 @@ module.exports = {
 		{
 			files: ['**/__tests__/*.{j,t}s?(x)'],
 			env: {
-				mocha: true,
+				mocha: false,
 			},
 		},
 	],
