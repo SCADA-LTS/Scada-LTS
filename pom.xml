@@ -5,6 +5,7 @@
   <groupId>org.scadalts</groupId>
   <artifactId>scadalts</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
 
   <name>Scada-LTS</name>
   <url>https://github.com/SCADA-LTS/Scada-LTS</url>
