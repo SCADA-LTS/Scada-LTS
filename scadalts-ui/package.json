@@ -58,16 +58,10 @@
 		"vue-underscore": "0.1.4",
 		"vuedraggable": "2.24.3",
 		"vuejs-logger": "1.5.3",
-		"vuetify": "3.4.8",
 		"vuex": "3.0.1",
 		"webstomp-client": "1.2.6"
 	},
 	"devDependencies": {
-		"@intlify/vue-i18n-loader": "1.0.0",
-		"@vue/cli-plugin-babel": "5.0.8",
-		"@vue/cli-plugin-e2e-cypress": "5.0.8",
-		"@vue/cli-plugin-eslint": "5.0.8",
-		"@vue/cli-service": "5.0.8",
 		"@vue/test-utils": "2.4.3",
 		"babel-eslint": "10.0.1",
 		"chai": "4.1.2",
@@ -77,11 +71,7 @@
 		"http-proxy-middleware": "0.20.0",
 		"http-proxy-middleware-secure-cookies": "0.1.8",
 		"prettier": "2.2.1",
-		"sass": "1.69.5",
-		"sass-loader": "13.3.2",
 		"sinon": "17.0.1",
-		"vue-cli-plugin-i18n": "^2.3.2",
-		"vue-cli-plugin-vuetify": "2.0.8",
 		"vue-template-compiler": "2.6.10"
 	}
 }
