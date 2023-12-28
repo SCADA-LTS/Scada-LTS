@@ -9,19 +9,19 @@ import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
-import IsAlive from './components/graphical_views/IsAlive';
-import Watchdog from './components/graphical_views/watchdog';
-import CMP from './components/graphical_views/cmp/CMP';
-import AutoManual from './components/graphical_views/cmp2/AutoManual'
-import AutoManual3 from './components/graphical_views/cmp3/AutoManual3'
-import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
-import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
-import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
+import IsAlive from '@/components/graphical_views/IsAlive';
+import Watchdog from '@/components/graphical_views/watchdog';
+import CMP from '@/components/graphical_views/cmp/CMP';
+import AutoManual from '@/components/graphical_views/cmp2/AutoManual'
+import AutoManual3 from '@/components/graphical_views/cmp3/AutoManual3'
+import SimpleComponentSVG from '@/components/graphical_views/SimpleComponentSVG';
+import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImportPointHierarchy';
+import SleepAndReactivationDS from '@/components/forms/SleepAndReactivationDS';
 import VueLodash from 'vue-lodash';
 
-import LineChartComponent from './components/amcharts/LineChartComponent';
-import RangeChartComponent from './components/amcharts/RangeChartComponent';
-import TableComponent from './components/graphical_views/pointTables/SimplePointTable.vue'
+import LineChartComponent from '@/components/amcharts/LineChartComponent';
+import RangeChartComponent from '@/components/amcharts/RangeChartComponent';
+import TableComponent from '@/components/graphical_views/pointTables/SimplePointTable.vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -36,7 +36,7 @@ import {
 	faCogs,
 } from '@fortawesome/free-solid-svg-icons';
 import i18n from './i18n';
-import LiveAlarms from './components/graphical_views/AlarmsComponent';
+import LiveAlarms from '@/components/graphical_views/AlarmsComponent';
 import RefreshView from '@/components/graphical_views/RefreshView';
 import SMSDomain from '@/components/forms/SMSDomain';
 import vuetify from './plugins/vuetify';
