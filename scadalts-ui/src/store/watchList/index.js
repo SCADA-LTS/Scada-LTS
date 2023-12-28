@@ -10,10 +10,10 @@
  */
 import { searchDataPointInHierarchy } from './utils';
 import { createWatchList, deleteWatchList, getWatchList, loadWatchList, setupWatchList, updateWatchList } from './actions';
-import WatchListPoint from '@models/WatchListPoint'
-import WatchListPointHierarchyNode from '@models/WatchListPointHierarchyNode';
-import WatchList from '@models/watchlist/WatchListEntry';
-import WatchListJson from '@models/watchlist/WatchListJson';
+import WatchListPoint from '@/models/WatchListPoint'
+import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
+import WatchList from '@/models/watchlist/WatchListEntry';
+import WatchListJson from '@/models/watchlist/WatchListJson';
 
 const watchListModule = {
     state: {
