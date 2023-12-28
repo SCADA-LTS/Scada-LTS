@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import About from '../views/About';
-import LoginPage from '../views/LoginPage';
+import About from '@/../views/About';
+import LoginPage from '@/../views/LoginPage';
 
 import alarmRoutes from './routes-alarms';
 import exampleRoutes from './routes-examples';
@@ -11,21 +11,21 @@ import userRoutes from './routes-users';
 import dataSourceRoutes from './routes-datasources';
 import eventRoutes from './routes-events';
 
-import GraphicalView from '../views/GraphicalViews';
+import GraphicalView from '@/../views/GraphicalViews';
 
-import PublicView from '../views/GraphicalViews/AnonymousViewPage';
-import ReportTabs from '../views/Reports/ReportTabs';
-import ReportsPage from '../views/Reports/ReportsPage';
-import ReportsData from '../views/Reports/ReportsData';
+import PublicView from '@/../views/GraphicalViews/AnonymousViewPage';
+import ReportTabs from '@/../views/Reports/ReportTabs';
+import ReportsPage from '@/../views/Reports/ReportsPage';
+import ReportsData from '@/../views/Reports/ReportsData';
 
-import SynopticPanelMenu from '../views/SynopticPanel/SynopticPanelMenu';
-import SynopticPanelItem from '../views/SynopticPanel/SynopticPanelItem';
-import WatchList from '../views/WatchList';
-import WatchListItem from '../views/WatchList/WatchListItem';
-import UnauthorizedPage from '../views/401.vue';
+import SynopticPanelMenu from '@/../views/SynopticPanel/SynopticPanelMenu';
+import SynopticPanelItem from '@/../views/SynopticPanel/SynopticPanelItem';
+import WatchList from '@/../views/WatchList';
+import WatchListItem from '@/../views/WatchList/WatchListItem';
+import UnauthorizedPage from '@/../views/401.vue';
 
-import store from '../store/index';
-import GraphicalViewPage from '../views/GraphicalViews/GraphicalViewPage';
+import store from '@/../store/index';
+import GraphicalViewPage from '@/../views/GraphicalViews/GraphicalViewPage';
 
 Vue.use(Router);
 
