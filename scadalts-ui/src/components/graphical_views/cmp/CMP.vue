@@ -138,7 +138,7 @@ import moment from 'moment';
 import httpClient from 'axios';
 import { _ } from 'vue-underscore';
 //import BtnGroup from 'uiv/src/components/button/BtnGroup';
-import BtnGroup from 'uiv';
+//import BtnGroup from 'uiv';
 import HistoryCMP from '@/HistoryCMP.vue';
 
 /**
@@ -215,7 +215,7 @@ class ApiCMP {
  */
 export default {
 	components: {
-		BtnGroup,
+		//BtnGroup,
 		HistoryCMP,
 	},
 	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
