@@ -9,14 +9,14 @@ import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
-import IsAlive from '@/components/graphical_views/IsAlive';
+import IsAlive from '@/components/graphical_views/IsAlive.vue';
 import Watchdog from '@/components/graphical_views/watchdog';
-import CMP from '@/components/graphical_views/cmp/CMP';
-import AutoManual from '@/components/graphical_views/cmp2/AutoManual'
-import AutoManual3 from '@/components/graphical_views/cmp3/AutoManual3'
-import SimpleComponentSVG from '@/components/graphical_views/SimpleComponentSVG';
-import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImportPointHierarchy';
-import SleepAndReactivationDS from '@/components/forms/SleepAndReactivationDS';
+import CMP from '@/components/graphical_views/cmp/CMP.vue';
+import AutoManual from '@/components/graphical_views/cmp2/AutoManual.vue'
+import AutoManual3 from '@/components/graphical_views/cmp3/AutoManual3.vue'
+import SimpleComponentSVG from '@/components/graphical_views/SimpleComponentSVG.vue';
+import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImportPointHierarchy.vue';
+import SleepAndReactivationDS from '@/components/forms/SleepAndReactivationDS.vue';
 import VueLodash from 'vue-lodash';
 
 import LineChartComponent from '@/components/amcharts/LineChartComponent';

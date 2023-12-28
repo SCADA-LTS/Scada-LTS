@@ -139,7 +139,7 @@ import httpClient from 'axios';
 import { _ } from 'vue-underscore';
 //import BtnGroup from 'uiv/src/components/button/BtnGroup';
 import BtnGroup from 'uiv';
-import HistoryCMP from './HistoryCMP';
+import HistoryCMP from '@/HistoryCMP.vue';
 
 /**
  *

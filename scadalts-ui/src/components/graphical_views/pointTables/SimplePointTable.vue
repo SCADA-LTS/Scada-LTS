@@ -41,9 +41,9 @@
 	</div>
 </template>
 <script>
-import { getValidDate } from '../../utils.js';
+import { getValidDate } from '@/../../utils.js';
 import BinaryDataPointEntry from './models/BinaryDataPointEntry.js';
-import NumericDataPointEntry from './models/NumericDataPointEntry.js';
+import NumericDataPointEntry from '@/models/NumericDataPointEntry.js';
 /**
  * Simple Point Table Graphical View Component
  *
