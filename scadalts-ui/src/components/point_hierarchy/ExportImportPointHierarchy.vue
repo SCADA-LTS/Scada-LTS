@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import VJsoneditor from 'vue-jsoneditor';
+//import VJsoneditor from 'vue-jsoneditor';
 import axios from 'axios';
 import moment from 'moment';
 import Ajv from 'ajv';
@@ -158,7 +158,7 @@ import Ajv from 'ajv';
 export default {
 	name: 'export-import-point-hierarchy',
 	components: {
-		VJsoneditor,
+		//VJsoneditor,
 	},
 	filters: {
 		moment: function (date) {
