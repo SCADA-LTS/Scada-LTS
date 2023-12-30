@@ -1,4 +1,4 @@
-FROM node:21.4 as vuejs
+FROM node:21.5.0-alpine3.19 as vuejs
 WORKDIR /src
 COPY ./scadalts-ui .
 RUN npm install
