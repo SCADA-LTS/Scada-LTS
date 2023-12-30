@@ -86,14 +86,14 @@
 </div>
 </template>
 <script>
-import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
-import DataPointComment from './DataPointComment';
-import PointProperties from './PointProperties';
-import DataPointEventList from './DataPointEventList';
-import DataPointValueHistory from './DataPointValueHistory';
-import LineChartComponent from '@/components/amcharts/LineChartComponent';
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent.vue';
+import DataPointComment from './DataPointComment.vue';
+import PointProperties from './PointProperties/index.vue';
+import DataPointEventList from './DataPointEventList.vue';
+import DataPointValueHistory from './DataPointValueHistory.vue';
+import LineChartComponent from '@/components/amcharts/LineChartComponent.vue';
 
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 /**
  * Data Point Details page
  *

@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import LiveAlarms from '../../components/graphical_views/AlarmsComponent';
+import LiveAlarms from '@/components/graphical_views/AlarmsComponent.vue';
 
 export default {
 	name: 'example-live-alarms',

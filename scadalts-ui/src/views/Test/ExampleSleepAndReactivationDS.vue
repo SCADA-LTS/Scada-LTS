@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SleepAndReactivationDS from '../../components/forms/SleepAndReactivationDS';
+import SleepAndReactivationDS from '@/components/forms/SleepAndReactivationDS.vue';
 
 export default {
 	name: 'example-sleep-and-reactivation-ds',

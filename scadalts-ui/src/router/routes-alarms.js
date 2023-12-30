@@ -1,8 +1,8 @@
 import Alarms from '../views/Alarms/Alarms.vue';
 import AlarmsTabs from '../views/Alarms/AlarmTabs.vue';
-import EventList from '../views/Alarms/EventList';
-import HistoricalAlarms from '../views/Alarms/HistoricalAlarms';
-import AlarmNotifications from '../views/Alarms/AlarmNotifications';
+import EventList from '../views/Alarms/EventList.vue';
+import HistoricalAlarms from '../views/Alarms/HistoricalAlarms.vue';
+import AlarmNotifications from '@/views/Alarms/AlarmNotifications/index.vue';
 
 export const routes = [
     {

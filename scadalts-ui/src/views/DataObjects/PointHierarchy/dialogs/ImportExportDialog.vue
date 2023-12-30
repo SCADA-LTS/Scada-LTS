@@ -21,7 +21,7 @@
 	</v-dialog>
 </template>
 <script>
-import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImportPointHierarchy';
+import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImportPointHierarchy.vue';
 
 export default {
 	name: 'ImportExportDialog',

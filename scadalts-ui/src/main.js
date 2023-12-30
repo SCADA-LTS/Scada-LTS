@@ -10,7 +10,7 @@ import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
 import IsAlive from '@/components/graphical_views/IsAlive.vue';
-import Watchdog from '@/components/graphical_views/watchdog';
+import Watchdog from '@/components/graphical_views/watchdog/index.vue';
 import CMP from '@/components/graphical_views/cmp/CMP.vue';
 import AutoManual from '@/components/graphical_views/cmp2/AutoManual.vue'
 import AutoManual3 from '@/components/graphical_views/cmp3/AutoManual3.vue'
@@ -19,8 +19,8 @@ import ExportImportPointHierarchy from '@/components/point_hierarchy/ExportImpor
 import SleepAndReactivationDS from '@/components/forms/SleepAndReactivationDS.vue';
 import VueLodash from 'vue-lodash';
 
-import LineChartComponent from '@/components/amcharts/LineChartComponent';
-import RangeChartComponent from '@/components/amcharts/RangeChartComponent';
+import LineChartComponent from '@/components/amcharts/LineChartComponent.vue';
+import RangeChartComponent from '@/components/amcharts/RangeChartComponent.vue';
 import TableComponent from '@/components/graphical_views/pointTables/SimplePointTable.vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -36,9 +36,9 @@ import {
 	faCogs,
 } from '@fortawesome/free-solid-svg-icons';
 import i18n from './i18n';
-import LiveAlarms from '@/components/graphical_views/AlarmsComponent';
-import RefreshView from '@/components/graphical_views/RefreshView';
-import SMSDomain from '@/components/forms/SMSDomain';
+import LiveAlarms from '@/components/graphical_views/AlarmsComponent.vue';
+import RefreshView from '@/components/graphical_views/RefreshView.vue';
+import SMSDomain from '@/components/forms/SMSDomain.vue';
 import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';

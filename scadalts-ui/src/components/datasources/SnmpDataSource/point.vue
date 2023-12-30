@@ -52,7 +52,7 @@
 	</div>
 </template>
 <script>
-import DataPointCreation from '../DataPointCreation';
+import DataPointCreation from '../DataPointCreation.vue';
 import { DataTypes, DataChangeTypes } from '@/store/dataSource/constants';
 
 export default {

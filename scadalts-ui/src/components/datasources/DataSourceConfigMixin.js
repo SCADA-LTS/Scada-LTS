@@ -1,4 +1,4 @@
-import DataSourceConfig from './DataSourceConfig';
+import DataSourceConfig from './DataSourceConfig.vue';
 
 /**
  * DataSource Configuration Mixin

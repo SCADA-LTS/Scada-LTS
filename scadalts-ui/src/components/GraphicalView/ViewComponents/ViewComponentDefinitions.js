@@ -1,24 +1,23 @@
-import ViewComponentSimple from './VCSimple';
-import ViewComponentSimpleJs from './VCSimple/model';
-import ViewComponentBinaryGraphic from './VCBinaryGraphic';
-import ViewComponentBinaryGraphicJs from './VCBinaryGraphic/model'
-import ViewComponentHtml from './VCHtml';
-import ViewComponentHtmlJs from './VCHtml/model'
-import ViewComponentAlarmList from './VCAlarmList';
-import ViewComponentAlarmListJs from './VCAlarmList/model';
-import ViewComponentButton from './VCButton';
-import ViewComponentButtonJs from './VCButton/model';
-import ViewComponentImageChart from './VCImageChart';
-import ViewComponentImageChartJs from './VCImageChart/model';
-import ViewComponentMultistateGraphic from './VCMultistateGraphic';
-import ViewComponentMultistateGraphicJs from './VCMultistateGraphic/model';
-import ViewComponentLink from './VCLink';
-import ViewComponentLinkJs from './VCLink/model';
-import ViewComponentScript from './VCScript';
-import ViewComponentScriptJs from './VCScript/model';
-import ViewComponentAnalogGraphic from './VCAnalogGraphic'
-import ViewComponentAnalogGraphicJs from './VCAnalogGraphic/model'
-
+import ViewComponentSimple from '@/components/GraphicalView/ViewComponents/VCSimple/index.vue';
+import ViewComponentSimpleJs from '@/components/GraphicalView/ViewComponents/VCSimple/model.js';
+import ViewComponentBinaryGraphic from '@/components/GraphicalView/ViewComponents/VCBinaryGraphic/index.vue';
+import ViewComponentBinaryGraphicJs from '@/components/GraphicalView/ViewComponents/VCBinaryGraphic/model.js'
+import ViewComponentHtml from '@/components/GraphicalView/ViewComponents/VCHtml/index.vue';
+import ViewComponentHtmlJs from '@/components/GraphicalView/ViewComponents/VCHtml/model.js'
+import ViewComponentAlarmList from '@/components/GraphicalView/ViewComponents/VCAlarmList/index.vue';
+import ViewComponentAlarmListJs from '@/components/GraphicalView/ViewComponents/VCAlarmList/model.js';
+import ViewComponentButton from '@/components/GraphicalView/ViewComponents/VCButton/index.vue';
+import ViewComponentButtonJs from '@/components/GraphicalView/ViewComponents/VCButton/model.js';
+import ViewComponentImageChart from '@/components/GraphicalView/ViewComponents/VCImageChart/index.vue';
+import ViewComponentImageChartJs from '@/components/GraphicalView/ViewComponents/VCImageChart/model.js';
+import ViewComponentMultistateGraphic from '@/components/GraphicalView/ViewComponents/VCMultistateGraphic/index.vue';
+import ViewComponentMultistateGraphicJs from '@/components/GraphicalView/ViewComponents/VCMultistateGraphic/model.js';
+import ViewComponentLink from '@/components/GraphicalView/ViewComponents/VCLink/index.vue';
+import ViewComponentLinkJs from '@/components/GraphicalView/ViewComponents/VCLink/model.js';
+import ViewComponentScript from '@/components/GraphicalView/ViewComponents/VCScript/index.vue';
+import ViewComponentScriptJs from '@/components/GraphicalView/ViewComponents/VCScript/model.js';
+import ViewComponentAnalogGraphic from '@/components/GraphicalView/ViewComponents/VCAnalogGraphic/index.vue'
+import ViewComponentAnalogGraphicJs from '@/components/GraphicalView/ViewComponents/VCAnalogGraphic/model.js'
 
 export const viewComponentDefinitions = {
     components: {

@@ -60,9 +60,9 @@
 <script>
 import draggable from 'vuedraggable';
 
-import PointWatcher from './PointWatcher';
-import PointChart from './PointChart';
-import { loadWatchList } from '@s/watchList/actions';
+import PointWatcher from '@/views/WatchList/PointWatcher/index.vue';
+import PointChart from '@/views/WatchList/PointChart/index.vue';
+import { loadWatchList } from '@/store/watchList/actions';
 
 export default {
 	name: 'WatchListItem',

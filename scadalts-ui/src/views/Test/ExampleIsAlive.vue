@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import IsAlive from '../../components/graphical_views/IsAlive';
+import IsAlive from '@/components/graphical_views/IsAlive.vue';
 
 export default {
 	name: 'example-isalive',

@@ -1,9 +1,9 @@
-import DataSources from '../views/DataObjects/DataSources';
-import DataPointList from '../views/DataObjects/DataPointDetails/DataPointList';
-import DataPointDetails from '../views/DataObjects/DataPointDetails';
-import PointHierarchy from '../views/DataObjects/PointHierarchy'
-import PointLinks from '../views/DataObjects/PointLinks'
-import Scripting from '../views/DataObjects/Scripting'
+import DataSources from '@/views/DataObjects/DataSources/index.vue';
+import DataPointList from '@/views/DataObjects/DataPointDetails/DataPointList.vue';
+import DataPointDetails from '@/views/DataObjects/DataPointDetails/index.vue';
+import PointHierarchy from '@/views/DataObjects/PointHierarchy/index.vue'
+import PointLinks from '@/views/DataObjects/PointLinks/index.vue'
+import Scripting from '@/views/DataObjects/Scripting/index.vue'
 
 export const routes = [
     {

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import HistoricalAlarmsComponent from './HistoricalAlarmsComponent';
+import HistoricalAlarmsComponent from '@/views/Alarms/HistoricalAlarmsComponent.vue';
 
 export default {
 	el: '#alarms',

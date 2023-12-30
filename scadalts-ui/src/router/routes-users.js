@@ -1,6 +1,6 @@
-import UserList from '../views/Users/UserList';
-import UserProfiles from '../views/Users/UserProfiles';
-import RecipientList from '../views/Users/RecipientList';
+import UserList from '@/views/Users/UserList/index.vue';
+import UserProfiles from '@/views/Users/UserProfiles/index.vue';
+import RecipientList from '@/views/Users/RecipientList/index.vue';
 
 export const routes = [
     {

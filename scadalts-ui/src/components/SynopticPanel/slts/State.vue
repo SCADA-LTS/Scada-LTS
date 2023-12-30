@@ -64,7 +64,7 @@
 </template>
 <script>
 import CustomComponentsBase from '../CustomComponentBase.vue';
-import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent.vue';
 /**
  * SLTS-STATE Component
  *

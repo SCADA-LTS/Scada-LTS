@@ -1,26 +1,26 @@
-import VirtualDataSource from './VirtualDataSource';
-import VirtualDataSourceEditor from './VirtualDataSource/config';
-import VirtualDataSourcePointEditor from './VirtualDataSource/point';
-import VirtualDataSourcePointList from './VirtualDataSource/list';
-import VirtualDataPoint from './VirtualDataSource/VirtualDataPoint';
+import VirtualDataSource from './VirtualDataSource/index.vue';
+import VirtualDataSourceEditor from './VirtualDataSource/config.vue';
+import VirtualDataSourcePointEditor from './VirtualDataSource/point.vue';
+import VirtualDataSourcePointList from './VirtualDataSource/list.vue';
+import VirtualDataPoint from './VirtualDataSource/VirtualDataPoint.js';
 
-import MetaDataSource from './MetaDataSource';
-import MetaDataSourceEditor from './MetaDataSource/config';
-import MetaDataSourcePointEditor from './MetaDataSource/point';
-import MetaDataSourcePointList from './MetaDataSource/list';
-import MetaDataPoint from './MetaDataSource/MetaDataPoint';
+import MetaDataSource from './MetaDataSource/index.vue';
+import MetaDataSourceEditor from './MetaDataSource/config.vue';
+import MetaDataSourcePointEditor from './MetaDataSource/point.vue';
+import MetaDataSourcePointList from './MetaDataSource/list.vue';
+import MetaDataPoint from './MetaDataSource/MetaDataPoint.js';
 
-import SnmpDataSource from './SnmpDataSource';
-import SnmpDataSourceEditor from './SnmpDataSource/config';
-import SnmpDataSourcePointEditor from './SnmpDataSource/point';
-import SnmpDataSourcePointList from './SnmpDataSource/list';
-import SnmpDataPoint from './SnmpDataSource/SnmpDataPoint';
+import SnmpDataSource from './SnmpDataSource/index.vue';
+import SnmpDataSourceEditor from './SnmpDataSource/config.vue';
+import SnmpDataSourcePointEditor from './SnmpDataSource/point.vue';
+import SnmpDataSourcePointList from './SnmpDataSource/list.vue';
+import SnmpDataPoint from './SnmpDataSource/SnmpDataPoint.js';
 
-import ModBusDataSource from './ModBusIpDataSource';
-import ModBusDataSourceEditor from './ModBusIpDataSource/config';
-import ModBusDataSourcePointEditor from './ModBusIpDataSource/point';
-import ModBusDataSourcePointList from './ModBusIpDataSource/list';
-import ModBusDataPoint from './ModBusIpDataSource/ModBusDataPoint';
+import ModBusDataSource from './ModBusIpDataSource/index.vue';
+import ModBusDataSourceEditor from './ModBusIpDataSource/config.vue';
+import ModBusDataSourcePointEditor from './ModBusIpDataSource/point.vue';
+import ModBusDataSourcePointList from './ModBusIpDataSource/list.vue';
+import ModBusDataPoint from './ModBusIpDataSource/ModBusDataPoint.js';
 
 /**
  * Data Sources Mixin

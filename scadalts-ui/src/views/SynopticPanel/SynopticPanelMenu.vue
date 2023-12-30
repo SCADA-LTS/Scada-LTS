@@ -67,8 +67,8 @@
 	</div>
 </template>
 <script>
-import SynopticPanelCreator from './SynopticPanelCreator';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import SynopticPanelCreator from './SynopticPanelCreator.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * Synoptic Panel component - Menu Page

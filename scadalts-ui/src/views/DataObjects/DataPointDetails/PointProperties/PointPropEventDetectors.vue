@@ -51,25 +51,25 @@
 				<v-col cols="1">
 					<img
 						v-if="e.alarmLevel === 1"
-						src="images/flag_blue.png"
+						:src="images/flag_blue.png"
 						title="Information"
 						alt="Information"
 					/>
 					<img
 						v-if="e.alarmLevel === 2"
-						src="images/flag_yellow.png"
+						:src="images/flag_yellow.png"
 						title="Urgent"
 						alt="Urgent"
 					/>
 					<img
 						v-if="e.alarmLevel === 3"
-						src="images/flag_orange.png"
+						:src="images/flag_orange.png"
 						title="Critical"
 						alt="Critical"
 					/>
 					<img
 						v-if="e.alarmLevel === 4"
-						src="images/flag_red.png"
+						:src="images/flag_red.png"
 						title="Life Safety"
 						alt="Life Safety"
 					/>
@@ -354,8 +354,8 @@
 	</v-row>
 </template>
 <script>
-import CreateEventDetectorDialog from '@/layout/dialogs/CreateEventDetectorDialog';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import CreateEventDetectorDialog from '@/layout/dialogs/CreateEventDetectorDialog.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * Event Detectors for Point Properties

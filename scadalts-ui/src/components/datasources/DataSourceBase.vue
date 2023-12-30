@@ -1,5 +1,5 @@
 <script>
-import DataSourceLoader from './DataSourceLoader';
+import DataSourceLoader from './DataSourceLoader.vue';
 
 /**
  * Base Data Source component.

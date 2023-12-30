@@ -73,8 +73,8 @@
  * 
  */
 import ScadaReportForm from '../../models/ScadaReportForm';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import ReportsForm from './ReportsForm';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
+import ReportsForm from './ReportsForm.vue';
 
 export default {
 	name: 'reportsPage',

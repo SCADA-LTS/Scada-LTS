@@ -191,7 +191,7 @@
 /**
  * @author sselvaggi
  */
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 export default {
 	name: 'scriptList',

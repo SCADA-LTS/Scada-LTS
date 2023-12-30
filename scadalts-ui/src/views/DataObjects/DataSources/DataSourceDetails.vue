@@ -47,7 +47,7 @@
 </template>
 <script>
 import dataSourceMixin from '../../../components/datasources/DataSourcesMixin.js';
-import DataSourceEvents from './DataSourceEvents';
+import DataSourceEvents from './DataSourceEvents.vue';
 
 export default {
 	props: ['datasource', 'datasourceType'],

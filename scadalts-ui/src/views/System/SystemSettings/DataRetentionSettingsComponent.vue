@@ -109,7 +109,7 @@
 	</v-col>
 </template>
 <script>
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog'
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue'
 
 export default {
 	name: 'DataRetentionSettingsComponent',

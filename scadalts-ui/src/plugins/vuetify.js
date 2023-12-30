@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import Vuetify from 'vuetify/lib/framework';
+import { createVuetify} from 'vuetify/lib/framework';
 
-Vue.use(Vuetify);
+Vue.use(createVuetify);
 
-export default new Vuetify({
+export default new createVuetify({
 	theme: {
 		options: {
 			customProperties: true,

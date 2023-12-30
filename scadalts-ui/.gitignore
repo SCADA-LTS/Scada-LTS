@@ -28,6 +28,5 @@ test-results.xml
 *.sln
 *.sw?
 
-node_modules/*
-!@min-gb/
+node_modules/
 

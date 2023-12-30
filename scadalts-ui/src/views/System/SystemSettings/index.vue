@@ -264,20 +264,20 @@
 	</div>
 </template>
 <script>
-import store from '../../../store';
-import i18n from '../../../i18n';
-import IsAlive from '../../../components/graphical_views/IsAlive';
-import AuditEventTypesComponent from './AuditEventTypesComponent';
-import SystemEventTypesComponent from './SystemEventTypesComponent';
-import EmailSettingsComponent from './EmailSettingsComponent';
-import HttpSettingsComponent from './HttpSettingsComponent';
-import MiscSettingsComponent from './MiscSettingsComponent';
-import DataRetentionSettingsComponent from './DataRetentionSettingsComponent';
-import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
-import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
-import ScadaConfigurationComponent from './ScadaConfigurationComponent';
-import AmChartSettingsComponent from './AmChartSettingsComponent';
-import DataBaseInfoComponent from './DataBaseInfoComponent';
+import store from '@/store';
+import i18n from '@/i18n';
+import IsAlive from '@/components/graphical_views/IsAlive.vue';
+import AuditEventTypesComponent from './AuditEventTypesComponent.vue';
+import SystemEventTypesComponent from './SystemEventTypesComponent.vue';
+import EmailSettingsComponent from './EmailSettingsComponent.vue';
+import HttpSettingsComponent from './HttpSettingsComponent.vue';
+import MiscSettingsComponent from './MiscSettingsComponent.vue';
+import DataRetentionSettingsComponent from './DataRetentionSettingsComponent.vue';
+import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent.vue';
+import SmsDomainSettingsComponent from './SmsDomainSettingsComponent.vue';
+import ScadaConfigurationComponent from './ScadaConfigurationComponent.vue';
+import AmChartSettingsComponent from './AmChartSettingsComponent.vue';
+import DataBaseInfoComponent from './DataBaseInfoComponent.vue';
 
 export default {
 	el: '#systemsettings',

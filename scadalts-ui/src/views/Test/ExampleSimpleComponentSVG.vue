@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SimpleComponentSvg from '../../components/graphical_views/SimpleComponentSVG';
+import SimpleComponentSvg from '@/components/graphical_views/SimpleComponentSVG.vue';
 
 export default {
 	name: 'example-simple-component-svg',

@@ -21,25 +21,25 @@
 					<v-col cols="2">
 						<img
 							v-if="event.i2 === 1"
-							src="images/flag_blue.png"
+							:src="images/flag_blue.png"
 							title="Information"
 							alt="Information"
 						/>
 						<img
 							v-if="event.i2 === 2"
-							src="images/flag_yellow.png"
+							:src="images/flag_yellow.png"
 							title="Urgent"
 							alt="Urgent"
 						/>
 						<img
 							v-if="event.i2 === 3"
-							src="images/flag_orange.png"
+							:src="images/flag_orange.png"
 							title="Critical"
 							alt="Critical"
 						/>
 						<img
 							v-if="event.i2 === 4"
-							src="images/flag_red.png"
+							:src="images/flag_red.png"
 							title="Life Safety"
 							alt="Life Safety"
 						/>

@@ -11,7 +11,7 @@
         "@c/*": ["src/components/*"],
         "@layout/*": ["src/layout/*"],
         "@dialogs/*": ["src/layout/dialogs/*"],
-        "@models/*": ["src/models/*"],
+        "@models/*": ["src/models/*"]
       }
     }, 
     "exclude": ["node_modules", "dist"]

@@ -1,7 +1,7 @@
-import EventHandlers from '../views/Events/EventHandlers'
-import ScheduledEvents from '../views/Events/ScheduledEvents'
-import CompountEventDetectors from '../views/Events/CompoundEventDetectors'
-import MaintenanceEvents from '../views/Events/MaintenanceEvents'
+import EventHandlers from '@/views/Events/EventHandlers/index.vue'
+import ScheduledEvents from '@/views/Events/ScheduledEvents/index.vue'
+import CompountEventDetectors from '@/views/Events/CompoundEventDetectors/index.vue'
+import MaintenanceEvents from '@/views/Events/MaintenanceEvents/index.vue'
 
 export const routes = [
     {

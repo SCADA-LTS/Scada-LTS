@@ -110,14 +110,14 @@
 	</v-dialog>
 </template>
 <script>
-import PointPropLogging from './PointPropLogging';
-import PointPropTextRenderer from './PointPropTextRenderer';
-import PointPropChartRenderer from './PointPropChartRenderer';
-import PointPropEventRenderer from './PointPropEventRenderer';
-import PointPropEventDetectors from './PointPropEventDetectors';
+import PointPropLogging from './PointPropLogging.vue';
+import PointPropTextRenderer from './PointPropTextRenderer.vue';
+import PointPropChartRenderer from './PointPropChartRenderer.vue';
+import PointPropEventRenderer from './PointPropEventRenderer.vue';
+import PointPropEventDetectors from './PointPropEventDetectors.vue';
 
-import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * Point Properties

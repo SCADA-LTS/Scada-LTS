@@ -139,12 +139,12 @@
 <script>
 import draggable from 'vuedraggable';
 
-import PointValueSet from './PointValueSet';
-import PointValueRenderer from './PointValueRenderer';
+import PointValueSet from './PointValueSet.vue';
+import PointValueRenderer from './PointValueRenderer.vue';
 
-import EventScadaItem from '@layout/lists/events/EventScadaItem';
-import WatchListPoint from '@models/WatchListPoint';
-import { updateWatchList } from '@s/watchList/actions';
+import EventScadaItem from '@/layout/lists/events/EventScadaItem.vue';
+import WatchListPoint from '@/models/WatchListPoint.js';
+import { updateWatchList } from '@/store/watchList/actions';
 
 /**
  *

@@ -117,8 +117,8 @@
 	</div>
 </template>
 <script>
-import UserDetails from './UserDetails';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import UserDetails from './UserDetails.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * User List component - View page.

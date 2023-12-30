@@ -25,8 +25,8 @@ import { READED_REPORT_INSTANCE } from '../../store/reports/types';
  * @version 1.1.0
  * Simplified version of reports tabs.
  */
-import ReportsData from './ReportsData';
-import ReportsPage from './ReportsPage';
+import ReportsData from './ReportsData.vue';
+import ReportsPage from './ReportsPage.vue';
 export default {
 	name: 'ReportsTabs',
 

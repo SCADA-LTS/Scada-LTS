@@ -354,9 +354,9 @@
 	</div>
 </template>
 <script>
-import DataPointCreation from '../DataPointCreation';
+import DataPointCreation from '../DataPointCreation.vue';
 import { DataTypes, DataChangeTypes } from '@/store/dataSource/constants';
-import ScadaVirtualDataPoint from "@c/datasources/VirtualDataSource/VirtualDataPoint";
+import ScadaVirtualDataPoint from "@c/datasources/VirtualDataSource/VirtualDataPoint.js";
 export default {
 	components: {
 		DataPointCreation,

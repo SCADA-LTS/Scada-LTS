@@ -110,7 +110,7 @@
 </template>
 <script>
 import UserProfileDetails from './UserProfileDetails.vue';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * User Profile List component - View Page

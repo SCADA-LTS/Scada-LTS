@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import CMP from '../../components/graphical_views/cmp/CMP';
-import AutoManual from '../../components/graphical_views/cmp2/AutoManual';
+import CMP from '@/components/graphical_views/cmp/CMP.vue';
+import AutoManual from '@/components/graphical_views/cmp2/AutoManual.vue';
 
 export default {
 	name: 'example-cmp',

@@ -69,7 +69,7 @@
 </template>
 <script>
 var dialog = False;
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 export default {
 	name: 'PurgeDataDialog',
 

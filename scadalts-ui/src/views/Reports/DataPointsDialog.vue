@@ -63,7 +63,7 @@
 	</v-dialog>
 </template>
 <script>
-import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent.vue';
 export default {
     components: {
         DataPointSearchComponent

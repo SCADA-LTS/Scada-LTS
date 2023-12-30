@@ -78,7 +78,7 @@
 	</v-card>
 </template>
 <script>
-import UpdatePeriodType from '@/layout/forms/UpdatePeriodType';
+import UpdatePeriodType from '@/layout/forms/UpdatePeriodType.vue';
 /**
  * DataSource Configuration Component
  *

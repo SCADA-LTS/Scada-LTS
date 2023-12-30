@@ -33,25 +33,25 @@
 					<v-col cols="1">
 						<img
 							v-if="eventDetector.alarmLevel === 1"
-							src="images/flag_blue.png"
+							:src="images/flag_blue.png"
 							title="Information"
 							alt="Information"
 						/>
 						<img
 							v-if="eventDetector.alarmLevel === 2"
-							src="images/flag_yellow.png"
+							:src="images/flag_yellow.png"
 							title="Urgent"
 							alt="Urgent"
 						/>
 						<img
 							v-if="eventDetector.alarmLevel === 3"
-							src="images/flag_orange.png"
+							:src="images/flag_orange.png"
 							title="Critical"
 							alt="Critical"
 						/>
 						<img
 							v-if="eventDetector.alarmLevel === 4"
-							src="images/flag_red.png"
+							:src="images/flag_red.png"
 							title="Life Safety"
 							alt="Life Safety"
 						/>

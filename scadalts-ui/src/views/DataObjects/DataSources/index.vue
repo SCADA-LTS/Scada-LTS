@@ -140,12 +140,12 @@
 	</div>
 </template>
 <script>
-import DataSourceDetails from './DataSourceDetails';
-import DataSourceCreator from './DataSourceCreator';
-import DataPointCreator from './DataPointCreator';
-import DataSourcePointList from './DataSourcePointList';
+import DataSourceDetails from './DataSourceDetails.vue';
+import DataSourceCreator from './DataSourceCreator.vue';
+import DataPointCreator from './DataPointCreator.vue';
+import DataSourcePointList from './DataSourcePointList.vue';
 
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 export default {
 	components: {

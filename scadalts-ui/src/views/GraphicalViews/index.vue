@@ -156,9 +156,9 @@
 <script>
 import GraphicalViewPage from './GraphicalViewPage.vue';
 import GraphicalViewItem from '@/models/GraphicalViewItem';
-import ComponentCreationDialog from './dialogs/ComponentCreationDialog';
-import BackgroundSettingsDialog from './dialogs/BackgroundSettingsDialog';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialogV2';
+import ComponentCreationDialog from '@/views/GraphicalViews/dialogs/ComponentCreationDialog.vue';
+import BackgroundSettingsDialog from '@/views/GraphicalViews/dialogs/BackgroundSettingsDialog.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialogV2.vue';
 import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 export default {

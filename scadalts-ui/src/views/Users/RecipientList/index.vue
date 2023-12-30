@@ -99,8 +99,8 @@
 	</div>
 </template>
 <script>
-import RecipientListDetails from './RecipientListDetails';
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import RecipientListDetails from './RecipientListDetails.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
 /**
  * Recipient List component - View page.

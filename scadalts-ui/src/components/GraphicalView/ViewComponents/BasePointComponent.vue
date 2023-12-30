@@ -101,7 +101,7 @@
 	</BaseViewComponent>
 </template>
 <script>
-import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent.vue';
 import BaseViewComponent from './BaseViewComponent.vue';
 import TextRenderer from '../../../bl/TextRender.js';
 

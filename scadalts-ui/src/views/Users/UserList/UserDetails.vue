@@ -217,8 +217,8 @@
 	</v-row>
 </template>
 <script>
-import ChangeUserPassword from './ChangeUserPassword'
-import UserProfileDetails from '../UserProfiles/UserProfileDetails'
+import ChangeUserPassword from './ChangeUserPassword.vue'
+import UserProfileDetails from '../UserProfiles/UserProfileDetails.vue'
 /**
  * User Details
  *

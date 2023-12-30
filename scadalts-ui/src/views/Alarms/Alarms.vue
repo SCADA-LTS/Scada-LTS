@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import AlarmsComponent from '../../components/graphical_views/AlarmsComponent';
+import AlarmsComponent from '@/components/graphical_views/AlarmsComponent.vue';
 import EventList from './EventList.vue';
 
 export default {

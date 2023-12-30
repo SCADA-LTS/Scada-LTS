@@ -27,49 +27,49 @@
 						<v-list-item-icon>
 							<img
 								v-if="e.alarmLevel === 1 && !e.ackTs"
-								src="images/flag_blue.png"
+								:src="images/flag_blue.png"
 								title="Information"
 								alt="Information"
 							/>
 							<img
 								v-if="e.alarmLevel === 1 && !!e.ackTs"
-								src="images/flag_blue_off.png"
+								:src="images/flag_blue_off.png"
 								title="Information"
 								alt="Information"
 							/>
 							<img
 								v-if="e.alarmLevel === 2 && !e.ackTs"
-								src="images/flag_yellow.png"
+								:src="images/flag_yellow.png"
 								title="Urgent"
 								alt="Urgent"
 							/>
 							<img
 								v-if="e.alarmLevel === 2 && !!e.ackTs"
-								src="images/flag_yellow_off.png"
+								:src="images/flag_yellow_off.png"
 								title="Urgent"
 								alt="Urgent"
 							/>
 							<img
 								v-if="e.alarmLevel === 3 && !e.ackTs"
-								src="images/flag_orange.png"
+								:src="images/flag_orange.png"
 								title="Critical"
 								alt="Critical"
 							/>
 							<img
 								v-if="e.alarmLevel === 3 && !!e.ackTs"
-								src="images/flag_orange_off.png"
+								:src="images/flag_orange_off.png"
 								title="Critical"
 								alt="Critical"
 							/>
 							<img
 								v-if="e.alarmLevel === 4 && !e.ackTs"
-								src="images/flag_red.png"
+								:src="images/flag_red.png"
 								title="Life Safety"
 								alt="Life Safety"
 							/>
 							<img
 								v-if="e.alarmLevel === 4 && !!e.ackTs"
-								src="images/flag_red_off.png"
+								:src="images/flag_red_off.png"
 								title="Life Safety"
 								alt="Life Safety"
 							/>

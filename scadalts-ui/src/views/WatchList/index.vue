@@ -74,12 +74,12 @@
 <script>
 import draggable from 'vuedraggable';
 
-import ConfirmationDialog from '@dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
 
-import PointWatcher from './PointWatcher';
-import PointChart from './PointChart/index.vue';
-import WatchListConfig from './WatchListConfig';
-import { createWatchList, deleteWatchList, updateWatchList } from '@s/watchList/actions';
+import PointWatcher from '@/views/WatchList/PointWatcher/index.vue';
+import PointChart from '@/views/WatchList/PointChart/index.vue';
+import WatchListConfig from '@/views/WatchList/WatchListConfig.vue';
+import { createWatchList, deleteWatchList, updateWatchList } from '@/store/watchList/actions';
 /**
  * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.1.0

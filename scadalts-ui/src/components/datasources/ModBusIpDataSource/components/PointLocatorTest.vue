@@ -31,8 +31,8 @@
 	</div>
 </template>
 <script>
-import Point from '../point';
-import ModBusDataPoint from '../ModBusDataPoint';
+import Point from '../point.vue';
+import ModBusDataPoint from '../ModBusDataPoint.js';
 
 export default {
     components: {

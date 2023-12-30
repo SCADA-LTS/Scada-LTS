@@ -125,9 +125,9 @@
 	
 </template>
 <script>
-import PermissionsDataSource from './PermissionsDataSource';
-import PermissionsViews from './PermissionsViews';
-import PermissionsWatchLists from './PermissionsWatchLists';
+import PermissionsDataSource from './PermissionsDataSource.vue';
+import PermissionsViews from './PermissionsViews.vue';
+import PermissionsWatchLists from './PermissionsWatchLists.vue';
 
 /**
  * User Profiles Details component

@@ -99,7 +99,7 @@
 	</div>
 </template>
 <script>
-import CreationSettingsDialog from './CreationSettings';
+import CreationSettingsDialog from './CreationSettings.vue';
 
 /**
  * Alarm notification View-component.

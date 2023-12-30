@@ -1,7 +1,7 @@
-import SystemSettings from '../views/System/SystemSettings';
-import ImportExport from '../views/System/ImportExport';
-import SqlView from '../views/System/SQL';
-import Publishers from '../views/System/Publishers';
+import SystemSettings from '@/views/System/SystemSettings/index.vue';
+import ImportExport from '@/views/System/ImportExport/index.vue';
+import SqlView from '@/views/System/SQL/index.vue';
+import Publishers from '@/views/System/Publishers/index.vue';
 
 export const routes = [
     {

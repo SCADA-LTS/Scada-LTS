@@ -85,10 +85,10 @@
 import AmChart from '../../../components/amcharts/AmChart';
 import AmChartConfigurator from '../../../components/amcharts/AmChartConfigurator';
 
-import ChartSettingsLiveComponent from './ChartSettingsLiveComponent';
-import ChartSettingsStaticComponent from './ChartSettingsStaticComponent';
-import ChartSeriesSettingsComponent from './ChartSeriesSettingsComponent';
-import ChartSettingsCompareComponent from './ChartSettingsCompareComponent';
+import ChartSettingsLiveComponent from './ChartSettingsLiveComponent.vue';
+import ChartSettingsStaticComponent from './ChartSettingsStaticComponent.vue';
+import ChartSeriesSettingsComponent from './ChartSeriesSettingsComponent.vue';
+import ChartSettingsCompareComponent from './ChartSettingsCompareComponent.vue';
 
 /**
  *

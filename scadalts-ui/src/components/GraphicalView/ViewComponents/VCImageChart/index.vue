@@ -75,7 +75,7 @@
 <script>
 import BaseViewComponent from '../BaseViewComponent.vue';
 import LineChartComponent from '@/components/amcharts/LineChartComponent.vue';
-import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent.vue';
 export default {
 	components: {
 		BaseViewComponent,

@@ -91,9 +91,9 @@
 </template>
 <script>
 import PointHierarchyNode from '@/models/PointHierarchyNode';
-import NestedNode from './NestedNode';
-import ImportExportDialog from './dialogs/ImportExportDialog';
-import EditNodeDialog from './dialogs/EditNodeDialog';
+import NestedNode from './NestedNode.vue';
+import ImportExportDialog from './dialogs/ImportExportDialog.vue';
+import EditNodeDialog from './dialogs/EditNodeDialog.vue';
 
 export default {
 	components: {
