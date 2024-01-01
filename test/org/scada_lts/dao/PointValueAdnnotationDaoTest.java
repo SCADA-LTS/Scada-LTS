@@ -39,6 +39,8 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
+
+@Deprecated
 public class PointValueAdnnotationDaoTest extends TestDAO{
 	
 	private final long POINT_ID_1 = 1;

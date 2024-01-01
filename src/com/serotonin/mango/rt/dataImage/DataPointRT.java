@@ -89,22 +89,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		pointValueService = new PointValueService();
 		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 	}
-	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator,int cacheSize,int maxSize) {
-		this.vo = vo;
-		this.pointLocator = pointLocator;
-		valueCache = new PointValueCache(cacheSize);
-		valueCache.setMaxSize(maxSize);
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 
-	public DataPointRT(DataPointVO vo) {
-		this.vo = vo;
-		this.pointLocator = null;
-		valueCache = new PointValueCache();
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 	public PointValueCache getPointValueCache(){
 		return this.valueCache;
 	}

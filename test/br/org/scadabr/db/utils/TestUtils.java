@@ -106,4 +106,21 @@ public class TestUtils {
 		dataSource.setXid("DS_" + id);
 		return dataSource;
 	}
+
+	public static User newUser(int id, String username) {
+		User user = new User();
+		user.setId(id);
+		user.setUsername(username);
+		user.setPassword("password");
+		user.setEmail("An email");
+		user.setPhone("phone");
+		user.setAdmin(true);
+		user.setDisabled(false);
+		user.setHomeUrl("url");
+		user.setReceiveAlarmEmails(1);
+		user.setReceiveOwnAuditEvents(true);
+		user.setDataSourcePermissions(new ArrayList<Integer>());
+		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
+		return user;
+	}
 }

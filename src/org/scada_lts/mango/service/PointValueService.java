@@ -44,11 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
-import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -73,12 +71,12 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Service
-public class PointValueService implements MangoPointValues, MangoPointValuesWithChangeOwner {
+public class PointValueService implements MangoPointValues {
 
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
-    private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
+    private PointValueDAO pointValueDAO = new PointValueDAO();
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
 
@@ -88,10 +86,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     }
 
-    @Override
-    public List<PointValueAdnnotation> findAllWithAdnotationsAboutChangeOwner(){
-        return pointValueAnnotationsDAO.findAllWithAdnotationsAboutChangeOwner();
-    }
     /**
      * Only the PointValueCache should call this method during runtime. Do not
      * use.
@@ -307,8 +301,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
-            PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
-            PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
+            PointValueDAO.getInstance().createAnnotation(id, shortString, longString, sourceType, sourceId);
 
         }
 
@@ -321,6 +314,9 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
+            if(pv.getPointValue() instanceof AnnotatedPointValueTime) {
+                updateAnnotation((AnnotatedPointValueTime) pv.getPointValue());
+            }
         }
         return lst;
     }
@@ -363,9 +359,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         List<PointValue> lstValues = PointValueDAO.getInstance().findByIdAndTs(dataPointId, maxTs);
 
-        PointValueAdnnotationsDAO.getInstance().updateAnnotations(lstValues);
         if (lstValues.size() == 0)
             return null;
+
+        PointValueTime pointValue = lstValues.get(0).getPointValue();
+        if(pointValue instanceof AnnotatedPointValueTime) {
+            updateAnnotation((AnnotatedPointValueTime) pointValue);
+        }
         return lstValues.get(0).getPointValue();
     }
 
@@ -634,14 +634,15 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     }
 
     public PointValueTime getPointValue(long id) {
-        return PointValueDAO.getInstance().getPointValue(id);
-    }
-    public List<PointValueAdnnotation> getAllPointValueAnnotations(){
-        return  pointValueAnnotationsDAO.findAll();
+        PointValueTime pointValueTime = PointValueDAO.getInstance().getPointValue(id);
+        if(pointValueTime instanceof AnnotatedPointValueTime) {
+            updateAnnotation((AnnotatedPointValueTime) pointValueTime);
+        }
+        return pointValueTime;
     }
 
     public void updatePointValueAnnotations(int userId) {
-        pointValueAnnotationsDAO.update(userId);
+        pointValueDAO.updateAnnotation(userId);
     }
 
     @Override
@@ -751,6 +752,21 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 .stream()
                 .forEach(dp -> updateMetaDataPointByScript(user, dp.getXid()));
 
+    }
+
+    private void updateAnnotation(AnnotatedPointValueTime annotatedPointValueTime) {
+        int sourceType = annotatedPointValueTime.getSourceType();
+        int sourceId = annotatedPointValueTime.getSourceId();
+        if (sourceType == SetPointSource.Types.USER && sourceId > 0) {
+            User user = ApplicationBeans.getLoggedUsersBean().getUser(sourceId);
+            if (user == null) {
+                user = ApplicationBeans.getUserDaoBean().getUser(sourceId);
+            }
+            if (user != null) {
+                String username = user.getUsername();
+                annotatedPointValueTime.setSourceDescriptionArgument(username);
+            }
+        }
     }
 }
 
