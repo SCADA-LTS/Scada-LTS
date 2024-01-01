@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 
 /*
  * (c) 2016 Abil'I.T. http://abilit.eu/

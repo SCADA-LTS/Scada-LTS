@@ -32,6 +32,7 @@ public class ScadaScheduler {
                 }
             }
             scheduler.shutdown(false);
+            Thread.sleep(1000);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }

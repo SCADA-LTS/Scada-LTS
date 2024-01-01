@@ -18,7 +18,7 @@
 
         <!-- Lifecycle Logging-->
         <Property name="startupLoggingLevel">INFO</Property>
-        <Property name="processingBackgroundLoggingLevel">ERROR</Property>
+        <Property name="backgroundProcessingLoggingLevel">ERROR</Property>
         <Property name="pollingDataSourceLoggingLevel">ERROR</Property>
         <Property name="runtimeManagerLoggingLevel">INFO</Property>
 
@@ -153,7 +153,7 @@
         </Logger>
 
         <!-- BackgroundProcessing Logging-->
-        <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundLoggingLevel}"/>
+        <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundProcessingLoggingLevel}"/>
 
         <!-- PollingDataSource Logging-->
         <Logger name="com.serotonin.mango.rt.dataSource.PollingDataSource" level="${pollingDataSourceLoggingLevel}"/>

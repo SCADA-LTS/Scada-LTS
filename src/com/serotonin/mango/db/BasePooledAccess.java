@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 
 import static com.serotonin.mango.db.DatabaseAccessUtils.closeDataSource;
+import static com.serotonin.mango.db.DatabaseAccessUtils.unregisterDriver;
 
 /**
  * @author Matthew Lohbihler
@@ -45,7 +47,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
 {
     private final static Log log = LogFactory.getLog(BasePooledAccess.class);
     protected DataSource dataSource;
-    protected boolean dataSourceFound = false;
+    private volatile boolean dataSourceFound;
 
 
     @SuppressWarnings("deprecation")
@@ -63,6 +65,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
                 try (Connection conn = dataSource.getConnection()) {
                     log.info("DataSource meta: " + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
                     dataSourceFound = true;
+                    DriverManager.getDrivers();
                 }
             }
             catch(NamingException e)
@@ -165,11 +168,12 @@ abstract public class BasePooledAccess extends DatabaseAccess
             if(dataSourceFound) {
                 closeDataSource(dataSource);
             }
+            unregisterDriver();
             log.info("Stopped database");
         }
-        catch(SQLException e)
+        catch(Throwable e)
         {
-            log.warn(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
