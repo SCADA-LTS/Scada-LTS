@@ -212,16 +212,16 @@ public class ImageChartUtils {
         }
     }
 
-	public static int calculateHeightConsolidatedChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeight, int imageHeightForDataPointNameInLegend, int charAmountPerLine) {
+	public static int calculateHeightConsolidatedChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeight, int imageHeightForDataPointNameInLegend, int charNumberPerLine) {
 		StringBuilder subLegend = new StringBuilder();
 		int linesAmount = 0;
 		String charsForColorIndicator = "111";
 		for (ReportChartCreator.PointStatistics point : pointStatistics){
 			subLegend.append(charsForColorIndicator); //characters that replace color indicators
-            if (point.getName().length() > charAmountPerLine){
+            if (point.getName().length() > charNumberPerLine){
                 throw new IllegalArgumentException("Point name is too long: " + point.getName());
             }
-			if ((subLegend.length() + point.getName().length()) > charAmountPerLine){
+			if ((subLegend.length() + point.getName().length()) > charNumberPerLine){
 				subLegend.delete(0, subLegend.length());
 				linesAmount++;
                 subLegend.append(charsForColorIndicator);

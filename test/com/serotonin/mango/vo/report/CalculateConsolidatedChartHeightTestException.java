@@ -10,11 +10,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.util.AssertionErrors.fail;
-
 @RunWith(Parameterized.class)
-public class CalculateConsolidatedChartHeightTest {
+public class CalculateConsolidatedChartHeightTestException {
 
 	private final List<ReportChartCreator.PointStatistics> pointStatistics;
 	private final int expectedHeight;
@@ -22,7 +19,7 @@ public class CalculateConsolidatedChartHeightTest {
 	private final int imageHeight;
 	private final int charAmountPerLine;
 
-	public CalculateConsolidatedChartHeightTest(List<ReportChartCreator.PointStatistics> pointStatistics, int expectedHeight, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
+	public CalculateConsolidatedChartHeightTestException(List<ReportChartCreator.PointStatistics> pointStatistics, int expectedHeight, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
 		this.pointStatistics = pointStatistics;
 		this.expectedHeight = expectedHeight;
 		this.imageHeightForDataPointNameInLegend = imageHeightForDataPointNameInLegend;
@@ -31,26 +28,18 @@ public class CalculateConsolidatedChartHeightTest {
 	}
 
 
-	@Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeight(points: {0}, expected height: {1},pixels per line: {2} base height of chart: {3}, characters per line: {4}) , expectException: {5}")
+
+
+	@Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeightException(points: {0}, expected height: {1},pixels per line: {2} base height of chart: {3}, characters per line: {4})")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{List.of(), 400, 20, 400, 138},
-				{createPointStatisticsList(pointNames), 1020, 20, 400, 138},
-				{createPointStatisticsList(pointNames2), 1000, 20, 400, 138},
-				{createPointStatisticsList(FewSmallerPointNames),420,20,400,138},
-				{createPointStatisticsList(FewSmallerPointNames2),400,20,400,138},
-				{createPointStatisticsList(MixedLengthNames),540,20,400,138},
-				{createPointStatisticsList(OneLongPointName),400,20,400,138},
-				{createPointStatisticsList(OrderCheck1),460,20,400,138},
-				{createPointStatisticsList(OrderCheck2),460,20,400,138},
-				{createPointStatisticsList(OrderCheck3),440,20,400,138},
-				{createPointStatisticsList(1, 50), 400, 20, 400, 138},
-				{createPointStatisticsList(2, 60), 400, 20, 400, 138},
-				{createPointStatisticsList(8, 130), 540, 20, 400, 138},
-				{createPointStatisticsList(4, 130), 460, 20, 400, 138},
-				{createPointStatisticsList(25, 20), 480, 20, 400, 138},
-				{createPointStatisticsList(50, 10), 480, 20, 400, 138},
-				{createPointStatisticsList(2, 200), 420, 20, 400, 210},
+				{createPointStatisticsList(pointNames), 1020, 20, 400, 110},
+				{createPointStatisticsList(pointNames2), 1180, 20, 400, 100},
+				{createPointStatisticsList(OneLongNameRestMedium), 400, 20, 400, 138},
+				{createPointStatisticsList(OnePointNameLongerThanCharAmountPerLine),400,20,400,138},
+				{createPointStatisticsList(2, 140), 420, 20, 400, 138},
+				{createPointStatisticsList(4, 30), 420, 20, 400, 20},
+				{createPointStatisticsList(2, 60), 420, 20, 400, 59},
 		});
 	}
 
@@ -157,68 +146,21 @@ public class CalculateConsolidatedChartHeightTest {
 			"test_virtual_ds - pdpddd7"
 	);
 
-	static List<String> FewSmallerPointNames = Arrays.asList(
-			"ds - dp1","ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1","ds - dp1",
-			"ds - dp1"
-	);
-
-	static List<String> FewSmallerPointNames2 = Arrays.asList(
-			"ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1",
-			"ds - dp1","ds - dp1"
-	);
-
-	static List<String> MixedLengthNames = Arrays.asList(
+	static List<String> OneLongNameRestMedium = Arrays.asList(
+			"test_virtual_ds - datapointdatapointdatapointdatapointdatapoint3",
+			"test_virtual_ds - datapointdatapointdatapointdatapointdatapoint2",
+			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint7",
 			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2",
-			"ds - dp1",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2",
-			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2",
-			"ds - dp1",
-			"ds - dp1",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2",
-			"test_virtual_ds - datapointdatapointdatapoint2",
-			"ds - dp1",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
-	static List<String> OneLongPointName = List.of(
-			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint2"
-	);
-	static List<String> OrderCheck1 = Arrays.asList(
-			"20characters20charac", "30characters30characters30char", "40characters40characters40characters40ch", "50characters50characters50characters50characters50", "60characters60characters60characters60characters60characters", "70characters70characters70characters70characters70characters70characte", "80characters80characters80characters80characters80characters80characters80charac"
-	);
-	static List<String> OrderCheck2 = Arrays.asList(
-			"80characters80characters80characters80characters80characters80characters80charac", "70characters70characters70characters70characters70characters70characte", "60characters60characters60characters60characters60characters", "50characters50characters50characters50characters50",  "40characters40characters40characters40ch", "20characters20charac", "30characters30characters30char"
-	);
-	static List<String> OrderCheck3 = Arrays.asList(
-			"80characters80characters80characters80characters80characters80characters80charac",  "40characters40characters40characters40ch", "50characters50characters50characters50characters50", "60characters60characters60characters60characters60characters", "20characters20charac", "30characters30characters30char", "70characters70characters70characters70characters70characters70characte"
+
+	static List<String> OnePointNameLongerThanCharAmountPerLine = List.of(
+			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
 
-	@Test
-	public void when_calculateConsolidatedChartHeight() {
-		int actualHeight = ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, imageHeight, imageHeightForDataPointNameInLegend, charAmountPerLine);
-		assertEquals(expectedHeight, actualHeight);
+	@Test(expected = IllegalArgumentException.class)
+	public void when_calculateConsolidatedChartHeightExpectException() {
+		ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, imageHeight, imageHeightForDataPointNameInLegend, charAmountPerLine);
 	}
 
 	private static List<ReportChartCreator.PointStatistics> createPointStatisticsList(int numberOfPoints, int pointNameLength) {
