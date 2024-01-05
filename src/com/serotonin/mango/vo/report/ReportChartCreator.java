@@ -58,10 +58,10 @@ public class ReportChartCreator {
      */
     private static final int IMAGE_WIDTH = 930;
     private static final int IMAGE_HEIGHT = 400;
-	private static final int IMAGE_HEIGHT_FOR_DATA_POINT_NAME_IN_LEGEND_PIXELS = 20;
-    private static final int NUMBER_CHARACTERS_PER_LINE_IN_CHART_LEGEND = 138; //this value refers to IMAGE_WIDTH equal to 930
-	private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35; // leaving 3 characters of space for " - " between data source name and data point name in extended name
-	private static final int DATA_POINT_NAME_LENGTH_FOR_CHART = 100;
+    private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
+	private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 138;
+    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35; // leaving 3 characters of space for " - " between data source name and data point name in extended name
+    private static final int DATA_POINT_NAME_LENGTH_FOR_CHART = 100;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -157,7 +157,7 @@ public class ReportChartCreator {
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
             try{
-	            int consolidatedChartHeight = ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, IMAGE_HEIGHT, IMAGE_HEIGHT_FOR_DATA_POINT_NAME_IN_LEGEND_PIXELS, NUMBER_CHARACTERS_PER_LINE_IN_CHART_LEGEND);
+	            int consolidatedChartHeight = ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, IMAGE_HEIGHT, IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER);
                 imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, consolidatedChartHeight);
             } catch (IllegalArgumentException e) {
 				e.printStackTrace();

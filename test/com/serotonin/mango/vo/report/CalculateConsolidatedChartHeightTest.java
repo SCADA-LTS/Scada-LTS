@@ -35,15 +35,17 @@ public class CalculateConsolidatedChartHeightTest {
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
 				{List.of(), 400, 20, 400, 138},
-				{createPointStatisticsList(pointNames), 1020, 20, 400, 138},
-				{createPointStatisticsList(pointNames2), 1000, 20, 400, 138},
-				{createPointStatisticsList(FewSmallerPointNames),420,20,400,138},
-				{createPointStatisticsList(FewSmallerPointNames2),400,20,400,138},
-				{createPointStatisticsList(MixedLengthNames),540,20,400,138},
-				{createPointStatisticsList(OneLongPointName),400,20,400,138},
-				{createPointStatisticsList(OrderCheck1),460,20,400,138},
-				{createPointStatisticsList(OrderCheck2),460,20,400,138},
-				{createPointStatisticsList(OrderCheck3),440,20,400,138},
+				{createPointStatisticsList(_42PointsNamesFromAppDataBaseUsedForTesting), 1020, 20, 400, 138},
+				{createPointStatisticsList(_53PointsNamesFromAppDataBaseUsedForTesting), 1000, 20, 400, 138},
+				{createPointStatisticsList(_16Short8CharactersPointNames),420,20,400,138},
+				{createPointStatisticsList(_12Short8CharactersPointNames),400,20,400,138},
+				{createPointStatisticsList(_25PointNames11ShortNamesAnd14LongerNamesMixedOrder),540,20,400,138},
+				{createPointStatisticsList(SingleLong127CharactersPointName),400,20,400,138},
+				{createPointStatisticsList(_7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneAscending),460,20,400,138},
+				{createPointStatisticsList(_7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneDescending),460,20,400,138},
+				{createPointStatisticsList(_7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneMixedOrderDifferentHeight),440,20,400,138},
+				{createPointStatisticsList(ShortNamesSmallLimitDifferentOrdersOfNames1),420,20,400,16},
+				{createPointStatisticsList(ShortNamesSmallLimitDifferentOrdersOfNames2),440,20,400,16},
 				{createPointStatisticsList(1, 50), 400, 20, 400, 138},
 				{createPointStatisticsList(2, 60), 400, 20, 400, 138},
 				{createPointStatisticsList(8, 130), 540, 20, 400, 138},
@@ -55,7 +57,7 @@ public class CalculateConsolidatedChartHeightTest {
 	}
 
 
-	static List<String> pointNames = Arrays.asList(
+	static List<String> _42PointsNamesFromAppDataBaseUsedForTesting = Arrays.asList(
 			"ds_1_virtual - dp-1-binary",
 			"ds_1_virtual - dp_flag",
 			"ds_1_virtual - dp_numeric",
@@ -101,7 +103,7 @@ public class CalculateConsolidatedChartHeightTest {
 	);
 
 
-	static List<String> pointNames2 = Arrays.asList(
+	static List<String> _53PointsNamesFromAppDataBaseUsedForTesting = Arrays.asList(
 			"ds_1_virtual - dp-1-binary",
 			"ds_1_virtual - dp_flag",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint8",
@@ -157,7 +159,7 @@ public class CalculateConsolidatedChartHeightTest {
 			"test_virtual_ds - pdpddd7"
 	);
 
-	static List<String> FewSmallerPointNames = Arrays.asList(
+	static List<String> _16Short8CharactersPointNames = Arrays.asList(
 			"ds - dp1","ds - dp1","ds - dp1",
 			"ds - dp1","ds - dp1","ds - dp1",
 			"ds - dp1","ds - dp1","ds - dp1",
@@ -166,7 +168,7 @@ public class CalculateConsolidatedChartHeightTest {
 			"ds - dp1"
 	);
 
-	static List<String> FewSmallerPointNames2 = Arrays.asList(
+	static List<String> _12Short8CharactersPointNames = Arrays.asList(
 			"ds - dp1","ds - dp1",
 			"ds - dp1","ds - dp1",
 			"ds - dp1","ds - dp1",
@@ -175,7 +177,7 @@ public class CalculateConsolidatedChartHeightTest {
 			"ds - dp1","ds - dp1"
 	);
 
-	static List<String> MixedLengthNames = Arrays.asList(
+	static List<String> _25PointNames11ShortNamesAnd14LongerNamesMixedOrder = Arrays.asList(
 			"test_virtual_ds - datapointdatapointdatapoint2",
 			"ds - dp1",
 			"test_virtual_ds - datapointdatapointdatapoint2",
@@ -202,17 +204,25 @@ public class CalculateConsolidatedChartHeightTest {
 			"ds - dp1",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
-	static List<String> OneLongPointName = List.of(
+	static List<String> SingleLong127CharactersPointName = List.of(
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
-	static List<String> OrderCheck1 = Arrays.asList(
+	static List<String> _7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneAscending = Arrays.asList(
 			"20characters20charac", "30characters30characters30char", "40characters40characters40characters40ch", "50characters50characters50characters50characters50", "60characters60characters60characters60characters60characters", "70characters70characters70characters70characters70characters70characte", "80characters80characters80characters80characters80characters80characters80charac"
 	);
-	static List<String> OrderCheck2 = Arrays.asList(
+	static List<String> _7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneDescending = Arrays.asList(
 			"80characters80characters80characters80characters80characters80characters80charac", "70characters70characters70characters70characters70characters70characte", "60characters60characters60characters60characters60characters", "50characters50characters50characters50characters50",  "40characters40characters40characters40ch", "20characters20charac", "30characters30characters30char"
 	);
-	static List<String> OrderCheck3 = Arrays.asList(
+	static List<String> _7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneMixedOrderDifferentHeight = Arrays.asList(
 			"80characters80characters80characters80characters80characters80characters80charac",  "40characters40characters40characters40ch", "50characters50characters50characters50characters50", "60characters60characters60characters60characters60characters", "20characters20charac", "30characters30characters30char", "70characters70characters70characters70characters70characters70characte"
+	);
+
+	static List<String> ShortNamesSmallLimitDifferentOrdersOfNames1 = Arrays.asList(
+			"abcd", "ab", "a", "abc", "abcd"
+	);
+
+	static List<String> ShortNamesSmallLimitDifferentOrdersOfNames2 = Arrays.asList(
+			"abcd", "ab", "abc", "a", "abcd"
 	);
 
 	@Test

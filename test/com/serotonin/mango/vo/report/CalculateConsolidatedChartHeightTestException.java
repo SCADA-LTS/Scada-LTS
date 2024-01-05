@@ -33,10 +33,10 @@ public class CalculateConsolidatedChartHeightTestException {
 	@Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeightException(points: {0}, expected height: {1},pixels per line: {2} base height of chart: {3}, characters per line: {4})")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][]{
-				{createPointStatisticsList(pointNames), 1020, 20, 400, 110},
-				{createPointStatisticsList(pointNames2), 1180, 20, 400, 100},
-				{createPointStatisticsList(OneLongNameRestMedium), 400, 20, 400, 138},
-				{createPointStatisticsList(OnePointNameLongerThanCharAmountPerLine),400,20,400,138},
+				{createPointStatisticsList(_42PointNamesFromDataBaseCharsPerLineSetTo110FewPointsWithNameLongerThanCharsPerLineLimit), 1020, 20, 400, 110},
+				{createPointStatisticsList(_53PointNamesFromDataBaseCharsPerLineSetTo100FewPointsWithNameLongerThanCharsPerLineLimit), 1180, 20, 400, 100},
+				{createPointStatisticsList(StandardAppLimitOneOutOfFiveNamesExceedingSetLimitForCharactersPerLine), 400, 20, 400, 138},
+				{createPointStatisticsList(SinglePointExceedingStandardAppLimitForCharactersPerLine),400,20,400,138},
 				{createPointStatisticsList(2, 140), 420, 20, 400, 138},
 				{createPointStatisticsList(4, 30), 420, 20, 400, 20},
 				{createPointStatisticsList(2, 60), 420, 20, 400, 59},
@@ -44,7 +44,7 @@ public class CalculateConsolidatedChartHeightTestException {
 	}
 
 
-	static List<String> pointNames = Arrays.asList(
+	static List<String> _42PointNamesFromDataBaseCharsPerLineSetTo110FewPointsWithNameLongerThanCharsPerLineLimit = Arrays.asList(
 			"ds_1_virtual - dp-1-binary",
 			"ds_1_virtual - dp_flag",
 			"ds_1_virtual - dp_numeric",
@@ -90,7 +90,7 @@ public class CalculateConsolidatedChartHeightTestException {
 	);
 
 
-	static List<String> pointNames2 = Arrays.asList(
+	static List<String> _53PointNamesFromDataBaseCharsPerLineSetTo100FewPointsWithNameLongerThanCharsPerLineLimit = Arrays.asList(
 			"ds_1_virtual - dp-1-binary",
 			"ds_1_virtual - dp_flag",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint8",
@@ -146,7 +146,7 @@ public class CalculateConsolidatedChartHeightTestException {
 			"test_virtual_ds - pdpddd7"
 	);
 
-	static List<String> OneLongNameRestMedium = Arrays.asList(
+	static List<String> StandardAppLimitOneOutOfFiveNamesExceedingSetLimitForCharactersPerLine = Arrays.asList(
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapoint3",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapoint2",
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint7",
@@ -154,7 +154,7 @@ public class CalculateConsolidatedChartHeightTestException {
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
 
-	static List<String> OnePointNameLongerThanCharAmountPerLine = List.of(
+	static List<String> SinglePointExceedingStandardAppLimitForCharactersPerLine = List.of(
 			"test_virtual_ds - datapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapointdatapoint2"
 	);
 

@@ -1,5 +1,6 @@
 package org.scada_lts.serorepl.utils;
 
+import br.org.scadabr.api.da.WriteDataOptions;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Properties;
@@ -132,13 +133,12 @@ public class StringUtils {
     public static String trimWhitespace(String s){
         return s.trim();
     }
-
 	@Deprecated
-	public static String truncate(String s, int length) {
-		return truncate(s, length, (String) null);
+	public static String truncate(String s, int length){
+		return truncate(s, length, (String)null);
 	}
 	@Deprecated
-	public static String truncate(String s, int length, String truncateSuffix) {
+	public static String truncate(String s, int length, String truncateSuffix){
 		if (s == null) {
 			return null;
 		}
@@ -150,7 +150,6 @@ public class StringUtils {
 		}
 		return s.substring(0,length);
 	}
-
     public static String abbreviateMiddle(String s, int length) {
         return abbreviateMiddle(s, length, (String)null);
     }
