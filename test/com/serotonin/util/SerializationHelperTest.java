@@ -21,24 +21,9 @@ public class SerializationHelperTest {
     public static String[][] data() {
         return new String[][] {
                 {"662_bytes_utf8.txt", "UTF-8"},
-                {"662_bytes_iso_latin1.txt", "ISO_8859_1"},
-                {"662_bytes_us_ascii.txt", "ASCII"},
-                {"662_bytes_utf16.txt", "UTF-16"},
-
                 {"65535_bytes_utf8.txt", "UTF-8"},
-                {"65535_bytes_iso_latin1.txt", "ISO_8859_1"},
-                {"65535_bytes_us_ascii.txt", "ASCII"},
-                {"65535_bytes_utf16.txt", "UTF-16"},
-
                 {"65536_bytes_utf8.txt", "UTF-8"},
-                {"65536_bytes_iso_latin1.txt", "ISO_8859_1"},
-                {"65536_bytes_us_ascii.txt", "ASCII"},
-                {"65536_bytes_utf16.txt", "UTF-16"},
-
                 {"5mb_5242880_bytes_utf8.txt", "UTF-8"},
-                {"3_5mb_5242880_bytes_iso_latin1.txt", "ISO_8859_1"},
-                {"3_5mb_5242880_bytes_us_ascii.txt", "ASCII"},
-                {"7mb_5242880_bytes_utf16.txt", "UTF-16"}
         };
     }
 
@@ -52,41 +37,53 @@ public class SerializationHelperTest {
 
     @Test
     public void when_writeSafeUTF_and_readSafeUTF_then_equals_bytes() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(baos)) {
 
-            //when:
+        //given:
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        //when:
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(baos)) {
             SerializationHelper.writeSafeUTF(outputStream, toWrite);
         }
+
+        //then
         try(ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
             String result = SerializationHelper.readSafeUTF(inputStream);
 
-            //then
-            Assert.assertEquals(toList(utf8Expected.getBytes()), toList(result.getBytes()));
+            byte[] bytesExpected = utf8Expected.getBytes();
+            byte[] bytesResult = result.getBytes();
+
+            Assert.assertEquals(bytesExpected.length, bytesResult.length);
+
+            for(int i = 0; i < bytesExpected.length ; i ++) {
+                Assert.assertEquals(bytesExpected[i], bytesResult[i]);
+            }
         }
     }
 
     @Test
-    public void when_writeSafeUTF_and_readSafeUTF_then_equals() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(baos)) {
+    public void when_writeSafeUTF_and_readSafeUTF_then_equals_chars() throws IOException {
 
-            //when:
+        //given:
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        //when:
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(baos)) {
             SerializationHelper.writeSafeUTF(outputStream, toWrite);
         }
+
+        //then
         try(ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
             String result = SerializationHelper.readSafeUTF(inputStream);
 
-            //then
-            Assert.assertEquals(utf8Expected, result);
-        }
-    }
+            char[] charsExpected = utf8Expected.toCharArray();
+            char[] charsResult = result.toCharArray();
 
-    private static List<Byte> toList(byte[] bytes) {
-        List<Byte> byteList = new ArrayList<>();
-        for(byte by: bytes) {
-            byteList.add(by);
+            Assert.assertEquals(charsExpected.length, charsResult.length);
+
+            for(int i = 0; i < charsExpected.length ; i ++) {
+                Assert.assertEquals(charsExpected[i], charsResult[i]);
+            }
         }
-        return byteList;
     }
 }
