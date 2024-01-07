@@ -444,10 +444,10 @@ public class MangoContextListener implements ServletContextListener {
 	// Database.
 	//
 	private void databaseInitialize(ServletContext ctx) {
-		DatabaseAccess databaseAccess = DatabaseAccess
-				.createDatabaseAccess(ctx);
+		DatabaseAccess databaseAccess = ApplicationBeans
+				.getBean("databaseAccess", DatabaseAccess.class);
 		ctx.setAttribute(Common.ContextKeys.DATABASE_ACCESS, databaseAccess);
-		databaseAccess.initialize();
+		databaseAccess.initialize(ctx);
 	}
 
 	private void databaseTerminate(ContextWrapper ctx) {

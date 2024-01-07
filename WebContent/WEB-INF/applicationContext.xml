@@ -228,10 +228,9 @@
     <property name="locations" value="classpath:env.properties"/>
   </bean>
 
-  <bean id="databaseSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="expectedType" value="javax.sql.DataSource"/>
-    <property name="jndiName" value="${db.datasourceName}"/>
-  </bean>
+  <bean id="databaseAccess" class="com.serotonin.mango.db.DatabaseAccess" factory-method="createDatabaseAccess" />
+
+  <bean id="databaseSource" factory-bean="databaseAccess" factory-method="getDataSource" />
 
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
 
