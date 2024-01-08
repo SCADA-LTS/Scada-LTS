@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './apps/App.vue';
 import router from './router/index';
 import store from './store';
@@ -56,7 +56,7 @@ library.add(
 	faCogs
 );
 
-Vue.component('font-awesome-icon', FontAwesomeIcon);
+createApp.component('font-awesome-icon', FontAwesomeIcon);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -70,20 +70,20 @@ const options = {
 	showConsoleColors: true,
 };
 
-Vue.use(VueLogger, options);
+createApp.use(VueLogger, options);
 
 const optionsLodash = { name: 'lodash' };
 
-Vue.use(VueLodash, optionsLodash);
+createApp.use(VueLodash, optionsLodash);
 
-Vue.use(VueCookie);
-Vue.use(VueDayjs);
+createApp.use(VueCookie);
+createApp.use(VueDayjs);
 
-Vue.use(svgJS);
+createApp.use(svgJS);
 
-Vue.config.devtools = true;
+createApp.config.devtools = true;
 
-new Vue({
+createApp({
 	router,
 	store,
 	i18n,
@@ -91,11 +91,11 @@ new Vue({
 	render: (h) => h(App),
 }).$mount('#app');
 
-Vue.use(uiv);
+createApp.use(uiv);
 
 if (window.document.getElementById('app-isalive') != undefined) {
 	const isAliveDom = document.getElementById('app-isalive');
-	new Vue({
+	new createApp({
 		store,
 		render: (h) =>
 			h(IsAlive, {
@@ -114,7 +114,7 @@ if (window.document.getElementById('app-isalive') != undefined) {
 const watchdogId = "app-isalive2";
 if (!!window.document.getElementById(watchdogId)) {
 	const watchdogEl = document.getElementById(watchdogId);
-	new Vue({
+	new createApp({
 		store,
 		i18n,
 		vuetify,
@@ -137,7 +137,7 @@ if (!!window.document.getElementById(watchdogId)) {
 for (let i = 0; i < 20; i++) {
 	const cmpId = `app-cmp-${i}`;
 	if (window.document.getElementById(cmpId) != undefined) {
-		new Vue({
+		new createApp({
 			vuetify,
 			render: (h) =>
 				h(CMP, {
@@ -161,7 +161,7 @@ for (let i = 0; i < 10; i++) {
 	const cmpId = `app-cmp2-${i}`;
 	const el = window.document.getElementById(cmpId);
 	if (el != undefined) {
-		new Vue({
+		new createApp({
 			store,
 			i18n,
 			vuetify,
@@ -187,7 +187,7 @@ for (let i = 0; i < 10; i++) {
 	const cmpId = `app-cmp3-${i}`;
 	const el = window.document.getElementById(cmpId);
 	if (el != undefined) {
-		new Vue({
+		new createApp({
 			store,
 			i18n,
 			vuetify,
@@ -213,7 +213,7 @@ for (let i = 0; i < 10; i++) {
 
 
 if (window.document.getElementById('simple-component-svg') != undefined) {
-	new Vue({
+	new createApp({
 		render: (h) =>
 			h(SimpleComponentSVG, {
 				props: {
@@ -235,20 +235,20 @@ if (window.document.getElementById('simple-component-svg') != undefined) {
 }
 
 if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
-	new Vue({
+	new createApp({
 		render: (h) => h(SleepAndReactivationDS),
 	}).$mount('#sleep-reactivation-ds');
 }
 
 if (window.document.getElementById('sms-domain') != undefined) {
-	new Vue({
+	new createApp({
 		vuetify,
 		render: (h) => h(SMSDomain),
 	}).$mount('#sms-domain');
 }
 
 if (window.document.getElementById('export-import-ph') != undefined) {
-	new Vue({
+	new createApp({
 		render: (h) => h(ExportImportPointHierarchy),
 	}).$mount('#export-import-ph');
 }
@@ -257,7 +257,7 @@ for (let x = 0; x < 10; x++) {
 	const chartId = `chart-line-${x}`;
 	const el = window.document.getElementById(chartId);
 	if (el != undefined) {
-		new Vue({
+		new createApp({
 			render: (h) =>
 				h(LineChartComponent, {
 					props: {
@@ -292,7 +292,7 @@ for (let x = 0; x < 10; x++) {
 	const chartId = `chart-range-${x}`;
 	const el = window.document.getElementById(chartId);
 	if (el != undefined) {
-		new Vue({
+		new createApp({
 			store,
 			vuetify,
 			render: (h) =>
@@ -323,7 +323,7 @@ for (let x = 0; x < 10; x++) {
 	const baseId = `simple-table-${x}`;
 	const el = window.document.getElementById(baseId);
 	if (el != undefined) {
-		new Vue({
+		createApp({
 			store,
 			vuetify,
 			render: (h) =>
@@ -345,7 +345,7 @@ for (let x = 0; x < 10; x++) {
 }
 
 if (window.document.getElementById('refresh-view') != undefined) {
-	new Vue({
+	createApp({
 		store,
 		render: (h) =>
 			h(RefreshView, {
@@ -366,7 +366,7 @@ if (window.document.getElementById('live-alarms') != undefined) {
 			.getAttribute('show-acknowledge-btn')}`
 	);
 
-	new Vue({
+	createApp({
 		store,
 		vuetify,
 		render: (h) =>
