@@ -209,7 +209,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 	public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
 	
 	public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
@@ -700,5 +700,29 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 				return phc;
 			}
 		});
+	}
+
+	public PointValueTime getPointValueBefore(int dataPointId, long time) {
+		try {
+			Long valueTime = DAO.getInstance().getJdbcTemp().queryForObject("select max(ts) from pointValues where dataPointId=? and ts<?",
+					new Object[] { dataPointId, time }, Long.class);
+			if (valueTime == null)
+				return null;
+			return getPointValueAt(dataPointId, valueTime);
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		}
+	}
+
+	public PointValueTime getPointValueAt(int dataPointId, long time) {
+		List<PointValue> pointValues = DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT + " where pv.dataPointId=? and pv.ts=?",
+				new Object[]{dataPointId, time}, new PointValueRowMapper());
+		if(pointValues.isEmpty())
+			return null;
+		long maxId = pointValues.stream().mapToLong(PointValue::getId).max().orElse(-1);
+		PointValue pointValue = pointValues.stream().filter(a -> a.getId() == maxId).findAny().orElse(null);
+		if(pointValue == null)
+			return null;
+		return pointValue.getPointValue();
 	}
 }
