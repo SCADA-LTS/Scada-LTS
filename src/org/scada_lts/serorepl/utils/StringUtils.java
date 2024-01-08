@@ -133,23 +133,23 @@ public class StringUtils {
     public static String trimWhitespace(String s){
         return s.trim();
     }
-	@Deprecated
-	public static String truncate(String s, int length){
+    @Deprecated
+    public static String truncate(String s, int length){
 		return truncate(s, length, (String)null);
 	}
-	@Deprecated
-	public static String truncate(String s, int length, String truncateSuffix){
-		if (s == null) {
-			return null;
-		}
-		if (s.length() <= length) {
-			return s;
-		}
-		if (truncateSuffix != null){
-			return s.substring(0,length) + truncateSuffix;
-		}
-		return s.substring(0,length);
-	}
+    @Deprecated
+    public static String truncate(String s, int length, String truncateSuffix){
+        if (s == null) {
+            return null;
+        }
+        if (s.length() <= length) {
+            return s;
+        }
+        if (truncateSuffix != null){
+            return s.substring(0,length) + truncateSuffix;
+        }
+        return s.substring(0,length);
+    }
     public static String abbreviateMiddle(String s, int length) {
         return abbreviateMiddle(s, length, (String)null);
     }

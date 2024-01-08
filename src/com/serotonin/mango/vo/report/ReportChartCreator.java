@@ -83,11 +83,11 @@ public class ReportChartCreator {
         this.bundle = bundle;
     }
 
-	public static int getDataSourceNameLengthForReport() {
+    public static int getDataSourceNameLengthForReport() {
 		return DATA_SOURCE_NAME_LENGTH_FOR_CHART;
 	}
 
-	public static int getDataPointNameLengthForReport() {
+    public static int getDataPointNameLengthForReport() {
 		return DATA_POINT_NAME_LENGTH_FOR_CHART;
 	}
 

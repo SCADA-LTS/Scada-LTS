@@ -46,6 +46,10 @@ public class CalculateConsolidatedChartHeightTest {
 				{createPointStatisticsList(_7PointNamesEveryNextPointName10CharactersLongerThanTheLastOneMixedOrderDifferentHeight),440,20,400,138},
 				{createPointStatisticsList(ShortNamesSmallLimitDifferentOrdersOfNames1),420,20,400,16},
 				{createPointStatisticsList(ShortNamesSmallLimitDifferentOrdersOfNames2),440,20,400,16},
+                {createPointStatisticsList(SemiShortNamesSmallLimitDifferentOrdersOfNames1),460,20,400,18},
+                {createPointStatisticsList(SemiShortNamesSmallLimitDifferentOrdersOfNames2),480,20,400,18},
+                {createPointStatisticsList(MediumSizeNamesMediumLimitDifferentOrdersOfNames1),460,20,400,35},
+                {createPointStatisticsList(MediumSizeNamesMediumLimitDifferentOrdersOfNames2),480,20,400,35},
 				{createPointStatisticsList(1, 50), 400, 20, 400, 138},
 				{createPointStatisticsList(2, 60), 400, 20, 400, 138},
 				{createPointStatisticsList(8, 130), 540, 20, 400, 138},
@@ -224,6 +228,22 @@ public class CalculateConsolidatedChartHeightTest {
 	static List<String> ShortNamesSmallLimitDifferentOrdersOfNames2 = Arrays.asList(
 			"abcd", "ab", "abc", "a", "abcd"
 	);
+
+    static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames1 = Arrays.asList(
+            "5char", "6chars", "7chars7", "8chars8c", "9chars9ch"
+    );
+
+    static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames2 = Arrays.asList(
+            "5char", "8chars8c", "6chars", "9chars9ch", "7chars7"
+    );
+
+    static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames1 = Arrays.asList(
+            "10chars10c", "15chars15chars1", "20chars20chars20char", "30chars30chars30chars30chars30", "25chars25chars25chars25ch"
+    );
+
+    static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames2 = Arrays.asList(
+            "10chars10c", "20chars20chars20char", "15chars15chars1", "25chars25chars25chars25ch", "30chars30chars30chars30chars30"
+    );
 
 	@Test
 	public void when_calculateConsolidatedChartHeight() {
