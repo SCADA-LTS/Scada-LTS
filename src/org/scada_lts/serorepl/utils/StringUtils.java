@@ -135,8 +135,8 @@ public class StringUtils {
     }
     @Deprecated
     public static String truncate(String s, int length){
-		return truncate(s, length, (String)null);
-	}
+        return truncate(s, length, (String)null);
+    }
     @Deprecated
     public static String truncate(String s, int length, String truncateSuffix){
         if (s == null) {
