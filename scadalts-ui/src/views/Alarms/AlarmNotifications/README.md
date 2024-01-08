@@ -14,7 +14,7 @@ New component for preparing a Notification Configuration that allow Scada-LTS us
 ### Definition
 
 - Open SMS and Email notification page  
-  _(open Alarms>Alarms Notifications or use this link: /ScadaBR/app.shtm#/alarm-notifications)_
+  _(open Alarms>Alarms Notifications or use this link: /Scada-LTS/app.shtm#/alarm-notifications)_
 
 - Select mailing list for which you want to configure a notification  
   _(User is able to configure two mailing list at once, or use the second one section to compare the configuration.)_

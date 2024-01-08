@@ -13,7 +13,7 @@ export const browserUtilsMixin = {
 
             if (DEVTOOLS && host[1] === '3000') {
                 host[1] = '8080';
-                locale = 'ScadaBR/';
+                locale = 'Scada-LTS/';
             }
 
 			let x = `${protocol}//${host[0]}:${host[1]}/${locale}${page}`;

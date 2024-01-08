@@ -63,17 +63,17 @@ export const imageSetFan = {
     id: 1,
     name: "Scada-LTS-Fan",
     imageFilenames: [
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/black.png",
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/blue.png",
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/green.png",
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/purple.png",
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/red.png",
-        "http://localhost:8080/ScadaBR/graphics/CarBattery/yellow.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/black.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/blue.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/green.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/purple.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/red.png",
+        "http://localhost:8080/Scada-LTS/graphics/CarBattery/yellow.png",
     ],
     // imageFilenames: [
-    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_disable.png",
-    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_off.png",
-    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_on.png"
+    //     "http://localhost:8080/Scada-LTS/graphics/Scada-LTS-Fan/slts_fan_disable.png",
+    //     "http://localhost:8080/Scada-LTS/graphics/Scada-LTS-Fan/slts_fan_off.png",
+    //     "http://localhost:8080/Scada-LTS/graphics/Scada-LTS-Fan/slts_fan_on.png"
     // ],
     width: 56,
     height: 56,
@@ -82,13 +82,13 @@ export const imageSetFan = {
 export const backgroundImages = [
     {
         name: "Firefighert",
-        imgUrl: "http://localhost:8080/ScadaBR/uploads/1.jpg",
+        imgUrl: "http://localhost:8080/Scada-LTS/uploads/1.jpg",
         width: 1920,
         height: 1229
     },
     {
         name: "Loft",
-        imgUrl: "http://localhost:8080/ScadaBR/uploads/Loft.gif",
+        imgUrl: "http://localhost:8080/Scada-LTS/uploads/Loft.gif",
         width: 927,
         height: 399,
     }
