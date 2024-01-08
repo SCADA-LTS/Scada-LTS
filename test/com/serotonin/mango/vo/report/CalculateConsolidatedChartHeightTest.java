@@ -229,21 +229,21 @@ public class CalculateConsolidatedChartHeightTest {
 			"abcd", "ab", "abc", "a", "abcd"
 	);
 
-    static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames1 = Arrays.asList(
-            "5char", "6chars", "7chars7", "8chars8c", "9chars9ch"
-    );
+	static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames1 = Arrays.asList(
+			"5char", "6chars", "7chars7", "8chars8c", "9chars9ch"
+	);
 
-    static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames2 = Arrays.asList(
-            "5char", "8chars8c", "6chars", "9chars9ch", "7chars7"
-    );
+	static List<String> SemiShortNamesSmallLimitDifferentOrdersOfNames2 = Arrays.asList(
+			"5char", "8chars8c", "6chars", "9chars9ch", "7chars7"
+	);
 
-    static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames1 = Arrays.asList(
-            "10chars10c", "15chars15chars1", "20chars20chars20char", "30chars30chars30chars30chars30", "25chars25chars25chars25ch"
-    );
+	static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames1 = Arrays.asList(
+			"10chars10c", "15chars15chars1", "20chars20chars20char", "30chars30chars30chars30chars30", "25chars25chars25chars25ch"
+	);
 
-    static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames2 = Arrays.asList(
-            "10chars10c", "20chars20chars20char", "15chars15chars1", "25chars25chars25chars25ch", "30chars30chars30chars30chars30"
-    );
+	static List<String> MediumSizeNamesMediumLimitDifferentOrdersOfNames2 = Arrays.asList(
+			"10chars10c", "20chars20chars20char", "15chars15chars1", "25chars25chars25chars25ch", "30chars30chars30chars30chars30"
+	);
 
 	@Test
 	public void when_calculateConsolidatedChartHeight() {
