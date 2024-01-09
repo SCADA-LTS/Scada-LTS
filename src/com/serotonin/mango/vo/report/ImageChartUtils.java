@@ -221,7 +221,8 @@ public class ImageChartUtils {
             if (point.getName().length() > charNumberPerLine){
                 throw new IllegalArgumentException("Point name is too long: " + point.getName());
             }
-			if ((subLegend.length() + point.getName().length()) > charNumberPerLine){
+
+			else if ((subLegend.length() + point.getName().length()) > charNumberPerLine){
 				subLegend.delete(0, subLegend.length());
 				linesAmount++;
                 subLegend.append(charsForColorIndicator);
@@ -231,7 +232,9 @@ public class ImageChartUtils {
 				subLegend.append(point.getName());
 			}
 		}
-		linesAmount++;
-		return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
-	}
+        if (pointStatistics.isEmpty() || pointStatistics.get(pointStatistics.size() - 1).getName().length() != charNumberPerLine) {
+            linesAmount++;
+        }
+        return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
+    }
 }
