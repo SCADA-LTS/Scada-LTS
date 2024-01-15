@@ -370,23 +370,13 @@ public class PointValueService implements MangoPointValues {
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, time}, 1);
-        if (lst != null && lst.size() > 0) {
-            return lst.get(0).getPointValue();
-        } else {
-            return null;
-        }
+        return PointValueDAO.getInstance().getPointValueBefore(dataPointId, time);
     }
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, time}, 1);
-        if (lst != null && lst.size() > 0) {
-            return lst.get(0).getPointValue();
-        } else {
+        try {
+            return PointValueDAO.getInstance().getPointValueAt(dataPointId, time);
+        } catch (Exception ex) {
             return null;
         }
     }
