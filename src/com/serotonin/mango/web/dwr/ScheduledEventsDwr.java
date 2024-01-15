@@ -28,6 +28,9 @@ import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.ScheduledEventService;
+import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -93,13 +96,8 @@ public class ScheduledEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!scheduledEventDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50)){
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
-        }
+        ScheduledEventService scheduledEventService = new ScheduledEventService();
+        XidUtils.validateXid(response, scheduledEventService::isXidUnique, xid, id);
 
         se.validate(response);
 

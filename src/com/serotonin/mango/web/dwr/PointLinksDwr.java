@@ -46,6 +46,10 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.PointLinkService;
+import org.scada_lts.mango.service.PublisherService;
+import org.scada_lts.utils.XidUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
@@ -122,13 +126,8 @@ public class PointLinksDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         PointLinkDao pointLinkDao = new PointLinkDao();
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!pointLinkDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50)){
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
-        }
+        PointLinkService pointLinkService = new PointLinkService();
+        XidUtils.validateXid(response, pointLinkService::isXidUnique, xid, id);
 
         vo.validate(response);
 

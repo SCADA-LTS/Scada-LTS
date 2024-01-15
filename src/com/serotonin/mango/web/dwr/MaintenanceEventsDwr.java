@@ -37,6 +37,9 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.MaintenanceEventService;
+import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -128,13 +131,8 @@ public class MaintenanceEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!maintenanceEventDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50)){
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
-        }
+        MaintenanceEventService maintenanceEventService = new MaintenanceEventService();
+        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, xid, id);
 
         e.validate(response);
 

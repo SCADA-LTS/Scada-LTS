@@ -62,9 +62,11 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.XidUtils;
 
 
 public class EventHandlersDwr extends BaseDwr {
@@ -331,9 +333,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		if (com.serotonin.util.StringUtils.isLengthGreaterThan(xid, 50)){
-			response.addContextualMessage("xid", "validate.notLongerThan", 50);
-		}
+		XidUtils.validateXid(response, eventService::isXidUnique, xid, handlerId);
 
 		vo.validate(response);
 
