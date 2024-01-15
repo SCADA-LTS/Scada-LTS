@@ -98,7 +98,6 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         createContext();
 
-        execute(dataPoint.getPointValue());
         // Add listener registrations
         RuntimeManager rm = Common.ctx.getRuntimeManager();
         for (IntValuePair contextKey : vo.getContext()) {
@@ -110,6 +109,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         initialized = true;
 
         initializeTimerTask();
+
+        if(dataPoint.getPointValue() != null && vo.getUpdateEvent()==MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE){
+            execute(dataPoint.getPointValue());
+        }
     }
 
     protected void initializeTimerTask() {
