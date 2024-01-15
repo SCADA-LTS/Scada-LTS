@@ -217,7 +217,7 @@ public class ImageChartUtils {
 		int linesAmount = 0;
 		String charsForColorIndicator = "111";
 		for (ReportChartCreator.PointStatistics point : pointStatistics){
-			subLegend.append(charsForColorIndicator); //characters that replace color indicators
+			subLegend.append(charsForColorIndicator);
             if (point.getName().length() > charNumberPerLine){
                 throw new IllegalArgumentException("Point name is too long: " + point.getName());
             }

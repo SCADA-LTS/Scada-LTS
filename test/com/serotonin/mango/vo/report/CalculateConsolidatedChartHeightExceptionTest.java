@@ -3,7 +3,6 @@ package com.serotonin.mango.vo.report;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,14 +10,14 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class CalculateConsolidatedChartHeightTestException {
+public class CalculateConsolidatedChartHeightExceptionTest {
 
 
     private final List<ReportChartCreator.PointStatistics> pointStatistics;
     private final int imageHeightForDataPointNameInLegend;
     private final int imageHeight;
     private final int charAmountPerLine;
-    public CalculateConsolidatedChartHeightTestException(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
+    public CalculateConsolidatedChartHeightExceptionTest(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
         this.pointStatistics = pointStatistics;
         this.imageHeightForDataPointNameInLegend = imageHeightForDataPointNameInLegend;
         this.imageHeight = imageHeight;
