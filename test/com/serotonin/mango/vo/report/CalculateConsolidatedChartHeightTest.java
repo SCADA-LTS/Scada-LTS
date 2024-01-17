@@ -49,196 +49,196 @@ public class CalculateConsolidatedChartHeightTest {
         String _138CharactersPointName = "138characters - 138characters138characters138characters138characters138characters138characters138characters138characters138characters138ch";
 
         return Arrays.asList(new Object[][]{
-                {List.of(), 400, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(
-                        _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName
-                )), 420, 20, 400, 15},
-                {createPointStatisticsList(List.of(_135CharactersPointName)), 400, 20, 400, 138},
-                {createPointStatisticsList(List.of(_138CharactersPointName)), 400, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(_138CharactersPointName, _138CharactersPointName, _138CharactersPointName)), 440, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(_135CharactersPointName, _135CharactersPointName, _135CharactersPointName)), 440, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(
-                        _4CharacterPointName, _2CharacterPointName, _1CharacterPointName, _3CharacterPointName, _4CharacterPointName
-                )), 420, 20, 400, 16},
-                {createPointStatisticsList(Arrays.asList(
-                        _4CharacterPointName, _2CharacterPointName, _3CharacterPointName, _1CharacterPointName, _4CharacterPointName
-                )), 440, 20, 400, 16},
-                {createPointStatisticsList(Arrays.asList(
-                        _5CharacterPointName, _6CharacterPointName, _7CharacterPointName, _8CharacterPointName, _9CharacterPointName
-                )), 460, 20, 400, 18},
-                {createPointStatisticsList(Arrays.asList(
-                        _5CharacterPointName, _8CharacterPointName, _6CharacterPointName, _9CharacterPointName, _7CharacterPointName
-                )), 480, 20, 400, 18},
-                {createPointStatisticsList(Arrays.asList(
-                        _10CharactersPointName, _15CharactersPointName, _20CharactersPointName, _30CharactersPointName, _25CharactersPointName
-                )), 460, 20, 400, 35},
-                {createPointStatisticsList(Arrays.asList(
-                        _10CharactersPointName, _20CharactersPointName, _15CharactersPointName, _25CharactersPointName, _30CharactersPointName
-                )), 480, 20, 400, 35},
+            {List.of(), 400, 20, 400, 138},
+            {createPointStatisticsList(Arrays.asList(
+                    _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName, _0CharactersPointName
+            )), 420, 20, 400, 15},
+            {createPointStatisticsList(List.of(_135CharactersPointName)), 400, 20, 400, 138},
+            {createPointStatisticsList(List.of(_138CharactersPointName)), 400, 20, 400, 138},
+            {createPointStatisticsList(Arrays.asList(_138CharactersPointName, _138CharactersPointName, _138CharactersPointName)), 440, 20, 400, 138},
+            {createPointStatisticsList(Arrays.asList(_135CharactersPointName, _135CharactersPointName, _135CharactersPointName)), 440, 20, 400, 138},
+            {createPointStatisticsList(Arrays.asList(
+                    _4CharacterPointName, _2CharacterPointName, _1CharacterPointName, _3CharacterPointName, _4CharacterPointName
+            )), 420, 20, 400, 16},
+            {createPointStatisticsList(Arrays.asList(
+                    _4CharacterPointName, _2CharacterPointName, _3CharacterPointName, _1CharacterPointName, _4CharacterPointName
+            )), 440, 20, 400, 16},
+            {createPointStatisticsList(Arrays.asList(
+                    _5CharacterPointName, _6CharacterPointName, _7CharacterPointName, _8CharacterPointName, _9CharacterPointName
+            )), 460, 20, 400, 18},
+            {createPointStatisticsList(Arrays.asList(
+                    _5CharacterPointName, _8CharacterPointName, _6CharacterPointName, _9CharacterPointName, _7CharacterPointName
+            )), 480, 20, 400, 18},
+            {createPointStatisticsList(Arrays.asList(
+                    _10CharactersPointName, _15CharactersPointName, _20CharactersPointName, _30CharactersPointName, _25CharactersPointName
+            )), 460, 20, 400, 35},
+            {createPointStatisticsList(Arrays.asList(
+                    _10CharactersPointName, _20CharactersPointName, _15CharactersPointName, _25CharactersPointName, _30CharactersPointName
+            )), 480, 20, 400, 35},
 
 
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10"
-                        )), 440, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 60characters60characters60characters60characters60cha",
-                        "ds_1 - 50characters50characters50characters50chara"
-                        )), 480, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character"
-                        )), 460, 20, 400, 138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10"
-                )),520,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 10c",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character"
-                )),580,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 10c"
-                )),600,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 60characters60characters60characters60characters60cha",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 30characters30character"
-                )),500,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 60characters60characters60characters60characters60cha",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c"
-                )),560,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 60characters60characters60characters60characters60cha"
-                )),520,20,400,138},
-                {createPointStatisticsList(Arrays.asList(
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 20characters2",
-                        "ds_1 - 10c",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 60characters60characters60characters60characters60cha",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
-                        "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 30characters30character",
-                        "ds_1 - 80characters80characters80characters80characters80characters80characters8",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 70characters70characters70characters70characters70characters70c",
-                        "ds_1 - 50characters50characters50characters50chara",
-                        "ds_1 - 60characters60characters60characters60characters60cha",
-                        "ds_1 - 60characters60characters60characters60characters60cha"
-                )),680,20,400,138},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10"
+                )), 440, 20, 400, 149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 60characters60characters60characters60characters60cha",
+                "ds_1 - 50characters50characters50characters50chara"
+                )), 480, 20, 400, 149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character"
+                )), 460, 20, 400, 149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 20characters2",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10"
+            )),520,20,400,138},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 20characters2",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 30characters30character",
+                "ds_1 - 20characters2",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 10c",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character"
+            )),580,20,400,149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 20characters2",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 10c"
+            )),580,20,400,149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 20characters2",
+                "ds_1 - 30characters30character",
+                "ds_1 - 60characters60characters60characters60characters60cha",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 30characters30character",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 30characters30character"
+            )),480,20,400,149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 30characters30character",
+                "ds_1 - 60characters60characters60characters60characters60cha",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 30characters30character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 20characters2",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 20characters2",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c"
+            )),540,20,400,149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 20characters2",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 30characters30character",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 60characters60characters60characters60characters60cha"
+            )),520,20,400,149},
+            {createPointStatisticsList(Arrays.asList(
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 20characters2",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 30characters30character",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 20characters2",
+                "ds_1 - 10c",
+                "ds_1 - 30characters30character",
+                "ds_1 - 60characters60characters60characters60characters60cha",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 90characters90characters90characters90characters90characters90characters90character",
+                "ds_1 - 100characters100characters100characters100characters100characters100characters100characters10",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 30characters30character",
+                "ds_1 - 80characters80characters80characters80characters80characters80characters8",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 70characters70characters70characters70characters70characters70c",
+                "ds_1 - 50characters50characters50characters50chara",
+                "ds_1 - 60characters60characters60characters60characters60cha",
+                "ds_1 - 60characters60characters60characters60characters60cha"
+            )),680,20,400,149},
         });
     }
 

@@ -59,8 +59,8 @@ public class ReportChartCreator {
     private static final int IMAGE_WIDTH = 930;
     private static final int IMAGE_HEIGHT = 400;
     private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
-    private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 138;
-    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35; // leaving 3 characters of space for " - " between data source name and data point name in extended name
+    private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 149;
+    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35;
     private static final int DATA_POINT_NAME_LENGTH_FOR_CHART = 100;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
