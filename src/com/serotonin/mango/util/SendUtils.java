@@ -26,6 +26,7 @@ import java.util.function.BiConsumer;
 public final class SendUtils {
 
     private static final Log LOG = LogFactory.getLog(SendUtils.class);
+    public static final String SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED = "Send email blocking, because application not started";
 
     private SendUtils() {}
 
@@ -142,6 +143,11 @@ public final class SendUtils {
                                 WorkItemDetails workItemDetails) {
         try {
 
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
+
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()
@@ -174,6 +180,11 @@ public final class SendUtils {
                                 AfterWork.WorkFinally workFinally, BeforeWork.NotExecuted notExecuted,
                                 WorkItemDetails workItemDetails) {
         try {
+
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
@@ -212,6 +223,11 @@ public final class SendUtils {
                                             BiConsumer<T, Exception> handleException, T object,
                                             BeforeWork.NotExecuted notExecuted, WorkItemDetails workItemDetails) {
         try {
+
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();

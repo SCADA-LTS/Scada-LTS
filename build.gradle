@@ -135,6 +135,16 @@ task runDebug(type: Exec) {
     }
 }
 
+task stopDebug(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'stop'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'stop'
+    }
+}
+
 task buildRun(type: GradleBuild) {
     tasks = ['clearTomcat', 'clearProject', 'test', 'war', 'deployTomcat', 'run']
 }

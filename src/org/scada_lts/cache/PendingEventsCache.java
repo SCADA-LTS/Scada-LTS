@@ -25,14 +25,14 @@ import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.mango.service.PendingEventService;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.quartz.SimpleTriggerScheduler;
 import org.scada_lts.quartz.UpdatePendingEvents;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /** 
  * Class responsible for buffering of PendingEvents
@@ -47,12 +47,10 @@ public class PendingEventsCache {
 	private int countBuffer;
 	private Map<Integer, List<EventInstance>> mapPendingEvents;
 	private final PendingEventService eventService;
-	private final Scheduler scheduler;
+	private final SimpleTriggerScheduler scheduler;
 	private final SystemSettingsService systemSettingsService;
-	private final JobDetail job;
-	private final SimpleTrigger trigger;
 
-	public static PendingEventsCache getInstance() throws SchedulerException, IOException {
+	public static PendingEventsCache getInstance() throws IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Get PendingEventsCache instance ");
 		}
@@ -109,43 +107,34 @@ public class PendingEventsCache {
 	}
 
 	
-	private PendingEventsCache() throws SchedulerException, IOException {
+	private PendingEventsCache() throws IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Create PendingEventsCache");
 		}
 		eventService = new PendingEventService();
 		mapPendingEvents = eventService.getPendingEvents();
-		scheduler = new StdSchedulerFactory().getScheduler();
+		scheduler = ApplicationBeans.getBean("updatePendingEventsScheduler", SimpleTriggerScheduler.class);
 		systemSettingsService = new SystemSettingsService();
-		trigger = createTrigger();
-		job = createJob();
+
 		cacheInitialize();
 	}
 
-	private void cacheInitialize() throws SchedulerException, IOException {
+	private void cacheInitialize() throws IOException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
 		}
-		scheduler.start();
-		startUpdate();
+		Date startTime = new Date(System.currentTimeMillis()
+				+ ScadaConfig.getInstance().getLong(ScadaConfig.START_UPDATE_PENDING_EVENTS, 10_000_000));
+		Long interval = ScadaConfig.getInstance().getLong(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS, 5_000_000);
+		scheduler.schedule(startTime, interval);
 	}
 
 	public void startUpdate() {
-		try {
-			if(!isScheduled(scheduler, job.getName()))
-				scheduler.scheduleJob(job, trigger);
-		} catch (SchedulerException e) {
-			LOG.error(e.getMessage(), e);
-		}
+		scheduler.start();
 	}
 
 	public void stopUpdate() {
-		try {
-			if(isScheduled(scheduler, job.getName()))
-				scheduler.deleteJob(job.getName(), job.getGroup());
-		} catch (SchedulerException e) {
-			LOG.error(e.getMessage(), e);
-		}
+		scheduler.stop();
 	}
 
 	public void resetUpdate() {
@@ -154,39 +143,5 @@ public class PendingEventsCache {
 			startUpdate();
 		else
 			stopUpdate();
-	}
-
-	private static JobDetail createJob() {
-		JobDetail job = new JobDetail();
-		job.setName("UpdatePendingEvents");
-		job.setJobClass(UpdatePendingEvents.class);
-		return job;
-	}
-
-	private static SimpleTrigger createTrigger() throws IOException {
-		SimpleTrigger trigger = new SimpleTrigger();
-		Date startTime = new Date(System.currentTimeMillis()
-				+ ScadaConfig.getInstance().getLong(ScadaConfig.START_UPDATE_PENDING_EVENTS, 10_000_000));
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Quartz - startTime:" + startTime);
-		}
-		trigger.setStartTime(startTime);
-		trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-		Long interval = ScadaConfig.getInstance().getLong(ScadaConfig.MILLIS_SECONDS_PERIOD_UPDATE_PENDING_EVENTS, 5_000_000);
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Quartz - interval:" + interval);
-		}
-		trigger.setRepeatInterval(interval);
-		trigger.setName("Quartz - trigger-UpdatePendingEvents");
-		return trigger;
-	}
-
-	private static boolean isScheduled(Scheduler scheduler, String jobName) throws SchedulerException {
-		for (String groupName : scheduler.getJobGroupNames()) {
-			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, groupName);
-			if(triggers.length > 0)
-				return true;
-		}
-		return false;
 	}
 }

@@ -58,6 +58,9 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     }
 
     public void scheduleTimeout(long fireTime) {
+        if(isMarkAsTerminating()) {
+            return;
+        }
         if (jobThread != null) {
             // There is another poll still running, so abort this one.
             LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)

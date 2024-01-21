@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -34,6 +35,8 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Data sources are things that produce data for consumption of this system. Anything that houses, creates, manages, or
@@ -50,6 +53,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
  */
 abstract public class DataSourceRT implements ILifecycle {
     public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
+    private static final Log LOG = LogFactory.getLog(DataSourceRT.class);
 
     private final DataSourceVO<?> vo;
 
@@ -76,6 +81,8 @@ abstract public class DataSourceRT implements ILifecycle {
     protected final Object pointListChangeLock = new Object();
 
     private final List<DataSourceEventType> eventTypes;
+
+    private volatile boolean markAsTerminating = false;
 
     public DataSourceRT(DataSourceVO<?> vo) {
         this.vo = vo;
@@ -200,5 +207,18 @@ abstract public class DataSourceRT implements ILifecycle {
     // Additional lifecycle.
     public void beginPolling() {
         // no op
+    }
+
+    public boolean isMarkAsTerminating() {
+        if(markAsTerminating) {
+            LOG.error(LoggingUtils.dataSourceInfo(this) + " is terminating.");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void markAsTerminating() {
+        this.markAsTerminating = true;
     }
 }

@@ -36,6 +36,8 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 
+import static com.serotonin.mango.db.DatabaseAccessUtils.closeDataSource;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -160,8 +162,10 @@ abstract public class BasePooledAccess extends DatabaseAccess
         log.info("Stopping database");
         try
         {
-            if(dataSourceFound && (dataSource instanceof BasicDataSource))
-                ((BasicDataSource) dataSource).close();
+            if(dataSourceFound) {
+                closeDataSource(dataSource);
+            }
+            log.info("Stopped database");
         }
         catch(SQLException e)
         {
