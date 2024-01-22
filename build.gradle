@@ -95,6 +95,8 @@ task clearTomcat(type: Delete) {
     delete System.getenv("CATALINA_HOME") + "/work/Catalina/localhost"
     delete System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS"
     delete file(System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS.war")
+    delete System.getenv("CATALINA_HOME") + "/webapps/ScadaBR"
+    delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
 }
 
 task existsScadaLTSWarFile {
