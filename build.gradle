@@ -135,7 +135,7 @@ task runDebug(type: Exec) {
     }
 }
 
-task stopDebug(type: Exec) {
+task stop(type: Exec) {
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         workingDir tomcatDirectory + '\\bin'
         commandLine 'cmd', '/c', 'catalina.bat', 'stop'
