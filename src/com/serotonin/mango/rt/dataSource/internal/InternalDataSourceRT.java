@@ -25,7 +25,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.vo.dataSource.internal.InternalDataSourceVO;
 import com.serotonin.mango.vo.dataSource.internal.InternalPointLocatorVO;
-import com.serotonin.monitor.IntegerMonitor;
+import org.scada_lts.monitor.type.IntegerMonitor;
 
 /**
  * @author Matthew Lohbihler
