@@ -24,6 +24,8 @@ public final class StaticImagesUtils {
 
     public static ResponseEntity<String> getAndSendImage(HttpServletRequest request, HttpServletResponse response) {
         File file = getSystemFileByRequest(request);
+        if(!Files.exists(file.toPath()) && Files.notExists(file.toPath()))
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         if(!UploadFileUtils.isToUploads(file))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {

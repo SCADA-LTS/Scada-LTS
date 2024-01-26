@@ -559,3 +559,20 @@ mango.view.graphic.HorizontalLevel.setValue = function(viewComponentId, value) {
     
     g.paint();
 };
+
+async function loadDefaultSizeContainer(fileUrl, containerId) {
+    const notFoundFile = await isNotFoundFile(fileUrl);
+    const container = document.getElementById(containerId);
+    if(notFoundFile) {
+        container.width=1920;
+        container.height=1080;
+    } else {
+        container.removeAttribute("width");
+        container.removeAttribute("height");
+    }
+}
+
+async function isNotFoundFile(fileUrl) {
+    const response = await fetch(fileUrl);
+    return response.status === 404;
+}
