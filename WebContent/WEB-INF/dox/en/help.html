@@ -1,9 +1,7 @@
 <pre>
-    ScadaBR - Open-Source Data Acquisition System - <a
-	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
-    Copyright (C) 2020 Funda&ccedil;&atilde;o Certi, Scada-LTS.
-    Release 1.0.0 powered by Mango M2M - <a
-	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    Scada-LTS - Open-Source Supervisory Control And Data Acquisition - <a
+        href="http://www.scada-lts.com">http://www.scada-lts.com</a>
+    Copyright (C) 2012 - Scada-LTS All rights reserved.
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -156,7 +154,7 @@ settable point determines how the data source sets the value within the external
 </ul>
 
 <h1>Alarm sounds</h1>
-<p>ScadaBR can play sounds when alarms are active. By default, alarm sounds are played for urgent, critical, and life
+<p>Scada-LTS can play sounds when alarms are active. By default, alarm sounds are played for urgent, critical, and life
 safety alarms (i.e. not for information alarms), but sounds for each alarm type can be controlled individually. To 
 enable particular alarm sounds, valid mp3 files must exist at the following locations:</p>
 <ul>
@@ -169,10 +167,10 @@ enable particular alarm sounds, valid mp3 files must exist at the following loca
 &lt;mango_home&gt;/audio/lib folder.</p>
 
 <h1>Graphics</h1>
-<p>ScadaBR ships with a small graphics library which can be found in the &lt;mango_home&gt;/graphics folder. Each
+<p>Scada-LTS ships with a small graphics library which can be found in the &lt;mango_home&gt;/graphics folder. Each
 sub-folder represents an image set. The contents of the sub-folder include all of the images in the image set, as 
 well as an optional properties file called <b>info.txt</b>. (Examples can be found in the graphics directories that
-ship with ScadaBR.) This property file contains name/value pairs with the following names (all of which are 
+ship with Scada-LTS.) This property file contains name/value pairs with the following names (all of which are
 optional):</p>
 <ul>
   <li><b>name</b>: The name that will be used to describe the image set in the user interface. If not provided this
@@ -192,7 +190,7 @@ as the identifier of the image set.</p>
 Lines beginning with '#' are considered comments. 'Thumbs.db' files are ignored. Archive files (zip, gz, tar, etc)
 cannot be used since the images files have to be accessible to the web server. Image sets are loaded upon system 
 startup, so any changes require a restart.</p>
-<p>To have future versions of ScadaBR ship with your preferred graphics, please contribute them to Serotonin 
+<p>To have future versions of Scada-LTS ship with your preferred graphics, please contribute them to Serotonin
 Software. Please support open source software.</p>
 
 <h1>Remote views</h1>
@@ -215,8 +213,8 @@ subsequently alter the name of the view without updating this reference.)</p>
 
 <h1>Database Configuration</h1>
 
-<p>The ScadaBR currently supports two database management systems
-Database: <b>Derby</b> and <b>MySQL</b>. The file <b> ScadaBR.war </b> comes
+<p>The Scada-LTS currently supports two database management systems
+Database: <b>Derby</b> and <b>MySQL</b>. The file <b> Scada-LTS.war </b> comes
 configured with the default Derby for reasons of ease
 to the user, because it runs and does not require embedded
 DBMS installation or configuration

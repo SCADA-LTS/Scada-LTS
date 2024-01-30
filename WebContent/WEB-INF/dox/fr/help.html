@@ -1,9 +1,7 @@
 <pre>
-    ScadaBR - Open-Source Data Acquisition System - <a
-	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
-    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
-    Release 0.8 powered by Mango M2M - <a
-	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    Scada-LTS - Open-Source Supervisory Control And Data Acquisition - <a
+        href="http://www.scada-lts.com">http://www.scada-lts.com</a>
+    Copyright (C) 2012 - Scada-LTS All rights reserved.
     
    Ce programme est un logiciel libre: vous pouvez le redistribuer et/ou le modifier
     conform&#233;ment aux disposition de la Licence Publique G&#233;n&#233;rale GNU, telle que publi&#233;e
@@ -137,7 +135,7 @@ définit la valeur au sein de l'équipement externe.</p>
 </ul>
 
 <h1>Sons des alarmes</h1>
-<p>ScadaBR peut émettre des sons lorsque les alarmes sont actives . Par défaut, les sons d'alarme sont joués pour les alarmes de sécurité, urgentes, critiques et sécurité des personnes  (mais pas pour les alarmes d'information), mais les sons de chaque type d'alarme peuvent  être contrôlés individuellement. Pour activer des sons d'alarme particulier, les fichiers mp3 doivent être stockés aux endroits suivants: </p>
+<p>Scada-LTS peut émettre des sons lorsque les alarmes sont actives . Par défaut, les sons d'alarme sont joués pour les alarmes de sécurité, urgentes, critiques et sécurité des personnes  (mais pas pour les alarmes d'information), mais les sons de chaque type d'alarme peuvent  être contrôlés individuellement. Pour activer des sons d'alarme particulier, les fichiers mp3 doivent être stockés aux endroits suivants: </p>
 <ul>
   <li>&lt;mango_home&gt;/audio/information.mp3</li>
   <li>&lt;mango_home&gt;/audio/urgent.mp3</li>
@@ -147,7 +145,7 @@ définit la valeur au sein de l'équipement externe.</p>
 <p>Pour désactiver un son, supprimez le fichier son associé. Une bibliothèque de sons est disponible dans le dossier <ScadaBR_home> / Audio / lib </p>
 
 <h1>Images</h1>
-<p>ScadaBR inclut une petite bibliothèque d'images stockée dans le dossier <ScadaBR_home> / graphics. Chaque sous-dossier contient toutes les images du fichier de définition d'image et un document facultatif nommé <b>info.txt</b>. Ce fichier contient les propriétés des attributs suivants (tous optionnels):</p>
+<p>Scada-LTS inclut une petite bibliothèque d'images stockée dans le dossier <ScadaBR_home> / graphics. Chaque sous-dossier contient toutes les images du fichier de définition d'image et un document facultatif nommé <b>info.txt</b>. Ce fichier contient les propriétés des attributs suivants (tous optionnels):</p>
 <ul>
   <li><b>name</b>: Le nom qui sera utilisé pour décrire l'image dans l'interface utilisateur. S'il n'est pas fourni, les valeurs par défaut l'image du nom du dossier.</li>
   <li><b>width</b>: La largeur de l'image. Par défaut, toutes les images sont de la même taille. S'il n'est pas renseigné, la largeur de la première image sera utilisée</li>
@@ -157,7 +155,7 @@ définit la valeur au sein de l'équipement externe.</p>
 </ul>
 <p><b>Lorsque vous utilisez des images, ne renommez plus les dossiers!</b> Le nom du dossier est utilisé en interne comme l'identifiant de la définition de l'image.</p>
 <p>Les fichiers images sont classées par ordre alphabétique de nom et est sensible à la casse. Paires nom / valeur sont séparés par des '='. Les lignes commençant par '#' sont considérées comme des commentaires. Archives "thumbs.db" sont ignorés. Les fichiers compressés (zip, gz, tar, etc) ne peuvent pas être utilisé parce que les fichiers images doivent être accessibles par le serveur web. Les paramètres de l'image sont chargés au démarrage, de sorte que toute modification nécessitera un redémarrage.</p>
-<p>Pour enrichir les futures versions de ScadaBR , vous pouvez envoyer vos propres images au projet ScadaBR. </p>
+<p>Pour enrichir les futures versions de Scada-LTS , vous pouvez envoyer vos propres images au projet Scada-LTS. </p>
 
 <h1>Vues distantes</h1>
 <p>Les vues publiques peuvent être consulté à partir d'autres sites en ajoutant simplement uen iframe dans vos pages. Par exemple,
