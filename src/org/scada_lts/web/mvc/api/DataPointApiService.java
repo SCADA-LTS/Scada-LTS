@@ -17,15 +17,14 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 import static org.scada_lts.utils.ApiUtils.toMapMessages;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
+import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
 
 @Service
@@ -82,15 +81,34 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     public DataPointJson update(HttpServletRequest request, DataPointJson datapoint) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
-        getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
-        DataPointVO fromRequest = toDataPointVO(request, datapoint);
-        dataSourceApiService.read(request, fromRequest.getDataSourceXid(), fromRequest.getDataSourceId());
+        DataPointVO toUpdate = getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
+        dataSourceApiService.read(request, datapoint.getDataSourceXid(), datapoint.getDataSourceId());
+        updateObjectDataPointVO(toUpdate, datapoint);
+        validateObjectDataPointVO(request, toUpdate);
         try {
-            dataPointService.updateDataPointConfiguration(fromRequest);
+            dataPointService.updateDataPointConfiguration(toUpdate);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return datapoint;
+    }
+
+    public DataPointJson enableDataPoint(HttpServletRequest request, String xid, Integer id, Boolean enabled) {
+        checkIfNonAdminThenUnauthorized(request);
+        checkArgsIfEmptyThenBadRequest(request, "Enabled is required.", enabled);
+        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
+        DataPointVO toUpdate = getDataPointFromDatabase(request, xid, id);
+        DataPointJson response;
+        if(toUpdate.isEnabled() == enabled)
+            throw new BadRequestException("Data point already is " + (enabled ? "enabled" : "disabled"), request.getRequestURI());
+        try {
+            toUpdate.setEnabled(enabled);
+            Common.ctx.getRuntimeManager().saveDataPoint(toUpdate);
+            response = DataSourcePointJsonFactory.getDataPointJson(toUpdate);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        return response;
     }
 
     @Override
@@ -274,5 +292,23 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return response;
+    }
+
+    private static void updateObjectDataPointVO(DataPointVO toUpdate, DataPointJson fromRequest) {
+        setIf(fromRequest.getXid(), toUpdate::setXid, a -> !StringUtils.isEmpty(a));
+        setIf(fromRequest.getPointLocator(), a -> toUpdate.setPointLocator(a.parsePointLocatorData()), Objects::nonNull);
+        setIf(fromRequest.getDescription(), toUpdate::setDescription, a -> !StringUtils.isEmpty(a));
+        setIf(fromRequest.getName(), toUpdate::setName, a -> !StringUtils.isEmpty(a));
+        setIf(fromRequest.isEnabled(), toUpdate::setEnabled, Objects::nonNull);
+        setIf(fromRequest.isSettable(), toUpdate::setSettable, Objects::nonNull);
+    }
+
+    private static void validateObjectDataPointVO(HttpServletRequest request, DataPointVO toUpdate) {
+        DwrResponseI18n responseI18n = new DwrResponseI18n();
+        toUpdate.validate(responseI18n);
+        if(responseI18n.getHasMessages()) {
+            throw new BadRequestException(toMapMessages(responseI18n),
+                    request.getRequestURI());
+        }
     }
 }

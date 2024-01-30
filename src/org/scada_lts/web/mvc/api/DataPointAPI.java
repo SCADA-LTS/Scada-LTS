@@ -163,5 +163,25 @@ public class DataPointAPI {
         List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersPlcByDataSourceId(request, datasourceId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PutMapping(value = "/api/datapoint/enabled")
+    public ResponseEntity<DataPointJson> enableDataPoint(@RequestParam(required = false) String xid,
+                                                         @RequestParam(required = false) Integer id,
+                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        DataPointJson response = dataPointApiService.enableDataPoint(request, xid, id, true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/api/datapoint/disabled")
+    public ResponseEntity<DataPointJson> disableDataPoint(@RequestParam(required = false) String xid,
+                                                          @RequestParam(required = false) Integer id,
+                                                          HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        DataPointJson response = dataPointApiService.enableDataPoint(request, xid, id, false);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
 

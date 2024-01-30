@@ -32,7 +32,7 @@ public class DataPointLocatorJson {
     }
 
     public PointLocatorVO parsePointLocatorData() {
-        throw new UnsupportedOperationException("Method not overwritten");
+        throw new UnsupportedOperationException("Unsupported type");
     }
 
     public int getDataTypeId() {

@@ -11,7 +11,7 @@ public class DataPointJson {
     private String xid;
     private String name;
     private String description;
-    private boolean enabled;
+    private Boolean enabled;
     private int dataSourceTypeId;
     private int dataSourceId;
     private String deviceName;
@@ -19,7 +19,7 @@ public class DataPointJson {
     private String datasourceName;
     private String dataSourceXid;
     private int typeId;
-    private boolean settable;
+    private Boolean settable;
 
     public DataPointJson() {}
 
