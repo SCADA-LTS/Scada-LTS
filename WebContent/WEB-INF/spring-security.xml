@@ -371,6 +371,12 @@
         <intercept-url pattern="/api/datapoint/getAll" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
         <intercept-url pattern="/api/datapoint" access="@guard.hasDataPointReadPermission(request)" method="GET" />
 
+        <!-- DataPoint POST/PUT -->
+        <intercept-url pattern="/api/datapoint" access="hasRole('ROLE_ADMIN')" method="POST" />
+        <intercept-url pattern="/api/datapoint" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/datapoint/disabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/datapoint/enabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
+
         <!-- DataSource GET -->
         <intercept-url pattern="/api/datasource" access="@guard.hasDataSourceReadPermission(request)" method="GET" />
 

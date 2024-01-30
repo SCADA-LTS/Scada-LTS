@@ -61,7 +61,8 @@ import java.util.Map;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
-public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO> {
+public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO>,
+        ScadaValidation {
     private static final long serialVersionUID = -1;
     public static final String XID_PREFIX = "DP_";
 
@@ -656,6 +657,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", purgeStrategy=" + purgeStrategy +  ", purgeValuesLimit=" + purgeValuesLimit + "]";
     }
 
+    @Override
     public void validate(DwrResponseI18n response) {
 
         DataPointService dataPointService = new DataPointService();

@@ -4,7 +4,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
-import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
@@ -22,7 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
-import static org.scada_lts.utils.ApiUtils.toMapMessages;
+import static org.scada_lts.utils.ApiUtils.idExists;
+import static org.scada_lts.utils.ApiUtils.validateObject;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
@@ -82,15 +82,16 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
         DataPointVO toUpdate = getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
-        dataSourceApiService.read(request, datapoint.getDataSourceXid(), datapoint.getDataSourceId());
         updateObjectDataPointVO(toUpdate, datapoint);
-        validateObjectDataPointVO(request, toUpdate);
+        validateObject(request, toUpdate);
+        DataPointJson response;
         try {
             dataPointService.updateDataPointConfiguration(toUpdate);
+            response = DataSourcePointJsonFactory.getDataPointJson(toUpdate);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return datapoint;
+        return response;
     }
 
     public DataPointJson enableDataPoint(HttpServletRequest request, String xid, Integer id, Boolean enabled) {
@@ -176,7 +177,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         User user = Common.getUser(request);
 
         DataPointVO response;
-        if(id != null) {
+        if(idExists(id)) {
             response = toObject(id, user, request, dataPointService::getDataPoint,
                     GetDataPointsWithAccess::hasDataPointReadPermission, a -> a);
         } else {
@@ -261,12 +262,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        DwrResponseI18n responseI18n = new DwrResponseI18n();
-        dataPointVO.validate(responseI18n);
-        if(responseI18n.getHasMessages()) {
-            throw new BadRequestException(toMapMessages(responseI18n),
-                    request.getRequestURI());
-        }
+        validateObject(request, dataPointVO);
         return dataPointVO;
     }
 
@@ -274,7 +270,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         checkArgsIfTwoEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", dataSourceId, dataSourceXid);
         List<DataPointVO> dataPoints;
         try {
-            if (dataSourceId != null) {
+            if (idExists(dataSourceId)) {
                 dataPoints = dataPointService.getDataPoints(dataSourceId,
                         Comparator.comparing(DataPointVO::getName));
             } else {
@@ -301,14 +297,5 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         setIf(fromRequest.getName(), toUpdate::setName, a -> !StringUtils.isEmpty(a));
         setIf(fromRequest.isEnabled(), toUpdate::setEnabled, Objects::nonNull);
         setIf(fromRequest.isSettable(), toUpdate::setSettable, Objects::nonNull);
-    }
-
-    private static void validateObjectDataPointVO(HttpServletRequest request, DataPointVO toUpdate) {
-        DwrResponseI18n responseI18n = new DwrResponseI18n();
-        toUpdate.validate(responseI18n);
-        if(responseI18n.getHasMessages()) {
-            throw new BadRequestException(toMapMessages(responseI18n),
-                    request.getRequestURI());
-        }
     }
 }
