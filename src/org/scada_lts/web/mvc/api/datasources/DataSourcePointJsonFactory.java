@@ -38,13 +38,16 @@ public class DataSourcePointJsonFactory {
     }
 
     public static DataSourceJson getDataSourceJson(DataSourceVO<?> ds) {
-        if(ds instanceof VirtualDataSourceVO) {
+        if (ds instanceof VirtualDataSourceVO) {
             return new VirtualDataSourceJson((VirtualDataSourceVO) ds);
-        } else if (ds instanceof SnmpDataSourceVO) {
+        }
+        if (ds instanceof SnmpDataSourceVO) {
             return new SnmpDataSourceJson((SnmpDataSourceVO) ds);
-        } else if (ds instanceof ModbusIpDataSourceVO) {
+        }
+        if (ds instanceof ModbusIpDataSourceVO) {
             return new ModbusIpDataSourceJson((ModbusIpDataSourceVO) ds);
-        } else if (ds instanceof MetaDataSourceVO) {
+        }
+        if (ds instanceof MetaDataSourceVO) {
             return new MetaDataSourceJson((MetaDataSourceVO) ds);
         }
         return new DataSourceJson(ds);
