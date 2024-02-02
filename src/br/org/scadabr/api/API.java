@@ -8,9 +8,8 @@
 package br.org.scadabr.api;
 
 public interface API extends javax.xml.rpc.Service {
-    public java.lang.String getAPIAddress();
 
-    public br.org.scadabr.api.ScadaBRAPI getAPI() throws javax.xml.rpc.ServiceException;
+    br.org.scadabr.api.ScadaBRAPI getAPI() throws javax.xml.rpc.ServiceException;
 
-    public br.org.scadabr.api.ScadaBRAPI getAPI(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    br.org.scadabr.api.ScadaBRAPI getAPI(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }
