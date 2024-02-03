@@ -26,14 +26,12 @@ public class ScriptsDwr extends BaseDwr {
 
 
 	public List<DataPointVO> getPoints() {
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(
+		return new DataPointDao().getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
-		return allPoints;
 	}
 
 	public List<ScriptVO<?>> getScripts() {
-		List<ScriptVO<?>> scripts = new ScriptDao().getScripts();
-		return scripts;
+		return  new ScriptDao().getScripts();
 	}
 
 	public ScriptVO<?> getScript(int id) {
