@@ -220,7 +220,9 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-		return eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		List<EventInstance> lst = eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		attachRelationInfo(lst);
+		return lst;
 	}
 
 	@Override

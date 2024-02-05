@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import static org.scada_lts.utils.SystemSettingsUtils.WEB_RESOURCE_GRAPHICS_PATH;
+import static org.scada_lts.utils.SystemSettingsUtils.WEB_RESOURCE_UPLOADS_PATH;
+
 /**
  * SystemSettings DAO
  *
@@ -161,6 +164,9 @@ public class SystemSettingsDAO {
 	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED = "workItemsReportingItemsPerSecondEnabled";
 	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT = "workItemsReportingItemsPerSecondLimit";
 	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
+	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
+	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
+
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
@@ -403,6 +409,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled());
 		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit());
 		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
+		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
+		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

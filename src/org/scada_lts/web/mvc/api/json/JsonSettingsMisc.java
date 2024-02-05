@@ -14,16 +14,20 @@ public class JsonSettingsMisc implements Serializable {
     public boolean workItemsReportingItemsPerSecondEnabled;
     public int workItemsReportingItemsPerSecondLimit;
     public int threadsNameAdditionalLength;
+    public String webResourceGraphicsPath;
+    public String webResourceUploadsPath;
 
     public JsonSettingsMisc() {}
 
-    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen, boolean hideShortcutDisableFullScreen, int eventPendingLimit, boolean eventPendingCacheEnabled) {
+    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen, boolean hideShortcutDisableFullScreen, int eventPendingLimit, boolean eventPendingCacheEnabled, String webResourceGraphicsPath, String webResourceUploadsPath) {
         this.uiPerformance = uiPerformance;
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
         this.enableFullScreen = enableFullScreen;
         this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
         this.eventPendingLimit = eventPendingLimit;
         this.eventPendingCacheEnabled = eventPendingCacheEnabled;
+        this.webResourceGraphicsPath = webResourceGraphicsPath;
+        this.webResourceUploadsPath = webResourceUploadsPath;
     }
 
     public int getUiPerformance() {
@@ -104,5 +108,21 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setThreadsNameAdditionalLength(int threadsNameAdditionalLength) {
         this.threadsNameAdditionalLength = threadsNameAdditionalLength;
+    }
+
+    public String getWebResourceGraphicsPath() {
+        return webResourceGraphicsPath;
+    }
+
+    public void setWebResourceGraphicsPath(String webResourceGraphicsPath) {
+        this.webResourceGraphicsPath = webResourceGraphicsPath;
+    }
+
+    public String getWebResourceUploadsPath() {
+        return webResourceUploadsPath;
+    }
+
+    public void setWebResourceUploadsPath(String webResourceUploadsPath) {
+        this.webResourceUploadsPath = webResourceUploadsPath;
     }
 }

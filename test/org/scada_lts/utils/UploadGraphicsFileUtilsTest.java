@@ -74,6 +74,8 @@ public class UploadGraphicsFileUtilsTest {
         datas.add(new Object[] {"classFile.class.jpg", false});
 
         datas.add(new Object[] {"txt" + File.separator + "info.txt", false});
+        datas.add(new Object[] { "jpg File.jpg", true});
+        datas.add(new Object[] { "jpg%20File.jpg", true});
         return datas;
     }
 

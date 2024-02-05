@@ -41,14 +41,10 @@ import com.serotonin.mango.Common;
  */
 abstract public class BasePooledAccess extends DatabaseAccess
 {
-    private final Log log = LogFactory.getLog(BasePooledAccess.class);
+    private final static Log log = LogFactory.getLog(BasePooledAccess.class);
     protected DataSource dataSource;
     protected boolean dataSourceFound = false;
 
-    public BasePooledAccess(ServletContext ctx)
-    {
-        super(ctx);
-    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -126,7 +122,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
         }
     }
 
-    protected void createSchema(String scriptFile)
+    protected void createSchema(String scriptFile, ServletContext ctx)
     {
         BufferedReader in = new BufferedReader(new InputStreamReader(ctx.getResourceAsStream(scriptFile)));
 

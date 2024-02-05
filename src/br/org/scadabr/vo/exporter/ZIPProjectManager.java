@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.json.ExportConfig;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -40,7 +42,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 
-import static org.scada_lts.utils.PathSecureUtils.getRealPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.*;
 
@@ -91,12 +92,14 @@ public class ZIPProjectManager {
 		tempFiles.add(buildJSONFile(JSON_FILE_NAME, includePointValues));
 
 		List<FileToPack> filesToZip = new ArrayList<>();
-		if (includeUploadsFolder)
-			filesToZip.addAll(getUploadsFolderFiles());
-
-		if (includeGraphicsFolder)
-			filesToZip.addAll(getGraphicsFolderFiles());
-
+		if (includeUploadsFolder) {
+			for(Path path: UploadFileUtils.getUploadsSystemFilePaths())
+				filesToZip.addAll(getUploadsFolderFiles(path));
+		}
+		if (includeGraphicsFolder) {
+			for(Path path: UploadFileUtils.getGraphicsSystemFilePaths())
+				filesToZip.addAll(getGraphicsFolderFiles(path));
+		}
 		filesToZip.addAll(tempFiles);
 
 		ServletOutputStream out = response.getOutputStream();
@@ -157,11 +160,11 @@ public class ZIPProjectManager {
 
 	public void importProject() throws Exception {
 
-		List<ZipEntry> graphicsFiles = getGraphicsFiles();
-		restoreFiles(graphicsFiles);
+		List<ZipEntry> graphicsFiles = getGraphicsFiles(graphicsFolder);
+		restoreFiles(graphicsFiles, getGraphicsBaseSystemFilePath(getGraphicsSystemFileToWritePath()));
 
-		List<ZipEntry> uploadFiles = getUploadFiles();
-		restoreFiles(uploadFiles);
+		List<ZipEntry> uploadFiles = getUploadFiles(uploadsFolder);
+		restoreFiles(uploadFiles, getUploadsBaseSystemFilePath(getUploadsSystemFileToWritePath()));
 
 		String jsonContent = getJsonContent();
 
@@ -170,9 +173,7 @@ public class ZIPProjectManager {
 
 	}
 
-	private void restoreFiles(List<ZipEntry> uploadFiles) {
-		String appPath = getRealPath();
-
+	private void restoreFiles(List<ZipEntry> uploadFiles, Path appPath) {
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
 			if(!entryName.isEmpty()) {
@@ -208,11 +209,11 @@ public class ZIPProjectManager {
 		}
 	}
 
-	private List<ZipEntry> getUploadFiles() {
+	private List<ZipEntry> getUploadFiles(String uploadsFolder) {
 		return filteringUploadFiles(filterZipFiles(uploadsFolder), zipFile);
 	}
 
-	private List<ZipEntry> getGraphicsFiles() {
+	private List<ZipEntry> getGraphicsFiles(String graphicsFolder) {
 		return filteringGraphicsFiles(filterZipFiles(graphicsFolder), zipFile);
 	}
 
@@ -241,41 +242,27 @@ public class ZIPProjectManager {
 		return file;
 	}
 
-	private List<FileToPack> getUploadsFolderFiles() {
-		String uploadFolder = Common.ctx.getServletContext().getRealPath(
-				FILE_SEPARATOR)
-				+ "uploads";
-
+	private List<FileToPack> getUploadsFolderFiles(Path uploadFolder) {
 		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
-		List<FileToPack> pack = new ArrayList<FileToPack>();
+		List<FileToPack> pack = new ArrayList<>();
+
 		for (File file : files) {
-
-			String filePartialPath = uploadsFolder + file.getName();
-
-			pack.add(new FileToPack(filePartialPath.substring(0, 7)
-					+ FILE_SEPARATOR + filePartialPath.substring(8), file));
+			String[] uploadsBasePath = file.getAbsolutePath().split("uploads");
+			String filePartialPath = "uploads" + uploadsBasePath[1];
+			pack.add(new FileToPack(filePartialPath, file));
 		}
 		return pack;
 	}
 
-	private List<FileToPack> getGraphicsFolderFiles() {
-		String graphicFolder = Common.ctx.getServletContext().getRealPath(
-				FILE_SEPARATOR)
-				+ "graphics";
-
+	private List<FileToPack> getGraphicsFolderFiles(Path graphicFolder) {
 		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
-		List<FileToPack> pack = new ArrayList<FileToPack>();
+		List<FileToPack> pack = new ArrayList<>();
 
 		for (File file : files) {
-
-			String[] pathDivided = null;
-
-			pathDivided = file.getAbsolutePath().split("graphics");
-
-			String filePartialPath = "graphics" + pathDivided[1];
-
+			String[] uploadsBasePath = file.getAbsolutePath().split("graphics");
+			String filePartialPath = "graphics" + uploadsBasePath[1];
 			pack.add(new FileToPack(filePartialPath, file));
 		}
 

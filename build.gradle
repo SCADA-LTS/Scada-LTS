@@ -73,14 +73,13 @@ task warDev(type: War) {
 }
 
 task clearDockerDir(type: Delete) {
-    delete files("docker/volumes/webapps/ScadaBR.war")
+    delete files("docker/volumes/webapps/Scada-LTS.war")
 }
 
 task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
     from "build/libs/"
     into "docker/volumes/webapps/"
     include('Scada-LTS.war')
-    rename('Scada-LTS.war', "ScadaBR.war")
 }
 
 task installWebDependency(type: Exec) {
@@ -94,6 +93,8 @@ task installWebDependency(type: Exec) {
 
 task clearTomcat(type: Delete) {
     delete System.getenv("CATALINA_HOME") + "/work/Catalina/localhost"
+    delete System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS"
+    delete file(System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS.war")
     delete System.getenv("CATALINA_HOME") + "/webapps/ScadaBR"
     delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
 }
@@ -108,7 +109,6 @@ task deployTomcat(type: Copy, dependsOn: existsScadaLTSWarFile) {
     from "build/libs/"
     into System.getenv("CATALINA_HOME")+ "/webapps"
     include('Scada-LTS.war')
-    rename('Scada-LTS.war', "ScadaBR.war")
 }
 
 task deploy(type: GradleBuild) {

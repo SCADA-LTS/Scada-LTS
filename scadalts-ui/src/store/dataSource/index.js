@@ -154,7 +154,7 @@ const ds = {
 			await commit('SET_DATA_SOURCE_LOADING',{dataSourceId, loading:true});
 			return new Promise((resolve, reject) => {
 				//Single array of Data Point configuration.
-				//http://localhost:8080/ScadaBR/api/datapoint?id=X//
+				//http://localhost:8080/Scada-LTS/api/datapoint?id=X//
 				dispatch('requestGet', `/datapoint/datasource?id=${dataSourceId}`)
 				.then(response => {
 					commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints: response});
