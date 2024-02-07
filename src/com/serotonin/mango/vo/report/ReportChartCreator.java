@@ -58,6 +58,10 @@ public class ReportChartCreator {
      */
     private static final int IMAGE_WIDTH = 930;
     private static final int IMAGE_HEIGHT = 400;
+    private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
+    private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 149;
+    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35;
+    private static final int DATA_POINT_NAME_LENGTH_FOR_CHART = 100;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -79,7 +83,15 @@ public class ReportChartCreator {
         this.bundle = bundle;
     }
 
-    /**
+    public static int getDataSourceNameLengthForReport() {
+		return DATA_SOURCE_NAME_LENGTH_FOR_CHART;
+	}
+
+    public static int getDataPointNameLengthForReport() {
+		return DATA_POINT_NAME_LENGTH_FOR_CHART;
+	}
+
+	/**
      * Uses the given parameters to create the data for the fields of this class. Once the content has been created the
      * getters for the fields can be used to retrieve.
      * 
@@ -144,8 +156,12 @@ public class ReportChartCreator {
                 // The path comes from the servlet path definition in web.xml.
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
-
-            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, IMAGE_HEIGHT);
+            try{
+	            int consolidatedChartHeight = ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, IMAGE_HEIGHT, IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER);
+                imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, consolidatedChartHeight);
+            } catch (IllegalArgumentException e) {
+				e.printStackTrace();
+            }
         }
 
         List<EventInstance> events = null;
@@ -255,7 +271,7 @@ public class ReportChartCreator {
         return pointStatistics;
     }
 
-    public class PointStatistics {
+    public static class PointStatistics {
         private final int reportPointId;
         private String name;
         private int dataType;
@@ -268,8 +284,11 @@ public class ReportChartCreator {
         private DiscreteTimeSeries discreteTimeSeries;
         private byte[] imageData;
 
-        public PointStatistics(int reportPointId) {
+        private String inlinePrefix;
+
+        public PointStatistics(int reportPointId, String inlinePrefix) {
             this.reportPointId = reportPointId;
+            this.inlinePrefix = inlinePrefix;
         }
 
         public String getName() {
@@ -475,7 +494,7 @@ public class ReportChartCreator {
         public void startPoint(ReportPointInfo pointInfo) {
             donePoint();
 
-            point = new PointStatistics(pointInfo.getReportPointId());
+            point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
             point.setName(pointInfo.getExtendedName());
             point.setDataType(pointInfo.getDataType());
             point.setDataTypeDescription(DataTypes.getDataTypeMessage(pointInfo.getDataType()).getLocalizedMessage(

@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -209,5 +210,31 @@ public class ImageChartUtils {
         }
         catch (SeriesException e) { /* duplicate Second. Ignore. */
         }
+    }
+
+	public static int calculateHeightConsolidatedChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeight, int imageHeightForDataPointNameInLegend, int charNumberPerLine) {
+		StringBuilder subLegend = new StringBuilder();
+		int linesAmount = 0;
+		String charsForColorIndicator = "111";
+		for (ReportChartCreator.PointStatistics point : pointStatistics){
+			subLegend.append(charsForColorIndicator);
+            if (point.getName().length() > charNumberPerLine){
+                throw new IllegalArgumentException("Point name is too long: " + point.getName());
+            }
+
+			else if ((subLegend.length() + point.getName().length()) > charNumberPerLine){
+				subLegend.delete(0, subLegend.length());
+				linesAmount++;
+                subLegend.append(charsForColorIndicator);
+				subLegend.append(point.getName());
+			}
+			else {
+				subLegend.append(point.getName());
+			}
+		}
+        if (pointStatistics.isEmpty() || pointStatistics.get(pointStatistics.size() - 1).getName().length() != charNumberPerLine) {
+            linesAmount++;
+        }
+        return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
     }
 }
