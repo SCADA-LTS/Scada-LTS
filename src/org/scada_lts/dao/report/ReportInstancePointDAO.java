@@ -126,7 +126,7 @@ public class ReportInstancePointDAO {
 		}
 
 		public String getName() {
-			return StringUtils.abbreviateMiddle(point.getName(), ReportChartCreator.getDataPointNameLengthForReport());
+			return StringUtils.abbreviateMiddle(point.getName(), ReportChartCreator.getDataSourceAndDataPointNameLengthForReport()-getDeviceName().length());
 		}
 
 		public String getDeviceName() {

@@ -60,8 +60,8 @@ public class ReportChartCreator {
     private static final int IMAGE_HEIGHT = 400;
     private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
     private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 149;
-    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 35;
-    private static final int DATA_POINT_NAME_LENGTH_FOR_CHART = 100;
+    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 30;
+    private static final int DATA_SOURCE_AND_DATA_POINT_NAME_LENGTH_FOR_CHART = 65;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -87,8 +87,8 @@ public class ReportChartCreator {
 		return DATA_SOURCE_NAME_LENGTH_FOR_CHART;
 	}
 
-    public static int getDataPointNameLengthForReport() {
-		return DATA_POINT_NAME_LENGTH_FOR_CHART;
+    public static int getDataSourceAndDataPointNameLengthForReport() {
+		return DATA_SOURCE_AND_DATA_POINT_NAME_LENGTH_FOR_CHART;
 	}
 
 	/**
