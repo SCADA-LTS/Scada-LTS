@@ -23,6 +23,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -166,8 +167,8 @@ public class ScheduledEventDAO {
 			scheduledEventVO.setAlias(rs.getString(COLUMN_NAME_ALIAS));
 			scheduledEventVO.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			scheduledEventVO.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
-			scheduledEventVO.setReturnToNormal(DAO.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
-			scheduledEventVO.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
+			scheduledEventVO.setReturnToNormal(CharTo.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
+			scheduledEventVO.setDisabled(CharTo.charToBool(COLUMN_NAME_DISABLED));
 			scheduledEventVO.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
 			scheduledEventVO.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
 			scheduledEventVO.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));
@@ -244,8 +245,8 @@ public class ScheduledEventDAO {
 						scheduledEventVO.getAlias(),
 						scheduledEventVO.getAlarmLevel(),
 						scheduledEventVO.getScheduleType(),
-						DAO.boolToChar(scheduledEventVO.isReturnToNormal()),
-						DAO.boolToChar(scheduledEventVO.isDisabled()),
+						CharTo.boolToChar(scheduledEventVO.isReturnToNormal()),
+						CharTo.boolToChar(scheduledEventVO.isDisabled()),
 						scheduledEventVO.getActiveYear(),
 						scheduledEventVO.getActiveMonth(),
 						scheduledEventVO.getActiveDay(),
@@ -281,8 +282,8 @@ public class ScheduledEventDAO {
 					scheduledEventVO.getAlias(),
 					scheduledEventVO.getAlarmLevel(),
 					scheduledEventVO.getScheduleType(),
-					DAO.boolToChar(scheduledEventVO.isReturnToNormal()),
-					DAO.boolToChar(scheduledEventVO.isDisabled()),
+					CharTo.boolToChar(scheduledEventVO.isReturnToNormal()),
+					CharTo.boolToChar(scheduledEventVO.isDisabled()),
 					scheduledEventVO.getActiveYear(),
 					scheduledEventVO.getActiveMonth(),
 					scheduledEventVO.getActiveDay(),

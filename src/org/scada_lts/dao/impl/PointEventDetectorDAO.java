@@ -197,7 +197,7 @@ public class PointEventDetectorDAO {
 			pointEventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
 			pointEventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
 			pointEventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
-			pointEventDetector.setBinaryState(DAO.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
+			pointEventDetector.setBinaryState(CharTo.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
 			pointEventDetector.setMultistateState(rs.getInt(COLUMN_NAME_MULTISTATE_STATE));
 			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
@@ -295,7 +295,7 @@ public class PointEventDetectorDAO {
 						pointEventDetector.getLimit(),
 						pointEventDetector.getDuration(),
 						pointEventDetector.getDurationType(),
-						DAO.boolToChar(pointEventDetector.isBinaryState()),
+						CharTo.boolToChar(pointEventDetector.isBinaryState()),
 						pointEventDetector.getMultistateState(),
 						pointEventDetector.getChangeCount(),
 						pointEventDetector.getAlphanumericState(),
@@ -322,7 +322,7 @@ public class PointEventDetectorDAO {
 				pointEventDetector.getLimit(),
 				pointEventDetector.getDuration(),
 				pointEventDetector.getDurationType(),
-				DAO.boolToChar(pointEventDetector.isBinaryState()),
+				CharTo.boolToChar(pointEventDetector.isBinaryState()),
 				pointEventDetector.getMultistateState(),
 				pointEventDetector.getChangeCount(),
 				pointEventDetector.getAlphanumericState(),
@@ -346,7 +346,7 @@ public class PointEventDetectorDAO {
 						pointEventDetector.getLimit(),
 						pointEventDetector.getDuration(),
 						pointEventDetector.getDurationType(),
-						DAO.boolToChar(pointEventDetector.isBinaryState()),
+						CharTo.boolToChar(pointEventDetector.isBinaryState()),
 						pointEventDetector.getMultistateState(),
 						pointEventDetector.getChangeCount(),
 						pointEventDetector.getAlphanumericState(),

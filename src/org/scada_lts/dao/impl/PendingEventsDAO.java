@@ -176,7 +176,7 @@ public class PendingEventsDAO {
 		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
 		EventType type = EventTypeUtil.createEventType(typeId,typeRef1,typeRef2);
 		long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
-		Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
+		Boolean rtnApplicable = CharTo.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
 
 		LocalizableMessage message;
@@ -211,7 +211,7 @@ public class PendingEventsDAO {
 			event.setAlternateAckSource(rs.getInt(COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE));
 		}
 		String silent = rs.getString(COLUMN_NAME_EVENT_SILENCED);
-		event.setSilenced(DAO.charToBool(silent));
+		event.setSilenced(CharTo.charToBool(silent));
 		
 		if (!rs.wasNull()) {
 			event.setUserNotified(true);

@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
@@ -564,7 +565,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			EventInstance event = new EventInstance(
 					type, 
 					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
-					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)), 
+					CharTo.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)),
 					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
 					message,
 					shortMessage,
@@ -594,7 +595,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		public EventInstance mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
 			EventInstance event = super.mapRow(rs, rowNum);
-			event.setSilenced(DAO.charToBool(rs.getString(COLUMN_NAME_SILENCED)));
+			event.setSilenced(CharTo.charToBool(rs.getString(COLUMN_NAME_SILENCED)));
 			if (!rs.wasNull())
 				event.setUserNotified(true);
 			return event;
@@ -912,7 +913,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						type.getReferenceId1(),
 				 						type.getReferenceId2(),
 				 						entity.getActiveTimestamp(),
-				 						DAO.boolToChar(entity.isRtnApplicable()),
+				 						CharTo.boolToChar(entity.isRtnApplicable()),
 				 						(!entity.isActive() ? entity.getRtnTimestamp():0),
 				 						(!entity.isActive() ? entity.getRtnCause():0),
 				 						entity.getAlarmLevel(),
@@ -993,11 +994,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
-		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER, new Object[]{typeId, typeRef1, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
+		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER, new Object[]{typeId, typeRef1, userId, CharTo.boolToChar(true)}, new UserEventRowMapper() );
 	}
 	
 	public List<EventInstance> getPendingEvents(int typeId, int userId) {
-		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER, new Object[]{typeId, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
+		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER, new Object[]{typeId, userId, CharTo.boolToChar(true)}, new UserEventRowMapper() );
 	}
 	
 	public List<EventInstance> getPendingEventsLimit(int userId, int limit) {
@@ -1022,10 +1023,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			LOG.trace("delete events before ts:"+time);
 		}
 		
-		int count = DAO.getInstance().getJdbcTemp().update(EVENT_DELETE_BEFORE, new Object[]  { time, DAO.boolToChar(false), DAO.boolToChar(true) });
+		int count = DAO.getInstance().getJdbcTemp().update(EVENT_DELETE_BEFORE, new Object[]  { time, CharTo.boolToChar(false), CharTo.boolToChar(true) });
 		
 		//TODO rewrite when delete event delete cascade remove user comments
-		DAO.getInstance().getJdbcTemp().update(EVENT_DELETE_BEFORE, new Object[]  { time, DAO.boolToChar(false), DAO.boolToChar(true) });
+		DAO.getInstance().getJdbcTemp().update(EVENT_DELETE_BEFORE, new Object[]  { time, CharTo.boolToChar(false), CharTo.boolToChar(true) });
 		
 		return count;
 		
@@ -1058,13 +1059,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
 			where.add("e.rtnApplicable=? and e.rtnTs is null");
-			params.add(DAO.boolToChar(true));
+			params.add(CharTo.boolToChar(true));
 		} else if (EventsDwr.STATUS_RTN.equals(status)) {
 			where.add("e.rtnApplicable=? and e.rtnTs is not null");
-			params.add(DAO.boolToChar(true));
+			params.add(CharTo.boolToChar(true));
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
 			where.add("e.rtnApplicable=?");
-			params.add(DAO.boolToChar(false));
+			params.add(CharTo.boolToChar(false));
 		}
 
 		if (alarmLevel != -1) {
@@ -1164,13 +1165,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
 			where.add("e.rtnApplicable=? and e.rtnTs is null");
-			params.add(DAO.boolToChar(true));
+			params.add(CharTo.boolToChar(true));
 		} else if (EventsDwr.STATUS_RTN.equals(status)) {
 			where.add("e.rtnApplicable=? and e.rtnTs is not null");
-			params.add(DAO.boolToChar(true));
+			params.add(CharTo.boolToChar(true));
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
 			where.add("e.rtnApplicable=?");
-			params.add(DAO.boolToChar(false));
+			params.add(CharTo.boolToChar(false));
 		}
 
 		if (alarmLevel != -1) {
@@ -1387,14 +1388,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		if (result == null) {
 			return true;
 		} else {
-			boolean silenced = !DAO.charToBool(result);
-			int updatedCount = DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { DAO.boolToChar(silenced), eventId, userId });
+			boolean silenced = !CharTo.charToBool(result);
+			int updatedCount = DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { CharTo.boolToChar(silenced), eventId, userId });
 			return silenced && updatedCount > 0;
 		}
 	}
 
 	public int getHighestUnsilencedAlarmLevel(int userId) {
-		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { DAO.boolToChar(false), userId },Integer.class);
+		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { CharTo.boolToChar(false), userId },Integer.class);
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

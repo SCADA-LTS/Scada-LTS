@@ -26,6 +26,7 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.SerializationData;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -153,7 +154,7 @@ public class ReportInstancePointDAO {
 						DataTypes.valueToString(startValue),
 						new SerializationData().writeObject(point.getTextRenderer()),
 						pointInfo.getColour(),
-						DAO.boolToChar(pointInfo.isConsolidatedChart())
+						CharTo.boolToChar(pointInfo.isConsolidatedChart())
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -179,7 +180,7 @@ public class ReportInstancePointDAO {
 
 			reportPointInfo.setTextRenderer((TextRenderer) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_P_TEXT_RENDERER).getBinaryStream()));
 			reportPointInfo.setColour(rs.getString(COLUMN_NAME_P_COLOUR));
-			reportPointInfo.setConsolidatedChart(DAO.charToBool(rs.getString(COLUMN_NAME_P_CONSOLIDATED_CHART)));
+			reportPointInfo.setConsolidatedChart(CharTo.charToBool(rs.getString(COLUMN_NAME_P_CONSOLIDATED_CHART)));
 
 			return reportPointInfo;
 		}

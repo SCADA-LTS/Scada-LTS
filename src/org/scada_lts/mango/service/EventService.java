@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
@@ -171,7 +172,7 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public List<EventInstance> getActiveEvents() {
-		List<EventInstance> result = eventDAO.filtered(EventDAO.EVENT_FILTER_ACTIVE, new Object[]{DAO.boolToChar(true)}, EventDAO.NO_LIMIT);
+		List<EventInstance> result = eventDAO.filtered(EventDAO.EVENT_FILTER_ACTIVE, new Object[]{CharTo.boolToChar(true)}, EventDAO.NO_LIMIT);
 		attachRelationInfo(result); 
 		return result;
 	}

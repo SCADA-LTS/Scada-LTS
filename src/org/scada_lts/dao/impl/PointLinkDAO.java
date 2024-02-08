@@ -116,7 +116,7 @@ public class PointLinkDAO {
 			pointLink.setTargetPointId(rs.getInt(COLUMN_NAME_TARGET_POINT_ID));
 			pointLink.setScript(rs.getString(COLUMN_NAME_SCRIPT));
 			pointLink.setEvent(rs.getInt(COLUMN_NAME_EVENT_TYPE));
-			pointLink.setDisabled(DAO.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
+			pointLink.setDisabled(CharTo.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
 			return pointLink;
 		}
 	}
@@ -192,7 +192,7 @@ public class PointLinkDAO {
 					pointLink.getTargetPointId(),
 					pointLink.getScript(),
 					pointLink.getEvent(),
-					DAO.boolToChar(pointLink.isDisabled())}
+					CharTo.boolToChar(pointLink.isDisabled())}
 				).setValues(ps);
 				return ps;
 			}
@@ -214,7 +214,7 @@ public class PointLinkDAO {
 				pointLink.getTargetPointId(),
 				pointLink.getScript(),
 				pointLink.getEvent(),
-				DAO.boolToChar(pointLink.isDisabled()),
+				CharTo.boolToChar(pointLink.isDisabled()),
 				pointLink.getId()
 		});
 	}

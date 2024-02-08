@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.event.UserEvent;
@@ -130,7 +131,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			userEvent = new UserEvent();
 			userEvent.setEventId(rs.getLong(COLUMN_NAME_EVENT_ID));
 			userEvent.setUserId(rs.getLong(COLUMN_NAME_USER_ID));
-			userEvent.setSilenced(DAO.charToBool(rs.getString(COLUMN_NAME_SILENCED)));
+			userEvent.setSilenced(CharTo.charToBool(rs.getString(COLUMN_NAME_SILENCED)));
 						
 			return userEvent;
 			
@@ -176,7 +177,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		
 		DAO.getInstance().getJdbcTemp().update(USER_EVENT_INSERT,  new Object[] {
 			 						entity.getUserId(),
-			 						DAO.boolToChar(entity.isSilenced()),
+			 						CharTo.boolToChar(entity.isSilenced()),
 									entity.getEventId(),
 			 				});
 
@@ -195,7 +196,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 				ps.setInt(COLUMN_INDEX_EVENT_ID, eventId);
 				ps.setInt(COLUMN_INDEX_USER_ID, userIds.get(i));
-				ps.setString(COLUMN_INDEX_SILENCED, DAO.boolToChar(!alarm));
+				ps.setString(COLUMN_INDEX_SILENCED, CharTo.boolToChar(!alarm));
 			}
 		  });
 	}
@@ -206,7 +207,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			LOG.trace("eventId:"+eventId);
 		}
 				
-		DAO.getInstance().getJdbcTemp().update( USER_EVENT_ACK, new Object[]  { DAO.boolToChar(silenced), eventId } );
+		DAO.getInstance().getJdbcTemp().update( USER_EVENT_ACK, new Object[]  { CharTo.boolToChar(silenced), eventId } );
 	}
 
 	public void silenceEvent(long eventId, int userId) {
