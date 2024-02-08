@@ -27,6 +27,7 @@ import java.util.List;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.GenericDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -126,8 +127,8 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
             ced.setXid(rs.getString(COLUMN_NAME_XID));
             ced.setName(rs.getString(COLUMN_NAME_NAME));
             ced.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
-            ced.setReturnToNormal(DAO.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
-            ced.setDisabled(DAO.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
+            ced.setReturnToNormal(CharTo.charToBool(rs.getString(COLUMN_NAME_RETURN_TO_NORMAL)));
+            ced.setDisabled(CharTo.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
             ced.setCondition(rs.getString(COLUMN_NAME_CONDITION_TEXT));
             return ced;
         }
@@ -191,8 +192,8 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 						 						entity.getXid(),
 						 						entity.getName(),
 						 						entity.getAlarmLevel(),
-						 						DAO.boolToChar(entity.isReturnToNormal()),
-						 						DAO.boolToChar(entity.isDisabled()),
+						 						CharTo.boolToChar(entity.isReturnToNormal()),
+						 						CharTo.boolToChar(entity.isDisabled()),
 						 						entity.getCondition()	 						
 						 				}).setValues(ps);
 						 				return ps;
@@ -211,8 +212,8 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 				entity.getXid(),
 				entity.getName(),
 				entity.getAlarmLevel(),
-				DAO.boolToChar(entity.isReturnToNormal()),
-				DAO.boolToChar(entity.isDisabled()),
+				CharTo.boolToChar(entity.isReturnToNormal()),
+				CharTo.boolToChar(entity.isDisabled()),
 				entity.getCondition(),
 				entity.getId()
 		});

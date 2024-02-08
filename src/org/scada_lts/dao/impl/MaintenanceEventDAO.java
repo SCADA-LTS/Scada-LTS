@@ -188,7 +188,7 @@ public class MaintenanceEventDAO {
 			maintenanceEvent.setAlias(rs.getString(COLUMN_NAME_ALIAS));
 			maintenanceEvent.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
 			maintenanceEvent.setScheduleType(rs.getInt(COLUMN_NAME_SCHEDULE_TYPE));
-			maintenanceEvent.setDisabled(DAO.charToBool(COLUMN_NAME_DISABLED));
+			maintenanceEvent.setDisabled(CharTo.charToBool(COLUMN_NAME_DISABLED));
 			maintenanceEvent.setActiveYear(rs.getInt(COLUMN_NAME_ACTIVE_YEAR));
 			maintenanceEvent.setActiveMonth(rs.getInt(COLUMN_NAME_ACTIVE_MONTH));
 			maintenanceEvent.setActiveDay(rs.getInt(COLUMN_NAME_ACTIVE_DAY));
@@ -264,7 +264,7 @@ public class MaintenanceEventDAO {
 						maintenanceEvent.getAlias(),
 						maintenanceEvent.getAlarmLevel(),
 						maintenanceEvent.getScheduleType(),
-						DAO.boolToChar(maintenanceEvent.isDisabled()),
+						CharTo.boolToChar(maintenanceEvent.isDisabled()),
 						maintenanceEvent.getActiveYear(),
 						maintenanceEvent.getActiveMonth(),
 						maintenanceEvent.getActiveDay(),
@@ -302,7 +302,7 @@ public class MaintenanceEventDAO {
 						maintenanceEvent.getAlias(),
 						maintenanceEvent.getAlarmLevel(),
 						maintenanceEvent.getScheduleType(),
-						DAO.boolToChar(maintenanceEvent.isDisabled()),
+						CharTo.boolToChar(maintenanceEvent.isDisabled()),
 						maintenanceEvent.getActiveYear(),
 						maintenanceEvent.getActiveMonth(),
 						maintenanceEvent.getActiveDay(),

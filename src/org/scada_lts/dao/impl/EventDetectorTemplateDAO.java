@@ -170,7 +170,7 @@ public class EventDetectorTemplateDAO {
 						detector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
 						detector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
 						detector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
-						detector.setBinaryState(DAO.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
+						detector.setBinaryState(CharTo.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
 						detector.setMultistateState(rs.getInt(COLUMN_NAME_MYLTISTATE_STATE));
 						detector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 						detector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
@@ -256,7 +256,7 @@ public class EventDetectorTemplateDAO {
 					ped.getLimit(), 
 					ped.getDuration(),
 					ped.getDurationType(),
-					DAO.boolToChar(ped.isBinaryState()),
+					CharTo.boolToChar(ped.isBinaryState()),
 					ped.getMultistateState(), 
 					ped.getChangeCount(),
 					ped.getAlphanumericState(), 

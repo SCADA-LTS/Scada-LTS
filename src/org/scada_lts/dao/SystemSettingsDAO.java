@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
@@ -235,7 +236,7 @@ public class SystemSettingsDAO {
 		String value = getValue(key, null);
 		if (value == null)
 			return defaultValue;
-		return DAO.charToBool(value);
+		return CharTo.charToBool(value);
 	}
 
 	public static boolean getBooleanValueOrDefault(String key) {
@@ -269,7 +270,7 @@ public class SystemSettingsDAO {
 	}
 
 	public void setBooleanValue(String key, boolean value) {
-		setValue(key, DAO.boolToChar(value));
+		setValue(key, CharTo.boolToChar(value));
 	}
 
 	public void removeValue(String key) {

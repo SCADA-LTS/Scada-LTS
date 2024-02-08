@@ -29,6 +29,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -150,13 +151,13 @@ public class ReportInstanceDAO {
 			reportInstance.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			reportInstance.setName(rs.getString(COLUMN_NAME_NAME));
 			reportInstance.setIncludeEvents(rs.getInt(COLUMN_NAME_INCLUDE_EVENTS));
-			reportInstance.setIncludeUserComments(DAO.charToBool(rs.getString(COLUMN_NAME_INCLUDE_USER_COMMENTS)));
+			reportInstance.setIncludeUserComments(CharTo.charToBool(rs.getString(COLUMN_NAME_INCLUDE_USER_COMMENTS)));
 			reportInstance.setReportStartTime(rs.getLong(COLUMN_NAME_REPORT_START_TIME));
 			reportInstance.setReportEndTime(rs.getLong(COLUMN_NAME_REPORT_END_TIME));
 			reportInstance.setRunStartTime(rs.getLong(COLUMN_NAME_RUN_START_TIME));
 			reportInstance.setRunEndTime(rs.getLong(COLUMN_NAME_RUN_END_TIME));
 			reportInstance.setRecordCount(rs.getInt(COLUMN_NAME_RECORD_COUNT));
-			reportInstance.setPreventPurge(DAO.charToBool(rs.getString(COLUMN_NAME_PREVENT_PURGE)));
+			reportInstance.setPreventPurge(CharTo.charToBool(rs.getString(COLUMN_NAME_PREVENT_PURGE)));
 			return reportInstance;
 		}
 	}
@@ -201,13 +202,13 @@ public class ReportInstanceDAO {
 						reportInstance.getUserId(),
 						reportInstance.getName(),
 						reportInstance.getIncludeEvents(),
-						DAO.boolToChar(reportInstance.isIncludeUserComments()),
+						CharTo.boolToChar(reportInstance.isIncludeUserComments()),
 						reportInstance.getReportStartTime(),
 						reportInstance.getReportEndTime(),
 						reportInstance.getRunStartTime(),
 						reportInstance.getRunEndTime(),
 						reportInstance.getRecordCount(),
-						DAO.boolToChar(reportInstance.isPreventPurge())
+						CharTo.boolToChar(reportInstance.isPreventPurge())
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -240,7 +241,7 @@ public class ReportInstanceDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_UPDATE_PREVENT_PURGE, new Object[]{
-				DAO.boolToChar(preventPurge),
+				CharTo.boolToChar(preventPurge),
 				id,
 				userId
 		});
@@ -263,7 +264,7 @@ public class ReportInstanceDAO {
 			LOG.trace("deleteReportBefore(final long time) time:" + time);
 		}
 
-		return DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE_BEFORE, new Object[]{ time, DAO.boolToChar(false)});
+		return DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE_BEFORE, new Object[]{ time, CharTo.boolToChar(false)});
 	}
 
 	/*
@@ -326,7 +327,7 @@ public class ReportInstanceDAO {
 			EventInstance event = new EventInstance(
 					type,
 					rs.getLong(COLUMN_NAME_E_ACTIVE_TS),
-					DAO.charToBool(rs.getString(COLUMN_NAME_E_RTN_APP)),
+					CharTo.charToBool(rs.getString(COLUMN_NAME_E_RTN_APP)),
 					rs.getInt(COLUMN_NAME_E_ALARM_LEVEL),
 					message,
 					message,

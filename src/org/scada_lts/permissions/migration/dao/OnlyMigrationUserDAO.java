@@ -3,6 +3,7 @@ package org.scada_lts.permissions.migration.dao;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.CharTo;
 import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.IUserDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -130,13 +131,13 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 			user.setPassword(rs.getString(COLUMN_NAME_PASSWORD));
 			user.setEmail(rs.getString(COLUMN_NAME_EMAIL));
 			user.setPhone(rs.getString(COLUMN_NAME_PHONE));
-			user.setAdmin(DAO.charToBool(rs.getString(COLUMN_NAME_ADMIN)));
-			user.setDisabled(DAO.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
+			user.setAdmin(CharTo.charToBool(rs.getString(COLUMN_NAME_ADMIN)));
+			user.setDisabled(CharTo.charToBool(rs.getString(COLUMN_NAME_DISABLED)));
 			user.setSelectedWatchList(rs.getInt(COLUMN_NAME_SELECTED_WATCH_LIST));
 			user.setHomeUrl(rs.getString(COLUMN_NAME_HOME_URL));
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
-			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setReceiveOwnAuditEvents(CharTo.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
 			return user;
 		}
 	}
@@ -195,7 +196,7 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 			LOG.trace("getActiveUsers()");
 		}
 
-		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ACTIVE, new Object[]{DAO.boolToChar(false)}, new UserRowMapper());
+		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ACTIVE, new Object[]{CharTo.boolToChar(false)}, new UserRowMapper());
 	}
 
 	public void updateHomeUrl(int userId, String homeUrl) {
@@ -234,11 +235,11 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 						user.getPassword(),
 						user.getEmail(),
 						user.getPhone(),
-						DAO.boolToChar(user.isAdmin()),
-						DAO.boolToChar(user.isDisabled()),
+						CharTo.boolToChar(user.isAdmin()),
+						CharTo.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						CharTo.boolToChar(user.isReceiveOwnAuditEvents())
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -257,11 +258,11 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 				user.getPassword(),
 				user.getEmail(),
 				user.getPhone(),
-				DAO.boolToChar(user.isAdmin()),
-				DAO.boolToChar(user.isDisabled()),
+				CharTo.boolToChar(user.isAdmin()),
+				CharTo.boolToChar(user.isDisabled()),
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
-				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				CharTo.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.getId()
 		});
 
