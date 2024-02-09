@@ -21,11 +21,13 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
@@ -1074,12 +1076,8 @@ public class RuntimeManager {
 
 		DataPointService dataPointService = new DataPointService();
 		List<DataPointVO> allPoints = dataPointService.getDataPoints(null, true);
-		List<DataPointVO> nonMetaDataPoints = allPoints.stream()
-				.filter(a -> !(a.getPointLocator() instanceof MetaPointLocatorVO))
-				.collect(Collectors.toList());
-		List<DataPointVO> metaDataPoints = allPoints.stream()
-				.filter(a -> a.getPointLocator() instanceof MetaPointLocatorVO)
-				.collect(Collectors.toList());
+		List<DataPointVO> nonMetaDataPoints = filterDataPoints(allPoints, a -> a.getPointLocator() instanceof MetaPointLocatorVO);
+		List<DataPointVO> metaDataPoints = filterDataPoints(allPoints, a -> !(a.getPointLocator() instanceof MetaPointLocatorVO));
 
 		run(nonMetaDataPoints);
 
@@ -1141,4 +1139,30 @@ public class RuntimeManager {
 			}
 		}
 	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
+		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
+		return filterRunningDataPoints(new ArrayList<>(dataPoints.values()), dataPoint ->
+				Objects.nonNull(dataPoint.getPointLocator())
+				&& dataPoint.getPointLocator() instanceof MetaPointLocatorRT
+				&& Objects.nonNull((((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()))
+				&& Objects.nonNull((((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()).getContext())
+				&& (((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()).getContext().stream()
+						.map(IntValuePair::getKey)
+						.collect(Collectors.toList())
+						.contains(dataPointInContextId));
+	}
+
+	private static List<DataPointRT> filterRunningDataPoints(List<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
+	private static List<DataPointVO> filterDataPoints(List<DataPointVO> dataPoints, Predicate<DataPointVO> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
 }

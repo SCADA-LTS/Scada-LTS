@@ -31,7 +31,7 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoints;
 
 /**
  * @author Matthew Lohbihler
@@ -144,11 +144,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
         LocalizableMessage message = validatePdu(response);
         if (message != null) {
-            setUnreliableDataPoint(dataPoint);
-            raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
+            raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message, dataPoint);
         } else {
             dataPoint.setPointValue(valueTime, source);
-            resetUnreliableDataPoint(dataPoint);
+            returnToNormal(PDU_EXCEPTION_EVENT, valueTime.getTime(), dataPoint);
         }
     }
     public void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
@@ -217,7 +216,6 @@ public class SnmpDataSourceRT extends PollingDataSource {
                     setUnreliableDataPoints(dataPoints);
 //                    Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
                 } else if (message != null) {
-                    setUnreliableDataPoints(dataPoints);
                     raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
                 }
             }
@@ -231,11 +229,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
                         updatePoint(dp, vb.getVariable(), time);
                     }
                 }
-                resetUnreliableDataPoints(dataPoints);
             } else {
-                setUnreliableDataPoints(dataPoints);
                 raiseEvent(PDU_EXCEPTION_EVENT, time, true, validatePdu(response));
-
             }
         }
 
@@ -283,10 +278,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
         }
 
         if(messageType!=MessageType.undefined) {
-            setUnreliableDataPoint(dp);
             raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
-        } else {
-            resetUnreliableDataPoint(dp);
         }
 
         return messageType!=MessageType.undefined;
@@ -348,10 +340,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
         // Take a look at the response.
         LocalizableMessage message = validatePdu(trap);
         if (message != null) {
-            setUnreliableDataPoints(dataPoints);
             raiseEvent(PDU_EXCEPTION_EVENT, time, false, message);
         } else {
-            resetUnreliableDataPoints(dataPoints);
             synchronized (pointListChangeLock) {
                 updateChangedPoints();
 
@@ -368,11 +358,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
                     }
 
                     if (!found) {
-                        setUnreliableDataPoints(dataPoints);
                         raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
                         log.warn("Trap not handled: " + vb);
-                    } else {
-                        resetUnreliableDataPoints(dataPoints);
                     }
                 }
             }
@@ -383,6 +370,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
         SnmpPointLocatorRT locator = dp.getPointLocator();
         dp.updatePointValue(new PointValueTime(locator
                 .variableToValue(variable), time));
+        returnToNormal(PDU_EXCEPTION_EVENT, time, dp);
     }
 
     //
@@ -402,9 +390,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
                     System.currentTimeMillis());
-            resetUnreliableDataPoints(dataPoints);
         } catch (Exception e) {
-            setUnreliableDataPoints(dataPoints);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, DataSourceRT.getExceptionMessage(e));
             log.debug("Error while initializing data source", e);

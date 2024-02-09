@@ -46,11 +46,11 @@ public class MqttMessagingChannels implements InitMessagingChannels {
     }
 
     @Override
-    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingChannelException {
+    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         try {
             channels.initChannel(dataPoint, () -> {
                 try {
-                    return new MqttMessagingChannel(createClient(dataPoint, exceptionHandler, updateErrorKey), dataPoint);
+                    return new MqttMessagingChannel(createClient(dataPoint, exceptionHandler, returnToNormal), dataPoint);
                 } catch (Exception e) {
                     throw new MessagingChannelException("Error Create Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
                 }
@@ -103,7 +103,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
         return channels.size();
     }
 
-    private MqttVClient createClient(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingChannelException {
+    private MqttVClient createClient(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
         MqttPointLocatorVO locator = pointLocator.getVO();
 
@@ -121,7 +121,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
         }
         try {
             client.subscribe(locator.getTopicFilter(), locator.getQos(), (topic, mqttMessage) ->
-                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, updateErrorKey, exceptionHandler).accept(mqttMessage.getPayload()));
+                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, exceptionHandler, returnToNormal).accept(mqttMessage.getPayload()));
         } catch (Exception e) {
             try {
                 close(client);

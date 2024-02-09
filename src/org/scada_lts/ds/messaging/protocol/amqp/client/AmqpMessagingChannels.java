@@ -76,7 +76,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
     }
 
     @Override
-    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingChannelException {
+    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         connectionManager.getIfOpen().or(() -> {
             try {
                 return Optional.ofNullable(connectionManager.open(vo));
@@ -89,7 +89,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
             try {
                 channels.initChannel(dataPoint, () -> {
                     try {
-                        return new AmqpMessagingChannel(AmqpChannelFactory.createReceiver(dataPoint, conn, exceptionHandler, updateErrorKey), dataPoint);
+                        return new AmqpMessagingChannel(AmqpChannelFactory.createReceiver(dataPoint, conn, exceptionHandler, returnToNormal), dataPoint);
                     } catch (IOException e) {
                         throw new MessagingChannelException("Error Create Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
                     } catch (Exception e) {

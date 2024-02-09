@@ -11,9 +11,6 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoints;
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoints;
-
 public class Dnp3SerialDataSource extends Dnp3DataSource {
 
 	private static final Log LOG = LogFactory.getLog(Dnp3SerialDataSource.class);
@@ -33,9 +30,8 @@ public class Dnp3SerialDataSource extends Dnp3DataSource {
 					configuration.getSlaveAddress(), configuration
 							.getCommPortId(), configuration.getBaudRate(),
 					configuration.getStaticPollPeriods());
-			resetUnreliableDataPoints(dataPoints);
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
-			setUnreliableDataPoints(dataPoints);
 			LOG.error(e.getMessage(), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", configuration

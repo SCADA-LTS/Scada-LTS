@@ -33,6 +33,9 @@ abstract public class Dnp3DataSourceVO<T extends Dnp3DataSourceVO<?>> extends
 		eventTypes.add(createEventType(
 				Dnp3DataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
+		eventTypes.add(createEventType(
+				Dnp3DataSource.POINT_WRITE_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.pointWrite")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();

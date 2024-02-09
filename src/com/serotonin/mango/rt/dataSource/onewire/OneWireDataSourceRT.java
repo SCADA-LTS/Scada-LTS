@@ -375,9 +375,11 @@ public class OneWireDataSourceRT extends PollingDataSource {
 
             // Event handling.
             if (exceptionMessage != null)
-                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage);
-            else
+                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage, dataPoint);
+            else {
                 dataPoint.setPointValue(valueTime, source);
+                returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+            }
         }
     }
 

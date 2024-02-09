@@ -184,11 +184,11 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
             }
             catch (IOException e) {
                 raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
-                        "event.galil.setPointFailed", dataPoint.getVO().getName(), e.getMessage()));
+                        "event.galil.setPointFailed", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
                 LOG.debug("Error while initializing data source", e);
                 return;
             }
-            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         }
 
         GalilPointLocatorRT locator = dataPoint.getPointLocator();
@@ -196,14 +196,14 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         GalilRequest request = locator.getSetRequest(valueTime.getValue());
         if (request == null)
             raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                    "event.galil.setRequest", dataPoint.getVO().getName(), valueTime.getValue()));
+                    "event.galil.setRequest", dataPoint.getVO().getName(), valueTime.getValue()), dataPoint);
         else {
             try {
                 GalilResponse response = (GalilResponse) conn.send(request);
 
                 if (response.isErrorResponse())
                     raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                            "event.galil.setResponse", dataPoint.getVO().getName()));
+                            "event.galil.setResponse", dataPoint.getVO().getName()), dataPoint);
                 else {
                     try {
                         // Update the data image with the new value.
@@ -217,13 +217,13 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
                     catch (LocalizableException e) {
                         raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
                                 new LocalizableMessage("event.galil.parsingError", dataPoint.getVO().getName(),
-                                        response.getResponseData()));
+                                        response.getResponseData()), dataPoint);
                     }
                 }
             }
             catch (IOException e) {
                 raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                        "event.galil.sendError", dataPoint.getVO().getName(), e.getMessage()));
+                        "event.galil.sendError", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
             }
         }
     }

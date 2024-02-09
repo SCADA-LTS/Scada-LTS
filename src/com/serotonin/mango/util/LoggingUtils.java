@@ -2,6 +2,7 @@ package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
@@ -207,6 +208,30 @@ public final class LoggingUtils {
         }
         String info = "batchWriteBehindEntry: pointId: {0}, dataType: {1}, time: {2}, dvalue: {3}";
         return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
+    }
+
+    public static String info(Exception e, DataSourceRT dataSourceRT) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT);
+    }
+
+    public static String info(Exception e, DataSourceRT dataSourceRT, DataPointRT dataPointRT) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT) + " - " + dataPointInfo(dataPointRT);
+    }
+
+    public static String dataPointInfo(DataPointRT dataPointRT) {
+        if(dataPointRT == null)
+            return "";
+        DataPointVO dataPointVO = dataPointRT.getVO();
+        if(dataPointVO == null)
+            return dataPointRtInfo(dataPointRT);
+        return dataPointInfo(dataPointVO);
+    }
+
+    public static String dataPointRtInfo(DataPointRT dataPoint) {
+        if(dataPoint == null)
+            return "";
+        String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
+        return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

@@ -1,14 +1,11 @@
 package br.org.scadabr.rt.dataSource.dnp3;
 
-import java.util.Date;
 
 import br.org.scadabr.vo.dataSource.dnp3.Dnp3IpDataSourceVO;
 
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 
 public class Dnp3IpDataSource extends Dnp3DataSource {
 
@@ -29,11 +26,10 @@ public class Dnp3IpDataSource extends Dnp3DataSource {
 					configuration.getSlaveAddress(), configuration.getHost(),
 					configuration.getPort(), configuration
 							.getStaticPollPeriods());
-			resetUnreliableDataPoints(dataPoints);
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
-			setUnreliableDataPoints(dataPoints);
 			LOG.error(e.getMessage(), e);
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", configuration
 							.getName(), e.getMessage()));
 		}

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -75,6 +74,8 @@ import com.serotonin.viconics.config.Thermostat;
 import com.serotonin.viconics.io.ViconicsIncomingResponse;
 import com.serotonin.viconics.io.ViconicsOutgoingRequest;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 
 /**
  * @author Matthew Lohbihler
@@ -148,7 +149,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		super.addDataPoint(dataPoint);
 
 		// Mark the point as unreliable.
-		DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
+		setUnreliableDataPoint(dataPoint);
 
 		// Add the point to the lookup map.
 		pointLookup.put(new PointKey(dataPoint), dataPoint);
@@ -177,12 +178,6 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 	// / ViconicsNetworkListener
 	//
 	public void viconicsNetworkStatus(boolean online) {
-		// Mark all points as unreliable.
-		synchronized (dataPoints) {
-			for (DataPointRT rt : dataPoints)
-				DataPointUnreliableUtils.setUnreliableDataPoint(rt);
-		}
-
 		if (online)
 			returnToNormal(NETWORK_OFFLINE_EVENT, System.currentTimeMillis());
 		else
@@ -387,17 +382,6 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		if (online)
 			returnToNormal(DEVICE_OFFLINE_EVENT, System.currentTimeMillis());
 		else {
-			// Mark all points for the device as unreliable.
-			synchronized (dataPoints) {
-				for (DataPointRT rt : dataPoints) {
-					ViconicsPointLocatorVO locator = rt.getVO()
-							.getPointLocator();
-					if (Arrays
-							.equals(locator.getDeviceIeee(), device.getIeee()))
-						DataPointUnreliableUtils.setUnreliableDataPoint(rt);
-				}
-			}
-
 			raiseEvent(DEVICE_OFFLINE_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.viconics.deviceOffline",
 							device.getIeeeString()));
@@ -473,9 +457,8 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			throw new ShouldNeverHappenException("Unknown point type: "
 					+ point.getClass());
 
-		DataPointUnreliableUtils.resetUnreliableDataPoint(rt);
-
 		rt.updatePointValue(new PointValueTime(mangoValue, time));
+		resetUnreliableDataPoint(rt);
 	}
 
 	public void viconicsDuplicateCommAddressDetected(int commAddress) {
@@ -510,13 +493,14 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			network.writeValue(locator.getDeviceIeee(),
 					locator.getPointAddress(), value);
 			dataPoint.setPointValue(pvt, source);
+			returnToNormal(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Exception e) {
 			raiseEvent(
 					MESSAGE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
-					false,
+					true,
 					new LocalizableMessage("event.setPointFailed", e
-							.getMessage()));
+							.getMessage()), dataPoint);
 		}
 	}
 
@@ -528,13 +512,14 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			// Ignore the result. It will be sent via the listener anyway.
 			network.readValue(locator.getDeviceIeee(),
 					locator.getPointAddress());
+			returnToNormal(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Exception e) {
 			raiseEvent(
 					MESSAGE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
 					false,
 					new LocalizableMessage("event.readPointFailed", e
-							.getMessage()));
+							.getMessage()), dataPoint);
 		}
 	}
 

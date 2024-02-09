@@ -184,6 +184,7 @@ public class MBusDataSourceRT extends PollingDataSource {
     private void closeConnection() {
         try {
             master.close();
+            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (IOException ex) {
             LOG.fatal("Close port", ex);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(

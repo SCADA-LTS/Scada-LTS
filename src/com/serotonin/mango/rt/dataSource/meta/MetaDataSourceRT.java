@@ -93,7 +93,7 @@ public class MetaDataSourceRT extends DataSourceRT {
             if (contextPointDisabledEventActive)
                 // A context point has been terminated, was never enabled, or not longer exists.
                 raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, System.currentTimeMillis(), true, new LocalizableMessage(
-                        "event.meta.pointUnavailable", problemPoint.getVO().getName()));
+                        "event.meta.pointUnavailable", problemPoint.getVO().getName()), problemPoint);
             else
                 // Everything is good
                 returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, System.currentTimeMillis());
@@ -103,15 +103,22 @@ public class MetaDataSourceRT extends DataSourceRT {
     public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         if(isNone(EVENT_TYPE_SCRIPT_ERROR))
             return;
-        raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, false, new LocalizableMessage("event.meta.scriptError", dataPoint
-                .getVO().getName(), message));
+        raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, true, new LocalizableMessage("event.meta.scriptError", dataPoint
+                .getVO().getName(), message), dataPoint);
     }
+
+    public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_SCRIPT_ERROR))
+            return;
+        returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
+    }
+
 
     public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR))
             return;
-        raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, false, new LocalizableMessage("event.meta.typeError",
-                dataPoint.getVO().getName(), message));
+        raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, true, new LocalizableMessage("event.meta.typeError",
+                dataPoint.getVO().getName(), message), dataPoint);
     }
 
     private boolean isNone(int type) {
@@ -119,5 +126,10 @@ public class MetaDataSourceRT extends DataSourceRT {
         if(object == null)
             return true;
         return object.getAlarmLevel() == AlarmLevels.NONE;
+    }
+
+    @Override
+    protected List<DataPointRT> getDataPoints() {
+        return points;
     }
 }

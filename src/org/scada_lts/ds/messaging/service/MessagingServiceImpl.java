@@ -8,6 +8,7 @@ import org.scada_lts.ds.messaging.channel.InitMessagingChannels;
 import org.scada_lts.ds.messaging.exception.MessagingServiceException;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
 
@@ -40,7 +41,7 @@ class MessagingServiceImpl implements MessagingService {
     }
 
     @Override
-    public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingServiceException {
+    public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingServiceException {
         if(blocked) {
             LOG.warn("Stop Init Receiver: " + dataSourceInfo(vo) + ", Service of shutting down: "  + dataSourceInfo(vo));
             return;
@@ -49,7 +50,7 @@ class MessagingServiceImpl implements MessagingService {
             return;
         }
         try {
-            channels.initChannel(dataPoint, exceptionHandler, updateErrorKey);
+            channels.initChannel(dataPoint, exceptionHandler, returnToNormal);
         } catch (Exception e) {
             throw new MessagingServiceException("Error Init Receiver: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }

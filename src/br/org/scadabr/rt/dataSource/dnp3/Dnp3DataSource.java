@@ -21,14 +21,13 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
-
 public class Dnp3DataSource extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(Dnp3DataSource.class);
 
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
 
 	private DNP3Master dnp3Master;
 	private final Dnp3DataSourceVO<?> vo;
@@ -46,9 +45,7 @@ public class Dnp3DataSource extends PollingDataSource {
 		try {
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
-			resetUnreliableDataPoints(dataPoints);
 		} catch (Exception e) {
-			setUnreliableDataPoints(dataPoints);
 			LOG.warn(e.getMessage(), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
@@ -86,9 +83,8 @@ public class Dnp3DataSource extends PollingDataSource {
 		super.terminate();
 		try {
 			dnp3Master.terminate();
-			resetUnreliableDataPoints(dataPoints);
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
-			setUnreliableDataPoints(dataPoints);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
@@ -114,9 +110,11 @@ public class Dnp3DataSource extends PollingDataSource {
 				dnp3Master
 						.sendAnalogCommand(index, valueTime.getIntegerValue());
 			}
-			resetUnreliableDataPoint(dataPoint);
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Exception e) {
-			setUnreliableDataPoint(dataPoint);
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, new Date().getTime(), true,
+					new LocalizableMessage("event.exception2", vo.getName(), e
+							.getMessage()), dataPoint);
 			LOG.error(e.getMessage(), e);
 		}
 	}

@@ -220,9 +220,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 						raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 								new LocalizableMessage("event.exception2",
 										dataPoint.getVO().getName(),
-										exceptionResult.getExceptionMessage()));
-
-						setUnreliableDataPoint(dataPoint);
+										exceptionResult.getExceptionMessage()), dataPoint);
 
 						// A response, albeit an undesirable one, was received
 						// from
@@ -241,11 +239,11 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 								new LocalizableMessage(
 										"event.modbus.noConnection", dataPoint
 												.getVO().getDataSourceName(), e
-												.getMessage()));
+												.getMessage()), dataPoint);
 					} else {
 						// Raise an event.
 						raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
-								getLocalExceptionMessage(e));
+								getLocalExceptionMessage(e), dataPoint);
 					}
 
 					// Update the slave status. Only set to false if it is
@@ -276,10 +274,9 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					LOG.trace("Point: " + locator.getVO().getOffset()
 							+ " eventRaised: " + eventRaised);
 					if (!eventRaised) {
-						returnToNormal(POINT_READ_EXCEPTION_EVENT, time);
-						resetUnreliableDataPoint(dataPoint);
 						updatePointValue(dataPoint, locator, result, time);
 						slaveStatuses.put(locator.getVO().getSlaveId(), true);
+						returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 					}
 				}
 			}
@@ -344,9 +341,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
-			resetUnreliableDataPoints(dataPoints);
 		} catch (Exception e) {
-			setUnreliableDataPoints(dataPoints);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
 					true, getLocalExceptionMessage(e));
 			return;
@@ -389,15 +384,12 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		synchronized (pointListChangeLock) {
 			try {
 				Object value = modbusMaster.getValue(ml);
-
-				returnToNormal(POINT_READ_EXCEPTION_EVENT, time);
-				resetUnreliableDataPoint(dataPoint);
 				updatePointValue(dataPoint, pl, value, time);
+				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 			} catch (ErrorResponseException e) {
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2", dataPoint
-								.getVO().getName(), e.getMessage()));
-				setUnreliableDataPoint(dataPoint);
+								.getVO().getName(), e.getMessage()), dataPoint);
 			} catch (ModbusTransportException e) {
 				// Don't raise a data source exception. Polling should do that.
 				LOG.warn("Error during forcePointRead", e);
@@ -460,29 +452,26 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			dataPoint.setPointValue(valueTime, source);
 
 			// Deactivate any existing event.
-			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime());
-			resetUnreliableDataPoint(dataPoint);
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), dataPoint);
 		} catch (ModbusTransportException e) {
-			setUnreliableDataPoint(dataPoint);
 			if (e.getMessage().contains("no active connection")) {
 				// Raise an event.
 				raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(),
 						true, new LocalizableMessage(
 								"event.modbus.noConnection", dataPoint.getVO()
-										.getDataSourceName(), e.getMessage()));
+										.getDataSourceName(), e.getMessage()), dataPoint);
 			} else {
 				// Raise an event.
 				raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(),
 						true, new LocalizableMessage("event.exception2",
-								dataPoint.getVO().getName(), e.getMessage()));
+								dataPoint.getVO().getName(), e.getMessage()), dataPoint);
 				LOG.info("Error setting point value", e);
 			}
 		} catch (ErrorResponseException e) {
-			setUnreliableDataPoint(dataPoint);
 			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), true,
 					new LocalizableMessage("event.exception2", dataPoint
 							.getVO().getName(), e.getErrorResponse()
-							.getExceptionMessage()));
+							.getExceptionMessage()), dataPoint);
 			LOG.info("Error setting point value", e);
 		}
 	}

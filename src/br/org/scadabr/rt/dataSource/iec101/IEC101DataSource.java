@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,10 +41,10 @@ public class IEC101DataSource extends PollingDataSource {
 		try {
 			iec101Master.doPoll();
 		} catch (Exception e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this), e);
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -85,11 +86,12 @@ public class IEC101DataSource extends PollingDataSource {
 				iec101Master.setPointCommand(ioa, select, qualifier, valueTime
 						.getIntegerValue());
 			}
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Exception e) {
-			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, new Date().getTime(), true,
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			e.printStackTrace();
+							.getMessage()), dataPoint);
+			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 		}
 	}
 
@@ -116,7 +118,7 @@ public class IEC101DataSource extends PollingDataSource {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this), e);
 		}
 		super.initialize();
 	}
@@ -130,7 +132,7 @@ public class IEC101DataSource extends PollingDataSource {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this), e);
 		}
 	}
 

@@ -3,6 +3,7 @@ package br.org.scadabr.rt.dataSource.opc;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jinterop.dcom.common.JISystem;
@@ -53,7 +54,7 @@ public class OPCDataSource extends PollingDataSource {
 		try {
 
 			if (timeoutCount >= timeoutsToReconnect) {
-				System.out.println("[OPC] Trying to reconnect !");
+				LOG.error("[OPC] Trying to reconnect ! :" + LoggingUtils.dataSourceInfo(this));
 				timeoutCount = 0;
 				initialize();
 			} else {
@@ -70,7 +71,7 @@ public class OPCDataSource extends PollingDataSource {
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
 			timeoutCount++;
-			System.out.println("[OPC] Poll Failed !");
+			LOG.error("[OPC] Poll Failed ! :" + LoggingUtils.info(e, this));
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -85,10 +86,11 @@ public class OPCDataSource extends PollingDataSource {
 						dataPointVO.getDataTypeId());
 				dataPoint
 						.updatePointValue(new PointValueTime(mangoValue, time));
+				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 			} catch (Exception e) {
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2",
-								vo.getName(), e.getMessage()));
+								vo.getName(), e.getMessage()), dataPoint);
 			}
 		}
 	}
@@ -116,8 +118,8 @@ public class OPCDataSource extends PollingDataSource {
 					System.currentTimeMillis(),
 					true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			e.printStackTrace();
+							.getMessage()), dataPoint);
+			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 		}
 	}
 

@@ -1,8 +1,11 @@
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.*;
 
 public final class DataPointUnreliableUtils {
 
@@ -10,31 +13,39 @@ public final class DataPointUnreliableUtils {
 
     private DataPointUnreliableUtils() {}
 
-    public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for (DataPointRT dp : dataPoints) {
-            setUnreliableDataPoint(dp);
-        }
-    }
 
-    public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for (DataPointRT dp : dataPoints) {
-            resetUnreliableDataPoint(dp);
-        }
+    public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
+        unreliable(dataPoints, DataPointUnreliableUtils::setAttributes, Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, true);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
-        setUnreliableDataPoint(ATTR_UNRELIABLE_KEY, dataPoint);
+        unreliable(Collections.singletonList(dataPoint), DataPointUnreliableUtils::setAttributes, Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, true);
+    }
+
+    public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
+        unreliable(dataPoints, DataPointUnreliableUtils::setAttributes, Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, false);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
-        resetUnreliableDataPoint(ATTR_UNRELIABLE_KEY, dataPoint);
+        unreliable(Collections.singletonList(dataPoint), DataPointUnreliableUtils::setAttributes, Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, false);
     }
 
-    public static void setUnreliableDataPoint(String key, DataPointRT dataPoint) {
-        dataPoint.setAttribute(key, true);
+    private static void unreliable(List<DataPointRT> dataPoints, BiConsumer<List<DataPointRT>, Boolean> setList,
+                                   IntFunction<List<DataPointRT>> getData, boolean unreliable) {
+        setList.accept(dataPoints, unreliable);
+        for(DataPointRT dataPoint: dataPoints) {
+            List<DataPointRT> metaDataPoints = getData.apply(dataPoint.getId());
+            setList.accept(metaDataPoints, unreliable);
+        }
     }
 
-    public static void resetUnreliableDataPoint(String key, DataPointRT dataPoint) {
-        dataPoint.setAttribute(key, false);
+    private static void setAttributes(List<DataPointRT> dataPoints, boolean unreliable) {
+        for (DataPointRT dp : dataPoints) {
+            setAttribute(dp, unreliable);
+        }
+    }
+
+    private static void setAttribute(DataPointRT dataPoint, boolean unreliable) {
+        dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, unreliable);
     }
 }

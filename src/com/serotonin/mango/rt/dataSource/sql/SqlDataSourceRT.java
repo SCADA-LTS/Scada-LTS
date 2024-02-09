@@ -101,13 +101,13 @@ public class SqlDataSourceRT extends PollingDataSource {
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(),
 						false, new LocalizableMessage(
 								"event.sql.noRowsUpdated", dataPoint.getVO()
-										.getName()));
+										.getName()), dataPoint);
 			} else
 				dataPoint.setPointValue(valueTime, source);
 		} catch (Exception e) {
 			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), false,
 					new LocalizableMessage("event.sql.setError", dataPoint
-							.getVO().getName(), getExceptionMessage(e)));
+							.getVO().getName(), getExceptionMessage(e)), dataPoint);
 		}
 	}
 
@@ -191,7 +191,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 							raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage(
 											"event.sql.timeNotFound",
-											timeOverride));
+											timeOverride), dp);
 							continue;
 						}
 

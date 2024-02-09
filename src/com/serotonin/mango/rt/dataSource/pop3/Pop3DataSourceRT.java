@@ -60,7 +60,7 @@ public class Pop3DataSourceRT extends PollingDataSource {
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis());
+        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
     }
 
     @Override

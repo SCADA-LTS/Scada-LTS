@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.dataSource.drStorageHt5b;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
@@ -89,12 +90,12 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 								dataPoint.updatePointValue(new PointValueTime(
 										hum, System.currentTimeMillis()));
 							}
-
+							returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
-							e.printStackTrace();
+											vo.getName(), e.getMessage()), dataPoint);
+							LOG.error(LoggingUtils.exceptionInfo(e) + " - " + LoggingUtils.dataSourceInfo(this), e);
 						}
 
 					}

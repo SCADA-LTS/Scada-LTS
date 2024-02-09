@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,7 +67,7 @@ public class NodaveS7DataSource extends PollingDataSource {
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							timestamp = time;
 						}
 
@@ -74,14 +75,15 @@ public class NodaveS7DataSource extends PollingDataSource {
 
 					dataPoint.updatePointValue(new PointValueTime(value,
 							timestamp));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
 					raiseEvent(
 							POINT_READ_EXCEPTION_EVENT,
 							time,
 							true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
-					e.printStackTrace();
+									.getName(), e.getMessage()), dataPoint);
+					LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 				}
 
 			}

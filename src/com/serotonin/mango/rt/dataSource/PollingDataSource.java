@@ -138,4 +138,9 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
             }
         }
     }
+
+    @Override
+    protected List<DataPointRT> getDataPoints() {
+        return dataPoints;
+    }
 }

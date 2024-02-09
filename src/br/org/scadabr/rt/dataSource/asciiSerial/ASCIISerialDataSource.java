@@ -93,6 +93,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 						new LocalizableMessage("event.exception2",
 								vo.getName(), "Sem dados disponíveis !"));
 			} else if (getInSerialStream().available() > 0) {
+				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 				byte[] readBuffer = new byte[vo.getBufferSize()];
 				try {
 
@@ -176,7 +177,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 											new LocalizableMessage(
 													"event.exception2", vo
 															.getName(), e
-															.getMessage()));
+															.getMessage()), dataPoint);
 									timestamp = time;
 								}
 
@@ -184,10 +185,11 @@ public class ASCIISerialDataSource extends PollingDataSource {
 
 							dataPoint.updatePointValue(new PointValueTime(
 									value, timestamp));
+							returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							// e.printStackTrace();
 						}
 

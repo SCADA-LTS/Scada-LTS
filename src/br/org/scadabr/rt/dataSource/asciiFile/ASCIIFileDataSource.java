@@ -58,7 +58,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							timestamp = time;
 						}
 
@@ -66,10 +66,11 @@ public class ASCIIFileDataSource extends PollingDataSource {
 
 					dataPoint.updatePointValue(new PointValueTime(value,
 							timestamp));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
 					raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
+									.getName(), e.getMessage()), dataPoint);
 					e.printStackTrace();
 				}
 

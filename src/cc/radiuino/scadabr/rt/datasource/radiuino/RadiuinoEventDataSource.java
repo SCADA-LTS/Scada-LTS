@@ -326,6 +326,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 							.parsePacoteRadiuino(time, pacote, dataPointVO);
 					if (pointValueTime != null)
 						dataPoint.updatePointValue(pointValueTime);
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
 					LOG.error("Erro ao fazer o parse dos dados.", e);
 					raiseEvent(
@@ -333,7 +334,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 							time,
 							true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
+									.getName(), e.getMessage()), dataPoint);
 				}
 
 			}
