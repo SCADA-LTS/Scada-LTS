@@ -22,7 +22,6 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.report.ReportChartCreator;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
 import org.apache.commons.logging.Log;
@@ -126,11 +125,11 @@ public class ReportInstancePointDAO {
 		}
 
 		public String getName() {
-			return StringUtils.abbreviateMiddle(point.getName(), ReportChartCreator.getDataSourceAndDataPointNameLengthForReport()-getDeviceName().length());
+			return StringUtils.truncate(point.getName(), "", 100);
 		}
 
 		public String getDeviceName() {
-			return StringUtils.abbreviateMiddle(point.getDeviceName(), ReportChartCreator.getDataSourceNameLengthForReport());
+			return StringUtils.truncate(point.getDeviceName(), "", 40);
 		}
 
 		public TextRenderer getTextRenderer() {

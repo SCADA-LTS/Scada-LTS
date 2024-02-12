@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
 
@@ -60,8 +61,7 @@ public class ReportChartCreator {
     private static final int IMAGE_HEIGHT = 400;
     private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
     private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 149;
-    private static final int DATA_SOURCE_NAME_LENGTH_FOR_CHART = 30;
-    private static final int DATA_SOURCE_AND_DATA_POINT_NAME_LENGTH_FOR_CHART = 65;
+    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART = 65;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH = 440;
@@ -82,14 +82,6 @@ public class ReportChartCreator {
     public ReportChartCreator(ResourceBundle bundle) {
         this.bundle = bundle;
     }
-
-    public static int getDataSourceNameLengthForReport() {
-		return DATA_SOURCE_NAME_LENGTH_FOR_CHART;
-	}
-
-    public static int getDataSourceAndDataPointNameLengthForReport() {
-		return DATA_SOURCE_AND_DATA_POINT_NAME_LENGTH_FOR_CHART;
-	}
 
 	/**
      * Uses the given parameters to create the data for the fields of this class. Once the content has been created the
@@ -269,6 +261,10 @@ public class ReportChartCreator {
 
     public List<PointStatistics> getPointStatistics() {
         return pointStatistics;
+    }
+
+    public static int getDataPointExtendedNameLengthForChart(){
+        return DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART;
     }
 
     public static class PointStatistics {
@@ -495,7 +491,7 @@ public class ReportChartCreator {
             donePoint();
 
             point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
-            point.setName(pointInfo.getExtendedName());
+            point.setName(calculatePointNameForReport(pointInfo.getExtendedName()));
             point.setDataType(pointInfo.getDataType());
             point.setDataTypeDescription(DataTypes.getDataTypeMessage(pointInfo.getDataType()).getLocalizedMessage(
                     bundle));
@@ -566,6 +562,13 @@ public class ReportChartCreator {
 
             if (reportCsvStreamer != null)
                 reportCsvStreamer.startPoint(pointInfo);
+        }
+
+        private String calculatePointNameForReport(String extendedName) {
+            if(extendedName.length() > DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART) {
+                return StringUtils.truncate(extendedName, "...", DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART);
+            }
+            return extendedName;
         }
 
         public void pointData(ReportDataValue rdv) {

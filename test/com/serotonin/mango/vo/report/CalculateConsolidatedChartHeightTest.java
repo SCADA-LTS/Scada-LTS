@@ -15,19 +15,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class CalculateConsolidatedChartHeightTest {
 
-    private final List<ReportChartCreator.PointStatistics> pointStatistics;
-    private final int expectedHeight;
-    private final int imageHeightForDataPointNameInLegend;
-    private final int imageHeight;
-    private final int charAmountPerLine;
-    public CalculateConsolidatedChartHeightTest(List<ReportChartCreator.PointStatistics> pointStatistics, int expectedHeight, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
-        this.pointStatistics = pointStatistics;
-        this.expectedHeight = expectedHeight;
-        this.imageHeightForDataPointNameInLegend = imageHeightForDataPointNameInLegend;
-        this.imageHeight = imageHeight;
-        this.charAmountPerLine = charAmountPerLine;
-    }
-
     @Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeight(points: {0}, expected height: {1},pixels per line: {2} base height of chart: {3}, characters per line: {4})")
     public static Collection<Object[]> data() {
         String chars0PointName = "";
@@ -55,197 +42,210 @@ public class CalculateConsolidatedChartHeightTest {
         String chars138PointName = "138characters - 138characters138characters138characters138characters138characters138characters138characters138characters138characters138ch";
 
         return Arrays.asList(new Object[][]{
-            {List.of(), 400, 20, 400, 138},
-            {createPointStatisticsList(Arrays.asList(
-                    chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName
-            )), 420, 20, 400, 15},
-            {createPointStatisticsList(List.of(chars135PointName)), 400, 20, 400, 138},
-            {createPointStatisticsList(List.of(chars138PointName)), 400, 20, 400, 138},
-            {createPointStatisticsList(Arrays.asList(chars138PointName, chars138PointName, chars138PointName)), 440, 20, 400, 138},
-            {createPointStatisticsList(Arrays.asList(chars135PointName, chars135PointName, chars135PointName)), 440, 20, 400, 138},
-            {createPointStatisticsList(Arrays.asList(
-                    chars4PointName, chars2PointName, chars1PointName, chars3PointName, chars4PointName
-            )), 420, 20, 400, 16},
-            {createPointStatisticsList(Arrays.asList(
-                    chars4PointName, chars2PointName, chars3PointName, chars1PointName, chars4PointName
-            )), 440, 20, 400, 16},
-            {createPointStatisticsList(Arrays.asList(
-                    chars5PointName, chars6PointName, chars7PointName, chars8PointName, chars9PointName
-            )), 460, 20, 400, 18},
-            {createPointStatisticsList(Arrays.asList(
-                    chars5PointName, chars8PointName, chars6PointName, chars9PointName, chars7PointName
-            )), 480, 20, 400, 18},
-            {createPointStatisticsList(Arrays.asList(
-                    chars10PointName, chars15PointName, chars20PointName, chars30PointName, chars25PointName
-            )), 460, 20, 400, 35},
-            {createPointStatisticsList(Arrays.asList(
-                    chars10PointName, chars20PointName, chars15PointName, chars25PointName, chars30PointName
-            )), 480, 20, 400, 35},
+                {List.of(), 400, 20, 400, 138},
+                {createPointStatisticsList(Arrays.asList(
+                        chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName, chars0PointName
+                )), 420, 20, 400, 15},
+                {createPointStatisticsList(List.of(chars135PointName)), 400, 20, 400, 138},
+                {createPointStatisticsList(List.of(chars138PointName)), 400, 20, 400, 138},
+                {createPointStatisticsList(Arrays.asList(chars138PointName, chars138PointName, chars138PointName)), 440, 20, 400, 138},
+                {createPointStatisticsList(Arrays.asList(chars135PointName, chars135PointName, chars135PointName)), 440, 20, 400, 138},
+                {createPointStatisticsList(Arrays.asList(
+                        chars4PointName, chars2PointName, chars1PointName, chars3PointName, chars4PointName
+                )), 420, 20, 400, 16},
+                {createPointStatisticsList(Arrays.asList(
+                        chars4PointName, chars2PointName, chars3PointName, chars1PointName, chars4PointName
+                )), 440, 20, 400, 16},
+                {createPointStatisticsList(Arrays.asList(
+                        chars5PointName, chars6PointName, chars7PointName, chars8PointName, chars9PointName
+                )), 460, 20, 400, 18},
+                {createPointStatisticsList(Arrays.asList(
+                        chars5PointName, chars8PointName, chars6PointName, chars9PointName, chars7PointName
+                )), 480, 20, 400, 18},
+                {createPointStatisticsList(Arrays.asList(
+                        chars10PointName, chars15PointName, chars20PointName, chars30PointName, chars25PointName
+                )), 460, 20, 400, 35},
+                {createPointStatisticsList(Arrays.asList(
+                        chars10PointName, chars20PointName, chars15PointName, chars25PointName, chars30PointName
+                )), 480, 20, 400, 35},
 
 
-            {createPointStatisticsList(Arrays.asList(
-                chars100PointName,
-                chars50PointName,
-                chars100PointName
+                {createPointStatisticsList(Arrays.asList(
+                        chars100PointName,
+                        chars50PointName,
+                        chars100PointName
                 )), 440, 20, 400, 149},
-            {createPointStatisticsList(Arrays.asList(
-                chars50PointName,
-                chars100PointName,
-                chars80PointName,
-                chars90PointName,
-                chars60PointName,
-                chars50PointName
+                {createPointStatisticsList(Arrays.asList(
+                        chars50PointName,
+                        chars100PointName,
+                        chars80PointName,
+                        chars90PointName,
+                        chars60PointName,
+                        chars50PointName
                 )), 480, 20, 400, 149},
-            {createPointStatisticsList(Arrays.asList(
-                chars100PointName,
-                chars80PointName,
-                chars10PointName,
-                chars30PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars90PointName
+                {createPointStatisticsList(Arrays.asList(
+                        chars100PointName,
+                        chars80PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars90PointName
                 )), 460, 20, 400, 149},
-            {createPointStatisticsList(Arrays.asList(
-                chars100PointName,
-                chars80PointName,
-                chars10PointName,
-                chars30PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars90PointName,
-                chars70PointName,
-                chars30PointName,
-                chars20PointName,
-                chars90PointName,
-                chars100PointName
-            )),520,20,400,138},
-            {createPointStatisticsList(Arrays.asList(
-                chars100PointName,
-                chars80PointName,
-                chars10PointName,
-                chars30PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars90PointName,
-                chars70PointName,
-                chars30PointName,
-                chars20PointName,
-                chars90PointName,
-                chars100PointName,
-                chars30PointName,
-                chars20PointName,
-                chars100PointName,
-                chars50PointName,
-                chars10PointName,
-                chars90PointName
-            )),580,20,400,149},
-            {createPointStatisticsList(Arrays.asList(
-                chars100PointName,
-                chars80PointName,
-                chars90PointName,
-                chars70PointName,
-                chars30PointName,
-                chars90PointName,
-                chars100PointName,
-                chars100PointName,
-                chars50PointName,
-                chars90PointName,
-                chars20PointName,
-                chars80PointName,
-                chars80PointName,
-                chars10PointName
-            )),580,20,400,149},
-            {createPointStatisticsList(Arrays.asList(
-                chars70PointName,
-                chars30PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars20PointName,
-                chars30PointName,
-                chars60PointName,
-                chars70PointName,
-                chars20PointName,
-                chars10PointName,
-                chars50PointName,
-                chars30PointName,
-                chars80PointName,
-                chars30PointName
-            )),480,20,400,149},
-            {createPointStatisticsList(Arrays.asList(
-                chars70PointName,
-                chars30PointName,
-                chars50PointName,
-                chars30PointName,
-                chars60PointName,
-                chars70PointName,
-                chars10PointName,
-                chars30PointName,
-                chars30PointName,
-                chars100PointName,
-                chars20PointName,
-                chars70PointName,
-                chars90PointName,
-                chars100PointName,
-                chars20PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName
-            )),540,20,400,149},
-            {createPointStatisticsList(Arrays.asList(
-                chars70PointName,
-                chars30PointName,
-                chars20PointName,
-                chars70PointName,
-                chars20PointName,
-                chars10PointName,
-                chars100PointName,
-                chars90PointName,
-                chars30PointName,
-                chars90PointName,
-                chars20PointName,
-                chars10PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars30PointName,
-                chars60PointName
-            )),520,20,400,149},
-            {createPointStatisticsList(Arrays.asList(
-                chars70PointName,
-                chars30PointName,
-                chars20PointName,
-                chars70PointName,
-                chars20PointName,
-                chars10PointName,
-                chars100PointName,
-                chars90PointName,
-                chars30PointName,
-                chars90PointName,
-                chars20PointName,
-                chars10PointName,
-                chars50PointName,
-                chars20PointName,
-                chars10PointName,
-                chars30PointName,
-                chars60PointName,
-                chars100PointName,
-                chars80PointName,
-                chars90PointName,
-                chars100PointName,
-                chars80PointName,
-                chars30PointName,
-                chars80PointName,
-                chars50PointName,
-                chars70PointName,
-                chars50PointName,
-                chars60PointName,
-                chars60PointName
-            )),680,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars100PointName,
+                        chars80PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars90PointName,
+                        chars70PointName,
+                        chars30PointName,
+                        chars20PointName,
+                        chars90PointName,
+                        chars100PointName
+                )),520,20,400,138},
+                {createPointStatisticsList(Arrays.asList(
+                        chars100PointName,
+                        chars80PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars90PointName,
+                        chars70PointName,
+                        chars30PointName,
+                        chars20PointName,
+                        chars90PointName,
+                        chars100PointName,
+                        chars30PointName,
+                        chars20PointName,
+                        chars100PointName,
+                        chars50PointName,
+                        chars10PointName,
+                        chars90PointName
+                )),580,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars100PointName,
+                        chars80PointName,
+                        chars90PointName,
+                        chars70PointName,
+                        chars30PointName,
+                        chars90PointName,
+                        chars100PointName,
+                        chars100PointName,
+                        chars50PointName,
+                        chars90PointName,
+                        chars20PointName,
+                        chars80PointName,
+                        chars80PointName,
+                        chars10PointName
+                )),580,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars70PointName,
+                        chars30PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars20PointName,
+                        chars30PointName,
+                        chars60PointName,
+                        chars70PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars50PointName,
+                        chars30PointName,
+                        chars80PointName,
+                        chars30PointName
+                )),480,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars70PointName,
+                        chars30PointName,
+                        chars50PointName,
+                        chars30PointName,
+                        chars60PointName,
+                        chars70PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars30PointName,
+                        chars100PointName,
+                        chars20PointName,
+                        chars70PointName,
+                        chars90PointName,
+                        chars100PointName,
+                        chars20PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName
+                )),540,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars70PointName,
+                        chars30PointName,
+                        chars20PointName,
+                        chars70PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars100PointName,
+                        chars90PointName,
+                        chars30PointName,
+                        chars90PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars60PointName
+                )),520,20,400,149},
+                {createPointStatisticsList(Arrays.asList(
+                        chars70PointName,
+                        chars30PointName,
+                        chars20PointName,
+                        chars70PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars100PointName,
+                        chars90PointName,
+                        chars30PointName,
+                        chars90PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars50PointName,
+                        chars20PointName,
+                        chars10PointName,
+                        chars30PointName,
+                        chars60PointName,
+                        chars100PointName,
+                        chars80PointName,
+                        chars90PointName,
+                        chars100PointName,
+                        chars80PointName,
+                        chars30PointName,
+                        chars80PointName,
+                        chars50PointName,
+                        chars70PointName,
+                        chars50PointName,
+                        chars60PointName,
+                        chars60PointName
+                )),680,20,400,149},
         });
+    }
+
+    private final List<ReportChartCreator.PointStatistics> pointStatistics;
+    private final int expectedHeight;
+    private final int imageHeightForDataPointNameInLegend;
+    private final int imageHeight;
+    private final int charAmountPerLine;
+    public CalculateConsolidatedChartHeightTest(List<ReportChartCreator.PointStatistics> pointStatistics, int expectedHeight, int imageHeightForDataPointNameInLegend, int imageHeight, int charAmountPerLine) {
+        this.pointStatistics = pointStatistics;
+        this.expectedHeight = expectedHeight;
+        this.imageHeightForDataPointNameInLegend = imageHeightForDataPointNameInLegend;
+        this.imageHeight = imageHeight;
+        this.charAmountPerLine = charAmountPerLine;
     }
 
     private static List<ReportChartCreator.PointStatistics> createPointStatisticsList(List<String> pointName) {

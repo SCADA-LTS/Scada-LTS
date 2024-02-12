@@ -204,7 +204,7 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
         includeTestsMatching "com.serotonin.util.SerializationHelperTest"
         includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
-        includeTestsMatching "com.serotonin.mango.vo.report.CalculateConsolidatedChartHeightTest"
-        includeTestsMatching "com.serotonin.mango.vo.report.CalculateConsolidatedChartHeightTestException"
+        includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestSuite"
+        includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
     }
 }

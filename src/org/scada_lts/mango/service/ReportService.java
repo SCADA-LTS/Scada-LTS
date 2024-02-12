@@ -73,6 +73,9 @@ public class ReportService implements MangoReport {
 	private void setReportDataValue(List<ReportPointInfo> pointInfos, final ReportDataStreamHandler handler) {
 		final ReportDataValue rdv = new ReportDataValue();
 		for (final ReportPointInfo point: pointInfos) {
+			if (point.getExtendedName().length() > ReportChartCreator.getDataPointExtendedNameLengthForChart()) {
+				point.setPointName(StringUtils.truncate(point.getPointName(), "...", ReportChartCreator.getDataPointExtendedNameLengthForChart() - point.getDeviceName().length() - 3));
+			}
 			handler.startPoint(point);
 			rdv.setReportPointId(point.getReportPointId());
 			reportInstanceDataDAO.setReportValue(point, rdv, handler);

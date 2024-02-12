@@ -133,11 +133,11 @@ public class StringUtils {
     public static String trimWhitespace(String s){
         return s.trim();
     }
-    @Deprecated
+    @Deprecated(since = "2.7.7")
     public static String truncate(String s, int length){
         return truncate(s, length, (String)null);
     }
-    @Deprecated
+    @Deprecated(since = "2.7.7")
     public static String truncate(String s, int length, String truncateSuffix){
         if (s == null) {
             return null;
@@ -150,15 +150,22 @@ public class StringUtils {
         }
         return s.substring(0,length);
     }
-    public static String abbreviateMiddle(String s, int length) {
-        return abbreviateMiddle(s, length, (String)null);
-    }
 
-    public static String abbreviateMiddle(String s, int length, String truncateSuffix) {
+    public static String truncate(String s, String truncateSuffix, int length) {
+        if(truncateSuffix != null && truncateSuffix.length() >= length)
+            throw new IllegalArgumentException("");
+        if (length < 4)
+            throw new IllegalArgumentException("Minimum abbreviation width is 4");
+        String name;
         if(truncateSuffix == null) {
-            truncateSuffix = "...";
+            name = org.apache.commons.lang3.StringUtils.abbreviate(s, length);
+            return name;
+        } else {
+            int fixedLength = length - truncateSuffix.length();
+            name = org.apache.commons.lang3.StringUtils.abbreviate(s, fixedLength + 3);
+            if(name.length() > fixedLength)
+                name = name.substring(0, fixedLength);
+            return name + truncateSuffix;
         }
-        return org.apache.commons.lang3.StringUtils.abbreviateMiddle(s, truncateSuffix, length);
     }
-
 }
