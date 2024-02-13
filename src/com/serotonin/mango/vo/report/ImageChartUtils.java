@@ -237,4 +237,12 @@ public class ImageChartUtils {
         }
         return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
     }
+
+    public static String calculatePointNameForReport(String extendedName) {
+        if(extendedName.length() > ReportChartCreator.getDataPointExtendedNameLengthForChart()) {
+            return org.scada_lts.serorepl.utils.StringUtils.truncate(extendedName, "...", ReportChartCreator.getDataPointExtendedNameLengthForChart());
+        }
+        return extendedName;
+    }
+
 }

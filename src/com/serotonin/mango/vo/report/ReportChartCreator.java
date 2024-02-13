@@ -491,7 +491,7 @@ public class ReportChartCreator {
             donePoint();
 
             point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
-            point.setName(calculatePointNameForReport(pointInfo.getExtendedName()));
+            point.setName(pointInfo.getExtendedNameForReport());
             point.setDataType(pointInfo.getDataType());
             point.setDataTypeDescription(DataTypes.getDataTypeMessage(pointInfo.getDataType()).getLocalizedMessage(
                     bundle));
@@ -516,7 +516,7 @@ public class ReportChartCreator {
                 quantizer = new NumericDataQuantizer(start, end, imageWidth, this);
 
                 discreteTimeSeries = null;
-                numericTimeSeries = new TimeSeries(pointInfo.getExtendedName(), null, null, Second.class);
+                numericTimeSeries = new TimeSeries(pointInfo.getExtendedNameForReport(), null, null, Second.class);
                 numericTimeSeries.setRangeDescription(point.getTextRenderer().getMetaText());
                 point.setNumericTimeSeries(numericTimeSeries);
                 point.setNumericTimeSeriesColor(colour);
@@ -527,7 +527,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new MultistateDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedName(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())
@@ -538,7 +538,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new BinaryDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedName(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())
@@ -562,13 +562,6 @@ public class ReportChartCreator {
 
             if (reportCsvStreamer != null)
                 reportCsvStreamer.startPoint(pointInfo);
-        }
-
-        private String calculatePointNameForReport(String extendedName) {
-            if(extendedName.length() > DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART) {
-                return StringUtils.truncate(extendedName, "...", DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART);
-            }
-            return extendedName;
         }
 
         public void pointData(ReportDataValue rdv) {
