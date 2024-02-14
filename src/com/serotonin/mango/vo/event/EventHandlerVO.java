@@ -386,7 +386,7 @@ public class EventHandlerVO implements Serializable,
 	public void validate(DwrResponseI18n response) {
 
 		EventService eventService = new EventService();
-		XidUtils.validateXid(response, eventService::isXidUnique, getXid(), getId());
+		XidUtils.validateXid(response, eventService::isXidUnique, xid, id);
 
 		if (handlerType == TYPE_SET_POINT) {
 			DataPointVO dp = new DataPointDao().getDataPoint(targetPointId);

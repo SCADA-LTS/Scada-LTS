@@ -427,7 +427,7 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     public void validate(DwrResponseI18n response) {
 
         MaintenanceEventService maintenanceEventService = new MaintenanceEventService();
-        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, getXid(), getId());
+        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, xid, id);
 
         if (StringUtils.isLengthGreaterThan(alias, 50))
             response.addContextualMessage("alias", "maintenanceEvents.validate.aliasTooLong");

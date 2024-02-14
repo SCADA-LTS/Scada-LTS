@@ -281,7 +281,7 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     public void validate(DwrResponseI18n response) {
 
         ScheduledEventService scheduledEventService = new ScheduledEventService();
-        XidUtils.validateXid(response, scheduledEventService::isXidUnique, getXid(), getId());
+        XidUtils.validateXid(response, scheduledEventService::isXidUnique, xid, id);
 
         if (StringUtils.isLengthGreaterThan(alias, 50))
             response.addContextualMessage("alias", "scheduledEvents.validate.aliasTooLong");

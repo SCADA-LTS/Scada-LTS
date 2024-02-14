@@ -133,7 +133,7 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
     public void validate(DwrResponseI18n response) {
 
         PointLinkService pointLinkService = new PointLinkService();
-        XidUtils.validateXid(response, pointLinkService::isXidUnique, getXid(), getId());
+        XidUtils.validateXid(response, pointLinkService::isXidUnique, xid, id);
 
         if (sourcePointId == 0)
             response.addContextualMessage("sourcePointId", "pointLinks.validate.sourceRequired");

@@ -156,7 +156,7 @@ public class MailingList extends EmailRecipient {
     public void validate(DwrResponseI18n response) {
 
         MailingListService mailingListService = new MailingListService();
-        XidUtils.validateXid(response, mailingListService::isXidUnique, getXid(), getId());
+        XidUtils.validateXid(response, mailingListService::isXidUnique, xid, id);
 
         // Check that required fields are present.
         if (StringUtils.isEmpty(name))

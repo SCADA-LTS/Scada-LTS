@@ -81,7 +81,7 @@ public class CompoundEventDetectorVO implements ChangeComparable<CompoundEventDe
     public void validate(DwrResponseI18n response) {
 
         CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
-        XidUtils.validateXid(response, compoundEventDetectorService::isXidUnique, getXid(), getId());
+        XidUtils.validateXid(response, compoundEventDetectorService::isXidUnique, xid, id);
 
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "compoundDetectors.validation.nameRequired");
