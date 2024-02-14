@@ -43,6 +43,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.mango.service.ScheduledEventService;
+import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -277,6 +279,10 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     }
 
     public void validate(DwrResponseI18n response) {
+
+        ScheduledEventService scheduledEventService = new ScheduledEventService();
+        XidUtils.validateXid(response, scheduledEventService::isXidUnique, xid, id);
+
         if (StringUtils.isLengthGreaterThan(alias, 50))
             response.addContextualMessage("alias", "scheduledEvents.validate.aliasTooLong");
 
