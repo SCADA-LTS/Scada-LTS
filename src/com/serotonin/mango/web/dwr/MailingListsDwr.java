@@ -43,9 +43,6 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.utils.XidUtils;
 
 import static com.serotonin.mango.util.LoggingUtils.mailingListInfo;
 import static com.serotonin.mango.util.LoggingUtils.userInfo;

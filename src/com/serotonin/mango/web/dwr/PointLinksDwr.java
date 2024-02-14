@@ -46,10 +46,6 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.PointLinkService;
-import org.scada_lts.mango.service.PublisherService;
-import org.scada_lts.utils.XidUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 

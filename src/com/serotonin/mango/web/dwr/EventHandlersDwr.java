@@ -62,11 +62,9 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.utils.XidUtils;
 
 
 public class EventHandlersDwr extends BaseDwr {
@@ -332,7 +330,6 @@ public class EventHandlersDwr extends BaseDwr {
 		vo.setDisabled(disabled);
 
 		DwrResponseI18n response = new DwrResponseI18n();
-
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {

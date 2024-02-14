@@ -37,9 +37,6 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.MaintenanceEventService;
-import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
