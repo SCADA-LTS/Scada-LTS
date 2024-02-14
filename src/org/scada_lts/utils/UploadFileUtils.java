@@ -362,7 +362,7 @@ public final class UploadFileUtils {
         }
     }
 
-    private static Path getAbsoluteResourcePath(String path) {
+    public static Path getAbsoluteResourcePath(String path) {
         Path normalizedPath = normalizePath(path);
         if (!path.equals(normalizedPath.toString())) {
             Path basePath = basePath();

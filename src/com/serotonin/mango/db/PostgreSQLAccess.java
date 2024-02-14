@@ -34,10 +34,6 @@ import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 
 public class PostgreSQLAccess extends BasePooledAccess {
-    public PostgreSQLAccess(ServletContext ctx) {
-        super(ctx);
-    }
-
     @Override
     protected void initializeImpl(String propertyPrefix) {
         super.initializeImpl(propertyPrefix);
@@ -76,7 +72,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
         try {
             //ejt.execute("select count(*) from users");
             Class.forName(getDriverClassName());
@@ -97,7 +93,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
                 conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
                     Common.getEnvironmentProfile().getString("db.username"),
                     Common.getEnvironmentProfile().getString("db.password"));
-                createSchema("/WEB-INF/db/createTables-postgresql.sql");
+                createSchema("/WEB-INF/db/createTables-postgresql.sql", ctx);
                 conn.close();
                 return true;                
             }
