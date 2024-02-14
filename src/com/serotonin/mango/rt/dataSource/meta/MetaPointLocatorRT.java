@@ -111,7 +111,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         initializeTimerTask();
 
         if(dataPoint.getPointValue() != null && vo.getUpdateEvent()==MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE){
-            execute(dataPoint.getPointValue());
+            execute(dataPoint.getPointValue(), true);
         }
     }
 
@@ -231,8 +231,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             execute(updateTime, sourceIds);
         }
     }
+    private void execute(long runtime, List<Integer> sourceIds) {
+        execute(runtime, sourceIds, false);
+    }
 
-    void execute(long runtime, List<Integer> sourceIds) {
+    private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode) {
         if (context == null) {
             LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
@@ -262,7 +265,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                         vo.getDataTypeId(), runtime);
                 if (pvt.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else
+                else if(!initializeMode || !pvt.equals(dataPoint.getPointValue()))
                     updatePoint(pvt);
             }
             catch (ScriptException e) {
@@ -293,7 +296,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
     }
 
-    private void execute(PointValueTime newValue) {
+    private void execute(PointValueTime value) {
+        execute(value, false);
+    }
+
+    private void execute(PointValueTime newValue, boolean initializeMode) {
         // Check for infinite loops
         List<Integer> sourceIds;
         if (threadLocal.get() == null)
@@ -303,7 +310,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         long time = newValue.getTime();
         if (vo.getExecutionDelaySeconds() == 0)
-            execute(time, sourceIds);
+            execute(time, sourceIds, initializeMode);
         else {
             synchronized (LOCK) {
                 if (initialized) {
