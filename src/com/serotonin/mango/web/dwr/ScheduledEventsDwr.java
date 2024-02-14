@@ -96,9 +96,6 @@ public class ScheduledEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 
-        ScheduledEventService scheduledEventService = new ScheduledEventService();
-        XidUtils.validateXid(response, scheduledEventService::isXidUnique, xid, id);
-
         se.validate(response);
 
         // Save the scheduled event

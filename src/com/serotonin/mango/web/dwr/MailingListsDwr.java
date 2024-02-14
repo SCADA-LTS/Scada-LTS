@@ -97,9 +97,6 @@ public class MailingListsDwr extends BaseDwr {
 		ml.setCronPattern(cronPattern);
 		ml.setCollectInactiveEmails(collectInactiveEmails);
 
-		MailingListService mailingListService = new MailingListService();
-		XidUtils.validateXid(response, mailingListService::isXidUnique, xid, id);
-
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {

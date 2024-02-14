@@ -131,9 +131,6 @@ public class MaintenanceEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
 
-        MaintenanceEventService maintenanceEventService = new MaintenanceEventService();
-        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, xid, id);
-
         e.validate(response);
 
         // Save the maintenance event

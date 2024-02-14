@@ -121,9 +121,6 @@ public class CompoundEventsDwr extends BaseDwr {
 
         CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
 
-        CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
-        XidUtils.validateXid(response, compoundEventDetectorService::isXidUnique, ced.getXid(), ced.getId());
-
         ced.validate(response);
 
         // Save it

@@ -36,6 +36,8 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.PointLinkService;
+import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -129,6 +131,10 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
     }
 
     public void validate(DwrResponseI18n response) {
+
+        PointLinkService pointLinkService = new PointLinkService();
+        XidUtils.validateXid(response, pointLinkService::isXidUnique, getXid(), getId());
+
         if (sourcePointId == 0)
             response.addContextualMessage("sourcePointId", "pointLinks.validate.sourceRequired");
         if (targetPointId == 0)

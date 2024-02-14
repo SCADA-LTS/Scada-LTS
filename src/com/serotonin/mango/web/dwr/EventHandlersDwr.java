@@ -333,8 +333,6 @@ public class EventHandlersDwr extends BaseDwr {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		XidUtils.validateXid(response, eventService::isXidUnique, xid, handlerId);
-
 		vo.validate(response);
 
 		if (!response.getHasMessages()) {

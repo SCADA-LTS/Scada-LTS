@@ -28,6 +28,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.mango.service.MaintenanceEventService;
+import org.scada_lts.utils.XidUtils;
 
 @JsonRemoteEntity
 public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>, JsonSerializable {
@@ -423,6 +425,10 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     }
 
     public void validate(DwrResponseI18n response) {
+
+        MaintenanceEventService maintenanceEventService = new MaintenanceEventService();
+        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, getXid(), getId());
+
         if (StringUtils.isLengthGreaterThan(alias, 50))
             response.addContextualMessage("alias", "maintenanceEvents.validate.aliasTooLong");
 

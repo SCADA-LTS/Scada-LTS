@@ -126,9 +126,6 @@ public class PointLinksDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         PointLinkDao pointLinkDao = new PointLinkDao();
 
-        PointLinkService pointLinkService = new PointLinkService();
-        XidUtils.validateXid(response, pointLinkService::isXidUnique, xid, id);
-
         vo.validate(response);
 
         // Save it
