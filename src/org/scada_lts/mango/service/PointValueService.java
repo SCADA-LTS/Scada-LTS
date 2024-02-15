@@ -49,6 +49,7 @@ import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
+import org.scada_lts.monitor.type.IntegerMonitor;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -62,7 +63,6 @@ import com.serotonin.mango.ImageSaveException;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
-import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
