@@ -22,9 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -311,7 +309,7 @@ public class PointValueService implements MangoPointValues {
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
-
+        lstIn.sort(Comparator.comparing(PointValue::getId).reversed());
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
             if(pv.getPointValue() instanceof AnnotatedPointValueTime) {
@@ -359,14 +357,16 @@ public class PointValueService implements MangoPointValues {
 
         List<PointValue> lstValues = PointValueDAO.getInstance().findByIdAndTs(dataPointId, maxTs);
 
-        if (lstValues.size() == 0)
+        if (lstValues.isEmpty())
             return null;
+
+        lstValues.sort(Comparator.comparing(PointValue::getId).reversed());
 
         PointValueTime pointValue = lstValues.get(0).getPointValue();
         if(pointValue instanceof AnnotatedPointValueTime) {
             updateAnnotation((AnnotatedPointValueTime) pointValue);
         }
-        return lstValues.get(0).getPointValue();
+        return pointValue;
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
