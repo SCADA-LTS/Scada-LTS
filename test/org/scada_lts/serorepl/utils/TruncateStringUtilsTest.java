@@ -20,7 +20,7 @@ public class TruncateStringUtilsTest {
                 {STRING_LENGTH_13, null, 10, "ds_1 - ...", 10},
                 {STRING_LENGTH_13, "", 10, "ds_1 - 13c", 10},
                 {STRING_LENGTH_13, ".", 10, "ds_1 - 13.", 10},
-                {STRING_LENGTH_13, "..", 10, "ds_1 - 2..", 10},
+                {STRING_LENGTH_13, "..", 10, "ds_1 - 1..", 10},
 
                 {STRING_LENGTH_12, null, 10, "ds_1 - ...", 10},
                 {STRING_LENGTH_12, "", 10, "ds_1 - 12c", 10},
