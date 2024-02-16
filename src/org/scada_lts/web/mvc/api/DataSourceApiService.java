@@ -3,13 +3,11 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.dao.model.DataSourceIdentifier;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
-import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.scada_lts.utils.ApiUtils.toMapMessages;
+import static org.scada_lts.utils.ApiUtils.idExists;
+import static org.scada_lts.utils.ApiUtils.validateObject;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
@@ -147,7 +146,7 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         Map<String, Object> response = new HashMap<>();
         try {
             boolean state;
-            if(id != null) {
+            if(idExists(id)) {
                 state = dataSourceService.toggleDataSource(id);
             } else {
                 state = dataSourceService.toggleDataSource(xid);
@@ -168,7 +167,7 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
 
         List<DataPointJson> response;
         try {
-            if(id != null) {
+            if(idExists(id)) {
                 response = dataSourceService.enableAllDataPointsInDS(id, user)
                         .stream().map(DataPointJson::new)
                         .collect(Collectors.toList());
@@ -200,7 +199,7 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
         User user = Common.getUser(request);
         DataSourceVO<?> response;
-        if(id != null) {
+        if(idExists(id)) {
             response = toObject(id, user, request, dataSourceService::getDataSource,
                     dataSourceService::hasDataSourceReadPermission,
                     a -> a);
@@ -213,19 +212,13 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
     }
 
     private static DataSourceVO<?> toDataSourceVO(HttpServletRequest request, DataSourceJson dataSource) {
-        DataSourceVO<?> vo;
+        DataSourceVO<?> dataSourceVO;
         try {
-            vo = dataSource.createDataSourceVO();
+            dataSourceVO = dataSource.createDataSourceVO();
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-
-        DwrResponseI18n responseI18n = new DwrResponseI18n();
-        vo.validate(responseI18n);
-        if(responseI18n.getHasMessages()) {
-            throw new BadRequestException(toMapMessages(responseI18n),
-                    request.getRequestURI());
-        }
-        return vo;
+        validateObject(request, dataSourceVO);
+        return dataSourceVO;
     }
 }

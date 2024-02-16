@@ -206,5 +206,7 @@ test {
         includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
         includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
+
     }
 }
