@@ -39,6 +39,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.ScadaValidation;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -86,7 +87,7 @@ import java.util.*;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -492,6 +493,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 				duplicateHandling);
 	}
 
+	@Override
 	public void validate(DwrResponseI18n response) {
 
 		DataSourceService dataSourceService = new DataSourceService();

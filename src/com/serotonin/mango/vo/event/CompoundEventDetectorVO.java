@@ -43,6 +43,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.CompoundEventDetectorService;
+import org.scada_lts.utils.XidUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -77,6 +79,10 @@ public class CompoundEventDetectorVO implements ChangeComparable<CompoundEventDe
     }
 
     public void validate(DwrResponseI18n response) {
+
+        CompoundEventDetectorService compoundEventDetectorService = new CompoundEventDetectorService();
+        XidUtils.validateXid(response, compoundEventDetectorService::isXidUnique, xid, id);
+
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "compoundDetectors.validation.nameRequired");
 
