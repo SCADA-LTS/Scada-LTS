@@ -6,8 +6,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    CalculateConsolidatedChartHeightExceptionTest.class,
-    CalculateConsolidatedChartHeightTest.class,
+    CalculateLinesImageChartUtilsTest.class,
+    CalculateLinesImageChartUtilsExceptionTest.class,
 })
 
 public class ImageChartUtilsTestsSuite { }

@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class ReplaceMacroStringUtilsWithProdParametersTest {
+public class ReplaceMacroStringUtilsTest {
 
     private final static String timestampSql = "and ${field}>=? and ${field}<?";
     private final static String toReplace = "field";

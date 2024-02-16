@@ -37,7 +37,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
-import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
 
@@ -57,15 +56,15 @@ public class ReportChartCreator {
     /**
      * This image width is specifically chosen such that the report will print on a single page width in landscape.
      */
-    private static final int IMAGE_WIDTH = 930;
-    private static final int IMAGE_HEIGHT = 400;
-    private static final int IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
-    private static final int CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER = 149;
-    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART = 65;
+    private static final int IMAGE_WIDTH_PIXELS = 930;
+    private static final int IMAGE_HEIGHT_PIXELS = 400;
+    private static final int POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
+    private static final int LINE_LENGTH_IN_LEGEND_LIMIT = 156;
+    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT = 54;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
-    public static final int POINT_IMAGE_WIDTH = 440;
-    public static final int POINT_IMAGE_HEIGHT = 250; // 340
+    public static final int POINT_IMAGE_WIDTH_PIXELS = 440;
+    public static final int POINT_IMAGE_HEIGHT_PIXELS = 250; // 340
 
     String inlinePrefix;
     private String html;
@@ -101,7 +100,7 @@ public class ReportChartCreator {
 
         // Use a stream handler to get the report data from the database.
         StreamHandler handler = new StreamHandler(reportInstance.getReportStartTime(),
-                reportInstance.getReportEndTime(), IMAGE_WIDTH, createExportFile, bundle);
+                reportInstance.getReportEndTime(), IMAGE_WIDTH_PIXELS, createExportFile, bundle);
         // Process the report content with the handler.
         reportDao.reportInstanceData(reportInstance.getId(), handler);
 
@@ -135,7 +134,7 @@ public class ReportChartCreator {
             if (ptsc.hasData()) {
                 if (inlinePrefix != null)
                     model.put("chartName", inlinePrefix + pointStat.getChartName());
-                pointStat.setImageData(ImageChartUtils.getChartData(ptsc, POINT_IMAGE_WIDTH, POINT_IMAGE_HEIGHT));
+                pointStat.setImageData(ImageChartUtils.getChartData(ptsc, POINT_IMAGE_WIDTH_PIXELS, POINT_IMAGE_HEIGHT_PIXELS));
             }
         }
 
@@ -148,12 +147,9 @@ public class ReportChartCreator {
                 // The path comes from the servlet path definition in web.xml.
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
-            try{
-	            int consolidatedChartHeight = ImageChartUtils.calculateHeightConsolidatedChart(pointStatistics, IMAGE_HEIGHT, IMAGE_POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, CHARACTERS_PER_LINE_IN_CHART_LEGEND_NUMBER);
-                imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, consolidatedChartHeight);
-            } catch (IllegalArgumentException e) {
-				e.printStackTrace();
-            }
+            int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT);
+            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
         List<EventInstance> events = null;
@@ -263,8 +259,8 @@ public class ReportChartCreator {
         return pointStatistics;
     }
 
-    public static int getDataPointExtendedNameLengthForChart(){
-        return DATA_POINT_EXTENDED_NAME_LENGTH_FOR_CHART;
+    public static int getDataPointExtendedNameLengthLimit(){
+        return DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT;
     }
 
     public static class PointStatistics {

@@ -1,44 +1,82 @@
 package org.scada_lts.serorepl.utils;
 
-import com.serotonin.mango.vo.report.ReportChartCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static br.org.scadabr.db.utils.TestUtils.*;
 
 @RunWith(Parameterized.class)
 public class TruncateStringUtilsExceptionTest {
 
-    @Parameterized.Parameters(name = "{index}: truncate(word: {0}, truncateSuffix: {1}, length: {2})")
+    @Parameterized.Parameters(name = "{index}: truncate(word: {0}, suffix: {1}, length: {2})")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {"ds - datap", "longsuffix", 6},
-                {"ds - dp", "suffix", 6},
-                {"2c", ".", 1},
-                {"ds - datapointnameplaceholder1", "longsuffix", 9},
-                {"ds-dp", ".", 3},
-                {"ds-dp", null, 3}
+        return Arrays.asList(new Object[][] {
+
+                {null, null, 6},
+                {null, "", 6},
+                {null, ".", 6},
+                {null, "....", 6},
+
+                {STRING_LENGTH_7, null, 3},
+                {STRING_LENGTH_8, null, 3},
+                {STRING_LENGTH_9, null, 3},
+
+                {STRING_LENGTH_7, null, 2},
+                {STRING_LENGTH_8, null, 2},
+                {STRING_LENGTH_9, null, 2},
+
+                {STRING_LENGTH_7, null, 1},
+                {STRING_LENGTH_8, null, 1},
+                {STRING_LENGTH_9, null, 1},
+
+                {STRING_LENGTH_7, null, 0},
+                {STRING_LENGTH_8, null, 0},
+                {STRING_LENGTH_9, null, 0},
+
+                {STRING_LENGTH_7, "", 0},
+                {STRING_LENGTH_8, "", 0},
+                {STRING_LENGTH_9, "", 0},
+
+                {STRING_LENGTH_7, ".", 0},
+                {STRING_LENGTH_8, ".", 0},
+                {STRING_LENGTH_9, ".", 0},
+
+                {STRING_LENGTH_7, "..", 0},
+                {STRING_LENGTH_8, "..", 0},
+                {STRING_LENGTH_9, "..", 0},
+
+                {STRING_LENGTH_7, null, -1},
+                {STRING_LENGTH_8, null, -1},
+                {STRING_LENGTH_9, null, -1},
+
+                {STRING_LENGTH_9, "123456", 6},
+                {STRING_LENGTH_9, "1234567", 7},
+                {STRING_LENGTH_9, "12345678", 8},
+
+                {STRING_LENGTH_9, "123456", 5},
+                {STRING_LENGTH_9, "1234567", 6},
+                {STRING_LENGTH_9, "12345678", 7},
+
+
         });
     }
 
     private final String word;
-    private final String truncateSuffix;
+    private final String suffix;
     private final int length;
 
-    public TruncateStringUtilsExceptionTest(String word, String truncateSuffix, int length) {
+    public TruncateStringUtilsExceptionTest(String word, String suffix, int length) {
         this.word = word;
-        this.truncateSuffix = truncateSuffix;
+        this.suffix = suffix;
         this.length = length;
     }
 
-
     @Test(expected = IllegalArgumentException.class)
     public void when_truncateExpectException() {
-        StringUtils.truncate(word, truncateSuffix, length);
+        StringUtils.truncate(word, suffix, length);
     }
 }

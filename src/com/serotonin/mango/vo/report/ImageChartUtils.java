@@ -26,9 +26,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -49,10 +52,15 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.mindprod.StripEntities;
 import com.serotonin.util.StringUtils;
 
+import static org.scada_lts.serorepl.utils.StringUtils.truncate;
+
 /**
  * @author Matthew Lohbihler
  */
 public class ImageChartUtils {
+
+    private static final Log LOG = LogFactory.getLog(ImageChartUtils.class);
+
     private static final int NUMERIC_DATA_INDEX = 0;
     private static final int DISCRETE_DATA_INDEX = 1;
 
@@ -212,37 +220,46 @@ public class ImageChartUtils {
         }
     }
 
-	public static int calculateHeightConsolidatedChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeight, int imageHeightForDataPointNameInLegend, int charNumberPerLine) {
-		StringBuilder subLegend = new StringBuilder();
-		int linesAmount = 0;
-		String charsForColorIndicator = "111";
-		for (ReportChartCreator.PointStatistics point : pointStatistics){
-			subLegend.append(charsForColorIndicator);
-            if (point.getName().length() > charNumberPerLine){
-                throw new IllegalArgumentException("Point name is too long: " + point.getName());
-            }
+    public static int calculateHeightChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeightPixels,
+                                           int pointLabelHeightInLegendPixels, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit) {
+        int linesNumber = calculateLinesNumber(toListNames(pointStatistics), lineLengthInLegendLimit, dataPointExtendedNameLengthLimit);
+        return imageHeightPixels - pointLabelHeightInLegendPixels + (linesNumber * pointLabelHeightInLegendPixels) + 1;
+    }
 
-			else if ((subLegend.length() + point.getName().length()) > charNumberPerLine){
-				subLegend.delete(0, subLegend.length());
-				linesAmount++;
-                subLegend.append(charsForColorIndicator);
-				subLegend.append(point.getName());
-			}
-			else {
-				subLegend.append(point.getName());
-			}
-		}
-        if (pointStatistics.isEmpty() || pointStatistics.get(pointStatistics.size() - 1).getName().length() != charNumberPerLine) {
-            linesAmount++;
+    public static int calculateLinesNumber(List<String> pointStatisticsNames, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit) {
+        if(pointStatisticsNames.isEmpty() || (pointStatisticsNames.size() == 1 && pointStatisticsNames.get(0) == null)) {
+            return 1;
         }
-        return (imageHeight - imageHeightForDataPointNameInLegend + (linesAmount*imageHeightForDataPointNameInLegend));
+        StringBuilder subLegend = new StringBuilder();
+        int linesNumber = 1;
+        String split = " ** ";
+        for (int i = 0; i < pointStatisticsNames.size(); i++) {
+            String name = pointStatisticsNames.get(i);
+            if (name == null || name.isEmpty())
+                continue;
+            name = truncate(split + truncate(name, "", dataPointExtendedNameLengthLimit), "", lineLengthInLegendLimit);
+            if ((subLegend.length() + name.length()) > lineLengthInLegendLimit) {
+                LOG.error(subLegend);
+                subLegend.delete(0, subLegend.length());
+                linesNumber++;
+            }
+            subLegend.append(name);
+            if(i == pointStatisticsNames.size() - 1) {
+                LOG.error(subLegend);
+                subLegend.delete(0, subLegend.length());
+            }
+        }
+        return linesNumber;
     }
 
     public static String calculatePointNameForReport(String extendedName) {
-        if(extendedName.length() > ReportChartCreator.getDataPointExtendedNameLengthForChart()) {
-            return org.scada_lts.serorepl.utils.StringUtils.truncate(extendedName, "...", ReportChartCreator.getDataPointExtendedNameLengthForChart());
+        if(extendedName.length() > ReportChartCreator.getDataPointExtendedNameLengthLimit()) {
+            return truncate(extendedName, "...", ReportChartCreator.getDataPointExtendedNameLengthLimit());
         }
         return extendedName;
     }
 
+    private static List<String> toListNames(List<ReportChartCreator.PointStatistics> pointStatistics) {
+        return pointStatistics.stream().map(ReportChartCreator.PointStatistics::getName).collect(Collectors.toList());
+    }
 }

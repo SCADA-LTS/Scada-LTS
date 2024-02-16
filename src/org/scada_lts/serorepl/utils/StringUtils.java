@@ -1,6 +1,5 @@
 package org.scada_lts.serorepl.utils;
 
-import br.org.scadabr.api.da.WriteDataOptions;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Properties;
@@ -10,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class StringUtils {
+public final class StringUtils {
 
     private static final Random RANDOM = new Random();
 
@@ -24,6 +23,8 @@ public class StringUtils {
     private static final String DOLLAR_OPEN_BRACKET = "${";
     private static final String CLOSE_BRACKET =  "}";
     private static int FIRST_GROUP = 1;
+
+    private StringUtils() {}
 
 
     public static String capitalize(String s){
@@ -151,21 +152,27 @@ public class StringUtils {
         return s.substring(0,length);
     }
 
-    public static String truncate(String s, String truncateSuffix, int length) {
-        if(truncateSuffix != null && truncateSuffix.length() >= length)
-            throw new IllegalArgumentException("");
-        if (length < 4)
-            throw new IllegalArgumentException("Minimum abbreviation width is 4");
+    public static String truncate(String word, String suffix, int length) {
+        if(word == null)
+            throw new IllegalArgumentException("The abbreviated word cannot be null.");
+        if(word.length() <= length) {
+            return word;
+        }
         String name;
-        if(truncateSuffix == null) {
-            name = org.apache.commons.lang3.StringUtils.abbreviate(s, length);
+        if(suffix == null) {
+            if (length < 4)
+                throw new IllegalArgumentException("Minimum abbreviation width is 4 but was: " + length);
+            name = org.apache.commons.lang3.StringUtils.abbreviate(word, length);
             return name;
         } else {
-            int fixedLength = length - truncateSuffix.length();
-            name = org.apache.commons.lang3.StringUtils.abbreviate(s, fixedLength + 3);
+            int minLength = suffix.length() + 1;
+            if (length < minLength)
+                throw new IllegalArgumentException("Minimum abbreviation width is " + minLength + " but was: " + length);
+            int fixedLength = length - suffix.length();
+            name = org.apache.commons.lang3.StringUtils.abbreviate(word, fixedLength + 3);
             if(name.length() > fixedLength)
                 name = name.substring(0, fixedLength);
-            return name + truncateSuffix;
+            return name + suffix;
         }
     }
 }
