@@ -45,7 +45,6 @@ import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
 import org.springframework.dao.ConcurrencyFailureException;
