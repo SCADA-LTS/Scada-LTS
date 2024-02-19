@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.util.PropertiesUtils;
@@ -29,10 +30,12 @@ public class MockUtils {
         ContextWrapper contextWrapper = mock(ContextWrapper.class);
         ServletContext servletContext = new ServletContextMock(a ->
                 a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
+        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
 
         Common.ctx = contextWrapper;
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
+        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)

@@ -18,12 +18,12 @@
  */
 package com.serotonin.mango.rt.dataImage;
 
-import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.web.i18n.I18NUtils;
+import com.serotonin.mango.util.AnnotatedPointValueUtils;
 import com.serotonin.web.taglib.DateFunctions;
 
 /**
@@ -79,18 +79,7 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getSourceDescriptionKey() {
-        switch (sourceType) {
-        case SetPointSource.Types.ANONYMOUS:
-            return "annotation.anonymous";
-        case SetPointSource.Types.EVENT_HANDLER:
-            return "annotation.eventHandler";
-        case SetPointSource.Types.USER:
-            return "annotation.user";
-        case SetPointSource.Types.POINT_LINK:
-            return "annotation.pointLink";
-        default:
-            return "annotation.unknown";
-        }
+        return AnnotatedPointValueUtils.getSourceDescriptionKey(sourceType);
     }
 
     public String getSourceDescriptionArgument() {
@@ -102,10 +91,7 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getAnnotation(ResourceBundle bundle) {
-        String pattern = I18NUtils.getMessage(bundle, getSourceDescriptionKey());
-        if (sourceDescriptionArgument == null)
-            return MessageFormat.format(pattern, I18NUtils.getMessage(bundle, "common.deleted"));
-        return MessageFormat.format(pattern, sourceDescriptionArgument);
+        return AnnotatedPointValueUtils.getAnnotation(bundle, sourceType, sourceDescriptionArgument);
     }
 
     @Override
@@ -124,6 +110,6 @@ public class AnnotatedPointValueTime extends PointValueTime {
 
     @Override
     public String toString() {
-        return "AnnotatedPointValueTime(" + sourceDescriptionArgument + " -- " + getValue() + "@" + DateFunctions.getTime(getTime()) + ")";
+        return "AnnotatedPointValueTime(" + (sourceDescriptionArgument == null ? getAnnotation(Common.getBundle()) : sourceDescriptionArgument) + " -- " + getValue() + "@" + DateFunctions.getTime(getTime()) + ")";
     }
 }

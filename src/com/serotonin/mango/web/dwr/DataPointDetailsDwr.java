@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.util.AnnotatedPointValueUtils;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -93,12 +94,12 @@ public class DataPointDetailsDwr extends BaseDwr {
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
 			rpvt.setTime(formatDateTime(pvt));
 
-			if (pvt != null && pvt.isAnnotated()) {
-				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
-				if (apvt.getSourceDescriptionArgument() == null) {
-					rpvt.setAnnotation(apvt.getSourceDescriptionArgument());
-				} else {
+			if (pvt != null) {
+				if(pvt.isAnnotated()) {
+					AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
 					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
+				} else {
+					rpvt.setAnnotation("System");
 				}
 			}
 			renderedData.add(rpvt);

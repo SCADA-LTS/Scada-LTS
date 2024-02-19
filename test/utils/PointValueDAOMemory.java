@@ -4,14 +4,16 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.mango.vo.User;
+import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
+import com.serotonin.mango.rt.link.PointLinkRT;
+import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
+import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.link.PointLinkVO;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.model.point.PointValue;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.IPointValueDAO;
 
 import java.util.HashMap;
@@ -19,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.serotonin.mango.util.AnnotatedPointValueUtils.createAnnotatedPointValueTime;
+
 public class PointValueDAOMemory implements IPointValueDAO {
 
     private final Map<Long, PointValueTime> pointValues;
     private final Map<Long, AnnotatedPointValueTime> pointValuesAnno;
     private static final AtomicLong serial = new AtomicLong(222);
+    private static final AtomicLong annoSerial = new AtomicLong(111);
     private final IUserDAO usersDAO;
 
 
@@ -60,16 +65,10 @@ public class PointValueDAOMemory implements IPointValueDAO {
     public synchronized PointValueTime getPointValue(long id) {
         if(pointValuesAnno.containsKey(id)) {
             AnnotatedPointValueTime annotatedPointValueTime = pointValuesAnno.get(id);
-            PointValueTime pointValueTime = pointValues.get(id);
-            User user = usersDAO.getUser(annotatedPointValueTime.getSourceId());
-            annotatedPointValueTime.setSourceDescriptionArgument(user.getUsername());
-            if(pointValueTime.getValue() instanceof AlphanumericValue) {
-                return annotatedPointValueTime;
-            } else {
-                AnnotatedPointValueTime annotatedPointValueTime1 = new AnnotatedPointValueTime(pointValueTime.getValue(), pointValueTime.getTime(), SetPointSource.Types.USER, user.getId());
-                annotatedPointValueTime1.setSourceDescriptionArgument(user.getUsername());
-                return annotatedPointValueTime1;
+            if(annotatedPointValueTime.getSourceType() == SetPointSource.Types.USER) {
+                annotatedPointValueTime.setSourceDescriptionArgument(usersDAO.getUser(annotatedPointValueTime.getSourceId()).getUsername());
             }
+            return annotatedPointValueTime;
         }
         return pointValues.get(id);
     }
@@ -91,126 +90,146 @@ public class PointValueDAOMemory implements IPointValueDAO {
 
     @Override
     public List<PointValue> findAll() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public PointValue findById(Object[] pk) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<PointValue> findByIdAndTs(long id, long ts) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<PointValue> filtered(String filter, Object[] argsFilter, long limit) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object[] create(PointValue entity) {
-        return new Object[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object[] createNoTransaction(int pointId, int dataType, double dvalue, long time) {
-        return new Object[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void executeBatchUpdateInsert(List<Object[]> params) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Long getInceptionDate(int dataPointId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long dateRangeCount(int dataPointId, long from, long to) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getStartTime(List<Integer> dataPointIds) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getEndTime(List<Integer> dataPointIds) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<Long> getFiledataIds() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Long getLatestPointValue(int dataPointId) {
-        return null;
+        PointValueTime pointValue = getPointValue(dataPointId);
+        if(pointValue == null)
+            return null;
+        return pointValue.getTime();
     }
 
     @Override
     public double applyBounds(double value) {
-        return 0;
+        if (Double.isNaN(value))
+            return 0;
+        if (value == Double.POSITIVE_INFINITY)
+            return Double.MAX_VALUE;
+        if (value == Double.NEGATIVE_INFINITY)
+            return -Double.MAX_VALUE;
+
+        return value;
     }
 
     @Override
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long deletePointValue(int dataPointId) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long deleteAllPointData() {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getMinTs(int dataPointId) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getMaxTs(int dataPointId) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<PointHistoryCount> getTopPointHistoryCounts() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void updateAnnotation(int userId) {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public PointValueTime getPointValueBefore(int dataPointId, long time) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PointValueTime getPointValueAt(int dataPointId, long time) {
+        throw new UnsupportedOperationException();
     }
 }

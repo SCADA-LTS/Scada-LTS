@@ -40,6 +40,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
  * 
  */
 @Repository
+@Deprecated
 public class PointValueDAO4REST {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueDAO4REST.class);
@@ -78,7 +79,7 @@ public class PointValueDAO4REST {
 				new RuntimeException("Value not compatible with type (double)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_STRING) {
-			pvt = new AnnotatedPointValueTime(MangoValue.objectToValue(value), new Date().getTime(), SetPointSource.Types.API, 0);
+			pvt = new AnnotatedPointValueTime(MangoValue.objectToValue(value), new Date().getTime(), SetPointSource.Types.REST_API, 0);
 		} else {
 			new RuntimeException("Unknown value type");
 		}

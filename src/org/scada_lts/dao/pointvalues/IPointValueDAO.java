@@ -72,4 +72,8 @@ public interface IPointValueDAO {
     int createAnnotation(long pointValueId, String textPointValueShort, String textPointValueLong, int sourceType, int sourceId);
 
     void updateAnnotation(int userId);
+
+    PointValueTime getPointValueBefore(int dataPointId, long time);
+
+    PointValueTime getPointValueAt(int dataPointId, long time);
 }

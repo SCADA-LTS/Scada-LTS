@@ -164,8 +164,9 @@ public class ConfigDataPointRtTest {
 
         MockUtils.configDaoMock();
 
-        ILoggedUsers loggedUsers = new LoggedUsers();
+        ILoggedUsers loggedUsers = mock(ILoggedUsers.class);
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
+        when(loggedUsers.getUser(eq(user.getId()))).thenReturn(user);
 
         dataSourceVO = createDataSource();
         dataPointVO = createDataPoint(defaultCacheSize, tolerance, startValue, dataTypeId, dataSourceVO);

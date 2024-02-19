@@ -34,7 +34,7 @@ public interface SetPointSource {
 		int ANONYMOUS = 3;
 		int POINT_LINK = 4;
 		int UNKNOWN = 5;
-		int API = 6;
+		int REST_API = 6;
 	}
 
 	public int getSetPointSourceType();
