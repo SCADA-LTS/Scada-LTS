@@ -223,7 +223,7 @@ public class ImageChartUtils {
     public static int calculateHeightChart(List<ReportChartCreator.PointStatistics> pointStatistics, int imageHeightPixels,
                                            int pointLabelHeightInLegendPixels, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit) {
         int linesNumber = calculateLinesNumber(toListNames(pointStatistics), lineLengthInLegendLimit, dataPointExtendedNameLengthLimit);
-        return imageHeightPixels - pointLabelHeightInLegendPixels + (linesNumber * pointLabelHeightInLegendPixels) + 1;
+        return imageHeightPixels - pointLabelHeightInLegendPixels + ((linesNumber + 1) * pointLabelHeightInLegendPixels);
     }
 
     public static int calculateLinesNumber(List<String> pointStatisticsNames, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit) {
@@ -238,14 +238,14 @@ public class ImageChartUtils {
             if (name == null || name.isEmpty())
                 continue;
             name = truncate(split + truncate(name, "", dataPointExtendedNameLengthLimit), "", lineLengthInLegendLimit);
-            if ((subLegend.length() + name.length()) > lineLengthInLegendLimit) {
-                LOG.error(subLegend);
+            if (subLegend.length() + name.length() > lineLengthInLegendLimit) {
+                LOG.debug(subLegend);
                 subLegend.delete(0, subLegend.length());
                 linesNumber++;
             }
             subLegend.append(name);
             if(i == pointStatisticsNames.size() - 1) {
-                LOG.error(subLegend);
+                LOG.debug(subLegend);
                 subLegend.delete(0, subLegend.length());
             }
         }

@@ -11,7 +11,7 @@ import static br.org.scadabr.db.utils.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class CalculateLinesImageChartUtilsTest {
+public class CalculateLinesImageChartUtilsLogicCaseTest {
 
     @Parameterized.Parameters(name = "{index}: calculateConsolidatedChartHeight(points: {0}, lineLengthInLegendLimit: {1}, dataPointExtendedNameLengthLimit: {2}, expectedLinesNumber: {3})")
     public static Object[][] data() {
@@ -21,49 +21,10 @@ public class CalculateLinesImageChartUtilsTest {
         withNulls.add(null);
         return new Object[][] {
 
-                {List.of(STRING_LENGTH_135, STRING_LENGTH_138, STRING_LENGTH_16), 156, 54, 1},
-
-                {List.of(STRING_LENGTH_135, STRING_LENGTH_138, STRING_LENGTH_16, STRING_LENGTH_8), 156, 54, 1},
-
-                {List.of(STRING_LENGTH_100, STRING_LENGTH_138, STRING_LENGTH_8, STRING_LENGTH_9, STRING_LENGTH_17), 156, 54, 2},
-
-                {List.of(STRING_LENGTH_100, STRING_LENGTH_10, STRING_LENGTH_11, STRING_LENGTH_12, STRING_LENGTH_135,
-                        STRING_LENGTH_138, STRING_LENGTH_13, STRING_LENGTH_140, STRING_LENGTH_14, STRING_LENGTH_15
-                ), 156, 54, 3},
-
-                {List.of(STRING_LENGTH_12, STRING_LENGTH_135, STRING_LENGTH_13, STRING_LENGTH_140, STRING_LENGTH_14,
-                        STRING_LENGTH_15, STRING_LENGTH_16, STRING_LENGTH_17, STRING_LENGTH_100, STRING_LENGTH_10
-                ), 156, 54, 2},
-
-                {List.of(STRING_LENGTH_100, STRING_LENGTH_10, STRING_LENGTH_138, STRING_LENGTH_20, STRING_LENGTH_25,
-                        STRING_LENGTH_30, STRING_LENGTH_40, STRING_LENGTH_50, STRING_LENGTH_60, STRING_LENGTH_70
-                ), 156, 54, 4},
-
-                {List.of(STRING_LENGTH_100, STRING_LENGTH_10, STRING_LENGTH_138, STRING_LENGTH_20, STRING_LENGTH_25,
-                        STRING_LENGTH_30, STRING_LENGTH_40, STRING_LENGTH_50, STRING_LENGTH_60, STRING_LENGTH_70,
-                        STRING_LENGTH_8, STRING_LENGTH_80, STRING_LENGTH_90, STRING_LENGTH_9, STRING_LENGTH_11,
-                        STRING_LENGTH_12, STRING_LENGTH_135, STRING_LENGTH_13, STRING_LENGTH_140, STRING_LENGTH_14,
-                        STRING_LENGTH_15, STRING_LENGTH_16, STRING_LENGTH_17
-                ), 156, 54, 7},
-
-                {List.of(STRING_LENGTH_12, STRING_LENGTH_135, STRING_LENGTH_13, STRING_LENGTH_140, STRING_LENGTH_14,
-                        STRING_LENGTH_15, STRING_LENGTH_16, STRING_LENGTH_17, STRING_LENGTH_100, STRING_LENGTH_10,
-                        STRING_LENGTH_138, STRING_LENGTH_20, STRING_LENGTH_25, STRING_LENGTH_30, STRING_LENGTH_40,
-                        STRING_LENGTH_50, STRING_LENGTH_60, STRING_LENGTH_70, STRING_LENGTH_8, STRING_LENGTH_80,
-                        STRING_LENGTH_90, STRING_LENGTH_9, STRING_LENGTH_11
-                ), 156, 54, 6},
-
-                {List.of(STRING_LENGTH_100, STRING_LENGTH_10, STRING_LENGTH_11, STRING_LENGTH_12, STRING_LENGTH_135,
-                        STRING_LENGTH_138, STRING_LENGTH_13, STRING_LENGTH_140, STRING_LENGTH_14, STRING_LENGTH_15,
-                        STRING_LENGTH_16, STRING_LENGTH_17, STRING_LENGTH_20, STRING_LENGTH_25, STRING_LENGTH_30,
-                        STRING_LENGTH_40, STRING_LENGTH_50, STRING_LENGTH_60, STRING_LENGTH_70, STRING_LENGTH_8,
-                        STRING_LENGTH_80, STRING_LENGTH_90, STRING_LENGTH_9
-                ), 156, 54, 7},
-
-
                 {List.of(), 1, 1, 1},
                 {List.of(STRING_LENGTH_0, STRING_LENGTH_0), 1, 1, 1},
                 {withNulls, 1, 1, 1},
+
 
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_4, STRING_LENGTH_3, STRING_LENGTH_2, STRING_LENGTH_1), 27, 1, 1},
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_4, STRING_LENGTH_3, STRING_LENGTH_2, STRING_LENGTH_1), 27, 2, 2},
@@ -76,6 +37,7 @@ public class CalculateLinesImageChartUtilsTest {
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_2, STRING_LENGTH_1, STRING_LENGTH_3, STRING_LENGTH_4), 27, 3, 2},
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_2, STRING_LENGTH_1, STRING_LENGTH_3, STRING_LENGTH_4), 27, 4, 2},
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_2, STRING_LENGTH_1, STRING_LENGTH_3, STRING_LENGTH_4), 27, 5, 2},
+
 
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_4, STRING_LENGTH_3, STRING_LENGTH_2, STRING_LENGTH_1), 18, 1, 2},
                 {List.of(STRING_LENGTH_4, STRING_LENGTH_4, STRING_LENGTH_3, STRING_LENGTH_2, STRING_LENGTH_1), 18, 2, 2},
@@ -136,7 +98,7 @@ public class CalculateLinesImageChartUtilsTest {
     private final int lineLengthInLegendLimit;
     private final int dataPointExtendedNameLengthLimit;
 
-    public CalculateLinesImageChartUtilsTest(List<String> pointStatisticsNames, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit, int expectedLinesNumber) {
+    public CalculateLinesImageChartUtilsLogicCaseTest(List<String> pointStatisticsNames, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit, int expectedLinesNumber) {
         this.pointStatisticsNames = pointStatisticsNames;
         this.expectedLinesNumber = expectedLinesNumber;
         this.lineLengthInLegendLimit = lineLengthInLegendLimit;
