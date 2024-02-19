@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class TruncateStringUtilsTest {
 
-    @Parameterized.Parameters(name = "{index}: truncate(word: {0}, truncateSuffix: {1}, length: {2}, expectedWord: {3})")
+    @Parameterized.Parameters(name = "{index}: truncate(word: {0}, suffix: {1}, length: {2}, expectedWord: {3}, expectedLength: {4})")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
 
