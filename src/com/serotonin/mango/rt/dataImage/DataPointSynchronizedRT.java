@@ -188,8 +188,10 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo, SetPointSource source) {
         lock.writeLock().lock();
         try {
-            pointValueState = PointValueState.newState(newValue, pointValueState, vo, source);
-            return Optional.of(pointValueState);
+            PointValueState state = PointValueState.newState(newValue, pointValueState, vo, source);
+            if(!state.isBackdated())
+                pointValueState = state;
+            return Optional.of(state);
         } catch(Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();

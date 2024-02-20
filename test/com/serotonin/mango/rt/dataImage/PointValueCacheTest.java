@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.web.ContextWrapper;
+import com.serotonin.web.taglib.DateFunctions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,8 @@ public class PointValueCacheTest {
     private PointValueCache pointValueCache;
     private PointValueTime pvt;
     private User sourceUser;
+    private String annotatedPointValueTimeToStringExpected;
+    private String pointValueTimeToStringExpected;
 
     @Before
     public void config() throws Exception {
@@ -76,9 +79,13 @@ public class PointValueCacheTest {
         mockStatic(Common.class);
         when(Common.getUser()).thenReturn(sourceUser);
         when(Common.getBundle()).thenReturn(ResourceBundle.getBundle("messages"));
+        long time = 1708165754243L;
 
-        pvt = new PointValueTime(MangoValue.stringToValue("1", DataTypes.BINARY), 1708165754243L);
+        pvt = new PointValueTime(MangoValue.stringToValue("1", DataTypes.BINARY), time);
         pointValueCache = new PointValueCache(-1, 1);
+
+        annotatedPointValueTimeToStringExpected = "AnnotatedPointValueTime(" + sourceUser.getUsername() + " -- true@" + DateFunctions.getTime(time) + ")";
+        pointValueTimeToStringExpected = "PointValueTime(true@" + DateFunctions.getTime(time) + ")";
     }
 
     @Test
@@ -98,14 +105,13 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_logValue_false_for_User_then_toString() {
 
         //given:
-        String expected = "AnnotatedPointValueTime(" + sourceUser.getUsername() + " -- true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, sourceUser, false, false);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(annotatedPointValueTimeToStringExpected, pvt.toString());
     }
 
     @Test
@@ -153,14 +159,13 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_sync_for_User_then_toString() {
 
         //given:
-        String expected = "AnnotatedPointValueTime(" + sourceUser.getUsername() + " -- true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, sourceUser, true, false);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(annotatedPointValueTimeToStringExpected, pvt.toString());
     }
 
     @Test
@@ -208,14 +213,13 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_async_for_User_then_toString() {
 
         //given:
-        String expected = "AnnotatedPointValueTime(" + sourceUser.getUsername() + " -- true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, sourceUser, true, true);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(annotatedPointValueTimeToStringExpected, pvt.toString());
     }
 
     @Test
@@ -263,14 +267,13 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_logValue_false_source_null_then_toString() {
 
         //given:
-        String expected = "PointValueTime(true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, null, false, false);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(pointValueTimeToStringExpected, pvt.toString());
     }
 
     @Test
@@ -290,14 +293,13 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_sync_source_null_then_toString() {
 
         //given:
-        String expected = "PointValueTime(true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, null, true, false);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(pointValueTimeToStringExpected, pvt.toString());
     }
 
     @Test
@@ -317,13 +319,12 @@ public class PointValueCacheTest {
     public void when_getLatestPointValue_after_savePointValueIntoDaoAndCacheUpdate_async_source_null_then_toString() {
 
         //given:
-        String expected = "PointValueTime(true@Feb 17 11:29)";
         pointValueCache.savePointValueIntoDaoAndCacheUpdate(pvt, null, true, true);
 
         //when:
         PointValueTime pvt = pointValueCache.getLatestPointValue();
 
         //then:
-        Assert.assertEquals(expected, pvt.toString());
+        Assert.assertEquals(pointValueTimeToStringExpected, pvt.toString());
     }
 }
