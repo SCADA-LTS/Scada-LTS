@@ -59,6 +59,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ScriptService;
+import org.scada_lts.utils.XidUtils;
 
 @JsonRemoteEntity
 public class EventHandlerVO implements Serializable,
@@ -383,6 +384,10 @@ public class EventHandlerVO implements Serializable,
 	}
 
 	public void validate(DwrResponseI18n response) {
+
+		EventService eventService = new EventService();
+		XidUtils.validateXid(response, eventService::isXidUnique, xid, id);
+
 		if (handlerType == TYPE_SET_POINT) {
 			DataPointVO dp = new DataPointDao().getDataPoint(targetPointId);
 

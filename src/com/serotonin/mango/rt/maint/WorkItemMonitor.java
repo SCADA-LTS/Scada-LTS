@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.serotonin.mango.Common;
-import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
+import org.scada_lts.monitor.type.IntegerMonitor;
 
 public class WorkItemMonitor extends TimerTask {
     private static final long TIMEOUT = 1000 * 10; // Run every ten seconds.

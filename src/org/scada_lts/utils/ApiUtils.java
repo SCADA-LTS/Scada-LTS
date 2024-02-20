@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.ScadaValidation;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.UserEntry;
@@ -12,9 +13,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 import org.scada_lts.web.mvc.api.user.UserInfo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -144,5 +147,18 @@ public final class ApiUtils {
 
     public static <T, R> R convertList(T list, Function<T, R> converter) {
         return converter.apply(list);
+    }
+
+    public static void validateObject(HttpServletRequest request, ScadaValidation toUpdate) {
+        DwrResponseI18n responseI18n = new DwrResponseI18n();
+        toUpdate.validate(responseI18n);
+        if(responseI18n.getHasMessages()) {
+            throw new BadRequestException(toMapMessages(responseI18n),
+                    request.getRequestURI());
+        }
+    }
+
+    public static boolean idExists(Integer id) {
+        return id != null && id > 0;
     }
 }

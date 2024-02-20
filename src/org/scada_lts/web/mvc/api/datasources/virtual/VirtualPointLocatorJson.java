@@ -117,7 +117,7 @@ public class VirtualPointLocatorJson extends DataPointLocatorJson {
     @Override
     public VirtualPointLocatorVO parsePointLocatorData() {
         VirtualPointLocatorVO  plVO = new VirtualPointLocatorVO();
-        plVO.setSettable(this.isSettable());
+        plVO.setSettable(this.isSettable() != null ? this.isSettable() : plVO.isSettable());
         plVO.setDataTypeId(this.getDataTypeId());
         plVO.setChangeTypeId(this.getChangeTypeId());
         plVO.setAlternateBooleanChange(this.getAlternateBooleanChange());
