@@ -111,7 +111,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         initializeTimerTask();
 
         if(dataPoint.getPointValue() != null && vo.getUpdateEvent()==MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE){
-            execute(dataPoint.getPointValue(), true);
+            execute(System.currentTimeMillis(), new ArrayList<>(), true);
         }
     }
 
@@ -265,7 +265,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                         vo.getDataTypeId(), runtime);
                 if (pvt.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else if(!initializeMode || !pvt.equals(dataPoint.getPointValue()))
+                else if(!initializeMode || !(pvt.getValue()).equals(dataPoint.getPointValue().getValue()))
                     updatePoint(pvt);
             }
             catch (ScriptException e) {
