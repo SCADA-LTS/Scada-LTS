@@ -42,6 +42,7 @@ import com.serotonin.timer.AbstractTimer;
 import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
+import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -265,7 +266,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                         vo.getDataTypeId(), runtime);
                 if (pvt.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else if(!initializeMode || !(pvt.getValue()).equals(dataPoint.getPointValue().getValue()))
+                else if(!initializeMode || !ObjectUtils.isEqual(pvt.getValue(), dataPoint.getPointValue().getValue()))
                     updatePoint(pvt);
             }
             catch (ScriptException e) {
