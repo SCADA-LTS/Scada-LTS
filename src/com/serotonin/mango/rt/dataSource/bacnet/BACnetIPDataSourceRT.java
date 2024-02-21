@@ -227,7 +227,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                 returnToNormal(dataPoint);
             }
             catch (BACnetException e) {
-                fireMessageExceptionEvent("event.bacnet.whoisPoint", dataPoint.getVO().getName(), e.getMessage());
+                fireMessageExceptionEvent(dataPoint,"event.bacnet.whoisPoint", dataPoint.getVO().getName(), e.getMessage());
                 disablePoint(dataPoint);
                 return;
             }
@@ -257,18 +257,18 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                 resetUnreliableDataPoint(dataPoint);
             }
             catch (BACnetException e) {
-                // Ignore.
+                log.warn(LoggingUtils.info(e, this), e);
             }
             catch (PropertyValueException e) {
                 setUnreliableDataPoint(dataPoint);
                 // Shouldn't happen, so just log.
-                log.error("Couldn't manually get segmentation and vendor id from device", e);
+                log.error("Couldn't manually get segmentation and vendor id from device: " + LoggingUtils.info(e, this));
             }
         }
 
         if (d == null) {
             // If we still don't have the device, call it in.
-            fireDeviceExceptionEvent("event.bacnet.deviceError", address.toIpString());
+            fireDeviceExceptionEvent(dataPoint,"event.bacnet.deviceError", address.toIpString());
             disablePoint(dataPoint);
         }
         else {
@@ -424,16 +424,16 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             returnToNormal(dataPoint);
         }
         catch (BACnetException e) {
-            fireMessageExceptionEvent("event.bacnet.readDevice", d.getAddress().toIpString(), e.getMessage());
+            fireMessageExceptionEvent(dataPoint, "event.bacnet.readDevice", d.getAddress().toIpString(), e.getMessage());
         }
     }
 
     private void dereferencePoint(DataPointRT dp, Encodable encodable, long time) {
         if (encodable == null) {
-            fireDeviceExceptionEvent("event.bacnet.readError", dp.getVO().getName(), "no value returned");
+            fireDeviceExceptionEvent(dp, "event.bacnet.readError", dp.getVO().getName(), "no value returned");
         } else if (encodable instanceof BACnetError) {
-            fireDeviceExceptionEvent("event.bacnet.readError", dp.getVO().getName(),
-                    ((BACnetError) encodable).getErrorCode());
+            fireDeviceExceptionEvent(dp, "event.bacnet.readError", dp.getVO().getName(),
+                    String.valueOf(((BACnetError) encodable).getErrorCode()));
         } else {
             MangoValue value = encodableToValue(encodable, dp.getDataTypeId());
             dp.updatePointValue(new PointValueTime(value, time));
@@ -459,7 +459,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             returnToNormal(dataPoint);
         }
         catch (Throwable t) {
-            fireMessageExceptionEvent("event.setPointFailed", t.getMessage());
+            fireMessageExceptionEvent(dataPoint, "event.setPointFailed", t.getMessage());
         }
     }
 
@@ -479,7 +479,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             forcePointRead(dataPoint);
         }
         catch (Throwable t) {
-            fireMessageExceptionEvent("event.relinquishFailed", t.getMessage());
+            fireMessageExceptionEvent(dataPoint, "event.relinquishFailed", t.getMessage());
         }
     }
 
@@ -571,6 +571,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                     sendCovSubscriptionImpl(initiatingDevice, monitoredObjectIdentifier, covId, true);
                 }
                 catch (BACnetException e) { /* Ignore exceptions */
+                    log.warn(LoggingUtils.info(e, this), e);
                 }
             }
         }
@@ -620,7 +621,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
     public void unimplementedVendorService(UnsignedInteger vendorId, UnsignedInteger serviceNumber, ByteQueue queue) {
         log.warn("Received unimplemented vendor service: vendor id=" + vendorId + ", service number=" + serviceNumber
-                + ", bytes (with context id)=" + queue);
+                + ", bytes (with context id)=" + queue + " : " + LoggingUtils.dataSourceInfo(this));
     }
 
     //
@@ -638,7 +639,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // If we are unsubscribing a failure doesn't really matter since the lease will expire eventually anyway,
             // so ignore.
             if (!unsubscribe) {
-                fireMessageExceptionEvent("event.bacnet.covFailed",
+                fireMessageExceptionEvent(dataPoint, "event.bacnet.covFailed",
                         locator.getRemoteDevice().getAddress().toIpString(), e.getMessage());
                 disablePoint(dataPoint);
                 return false;
@@ -669,12 +670,16 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         log.info("", t);
     }
 
-    private void fireMessageExceptionEvent(String key, Object... args) {
-        raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(key, args));
+    private void fireMessageExceptionEvent(String key, String... args) {
+        raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(key, (Object[]) args));
     }
 
-    private void fireDeviceExceptionEvent(String key, Object... args) {
-        raiseEvent(DEVICE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(key, args));
+    private void fireMessageExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
+        raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(key, (Object[]) args), dataPointRT);
+    }
+
+    private void fireDeviceExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
+        raiseEvent(DEVICE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(key, (Object[]) args), dataPointRT);
     }
 
     private void returnToNormal() {
@@ -798,5 +803,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
 
         throw new ShouldNeverHappenException("Unknown data type: " + value.getClass().getName());
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
     }
 }

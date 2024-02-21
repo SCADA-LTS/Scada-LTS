@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.modbus4j.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +61,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 2;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 3;
+	public static final int MONITOR_WRITE_EXCEPTION_EVENT = 4;
 
 	private ModbusMaster modbusMaster;
 	private BatchRead<ModbusPointLocatorRT> batchRead;
@@ -190,6 +192,9 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				}
 			}
 		} catch (Exception e) {
+			LOG.warn(LoggingUtils.info(e, this));
+			setUnreliableDataPoints(dataPoints);
+			return;
 		}
 
 		try {
@@ -208,12 +213,12 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 				if (result instanceof ExceptionResult) {
 					ExceptionResult exceptionResult = (ExceptionResult) result;
-					LOG.trace("Point: " + locator.getVO().getOffset()
+					LOG.warn("Point: " + locator.getVO().getOffset()
 							+ " Exception: "
 							+ exceptionResult.getExceptionMessage());
 					if (exceptionResult.getExceptionMessage().contains(
 							"no active connection")) {
-						LOG.trace("Cannot reach source, setting monitors to false");
+						LOG.warn("Cannot reach source, setting monitors to false");
 						slaveStatuses.put(locator.getVO().getSlaveId(), false);
 					} else {
 						// Raise an event.
@@ -254,8 +259,6 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 						slaveStatuses.put(locator.getVO().getSlaveId(), false);
 
 					dataSourceExceptions = true;
-
-					setUnreliableDataPoint(dataPoint);
 				} else {
 					/*
 					 * When an event is raised from the Callback
@@ -271,7 +274,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					 * it´s effective. TODO: Treat this type of exception
 					 * only... but how?!
 					 */
-					LOG.trace("Point: " + locator.getVO().getOffset()
+					LOG.warn("Point: " + locator.getVO().getOffset()
 							+ " eventRaised: " + eventRaised);
 					if (!eventRaised) {
 						updatePointValue(dataPoint, locator, result, time);
@@ -304,8 +307,14 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 						if (oldOnline != newOnline) {
 							LOG.trace("Monitor.setPointValue(): " + newOnline);
-							monitor.setPointValue(new PointValueTime(newOnline,
-									time), null);
+							try {
+								monitor.setPointValue(new PointValueTime(newOnline,
+										time), null);
+								returnToNormal(MONITOR_WRITE_EXCEPTION_EVENT, time, monitor);
+							} catch (Exception e) {
+								raiseEvent(MONITOR_WRITE_EXCEPTION_EVENT, time, true,
+										getLocalExceptionMessage(e), monitor);
+							}
 						}
 					}
 				}

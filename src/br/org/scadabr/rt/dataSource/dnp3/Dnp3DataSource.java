@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,8 +46,8 @@ public class Dnp3DataSource extends PollingDataSource {
 		try {
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
-		} catch (Exception e) {
-			LOG.warn(e.getMessage(), e);
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
@@ -84,11 +85,11 @@ public class Dnp3DataSource extends PollingDataSource {
 		try {
 			dnp3Master.terminate();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -111,11 +112,11 @@ public class Dnp3DataSource extends PollingDataSource {
 						.sendAnalogCommand(index, valueTime.getIntegerValue());
 			}
 			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
 			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()), dataPoint);
-			LOG.error(e.getMessage(), e);
 		}
 	}
 

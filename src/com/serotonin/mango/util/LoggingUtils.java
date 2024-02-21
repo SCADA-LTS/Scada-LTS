@@ -68,7 +68,7 @@ public final class LoggingUtils {
         return MessageFormat.format(info, script.getName(), String.valueOf(script.getId()), script.getXid());
     }
 
-    public static String exceptionInfo(Exception ex) {
+    public static String exceptionInfo(Throwable ex) {
         if(ex == null)
             return "";
         String info = "exception: {0} (msg: {1})";
@@ -210,11 +210,11 @@ public final class LoggingUtils {
         return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
     }
 
-    public static String info(Exception e, DataSourceRT dataSourceRT) {
+    public static String info(Throwable e, DataSourceRT dataSourceRT) {
         return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT);
     }
 
-    public static String info(Exception e, DataSourceRT dataSourceRT, DataPointRT dataPointRT) {
+    public static String info(Throwable e, DataSourceRT dataSourceRT, DataPointRT dataPointRT) {
         return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT) + " - " + dataPointInfo(dataPointRT);
     }
 

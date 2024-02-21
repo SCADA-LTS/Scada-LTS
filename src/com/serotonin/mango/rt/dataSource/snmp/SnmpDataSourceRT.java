@@ -340,7 +340,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
         // Take a look at the response.
         LocalizableMessage message = validatePdu(trap);
         if (message != null) {
-            raiseEvent(PDU_EXCEPTION_EVENT, time, false, message);
+            raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
         } else {
             synchronized (pointListChangeLock) {
                 updateChangedPoints();
@@ -358,8 +358,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
                     }
 
                     if (!found) {
-                        raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
                         log.warn("Trap not handled: " + vb);
+                        raiseEvent(TRAP_NOT_HANDLED_EVENT, time, true, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+                    } else {
+                        returnToNormal(TRAP_NOT_HANDLED_EVENT, time);
                     }
                 }
             }

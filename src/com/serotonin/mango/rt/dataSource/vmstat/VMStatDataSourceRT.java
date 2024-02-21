@@ -60,7 +60,6 @@ public class VMStatDataSourceRT extends EventDataSource implements Runnable {
     //
     @Override
     public void initialize() {
-        super.initialize();
 
         String command = "vmstat -n ";
         switch (vo.getOutputScale()) {
@@ -143,7 +142,9 @@ public class VMStatDataSourceRT extends EventDataSource implements Runnable {
         catch (IOException e) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
+            return;
         }
+        super.initialize();
     }
 
     @Override

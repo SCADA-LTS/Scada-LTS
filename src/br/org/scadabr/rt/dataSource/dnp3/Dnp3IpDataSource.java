@@ -3,6 +3,7 @@ package br.org.scadabr.rt.dataSource.dnp3;
 
 import br.org.scadabr.vo.dataSource.dnp3.Dnp3IpDataSourceVO;
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +28,12 @@ public class Dnp3IpDataSource extends Dnp3DataSource {
 					configuration.getPort(), configuration
 							.getStaticPollPeriods());
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
-		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this));
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", configuration
 							.getName(), e.getMessage()));
+			return;
 		}
 
 		super.initialize(dnp3Master);

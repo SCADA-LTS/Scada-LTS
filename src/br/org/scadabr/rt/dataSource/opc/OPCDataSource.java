@@ -63,7 +63,8 @@ public class OPCDataSource extends PollingDataSource {
 				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			}
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.error("[OPC] Poll Failed ! :" + LoggingUtils.info(e, this));
 			raiseEvent(
 					DATA_SOURCE_EXCEPTION_EVENT,
 					time,
@@ -71,7 +72,7 @@ public class OPCDataSource extends PollingDataSource {
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
 			timeoutCount++;
-			LOG.error("[OPC] Poll Failed ! :" + LoggingUtils.info(e, this));
+			return;
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -87,7 +88,7 @@ public class OPCDataSource extends PollingDataSource {
 				dataPoint
 						.updatePointValue(new PointValueTime(mangoValue, time));
 				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2",
 								vo.getName(), e.getMessage()), dataPoint);
@@ -112,14 +113,14 @@ public class OPCDataSource extends PollingDataSource {
 
 		try {
 			opcMaster.write(tag, value);
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 			raiseEvent(
 					POINT_WRITE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
 					true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()), dataPoint);
-			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 		}
 	}
 
@@ -136,7 +137,7 @@ public class OPCDataSource extends PollingDataSource {
 			opcMaster.init();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			String message = e.getMessage();
 			if(e.getMessage() != null && e.getMessage().contains("Unknown Error")) {
 				message = "The OPC DA Server for the data source settings may not be found. ";
@@ -158,7 +159,7 @@ public class OPCDataSource extends PollingDataSource {
 		super.terminate();
 		try {
 			opcMaster.terminate();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			String message = e.getMessage();
 			if(e instanceof NullPointerException) {
 				message = "The client may not have been properly initialized. ";

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -68,10 +69,10 @@ public class ASCIIFileDataSource extends PollingDataSource {
 							timestamp));
 					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
+					LOG.error(LoggingUtils.info(e, this), e);
 					raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 							new LocalizableMessage("event.exception2", vo
 									.getName(), e.getMessage()), dataPoint);
-					e.printStackTrace();
 				}
 
 			}
@@ -144,7 +145,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 			} while (c != -1);
 			reader.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this), e);
 		}
 		return sb.toString();
 	}

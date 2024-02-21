@@ -44,6 +44,8 @@ abstract public class Dnp3DataSourceVO<T extends Dnp3DataSourceVO<?>> extends
 				"DATA_SOURCE_EXCEPTION");
 		EVENT_CODES.addElement(Dnp3DataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
+		EVENT_CODES.addElement(Dnp3DataSource.POINT_WRITE_EXCEPTION_EVENT,
+				"POINT_WRITE_EXCEPTION");
 	}
 
 	@Override

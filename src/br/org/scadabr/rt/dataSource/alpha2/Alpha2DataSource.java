@@ -22,10 +22,14 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class Alpha2DataSource extends PollingDataSource {
 
+	private static final Log LOG = LogFactory.getLog(Alpha2DataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 2;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 3;
@@ -65,6 +69,7 @@ public class Alpha2DataSource extends PollingDataSource {
 					MangoValue value = MangoValue.stringToValue(deviceValue
 							.getValue(), rt.getDataTypeId());
 					rt.updatePointValue(new PointValueTime(value, time));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, rt);
 				}
 			}
 
@@ -131,18 +136,18 @@ public class Alpha2DataSource extends PollingDataSource {
 					master.runController();
 				else
 					master.stopController();
-			} else
+			} else {
 				master.write(devices);
+				returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+			}
 		} catch (Exception e) {
-			treatException(POINT_WRITE_EXCEPTION_EVENT, e, System
-					.currentTimeMillis());
+			treatException(POINT_WRITE_EXCEPTION_EVENT, e, System.currentTimeMillis(), dataPoint);
 		}
 
 	}
 
 	@Override
 	public void initialize() {
-		super.initialize();
 
 		SerialParameters parameters = new SerialParameters();
 		parameters.setBaudRate(vo.getBaudRate());
@@ -155,10 +160,13 @@ public class Alpha2DataSource extends PollingDataSource {
 		try {
 			master.init();
 			master.lineCheck();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
 			treatException(DATA_SOURCE_EXCEPTION_EVENT, e, System
 					.currentTimeMillis());
+			return;
 		}
+		super.initialize();
 
 	}
 
@@ -167,12 +175,17 @@ public class Alpha2DataSource extends PollingDataSource {
 		super.terminate();
 		try {
 			master.terminate();
-		} catch (Exception e) {
-			e.printStackTrace();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
 		}
 	}
 
 	private void treatException(int exceptionType, Exception e, long time) {
+		LOG.warn(LoggingUtils.info(e, this), e);
 		if (e instanceof COMMException) {
 			raiseEvent(exceptionType, time, true, new LocalizableMessage(
 					"alpha2.commException", vo.getName(), e.getMessage()));
@@ -190,37 +203,22 @@ public class Alpha2DataSource extends PollingDataSource {
 		}
 	}
 
-	// public static void main(String[] args) {
-	// List<String> lista = new ArrayList<String>();
-	//
-	// for (int i = 0; i < 250; i++) {
-	// lista.add("device " + i);
-	// }
-	//
-	// final int maxNum = 82;
-	// List<List<String>> messages = new ArrayList<List<String>>();
-	//
-	// int numMessages = lista.size() % maxNum == 0 ? ((int) (lista.size() /
-	// maxNum))
-	// : ((int) (lista.size() / maxNum)) + 1;
-	//
-	// for (int i = 0; i < numMessages; i++) {
-	// List<String> temp;
-	// if (i == numMessages - 1) {
-	// temp = lista.subList(0 + (i * (maxNum)), lista.size());
-	// } else {
-	// int init = 0 + (i * (maxNum));
-	// int end = (maxNum) + ((maxNum) * i);
-	// temp = lista.subList(init, end);
-	//
-	// }
-	// messages.add(temp);
-	// }
-	// System.out.println("Enviar " + messages.size() + " mensagens!");
-	// for (List<String> list : messages) {
-	// System.out.println("Mensagem: " + list.size());
-	// }
-	//
-	// }
-
+	private void treatException(int exceptionType, Exception e, long time, DataPointRT dataPointRT) {
+		LOG.warn(LoggingUtils.info(e, this), e);
+		if (e instanceof COMMException) {
+			raiseEvent(exceptionType, time, true, new LocalizableMessage(
+					"alpha2.commException", vo.getName(), e.getMessage()), dataPointRT);
+		} else if (e instanceof InvalidFrameReceivedException) {
+			raiseEvent(exceptionType, time, true, new LocalizableMessage(
+					"alpha2.invalidFrameException", vo.getName(), e
+					.getMessage()), dataPointRT);
+		} else if (e instanceof ErrorMessageReceivedException) {
+			raiseEvent(exceptionType, time, true, new LocalizableMessage(
+					"alpha2.errorMessageException", vo.getName(), e
+					.getMessage()), dataPointRT);
+		} else {
+			raiseEvent(exceptionType, time, true, new LocalizableMessage(
+					"alpha2.unknownException", vo.getName(), e.getMessage()), dataPointRT);
+		}
+	}
 }

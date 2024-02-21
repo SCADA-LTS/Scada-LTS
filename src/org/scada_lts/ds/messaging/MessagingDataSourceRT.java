@@ -76,6 +76,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             LOG.error(exceptionInfo(e), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
+            return;
         }
         super.initialize();
     }

@@ -1,5 +1,6 @@
 package cc.radiuino.scadabr.rt.datasource.radiuino;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
@@ -69,7 +70,7 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 					return true;
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOG.error("Erro ao conectar na porta serial", e);
 			return false;
 		}
@@ -153,13 +154,22 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 
 	@Override
 	public void initialize() {
-		super.initialize();
 
 		LOG.debug("Inicializando o Radiuino Polling Data Source.");
 
-		portList = CommPortIdentifier.getPortIdentifiers();
-		getPort(vo.getCommPortId(), vo.getTimeout());
-		configurePort(getsPort());
+		try {
+			portList = CommPortIdentifier.getPortIdentifiers();
+			getPort(vo.getCommPortId(), vo.getTimeout());
+			configurePort(getsPort());
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+			return;
+		}
+
+		super.initialize();
 	}
 
 	@Override
@@ -297,8 +307,8 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 		try {
 			setInSerialStream(port.getInputStream());
 			setOutSerialStream(port.getOutputStream());
-		} catch (Exception e) {
-			LOG.error("Erro ao configurar streaming de in e out", e);
+		} catch (Throwable e) {
+			LOG.error("Erro ao configurar streaming de in e out: " + LoggingUtils.info(e, this));
 		}
 
 		port.notifyOnDataAvailable(true);
@@ -306,16 +316,16 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 			port.addEventListener(this);
 			port.enableReceiveTimeout(vo.getTimeout());
 		} catch (UnsupportedCommOperationException e1) {
-			LOG.error("Comando nao suportado ao abrir a porta serial.", e1);
+			LOG.error("Comando nao suportado ao abrir a porta serial: " + LoggingUtils.info(e1, this));
 		} catch (TooManyListenersException e) {
-			LOG.error("Muitos Listeners adicionados a porta serial", e);
+			LOG.error("Muitos Listeners adicionados a porta serial: " + LoggingUtils.info(e, this));
 		}
 
 		try {
 			port.setSerialPortParams(vo.getBaudRate(), vo.getDataBits(),
 					vo.getStopBits(), vo.getParity());
-		} catch (Exception e) {
-			LOG.error("Erro ao setar parametros da porta serial", e);
+		} catch (Throwable e) {
+			LOG.error("Erro ao setar parametros da porta serial: " + LoggingUtils.info(e, this));
 		}
 
 	}
@@ -332,8 +342,8 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 						serialPort = (SerialPort) portId.open(this.getName(),
 								timeout);
 						setsPort(serialPort);
-					} catch (Exception e) {
-						LOG.error("Erro ao abrir a porta serial.", e);
+					} catch (Throwable e) {
+						LOG.error("Erro ao abrir a porta serial: " + LoggingUtils.info(e, this));
 					}
 				}
 			}
@@ -387,14 +397,14 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 						pacoteRecebido();
 					}
 				} catch (IOException e) {
-					LOG.error("Erro ao receber dados da porta serial", e);
+					LOG.error("Erro ao receber dados da porta serial: " + LoggingUtils.info(e, this));
 				}
 
 			} else {
 				try {
 					int i = getInSerialStream().read(buffer);
 				} catch (IOException e) {
-					LOG.error("Erro ao ler dados da porta serial", e);
+					LOG.error("Erro ao ler dados da porta serial: " + LoggingUtils.info(e, this));
 				}
 			}
 		default:
@@ -416,8 +426,8 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 					if (pointValueTime != null)
 						dataPoint.updatePointValue(pointValueTime);
 					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
-				} catch (Exception e) {
-					LOG.error("Erro ao fazer o parse dos dados.", e);
+				} catch (Throwable e) {
+					LOG.error("Erro ao fazer o parse dos dados: " + LoggingUtils.info(e, this));
 					raiseEvent(
 							POINT_READ_EXCEPTION_EVENT,
 							time,

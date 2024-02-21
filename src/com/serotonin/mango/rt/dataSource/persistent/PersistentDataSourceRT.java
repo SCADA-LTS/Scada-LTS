@@ -98,8 +98,6 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
     //
     @Override
     public void initialize() {
-        super.initialize();
-
         try {
             serverSocket = new ServerSocket(vo.getPort());
             serverSocket.setSoTimeout(2000);
@@ -110,7 +108,9 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             serverSocket = null;
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
+            return;
         }
+        super.initialize();
     }
 
     @Override

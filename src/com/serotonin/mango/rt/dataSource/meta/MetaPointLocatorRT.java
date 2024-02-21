@@ -265,7 +265,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 }
             }
             catch (ScriptException e) {
-                handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
+                handleError(runtime, new LocalizableMessage("common.default", e.getLocalizedMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (ResultTypeException e) {
@@ -273,8 +273,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (Exception e) {
+                handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
-                throw e;
             }
         }
         finally {
@@ -287,6 +287,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext());
+            returnToNormal(System.currentTimeMillis());
         } catch (Exception e) {
             handleError(System.currentTimeMillis(), new LocalizableMessage("common.default", e.getMessage()));
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
@@ -317,10 +318,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void updatePoint(PointValueTime pvt) {
         dataPoint.updatePointValue(pvt);
-        dataSource.returnToNormalScript(pvt.getTime(), dataPoint);
+        returnToNormal(System.currentTimeMillis());
     }
 
     protected void handleError(long runtime, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
+    }
+
+    protected void returnToNormal(long runtime) {
+        dataSource.returnToNormalScript(runtime, dataPoint);
     }
 }

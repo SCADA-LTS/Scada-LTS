@@ -412,7 +412,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		raiseEvent(
 				MESSAGE_EXCEPTION_EVENT,
 				System.currentTimeMillis(),
-				false,
+				true,
 				new LocalizableMessage("event.viconics.messagingException", e
 						.getMessage()));
 	}
@@ -463,7 +463,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 
 	public void viconicsDuplicateCommAddressDetected(int commAddress) {
 		raiseEvent(DUPLICATE_COMM_ADDRESS_EVENT, System.currentTimeMillis(),
-				false, new LocalizableMessage(
+				true, new LocalizableMessage(
 						"event.viconics.messagingException", commAddress));
 	}
 
@@ -517,7 +517,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			raiseEvent(
 					MESSAGE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
-					false,
+					true,
 					new LocalizableMessage("event.readPointFailed", e
 							.getMessage()), dataPoint);
 		}

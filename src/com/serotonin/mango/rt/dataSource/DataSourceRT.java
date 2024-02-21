@@ -51,8 +51,10 @@ import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
  * @author Matthew Lohbihler
  */
 abstract public class DataSourceRT implements ILifecycle {
-    @Deprecated(since = "2.7.7")
+
     public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
+    private volatile boolean initialized;
 
     private final DataSourceVO<?> vo;
 
@@ -130,6 +132,9 @@ abstract public class DataSourceRT implements ILifecycle {
     abstract public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source);
 
     protected abstract List<DataPointRT> getDataPoints();
+    public boolean isInitialized() {
+        return initialized;
+    }
 
     public void relinquish(@SuppressWarnings("unused") DataPointRT dataPoint) {
         throw new ShouldNeverHappenException("not implemented in " + getClass());
@@ -222,9 +227,11 @@ abstract public class DataSourceRT implements ILifecycle {
     //
     public void initialize() {
         // no op
+        this.initialized = true;
     }
 
     public void terminate() {
+        this.initialized = false;
         // Remove any outstanding events.
         Common.ctx.getEventManager().cancelEventsForDataSource(vo.getId());
     }

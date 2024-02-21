@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
-import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
@@ -74,6 +73,10 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import static org.scada_lts.utils.MetaDataPointUtils.isDataPointInContext;
+import static org.scada_lts.utils.MetaDataPointUtils.isMetaDataPointRT;
 
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
@@ -488,7 +491,13 @@ public class RuntimeManager {
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 
-				LOG.info("Data point '" + vo.getExtendedName() + "' initialized");
+				boolean reliable = isReliable(dataPoint);
+				if(reliable)
+					resetUnreliableDataPoint(dataPoint);
+				else if(!ds.isInitialized())
+					setUnreliableDataPoint(dataPoint);
+
+				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - reliable: " + reliable);
 			}
 		}
 	}
@@ -1142,15 +1151,8 @@ public class RuntimeManager {
 
 	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
 		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
-		return filterRunningDataPoints(new ArrayList<>(dataPoints.values()), dataPoint ->
-				Objects.nonNull(dataPoint.getPointLocator())
-				&& dataPoint.getPointLocator() instanceof MetaPointLocatorRT
-				&& Objects.nonNull((((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()))
-				&& Objects.nonNull((((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()).getContext())
-				&& (((MetaPointLocatorRT) dataPoint.getPointLocator()).getPointLocatorVO()).getContext().stream()
-						.map(IntValuePair::getKey)
-						.collect(Collectors.toList())
-						.contains(dataPointInContextId));
+		return filterRunningDataPoints(new ArrayList<>(dataPoints.values()), dataPoint -> isMetaDataPointRT(dataPoint)
+				&& isDataPointInContext(dataPoint, dataPointInContextId));
 	}
 
 	private static List<DataPointRT> filterRunningDataPoints(List<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {

@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.scada_lts.utils.PointValueStateUtils.isSetPointHandler;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue>, IDataPointRT {
+public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 

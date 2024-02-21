@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.dataSource.asciiSerial;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
@@ -44,10 +45,6 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
 				vo.isQuantize());
 
-		portList = CommPortIdentifier.getPortIdentifiers();
-		getPort(vo.getCommPortId());
-		configurePort(getsPort());
-
 	}
 
 	private boolean reconnect() {
@@ -63,7 +60,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 					return true;
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 			return false;
 		}
 
@@ -75,7 +73,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 
 			// nao tem dados
-			if (getInSerialStream().available() == 0) {
+			if (getInSerialStream() == null || getInSerialStream().available() == 0) {
 
 				for (DataPointRT dataPoint : dataPoints) {
 					ASCIISerialPointLocatorVO dataPointVO = dataPoint.getVO()
@@ -187,6 +185,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 									value, timestamp));
 							returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 						} catch (Exception e) {
+							LOG.warn(LoggingUtils.info(e, this), e);
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
 											vo.getName(), e.getMessage()), dataPoint);
@@ -195,21 +194,38 @@ public class ASCIISerialDataSource extends PollingDataSource {
 
 					}
 
-				} catch (Exception e) {
+				} catch (Throwable e) {
+					LOG.warn(LoggingUtils.info(e, this), e);
 				}
 			}
 
 		} catch (IOException io) {
-			getsPort().close();
-			reconnect();
-		} catch (Exception e) {
+			LOG.warn(LoggingUtils.info(io, this), io);
+			try {
+				getsPort().close();
+				reconnect();
+			} catch (Throwable e) {
+				LOG.warn(LoggingUtils.info(io, this), e);
+			}
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 	}
 
 	@Override
 	public void initialize() {
+		try {
+			portList = CommPortIdentifier.getPortIdentifiers();
+			getPort(vo.getCommPortId());
+			configurePort(getsPort());
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+			return;
+		}
 		super.initialize();
-
 	}
 
 	private MangoValue getValue(ASCIISerialPointLocatorVO point, String arquivo)
@@ -262,7 +278,17 @@ public class ASCIISerialDataSource extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
-		getsPort().close();
+		try {
+			SerialPort serialPort = getsPort();
+			if(serialPort != null) {
+				serialPort.close();
+			}
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+		}
 	}
 
 	@Override
@@ -276,7 +302,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			setInSerialStream(port.getInputStream());
 			setOutSerialStream(port.getOutputStream());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 
 		port.notifyOnDataAvailable(true);
@@ -284,7 +311,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			port.setSerialPortParams(vo.getBaudRate(), vo.getDataBits(),
 					vo.getStopBits(), vo.getParity());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 
 	}
@@ -300,8 +328,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 						serialPort = (SerialPort) portId.open(this.getName(),
 								10000);
 						setsPort(serialPort);
-					} catch (Exception e) {
-						System.out.println("Erro ao abrir a porta !");
+					} catch (Throwable e) {
+						LOG.error("Erro ao abrir a porta ! :" + LoggingUtils.info(e, this));
 					}
 				}
 			}

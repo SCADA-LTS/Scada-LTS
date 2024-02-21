@@ -391,7 +391,6 @@ public class OneWireDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         initializeNetwork();
-        super.initialize();
     }
 
     @Override
@@ -421,6 +420,7 @@ public class OneWireDataSourceRT extends PollingDataSource {
             terminateNetwork();
             return;
         }
+        super.initialize();
     }
 
     private void terminateNetwork() {
