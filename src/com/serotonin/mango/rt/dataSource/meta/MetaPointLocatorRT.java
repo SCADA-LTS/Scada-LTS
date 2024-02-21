@@ -266,7 +266,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                         vo.getDataTypeId(), runtime);
                 if (pvt.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else if(!initializeMode || !ObjectUtils.isEqual(pvt.getValue(), dataPoint.getPointValue().getValue()))
+                else if((!initializeMode || !ObjectUtils.isEqual(pvt.getValue(), dataPoint.getPointValue().getValue())) && vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE)
                     updatePoint(pvt);
             }
             catch (ScriptException e) {
