@@ -491,10 +491,10 @@ public class RuntimeManager {
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 
-				boolean reliable = isReliable(dataPoint);
+				boolean reliable = isReliable(dataPoint, ds);
 				if(reliable)
 					resetUnreliableDataPoint(dataPoint);
-				else if(!ds.isInitialized())
+				else
 					setUnreliableDataPoint(dataPoint);
 
 				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - reliable: " + reliable);

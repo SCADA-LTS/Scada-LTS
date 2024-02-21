@@ -175,7 +175,16 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 	@Override
 	public void terminate() {
 		super.terminate();
-		getsPort().close();
+		try {
+			SerialPort serialPort = getsPort();
+			if(serialPort != null)
+				serialPort.close();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+		}
 
 		LOG.debug("Terminando o Radiuino Polling Data Source.");
 	}

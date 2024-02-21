@@ -120,7 +120,9 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			getsPort().close();
+			SerialPort serialPort = getsPort();
+			if(serialPort != null)
+				serialPort.close();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,

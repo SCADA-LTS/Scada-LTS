@@ -83,7 +83,8 @@ public class Dnp3DataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			dnp3Master.terminate();
+			if(dnp3Master != null)
+				dnp3Master.terminate();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this), e);

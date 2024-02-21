@@ -113,6 +113,7 @@ public class OPCDataSource extends PollingDataSource {
 
 		try {
 			opcMaster.write(tag, value);
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 			raiseEvent(
@@ -158,7 +159,9 @@ public class OPCDataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			opcMaster.terminate();
+			if(opcMaster != null)
+				opcMaster.terminate();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			String message = e.getMessage();
 			if(e instanceof NullPointerException) {
