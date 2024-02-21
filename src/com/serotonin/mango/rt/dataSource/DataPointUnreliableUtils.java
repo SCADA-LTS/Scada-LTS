@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.*;
 import java.util.stream.Collectors;
 
 public final class DataPointUnreliableUtils {
@@ -18,38 +17,36 @@ public final class DataPointUnreliableUtils {
 
     private DataPointUnreliableUtils() {}
 
+    public static boolean isReliable(DataPointRT dataPoint, DataSourceRT dataSource) {
+        return dataSource.isInitialized() && (!isSetUnreliable(dataPoint, true) || isSetUnreliable(dataPoint, false));
+    }
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        unreliable(dataPoints, DataPointUnreliableUtils::setAttributes,
-                Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, true, 9);
+        unreliable(dataPoints, true, 9);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
-        unreliable(Collections.singletonList(dataPoint), DataPointUnreliableUtils::setAttributes,
-                Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, true, 9);
+        unreliable(Collections.singletonList(dataPoint), true, 9);
     }
 
     public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        unreliable(dataPoints, DataPointUnreliableUtils::setAttributes,
-                Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, false, 9);
+        unreliable(dataPoints, false, 9);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
-        unreliable(Collections.singletonList(dataPoint), DataPointUnreliableUtils::setAttributes,
-                Common.ctx.getRuntimeManager()::getRunningMetaDataPoints, false, 9);
+        unreliable(Collections.singletonList(dataPoint), false, 9);
     }
 
-    private static void unreliable(List<DataPointRT> dataPoints, BiConsumer<List<DataPointRT>, Boolean> setList,
-                                   IntFunction<List<DataPointRT>> getData, boolean unreliable, int safe) {
-        setList.accept(filter(dataPoints, unreliable), unreliable);
+    private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable, int safe) {
+        setAttributes(filter(dataPoints, unreliable), unreliable);
         for(DataPointRT dataPoint: dataPoints) {
-            List<DataPointRT> metaDataPoints = getData.apply(dataPoint.getId());
+            List<DataPointRT> metaDataPoints = Common.ctx.getRuntimeManager().getRunningMetaDataPoints(dataPoint.getId());
             if(!metaDataPoints.isEmpty()) {
                 if(safe > -1)
-                    unreliable(metaDataPoints, setList, getData, unreliable, --safe);
+                    unreliable(metaDataPoints, unreliable, --safe);
                 else {
                     LOG.warn("The safe counter has been exceeded!");
-                    setList.accept(filter(metaDataPoints, unreliable), unreliable);
+                    setAttributes(filter(metaDataPoints, unreliable), unreliable);
                 }
             }
         }
@@ -69,9 +66,5 @@ public final class DataPointUnreliableUtils {
     private static boolean isSetUnreliable(DataPointRT dataPoint, boolean unreliable) {
         return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) != null
                 && ((boolean) dataPoint.getAttribute(ATTR_UNRELIABLE_KEY)) == unreliable;
-    }
-
-    public static boolean isReliable(DataPointRT dataPoint) {
-        return !isSetUnreliable(dataPoint, true) || isSetUnreliable(dataPoint, false);
     }
 }

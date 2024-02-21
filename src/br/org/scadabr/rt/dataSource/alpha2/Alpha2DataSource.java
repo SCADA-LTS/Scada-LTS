@@ -140,7 +140,7 @@ public class Alpha2DataSource extends PollingDataSource {
 				master.write(devices);
 				returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			treatException(POINT_WRITE_EXCEPTION_EVENT, e, System.currentTimeMillis(), dataPoint);
 		}
 
@@ -161,7 +161,7 @@ public class Alpha2DataSource extends PollingDataSource {
 			master.init();
 			master.lineCheck();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			treatException(DATA_SOURCE_EXCEPTION_EVENT, e, System
 					.currentTimeMillis());
 			return;
@@ -174,7 +174,8 @@ public class Alpha2DataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			master.terminate();
+			if(master != null)
+				master.terminate();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this), e);
@@ -184,7 +185,7 @@ public class Alpha2DataSource extends PollingDataSource {
 		}
 	}
 
-	private void treatException(int exceptionType, Exception e, long time) {
+	private void treatException(int exceptionType, Throwable e, long time) {
 		LOG.warn(LoggingUtils.info(e, this), e);
 		if (e instanceof COMMException) {
 			raiseEvent(exceptionType, time, true, new LocalizableMessage(
@@ -203,7 +204,7 @@ public class Alpha2DataSource extends PollingDataSource {
 		}
 	}
 
-	private void treatException(int exceptionType, Exception e, long time, DataPointRT dataPointRT) {
+	private void treatException(int exceptionType, Throwable e, long time, DataPointRT dataPointRT) {
 		LOG.warn(LoggingUtils.info(e, this), e);
 		if (e instanceof COMMException) {
 			raiseEvent(exceptionType, time, true, new LocalizableMessage(

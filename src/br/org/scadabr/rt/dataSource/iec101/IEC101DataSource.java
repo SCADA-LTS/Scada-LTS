@@ -39,6 +39,8 @@ public class IEC101DataSource extends PollingDataSource {
 	@Override
 	protected void doPoll(long time) {
 		try {
+			if(iec101Master == null)
+				throw new IllegalStateException("Data source is not initialized!");
 			iec101Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
@@ -138,7 +140,8 @@ public class IEC101DataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			iec101Master.terminate();
+			if(iec101Master != null)
+				iec101Master.terminate();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this), e);
