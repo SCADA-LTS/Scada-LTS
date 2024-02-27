@@ -135,12 +135,12 @@ public final class LoggingUtils {
         return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
     }
 
-    public static String causeInfo(Exception e) {
+    public static String causeInfo(Throwable e) {
         return exceptionInfo(getCause(e));
     }
 
-    public static Exception getCause(Exception e) {
-        return e.getCause() != null ? (Exception) e.getCause() : e;
+    public static Throwable getCause(Throwable e) {
+        return e.getCause() != null ? e.getCause() : e;
     }
 
     public static String userInfo(User user) {

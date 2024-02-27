@@ -7,5 +7,5 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface InitMessagingChannels extends MessagingChannels {
-    void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException;
+    void initChannel(DataPointRT dataPoint, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException;
 }

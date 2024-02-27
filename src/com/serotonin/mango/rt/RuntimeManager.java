@@ -491,13 +491,14 @@ public class RuntimeManager {
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 
-				boolean reliable = isReliable(dataPoint, ds);
-				if(reliable)
-					resetUnreliableDataPoint(dataPoint);
-				else
-					setUnreliableDataPoint(dataPoint);
+				boolean unreliable = dataPoint.isUnreliable();
 
-				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - reliable: " + reliable);
+				if(unreliable)
+					setUnreliableDataPoint(dataPoint);
+				else
+					resetUnreliableDataPoint(dataPoint);
+
+				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - unreliable: " + unreliable);
 			}
 		}
 	}

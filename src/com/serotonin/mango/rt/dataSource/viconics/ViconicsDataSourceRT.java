@@ -110,7 +110,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 	public void initialize() {
 		try {
 			network = new ViconicsNetwork(vo.getCommPortId(), Common.timer);
-		} catch (ViconicsConfigurationException e) {
+		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT,
 					System.currentTimeMillis(), true, new LocalizableMessage(
 							"event.initializationError", e.getMessage()));
@@ -129,7 +129,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 		try {
 			network.init();
 			network.startNetwork(vo.getPanId(), vo.getChannel());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT,
 					System.currentTimeMillis(), true, new LocalizableMessage(
 							"event.initializationError", e.getMessage()));
@@ -494,7 +494,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					locator.getPointAddress(), value);
 			dataPoint.setPointValue(pvt, source);
 			returnToNormal(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			raiseEvent(
 					MESSAGE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
@@ -513,7 +513,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 			network.readValue(locator.getDeviceIeee(),
 					locator.getPointAddress());
 			returnToNormal(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			raiseEvent(
 					MESSAGE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),

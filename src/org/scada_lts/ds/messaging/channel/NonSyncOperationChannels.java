@@ -23,7 +23,7 @@ class NonSyncOperationChannels implements OperationChannels {
         for(MessagingChannel channel: chs.values()) {
             try {
                 channel.close(timeout);
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 LOG.warn("Error Init Channel: " + channel.getClass().getName() + ", " + exceptionInfo(ex), ex);
             }
         }

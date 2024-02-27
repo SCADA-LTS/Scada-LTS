@@ -20,6 +20,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class DrStorageHt5bDataSource extends PollingDataSource {
 
@@ -355,7 +356,7 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 	@Override
 	public void initialize() {
 		try {
-			portList = CommPortIdentifier.getPortIdentifiers();
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
 			getPort(vo.getCommPortId());
 			configurePort(getsPort());
 			setValuesHt5b(new ArrayList<>());

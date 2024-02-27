@@ -10,10 +10,10 @@ public class UpdatePointValueConsumer implements Consumer<byte[]> {
 
     private final DataPointRT dataPoint;
     private final Writable writable;
-    private final Consumer<Exception> exceptionHandler;
+    private final Consumer<Throwable> exceptionHandler;
     private final Supplier<Void> returnToNormal;
 
-    public UpdatePointValueConsumer(DataPointRT dataPoint, Writable writable, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) {
+    public UpdatePointValueConsumer(DataPointRT dataPoint, Writable writable, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) {
         this.dataPoint = dataPoint;
         this.writable = writable;
         this.exceptionHandler = exceptionHandler;
@@ -27,7 +27,7 @@ public class UpdatePointValueConsumer implements Consumer<byte[]> {
                 String message = new String(payload, StandardCharsets.UTF_8);
                 dataPoint.updatePointValue(message);
                 returnToNormal.get();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 exceptionHandler.accept(ex);
             }
         }

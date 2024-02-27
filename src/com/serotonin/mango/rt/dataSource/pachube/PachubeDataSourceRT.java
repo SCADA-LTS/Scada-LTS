@@ -65,23 +65,35 @@ public class PachubeDataSourceRT extends PollingDataSource {
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int INITIALIZATION_EXCEPTION_EVENT = 4;
 
     public static final String HEADER_API_KEY = "X-PachubeApiKey";
 
     final Log log = LogFactory.getLog(PachubeDataSourceRT.class);
     final PachubeDataSourceVO vo;
-    private final HttpClient httpClient;
-    final SimpleDateFormat sdf;
+    private HttpClient httpClient;
+    private SimpleDateFormat sdf;
 
     public PachubeDataSourceRT(PachubeDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.vo = vo;
+    }
 
-        httpClient = createHttpClient(vo.getTimeoutSeconds(), vo.getRetries());
-
-        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    @Override
+    public void initialize() {
+        try {
+            httpClient = createHttpClient(vo.getTimeoutSeconds(), vo.getRetries());
+            sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            returnToNormal(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis());
+        } catch (Throwable e) {
+            raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.exception2",
+                            vo.getName(), e.getMessage()));
+            return;
+        }
+        super.initialize();
     }
 
     public static HttpClient createHttpClient(int timeoutSeconds, int retries) {
@@ -139,19 +151,19 @@ public class PachubeDataSourceRT extends PollingDataSource {
         try {
             data = getData(httpClient, feedId, vo.getApiKey());
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
                 lm = ((LocalizableException) e).getLocalizableMessage();
             else
                 lm = new LocalizableMessage("event.pachube.feed.retrievalError", feedId, e.getMessage());
-            raiseEvent(DATA_RETRIEVAL_FAILURE_EVENT, time, true, lm, points);
+            raiseEvent(DATA_RETRIEVAL_FAILURE_EVENT, time, true, lm);
 
             return;
         }
 
         // If we made it this far, everything is good.
-        returnToNormal(DATA_RETRIEVAL_FAILURE_EVENT, time, points);
+        returnToNormal(DATA_RETRIEVAL_FAILURE_EVENT, time);
 
         // We have the data. Now run the regex.
         LocalizableMessage parseErrorMessage = null;
@@ -182,26 +194,27 @@ public class PachubeDataSourceRT extends PollingDataSource {
                     // Save the new value if it is new
                     if (!ObjectUtils.isEqual(dp.getPointValue(), pvt))
                         dp.updatePointValue(new PointValueTime(value, valueTime));
-                    resetUnreliableDataPoint(dp);
                 }
                 catch (LocalizableException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = e.getLocalizableMessage();
-                    setUnreliableDataPoint(dp);
                 }
                 catch (ParseException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = new LocalizableMessage("event.valueParse.timeParsePoint",
                                 dataValue.getTimestamp(), dp.getVO().getName());
-                    setUnreliableDataPoint(dp);
+                }
+                catch (Throwable e) {
+                    if (parseErrorMessage == null)
+                        parseErrorMessage = new LocalizableMessage("common.default", e.getMessage());
                 }
             }
         }
 
         if (parseErrorMessage != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseErrorMessage, points);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseErrorMessage);
         else
-            returnToNormal(PARSE_EXCEPTION_EVENT, time, points);
+            returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
     public static Map<String, PachubeValue> getData(HttpClient client, int feedId, String apiKey)

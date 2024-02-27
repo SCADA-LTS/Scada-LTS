@@ -108,7 +108,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
     private final Log log = LogFactory.getLog(SnmpDataSourceRT.class);
 
     private final SnmpDataSourceVO vo;
-    private final Version version;
+    private Version version;
     private String address;
     private Target target;
     private Snmp snmp;
@@ -124,12 +124,6 @@ public class SnmpDataSourceRT extends PollingDataSource {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.vo = vo;
-        version = Version.getVersion(vo.getSnmpVersion(), vo.getCommunity(),
-                vo.getSecurityName(), vo.getAuthProtocol(),
-                vo.getAuthPassphrase(), vo.getPrivProtocol(),
-                vo.getPrivPassphrase(), vo.getSecurityLevel(),
-                vo.getContextName());
-        snmpRequests = new SnmpResponses();
     }
 
     @Override
@@ -383,6 +377,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         try {
+            version = Version.getVersion(vo.getSnmpVersion(), vo.getCommunity(),
+                    vo.getSecurityName(), vo.getAuthProtocol(),
+                    vo.getAuthPassphrase(), vo.getPrivProtocol(),
+                    vo.getPrivPassphrase(), vo.getSecurityLevel(),
+                    vo.getContextName());
+            snmpRequests = new SnmpResponses();
             initializeComponents();
             counterEmptyResponsesOrResponsesWithError=0;
             log.info("Counter Empty Responses Or Responses With Error is set 0.");
@@ -392,7 +392,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
                     System.currentTimeMillis());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, DataSourceRT.getExceptionMessage(e));
             log.debug("Error while initializing data source", e);

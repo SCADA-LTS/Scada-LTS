@@ -52,6 +52,7 @@ import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.checkInitialized;
 
 abstract public class ModbusDataSource extends PollingDataSource implements
 		MessagingExceptionHandler {
@@ -151,8 +152,14 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 	@Override
 	protected void doPoll(long time) {
-		
-		
+		try {
+			checkInitialized(modbusMaster, this);
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
+					getLocalExceptionMessage(e));
+			return;
+		}
 
 		if (!modbusMaster.isInitialized()) {
 			if (vo.isCreateSlaveMonitorPoints()) {
@@ -350,7 +357,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
 					true, getLocalExceptionMessage(e));
 			return;
@@ -362,26 +369,6 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	@Override
 	public void forcePointRead(DataPointRT dataPoint) {
 
-		if (!modbusMaster.isInitialized()) {
-			// terminate();
-			//
-			// vo.setEnabled(false);
-			//
-			// RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
-			//
-			// for (DataPointRT dP : dataPoints) {
-			// dP.getVO().setEnabled(false);
-			// }
-			//
-			// for (DataPointRT dP : dataPoints) {
-			// dP.getVO().setEnabled(true);
-			// runtimeManager.saveDataPoint(dP.getVO());
-			// }
-			//
-			// vo.setEnabled(true);
-			// runtimeManager.saveDataSource(vo);
-		}
-
 		ModbusPointLocatorRT pl = dataPoint.getPointLocator();
 		if (pl.getVO().isSlaveMonitor() || pl.getVO().isSocketMonitor())
 			// Nothing to do
@@ -392,6 +379,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 		synchronized (pointListChangeLock) {
 			try {
+				checkInitialized(modbusMaster, this);
 				Object value = modbusMaster.getValue(ml);
 				updatePointValue(dataPoint, pl, value, time);
 				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
@@ -399,7 +387,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2", dataPoint
 								.getVO().getName(), e.getMessage()), dataPoint);
-			} catch (ModbusTransportException e) {
+			} catch (Throwable e) {
 				// Don't raise a data source exception. Polling should do that.
 				LOG.warn("Error during forcePointRead", e);
 				setUnreliableDataPoint(dataPoint);
@@ -429,7 +417,8 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	@Override
 	public void terminate() {
 		super.terminate();
-		modbusMaster.destroy();
+		if(modbusMaster != null)
+			modbusMaster.destroy();
 	}
 
 	//
@@ -444,6 +433,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		BaseLocator<?> ml = createModbusLocator(pl.getVO());
 
 		try {
+			checkInitialized(modbusMaster, this);
 			// See if this is a numeric value that needs to be converted.
 			if (dataPoint.getDataTypeId() == DataTypes.NUMERIC) {
 				double convertedValue = valueTime.getDoubleValue();
@@ -482,6 +472,10 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 							.getVO().getName(), e.getErrorResponse()
 							.getExceptionMessage()), dataPoint);
 			LOG.info("Error setting point value", e);
+		} catch (Throwable e) {
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(),
+					true, new LocalizableMessage("event.exception2",
+							dataPoint.getVO().getName(), e.getMessage()), dataPoint);
 		}
 	}
 
@@ -491,7 +485,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				vo.getRegisterCount(), Charset.forName(vo.getCharset()));
 	}
 
-	public static LocalizableMessage localExceptionMessage(Exception e) {
+	public static LocalizableMessage localExceptionMessage(Throwable e) {
 		if (e instanceof ModbusTransportException) {
 			Throwable cause = e.getCause();
 			if (cause instanceof TimeoutException)
@@ -504,7 +498,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		return DataSourceRT.getExceptionMessage(e);
 	}
 
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		return localExceptionMessage(e);
 	}
 

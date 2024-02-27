@@ -22,8 +22,6 @@ import static com.serotonin.mango.util.LoggingUtils.*;
 public class MessagingDataSourceRT extends PollingDataSource {
 
 
-    private static final String ATTR_UPDATE_ERROR_KEY = "DP_UPDATE_ERROR";
-
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int DATA_POINT_PUBLISH_EXCEPTION_EVENT = 2;
     public static final int DATA_POINT_INIT_EXCEPTION_EVENT = 3;
@@ -59,7 +57,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.publish(dataPoint, message);
             returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", "
                     + exceptionInfo(e), e);
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
@@ -72,8 +70,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.open();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
-        } catch (Exception e) {
-            LOG.error(exceptionInfo(e), e);
+        } catch (Throwable e) {
+            LOG.error(info(e, this), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
             return;
@@ -88,8 +86,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.close();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
-        } catch (Exception e) {
-            LOG.error(exceptionInfo(e), e);
+        } catch (Throwable e) {
+            LOG.error(info(e, this), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
         } finally {
@@ -103,8 +101,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
             updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-        } catch (Exception e) {
-            LOG.error(exceptionInfo(e), e);
+        } catch (Throwable e) {
+            LOG.error(info(e, this), e);
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         }
@@ -116,8 +114,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.removeReceiver(dataPoint);
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-        } catch (Exception e) {
-            LOG.error(exceptionInfo(e), e);
+        } catch (Throwable e) {
+            LOG.error(info(e, this), e);
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         } finally {
@@ -130,22 +128,26 @@ public class MessagingDataSourceRT extends PollingDataSource {
     protected void doPoll(long time) {
         for (DataPointRT dataPoint : dataPoints) {
             try {
-                updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
-                if(updateAttemptsCounters.get(dataPoint.getId()).get() < updateAttempts) {
-                    messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
-                    updateAttemptsCounters.get(dataPoint.getId()).set(0);
+                if(!messagingService.isOpen(dataPoint)) {
+                    updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
+                    if (updateAttemptsCounters.get(dataPoint.getId()).get() < updateAttempts) {
+                        messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
+                        updateAttemptsCounters.get(dataPoint.getId()).set(0);
+                        returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+                    }
+                } else {
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
-                LOG.warn(exceptionInfo(e), e);
+                LOG.error(info(e, this), e);
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e), dataPoint);
             }
         }
     }
 
-    private java.util.function.Consumer<Exception> getPointUpdateExceptionHandler(DataPointRT dataPoint) {
+    private java.util.function.Consumer<Throwable> getPointUpdateExceptionHandler(DataPointRT dataPoint) {
         return ex -> {
             LOG.warn("Error Update: " + dataPointInfo(dataPoint.getVO()) + ", " + dataSourceInfo(vo) + ", "
                     + exceptionInfo(ex), ex);

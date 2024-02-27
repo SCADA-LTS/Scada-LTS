@@ -17,8 +17,9 @@ public final class DataPointUnreliableUtils {
 
     private DataPointUnreliableUtils() {}
 
-    public static boolean isReliable(DataPointRT dataPoint, DataSourceRT dataSource) {
-        return dataSource.isInitialized() && (!isSetUnreliable(dataPoint, true) || isSetUnreliable(dataPoint, false));
+    public static boolean isSetUnreliable(DataPointRT dataPoint, boolean unreliable) {
+        return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) != null
+                && ((boolean) dataPoint.getAttribute(ATTR_UNRELIABLE_KEY)) == unreliable;
     }
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
@@ -63,8 +64,5 @@ public final class DataPointUnreliableUtils {
                 .collect(Collectors.toList());
     }
 
-    private static boolean isSetUnreliable(DataPointRT dataPoint, boolean unreliable) {
-        return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) != null
-                && ((boolean) dataPoint.getAttribute(ATTR_UNRELIABLE_KEY)) == unreliable;
-    }
+
 }

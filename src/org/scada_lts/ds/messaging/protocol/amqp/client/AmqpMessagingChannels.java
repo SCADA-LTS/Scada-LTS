@@ -37,11 +37,11 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
         } catch (IOException e) {
             try {
                 connectionManager.close();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 LOG.warn("Error Close Channel: " + exceptionInfo(e), e);
             }
             throw new MessagingChannelException("Error Open Channel: " + causeInfo(e), e.getCause());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             try {
                 connectionManager.close();
             } catch (Exception ex) {
@@ -57,7 +57,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
             channels.removeChannel(dataPoint);
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Remove Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         } finally {
             if (channels.size() == 0) {
@@ -76,13 +76,13 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
     }
 
     @Override
-    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
+    public void initChannel(DataPointRT dataPoint, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         connectionManager.getIfOpen().or(() -> {
             try {
                 return Optional.ofNullable(connectionManager.open(vo));
             } catch (IOException e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         }).ifPresent(conn -> {
@@ -97,7 +97,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
                     }});
             } catch (MessagingChannelException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         });
@@ -110,7 +110,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
                 return Optional.ofNullable(connectionManager.open(vo));
             } catch (IOException e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         }).ifPresent(conn -> {
@@ -118,7 +118,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
                 channels.initChannel(dataPoint, create);
             } catch (MessagingChannelException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         });
@@ -131,7 +131,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
                 return Optional.ofNullable(connectionManager.open(vo));
             } catch (IOException e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Open Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         }).ifPresent(conn -> {
@@ -139,7 +139,7 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
                 channels.publish(dataPoint, message);
             } catch (MessagingChannelException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         });
@@ -154,12 +154,12 @@ public class AmqpMessagingChannels implements InitMessagingChannels {
     public void closeChannels() throws MessagingChannelException {
         try {
             channels.closeChannels();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn("Error Close Channels: " + exceptionInfo(ex), ex);
         } finally {
             try {
                 connectionManager.close();
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 LOG.warn("Error Close Connection: " + exceptionInfo(e), e);
             }
         }

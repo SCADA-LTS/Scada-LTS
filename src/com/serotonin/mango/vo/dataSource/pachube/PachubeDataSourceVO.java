@@ -54,6 +54,9 @@ public class PachubeDataSourceVO extends DataSourceVO<PachubeDataSourceVO> {
                         "event.ds.dataParse")));
         ets.add(createEventType(PachubeDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.pointWrite")));
+        ets.add(createEventType(PachubeDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.initialization"
+        )));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -61,6 +64,7 @@ public class PachubeDataSourceVO extends DataSourceVO<PachubeDataSourceVO> {
         EVENT_CODES.addElement(PachubeDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, "DATA_RETRIEVAL_FAILURE");
         EVENT_CODES.addElement(PachubeDataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
         EVENT_CODES.addElement(PachubeDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, "POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(PachubeDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, "INITIALIZATION_EXCEPTION");
     }
 
     @Override
