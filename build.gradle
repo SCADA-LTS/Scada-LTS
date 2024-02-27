@@ -206,5 +206,6 @@ test {
         includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
         includeTestsMatching "com.serotonin.mango.rt.dataSource.DataPointUnreliableUtilsTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.InitializeDataSourceRtTestsSuite"
     }
 }

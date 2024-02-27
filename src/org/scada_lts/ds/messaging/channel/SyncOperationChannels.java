@@ -1,7 +1,9 @@
 package org.scada_lts.ds.messaging.channel;
 
-import net.bull.javamelody.internal.common.LOG;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.exception.MessagingChannelException;
+import org.scada_lts.ds.messaging.protocol.amqp.client.AmqpMessagingChannels;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.function.Function;
 import static com.serotonin.mango.util.LoggingUtils.exceptionInfo;
 
 class SyncOperationChannels implements OperationChannels {
+
+    private static final Log LOG = LogFactory.getLog(AmqpMessagingChannels.class);
 
     private final Map<Integer, MessagingChannel> channels;
     private final ReentrantReadWriteLock lock;
@@ -28,7 +32,7 @@ class SyncOperationChannels implements OperationChannels {
             for(MessagingChannel channel: chs.values()) {
                 try {
                     channel.close(timeout);
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     LOG.warn("Error Init Channel: " + channel.getClass().getName() + ", " + exceptionInfo(ex), ex);
                 }
             }

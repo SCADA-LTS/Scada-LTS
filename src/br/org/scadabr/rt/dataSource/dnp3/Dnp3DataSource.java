@@ -2,7 +2,6 @@ package br.org.scadabr.rt.dataSource.dnp3;
 
 import java.net.ConnectException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import com.serotonin.mango.util.LoggingUtils;
@@ -21,6 +20,9 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.checkInitialized;
+
 
 public class Dnp3DataSource extends PollingDataSource {
 
@@ -44,13 +46,12 @@ public class Dnp3DataSource extends PollingDataSource {
 	protected void doPoll(long time) {
 
 		try {
+			checkInitialized(dnp3Master, this);
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
 			LOG.warn(LoggingUtils.info(e, this), e);
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true, getLocalExceptionMessage(e));
 			return;
 		}
 
@@ -88,9 +89,7 @@ public class Dnp3DataSource extends PollingDataSource {
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this), e);
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, getLocalExceptionMessage(e));
 		}
 	}
 
@@ -104,6 +103,7 @@ public class Dnp3DataSource extends PollingDataSource {
 		int index = pointLocator.getIndex();
 
 		try {
+			checkInitialized(dnp3Master, this);
 			if (dataType == 0x10) {
 				dnp3Master.controlCommand(valueTime.getValue().toString(),
 						index, pointLocator.getControlCommand(), pointLocator
@@ -115,13 +115,11 @@ public class Dnp3DataSource extends PollingDataSource {
 			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this), e);
-			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, new Date().getTime(), true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()), dataPoint);
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true, getLocalExceptionMessage(e), dataPoint);
 		}
 	}
 
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof Exception) {
 			Throwable cause = e.getCause();
 			if (cause instanceof TimeoutException)

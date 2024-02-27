@@ -27,6 +27,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class ASCIISerialDataSource extends PollingDataSource {
 
@@ -52,7 +53,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			while (true) {
 				Thread.sleep(5000);
-				portList = CommPortIdentifier.getPortIdentifiers();
+				portList = ScadaCommPortIdentifier.getPortIdentifiers();
 				SerialPort p = getPort(vo.getCommPortId());
 				if (p != null) {
 					configurePort(getsPort());
@@ -215,7 +216,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 	@Override
 	public void initialize() {
 		try {
-			portList = CommPortIdentifier.getPortIdentifiers();
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
 			getPort(vo.getCommPortId());
 			configurePort(getsPort());
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());

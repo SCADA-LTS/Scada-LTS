@@ -34,9 +34,7 @@ public class Dnp3SerialDataSource extends Dnp3DataSource {
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
 			LOG.error(LoggingUtils.info(e, this));
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
-					new LocalizableMessage("event.exception2", configuration
-							.getName(), e.getMessage()));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true, getLocalExceptionMessage(e));
 			return;
 		}
 
@@ -44,7 +42,7 @@ public class Dnp3SerialDataSource extends Dnp3DataSource {
 	}
 
 	@Override
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof Exception) {
 			Throwable cause = e.getCause();
 			if (cause instanceof NoSuchPortException)

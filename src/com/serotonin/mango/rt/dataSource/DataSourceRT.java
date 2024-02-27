@@ -208,7 +208,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return null;
     }
 
-    protected LocalizableMessage getSerialExceptionMessage(Exception e, String portId) {
+    protected LocalizableMessage getSerialExceptionMessage(Throwable e, String portId) {
         if (e instanceof NoSuchPortException)
             return new LocalizableMessage("event.serial.portOpenError", portId);
         if (e instanceof PortInUseException)
@@ -216,7 +216,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return getExceptionMessage(e);
     }
 
-    protected static LocalizableMessage getExceptionMessage(Exception e) {
+    protected static LocalizableMessage getExceptionMessage(Throwable e) {
         return new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage());
     }
 

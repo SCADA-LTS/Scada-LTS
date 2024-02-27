@@ -104,7 +104,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     final Log log = LogFactory.getLog(BACnetIPDataSourceRT.class);
     final BACnetIPDataSourceVO vo;
     private LocalDevice localDevice;
-    private boolean initialized = false;
+    private volatile boolean initialized = false;
     final List<RemoteDevice> pollsInProgress = new ArrayList<RemoteDevice>();
     private CovResubscriptionTask covResubscriptionTask;
 
@@ -139,7 +139,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // Deactivate any existing event.
             returnToNormal(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
             return;
@@ -154,12 +154,13 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
         catch (BACnetException e) {
             fireMessageExceptionEvent("event.bacnet.iamError", e.getMessage());
+            return;
         }
 
         // Find out who we're slummin with.
         try {
             localDevice.sendBroadcast(new WhoIsRequest());
-
+            returnToNormal();
             // Wait for responses to come in.
             try {
                 Thread.sleep(vo.getTimeout() / 4);
@@ -170,9 +171,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
         catch (BACnetException e) {
             fireMessageExceptionEvent("event.bacnet.whoisError", e.getMessage());
+            return;
         }
 
-        initialized = true;
+        initialized = isInitialized(localDevice);
     }
 
     @Override
@@ -207,6 +209,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             }
         }
         LocalDevice.setExceptionListener(null);
+        initialized = isInitialized(localDevice);
     }
 
     @Override
@@ -808,5 +811,9 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     @Override
     public boolean isInitialized() {
         return initialized;
+    }
+
+    private boolean isInitialized(LocalDevice localDevice) {
+        return localDevice != null && localDevice.isInitialized() && super.isInitialized();
     }
 }

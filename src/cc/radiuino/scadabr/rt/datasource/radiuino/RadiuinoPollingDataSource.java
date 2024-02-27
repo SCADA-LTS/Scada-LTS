@@ -28,6 +28,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class RadiuinoPollingDataSource extends PollingDataSource implements
 		SerialPortEventListener {
@@ -61,7 +62,7 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 		try {
 			while (true) {
 				Thread.sleep(5000);
-				portList = CommPortIdentifier.getPortIdentifiers();
+				portList = ScadaCommPortIdentifier.getPortIdentifiers();
 				SerialPort p = getPort(vo.getCommPortId(), vo.getTimeout());
 				if (p != null) {
 					LOG.debug("Conexao estabelecida com a porta serial");
@@ -158,7 +159,7 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 		LOG.debug("Inicializando o Radiuino Polling Data Source.");
 
 		try {
-			portList = CommPortIdentifier.getPortIdentifiers();
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
 			getPort(vo.getCommPortId(), vo.getTimeout());
 			configurePort(getsPort());
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());

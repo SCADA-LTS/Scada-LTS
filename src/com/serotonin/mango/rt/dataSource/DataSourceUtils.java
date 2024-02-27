@@ -152,4 +152,10 @@ public class DataSourceUtils {
 
 		return null;
 	}
+
+	public static <T> void checkInitialized(T master, DataSourceRT dataSource) {
+		if(master == null || !dataSource.isInitialized()) {
+			throw new IllegalStateException("Data Source not initialized!");
+		}
+	}
 }

@@ -13,7 +13,7 @@ public interface MessagingService {
     void open() throws MessagingServiceException;
     void close() throws MessagingServiceException;
 
-    void initReceiver(DataPointRT dataPoint, Consumer<Exception> updateExceptionHandler, Supplier<Void> returnToNormal) throws MessagingServiceException;
+    void initReceiver(DataPointRT dataPoint, Consumer<Throwable> updateExceptionHandler, Supplier<Void> returnToNormal) throws MessagingServiceException;
     void removeReceiver(DataPointRT dataPoint) throws MessagingServiceException;
     void publish(DataPointRT dataPoint, String message) throws MessagingServiceException;
 }

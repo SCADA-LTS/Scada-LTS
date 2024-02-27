@@ -59,6 +59,7 @@ import com.serotonin.timer.RealTimeTimer;
 import com.serotonin.util.PropertiesUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 import org.scada_lts.serial.SerialPortUtils;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -408,7 +409,7 @@ public class Common {
 			throws CommPortConfigException {
 		try {
 			List<CommPortProxy> ports = new LinkedList<CommPortProxy>();
-			Enumeration<?> portEnum = CommPortIdentifier.getPortIdentifiers();
+			Enumeration<?> portEnum = ScadaCommPortIdentifier.getPortIdentifiers();
 			CommPortIdentifier cpid;
 			while (portEnum.hasMoreElements()) {
 				cpid = (CommPortIdentifier) portEnum.nextElement();

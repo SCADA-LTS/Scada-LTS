@@ -37,14 +37,11 @@ public class OPCDataSource extends PollingDataSource {
 		this.vo = vo;
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
 				vo.isQuantize());
-
-		this.opcMaster = new RealOPCMaster();
-		JISystem.getLogger().setLevel(Level.OFF);
 	}
 
 	@Override
 	protected void doPoll(long time) {
-		ArrayList<String> enabledTags = new ArrayList<String>();
+		ArrayList<String> enabledTags = new ArrayList<>();
 
 		for (DataPointRT dataPoint : dataPoints) {
 			OPCPointLocatorVO dataPointVO = dataPoint.getVO().getPointLocator();
@@ -126,6 +123,15 @@ public class OPCDataSource extends PollingDataSource {
 	}
 
 	public void initialize() {
+		if(opcMaster != null) {
+            try {
+                opcMaster.terminate();
+            } catch (Exception e) {
+                LOG.warn(LoggingUtils.info(e, this));
+            }
+        }
+		this.opcMaster = new RealOPCMaster();
+		JISystem.getLogger().setLevel(Level.OFF);
 
 		opcMaster.setHost(vo.getHost());
 		opcMaster.setDomain(vo.getDomain());

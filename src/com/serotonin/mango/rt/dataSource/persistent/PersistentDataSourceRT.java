@@ -104,7 +104,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
 
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (IOException e) {
+        catch (Throwable e) {
             serverSocket = null;
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));

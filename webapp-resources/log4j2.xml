@@ -34,8 +34,8 @@
         <Property name="scriptLoggingLevel">ERROR</Property>
         <Property name="eventManagerLoggingLevel">ERROR</Property>
         <Property name="modbusLoggingLevel">ERROR</Property>
-        <Property name="dataSourceRtLoggingLevel">WARN</Property>
-        <Property name="dataPointRtLoggingLevel">WARN</Property>
+        <Property name="dataSourceRtLoggingLevel">ERROR</Property>
+        <Property name="dataPointRtLoggingLevel">ERROR</Property>
 
         <!-- Parse log4j2.xml Logging-->
         <Property name="log4jLoggingLevel">ERROR</Property>
