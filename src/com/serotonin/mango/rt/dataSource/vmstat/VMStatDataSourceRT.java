@@ -139,7 +139,7 @@ public class VMStatDataSourceRT extends EventDataSource implements Runnable {
 
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (IOException e) {
+        catch (Throwable e) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
             return;

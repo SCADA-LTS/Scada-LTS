@@ -25,7 +25,6 @@ import com.serotonin.mango.rt.dataSource.bacnet.BACnetIPDataSourceRT;
 import com.serotonin.mango.rt.dataSource.ebro.EBI25DataSourceRT;
 import com.serotonin.mango.rt.dataSource.galil.GalilDataSourceRT;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverDataSourceRT;
-import com.serotonin.mango.rt.dataSource.modbus.ModbusDataSource;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusIpDataSource;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusSerialDataSource;
 import com.serotonin.mango.rt.dataSource.nmea.NmeaDataSourceRT;
@@ -51,7 +50,6 @@ import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import com.serotonin.mango.vo.dataSource.viconics.ViconicsDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.web.ContextWrapper;
-import org.apache.derby.iapi.services.i18n.MessageService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,14 +63,15 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
+import org.scada_lts.ds.messaging.exception.MessagingServiceException;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.service.MessagingService;
 import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
-import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.modbusMock;
 import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.wrap;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -103,7 +102,7 @@ public class InitializeWithErrorsDataSourceRtTest {
 
         MessagingService messageServiceMock = mock(MessagingService.class);
         doAnswer(a -> {
-            throw new RuntimeException();
+            throw new MessagingServiceException();
         }).when(messageServiceMock).open();
 
         return new Object[][] {
@@ -166,6 +165,18 @@ public class InitializeWithErrorsDataSourceRtTest {
         }
 
         reset(eventManager);
+
+        java.lang.Runtime runtimeMock = mock(Runtime.class);
+        try {
+            doAnswer(a -> {
+                throw new IOException();
+            }).when(runtimeMock).exec(anyString());
+            PowerMockito.mockStatic(java.lang.Runtime.class);
+            when(java.lang.Runtime.getRuntime()).thenReturn(runtimeMock);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @After
@@ -209,5 +220,4 @@ public class InitializeWithErrorsDataSourceRtTest {
         //then:
         Mockito.verify(eventManager, never()).returnToNormal(any(), anyLong());
     }
-
 }
