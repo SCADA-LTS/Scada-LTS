@@ -79,7 +79,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
-@PrepareForTest({Common.class})
+@PrepareForTest({Common.class, Runtime.class, VMStatDataSourceRT.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class InitializeWithErrorsDataSourceRtTest {
@@ -102,7 +102,7 @@ public class InitializeWithErrorsDataSourceRtTest {
 
         MessagingService messageServiceMock = mock(MessagingService.class);
         doAnswer(a -> {
-            throw new MessagingServiceException();
+            throw new MessagingServiceException("From test");
         }).when(messageServiceMock).open();
 
         return new Object[][] {
@@ -166,16 +166,18 @@ public class InitializeWithErrorsDataSourceRtTest {
 
         reset(eventManager);
 
-        java.lang.Runtime runtimeMock = mock(Runtime.class);
-        try {
-            doAnswer(a -> {
-                throw new IOException();
-            }).when(runtimeMock).exec(anyString());
-            PowerMockito.mockStatic(java.lang.Runtime.class);
-            when(java.lang.Runtime.getRuntime()).thenReturn(runtimeMock);
+        if(dataSourceRT instanceof VMStatDataSourceRT) {
+            java.lang.Runtime runtimeMock = mock(Runtime.class);
+            try {
+                doAnswer(a -> {
+                    throw new IOException("From test");
+                }).when(runtimeMock).exec(anyString());
+                PowerMockito.mockStatic(java.lang.Runtime.class);
+                when(java.lang.Runtime.getRuntime()).thenReturn(runtimeMock);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
