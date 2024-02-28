@@ -54,6 +54,8 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 				new LocalizableMessage("event.ds.pointWrite")));
 		ets.add(createEventType(ModbusDataSource.MONITOR_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.monitorWrite")));
+		ets.add(createEventType(ModbusDataSource.INITIALIZATION_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.initialization")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -66,6 +68,8 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 				"POINT_WRITE_EXCEPTION");
 		EVENT_CODES.addElement(ModbusDataSource.MONITOR_WRITE_EXCEPTION_EVENT,
 				"MONITOR_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(ModbusDataSource.INITIALIZATION_EXCEPTION_EVENT,
+				"INITIALIZATION_EXCEPTION");
 	}
 
 	@Override

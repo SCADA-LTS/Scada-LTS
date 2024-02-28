@@ -72,7 +72,7 @@ import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.wrap;
+import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.supplier;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -107,33 +107,33 @@ public class InitializeWithErrorsDataSourceRtTest {
 
         return new Object[][] {
 
-                {wrap(() -> new ASCIISerialDataSource(new ASCIISerialDataSourceVO<>())), ASCIISerialDataSource.class.getSimpleName()},
-                {wrap(() -> new Alpha2DataSource(new Alpha2DataSourceVO<>())), Alpha2DataSource.class.getSimpleName()},
-                {wrap(() -> new BACnetIPDataSourceRT(baCnetIPDataSourceVO)), BACnetIPDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new Dnp3IpDataSource(new Dnp3IpDataSourceVO())), Dnp3IpDataSource.class.getSimpleName()},
-                {wrap(() -> new Dnp3SerialDataSource(new Dnp3SerialDataSourceVO())), Dnp3SerialDataSource.class.getSimpleName()},
-                {wrap(() -> new DrStorageHt5bDataSource(new DrStorageHt5bDataSourceVO<>())), DrStorageHt5bDataSource.class.getSimpleName()},
-                {wrap(() -> new EBI25DataSourceRT(new EBI25DataSourceVO())), EBI25DataSourceRT.class.getSimpleName()},
-                {wrap(() -> new NmeaDataSourceRT(new NmeaDataSourceVO())), NmeaDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new RadiuinoEventDataSource(new RadiuinoDataSourceVO<>())), RadiuinoEventDataSource.class.getSimpleName()},
-                {wrap(() -> new RadiuinoPollingDataSource(new RadiuinoDataSourceVO<>())), RadiuinoPollingDataSource.class.getSimpleName()},
-                {wrap(() -> new VMStatDataSourceRT(new VMStatDataSourceVO())), VMStatDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new ViconicsDataSourceRT(new ViconicsDataSourceVO())), ViconicsDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new GalilDataSourceRT(new GalilDataSourceVO())), GalilDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new IEC101EthernetDataSource(new IEC101EthernetDataSourceVO())), IEC101EthernetDataSource.class.getSimpleName()},
-                {wrap(() -> new IEC101SerialDataSource(new IEC101SerialDataSourceVO())), IEC101SerialDataSource.class.getSimpleName()},
-                {wrap(() -> new MessagingDataSourceRT(amqpDataSourceVO, MessagingServiceFactory.newService(amqpDataSourceVO))), AmqpDataSourceVO.class.getSimpleName()},
-                {wrap(() -> new MessagingDataSourceRT(mqttDataSourceVO, messageServiceMock)), MqttDataSourceVO.class.getSimpleName()},
+                {supplier(() -> new ASCIISerialDataSource(new ASCIISerialDataSourceVO<>())), ASCIISerialDataSource.class.getSimpleName()},
+                {supplier(() -> new Alpha2DataSource(new Alpha2DataSourceVO<>())), Alpha2DataSource.class.getSimpleName()},
+                {supplier(() -> new BACnetIPDataSourceRT(baCnetIPDataSourceVO)), BACnetIPDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new Dnp3IpDataSource(new Dnp3IpDataSourceVO())), Dnp3IpDataSource.class.getSimpleName()},
+                {supplier(() -> new Dnp3SerialDataSource(new Dnp3SerialDataSourceVO())), Dnp3SerialDataSource.class.getSimpleName()},
+                {supplier(() -> new DrStorageHt5bDataSource(new DrStorageHt5bDataSourceVO<>())), DrStorageHt5bDataSource.class.getSimpleName()},
+                {supplier(() -> new EBI25DataSourceRT(new EBI25DataSourceVO())), EBI25DataSourceRT.class.getSimpleName()},
+                {supplier(() -> new NmeaDataSourceRT(new NmeaDataSourceVO())), NmeaDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new RadiuinoEventDataSource(new RadiuinoDataSourceVO<>())), RadiuinoEventDataSource.class.getSimpleName()},
+                {supplier(() -> new RadiuinoPollingDataSource(new RadiuinoDataSourceVO<>())), RadiuinoPollingDataSource.class.getSimpleName()},
+                {supplier(() -> new VMStatDataSourceRT(new VMStatDataSourceVO())), VMStatDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new ViconicsDataSourceRT(new ViconicsDataSourceVO())), ViconicsDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new GalilDataSourceRT(new GalilDataSourceVO())), GalilDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new IEC101EthernetDataSource(new IEC101EthernetDataSourceVO())), IEC101EthernetDataSource.class.getSimpleName()},
+                {supplier(() -> new IEC101SerialDataSource(new IEC101SerialDataSourceVO())), IEC101SerialDataSource.class.getSimpleName()},
+                {supplier(() -> new MessagingDataSourceRT(amqpDataSourceVO, MessagingServiceFactory.newService(amqpDataSourceVO))), AmqpDataSourceVO.class.getSimpleName()},
+                {supplier(() -> new MessagingDataSourceRT(mqttDataSourceVO, messageServiceMock)), MqttDataSourceVO.class.getSimpleName()},
 
-                {wrap(() -> new ModbusSerialDataSource(new ModbusSerialDataSourceVO())), ModbusSerialDataSource.class.getSimpleName()},
-                {wrap(() -> new ModbusIpDataSource(modbusIpDataSourceVO)), ModbusIpDataSource.class.getSimpleName()},
-                {wrap(() -> new OPCDataSource(new OPCDataSourceVO<>())), OPCDataSource.class.getSimpleName()},
-                {wrap(() -> new OneWireDataSourceRT(new OneWireDataSourceVO())), OneWireDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new SqlDataSourceRT(new SqlDataSourceVO())), SqlDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new HttpReceiverDataSourceRT(new HttpReceiverDataSourceVO())), HttpReceiverDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new PachubeDataSourceRT(new PachubeDataSourceVO())), PachubeDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new SnmpDataSourceRT(new SnmpDataSourceVO())), SnmpDataSourceRT.class.getSimpleName()},
-                {wrap(() -> new PersistentDataSourceRT(persistentDataSourceVO)), PersistentDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new ModbusSerialDataSource(new ModbusSerialDataSourceVO())), ModbusSerialDataSource.class.getSimpleName()},
+                {supplier(() -> new ModbusIpDataSource(modbusIpDataSourceVO)), ModbusIpDataSource.class.getSimpleName()},
+                {supplier(() -> new OPCDataSource(new OPCDataSourceVO<>())), OPCDataSource.class.getSimpleName()},
+                {supplier(() -> new OneWireDataSourceRT(new OneWireDataSourceVO())), OneWireDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new SqlDataSourceRT(new SqlDataSourceVO())), SqlDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new HttpReceiverDataSourceRT(new HttpReceiverDataSourceVO())), HttpReceiverDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new PachubeDataSourceRT(new PachubeDataSourceVO())), PachubeDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new SnmpDataSourceRT(new SnmpDataSourceVO())), SnmpDataSourceRT.class.getSimpleName()},
+                {supplier(() -> new PersistentDataSourceRT(persistentDataSourceVO)), PersistentDataSourceRT.class.getSimpleName()},
 
         };
     }

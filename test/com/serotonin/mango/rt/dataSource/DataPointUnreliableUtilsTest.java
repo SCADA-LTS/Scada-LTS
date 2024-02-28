@@ -9,14 +9,12 @@ import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueCache;
-import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.TimePeriodType;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
-import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.mango.web.dwr.MiscDwr;
 import com.serotonin.web.content.ContentGenerator;
 import org.directwebremoting.WebContextFactory;
@@ -28,12 +26,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.mango.service.PointValueService;
-import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +34,10 @@ import java.util.List;
 
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoints;
-import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.reset;
-import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.set;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.resetUnreliable;
+import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.setUnreliable;
+import static org.mockito.Mockito.mock;
+import static utils.mock.RuntimeMockUtils.runtimeManagerMock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({WebContextFactory.class, Common.class, MiscDwr.class, SystemSettingsDAO.class,
@@ -80,40 +73,7 @@ public class DataPointUnreliableUtilsTest {
     @Before
     public void configMock() throws Exception {
 
-        DataSourceService dataSourceService = mock(DataSourceService.class);
-        whenNew(DataSourceService.class).withNoArguments().thenReturn(dataSourceService);
-
-        DataPointService dataPointService = mock(DataPointService.class);
-        whenNew(DataPointService.class).withNoArguments().thenReturn(dataPointService);
-
-        SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);
-        whenNew(SystemSettingsService.class).withNoArguments().thenReturn(systemSettingsService);
-
-        SystemSettingsDAO systemSettingsDAO = mock(SystemSettingsDAO.class);
-        whenNew(SystemSettingsDAO.class).withNoArguments().thenReturn(systemSettingsDAO);
-
-        mockStatic(SystemSettingsDAO.class);
-        when(SystemSettingsDAO.getValue(anyString())).thenReturn("");
-        when(SystemSettingsDAO.getFutureDateLimit()).thenReturn(1L);
-
-        PointValueService mangoPointValues = mock(PointValueService.class);
-        whenNew(PointValueService.class).withNoArguments().thenReturn(mangoPointValues);
-
-        mockStatic(ApplicationBeans.class);
-        DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
-        when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
-
-        ContextWrapper contextWrapper = mock(ContextWrapper.class);
-        EventManager eventManager = mock(EventManager.class);
-        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
-
-        runtimeManager = new RuntimeManager();
-        when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
-        when(contextWrapper.getEventManager()).thenReturn(eventManager);
-        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
-
-        Common.ctx = contextWrapper;
-        Common.timer.init();
+        runtimeManagerMock(this.runtimeManager = new RuntimeManager(), mock(EventManager.class));
 
         configData();
     }
@@ -213,7 +173,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_virtual_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(virtualDataPoints);
@@ -228,7 +188,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_meta_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(metaDataPoints);
@@ -243,7 +203,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_meta_points_with_context_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(metaDataPointsWithContext);
@@ -291,7 +251,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_virtual_point_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
 
         //when:
@@ -306,7 +266,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_meta_point_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint1.getId());
 
         //when:
@@ -321,7 +281,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_meta_point_with_context_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint6WithVirtualDataPoint1.getId());
 
         //when:
@@ -336,7 +296,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_virtual_points_then_meta_points_unreliable_false() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(virtualDataPoints);
@@ -351,7 +311,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_virtual_points_from_meta_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(virtualDataPoints);
@@ -366,7 +326,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_meta_point_from_context_meta_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint10WithVirtualDataPoint1.getId());
 
         //when:
@@ -382,7 +342,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_meta_point_from_context_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint10WithVirtualDataPoint1.getId());
 
         //when:
@@ -398,7 +358,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoints_with_virtual_points_from_context_meta_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
 
         //when:
         setUnreliableDataPoints(virtualDataPoints);
@@ -413,7 +373,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_virtual_point_from_context_meta_points_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
 
         //when:
@@ -429,7 +389,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_setUnreliableDataPoint_with_virtual_point_from_context_meta_point_then_unreliable_true() {
 
         //given:
-        reset(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint2.getId());
         DataPointRT metaDataPointRT = runtimeManager.getDataPoint(metaDataPoint9WithVirtualDataPoint2.getId());
 
@@ -445,7 +405,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoint_with_virtual_point_then_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
 
         //when:
@@ -460,7 +420,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoint_with_meta_point_then_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint1.getId());
 
         //when:
@@ -475,7 +435,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoint_with_meta_point_with_context_then_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint6WithVirtualDataPoint1.getId());
 
         //when:
@@ -490,7 +450,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoint_with_meta_point_from_context_meta_point_then_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint10WithVirtualDataPoint1.getId());
 
         //when:
@@ -506,7 +466,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoints_with_meta_point_then_unreliable_false() {
         
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint1.getId());
 
         //when:
@@ -521,7 +481,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoints_with_meta_points_then_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(metaDataPoint1.getId());
 
         //when:
@@ -536,7 +496,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoints_with_virtual_point_from_context_meta_point_then_meta_points_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
 
         //when:
@@ -552,7 +512,7 @@ public class DataPointUnreliableUtilsTest {
     public void when_resetUnreliableDataPoints_with_virtual_point_from_context_meta_point_then_meta_point_unreliable_false() {
 
         //given:
-        set(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
         DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint2.getId());
         DataPointRT metaDataPointRT = runtimeManager.getDataPoint(metaDataPoint9WithVirtualDataPoint2.getId());
 
