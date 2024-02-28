@@ -99,13 +99,15 @@ public class SqlDataSourceRT extends PollingDataSource {
 			int rows = jdbcOperations.update(locatorVO.getUpdateStatement(), value);
 			if (rows == 0) {
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(),
-						false, new LocalizableMessage(
+						true, new LocalizableMessage(
 								"event.sql.noRowsUpdated", dataPoint.getVO()
 										.getName()), dataPoint);
-			} else
+			} else {
 				dataPoint.setPointValue(valueTime, source);
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, valueTime.getTime());
+			}
 		} catch (Exception e) {
-			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), false,
+			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), true,
 					new LocalizableMessage("event.sql.setError", dataPoint
 							.getVO().getName(), getExceptionMessage(e)), dataPoint);
 		}
@@ -193,6 +195,8 @@ public class SqlDataSourceRT extends PollingDataSource {
 											"event.sql.timeNotFound",
 											timeOverride), dp);
 							continue;
+						} else {
+							returnToNormal(STATEMENT_EXCEPTION_EVENT, time, dp);
 						}
 
 						pointTime = getTimeOverride(meta, column, rs, time);
@@ -255,6 +259,8 @@ public class SqlDataSourceRT extends PollingDataSource {
 			if (!found)
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.sql.noDataPoint", rowId));
+			else
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, time);
 		}
 	}
 

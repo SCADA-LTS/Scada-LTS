@@ -2,6 +2,7 @@ package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,7 +47,7 @@ public final class DataPointUnreliableUtils {
                 if(safe > -1)
                     unreliable(metaDataPoints, unreliable, --safe);
                 else {
-                    LOG.warn("The safe counter has been exceeded!");
+                    LOG.warn("The safe counter has been exceeded!: " + LoggingUtils.dataPointInfo(dataPoint));
                     setAttributes(filter(metaDataPoints, unreliable), unreliable);
                 }
             }
