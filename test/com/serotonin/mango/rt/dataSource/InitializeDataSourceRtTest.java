@@ -77,7 +77,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.wrap;
+import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.supplier;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -98,47 +98,47 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
 
         return new Object[][] {
 
-                {ASCIISerialDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createAsciiSerial), 1, 0},
-                {Alpha2DataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createAlpha2), 1, 0},
-                {BACnetIPDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createBacNet), 3, 0},
-                {Dnp3IpDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createDnp3Ip), 1, 0},
-                {Dnp3SerialDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createDnp3Serial), 1, 0},
-                {DrStorageHt5bDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createDrStorageMock), 1, 0},
-                {EBI25DataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createEbi25), 1, 0},
-                {NmeaDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createNmea), 1, 0},
-                {RadiuinoEventDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createRadiuino), 1, 0},
-                {RadiuinoPollingDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createRadiuinoPolling), 1, 0},
-                {VMStatDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtTest::createVmStat), 1, 0},
-                {ViconicsDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createViconics), 1, 0},
-                {GalilDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createGalil), 1, 0},
-                {IEC101EthernetDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createIec101Ethernet), 1, 0},
-                {IEC101SerialDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createIec101Serial), 1, 0},
-                {AmqpDataSourceVO.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createAmqp), 1, 0},
-                {MqttDataSourceVO.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createMqtt), 1, 0},
-                {ModbusIpDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createModbusIpDataSource), 1, 0},
-                {ModbusSerialDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createModbusSerialDataSource), 1, 0},
-                {OPCDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createOpc), 1, 0},
-                {OneWireDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createOneWire), 1, 0},
-                {SqlDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createSql), 1, 0},
-                {HttpReceiverDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createSql), 1, 0},
-                {PachubeDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createPachube), 1, 0},
-                {SnmpDataSourceRT.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createSnmp), 1, 0},
-                {PersistentDataSourceRT.class.getSimpleName(), wrap(() -> new PersistentDataSourceRT(new PersistentDataSourceVO())), 1, 0},
-                {ModbusIpDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createModbusIpDataSource), 1, 0},
-                {ModbusSerialDataSource.class.getSimpleName(), wrap(InitializeDataSourceRtMockUtils::createModbusSerialDataSource), 1, 0},
+                {ASCIISerialDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createAsciiSerial), 1, 0},
+                {Alpha2DataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createAlpha2), 1, 0},
+                {BACnetIPDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createBacNet), 3, 0},
+                {Dnp3IpDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createDnp3Ip), 1, 0},
+                {Dnp3SerialDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createDnp3Serial), 1, 0},
+                {DrStorageHt5bDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createDrStorageMock), 1, 0},
+                {EBI25DataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createEbi25), 1, 0},
+                {NmeaDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createNmea), 1, 0},
+                {RadiuinoEventDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createRadiuino), 1, 0},
+                {RadiuinoPollingDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createRadiuinoPolling), 1, 0},
+                {VMStatDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtTest::createVmStat), 1, 0},
+                {ViconicsDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createViconics), 1, 0},
+                {GalilDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createGalil), 1, 0},
+                {IEC101EthernetDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createIec101Ethernet), 1, 0},
+                {IEC101SerialDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createIec101Serial), 1, 0},
+                {AmqpDataSourceVO.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createAmqp), 1, 0},
+                {MqttDataSourceVO.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createMqtt), 1, 0},
+                {ModbusIpDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createModbusIpDataSource), 1, 0},
+                {ModbusSerialDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createModbusSerialDataSource), 1, 0},
+                {OPCDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createOpc), 1, 0},
+                {OneWireDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createOneWire), 1, 0},
+                {SqlDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createSql), 1, 0},
+                {HttpReceiverDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createSql), 1, 0},
+                {PachubeDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createPachube), 1, 0},
+                {SnmpDataSourceRT.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createSnmp), 1, 0},
+                {PersistentDataSourceRT.class.getSimpleName(), supplier(() -> new PersistentDataSourceRT(new PersistentDataSourceVO())), 1, 0},
+                {ModbusIpDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createModbusIpDataSource), 1, 0},
+                {ModbusSerialDataSource.class.getSimpleName(), supplier(InitializeDataSourceRtMockUtils::createModbusSerialDataSource), 1, 0},
 
 
-                {VirtualDataSourceRT.class.getSimpleName(), wrap(() -> new VirtualDataSourceRT(new VirtualDataSourceVO())), 0, 0},
-                {ASCIIFileDataSource.class.getSimpleName(), wrap(() -> new ASCIIFileDataSource(new ASCIIFileDataSourceVO<>())), 0, 0},
-                {HttpImageDataSourceRT.class.getSimpleName(), wrap(() -> new HttpImageDataSourceRT(new HttpImageDataSourceVO())), 0, 0},
-                {HttpRetrieverDataSourceRT.class.getSimpleName(), wrap(() -> new HttpRetrieverDataSourceRT(new HttpRetrieverDataSourceVO())), 0, 0},
-                {InternalDataSourceRT.class.getSimpleName(), wrap(() -> new InternalDataSourceRT(new InternalDataSourceVO())), 0, 0},
-                {JmxDataSourceRT.class.getSimpleName(), wrap(() -> new JmxDataSourceRT(new JmxDataSourceVO())), 0, 0},
-                {MBusDataSourceRT.class.getSimpleName(), wrap(() -> new MBusDataSourceRT(new MBusDataSourceVO())), 0, 0},
-                {MetaDataSourceRT.class.getSimpleName(), wrap(() -> new MetaDataSourceRT(new MetaDataSourceVO())), 0, 0},
-                {NodaveS7DataSource.class.getSimpleName(), wrap(() -> new NodaveS7DataSource(new NodaveS7DataSourceVO<>())), 0, 0},
-                {OpenV4JDataSourceRT.class.getSimpleName(), wrap(() -> new OpenV4JDataSourceRT(new OpenV4JDataSourceVO())), 0, 0},
-                {Pop3DataSourceRT.class.getSimpleName(), wrap(() -> new Pop3DataSourceRT(new Pop3DataSourceVO())), 0, 0},
+                {VirtualDataSourceRT.class.getSimpleName(), supplier(() -> new VirtualDataSourceRT(new VirtualDataSourceVO())), 0, 0},
+                {ASCIIFileDataSource.class.getSimpleName(), supplier(() -> new ASCIIFileDataSource(new ASCIIFileDataSourceVO<>())), 0, 0},
+                {HttpImageDataSourceRT.class.getSimpleName(), supplier(() -> new HttpImageDataSourceRT(new HttpImageDataSourceVO())), 0, 0},
+                {HttpRetrieverDataSourceRT.class.getSimpleName(), supplier(() -> new HttpRetrieverDataSourceRT(new HttpRetrieverDataSourceVO())), 0, 0},
+                {InternalDataSourceRT.class.getSimpleName(), supplier(() -> new InternalDataSourceRT(new InternalDataSourceVO())), 0, 0},
+                {JmxDataSourceRT.class.getSimpleName(), supplier(() -> new JmxDataSourceRT(new JmxDataSourceVO())), 0, 0},
+                {MBusDataSourceRT.class.getSimpleName(), supplier(() -> new MBusDataSourceRT(new MBusDataSourceVO())), 0, 0},
+                {MetaDataSourceRT.class.getSimpleName(), supplier(() -> new MetaDataSourceRT(new MetaDataSourceVO())), 0, 0},
+                {NodaveS7DataSource.class.getSimpleName(), supplier(() -> new NodaveS7DataSource(new NodaveS7DataSourceVO<>())), 0, 0},
+                {OpenV4JDataSourceRT.class.getSimpleName(), supplier(() -> new OpenV4JDataSourceRT(new OpenV4JDataSourceVO())), 0, 0},
+                {Pop3DataSourceRT.class.getSimpleName(), supplier(() -> new Pop3DataSourceRT(new Pop3DataSourceVO())), 0, 0},
 
         };
     }
@@ -148,7 +148,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
     private final int returnToNormalTimes;
     private final Supplier<T> mockConfig;
 
-    public InitializeDataSourceRtTest(String name, Supplier<T> mockConfig, int raiseEventTimes, int returnToNormalTimes) {
+    public InitializeDataSourceRtTest(String name, Supplier<T> mockConfig, int returnToNormalTimes, int raiseEventTimes) {
         this.raiseEventTimes = raiseEventTimes;
         this.returnToNormalTimes = returnToNormalTimes;
         this.mockConfig = mockConfig;
@@ -205,7 +205,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
         dataSourceRT.initialize();
 
         //then:
-        Mockito.verify(eventManager, times(raiseEventTimes)).returnToNormal(any(), anyLong());
+        Mockito.verify(eventManager, times(returnToNormalTimes)).returnToNormal(any(), anyLong());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
         dataSourceRT.initialize();
 
         //then:
-        Mockito.verify(eventManager, times(returnToNormalTimes)).raiseEvent(any(), anyLong(), anyBoolean(), anyInt(), any(), anyMap());
+        Mockito.verify(eventManager, times(raiseEventTimes)).raiseEvent(any(), anyLong(), anyBoolean(), anyInt(), any(), anyMap());
     }
 
     public static DataSourceRT createVmStat() {

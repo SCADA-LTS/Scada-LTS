@@ -63,6 +63,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 2;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 3;
 	public static final int MONITOR_WRITE_EXCEPTION_EVENT = 4;
+	public static final int INITIALIZATION_EXCEPTION_EVENT = 5;
 
 	private ModbusMaster modbusMaster;
 	private BatchRead<ModbusPointLocatorRT> batchRead;
@@ -154,9 +155,9 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	protected void doPoll(long time) {
 		try {
 			checkInitialized(modbusMaster, this);
-			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+			returnToNormal(INITIALIZATION_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
+			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, time, true,
 					getLocalExceptionMessage(e));
 			return;
 		}
@@ -355,10 +356,10 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			modbusMaster.init();
 
 			// Deactivate any existing event.
-			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
+			returnToNormal(INITIALIZATION_EXCEPTION_EVENT,
 					System.currentTimeMillis());
 		} catch (Throwable e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
+			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(),
 					true, getLocalExceptionMessage(e));
 			return;
 		}

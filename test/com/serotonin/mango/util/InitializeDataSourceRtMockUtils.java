@@ -29,11 +29,12 @@ import com.serotonin.bacnet4j.LocalDevice;
 import com.serotonin.bacnet4j.event.DeviceEventHandler;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.bacnet.BACnetIPDataSourceRT;
 import com.serotonin.mango.rt.dataSource.ebro.EBI25Constants;
 import com.serotonin.mango.rt.dataSource.ebro.EBI25DataSourceRT;
 import com.serotonin.mango.rt.dataSource.galil.GalilDataSourceRT;
+import com.serotonin.mango.rt.dataSource.galil.GalilRequest;
+import com.serotonin.mango.rt.dataSource.galil.GalilResponse;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusDataSource;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusIpDataSource;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusSerialDataSource;
@@ -46,6 +47,8 @@ import com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRT;
 import com.serotonin.mango.rt.dataSource.sql.SqlDataSourceRT;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.util.timeout.TimeoutTask;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -57,6 +60,8 @@ import com.serotonin.mango.vo.dataSource.pachube.PachubeDataSourceVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import com.serotonin.mango.vo.dataSource.viconics.ViconicsDataSourceVO;
+import com.serotonin.messaging.MessageControl;
+import com.serotonin.messaging.StreamTransport;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.ip.tcp.TcpMaster;
@@ -80,6 +85,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoints;
@@ -236,23 +243,31 @@ public final class InitializeDataSourceRtMockUtils {
         return dataSource;
     }
 
-    public static <T extends DataSourceRT> Supplier<T> wrap(Supplier<T> function) {
+    public static <T> Consumer<T> consumer(Consumer<T> consumer) {
+        return consumer;
+    }
+
+    public static <T> Supplier<T> supplier(Supplier<T> function) {
         return function;
     }
 
-    public static void reset(List<DataPointRT> list1, List<DataPointRT> list2, List<DataPointRT> list3) {
+    public static <T extends DataSourceVO<T>> Function<T, DataPointVO> function(Function<T, DataPointVO> function) {
+        return function;
+    }
+
+    public static void resetUnreliable(List<DataPointRT> list1, List<DataPointRT> list2, List<DataPointRT> list3) {
         resetUnreliableDataPoints(list1);
         resetUnreliableDataPoints(list2);
         resetUnreliableDataPoints(list3);
     }
 
-    public static void set(List<DataPointRT> list1, List<DataPointRT> list2, List<DataPointRT> list3) {
+    public static void setUnreliable(List<DataPointRT> list1, List<DataPointRT> list2, List<DataPointRT> list3) {
         setUnreliableDataPoints(list1);
         setUnreliableDataPoints(list2);
         setUnreliableDataPoints(list3);
     }
 
-    private static void sqlMock(SqlDataSourceRT dataSource) {
+    public static void sqlMock(SqlDataSourceRT dataSource) {
         mockStatic(SqlDataSourceUtils.class);
         JdbcOperations jdbcOperations = mock(JdbcOperations.class);
         when(jdbcOperations.queryForObject(anyString(), eq(int.class))).thenReturn(1);
@@ -264,7 +279,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void oneWireMock(OneWireDataSourceRT dataSource) {
+    public static void oneWireMock(OneWireDataSourceRT dataSource) {
         Network networkMock = mock(Network.class);
         try {
             whenNew(Network.class).withAnyArguments()
@@ -274,7 +289,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void opcMock(OPCDataSource dataSource) {
+    public static void opcMock(OPCDataSource dataSource) {
         RealOPCMaster realOPCMasterMock = mock(RealOPCMaster.class);
         try {
             whenNew(RealOPCMaster.class).withAnyArguments()
@@ -300,7 +315,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void iec101Mock(IEC101DataSource dataSource) {
+    public static void iec101Mock(IEC101DataSource dataSource) {
         IEC101Master iec101MasterMock = mock(IEC101Master.class);
         try {
             whenNew(IEC101Master.class).withAnyArguments()
@@ -310,11 +325,24 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void galilMock(GalilDataSourceRT dataSource) {
+    public static void galilMock(GalilDataSourceRT dataSource) {
         InputStream inputStreamMock = mock(InputStream.class);
         OutputStream outputStreamMock = mock(OutputStream.class);
 
         Socket socketMock = mock(Socket.class);
+
+        MessageControl messageControlMock = mock(MessageControl.class);
+        try {
+            when(messageControlMock.send(any(GalilRequest.class)))
+                    .thenReturn(new GalilResponse(new byte[]{}));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        StreamTransport streamTransportMock = mock(StreamTransport.class);
+        doAnswer(a -> {
+            return null;
+        }).when(streamTransportMock).start(anyString());
 
         try {
             doAnswer(a -> {
@@ -326,12 +354,18 @@ public final class InitializeDataSourceRtMockUtils {
 
             whenNew(Socket.class).withAnyArguments()
                     .thenReturn(socketMock);
+
+            whenNew(MessageControl.class).withAnyArguments()
+                    .thenReturn(messageControlMock);
+
+            whenNew(StreamTransport.class).withAnyArguments()
+                    .thenReturn(streamTransportMock);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void viconicsMock(ViconicsDataSourceRT dataSource) {
+    public static void viconicsMock(ViconicsDataSourceRT dataSource) {
         ViconicsNetwork viconicsNetworkMock = mock(ViconicsNetwork.class);
         try {
             whenNew(ViconicsNetwork.class).withAnyArguments()
@@ -341,7 +375,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void nmeaMock(NmeaDataSourceRT dataSource) {
+    public static void nmeaMock(NmeaDataSourceRT dataSource) {
         NmeaReceiver nmeaReceiverMock = mock(NmeaReceiver.class);
         TimeoutTask timeoutTaskMock = mock(TimeoutTask.class);
         try {
@@ -354,7 +388,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void ebi25Mock(EBI25DataSourceRT dataSource) {
+    public static void ebi25Mock(EBI25DataSourceRT dataSource) {
         ModbusMaster modbusMasterMock = mock(ModbusMaster.class);
         mockStatic(EBI25Constants.class);
         try {
@@ -365,7 +399,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void alpha2Mock(Alpha2DataSource dataSource) {
+    public static void alpha2Mock(Alpha2DataSource dataSource) {
         Alpha2Master alpha2MasterMock = mock(Alpha2Master.class);
         try {
             doAnswer(invocation -> {
@@ -379,7 +413,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void dnp3Mock(Dnp3DataSource dataSource) {
+    public static void dnp3Mock(Dnp3DataSource dataSource) {
         DNP3Master dnp3MasterMock = mock(DNP3Master.class);
         try {
             whenNew(DNP3Master.class)
@@ -390,7 +424,7 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void bacNetMock(BACnetIPDataSourceRT dataSource) {
+    public static void bacNetMock(BACnetIPDataSourceRT dataSource) {
         LocalDevice localDeviceMock = mock(LocalDevice.class);
 
         DeviceEventHandler deviceEventHandlerMock = mock(DeviceEventHandler.class);
@@ -406,29 +440,29 @@ public final class InitializeDataSourceRtMockUtils {
         }
     }
 
-    private static void pachubeMock(PachubeDataSourceRT dataSource) {
+    public static void pachubeMock(PachubeDataSourceRT dataSource) {
         HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.getParams()).thenReturn(new HttpClientParams());
         mockStatic(Common.class);
         when(Common.getHttpClient(anyInt())).thenReturn(httpClient);
     }
 
-    private static void asciiSerialMock(ASCIISerialDataSource dataSource) {
+    public static void asciiSerialMock(ASCIISerialDataSource dataSource) {
         SerialPort serialPortMock = mock(SerialPort.class);
         dataSource.setsPort(serialPortMock);
     }
 
-    private static void radiuinoMock(RadiuinoEventDataSource dataSource) {
+    public static void radiuinoMock(RadiuinoEventDataSource dataSource) {
         SerialPort serialPortMock = mock(SerialPort.class);
         dataSource.setsPort(serialPortMock);
     }
 
-    private static void radiuinoPollingMock(RadiuinoPollingDataSource dataSource) {
+    public static void radiuinoPollingMock(RadiuinoPollingDataSource dataSource) {
         SerialPort serialPortMock = mock(SerialPort.class);
         dataSource.setsPort(serialPortMock);
     }
 
-    private static void drStorageMock(DrStorageHt5bDataSource dataSource) {
+    public static void drStorageMock(DrStorageHt5bDataSource dataSource) {
         SerialPort serialPortMock = mock(SerialPort.class);
         dataSource.setsPort(serialPortMock);
         InputStream inputStreamMock = mock(InputStream.class);

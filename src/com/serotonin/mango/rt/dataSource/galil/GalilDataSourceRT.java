@@ -109,6 +109,7 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
             // Raise an event.
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true, new LocalizableMessage("event.pollingError",
                     messageException.getMessage()));
+            return;
         }
         else
             // Deactivate any existing event.
@@ -117,6 +118,7 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         if (pointError != null) {
             // Raise an event.
             raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true, pointError);
+            return;
         }
         else
             // Deactivate any existing event.
