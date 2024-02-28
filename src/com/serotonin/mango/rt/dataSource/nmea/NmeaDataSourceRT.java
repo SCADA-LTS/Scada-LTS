@@ -135,7 +135,9 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
         }
 
         if (parseError != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseError);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseError);
+        else
+            returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
     private void receivedMessageImpl(DataPointRT dp, NmeaMessage message, long time) throws Exception {

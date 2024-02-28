@@ -41,6 +41,7 @@ import com.serotonin.mango.rt.dataSource.virtual.VirtualDataSourceRT;
 import com.serotonin.mango.rt.dataSource.vmstat.VMStatDataSourceRT;
 import com.serotonin.mango.util.InitializeDataSourceRtMockUtils;
 import com.serotonin.mango.util.SqlDataSourceUtils;
+import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.vo.dataSource.http.HttpImageDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpRetrieverDataSourceVO;
 import com.serotonin.mango.vo.dataSource.internal.InternalDataSourceVO;
@@ -80,6 +81,8 @@ import java.util.function.Supplier;
 import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.supplier;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
@@ -88,7 +91,7 @@ import static org.mockito.Mockito.*;
         Alpha2Master.class, BACnetIPDataSourceRT.class, Dnp3IpDataSource.class, Dnp3SerialDataSource.class,
         EBI25DataSourceRT.class, EBI25Constants.class, NmeaDataSourceRT.class, Runtime.class, VMStatDataSourceRT.class,
         ViconicsDataSourceRT.class, GalilDataSourceRT.class, IEC101EthernetDataSource.class, IEC101SerialDataSource.class,
-        ModbusFactory.class, OPCDataSource.class, OneWireDataSourceRT.class, SqlDataSourceUtils.class})
+        ModbusFactory.class, OPCDataSource.class, OneWireDataSourceRT.class, SqlDataSourceUtils.class, PollingDataSource.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class InitializeDataSourceRtTest<T extends DataSourceRT> {
@@ -157,7 +160,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
     private EventManager eventManager;
 
     @Before
-    public void config() throws Exception {
+    public void config() {
         eventManager = mock(EventManager.class);
         HttpReceiverMulticaster multicastListener = mock(HttpReceiverMulticaster.class);
 

@@ -123,19 +123,21 @@ public class Pop3DataSourceRT extends PollingDataSource {
             returnToNormal(INBOX_EXCEPTION_EVENT, time);
 
             if (messagesRead) {
-                if (messageReadError != null)
-                    raiseEvent(MESSAGE_READ_EXCEPTION_EVENT, time, false, messageReadError);
-                else
+                if (messageReadError != null) {
+                    raiseEvent(MESSAGE_READ_EXCEPTION_EVENT, time, true, messageReadError);
+                    return;
+                } else
                     returnToNormal(MESSAGE_READ_EXCEPTION_EVENT, time);
 
-                if (parseError != null)
-                    raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseError);
-                else
+                if (parseError != null) {
+                    raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseError);
+                    return;
+                } else
                     returnToNormal(PARSE_EXCEPTION_EVENT, time);
             }
         }
         catch (Exception e) {
-            raiseEvent(INBOX_EXCEPTION_EVENT, time, false, new LocalizableMessage("common.default", e.getMessage()));
+            raiseEvent(INBOX_EXCEPTION_EVENT, time, true, new LocalizableMessage("common.default", e.getMessage()));
         }
         finally {
             try {

@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
+import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.web.ContextWrapper;
 import org.powermock.api.mockito.PowerMockito;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -53,6 +54,10 @@ public final class RuntimeMockUtils {
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getEventManager()).thenReturn(eventManager);
         when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
+
+        TimeoutTask timeoutTaskMock = mock(TimeoutTask.class);
+        whenNew(TimeoutTask.class).withAnyArguments()
+                .thenReturn(timeoutTaskMock);
 
         Common.ctx = contextWrapper;
         Common.timer.init();

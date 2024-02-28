@@ -212,7 +212,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
         }
 
         if (parseErrorMessage != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseErrorMessage);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseErrorMessage);
         else
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }

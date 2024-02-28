@@ -42,7 +42,7 @@ import static utils.mock.RuntimeMockUtils.runtimeManagerMock;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({WebContextFactory.class, Common.class, MiscDwr.class, SystemSettingsDAO.class,
         ContentGenerator.class, PointValueCache.class, DataPointRT.class, RuntimeManager.class, DataPointDao.class,
-        PointValueDao.class, ApplicationBeans.class})
+        PointValueDao.class, ApplicationBeans.class, PollingDataSource.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class DataPointUnreliableUtilsTest {

@@ -35,6 +35,7 @@ import com.serotonin.mango.rt.dataSource.snmp.SnmpDataSourceRT;
 import com.serotonin.mango.rt.dataSource.sql.SqlDataSourceRT;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.dataSource.vmstat.VMStatDataSourceRT;
+import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -75,11 +76,13 @@ import java.util.function.Supplier;
 import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.supplier;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
-@PrepareForTest({Common.class, Runtime.class, VMStatDataSourceRT.class})
+@PrepareForTest({Common.class, Runtime.class, VMStatDataSourceRT.class, PollingDataSource.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class InitializeWithErrorsDataSourceRtTest {
@@ -162,6 +165,14 @@ public class InitializeWithErrorsDataSourceRtTest {
         if(dataSourceRT instanceof BACnetIPDataSourceRT) {
             DataSourceRT dataSourceRT1 = this.createDataSource.get();
             dataSourceRT1.initialize();
+        }
+
+        TimeoutTask timeoutTaskMock = mock(TimeoutTask.class);
+        try {
+            whenNew(TimeoutTask.class).withAnyArguments()
+                    .thenReturn(timeoutTaskMock);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         reset(eventManager);
