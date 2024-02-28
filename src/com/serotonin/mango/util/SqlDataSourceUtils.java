@@ -2,6 +2,7 @@ package com.serotonin.mango.util;
 
 import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -40,5 +41,15 @@ public final class SqlDataSourceUtils {
         sqlDataSourceVO.setJndiResource(jndiResource);
         sqlDataSourceVO.setJndiResourceName(jndiResourceName);
         return sqlDataSourceVO;
+    }
+
+    public static String addLimitIfWithout(String query, int defaultLimit) {
+        if(StringUtils.isEmpty(query))
+            throw new IllegalArgumentException("Select statement cannot be empty!");
+        return query.toLowerCase().contains(" limit ") ? query : reduce(query) + " LIMIT " + defaultLimit;
+    }
+
+    private static String reduce(String sql) {
+        return sql.endsWith(";") ? sql.substring(0, sql.length() - 1) : sql;
     }
 }

@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -52,17 +54,19 @@ public class JdbcOperationsTester extends Thread implements TestingUtility {
     public void run() {
         try {
 
+            String selectStatement = addLimitIfWithout(vo.getSelectStatement(), MAX_ROWS);
+
             JdbcOperations jdbcOperations = SqlDataSourceUtils.createJdbcOperations(vo);
 
             if (vo.isRowBasedQuery()) {
-                this.resultTable = jdbcOperations.query(vo.getSelectStatement(), new ResultSetExtractor<List<List<String>>>() {
+                this.resultTable = jdbcOperations.query(selectStatement, new ResultSetExtractor<List<List<String>>>() {
                     @Override
                     public List<List<String>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
                         return getRowData(resultSet);
                     }
                 });
             } else {
-                this.resultTable = jdbcOperations.query(vo.getSelectStatement(), new ResultSetExtractor<List<List<String>>>() {
+                this.resultTable = jdbcOperations.query(selectStatement, new ResultSetExtractor<List<List<String>>>() {
                     @Override
                     public List<List<String>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
                         return getColumnData(resultSet);

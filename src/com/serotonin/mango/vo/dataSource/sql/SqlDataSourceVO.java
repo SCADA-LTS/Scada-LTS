@@ -213,6 +213,10 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 			if (StringUtils.isEmpty(jndiResourceName))
 				response.addContextualMessage("jndiResourceName", "validate.required");
 		}
+
+		if(StringUtils.isEmpty(selectStatement)) {
+			response.addContextualMessage("selectStatement", "validate.required");
+		}
 	}
 
 	@Override
