@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.mango.service.PendingEventService;
@@ -51,7 +50,7 @@ public class UpdatePendingEvents implements StatefulJob {
 			PendingEventsCache.getInstance().resetUpdate();
 			PendingEventsCache.getInstance().setMapPendingEvents(pendingEventService.getPendingEvents());
 			PendingEventsCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 	}

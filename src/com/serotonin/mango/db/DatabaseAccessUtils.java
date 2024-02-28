@@ -1,28 +1,23 @@
 package com.serotonin.mango.db;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
 public class DatabaseAccessUtils {
+
+    private static final Log LOG = LogFactory.getLog(DatabaseAccessUtils.class);
     public String decrypt(String input) {
         return input;
     }
 
-    //  private static final String ALGORITHM = "Blowfish";
-
-    //    public String decrypt(String input) {
-    //        StringEncrypter se = new StringEncrypter("TR58yrqPswXJubYGiRdARw==", ALGORITHM);
-    //        return se.decodeToString(input);
-    //    }
-    //
-    //    public static void main(String[] args) {
-    //        //        // Generate a key
-    //        //        String key = StringEncrypter.generateKey(ALGORITHM);
-    //        //        System.out.println(key);
-    //
-    //        //
-    //        //        // Encrypt a password with it.
-    //        //        StringEncrypter se = new StringEncrypter(key, ALGORITHM);
-    //        //        System.out.println(se.encodeString("mangoPassword"));
-    //
-    //        // Decrypt
-    //        System.out.println(new DatabaseAccessUtils().decrypt("bWFuZ29QYXNzd29yZA=="));
-    //    }
+    public static void closeDataSource(DataSource dataSource) throws SQLException {
+        if (dataSource instanceof BasicDataSource)
+            ((BasicDataSource) dataSource).close();
+        else
+            dataSource.getConnection().close();
+    }
 }

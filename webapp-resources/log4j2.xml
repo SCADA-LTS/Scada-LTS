@@ -28,7 +28,7 @@
         <Property name="springLoggingLevel">ERROR</Property>
         <Property name="databaseLoggingLevel">ERROR</Property>
         <Property name="springCacheLoggingLevel">ERROR</Property>
-        <Property name="quartzLoggingLevel">ERROR</Property>
+        <Property name="quartzLoggingLevel">INFO</Property>
 
         <!-- Functional Logging-->
         <Property name="scriptLoggingLevel">ERROR</Property>
