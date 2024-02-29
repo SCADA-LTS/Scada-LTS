@@ -7,10 +7,11 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.vo.RestApiSource;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
@@ -445,7 +446,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                dataPointService.save(user, value, xid, type);
+                dataPointService.save(user, value, xid, type, new RestApiSource());
 
                 return new ResponseEntity<String>(value, HttpStatus.OK);
             }
@@ -480,8 +481,8 @@ public class PointValueAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                if(type != PointValueTypeOfREST.TYPE_STRING) { value = convertInputValue(value); }
-                dataPointService.save(user, value, xid, type);
+                if(type != DataTypes.ALPHANUMERIC) { value = convertInputValue(value); }
+                dataPointService.save(user, value, xid, type, new RestApiSource());
                 return new ResponseEntity<>(value, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -512,7 +513,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                dataPointService.save(user, value, xid, type);
+                dataPointService.save(user, value, xid, type, new RestApiSource());
 
                 return new ResponseEntity<String>(value, HttpStatus.OK);
             }

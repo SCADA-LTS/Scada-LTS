@@ -18,11 +18,13 @@
  */
 package com.serotonin.mango.rt.dataImage;
 
-import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.web.i18n.I18NUtils;
+import com.serotonin.mango.util.AnnotatedPointValueUtils;
+import com.serotonin.web.taglib.DateFunctions;
 
 /**
  * This class provides a way of arbitrarily annotating a PointValue. Point value annotations should not be confused with
@@ -56,24 +58,11 @@ public class AnnotatedPointValueTime extends PointValueTime {
      * @see SetPointSource
      */
     private String sourceDescriptionArgument;
-    public AnnotatedPointValueTime(String valueChanger,MangoValue value, long time, int sourceType, int sourceId) {
-        super(value, time);
-        this.sourceType = sourceType;
-        this.sourceId = sourceId;
-        this.sourceDescriptionArgument = valueChanger;
-    }
+
     public AnnotatedPointValueTime(MangoValue value, long time, int sourceType, int sourceId) {
         super(value, time);
         this.sourceType = sourceType;
         this.sourceId = sourceId;
-        this.sourceDescriptionArgument = getWhoChangedValue();
-    }
-    public AnnotatedPointValueTime(MangoValue value, long time, int sourceType, int sourceId,String sourceDescription) {
-        super(value, time);
-        this.sourceType = sourceType;
-        this.sourceId = sourceId;
-        this.sourceDescriptionArgument = sourceDescription;
-        this.setWhoChangedValue(sourceDescription);
     }
 
     @Override
@@ -90,24 +79,10 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getSourceDescriptionKey() {
-        switch (sourceType) {
-        case SetPointSource.Types.ANONYMOUS:
-            return "annotation.anonymous";
-        case SetPointSource.Types.EVENT_HANDLER:
-            return "annotation.eventHandler";
-        case SetPointSource.Types.USER:
-            return "annotation.user";
-        case SetPointSource.Types.POINT_LINK:
-            return "annotation.pointLink";
-        default:
-            return "annotation.unknown";
-        }
+        return AnnotatedPointValueUtils.getSourceDescriptionKey(sourceType);
     }
 
     public String getSourceDescriptionArgument() {
-        String EMPTY_STRING = "";
-        if(sourceDescriptionArgument.equals( EMPTY_STRING ) )
-            setSourceDescriptionArgument(getWhoChangedValue());
         return sourceDescriptionArgument;
     }
 
@@ -116,20 +91,25 @@ public class AnnotatedPointValueTime extends PointValueTime {
     }
 
     public String getAnnotation(ResourceBundle bundle) {
-        String pattern = I18NUtils.getMessage(bundle, getSourceDescriptionKey());
-        if (sourceDescriptionArgument == null)
-            return MessageFormat.format(pattern, I18NUtils.getMessage(bundle, "common.deleted"));
-        return MessageFormat.format(pattern, sourceDescriptionArgument);
+        return AnnotatedPointValueUtils.getAnnotation(bundle, sourceType, sourceDescriptionArgument);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnnotatedPointValueTime)) return false;
+        if (!super.equals(o)) return false;
+        AnnotatedPointValueTime that = (AnnotatedPointValueTime) o;
+        return getSourceType() == that.getSourceType() && getSourceId() == that.getSourceId() && Objects.equals(getSourceDescriptionArgument(), that.getSourceDescriptionArgument());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getSourceType(), getSourceId(), getSourceDescriptionArgument());
     }
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("AnnotatedPointValueTime{")
-                .append(" sourceType= ").append(getSourceType())
-                .append(" sourceId= ").append(getSourceId())
-                .append(" whoChangedValue= ").append(getWhoChangedValue())
-                .append(" sourceDescriptionArgument= ").append(getSourceDescriptionArgument())
-                .append("}").toString();
+        return "AnnotatedPointValueTime(" + (sourceDescriptionArgument == null ? getAnnotation(Common.getBundle()) : sourceDescriptionArgument) + " -- " + getValue() + "@" + DateFunctions.getTime(getTime()) + ")";
     }
 }
