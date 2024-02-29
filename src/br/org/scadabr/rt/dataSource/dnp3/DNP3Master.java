@@ -2,6 +2,7 @@ package br.org.scadabr.rt.dataSource.dnp3;
 
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,8 +44,10 @@ public class DNP3Master {
 			user.init();
 		} catch (Error e) {
 			log.fatal(e.getMessage(), e);
+			throw e;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			throw e;
 		}
 	}
 
@@ -52,18 +55,24 @@ public class DNP3Master {
 
 	public void doPoll() throws Exception {
 		if (reconnecting) {
-			log.debug("[DNP3Master] Trying to reconnect...");
+			log.warn("[DNP3Master] Trying to reconnect...");
 			timeoutCount = 0;
 			try {
 				try {
 					user.init();
 					reconnecting = false;
-					log.debug("[DNP3Master] Reconnected!");
-				} catch (Exception | Error e) {
-					log.warn(e.getMessage(), e);
-					terminate();
+					log.warn("[DNP3Master] Reconnected!");
+				} catch (Throwable e) {
+					log.warn(LoggingUtils.exceptionInfo(e));
+					try {
+						terminate();
+					} catch (Throwable ex) {
+						log.warn(LoggingUtils.exceptionInfo(ex));
+						throw ex;
+					}
 				}
 			} catch (Exception e) {
+				log.error(LoggingUtils.exceptionInfo(e));
 				throw e;
 			}
 		} else {
@@ -72,10 +81,13 @@ public class DNP3Master {
 				log.debug("[DNP3Master] Conexão falhou. Terminar Conexão.");
 				terminate();
 				log.debug("[DNP3Master] Conexão terminada.");
-				throw new Exception("[DNP3Master] Poll failed!");
+                throw new Exception("[DNP3Master] Poll failed! User: " + this.user + ", pollingCount: " + this.pollingCount
+                        + ", relativePollingPeriod: " + this.relativePollingPeriod
+                        + ", timeoutCount: " + this.timeoutCount
+                        + ", reconnecting: " + this.reconnecting);
 			} else {
 				try {
-					log.debug("[DNP3Master] Poll " + pollingCount + " / "
+					log.warn("[DNP3Master] Poll " + pollingCount + " / "
 							+ relativePollingPeriod);
 					if (pollingCount == 0) {
 						user.sendSynch(user.buildReadStaticDataMsg());
@@ -87,10 +99,11 @@ public class DNP3Master {
 							pollingCount = 0;
 					}
 					timeoutCount = 0;
-				} catch (Exception e) {
-					log.debug("[DNP3Master] Poll failed! (Error: "
+				} catch (Throwable e) {
+					log.warn("[DNP3Master] Poll failed! (Error: "
 							+ e.getMessage() + ")");
 					timeoutCount++;
+					throw e;
 				}
 
 			}

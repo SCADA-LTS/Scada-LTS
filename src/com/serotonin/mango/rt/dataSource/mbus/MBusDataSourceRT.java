@@ -61,13 +61,13 @@ public class MBusDataSourceRT extends PollingDataSource {
 
     @Override
     public void initialize() {
-        LOG.fatal("INITIALIZE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
+        LOG.debug("INITIALIZE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
         super.initialize();
     }
 
     @Override
     public void terminate() {
-        LOG.fatal("TERMINATE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
+        LOG.debug("TERMINATE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
         super.terminate();
     }
 
@@ -184,6 +184,7 @@ public class MBusDataSourceRT extends PollingDataSource {
     private void closeConnection() {
         try {
             master.close();
+            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (IOException ex) {
             LOG.fatal("Close port", ex);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(

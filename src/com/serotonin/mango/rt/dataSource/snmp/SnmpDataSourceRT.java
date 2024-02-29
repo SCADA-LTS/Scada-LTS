@@ -31,6 +31,8 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoints;
+
 /**
  * @author Matthew Lohbihler
  *
@@ -106,7 +108,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
     private final Log log = LogFactory.getLog(SnmpDataSourceRT.class);
 
     private final SnmpDataSourceVO vo;
-    private final Version version;
+    private Version version;
     private String address;
     private Target target;
     private Snmp snmp;
@@ -122,12 +124,6 @@ public class SnmpDataSourceRT extends PollingDataSource {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.vo = vo;
-        version = Version.getVersion(vo.getSnmpVersion(), vo.getCommunity(),
-                vo.getSecurityName(), vo.getAuthProtocol(),
-                vo.getAuthPassphrase(), vo.getPrivProtocol(),
-                vo.getPrivPassphrase(), vo.getSecurityLevel(),
-                vo.getContextName());
-        snmpRequests = new SnmpResponses();
     }
 
     @Override
@@ -141,10 +137,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
         PDU response = snmpRequests.getResponseBySet();
 
         LocalizableMessage message = validatePdu(response);
-        if (message != null)
-            raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message);
-        else
+        if (message != null) {
+            raiseEvent(PDU_EXCEPTION_EVENT, valueTime.getTime(), false, message, dataPoint);
+        } else {
             dataPoint.setPointValue(valueTime, source);
+            returnToNormal(PDU_EXCEPTION_EVENT, valueTime.getTime(), dataPoint);
+        }
     }
     public void setDeviceDidNotRespondDespiteTheCounterOfRetries(boolean deviceDidNotRespondDespiteTheCounterOfRetries) {
         this.deviceDidNotRespondDespiteTheCounterOfRetries = deviceDidNotRespondDespiteTheCounterOfRetries;
@@ -209,6 +207,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
                 }
             } else {
                 if (!isSnmpConnectionIsAlive()) {
+                    setUnreliableDataPoints(dataPoints);
 //                    Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
                 } else if (message != null) {
                     raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
@@ -226,7 +225,6 @@ public class SnmpDataSourceRT extends PollingDataSource {
                 }
             } else {
                 raiseEvent(PDU_EXCEPTION_EVENT, time, true, validatePdu(response));
-
             }
         }
 
@@ -273,8 +271,9 @@ public class SnmpDataSourceRT extends PollingDataSource {
                 break;
         }
 
-        if(messageType!=MessageType.undefined)
-            raiseEvent(PDU_EXCEPTION_EVENT,time,true,message);
+        if(messageType!=MessageType.undefined) {
+            raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+        }
 
         return messageType!=MessageType.undefined;
     }
@@ -334,9 +333,9 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
         // Take a look at the response.
         LocalizableMessage message = validatePdu(trap);
-        if (message != null)
-            raiseEvent(PDU_EXCEPTION_EVENT, time, false, message);
-        else {
+        if (message != null) {
+            raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+        } else {
             synchronized (pointListChangeLock) {
                 updateChangedPoints();
 
@@ -352,9 +351,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
                         }
                     }
 
-                    if (!found)
-						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+                    if (!found) {
                         log.warn("Trap not handled: " + vb);
+                        raiseEvent(TRAP_NOT_HANDLED_EVENT, time, true, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+                    } else {
+                        returnToNormal(TRAP_NOT_HANDLED_EVENT, time);
+                    }
                 }
             }
         }
@@ -364,6 +366,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
         SnmpPointLocatorRT locator = dp.getPointLocator();
         dp.updatePointValue(new PointValueTime(locator
                 .variableToValue(variable), time));
+        returnToNormal(PDU_EXCEPTION_EVENT, time, dp);
     }
 
     //
@@ -374,6 +377,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         try {
+            version = Version.getVersion(vo.getSnmpVersion(), vo.getCommunity(),
+                    vo.getSecurityName(), vo.getAuthProtocol(),
+                    vo.getAuthPassphrase(), vo.getPrivProtocol(),
+                    vo.getPrivPassphrase(), vo.getSecurityLevel(),
+                    vo.getContextName());
+            snmpRequests = new SnmpResponses();
             initializeComponents();
             counterEmptyResponsesOrResponsesWithError=0;
             log.info("Counter Empty Responses Or Responses With Error is set 0.");
@@ -383,7 +392,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
                     System.currentTimeMillis());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, DataSourceRT.getExceptionMessage(e));
             log.debug("Error while initializing data source", e);

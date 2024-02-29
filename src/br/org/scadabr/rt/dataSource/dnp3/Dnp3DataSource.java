@@ -2,9 +2,9 @@ package br.org.scadabr.rt.dataSource.dnp3;
 
 import java.net.ConnectException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,12 +21,16 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.checkInitialized;
+
+
 public class Dnp3DataSource extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(Dnp3DataSource.class);
 
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
 
 	private DNP3Master dnp3Master;
 	private final Dnp3DataSourceVO<?> vo;
@@ -42,13 +46,12 @@ public class Dnp3DataSource extends PollingDataSource {
 	protected void doPoll(long time) {
 
 		try {
+			checkInitialized(dnp3Master, this);
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
-		} catch (Exception e) {
-			LOG.warn(e.getMessage(), e);
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true, getLocalExceptionMessage(e));
 			return;
 		}
 
@@ -81,12 +84,12 @@ public class Dnp3DataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			dnp3Master.terminate();
-		} catch (Exception e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
-					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			LOG.error(e.getMessage(), e);
+			if(dnp3Master != null)
+				dnp3Master.terminate();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, getLocalExceptionMessage(e));
 		}
 	}
 
@@ -100,6 +103,7 @@ public class Dnp3DataSource extends PollingDataSource {
 		int index = pointLocator.getIndex();
 
 		try {
+			checkInitialized(dnp3Master, this);
 			if (dataType == 0x10) {
 				dnp3Master.controlCommand(valueTime.getValue().toString(),
 						index, pointLocator.getControlCommand(), pointLocator
@@ -108,12 +112,14 @@ public class Dnp3DataSource extends PollingDataSource {
 				dnp3Master
 						.sendAnalogCommand(index, valueTime.getIntegerValue());
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true, getLocalExceptionMessage(e), dataPoint);
 		}
 	}
 
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof Exception) {
 			Throwable cause = e.getCause();
 			if (cause instanceof TimeoutException)

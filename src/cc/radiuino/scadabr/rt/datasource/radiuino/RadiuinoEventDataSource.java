@@ -1,5 +1,6 @@
 package cc.radiuino.scadabr.rt.datasource.radiuino;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
@@ -25,6 +26,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.EventDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class RadiuinoEventDataSource extends EventDataSource implements
 		SerialPortEventListener {
@@ -57,7 +59,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 		try {
 			while (true) {
 				Thread.sleep(5000);
-				portList = CommPortIdentifier.getPortIdentifiers();
+				portList = ScadaCommPortIdentifier.getPortIdentifiers();
 				SerialPort p = getPort(vo.getCommPortId(), vo.getTimeout());
 				if (p != null) {
 					LOG.debug("Conexao estabelecida com a porta serial");
@@ -66,8 +68,8 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 					return true;
 				}
 			}
-		} catch (Exception e) {
-			LOG.error("Erro ao conectar na porta serial", e);
+		} catch (Throwable e) {
+			LOG.error("Erro ao conectar na porta serial: " + LoggingUtils.info(e, this));
 			return false;
 		}
 
@@ -75,19 +77,37 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 
 	@Override
 	public void initialize() {
-		super.initialize();
 
 		LOG.debug("Inicializando o Radiuino Polling Data Source.");
 
-		portList = CommPortIdentifier.getPortIdentifiers();
-		getPort(vo.getCommPortId(), vo.getTimeout());
-		configurePort(getsPort());
+		try {
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
+			getPort(vo.getCommPortId(), vo.getTimeout());
+			configurePort(getsPort());
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+			return;
+		}
+
+		super.initialize();
 	}
 
 	@Override
 	public void terminate() {
 		super.terminate();
-		getsPort().close();
+		try {
+			SerialPort serialPort = getsPort();
+			if(serialPort != null)
+				serialPort.close();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+		}
 
 		LOG.debug("Terminando o Radiuino Polling Data Source.");
 	}
@@ -155,11 +175,15 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 			enviarPacote(pacoteEnvio, 1);
 
 		} catch (IOException io) {
-			LOG.error("Erro ao setar valor no data point Radiuino.", io);
-			getsPort().close();
-			reconnect();
+			LOG.error("Erro ao setar valor no data point Radiuino: " + LoggingUtils.info(io, this));
+			try {
+				getsPort().close();
+				reconnect();
+			} catch (Throwable e) {
+				LOG.error(LoggingUtils.info(e, this));
+			}
 		} catch (Exception e) {
-			LOG.error("Erro geral ao setar valor no datasource.", e);
+			LOG.error("Erro geral ao setar valor no datasource: " + LoggingUtils.info(e, this));
 		}
 
 	}
@@ -197,8 +221,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
-						LOG.error("Erro ao aguardar por pacote.", e);
-						e.printStackTrace();
+						LOG.error("Erro ao aguardar por pacote: " + LoggingUtils.info(e, this), e);
 					}
 				} while ((new Date().getTime() - startTime) < timeout);
 				LOG.debug("Ainda esperando pacote " + new Date().getTime());
@@ -220,7 +243,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 			setInSerialStream(port.getInputStream());
 			setOutSerialStream(port.getOutputStream());
 		} catch (Exception e) {
-			LOG.error("Erro ao configurar streaming de in e out", e);
+			LOG.error("Erro ao configurar streaming de in e out: " + LoggingUtils.info(e, this));
 		}
 
 		port.notifyOnDataAvailable(true);
@@ -228,16 +251,16 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 			port.addEventListener(this);
 			port.enableReceiveTimeout(vo.getTimeout());
 		} catch (UnsupportedCommOperationException e1) {
-			LOG.error("Comando nao suportado ao abrir a porta serial.", e1);
+			LOG.error("Comando nao suportado ao abrir a porta serial: " + LoggingUtils.info(e1, this));
 		} catch (TooManyListenersException e) {
-			LOG.error("Muitos Listeners adicionados a porta serial", e);
+			LOG.error("Muitos Listeners adicionados a porta serial: " + LoggingUtils.info(e, this));
 		}
 
 		try {
 			port.setSerialPortParams(vo.getBaudRate(), vo.getDataBits(),
 					vo.getStopBits(), vo.getParity());
 		} catch (Exception e) {
-			LOG.error("Erro ao setar parametros da porta serial", e);
+			LOG.error("Erro ao setar parametros da porta serial: " + LoggingUtils.info(e, this));
 		}
 
 	}
@@ -255,7 +278,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 								timeout);
 						setsPort(serialPort);
 					} catch (Exception e) {
-						LOG.error("Erro ao abrir a porta serial.", e);
+						LOG.error("Erro ao abrir a porta serial: " + LoggingUtils.info(e, this));
 					}
 				}
 			}
@@ -305,7 +328,7 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 					pacoteRecebido();
 				}
 			} catch (IOException e) {
-				LOG.error("Erro ao receber dados da porta serial", e);
+				LOG.error("Erro ao receber dados da porta serial: " + LoggingUtils.info(e, this));
 			}
 
 		default:
@@ -326,14 +349,15 @@ public class RadiuinoEventDataSource extends EventDataSource implements
 							.parsePacoteRadiuino(time, pacote, dataPointVO);
 					if (pointValueTime != null)
 						dataPoint.updatePointValue(pointValueTime);
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
-					LOG.error("Erro ao fazer o parse dos dados.", e);
+					LOG.error("Erro ao fazer o parse dos dados: " + LoggingUtils.info(e, this, dataPoint));
 					raiseEvent(
 							POINT_READ_EXCEPTION_EVENT,
 							time,
 							true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
+									.getName(), e.getMessage()), dataPoint);
 				}
 
 			}

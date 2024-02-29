@@ -8,6 +8,7 @@ import org.scada_lts.ds.messaging.channel.InitMessagingChannels;
 import org.scada_lts.ds.messaging.exception.MessagingServiceException;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
 
@@ -30,27 +31,27 @@ class MessagingServiceImpl implements MessagingService {
     @Override
     public void publish(DataPointRT dataPoint, String message) throws MessagingServiceException {
         if(blocked) {
-            throw new MessagingServiceException("Stop Publish: " + dataSourceInfo(vo) + ", Service of shutting down:  "  + dataSourceInfo(vo) + ", Value: " + message);
+            throw new MessagingServiceException("Stop Publish: " + dataPointInfo(dataPoint) + ", Service of shutting down:  "  + dataSourceInfo(vo) + ", Value: " + message);
         }
         try {
             channels.publish(dataPoint, message);
-        } catch (Exception e) {
-            throw new MessagingServiceException("Error Publish: " + dataSourceInfo(vo) + ", Value: " + message + ", " + exceptionInfo(e), e);
+        } catch (Throwable e) {
+            throw new MessagingServiceException("Error Publish: " + dataPointInfo(dataPoint) + ", Value: " + message + ", " + exceptionInfo(e), e);
         }
     }
 
     @Override
-    public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingServiceException {
+    public void initReceiver(DataPointRT dataPoint, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingServiceException {
         if(blocked) {
-            LOG.warn("Stop Init Receiver: " + dataSourceInfo(vo) + ", Service of shutting down: "  + dataSourceInfo(vo));
+            LOG.warn("Stop Init Receiver: " + dataPointInfo(dataPoint) + ", Service of shutting down: "  + dataSourceInfo(vo));
             return;
         }
         if(isOpen(dataPoint)) {
             return;
         }
         try {
-            channels.initChannel(dataPoint, exceptionHandler, updateErrorKey);
-        } catch (Exception e) {
+            channels.initChannel(dataPoint, exceptionHandler, returnToNormal);
+        } catch (Throwable e) {
             throw new MessagingServiceException("Error Init Receiver: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
     }
@@ -58,12 +59,12 @@ class MessagingServiceImpl implements MessagingService {
     @Override
     public void removeReceiver(DataPointRT dataPoint) throws MessagingServiceException {
         if(blocked) {
-            LOG.warn("Stop Remove Receiver: " + dataSourceInfo(vo) + ", Service of shutting down: "  + dataSourceInfo(vo));
+            LOG.warn("Stop Remove Receiver: " + dataPointInfo(dataPoint) + ", Service of shutting down: "  + dataSourceInfo(vo));
             return;
         }
         try {
             channels.removeChannel(dataPoint);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingServiceException("Error Remove Receiver: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
     }
@@ -80,16 +81,14 @@ class MessagingServiceImpl implements MessagingService {
 
     @Override
     public void open() throws MessagingServiceException {
-        if(blocked) {
-            throw new MessagingServiceException("Stop Open Connection: Service of shutting down:  "  + dataSourceInfo(vo));
-        }
         if(channels.isOpenConnection()) {
+            blocked = false;
             LOG.warn("Stop Open Connection: Connection is opened:  "  + dataSourceInfo(vo));
             return;
         }
         try {
             channels.openConnection();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingServiceException("Error Open Connection: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
         blocked = false;
@@ -100,7 +99,7 @@ class MessagingServiceImpl implements MessagingService {
         blocked = true;
         try {
             channels.closeChannels();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn("Error Close Receivers: " + dataSourceInfo(vo) + ", " + exceptionInfo(ex), ex);
         }
     }

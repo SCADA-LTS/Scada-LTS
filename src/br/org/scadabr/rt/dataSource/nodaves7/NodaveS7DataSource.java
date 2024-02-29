@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,7 +67,7 @@ public class NodaveS7DataSource extends PollingDataSource {
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							timestamp = time;
 						}
 
@@ -74,14 +75,15 @@ public class NodaveS7DataSource extends PollingDataSource {
 
 					dataPoint.updatePointValue(new PointValueTime(value,
 							timestamp));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
+					LOG.error(LoggingUtils.info(e, this, dataPoint));
 					raiseEvent(
 							POINT_READ_EXCEPTION_EVENT,
 							time,
 							true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
-					e.printStackTrace();
+									.getName(), e.getMessage()), dataPoint);
 				}
 
 			}
@@ -138,37 +140,31 @@ public class NodaveS7DataSource extends PollingDataSource {
 	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
 			SetPointSource source) {
 
-		System.out.println("WRITE datapoint to S7 :");
+		LOG.info("WRITE datapoint to S7 :");
 
-		System.out.println("Command: " + this.vo.getNodaveWriteBaseCmd());
+		LOG.info("Command: " + this.vo.getNodaveWriteBaseCmd());
 
-		System.out
-				.println("AREA "
+		LOG.info("AREA "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getS7writeMemoryArea());
-		System.out
-				.println("DBNUM "
+		LOG.info("DBNUM "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getS7writeDBNUM());
-		System.out
-				.println("BYTES "
+		LOG.info("BYTES "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getS7writeBytesQty());
-		System.out
-				.println("STARTS "
+		LOG.info("STARTS "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getS7writeStarts());
-		System.out
-				.println("BIT "
+		LOG.info("BIT "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getS7writeBitOffset());
 
-		System.out
-				.println("TYPE "
+		LOG.info("TYPE "
 						+ ((NodaveS7PointLocatorVO) dataPoint.getVO()
 								.getPointLocator()).getDataType());
 
-		System.out.println(valueTime.toString());
+		LOG.info(valueTime.toString());
 
 		// datatype 1 => binario
 		// datatype 2 => multistate
@@ -210,7 +206,7 @@ public class NodaveS7DataSource extends PollingDataSource {
 					break;
 				}
 			}
-			System.out.println("Writing binary - converted to " + converted);
+			LOG.info("Writing binary - converted to " + converted);
 
 		}
 

@@ -65,8 +65,10 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         if (socket == null) {
             try {
                 openConnection();
-            }
-            catch (IOException e) {
+                returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+            } catch (Throwable messageException) {
+                raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true, new LocalizableMessage("event.pollingError",
+                        messageException.getMessage()));
                 return;
             }
         }
@@ -83,16 +85,14 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
 
                 try {
                     sendMsg = sendRequest(request, dataPoint, locator, time);
-                }
-                catch (IOException e) {
+                } catch (Throwable e) {
                     // The connection may have been reset, so try to reopen it and attempt the message again.
                     try {
-                        LOG.debug("Keep-alive connection may have been reset. Attempting to re-open.");
+                        LOG.warn("Keep-alive connection may have been reset. Attempting to re-open.");
                         closeConnection();
                         openConnection();
                         sendMsg = sendRequest(request, dataPoint, locator, time);
-                    }
-                    catch (Exception e2) {
+                    } catch (Exception e2) {
                         messageException = e2;
                         closeConnection();
                         break;
@@ -105,10 +105,11 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         }
 
         if (messageException != null) {
+            LOG.info("Error while polling Galil device", messageException);
             // Raise an event.
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true, new LocalizableMessage("event.pollingError",
                     messageException.getMessage()));
-            LOG.info("Error while polling Galil device", messageException);
+            return;
         }
         else
             // Deactivate any existing event.
@@ -117,6 +118,7 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         if (pointError != null) {
             // Raise an event.
             raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true, pointError);
+            return;
         }
         else
             // Deactivate any existing event.
@@ -156,11 +158,12 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
         catch (Exception e) {
+            LOG.warn("Error while initializing data source", e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
-            LOG.debug("Error while initializing data source", e);
             return;
         }
+        super.initialize();
     }
 
     @Override
@@ -181,33 +184,33 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         if (socket == null) {
             try {
                 openConnection();
-            }
-            catch (IOException e) {
+                returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+            } catch (Throwable e) {
+                LOG.warn("Error while initializing data source", e);
                 raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
-                        "event.galil.setPointFailed", dataPoint.getVO().getName(), e.getMessage()));
-                LOG.debug("Error while initializing data source", e);
+                        "event.galil.setPointFailed", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
                 return;
             }
-            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
 
         GalilPointLocatorRT locator = dataPoint.getPointLocator();
 
         GalilRequest request = locator.getSetRequest(valueTime.getValue());
         if (request == null)
-            raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                    "event.galil.setRequest", dataPoint.getVO().getName(), valueTime.getValue()));
+            raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
+                    "event.galil.setRequest", dataPoint.getVO().getName(), valueTime.getValue()), dataPoint);
         else {
             try {
                 GalilResponse response = (GalilResponse) conn.send(request);
 
                 if (response.isErrorResponse())
-                    raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                            "event.galil.setResponse", dataPoint.getVO().getName()));
+                    raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
+                            "event.galil.setResponse", dataPoint.getVO().getName()), dataPoint);
                 else {
                     try {
                         // Update the data image with the new value.
                         dataPoint.updatePointValue(new PointValueTime(valueTime.getValue(), valueTime.getTime()));
+                        returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 
                         MangoValue value = locator.parseSetResponse(response.getResponseData());
                         if (value != null)
@@ -215,15 +218,15 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
                             dataPoint.updatePointValue(new PointValueTime(value, System.currentTimeMillis()));
                     }
                     catch (LocalizableException e) {
-                        raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
+                        raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                                 new LocalizableMessage("event.galil.parsingError", dataPoint.getVO().getName(),
-                                        response.getResponseData()));
+                                        response.getResponseData()), dataPoint);
                     }
                 }
             }
-            catch (IOException e) {
-                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, new LocalizableMessage(
-                        "event.galil.sendError", dataPoint.getVO().getName(), e.getMessage()));
+            catch (Throwable e) {
+                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
+                        "event.galil.sendError", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
             }
         }
     }

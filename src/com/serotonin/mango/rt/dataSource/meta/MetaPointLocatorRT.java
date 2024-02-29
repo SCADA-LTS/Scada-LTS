@@ -46,6 +46,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
 import static com.serotonin.mango.util.LoggingScriptUtils.generateContext;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorInitializationScript;
@@ -230,6 +231,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     void execute(long runtime, List<Integer> sourceIds) {
         if (context == null) {
+            setUnreliableDataPoint(dataPoint);
             LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
         }
@@ -256,13 +258,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             try {
                 PointValueTime pvt = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
                         vo.getDataTypeId(), runtime);
-                if (pvt.getValue() == null)
+                if (pvt.getValue() == null) {
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else
+                } else {
                     updatePoint(pvt);
+                }
             }
             catch (ScriptException e) {
-                handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
+                handleError(runtime, new LocalizableMessage("common.default", e.getLocalizedMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (ResultTypeException e) {
@@ -270,8 +273,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (Exception e) {
+                handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
-                throw e;
             }
         }
         finally {
@@ -284,7 +287,9 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext());
+            returnToNormal(System.currentTimeMillis());
         } catch (Exception e) {
+            handleError(System.currentTimeMillis(), new LocalizableMessage("common.default", e.getMessage()));
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
         }
     }
@@ -313,9 +318,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void updatePoint(PointValueTime pvt) {
         dataPoint.updatePointValue(pvt);
+        returnToNormal(System.currentTimeMillis());
     }
 
     protected void handleError(long runtime, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
+    }
+
+    protected void returnToNormal(long runtime) {
+        dataSource.returnToNormalScript(runtime, dataPoint);
     }
 }

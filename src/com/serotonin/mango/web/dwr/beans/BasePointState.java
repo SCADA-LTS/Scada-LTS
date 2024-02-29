@@ -25,6 +25,7 @@ abstract public class BasePointState implements Cloneable {
     private String change;
     private String chart;
     private String messages;
+    private String warningIcon;
 
     public String getId() {
         return id;
@@ -56,6 +57,14 @@ abstract public class BasePointState implements Cloneable {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public String getWarningIcon() {
+        return warningIcon;
+    }
+
+    public void setWarningIcon(String warningIcon) {
+        this.warningIcon = warningIcon;
     }
 
     public void removeEqualValue(BasePointState that) {

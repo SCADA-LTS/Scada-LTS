@@ -35,6 +35,8 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * Data sources are things that produce data for consumption of this system. Anything that houses, creates, manages, or
  * otherwise can get data to Mango can be considered a data source. As such, this interface can more precisely be
@@ -49,7 +51,10 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class DataSourceRT implements ILifecycle {
+
     public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
+    private volatile boolean initialized;
 
     private final DataSourceVO<?> vo;
 
@@ -126,6 +131,11 @@ abstract public class DataSourceRT implements ILifecycle {
 
     abstract public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source);
 
+    protected abstract List<DataPointRT> getDataPoints();
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     public void relinquish(@SuppressWarnings("unused") DataPointRT dataPoint) {
         throw new ShouldNeverHappenException("not implemented in " + getClass());
     }
@@ -143,7 +153,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+    private void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
         DataSourceEventType type = getEventType(eventId);
 
@@ -153,9 +163,41 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
-    protected void returnToNormal(int eventId, long time) {
+    private void _returnToNormal(int eventId, long time) {
         DataSourceEventType type = getEventType(eventId);
         Common.ctx.getEventManager().returnToNormal(type, time);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+        _raiseEvent(eventId, time, rtn, message);
+        List<DataPointRT> dataPoints = getDataPoints();
+        setUnreliableDataPoints(dataPoints);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+        _raiseEvent(eventId, time, rtn, message);
+        setUnreliableDataPoint(dataPoint);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, List<DataPointRT> dataPoints) {
+        _raiseEvent(eventId, time, rtn, message);
+        setUnreliableDataPoints(dataPoints);
+    }
+
+    protected void returnToNormal(int eventId, long time) {
+        _returnToNormal(eventId, time);
+        List<DataPointRT> dataPoints = getDataPoints();
+        resetUnreliableDataPoints(dataPoints);
+    }
+
+    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
+        _returnToNormal(eventId, time);
+        resetUnreliableDataPoint(dataPoint);
+    }
+
+    protected void returnToNormal(int eventId, long time, List<DataPointRT> dataPoints) {
+        _returnToNormal(eventId, time);
+        resetUnreliableDataPoints(dataPoints);
     }
 
     protected DataSourceEventType getEventType(int eventId) {
@@ -166,7 +208,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return null;
     }
 
-    protected LocalizableMessage getSerialExceptionMessage(Exception e, String portId) {
+    protected LocalizableMessage getSerialExceptionMessage(Throwable e, String portId) {
         if (e instanceof NoSuchPortException)
             return new LocalizableMessage("event.serial.portOpenError", portId);
         if (e instanceof PortInUseException)
@@ -174,7 +216,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return getExceptionMessage(e);
     }
 
-    protected static LocalizableMessage getExceptionMessage(Exception e) {
+    protected static LocalizableMessage getExceptionMessage(Throwable e) {
         return new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage());
     }
 
@@ -185,9 +227,11 @@ abstract public class DataSourceRT implements ILifecycle {
     //
     public void initialize() {
         // no op
+        this.initialized = true;
     }
 
     public void terminate() {
+        this.initialized = false;
         // Remove any outstanding events.
         Common.ctx.getEventManager().cancelEventsForDataSource(vo.getId());
     }
