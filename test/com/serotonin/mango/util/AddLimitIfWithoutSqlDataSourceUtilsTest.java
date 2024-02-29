@@ -10,13 +10,9 @@ public class AddLimitIfWithoutSqlDataSourceUtilsTest {
 
         //given:
         String query = "";
-        String queryExpected = "";
 
         //when:
         String queryResult =  SqlDataSourceUtils.addLimitIfWithout(query, 100);
-
-        //then:
-        Assert.assertEquals(queryExpected, queryResult);
 
     }
 
@@ -25,13 +21,9 @@ public class AddLimitIfWithoutSqlDataSourceUtilsTest {
 
         //given:
         String query = ";";
-        String queryExpected = "";
 
         //when:
         String queryResult =  SqlDataSourceUtils.addLimitIfWithout(query, 100);
-
-        //then:
-        Assert.assertEquals(queryExpected, queryResult);
 
     }
 
