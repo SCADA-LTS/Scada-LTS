@@ -204,6 +204,8 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
         includeTestsMatching "com.serotonin.util.SerializationHelperTest"
         includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
+        includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
         includeTestsMatching "com.serotonin.mango.rt.dataSource.DataPointUnreliableUtilsTest"
         includeTestsMatching "com.serotonin.mango.rt.dataSource.InitializeDataSourceRtTestsSuite"
