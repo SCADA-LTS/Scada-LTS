@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -118,7 +119,9 @@ public interface MangoEvent {
 	void deleteEventHandler(final int handlerId);
 	
 	boolean toggleSilence(int eventId, int userId);
-	
+
+	boolean assigneeEvent(int eventId, long time, User user);
+
 	int getHighestUnsilencedAlarmLevel(int userId);
 
 	EventInstance getEvent(int eventId);

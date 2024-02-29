@@ -29,10 +29,7 @@ import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDaoCR;
-import org.scada_lts.dao.IUserCommentDAO;
-import org.scada_lts.dao.SerializationData;
+import org.scada_lts.dao.*;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.utils.SQLPageWithTotal;
@@ -92,6 +89,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_USER_COMMENT_COUNT = "comments";
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
+
+	private static final String COLUMN_NAME_ASSIGNEE_TS = "assigneeTs";
+	private static final String COLUMN_NAME_ASSIGNEE_USERNAME = "assigneeUsername";
 	
 	//------------- User comments
 	//TODO rewrite to another class
@@ -135,7 +135,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_ACT_TS + ", " +
 			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
 			"dp."+ COLUMN_NAME_DATAPOINT_XID + ", " +
-			"ue."+ COLUMN_NAME_SILENCED + " ";
+			"ue."+ COLUMN_NAME_SILENCED + ", " +
+			"e."+ COLUMN_NAME_ASSIGNEE_TS +" ";
 	
 	// @formatter:off
 	private static final String BASIC_EVENT_SELECT = ""
@@ -154,7 +155,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_ACT_TS+", "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
-				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
+				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+", "
+				+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
+				+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
 				+ "events e " 
 			    + "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id ";
@@ -174,7 +177,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "e."+COLUMN_NAME_SHORT_MESSAGE+", "
 			+ "e."+COLUMN_NAME_ACT_TS+", "
 			+ "e."+COLUMN_NAME_ACT_USER_ID+", "
-			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
+			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+", "
+			+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
+			+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
 			+ "events e where "
 			+ COLUMN_NAME_ID + " "
@@ -233,6 +238,15 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_ID+"=? and "
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 
+	private static final String EVENT_ACCEPT ="" +
+			"update "
+			+"events set "
+			+ COLUMN_NAME_ASSIGNEE_TS +"=?, "
+			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
+			+ "where "
+			+ COLUMN_NAME_ID+"=? and "
+			+ "("+ COLUMN_NAME_ASSIGNEE_TS +" is null or "+ COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
+
 	private static final String EVENT_ACT_ALL ="" +
 			"update "
 			+" events set "
@@ -278,7 +292,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
 				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+", "
-				+ "ue."+COLUMN_NAME_SILENCED+" "
+				+ "ue."+COLUMN_NAME_SILENCED+", "
+				+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
+				+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
 				+ "events e " 
 				+ "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id "
@@ -474,7 +490,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_MESSAGE + ", " +
 			"e." + COLUMN_NAME_ACT_TS + ", " +
 			"u." + COLUMN_NAME_USER_NAME + ", " +
-			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE+", " +
+			"e."+ COLUMN_NAME_ASSIGNEE_TS +" "+
 			"FROM events e " +
 				"LEFT JOIN users u ON u.id=e.ackUserId " +
 			"WHERE typeId=? AND typeRef1=? " +
@@ -495,7 +512,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_MESSAGE + ", " +
 			"e." + COLUMN_NAME_ACT_TS + ", " +
 			"u." + COLUMN_NAME_USER_NAME + ", " +
-			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
+			"e." + COLUMN_NAME_ASSIGNEE_TS + " " +
 			"FROM events e " +
 			"LEFT JOIN users u ON u.id=e.ackUserId " +
 			"WHERE typeId=? AND typeRef1=? " +
@@ -594,6 +612,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				if (!rs.wasNull())
 					event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_USER_NAME));
 				event.setAlternateAckSource(rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE));
+			}
+			long assigneeTs = rs.getLong(COLUMN_NAME_ASSIGNEE_TS);
+
+			if (!rs.wasNull()) {
+				event.setAssigneeTimestamp(assigneeTs);
+				event.setAssigneeByUsername(rs.getString(COLUMN_NAME_ASSIGNEE_USERNAME));
 			}
 
 			return event;
@@ -968,6 +992,16 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT, new Object[]  { actTS, userId, alternateAckSource, eventId } );
 
+	}
+
+	public boolean updateAssignee(long acceptTs, String username, long eventId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+acceptTs+" username:"+username+" eventId:"+eventId);
+		}
+
+		int updates = DAO.getInstance().getJdbcTemp().update(EVENT_ACCEPT, new Object[]  { acceptTs, username, eventId } );
+		return updates > 0;
 	}
 
 	public void ackAllPending(long actTS, long userId, int alternateAckSource) {
