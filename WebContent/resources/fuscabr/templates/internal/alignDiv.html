@@ -1,0 +1,58 @@
+<style>
+	#fuscabr-align {
+		text-align: center;
+		padding: 0px 4px;
+		margin-left: 5px;
+		max-width: 160px;
+	}
+	#fuscabr-align-footer {
+		font-style: italic;
+		margin-top: 15px;
+	}
+	#fuscabr-align > div > * {
+	  display: block;
+	  width: 155px;
+	  margin: 4px auto;
+	  text-align: center;
+	}
+	#fuscabr-align span > * {
+	  display: inline;
+	  margin: 4px auto;
+	}
+</style>
+
+<div>
+	<b><p data-i18n="align_elements" style="text-transform: uppercase;">Align Elements</p></b>
+	<input type="button" id="fuscabr-align-start-stop" onclick="fuscabr.align.start()" data-i18n="start_alignment" value="Start alignment">
+</div>
+<div id="fuscabr-align-controls" style="display: none;">
+	<input type="button" onclick="fuscabr.align.restart()" data-i18n="clear_selection" value="Clear selection (S)">
+	<b><p data-i18n="anchor_position">Anchor position:</p></b>
+	<span>
+		<label>X:</label>
+		<input type="number" id="fuscabr-align-x-anchor" style="width: 40px;">
+		<label>Y:</label>
+		<input type="number" id="fuscabr-align-y-anchor" style="width: 40px;">
+		<input type="button" value="OK" style="width: 25px;" onclick="fuscabr.align.absoluteMoveAnchor();">
+		<br>
+		<input id="fuscabr-keyboard-moving" type="checkbox" onchange="fuscabr.align.enableMovingShortcuts(this.checked);">
+		<p data-i18n="move_with_arrows">Move with keyboard arrows</p>
+		<br>
+		<input id="fuscabr-anchor-following" type="checkbox" onchange="fuscabr.align.enableAnchorFollowing(this.checked);">
+		<p data-i18n="elements_follow_anchor">Elements follow anchor</p>
+	</span>
+	<b><p data-i18n="align_options">Align options:</p></b>
+	<p data-i18n="align">Align:</p>
+	<input type="button" data-i18n="align_left" value="Left (A)" onclick="fuscabr.align.alignLeft()">
+	<input type="button" data-i18n="align_right" value="Right (D)" onclick="fuscabr.align.alignRight()">
+	<input type="button" data-i18n="align_top" value="Top (W)" onclick="fuscabr.align.alignTop()">
+	<input type="button" data-i18n="align_bottom" value="Bottom (X)" onclick="fuscabr.align.alignBottom()">
+	<p data-i18n="center">Center:</p>
+	<input type="button" data-i18n="center_horizontally" value="Horizontally (F)" onclick="fuscabr.align.centerHorizontal()">
+	<input type="button" data-i18n="center_vertically" value="Vertically (G)" onclick="fuscabr.align.centerVertical()">
+	<p data-i18n="distribute">Distribute:</p>
+	<input type="button" data-i18n="distribute_horizontally" value="Horizontally (R)" onclick="fuscabr.align.distributeHorizontal()">
+	<input type="button" data-i18n="distribute_vertically" value="Vertically (T)" onclick="fuscabr.align.distributeVertical()">
+</div>
+<p id="fuscabr-align-footer" data-i18n="fuscabr_library">FUScaBR Library</p>
+

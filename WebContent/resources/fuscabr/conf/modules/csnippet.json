@@ -1,0 +1,39 @@
+{
+    "htmlTemplatesFolder": "resources/fuscabr/templates/html/",
+    "serverScriptTemplatesFolder": "resources/fuscabr/templates/serverside/",
+    "templatesLoadTimeout": 15000,
+    
+    "htmlTemplates": [
+		{ "file": "acnowledgeAlarms.html", "i18n": "acknowledge_alarms", "desc": "Acknowledge alarms button" },
+        { "file": "buttonChangePage.html", "i18n": "button_change_page", "desc": "Button (change page)" },
+        { "file": "clock.html", "i18n": "clock", "desc": "Digital clock" },
+        { "file": "fullScreen.html", "i18n": "full_screen", "desc": "Toggle Full Screen" },
+        { "file": "HTMLImage.html", "i18n": "html_image", "desc": "HTML image" },
+        { "file": "logout.html", "i18n": "button_logout", "desc": "Logout button" },
+        { "file": "runMultipleScripts.html", "i18n": "run_multiple_scripts", "desc": "Run multiple ScadaBR scripts" },
+        { "file": "silenceAlarms.html", "i18n": "silence_alarms", "desc": "Silence alarms button" },
+        { "file": "simpleText.html", "i18n": "simple_text", "desc": "Simple text example" }
+    ],
+    
+    "serverScriptTemplates": [
+        { "file": "activeUsersTable.js", "i18n": "active_users_table", "desc": "Active users table" },
+        { "file": "binaryText.js", "i18n": "binary_text", "desc": "Binary text" },
+        { "file": "changePassword.js", "i18n": "change_password", "desc": "Change user password (experimental)" },
+        { "file": "checkbox.js", "i18n": "checkbox", "desc": "Checkbox" },
+        { "file": "customizableDataPoint.js", "i18n": "customizable_data_point", "desc": "Customizable data point" },
+        { "file": "demoFunctions.js", "i18n": "demo_functions", "desc": "Demo functions" },
+        { "file": "dropDownSelector.js", "i18n": "drop_down_selector", "desc": "Drop-down selector" },
+        { "file": "fuscabrChartTime.js", "i18n": "fuscabr_chart_time", "desc": "FUScaBR Chart (time based)" },
+        { "file": "fuscabrChartLatest.js", "i18n": "fuscabr_chart_latest", "desc": "FUScaBR Chart (latest values)" },
+        { "file": "gauge.js", "i18n": "gauge", "desc": "Gauge" },
+        { "file": "historyCSV.js", "i18n": "history_csv", "desc": "Point values history download (CSV)" },
+        { "file": "horizontalBar.js", "i18n": "horizontal_bar", "desc": "Bar (horizontal)" },
+        { "file": "verticalBar.js", "i18n": "vertical_bar", "desc": "Bar (vertical)" },
+        { "file": "imageButton.js", "i18n": "image_button", "desc": "Button (image)" },
+        { "file": "imageSequence.js", "i18n": "image_sequence", "desc": "Image sequence" },
+        { "file": "numericSelector.js", "i18n": "numeric_selector", "desc": "Numeric selector" },
+        { "file": "pulseButton.js", "i18n": "pulse_button", "desc": "Button (pulse)" },
+        { "file": "showUsername.js", "i18n": "show_username", "desc": "Show username" },
+        { "file": "slider.js", "i18n": "slider", "desc": "Slider selector" }
+    ]
+}
