@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.components.cmp;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.RestApiSource;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,7 +53,7 @@ public class ChangeDataAPI {
             if (user != null) {
                 for (SetValuePointDTO sv : xIDsValues) {
                     try {
-                        dataPointService.saveAPI(user, sv.getValue(), sv.getXid());
+                        dataPointService.save(user, sv.getValue(), sv.getXid(), new RestApiSource());
                     } catch (Exception e) {
                         sv.setError(e.getMessage());
                     }
@@ -95,7 +95,7 @@ public class ChangeDataAPI {
             if (user != null) {
                 for (SetValuePointDTO sv : xIDsValues) {
                     try {
-                        dataPointService.saveAPI(user, sv.getValue(), sv.getXid());
+                        dataPointService.save(user, sv.getValue(), sv.getXid(), new RestApiSource());
                     } catch (Exception e) {
                         sv.setError(e.getMessage());
                     }

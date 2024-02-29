@@ -579,11 +579,6 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		if(source instanceof User){
-			setDataPointValue(dataPointId,
-					new PointValueTime(value, System.currentTimeMillis(),((User)source).getUsername()), source);
-		}
-		else
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
 	}

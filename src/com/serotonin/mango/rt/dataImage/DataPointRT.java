@@ -52,7 +52,7 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.scada_lts.utils.PointValueStateUtils.isSetPointHandler;
+import static org.scada_lts.utils.PointValueStateUtils.isSetPoint;
 
 public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
@@ -91,22 +91,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		pointValueService = new PointValueService();
 		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 	}
-	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator,int cacheSize,int maxSize) {
-		this.vo = vo;
-		this.pointLocator = pointLocator;
-		valueCache = new PointValueCache(cacheSize);
-		valueCache.setMaxSize(maxSize);
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 
-	public DataPointRT(DataPointVO vo) {
-		this.vo = vo;
-		this.pointLocator = null;
-		valueCache = new PointValueCache();
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 	public PointValueCache getPointValueCache(){
 		return this.valueCache;
 	}
@@ -254,10 +239,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			return;
 		}
 
-		boolean isSetPointHandler = isSetPointHandler(source);
+		boolean isSetPoint = isSetPoint(source);
 		boolean backdated = pointValue != null
 				&& newValue.getTime() < pointValue.getTime()
-				&& !isSetPointHandler;
+				&& !isSetPoint;
 
 		// Determine whether the new value qualifies for logging.
 		boolean logValue;
@@ -320,7 +305,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 
 		// Ignore historical values.
-		if (pointValue == null || newValue.getTime() >= pointValue.getTime() || isSetPointHandler) {
+		if (pointValue == null || newValue.getTime() >= pointValue.getTime() || isSetPoint) {
 			PointValueTime oldValue = pointValue;
 			pointValue = newValue;
 			fireEvents(oldValue, newValue, source != null, false);
