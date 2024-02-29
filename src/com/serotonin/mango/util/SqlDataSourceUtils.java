@@ -44,7 +44,7 @@ public final class SqlDataSourceUtils {
     }
 
     public static String addLimitIfWithout(String query, int defaultLimit) {
-        if(StringUtils.isEmpty(query))
+        if(StringUtils.isEmpty(query) || ";".equals(query))
             throw new IllegalArgumentException("Select statement cannot be empty!");
         return query.toLowerCase().contains(" limit ") ? query : reduce(query) + " LIMIT " + defaultLimit;
     }
