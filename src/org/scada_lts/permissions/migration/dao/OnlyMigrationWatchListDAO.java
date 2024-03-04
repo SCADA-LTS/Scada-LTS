@@ -280,10 +280,6 @@ public final class OnlyMigrationWatchListDAO extends WatchListDAO implements Gen
 		}
 	}
 	@Override
-	public List<WatchList> findAllWithUserName(){
-		return null;
-	}
-	@Override
 	public List<WatchList> findAll() {
 		return  (List<WatchList>) DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[] {}, new WatchListRowMapper());
 	}

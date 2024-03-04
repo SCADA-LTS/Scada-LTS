@@ -47,16 +47,6 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         this.pointValueState = PointValueState.empty();
     }
 
-    public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-        this.pointValueState = PointValueState.empty();
-    }
-
-    public DataPointSynchronizedRT(DataPointVO vo) {
-        super(vo);
-        this.pointValueState = PointValueState.empty();
-    }
-
     @Override
     protected void savePointValue(PointValueTime newValue, SetPointSource source,
                                 boolean async) {
@@ -198,8 +188,10 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo, SetPointSource source) {
         lock.writeLock().lock();
         try {
-            pointValueState = PointValueState.newState(newValue, pointValueState, vo, source);
-            return Optional.of(pointValueState);
+            PointValueState state = PointValueState.newState(newValue, pointValueState, vo, source);
+            if(!state.isBackdated())
+                pointValueState = state;
+            return Optional.of(state);
         } catch(Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();
