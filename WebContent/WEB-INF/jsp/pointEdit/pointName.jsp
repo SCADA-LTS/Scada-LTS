@@ -70,7 +70,7 @@
       <fmt:message key="pointEdit.name.goto"/>:&nbsp;
       <sst:select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
         <c:forEach items="${userPoints}" var="point">
-          <sst:option value="${point.id}">${point.extendedName}</sst:option>
+          <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
         </c:forEach>
       </sst:select>
       

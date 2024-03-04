@@ -177,6 +177,7 @@
 
         if (currentPoint)
             stopImageFader("editImg"+ currentPoint.id);
+        escapePoints(points);
         dwr.util.removeAllRows("pointsList");
         dwr.util.addRows("pointsList", points, pointListColumnFunctions, pointListOptions);
     }
@@ -327,6 +328,14 @@
     function enableAllPointsCB(points) {
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
+    }
+
+    function escapePoints(points) {
+        for(var i=0; i < points.length; i++) {
+            var point = points[i];
+            point.name = convertToText(point.name);
+            point.xid = convertToText(point.xid);
+        }
     }
   </script>
 

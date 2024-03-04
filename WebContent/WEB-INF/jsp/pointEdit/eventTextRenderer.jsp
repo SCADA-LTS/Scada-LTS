@@ -42,7 +42,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.zeroLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -52,7 +52,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.oneLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -120,8 +120,6 @@
       // Figure out which fields to populate with data.
       <c:choose>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZero", "${form.eventTextRenderer.zeroLabel}");
-      $set("eventTextRendererBinaryOne", "${form.eventTextRenderer.oneLabel}");
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
@@ -198,8 +196,9 @@
       theValue.key = theNumericKey;
       if (text)
         theValue.text = text;
-      else
-        theValue.text = $get("eventTextRendererMultistateText");
+      else {
+        theValue.text = convertToText($get("eventTextRendererMultistateText"));
+      }
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
       this.refreshMultistateEventList();
@@ -270,8 +269,9 @@
       theValue.to = theTo;
       if (text)
         theValue.text = text;
-      else
-        theValue.text = $get("eventTextRendererRangeText");
+      else {
+        theValue.text = convertToText($get("eventTextRendererRangeText"));
+      }
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();
       this.refreshRangeList();
