@@ -107,12 +107,12 @@
   This handler will execute a local process, or shell command, optionally when an event is raised or deactivated. 
   The respective commands can be any shell command appropriate to the host. Commands should be specified as they would
   be from a terminal command prompt. For very complex commands, you may find it convenient to write a shell script, 
-  and then call the script from ScadaBR.
+  and then call the script from Scada-LTS.
 </p>
 
 <p>
   If a process fails to initiate for any reason, a system event will be raised providing the failure description. 
   Also, processes will be terminated if they run for longer than 15 seconds. Non-empty standard output from the process 
-  will be written to the ScadaBR log at an "information" level. Non-empty error output will be written to the Mango log
+  will be written to the Scada-LTS log at an "information" level. Non-empty error output will be written to the Mango log
   at an "error" level.
 </p>

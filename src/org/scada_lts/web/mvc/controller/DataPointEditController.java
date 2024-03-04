@@ -18,10 +18,7 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.utils.XidUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -56,6 +54,8 @@ import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
+
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
  * Controller for data point edition
@@ -236,10 +236,11 @@ public class DataPointEditController {
         List<String> xids = new ArrayList<>();
 
         for (PointEventDetectorVO ped : point.getEventDetectors()) {
-            if (StringUtils.isEmpty(ped.getXid())) {
-            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidMissing"));
+
+            validateXid(errors, ped.getXid(), Common.getBundle(request), "eventDetector" + ped.getId() + "ErrorMessage");
+
+            if(!errors.isEmpty())
                 break;
-            }
 
             if (xids.contains(ped.getXid()) || !dataPointService
                     .isEventDetectorXidUnique(point.getId(), ped.getXid(), ped.getId())) {

@@ -49,6 +49,7 @@ import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
+import org.scada_lts.monitor.type.IntegerMonitor;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -62,11 +63,9 @@ import com.serotonin.mango.ImageSaveException;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
-import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
-import static com.serotonin.mango.util.LoggingUtils.entryInfo;
 
 /**
  * Base on the PointValueDao
@@ -371,23 +370,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, time}, 1);
-        if (lst != null && lst.size() > 0) {
-            return lst.get(0).getPointValue();
-        } else {
-            return null;
-        }
+        return PointValueDAO.getInstance().getPointValueBefore(dataPointId, time);
     }
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, time}, 1);
-        if (lst != null && lst.size() > 0) {
-            return lst.get(0).getPointValue();
-        } else {
+        try {
+            return PointValueDAO.getInstance().getPointValueAt(dataPointId, time);
+        } catch (Exception ex) {
             return null;
         }
     }
@@ -625,7 +614,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{entries size: " + ENTRIES.size() + ", instances size: " + instances.size() + '}';
+            return "BatchWriteBehind{instances size: " + instances.size() + '}';
         }
 
         @Override

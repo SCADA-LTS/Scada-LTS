@@ -99,6 +99,7 @@ import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
@@ -215,6 +216,7 @@ import org.scada_lts.serial.SerialPortWrapperAdapter;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
  * @author Matthew Lohbihler
@@ -267,7 +269,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (ds.getId() == Common.NEW_ID)
             return null;
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
+        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
                 DataPointNameComparator.instance);
         for (DataPointVO dataPointVO : points) {
             if (!dataPointVO.isEnabled()) {
@@ -293,7 +295,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (ds.getId() == Common.NEW_ID)
             return null;
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
+        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
                 DataPointNameComparator.instance);
         return points;
     }
@@ -310,14 +312,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp;
         if (pointId == Common.NEW_ID) {
             dp = new DataPointVO();
-            dp.setXid(new DataPointDao().generateUniqueXid());
+            dp.setXid(new DataPointService().generateUniqueXid());
             dp.setDataSourceId(ds.getId());
             dp.setPointLocator(ds.createPointLocator());
             dp.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
             if (defaulter != null)
                 defaulter.setDefaultValues(dp);
         } else {
-            dp = new DataPointDao().getDataPoint(pointId);
+            dp = new DataPointService().getDataPoint(pointId);
             if (dp != null && dp.getDataSourceId() != ds.getId())
                 throw new RuntimeException("Data source id mismatch");
         }
@@ -335,12 +337,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         dp.setName(name);
         dp.setPointLocator(locator);
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!new DataPointDao().isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
 
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "dsEdit.validate.required");
@@ -2321,14 +2319,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             locators[i].setIndex(index[i]);
             dp.setPointLocator(locators[i]);
 
-            if (StringUtils.isEmpty(dp.getXid()))
-                response.addContextualMessage("xid", "validate.required");
-            else if (!new DataPointDao()
-                    .isXidUnique(dp.getXid(), Common.NEW_ID))
-                response.addContextualMessage("xid", "validate.xidUsed");
-            else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))
-                response.addContextualMessage("xid", "validate.notLongerThan",
-                        50);
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
             locators[i].validate(response);
 
@@ -2459,14 +2451,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             locators[i].setSettable(settables[i]);
             dp.setPointLocator(locators[i]);
 
-            if (StringUtils.isEmpty(dp.getXid()))
-                response.addContextualMessage("xid", "validate.required");
-            else if (!new DataPointDao()
-                    .isXidUnique(dp.getXid(), Common.NEW_ID))
-                response.addContextualMessage("xid", "validate.xidUsed");
-            else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))
-                response.addContextualMessage("xid", "validate.notLongerThan",
-                        50);
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
             // locators[i].validate(response);
             if (!response.getHasMessages()) {

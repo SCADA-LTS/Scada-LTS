@@ -287,12 +287,10 @@ public final class SendUtils {
         String messageErrorEventInstance = "Event Instance null \n";
         String messageErrorNotyficationType = "Notification type is null \n";
         String messageErrorEmails = " Don't have e-mail \n";
-        String messageErrorAlias = " Don't have alias\n";
         String messages = "";
         if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
         if (notificationType == null) messages += messageErrorNotyficationType;
         if (addresses == null || addresses.size() == 0) messages += messageErrorEmails;
-        if (alias == null) messages += messageErrorAlias;
 
         if (messages.length() > 0) {
             throw new IllegalArgumentException(getInfoEmail(evt, notificationType, alias) + messages );

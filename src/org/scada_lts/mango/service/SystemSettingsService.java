@@ -20,6 +20,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
@@ -139,6 +140,8 @@ public class SystemSettingsService {
         json.setWorkItemsReportingEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, true));
         json.setWorkItemsReportingItemsPerSecondEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, true));
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 20000));
+        json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
+        json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         return json;
     }
 
@@ -153,6 +156,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, json.isWorkItemsReportingEnabled());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, json.isWorkItemsReportingItemsPerSecondEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -420,6 +425,26 @@ public class SystemSettingsService {
         }
     }
 
+    public String getWebResourceGraphicsPath(){
+        String defaultValue = SystemSettingsUtils.getWebResourceGraphicsPath();
+        try {
+            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
+        } catch (Exception e){
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public String getWebResourceUploadsPath(){
+        String defaultValue = SystemSettingsUtils.getWebResourceUploadsPath();
+        try {
+            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
+        } catch (Exception e){
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
     public int getThreadsNameAdditionalLength() {
         int defaultValue = SystemSettingsUtils.getThreadsNameAdditionalLength();
         try {
@@ -432,8 +457,11 @@ public class SystemSettingsService {
 
     private static String getHttpResponseHeaders(JsonSettingsHttp json) {
         try {
+            String httpResponseHeaders = json.getHttpResponseHeaders();
+            if(StringUtils.isEmpty(httpResponseHeaders))
+                return "";
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> headers = SystemSettingsUtils.deserializeMap(json.getHttpResponseHeaders(), objectMapper);
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, objectMapper);
             return serializeMap(headers, objectMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);

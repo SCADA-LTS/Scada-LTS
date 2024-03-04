@@ -273,7 +273,7 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         return "ProcessWorkItem{" +
                 "command='" + command + '\'' +
                 ", details='" + details + '\'' +
-                "} " + super.toString();
+                "}";
     }
 
     @Override

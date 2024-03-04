@@ -12,7 +12,7 @@ const commit = packageJson.commit || 'N/A';
 const pullRequestNumber = packageJson.pullRequestNumber || 'false';
 const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
-	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/Scada-LTS/' : '/',
 	filenameHashing: false,
 	productionSourceMap: true,
 	configureWebpack: {
@@ -53,13 +53,13 @@ module.exports = {
 	transpileDependencies: ['vuetify'],
 	devServer: {
 		proxy: {
-			'^/graphics/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
-			'^/uploads/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
-			'^/images/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
-			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
-			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
+			'^/graphics/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/uploads/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/images/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/api/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
 			'^/ws-scada/*': {
-				target: 'http://localhost:8080/ScadaBR',
+				target: 'http://localhost:8080/Scada-LTS',
 				ws: true,
 				changeOrigin: true,
 			}

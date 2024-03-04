@@ -666,8 +666,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
 
             @Override
             public String toString() {
-                return "RangeCountHandler{" +
-                        "details='" + details + '\'' +
+                return "RangeCountHandler{details='" + details + '\'' +
                         ", requestId=" + requestId +
                         ", index=" + index +
                         ", from=" + from +
@@ -688,8 +687,7 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
 
         @Override
         public String toString() {
-            return "ConnectionHandler{" +
-                    ", version=" + version +
+            return "ConnectionHandler{version=" + version +
                     ", indexedXids=" + indexedXids +
                     ", details='" + details + '\'' +
                     ", connectionTime=" + connectionTime +
