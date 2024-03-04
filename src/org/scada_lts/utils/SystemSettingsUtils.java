@@ -44,6 +44,8 @@ public final class SystemSettingsUtils {
     public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED_KEY = "workitems.reporting.itemspersecond.enabled";
     public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT_KEY = "workitems.reporting.itemspersecond.limit";
     public static final String THREADS_NAME_ADDITIONAL_LENGTH_KEY = "threads.name.additional.length";
+    public static final String WEB_RESOURCE_GRAPHICS_PATH = "webresource.graphics.path";
+    public static final String WEB_RESOURCE_UPLOADS_PATH = "webresource.uploads.path";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -331,6 +333,24 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 255;
+        }
+    }
+
+    public static String getWebResourceUploadsPath() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(WEB_RESOURCE_UPLOADS_PATH, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getWebResourceGraphicsPath() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(WEB_RESOURCE_GRAPHICS_PATH, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
         }
     }
 }

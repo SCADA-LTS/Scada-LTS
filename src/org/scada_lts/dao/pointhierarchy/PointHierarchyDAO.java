@@ -184,7 +184,7 @@ public class PointHierarchyDAO {
                                 rs.getInt(COLUMN_NAME_ID),
                                 rs.getString(COLUMN_NAME_XID),
                                 dp.getPointFolderId(),
-                                dp.getName(),
+                                phds.getName() + " - " + dp.getName(),
                                 IS_NOT_FOLDER,
                                 phds
                         );

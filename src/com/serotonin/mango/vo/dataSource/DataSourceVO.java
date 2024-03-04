@@ -32,7 +32,6 @@ import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -40,7 +39,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.vo.PointDataType;
+import com.serotonin.mango.vo.ScadaValidation;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -70,13 +69,13 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.dao.model.DataSourceIdentifier;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
+import org.scada_lts.mango.service.DataSourceService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -85,8 +84,10 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -492,13 +493,11 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 				duplicateHandling);
 	}
 
+	@Override
 	public void validate(DwrResponseI18n response) {
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataSourceDao().isXidUnique(xid, id))
-			response.addContextualMessage("xid", "validate.xidUsed");
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addContextualMessage("xid", "validate.notLongerThan", 50);
+
+		DataSourceService dataSourceService = new DataSourceService();
+		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
 
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("dataSourceName",

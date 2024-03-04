@@ -64,13 +64,6 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
     public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
     }
-    public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-    }
-
-    public DataPointNonSyncRT(DataPointVO vo) {
-        super(vo);
-    }
 
     @Override
     protected void savePointValue(PointValueTime newValue, SetPointSource source,

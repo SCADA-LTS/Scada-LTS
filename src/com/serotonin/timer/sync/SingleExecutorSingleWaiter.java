@@ -90,9 +90,7 @@ public class SingleExecutorSingleWaiter {
 
         @Override
         public String toString() {
-            return "TaskWrapper{" +
-                    "command=" + command +
-                    ", details='" + details + '\'' +
+            return "TaskWrapper{details='" + details + '\'' +
                     '}';
         }
 

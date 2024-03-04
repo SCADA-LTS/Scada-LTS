@@ -169,4 +169,20 @@ public final class ScadaLocaleUtils {
             return webContext.getHttpServletRequest();
         return null;
     }
+
+    public static List<Locale> getLocales() {
+        List<Locale> languages = new ArrayList<>();
+        for (KeyValuePair key : getLanguages())
+            languages.add(Locale.forLanguageTag(key.getKey()));
+        return languages;
+    }
+
+    public static List<String> getTranslationsForKey(String key){
+        List<Locale> locales = getLocales();
+        List<String> keyTranslations = new ArrayList<>();
+        for (Locale locale : locales) {
+            keyTranslations.add(LocalizableMessage.getMessage(getResourceBundleByLocale(locale),key));
+        }
+        return keyTranslations;
+    }
 }

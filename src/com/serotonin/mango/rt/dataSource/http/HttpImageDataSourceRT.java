@@ -223,12 +223,10 @@ public class HttpImageDataSourceRT extends PollingDataSource {
 
         @Override
         public String toString() {
-            return "ImageRetriever{" +
-                    "monitor=" + monitor +
-                    ", " + (dp == null ? null : LoggingUtils.dataPointInfo(dp.getVO())) +
+            return "ImageRetriever{dp='" + (dp == null ? null : LoggingUtils.dataPointInfo(dp.getVO())) + '\'' +
                     ", time=" + time +
-                    ", retrievalFailure=" + retrievalFailure +
-                    ", saveFailure=" + saveFailure +
+                    ", retrievalFailure='" + (retrievalFailure == null ? null : retrievalFailure.getLocalizedMessage(Common.getBundle())) + '\'' +
+                    ", saveFailure='" + (saveFailure == null ? null : saveFailure.getLocalizedMessage(Common.getBundle())) + '\'' +
                     '}';
         }
         @Override

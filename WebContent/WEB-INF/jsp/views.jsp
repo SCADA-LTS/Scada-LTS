@@ -58,7 +58,7 @@
 	jQuery.ajax({
         type: "GET",
         dataType: "json",
-        url:'/ScadaBR/api/config/replacealert',
+        url:'api/config/replacealert',
             success: function(data){
               if (data==true) {
             	  window.alert =  function(message) {

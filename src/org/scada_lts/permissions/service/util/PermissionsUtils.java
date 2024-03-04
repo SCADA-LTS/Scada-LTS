@@ -84,21 +84,25 @@ public final class PermissionsUtils {
     }
 
     private static <T, U> void updatePermissions(U user, List<T> accessesFromUser,
-                                                    PermissionsService<T, U> service,
+                                                 PermissionsService<T, U> service,
                                                  Comparator<T> comparator) {
         List<T> accessesFromDatabase = service.getPermissions(user);
         if(!sortEquals(accessesFromUser, accessesFromDatabase, comparator)) {
-            if(!accessesFromDatabase.isEmpty() && !accessesFromUser.containsAll(accessesFromDatabase)) {
+            if(!accessesFromDatabase.isEmpty() && !containsAll(accessesFromUser, accessesFromDatabase)) {
                 List<T> notExistInUser = diff(accessesFromUser, accessesFromDatabase);
                 service.removePermissions(user, notExistInUser);
                 accessesFromDatabase.removeAll(notExistInUser);
             }
-            if((accessesFromDatabase.isEmpty() || !accessesFromDatabase.containsAll(accessesFromUser))
+            if((accessesFromDatabase.isEmpty() || !containsAll(accessesFromDatabase, accessesFromUser))
                     && !accessesFromUser.isEmpty()) {
                 List<T> noExistInDatabase = diff(accessesFromDatabase, accessesFromUser);
                 service.addOrUpdatePermissions(user, noExistInDatabase);
             }
         }
+    }
+
+    private static <T> boolean containsAll(List<T> accesses1, List<T> accesses2) {
+        return new HashSet<>(accesses1).containsAll(accesses2);
     }
 
     private static <T, U> void update(U user,

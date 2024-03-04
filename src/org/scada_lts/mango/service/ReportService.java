@@ -27,14 +27,13 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.*;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
-import com.serotonin.web.taglib.Functions;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
@@ -222,7 +221,7 @@ public class ReportService implements MangoReport {
 			MangoValue startValue = null;
 			if (!instance.isFromInception()) {
 				// Get the value just before the start of the report
-				PointValueTime pvt = pointValueService.getPointValueBefore(point.getId(), instance.getReportStartTime());
+				PointValueTime pvt = pointValueService.getPointValueBefore(pointInfo.getId(), instance.getReportStartTime());
 				if (pvt != null)
 					startValue = pvt.getValue();
 
@@ -233,10 +232,8 @@ public class ReportService implements MangoReport {
 
 			// Insert the reportInstancePoints record
 			//TODO SeroUtils
-			String name = Functions.truncate(point.getName(), 100);
-
-			int reportPointId = reportInstancePointDAO.insert(instance, point, name, dataType, startValue, pointInfo);
-			count += reportInstanceDataDAO.insert(appendParameters(timestampParams, point.getId(), dataType), reportPointId, StringUtils.replaceMacro(timestampSql, "field", "ts"));
+			int reportPointId = reportInstancePointDAO.insert(instance, dataType, startValue, pointInfo);
+			count += reportInstanceDataDAO.insert(appendParameters(timestampParams, pointInfo.getId(), dataType), reportPointId, StringUtils.replaceMacro(timestampSql, "field", "ts"));
 
 			String annotationCase = "    case pva.sourceType" //
 					+ "      when 1 then concat('" + userLabel + ": ',ifnull(u.username,'" + deletedLabel + "')) " //
@@ -269,7 +266,7 @@ public class ReportService implements MangoReport {
 				}
 
 				eventSQL += StringUtils.replaceMacro(timestampSql, "field", "e.activeTs");
-				DAO.getInstance().getJdbcTemp().update(eventSQL, appendParameters(timestampParams, instance.getUserId(), point.getId()));
+				DAO.getInstance().getJdbcTemp().update(eventSQL, appendParameters(timestampParams, instance.getUserId(), pointInfo.getId()));
 			}
 
 			// Insert the reportInstanceUserComments records for the point.
@@ -285,7 +282,7 @@ public class ReportService implements MangoReport {
 
 				// Only include comments made in the duration of the report.
 				commentSQL += StringUtils.replaceMacro(timestampSql, "field", "uc.ts");
-				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, point.getId()));
+				DAO.getInstance().getJdbcTemp().update(commentSQL, appendParameters(timestampParams, pointInfo.getId()));
 			}
 		}
 

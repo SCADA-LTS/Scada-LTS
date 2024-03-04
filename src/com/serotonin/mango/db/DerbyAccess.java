@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.derby.jdbc.EmbeddedXADataSource40;
 import org.apache.derby.tools.ij;
+import org.scada_lts.utils.PathSecureUtils;
+import org.scada_lts.utils.UploadFileUtils;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -57,10 +60,6 @@ public class DerbyAccess extends DatabaseAccess {
     private static final double SMALLEST_NEGATIVE = -1.79769E+308;
 
     private EmbeddedXADataSource40 dataSource;
-
-    public DerbyAccess(ServletContext ctx) {
-        super(ctx);
-    }
 
     @Override
     public DatabaseType getType() {
@@ -92,7 +91,7 @@ public class DerbyAccess extends DatabaseAccess {
     {
         String name = Common.getEnvironmentProfile().getString(propertyPrefix + "db.url", "~/../../mangoDB");
         if (name.startsWith("~"))
-            name = ctx.getRealPath(name.substring(1));
+            name = UploadFileUtils.getAbsoluteResourcePath(name.substring(1)).toString();
         return name;
     }
 
@@ -123,7 +122,7 @@ public class DerbyAccess extends DatabaseAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
         int count = ejt.queryForInt("select count(1) from sys.systables where tablename='USERS'", 0);
         if (count == 0) {
             // The users table wasn't found, so assume that this is a new Mango instance.

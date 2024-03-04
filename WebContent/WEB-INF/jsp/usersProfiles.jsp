@@ -27,6 +27,7 @@
     var watchlists;
     var views;
     var adminUser;
+    var keyTranslations;
     
     function init() {
         UsersProfilesDwr.getInitData(function(data) {
@@ -79,9 +80,10 @@
 
            var wlhtml = "";
            watchlists = data.watchlists;
+           keyTranslations = data.keyTranslations;
            if (watchlists != null){
 	           for (i=0; i<watchlists.length; i++) {
-	        	   if(isUnnamedWatchList(watchlists[i].name))
+	        	   if(isUnnamedWatchList(keyTranslations, watchlists[i].name))
 	        	        continue;
 	        	   id = watchlists[i].id;
 	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
@@ -172,7 +174,7 @@
 
         if(watchlists != null) {
             for (i=0; i<watchlists.length; i++) {
-	        	if(isUnnamedWatchList(watchlists[i].name))
+	        	if(isUnnamedWatchList(keyTranslations, watchlists[i].name))
 	        	    continue;
                 $set("wl"+ watchlists[i].id, "0");
             }
@@ -222,7 +224,7 @@
         var wlval;
         if (watchlists != null ){
 	      	for (i=0; i<watchlists.length; i++) {
-                if(isUnnamedWatchList(watchlists[i].name))
+                if(isUnnamedWatchList(keyTranslations, watchlists[i].name))
                     continue;
 	 			wlval = $get("wl"+ watchlists[i].id);
 	              
@@ -318,8 +320,11 @@
         }
     }
 
-    function isUnnamedWatchList(wl) {
-        return wl == '<fmt:message key="common.newName"/>' // skip unnamed lists
+    function isUnnamedWatchList(keyTranslations, wl) {
+      if (keyTranslations) {
+        return keyTranslations.includes(wl); // skip unnamed lists
+      }
+      return false;
     }
   </script>
   
