@@ -9,7 +9,7 @@
 <%@page import="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion"%>
 <%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
 <script type="text/javascript">
-
+    let translatedMessage = '<fmt:message key="badIntegerFormat"/>';
   function initImpl() {
 
   }
@@ -36,10 +36,10 @@
         dataSourceToSave.brokerMode=$get("brokerMode");
 
         if(!isValid(dataSourceToSave.updateAttempts)) {
-          $set("updateAttemptsMessage", $get("updateAttemptsForm") + " - Incorrect input data type");
+          $set("updateAttemptsMessage", '<fmt:message key="badIntegerFormat"/>');
         }
         else {
-          $set("updateAttemptsMessage", "");
+          $set("updateAttemptsMessage", null);
           DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
     }
@@ -90,8 +90,10 @@
   </tr>
   <tr>
     <td id="updateAttemptsForm" class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
-    <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
-    <span id="updateAttemptsMessage" class="formError"></span>
+    <td class="formField">
+        <input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/>
+        <div id="updateAttemptsMessage" class="formError"></div>
+    </td>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
