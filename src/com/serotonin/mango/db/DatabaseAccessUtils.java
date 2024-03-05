@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Enumeration;
 
 public class DatabaseAccessUtils {
@@ -31,9 +32,9 @@ public class DatabaseAccessUtils {
             if(driver != null) {
                 try {
                     DriverManager.deregisterDriver(driver);
-                    LOG.info(String.format("Unregistered jdbc driver: %s", driver.getClass().getName()));
+                    LOG.info(MessageFormat.format("Unregistered jdbc driver: {0}", driver.getClass().getName()));
                 } catch (SQLException e) {
-                    LOG.info(String.format("Error unregister jdbc driver: %s, msg: %s", driver.getClass().getName(), e.getMessage()));
+                    LOG.info(MessageFormat.format("Error unregister jdbc driver: {0}, msg: {1}", driver.getClass().getName(), e.getMessage()));
                 }
             }
         }
