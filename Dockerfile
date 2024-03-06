@@ -8,8 +8,8 @@ COPY tomcat/lib/jaxb-core-3.0.2.jar /usr/local/tomcat/lib/jaxb-core-3.0.2.jar
 COPY tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar /usr/local/tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar
 
 COPY build/libs/Scada-LTS.war /usr/local/tomcat/webapps/
-RUN apt-get install unzip
+RUN apt-get install -y unzip
 RUN cd /usr/local/tomcat/webapps/ && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS
 COPY docker/config/context.xml /usr/local/tomcat/webapps/Scada-LTS/META-INF/context.xml
 
-RUN apt-get update && apt-get install wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*
