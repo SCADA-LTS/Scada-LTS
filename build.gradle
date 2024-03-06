@@ -16,7 +16,7 @@ compileTestJava.options.encoding = 'UTF-8'
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
-def tomcatVersion = '9.0.53'
+def tomcatVersion = '9.0.86'
 def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
