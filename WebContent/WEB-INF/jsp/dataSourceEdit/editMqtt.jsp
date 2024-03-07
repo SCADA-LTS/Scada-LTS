@@ -91,7 +91,7 @@
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
-    <td class="formField"> <input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
+    <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
