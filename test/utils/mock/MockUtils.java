@@ -23,13 +23,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class MockUtils {
 
     public static void configMock(RuntimeManager runtimeManager, User user) throws Exception {
-        ContextWrapper contextWrapper = mock(ContextWrapper.class);
-        ServletContext servletContext = new ServletContextMock(a ->
-                a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
-
-        Common.ctx = contextWrapper;
-        when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
-        when(contextWrapper.getServletContext()).thenReturn(servletContext);
+        configMockContextWrapper(runtimeManager);
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)
@@ -57,5 +51,15 @@ public class MockUtils {
 
         PropertiesUtils propertiesUtils = new PropertiesUtils("WEB-INF/classes/env");
         when(Common.getEnvironmentProfile()).thenReturn(propertiesUtils);
+    }
+
+    public static void configMockContextWrapper(RuntimeManager runtimeManager) {
+        ContextWrapper contextWrapper = mock(ContextWrapper.class);
+        ServletContext servletContext = new ServletContextMock(a ->
+                a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
+        when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
+        when(contextWrapper.getServletContext()).thenReturn(servletContext);
+
+        Common.ctx = contextWrapper;
     }
 }
