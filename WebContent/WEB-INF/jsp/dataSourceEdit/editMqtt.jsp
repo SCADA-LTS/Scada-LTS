@@ -40,7 +40,6 @@
             DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
         else {
-            $set("updateAttemptsMessage", null);
             DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
     }
