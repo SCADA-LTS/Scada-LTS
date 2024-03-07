@@ -9,6 +9,7 @@
 <%@page import="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion"%>
 <%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
 <script type="text/javascript">
+
   function initImpl() {
 
   }
@@ -89,7 +90,7 @@
     </td>
   </tr>
   <tr>
-    <td id="updateAttemptsForm" class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
     <td class="formField"> <input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
