@@ -1,5 +1,5 @@
 #Create an Scada-LTS.war file and deploy it into Docker Tomcat Image.
-FROM tomcat:9.0.86
+FROM tomcat:9.0.86-jre11
 LABEL maintainer="rjajko@softq.pl"
 COPY tomcat/lib/mysql-connector-java-5.1.49.jar /usr/local/tomcat/lib/mysql-connector-java-5.1.49.jar
 COPY tomcat/lib/activation.jar /usr/local/tomcat/lib/activation.jar
@@ -8,9 +8,13 @@ COPY tomcat/lib/jaxb-core-3.0.2.jar /usr/local/tomcat/lib/jaxb-core-3.0.2.jar
 COPY tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar /usr/local/tomcat/lib/jaxb-runtime-2.4.0-b180830.0438.jar
 
 COPY build/libs/Scada-LTS.war /usr/local/tomcat/webapps/
-RUN apt-get update;
-RUN apt-get install -y unzip;
-RUN cd /usr/local/tomcat/webapps/ && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS;
-COPY docker/config/context.xml /usr/local/tomcat/webapps/Scada-LTS/META-INF/context.xml
+RUN apt update;
+RUN apt install -y unzip;
+RUN apt install -y wait-for-it;
+RUN apt clean;
+RUN rm -rf /var/lib/apt/lists/*;
 
-RUN apt-get update && apt-get install -y wait-for-it && apt clean && rm -rf /var/lib/apt/lists/*;
+RUN cd /usr/local/tomcat/webapps/;
+RUN mkdir Scada-LTS;
+RUN unzip Scada-LTS.war -d Scada-LTS;
+COPY docker/config/context.xml /usr/local/tomcat/webapps/Scada-LTS/META-INF/context.xml
