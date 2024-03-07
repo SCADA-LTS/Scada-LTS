@@ -9,7 +9,6 @@
 <%@page import="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion"%>
 <%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
 <script type="text/javascript">
-    let translatedMessage = '<fmt:message key="badIntegerFormat"/>';
   function initImpl() {
 
   }
@@ -36,11 +35,12 @@
         dataSourceToSave.brokerMode=$get("brokerMode");
 
         if(!isValid(dataSourceToSave.updateAttempts)) {
-          $set("updateAttemptsMessage", '<fmt:message key="badIntegerFormat"/>');
+            dataSourceToSave.updateAttempts=-1;
+            DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
         else {
-          $set("updateAttemptsMessage", null);
-          DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+            $set("updateAttemptsMessage", null);
+            DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
     }
   function editPointCBImpl(locator) {
@@ -90,10 +90,7 @@
   </tr>
   <tr>
     <td id="updateAttemptsForm" class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
-    <td class="formField">
-        <input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/>
-        <div id="updateAttemptsMessage" class="formError"></div>
-    </td>
+    <td class="formField"> <input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
