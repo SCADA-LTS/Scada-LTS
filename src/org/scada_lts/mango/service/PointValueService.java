@@ -22,9 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -44,11 +42,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
-import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
+import org.scada_lts.monitor.type.IntegerMonitor;
+
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -62,7 +59,6 @@ import com.serotonin.mango.ImageSaveException;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
-import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -73,12 +69,12 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Service
-public class PointValueService implements MangoPointValues, MangoPointValuesWithChangeOwner {
+public class PointValueService implements MangoPointValues {
 
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
-    private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
+    private PointValueDAO pointValueDAO = new PointValueDAO();
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
 
@@ -88,14 +84,11 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     }
 
-    @Override
-    public List<PointValueAdnnotation> findAllWithAdnotationsAboutChangeOwner(){
-        return pointValueAnnotationsDAO.findAllWithAdnotationsAboutChangeOwner();
-    }
     /**
      * Only the PointValueCache should call this method during runtime. Do not
      * use.
      */
+    @Override
     public PointValueTime savePointValueSync(int pointId,
                                              PointValueTime pointValue, SetPointSource source) {
         long id = savePointValueImpl(pointId, pointValue, source, false);
@@ -104,7 +97,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         int retries = 5;
         while (true) {
             try {
-                savedPointValue = PointValueDAO.getInstance().findById(new Object[]{id}).getPointValue();
+                savedPointValue = getPointValue(id);
                 break;
             } catch (ConcurrencyFailureException e) {
                 if (retries <= 0)
@@ -120,6 +113,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
      * Only the PointValueCache should call this method during runtime. Do not
      * use.
      */
+    @Override
     public void savePointValueAsync(int pointId, PointValueTime pointValue,
                                     SetPointSource source) {
         long id = savePointValueImpl(pointId, pointValue, source, true);
@@ -245,7 +239,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             } catch (RuntimeException e) {
                 throw new RuntimeException(
                         "Error saving point value: dataType=" + dataType
-                                + ", dvalue=" + dvalue, e);
+                                + ", dvalue=" + dvalue + ", message: " + e.getMessage(), e);
             }
         }
     }
@@ -307,8 +301,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
-            PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
-            PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
+            PointValueDAO.getInstance().createAnnotation(id, shortString, longString, sourceType, sourceId);
 
         }
 
@@ -318,7 +311,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
-
+        lstIn.sort(Comparator.comparing(PointValue::getId).reversed());
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
         }
@@ -363,10 +356,16 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         List<PointValue> lstValues = PointValueDAO.getInstance().findByIdAndTs(dataPointId, maxTs);
 
-        PointValueAdnnotationsDAO.getInstance().updateAnnotations(lstValues);
-        if (lstValues.size() == 0)
+        if (lstValues.isEmpty())
             return null;
-        return lstValues.get(0).getPointValue();
+
+        lstValues.sort(Comparator.comparing(PointValue::getId).reversed());
+
+        PointValueTime pointValue = lstValues.get(0).getPointValue();
+        /*if(pointValue instanceof AnnotatedPointValueTime) {
+            updateAnnotation((AnnotatedPointValueTime) pointValue);
+        }*/
+        return pointValue;
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
@@ -624,14 +623,15 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     }
 
     public PointValueTime getPointValue(long id) {
-        return PointValueDAO.getInstance().getPointValue(id);
-    }
-    public List<PointValueAdnnotation> getAllPointValueAnnotations(){
-        return  pointValueAnnotationsDAO.findAll();
+        PointValueTime pointValueTime = PointValueDAO.getInstance().getPointValue(id);
+        /*if(pointValueTime instanceof AnnotatedPointValueTime) {
+            updateAnnotation((AnnotatedPointValueTime) pointValueTime);
+        }*/
+        return pointValueTime;
     }
 
     public void updatePointValueAnnotations(int userId) {
-        pointValueAnnotationsDAO.update(userId);
+        pointValueDAO.updateAnnotation(userId);
     }
 
     @Override
@@ -672,8 +672,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
             metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
 
-            String value = "";
-
             try {
 
                 ScriptExecutor scriptExecutor = new ScriptExecutor();
@@ -681,35 +679,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
 
                 PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
-
-                switch (metaPointLocatorVO.getDataTypeId()) {
-                    case DataTypes.BINARY:
-                        BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
-                        if (binaryValue.getBooleanValue()) {
-                            value = "" + 1;
-                        } else {
-                            value = "" + 0;
-                        }
-                        break;
-                    case DataTypes.MULTISTATE:
-                        MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
-                        value = "" + multistateValue.getIntegerValue();
-                        break;
-                    case DataTypes.NUMERIC:
-                        NumericValue numericValue = (NumericValue) pointValueTime.getValue();
-                        value = "" + numericValue.getDoubleValue();
-                        break;
-                    case DataTypes.ALPHANUMERIC:
-                        AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
-                        value = alphanumericValue.getStringValue();
-                        break;
-                }
+                Common.ctx.getRuntimeManager().setDataPointValue(dataPoint.getId(), pointValueTime, user);
             } catch (Exception ex) {
                 LOG.error(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
                 throw ex;
             }
 
-            dataPointService.save(user, value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+
         } catch (Exception e) {
             LOG.error(e.getMessage());
         }
