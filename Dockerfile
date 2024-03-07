@@ -14,6 +14,5 @@ RUN apt install -y wait-for-it;
 RUN apt clean;
 RUN rm -rf /var/lib/apt/lists/*;
 RUN ls -l;
-RUN cd /usr/local/tomcat/webapps/ && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS;
-RUN ls -l;
+RUN cd /usr/local/tomcat/webapps/ && ls -l && mkdir Scada-LTS && unzip Scada-LTS.war -d Scada-LTS;
 COPY docker/config/context.xml /usr/local/tomcat/webapps/Scada-LTS/META-INF/context.xml
