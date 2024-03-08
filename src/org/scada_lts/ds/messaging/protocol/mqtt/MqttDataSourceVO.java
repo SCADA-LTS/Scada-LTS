@@ -112,7 +112,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
             response.addContextualMessage("serverPortNumber","validate.invalidValue");
         }
         if (updateAttempts < 0) {
-            response.addContextualMessage("updateAttempts", "badIntegerFormat");
+            response.addContextualMessage("updateAttempts", "validate.updateAttempts");
         }
 
         if (maxReconnectDelay < 0) {
