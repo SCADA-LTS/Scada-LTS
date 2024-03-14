@@ -36,7 +36,7 @@
         dataSourceToSave.brokerMode=$get("brokerMode");
 
         if(!isValid(dataSourceToSave.updateAttempts)) {
-            messages = [createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>")];
+            let messages = [createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>")];
             showDwrMessages(messages);
         }
         else {
