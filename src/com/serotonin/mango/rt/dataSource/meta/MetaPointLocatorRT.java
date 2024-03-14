@@ -111,8 +111,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         initializeTimerTask();
 
-        if(dataPoint.getPointValue() != null && vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE) {
-            execute(System.currentTimeMillis(), new ArrayList<>(), true);
+        if(dataPoint.isInitialized() && vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE) {
+            execute(System.currentTimeMillis(), new ArrayList<>(), true, dataPoint);
         }
     }
 
@@ -233,10 +233,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
     }
     private void execute(long runtime, List<Integer> sourceIds) {
-        execute(runtime, sourceIds, false);
+        execute(runtime, sourceIds, false, dataPoint);
     }
 
-    private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode) {
+    private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode, DataPointRT dataPoint) {
         if (context == null) {
             LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
@@ -262,12 +262,13 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor executor = new ScriptExecutor();
             try {
-                PointValueTime pvt = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
+                PointValueTime valueTime = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
                         vo.getDataTypeId(), runtime);
-                if (pvt.getValue() == null)
+                PointValueTime previousValueTime = dataPoint.getPointValue();
+                if (valueTime.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else if(vo.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE || !initializeMode || !ObjectUtils.isEqual(pvt.getValue(), dataPoint.getPointValue().getValue()))
-                    updatePoint(pvt);
+                else if(isUpdatePoint(initializeMode, valueTime, previousValueTime, vo))
+                    updatePoint(valueTime);
             }
             catch (ScriptException e) {
                 handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
@@ -311,7 +312,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         long time = newValue.getTime();
         if (vo.getExecutionDelaySeconds() == 0)
-            execute(time, sourceIds, initializeMode);
+            execute(time, sourceIds, initializeMode, dataPoint);
         else {
             synchronized (LOCK) {
                 if (initialized) {
@@ -329,5 +330,9 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void handleError(long runtime, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
+    }
+
+    private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {
+        return !initializeMode || metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE || (previousValueTime == null || !ObjectUtils.isEqual(valueTime.getValue(), previousValueTime.getValue()));
     }
 }

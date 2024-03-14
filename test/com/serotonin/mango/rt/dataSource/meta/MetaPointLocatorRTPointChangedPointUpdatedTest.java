@@ -33,13 +33,14 @@ import static org.mockito.Mockito.*;
 public class MetaPointLocatorRTPointChangedPointUpdatedTest {
 
     private final MetaPointLocatorVO vo = new MetaPointLocatorVO();
-    private final DataPointRT dataPoint = mock(DataPointRT.class);
-    private final MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
+    private DataPointRT dataPoint;
     private MetaPointLocatorRT locatorRT;
-    private final RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
 
     @Before
     public void config() throws Exception {
+        dataPoint = mock(DataPointRT.class);
+        MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
+        RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
         vo.setContext(new ArrayList<>());
         vo.setDataTypeId(DataTypes.NUMERIC);

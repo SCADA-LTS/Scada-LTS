@@ -43,14 +43,9 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
                 new Object[] {Common.TimePeriods.YEARS, 1},
         };
     }
-
-    private final DataPointRT dataPoint = mock(DataPointRT.class);
-    private final MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
+    private DataPointRT dataPoint;
     private final int expectedInvocationTimes;
-    MetaPointLocatorRT metaPointLocatorRT;
-    MetaPointLocatorRT.ExecutionDelayTimeout executionDelayTimeout;
-    RealTimeTimer timer = mock(RealTimeTimer.class);
-    private final RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
+    private final MetaPointLocatorRT metaPointLocatorRT;
 
     public MetaPointLocatorRTExecutionDelayTimeoutRunTest(int updateEvent, int expectedInvocationTimes){
         this.expectedInvocationTimes = expectedInvocationTimes;
@@ -69,6 +64,10 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
 
     @Before
     public void config() throws Exception {
+        dataPoint = mock(DataPointRT.class);
+        MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
+        RealTimeTimer timer = mock(RealTimeTimer.class);
+        RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
         metaPointLocatorRT.initialize(timer, dataSource, dataPoint);
     }
@@ -81,7 +80,7 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
     @Test
     public void when_scheduledUpdateTimeout_run_with_different_update_events_then_updatePointValue(){
         //given:
-        executionDelayTimeout = metaPointLocatorRT.new ExecutionDelayTimeout(123456L, new ArrayList<>());
+        MetaPointLocatorRT.ExecutionDelayTimeout executionDelayTimeout = metaPointLocatorRT.new ExecutionDelayTimeout(123456L, new ArrayList<>());
 
         //when:
         executionDelayTimeout.run(123456L);

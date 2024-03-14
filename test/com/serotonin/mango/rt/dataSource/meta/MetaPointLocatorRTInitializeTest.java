@@ -48,12 +48,11 @@ public class MetaPointLocatorRTInitializeTest {
         };
     }
 
-    private final DataPointRT dataPoint = mock(DataPointRT.class);
-    private final MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
-
+    private DataPointRT dataPoint;
+    private MetaDataSourceRT dataSource;
     private final int expectedInvocationTimes;
     MetaPointLocatorRT metaPointLocatorRT;
-    RealTimeTimer timer = mock(RealTimeTimer.class);
+    private RealTimeTimer timer;
 
     public MetaPointLocatorRTInitializeTest (int updateEvent, int expectedInvocationTimes){
         this.expectedInvocationTimes = expectedInvocationTimes;
@@ -68,17 +67,16 @@ public class MetaPointLocatorRTInitializeTest {
         }
 
         metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
-
-        if(metaPointLocatorVO.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
-                && metaPointLocatorVO.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE) {
-            timer.init();
-        }
     }
 
     @Before
     public void config() throws Exception {
+        dataPoint = mock(DataPointRT.class);
+        dataSource = mock(MetaDataSourceRT.class);
+        timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
+        when(dataPoint.isInitialized()).thenReturn(true);
         when(dataPoint.getPointValue()).thenReturn(mock(PointValueTime.class));
 
         MetaPointLocatorRT.ScheduledUpdateTimeout scheduledUpdateTimeout = mock(MetaPointLocatorRT.ScheduledUpdateTimeout.class);
