@@ -36,8 +36,8 @@
         dataSourceToSave.brokerMode=$get("brokerMode");
 
         if(!isValid(dataSourceToSave.updateAttempts)) {
-            let messages = [createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>")];
-            showDwrMessages(messages);
+            let messages = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
+            showDwrMessages([messages]);
         }
         else {
             DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
