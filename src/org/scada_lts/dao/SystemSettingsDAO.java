@@ -42,9 +42,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import static org.scada_lts.utils.SystemSettingsUtils.WEB_RESOURCE_GRAPHICS_PATH;
-import static org.scada_lts.utils.SystemSettingsUtils.WEB_RESOURCE_UPLOADS_PATH;
-
 /**
  * SystemSettings DAO
  *
@@ -245,7 +242,10 @@ public class SystemSettingsDAO {
 	}
 
 	public static boolean getBooleanValue(String key) {
-		return getBooleanValue(key, false);
+		Boolean defaultValue = (Boolean) DEFAULT_VALUES.get(key);
+		if(defaultValue == null)
+			return getBooleanValue(key, false);
+		return getBooleanValue(key, defaultValue);
 	}
 
 	public static boolean getBooleanValue(String key, boolean defaultValue) {
@@ -255,6 +255,7 @@ public class SystemSettingsDAO {
 		return DAO.charToBool(value);
 	}
 
+	@Deprecated(since = "2.7.7.1")
 	public static boolean getBooleanValueOrDefault(String key) {
 		String value = getValue(key, null);
 		if (value == null)
