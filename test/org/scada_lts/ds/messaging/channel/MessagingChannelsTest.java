@@ -8,9 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.mock.MockUtils;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class MessagingChannelsTest {
@@ -94,13 +98,17 @@ public class MessagingChannelsTest {
             public void publish(String message) {}
         };
 
-        DataPointVO dataPoint1 = TestUtils.newPointSettable(1, -1);
-        dataPointRT1 = new DataPointRT(dataPoint1);
-        DataPointVO dataPoint2 = TestUtils.newPointSettable(2, -1);
-        dataPointRT2 = new DataPointRT(dataPoint2);
-        DataPointVO dataPoint3 = TestUtils.newPointSettable(3, -1);
-        dataPointRT3 = new DataPointRT(dataPoint3);
+        DataPointRT dataPointRT1 = mock(DataPointRT.class);
+        when(dataPointRT1.getId()).thenReturn(1);
+        this.dataPointRT1 = dataPointRT1;
 
+        DataPointRT dataPointRT2 = mock(DataPointRT.class);
+        when(dataPointRT2.getId()).thenReturn(2);
+        this.dataPointRT2 = dataPointRT2;
+
+        DataPointRT dataPointRT3 = mock(DataPointRT.class);
+        when(dataPointRT3.getId()).thenReturn(3);
+        this.dataPointRT3 = dataPointRT3;
     }
 
     @Before
@@ -109,7 +117,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_then_channels_size_zero() throws Exception {
+    public void when_removeChannel_then_channels_size_zero() {
 
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -123,7 +131,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_then_isOpenChannel_false() throws Exception {
+    public void when_removeChannel_then_isOpenChannel_false() {
 
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -137,7 +145,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_one_form_two_then_one_isOpenChannel_true() throws Exception {
+    public void when_removeChannel_one_form_two_then_one_isOpenChannel_true() {
 
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -151,7 +159,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_one_form_two_then_isOpenChannel_false() throws Exception {
+    public void when_removeChannel_one_form_two_then_isOpenChannel_false() {
 
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -165,7 +173,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_one_form_two_then_one_size() throws Exception {
+    public void when_removeChannel_one_form_two_then_one_size() {
 
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -179,7 +187,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_and_initChannel_on_other_dataPoints_then_one_size() throws Exception {
+    public void when_removeChannel_and_initChannel_on_other_dataPoints_then_one_size() {
 
         //given:
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);
@@ -194,7 +202,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_removeChannel_and_initChannel_on_other_dataPoints_then_one_isOpenChannel_true() throws Exception {
+    public void when_removeChannel_and_initChannel_on_other_dataPoints_then_one_isOpenChannel_true() {
 
         //given:
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);
@@ -209,7 +217,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_isOpenChannel_after_initChannel_then_true() throws Exception {
+    public void when_isOpenChannel_after_initChannel_then_true() {
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
@@ -231,7 +239,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_initChannel_with_three_dataPoints_then_size_three() throws Exception {
+    public void when_initChannel_with_three_dataPoints_then_size_three() {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -243,7 +251,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_initChannel_same_dataPoint_then_size_one() throws Exception {
+    public void when_initChannel_same_dataPoint_then_size_one() {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -253,7 +261,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_isOpen_after_initChannel_then_true() throws Exception {
+    public void when_isOpen_after_initChannel_then_true() {
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
@@ -265,7 +273,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_closeChannels_then_size_zero() throws Exception {
+    public void when_closeChannels_then_size_zero() {
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);

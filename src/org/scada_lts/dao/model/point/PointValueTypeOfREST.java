@@ -1,5 +1,6 @@
 package org.scada_lts.dao.model.point;
 
+@Deprecated
 public class PointValueTypeOfREST {
 
 	public final static int TYPE_UNKNOWN = 0;

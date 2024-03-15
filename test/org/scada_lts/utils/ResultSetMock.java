@@ -1,4 +1,4 @@
-package org.scada_lts.dao.pointvalues;
+package org.scada_lts.utils;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -9,11 +9,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResultSetImpl implements ResultSet {
+public class ResultSetMock implements ResultSet {
 
-    private Map<String,String> rowExample = new HashMap<String,String>();
+    private Map<String,Object> rowExample = new HashMap<>();
 
-    public ResultSetImpl(Map<String,String> rowExample){
+    public ResultSetMock(Map<String,Object> rowExample){
         this.rowExample = rowExample;
     }
     @Override
@@ -33,7 +33,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public String getString(int i) throws SQLException {
-        return rowExample.get(i);
+        return (String) rowExample.get(i);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public int getInt(int i) throws SQLException {
-        return 0;
+        return (int) rowExample.get(i);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public String getString(String s) throws SQLException {
-        return rowExample.get(s);
+        return (String) rowExample.get(s);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public int getInt(String s) throws SQLException {
-        return Integer.parseInt(rowExample.get(s));
+        return (int) rowExample.get(s);
     }
 
     @Override
