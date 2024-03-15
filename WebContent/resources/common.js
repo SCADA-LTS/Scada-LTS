@@ -1105,3 +1105,11 @@ function isInt32(state) {
     return Number.parseInt(state) === view.getInt32(1);
 }
 
+function isIntValueValid(value) {
+    return value === "" || isPositiveInt(value);
+}
+
+function isPositiveInt(value) {
+    return isInt32(value) && value >= 0;
+}
+

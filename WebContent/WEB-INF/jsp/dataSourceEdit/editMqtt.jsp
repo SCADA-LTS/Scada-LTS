@@ -35,7 +35,7 @@
         dataSourceToSave.cleanSession=$get("cleanSession");
         dataSourceToSave.brokerMode=$get("brokerMode");
 
-        if(!isValid(dataSourceToSave.updateAttempts)) {
+        if(!isIntValueValid(dataSourceToSave.updateAttempts)) {
             let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
             showDwrMessages([message]);
         }
@@ -65,13 +65,6 @@
 
     DataSourceEditDwr.saveMqttPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
-  }
-  function isValid(value) {
-    return value == "" || isPositiveInt(value);
-  }
-
-  function isPositiveInt(value) {
-    return isInt32(value) && value >= 0;
   }
 </script>
 
