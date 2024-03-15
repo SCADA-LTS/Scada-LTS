@@ -36,7 +36,6 @@ import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
  * @author Matthew Lohbihler
  */
 public class JdbcOperationsTester extends Thread implements TestingUtility {
-    private static final int MAX_ROWS = 50;
 
     private final ResourceBundle bundle;
     private final SqlDataSourceVO vo;
@@ -54,7 +53,7 @@ public class JdbcOperationsTester extends Thread implements TestingUtility {
     public void run() {
         try {
 
-            String selectStatement = addLimitIfWithout(vo.getSelectStatement(), MAX_ROWS);
+            String selectStatement = addLimitIfWithout(vo.getSelectStatement(), vo.getStatementLimit());
 
             JdbcOperations jdbcOperations = SqlDataSourceUtils.createJdbcOperations(vo);
 
@@ -113,9 +112,6 @@ public class JdbcOperationsTester extends Thread implements TestingUtility {
                 row.add(rs.getString(i));
 
             resultTable.add(row);
-            if (resultTable.size() > MAX_ROWS)
-                // Seriously, that ought to be enough
-                break;
         }
         return resultTable;
     }

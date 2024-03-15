@@ -29,8 +29,9 @@ public final class SqlDataSourceUtils {
     }
 
     public static SqlDataSourceVO createSqlDataSourceVO(String driverClassname, String connectionUrl,
-                                            String username, String password, String selectStatement,
-                                            boolean rowBasedQuery, boolean jndiResource, String jndiResourceName) {
+                                                        String username, String password, String selectStatement,
+                                                        boolean rowBasedQuery, boolean jndiResource, String jndiResourceName,
+                                                        int statementLimit) {
         SqlDataSourceVO sqlDataSourceVO = new SqlDataSourceVO();
         sqlDataSourceVO.setDriverClassname(driverClassname);
         sqlDataSourceVO.setConnectionUrl(connectionUrl);
@@ -40,13 +41,20 @@ public final class SqlDataSourceUtils {
         sqlDataSourceVO.setRowBasedQuery(rowBasedQuery);
         sqlDataSourceVO.setJndiResource(jndiResource);
         sqlDataSourceVO.setJndiResourceName(jndiResourceName);
+        sqlDataSourceVO.setStatementLimit(statementLimit);
         return sqlDataSourceVO;
     }
 
     public static String addLimitIfWithout(String query, int defaultLimit) {
-        if(StringUtils.isEmpty(query) || ";".equals(query))
+        if(StringUtils.isEmpty(query) || isInvalidValue(query))
             throw new IllegalArgumentException("Select statement cannot be empty!");
-        return query.toLowerCase().contains(" limit ") ? query : reduce(query) + " LIMIT " + defaultLimit;
+        if(query.toLowerCase().contains(" limit ") || defaultLimit < 1)
+            return query;
+        return reduce(query) + " LIMIT " + defaultLimit;
+    }
+
+    public static boolean isInvalidValue(String query) {
+        return ";".equals(query);
     }
 
     private static String reduce(String sql) {

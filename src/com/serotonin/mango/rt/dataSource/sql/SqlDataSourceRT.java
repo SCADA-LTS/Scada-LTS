@@ -135,7 +135,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 				timeoutCount = 0;
 				initialize();
 			} else {
-				String selectStatement = addLimitIfWithout(vo.getSelectStatement(), 100);
+				String selectStatement = addLimitIfWithout(vo.getSelectStatement(), vo.getStatementLimit());
 				if (vo.isRowBasedQuery()) {
 					jdbcOperations.query(selectStatement, resultSet -> {
 						updateByRowId(time, resultSet);

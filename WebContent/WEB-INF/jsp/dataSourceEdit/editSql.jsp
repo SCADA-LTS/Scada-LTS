@@ -33,7 +33,7 @@
       dwr.util.removeAllRows("sqlTestResults");
       DataSourceEditDwr.sqlTestStatement($get("driverClassname"), $get("connectionUrl"), $get("username"), 
               $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-              $get("jndiResourceName"), sqlTestCB);
+              $get("jndiResourceName"), $get("statementLimit"), sqlTestCB);
   }
   
   function sqlTestCB() {
@@ -88,7 +88,7 @@
       DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
               $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
               $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-              $get("jndiResourceName"), saveDataSourceCB);
+              $get("jndiResourceName"), $get("statementLimit"), saveDataSourceCB);
   }
   
   function writePointListImpl(points) {
@@ -201,8 +201,13 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.sql.select"/></td>
           <td class="formField">
-            <textarea id="selectStatement" rows="10" cols="45">${dataSource.selectStatement}</textarea>
+            <textarea id="selectStatement" rows="10" cols="45"><c:out value="${dataSource.selectStatement}"/></textarea>
           </td>
+        </tr>
+
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.statementLimit"/></td>
+          <td class="formField"><input id="statementLimit" type="number" value="${dataSource.statementLimit}"/></td>
         </tr>
         
         <tr>

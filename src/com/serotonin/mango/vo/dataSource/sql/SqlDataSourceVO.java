@@ -41,6 +41,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.util.SqlDataSourceUtils.isInvalidValue;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -113,6 +115,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 	private String jndiResourceName;
 	@JsonRemoteProperty
 	private boolean jndiResource = false;
+	@JsonRemoteProperty
+	private int statementLimit = 100;
 
 	public String getDriverClassname() {
 		return driverClassname;
@@ -194,6 +198,14 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 		this.jndiResource = jndiResource;
 	}
 
+	public int getStatementLimit() {
+		return statementLimit;
+	}
+
+	public void setStatementLimit(int statementLimit) {
+		this.statementLimit = statementLimit;
+	}
+
 	@Override
 	public void validate(DwrResponseI18n response) {
 		super.validate(response);
@@ -216,6 +228,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 
 		if(StringUtils.isEmpty(selectStatement)) {
 			response.addContextualMessage("selectStatement", "validate.required");
+		} else if (isInvalidValue(selectStatement)) {
+			response.addContextualMessage("selectStatement", "validate.invalidValue");
 		}
 	}
 
@@ -239,6 +253,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				jndiResource);
 		AuditEventType.addPropertyMessage(list, "dsEdit.sql.jndiResourceName",
 				jndiResourceName);
+		AuditEventType.addPropertyMessage(list, "dsEdit.sql.limitValue",
+				statementLimit);
 	}
 
 	@Override
@@ -265,6 +281,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				"dsEdit.sql.jndiResource", from.jndiResource, jndiResource);
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.sql.jndiResourceName", from.jndiResourceName, jndiResourceName);
+		AuditEventType.maybeAddPropertyChangeMessage(list,
+				"dsEdit.sql.limitValue", from.statementLimit, statementLimit);
 	}
 
 	//
@@ -273,7 +291,7 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 3;
+	private static final int version = 4;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -287,6 +305,7 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 		out.writeBoolean(rowBasedQuery);
 		out.writeBoolean(jndiResource);
 		SerializationHelper.writeSafeUTF(out, jndiResourceName);
+		out.writeInt(statementLimit);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException {
@@ -323,6 +342,18 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 			rowBasedQuery = in.readBoolean();
 			jndiResource = in.readBoolean();
 			jndiResourceName = SerializationHelper.readSafeUTF(in);
+		} else if (ver == 4) {
+			driverClassname = SerializationHelper.readSafeUTF(in);
+			connectionUrl = SerializationHelper.readSafeUTF(in);
+			username = SerializationHelper.readSafeUTF(in);
+			password = SerializationHelper.readSafeUTF(in);
+			selectStatement = SerializationHelper.readSafeUTF(in);
+			updatePeriodType = in.readInt();
+			updatePeriods = in.readInt();
+			rowBasedQuery = in.readBoolean();
+			jndiResource = in.readBoolean();
+			jndiResourceName = SerializationHelper.readSafeUTF(in);
+			statementLimit = in.readInt();
 		}
 	}
 
