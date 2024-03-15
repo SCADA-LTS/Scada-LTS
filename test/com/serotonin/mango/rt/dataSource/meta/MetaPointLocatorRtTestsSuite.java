@@ -12,6 +12,6 @@ import org.junit.runners.Suite;
         MetaPointLocatorRtInitializeTest.class,
 })
 
-public class MetaPointLocatorRTTestsSuite {
+public class MetaPointLocatorRtTestsSuite {
 
 }

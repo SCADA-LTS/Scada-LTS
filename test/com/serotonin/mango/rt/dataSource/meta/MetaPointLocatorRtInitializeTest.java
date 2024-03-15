@@ -7,7 +7,6 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.RealTimeTimer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +47,7 @@ public class MetaPointLocatorRtInitializeTest {
         };
     }
 
-    private DataPointRT dataPoint;
+    private final DataPointRT dataPoint;
     private MetaDataSourceRT dataSource;
     private final int expectedInvocationTimes;
     private final MetaPointLocatorRT metaPointLocatorRT;
@@ -56,6 +55,7 @@ public class MetaPointLocatorRtInitializeTest {
 
     public MetaPointLocatorRtInitializeTest(int updateEvent, int expectedInvocationTimes){
         this.expectedInvocationTimes = expectedInvocationTimes;
+        dataPoint = mock(DataPointRT.class);
 
         MetaPointLocatorVO metaPointLocatorVO = new MetaPointLocatorVO();
         metaPointLocatorVO.setUpdateEvent(updateEvent);
@@ -71,7 +71,6 @@ public class MetaPointLocatorRtInitializeTest {
 
     @Before
     public void config() throws Exception {
-        dataPoint = mock(DataPointRT.class);
         dataSource = mock(MetaDataSourceRT.class);
         timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
@@ -81,11 +80,6 @@ public class MetaPointLocatorRtInitializeTest {
 
         MetaPointLocatorRT.ScheduledUpdateTimeout scheduledUpdateTimeout = mock(MetaPointLocatorRT.ScheduledUpdateTimeout.class);
         whenNew(MetaPointLocatorRT.ScheduledUpdateTimeout.class).withArguments(anyLong()).thenReturn(scheduledUpdateTimeout);
-    }
-
-    @After
-    public void resetMock() {
-        reset(dataPoint);
     }
 
     @Test

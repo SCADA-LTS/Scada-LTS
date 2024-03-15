@@ -7,7 +7,6 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.RealTimeTimer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,11 +67,6 @@ public class MetaPointLocatorRtUpdateEventCronAndStartOfTest {
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
         metaPointLocatorRT.initialize(timer, dataSource, dataPoint);
-    }
-
-    @After
-    public void resetMock() {
-        reset(dataPoint);
     }
 
     @Test

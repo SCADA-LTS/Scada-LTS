@@ -33,12 +33,15 @@ import static org.mockito.Mockito.*;
 public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
 
     private final MetaPointLocatorVO vo = new MetaPointLocatorVO();
-    private DataPointRT dataPoint;
+    private final DataPointRT dataPoint;
     private MetaPointLocatorRT locatorRT;
+
+    public MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest(){
+        dataPoint = mock(DataPointRT.class);
+    }
 
     @Before
     public void config() throws Exception {
-        dataPoint = mock(DataPointRT.class);
         MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
@@ -49,8 +52,13 @@ public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
         locatorRT.initialize(timer, dataSource, dataPoint);
     }
 
+    @After
+    public void resetMock() {
+        reset(dataPoint);
+    }
+
     @Test
-    public void test_updatePointValue_In_pointChanged_For_ContextChange_Happens_once() throws DataPointStateException {
+    public void test_updatePointValue_In_pointChanged_For_ContextChange_Happens_once() {
         //given:
         vo.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE);
         PointValueTime pointValueTime = new PointValueTime(MangoValue.objectToValue(1),534534L);
