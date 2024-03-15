@@ -42,7 +42,7 @@
         else {
             DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         }
-    }
+  }
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
         $set("writable", locator.writable);
@@ -51,7 +51,7 @@
         $set("retained", locator.retained);
         $set("qos", locator.qos);
         $set("clientId", locator.clientId);
-    }
+  }
   function savePointImpl(locator) {
     delete locator.relinquishable;
     locator.settable = $get("settable");
@@ -65,14 +65,14 @@
 
     DataSourceEditDwr.saveMqttPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
-    }
+  }
   function isValid(value) {
     return value == "" || isPositiveInt(value);
-    }
+  }
 
   function isPositiveInt(value) {
     return isInt32(value) && value >= 0;
-    }
+  }
 </script>
 
 
