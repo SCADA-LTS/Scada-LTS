@@ -85,10 +85,16 @@
   }
 
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-              $get("jndiResourceName"), $get("statementLimit"), saveDataSourceCB);
+      let statementLimit = $get("statementLimit");
+      if(isValid(statementLimit)) {
+          DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
+                  $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
+                  $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
+                  $get("jndiResourceName"), $get("statementLimit"), saveDataSourceCB);
+      } else {
+        let message = createValidationMessage("statementLimit","<fmt:message key="badIntegerFormat"/>");
+        showDwrMessages([message]);
+      }
   }
   
   function writePointListImpl(points) {
@@ -147,6 +153,10 @@
           hide("isJndiResource");
           show("isNotJndiResource");
       }
+  }
+
+  function isValid(value) {
+      return value == "" || (isInt32(value) && value >= 0);
   }
 </script>
 
