@@ -18,18 +18,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import utils.mock.MockUtils;
 
-import java.util.ArrayList;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({MetaPointLocatorRT.ScheduledUpdateTimeout.class, MetaPointLocatorRT.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
-public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
+public class MetaPointLocatorRtUpdateEventCronAndStartOfTest {
 
     @Parameterized.Parameters(name= "{index}: Update event type: {0}, Expected times of invocation: {1}")
     public static Object[] data() {
@@ -43,12 +40,14 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
                 new Object[] {Common.TimePeriods.YEARS, 1},
         };
     }
-    private DataPointRT dataPoint;
+
+    private final DataPointRT dataPoint;
     private final int expectedInvocationTimes;
     private final MetaPointLocatorRT metaPointLocatorRT;
 
-    public MetaPointLocatorRTExecutionDelayTimeoutRunTest(int updateEvent, int expectedInvocationTimes){
+    public MetaPointLocatorRtUpdateEventCronAndStartOfTest(int updateEvent, int expectedInvocationTimes){
         this.expectedInvocationTimes = expectedInvocationTimes;
+        dataPoint = mock(DataPointRT.class);
 
         MetaPointLocatorVO metaPointLocatorVO = new MetaPointLocatorVO();
         metaPointLocatorVO.setDataTypeId(DataTypes.NUMERIC);
@@ -64,7 +63,6 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
 
     @Before
     public void config() throws Exception {
-        dataPoint = mock(DataPointRT.class);
         MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
         RealTimeTimer timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
@@ -80,10 +78,10 @@ public class MetaPointLocatorRTExecutionDelayTimeoutRunTest {
     @Test
     public void when_scheduledUpdateTimeout_run_with_different_update_events_then_updatePointValue(){
         //given:
-        MetaPointLocatorRT.ExecutionDelayTimeout executionDelayTimeout = metaPointLocatorRT.new ExecutionDelayTimeout(123456L, new ArrayList<>());
+        MetaPointLocatorRT.ScheduledUpdateTimeout scheduledUpdateTimeout = metaPointLocatorRT.new ScheduledUpdateTimeout(123456L);
 
         //when:
-        executionDelayTimeout.run(123456L);
+        scheduledUpdateTimeout.run(123456L);
 
         //then:
         verify(dataPoint, times(expectedInvocationTimes)).updatePointValue(any(PointValueTime.class));

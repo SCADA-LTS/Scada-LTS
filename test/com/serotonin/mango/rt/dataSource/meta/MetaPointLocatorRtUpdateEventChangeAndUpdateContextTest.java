@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 @PrepareForTest({Common.class, Permissions.class, ScriptContextObject.class, ApplicationBeans.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
-public class MetaPointLocatorRTPointChangedPointUpdatedTest {
+public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
 
     private final MetaPointLocatorVO vo = new MetaPointLocatorVO();
     private DataPointRT dataPoint;
@@ -48,13 +48,6 @@ public class MetaPointLocatorRTPointChangedPointUpdatedTest {
         locatorRT = new MetaPointLocatorRT(vo);
         locatorRT.initialize(timer, dataSource, dataPoint);
     }
-
-    @After
-    public void resetMock() {
-        reset(dataPoint);
-    }
-
-
 
     @Test
     public void test_updatePointValue_In_pointChanged_For_ContextChange_Happens_once() throws DataPointStateException {

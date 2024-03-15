@@ -31,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
-public class MetaPointLocatorRTInitializeTest {
+public class MetaPointLocatorRtInitializeTest {
 
     @Parameterized.Parameters(name= "{index}: Update event type: {0}, Expected times of invocation: {1}")
     public static Object[] data() {
@@ -51,10 +51,10 @@ public class MetaPointLocatorRTInitializeTest {
     private DataPointRT dataPoint;
     private MetaDataSourceRT dataSource;
     private final int expectedInvocationTimes;
-    MetaPointLocatorRT metaPointLocatorRT;
+    private final MetaPointLocatorRT metaPointLocatorRT;
     private RealTimeTimer timer;
 
-    public MetaPointLocatorRTInitializeTest (int updateEvent, int expectedInvocationTimes){
+    public MetaPointLocatorRtInitializeTest(int updateEvent, int expectedInvocationTimes){
         this.expectedInvocationTimes = expectedInvocationTimes;
 
         MetaPointLocatorVO metaPointLocatorVO = new MetaPointLocatorVO();

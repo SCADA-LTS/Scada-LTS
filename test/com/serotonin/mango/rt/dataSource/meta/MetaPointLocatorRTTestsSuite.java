@@ -6,10 +6,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MetaPointLocatorRTExecutionDelayTimeoutRunTest.class,
-        MetaPointLocatorRTScheduledUpdateTimeoutRunTest.class,
-        MetaPointLocatorRTPointChangedPointUpdatedTest.class,
-        MetaPointLocatorRTInitializeTest.class,
+        MetaPointLocatorRtExecutionDelayTest.class,
+        MetaPointLocatorRtUpdateEventCronAndStartOfTest.class,
+        MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest.class,
+        MetaPointLocatorRtInitializeTest.class,
 })
 
 public class MetaPointLocatorRTTestsSuite {
