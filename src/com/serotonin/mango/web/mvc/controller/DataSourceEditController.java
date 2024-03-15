@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.util.SqlDataSourceUtils;
 import com.serotonin.mango.vo.CommPortProxy;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -112,7 +113,7 @@ public class DataSourceEditController extends ParameterizableViewController {
         }
         model.put("userPoints", userPoints);
         model.put("analogPoints", analogPoints);
-
+        model.put("selectWithLimitLowerCaseRegex", SqlDataSourceUtils.selectWithLimitLowerCaseEscape());
         return new ModelAndView(getViewName(), model);
     }
 

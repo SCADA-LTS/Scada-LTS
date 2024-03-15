@@ -86,11 +86,20 @@
 
   function saveDataSourceImpl() {
       let statementLimit = $get("statementLimit");
+      let selectStatement = $get("selectStatement");
+      let selectStatementLowerCase = selectStatement.toLowerCase();
+      let selectWithLimitLowerCaseRegex = new RegExp("${selectWithLimitLowerCaseRegex}");
+      if(statementLimit == 0 && !selectWithLimitLowerCaseRegex.test(selectStatementLowerCase)) {
+        let result = confirm('<fmt:message key="dsEdit.sql.statementLimit.warning"/>');
+        if(!result) {
+           return;
+        }
+      }
       if(isValid(statementLimit)) {
-          DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
+        DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
                   $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
-                  $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-                  $get("jndiResourceName"), $get("statementLimit"), saveDataSourceCB);
+                  $get("password"), selectStatement, $get("rowBasedQuery"), $get("jndiResource"),
+                  $get("jndiResourceName"), statementLimit, saveDataSourceCB);
       } else {
         let message = createValidationMessage("statementLimit","<fmt:message key="badIntegerFormat"/>");
         showDwrMessages([message]);

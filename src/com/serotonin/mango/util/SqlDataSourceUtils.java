@@ -12,6 +12,8 @@ import javax.sql.DataSource;
 
 public final class SqlDataSourceUtils {
 
+    private static final String SELECT_WITH_LIMIT_LOWER_CASE = "select(?:[^;']|(?:'[^']+'))+ limit +\\d+;?\\s*$";
+
     private SqlDataSourceUtils() {}
 
     public static JdbcOperations createJdbcOperations(SqlDataSourceVO vo) throws NamingException {
@@ -48,9 +50,18 @@ public final class SqlDataSourceUtils {
     public static String addLimitIfWithout(String query, int defaultLimit) {
         if(StringUtils.isEmpty(query) || isInvalidValue(query))
             throw new IllegalArgumentException("Select statement cannot be empty!");
-        if(query.toLowerCase().contains(" limit ") || defaultLimit < 1)
-            return query;
-        return reduce(query) + " LIMIT " + defaultLimit;
+        if(isSetLimitSelect(query, defaultLimit))
+            return reduce(query) + " LIMIT " + defaultLimit;
+        return query;
+    }
+
+    public static boolean isSetLimitSelect(String query, int defaultLimit) {
+        String queryLowerCase = query.toLowerCase();
+        return !queryLowerCase.matches(SELECT_WITH_LIMIT_LOWER_CASE) && defaultLimit != 0;
+    }
+
+    public static String selectWithLimitLowerCaseEscape() {
+        return SELECT_WITH_LIMIT_LOWER_CASE.replace("\\", "\\\\");
     }
 
     public static boolean isInvalidValue(String query) {
