@@ -1106,10 +1106,18 @@ function isInt32(state) {
 }
 
 function isIntValueValid(value) {
-    return value === "" || isPositiveInt(value);
+    let trimValue = value;
+    if(typeof value === "string") {
+        let trimValue = value.trim();
+    }
+    return trimValue === "" || isPositiveInt(trimValue)
 }
 
 function isPositiveInt(value) {
-    return isInt32(value) && value >= 0;
+    let trimValue = value.trim();
+    if(typeof value === "string") {
+        let trimValue = value.trim();
+    }
+    return isInt32(trimValue) && trimValue >= 0;
 }
 
