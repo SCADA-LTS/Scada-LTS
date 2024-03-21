@@ -12,7 +12,7 @@
 								elevation="2"
 								color="primary"
 								@click="openModal = !openModal"
-								v-if="componentsEdited.length > 0"
+								v-if="componentsEdited.length > 0 && this.$refs.miscSettingsComponent.isMiscValidated"
 							>
 								<v-icon>mdi-content-save</v-icon>
 							</v-btn>
@@ -387,9 +387,7 @@ export default {
 
 		async componentChanged(object) {
 			let idx = this.componentsEdited.findIndex((x) => x.component == object.component);
-      if(!object.valid) {
-        this.componentsEdited = [];
-      } else if (idx == -1 && object.changed) {
+      if (idx == -1 && object.changed) {
 				this.componentsEdited.push(object);
 			} else if (idx != -1 && !object.changed) {
 				this.componentsEdited.splice(idx, 1);
