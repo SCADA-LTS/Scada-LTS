@@ -17,7 +17,7 @@
  */
 package org.scada_lts.dao.mailingList;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

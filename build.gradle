@@ -16,7 +16,7 @@ compileTestJava.options.encoding = 'UTF-8'
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
-def tomcatVersion = '9.0.53'
+def tomcatVersion = '9.0.86'
 def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
@@ -132,6 +132,16 @@ task runDebug(type: Exec) {
     } else {
         workingDir tomcatDirectory + '/bin'
         commandLine 'sh', './catalina.sh', 'jpda', 'run'
+    }
+}
+
+task stopDebug(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'stop'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'stop'
     }
 }
 

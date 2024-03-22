@@ -1,6 +1,6 @@
 package org.scada_lts.dao.event;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
