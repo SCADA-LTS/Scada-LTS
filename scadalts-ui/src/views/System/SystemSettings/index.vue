@@ -12,7 +12,7 @@
 								elevation="2"
 								color="primary"
 								@click="openModal = !openModal"
-								v-if="componentsEdited.length > 0 && this.$refs.miscSettingsComponent.isMiscValidated"
+								v-if="componentsEdited.length > 0 && checkValidation()"
 							>
 								<v-icon>mdi-content-save</v-icon>
 							</v-btn>
@@ -314,6 +314,7 @@ export default {
 	},
 	data() {
 		return {
+			componentsValidation: {},
 			componentsEdited: [],
 			isUserRoleAdmin: true,
 			systemRunningTime: undefined,
@@ -387,7 +388,8 @@ export default {
 
 		async componentChanged(object) {
 			let idx = this.componentsEdited.findIndex((x) => x.component == object.component);
-      if (idx == -1 && object.changed) {
+			this.componentsValidation[object.component] = object.valid;
+      		if (idx == -1 && object.changed) {
 				this.componentsEdited.push(object);
 			} else if (idx != -1 && !object.changed) {
 				this.componentsEdited.splice(idx, 1);
@@ -428,6 +430,10 @@ export default {
 			);
 			if (this.componentsEdited.length == 0) this.openModal = false;
 		},
+
+		checkValidation(){
+		  return !Object.values(this.componentsValidation).some(valid => valid === false);
+		}
 	},
 	computed: {
 		systemInfoSettings() {

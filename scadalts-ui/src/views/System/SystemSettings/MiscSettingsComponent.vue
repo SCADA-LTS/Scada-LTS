@@ -122,8 +122,7 @@ export default {
 
 	data() {
 		return {
-      isMiscValidated: true,
-			arePathsValid: [],
+			validatedPaths: [],
 			miscSettings: undefined,
 			miscSettingsStore: undefined,
 			isMiscSettingsEdited: false,
@@ -195,7 +194,7 @@ export default {
 				title: 'systemsettings.misc.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
-				validateForm: this.validateForm(this.arePathsValid)
+				valid: this.validateForm(this.validatedPaths)
 			});
 		},
 
@@ -247,33 +246,32 @@ export default {
 		},
     validateGraphicsPath(v) {
       let validGraphicsKey = "validGraphics"
-      if(this.arePathsValid.some(item => item.key === validGraphicsKey)) {
-          this.arePathsValid = this.arePathsValid.filter(item => item.key !== validGraphicsKey);
+      if(this.validatedPaths.some(item => item.key === validGraphicsKey)) {
+          this.validatedPaths = this.validatedPaths.filter(item => item.key !== validGraphicsKey);
       }
       if (v === 'graphics' || v === 'graphics' + path.sep || v.endsWith(path.sep + 'graphics') || v.endsWith(path.sep + 'graphics' + path.sep)) {
-        this.arePathsValid.push({key: validGraphicsKey,value: true})
+        this.validatedPaths.push({key: validGraphicsKey,value: true})
         return true;
       } else {
-        this.arePathsValid.push({key: validGraphicsKey,value: false})
+        this.validatedPaths.push({key: validGraphicsKey,value: false})
         return this.$t("systemsettings.webresource.graphics.path.wrong", {0: path.sep});
       }
     },
     validateUploadsPath(v) {
       let validUploadsKey = "validUploads"
-      if(this.arePathsValid.some(item => item.key === validUploadsKey)) {
-          this.arePathsValid = this.arePathsValid.filter(item => item.key !== validUploadsKey);
+      if(this.validatedPaths.some(item => item.key === validUploadsKey)) {
+          this.validatedPaths = this.validatedPaths.filter(item => item.key !== validUploadsKey);
       }
       if (v === 'uploads' || v === 'uploads' + path.sep || v.endsWith(path.sep + 'uploads') || v.endsWith(path.sep + 'uploads' + path.sep)) {
-        this.arePathsValid.push({key: validUploadsKey, value: true});
+        this.validatedPaths.push({key: validUploadsKey, value: true});
         return true;
       } else {
-        this.arePathsValid.push({key: validUploadsKey, value: false})
+        this.validatedPaths.push({key: validUploadsKey, value: false})
         return this.$t("systemsettings.webresource.uploads.path.wrong", {0: path.sep});
       }
     },
     validateForm(paths) {
       const result = paths.every(item => item.value);
-      this.isMiscValidated = result;
       return result;
     }
 	},

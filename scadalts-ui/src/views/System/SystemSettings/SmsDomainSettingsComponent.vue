@@ -92,6 +92,7 @@ export default {
 				title: 'systemsettings.smsdomain.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 
