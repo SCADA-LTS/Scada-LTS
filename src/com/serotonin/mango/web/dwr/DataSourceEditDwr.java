@@ -105,7 +105,6 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -921,7 +920,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                              int updatePeriods, int updatePeriodType, String driverClassname,
                                              String connectionUrl, String username, String password,
                                              String selectStatement, boolean rowBasedQuery, boolean jndiResource,
-                                             String jndiResourceName) {
+                                             String jndiResourceName, int statementLimit) {
         Permissions.ensureAdmin();
         SqlDataSourceVO ds = (SqlDataSourceVO) Common.getUser()
                 .getEditDataSource();
@@ -948,6 +947,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setSelectStatement(selectStatement);
         ds.setRowBasedQuery(rowBasedQuery);
         ds.setJndiResource(jndiResource);
+        ds.setStatementLimit(statementLimit);
 
         return tryDataSourceSave(ds);
     }
@@ -962,11 +962,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public void sqlTestStatement(String driverClassname, String connectionUrl,
                                  String username, String password, String selectStatement,
                                  boolean rowBasedQuery, boolean jndiResource,
-                                 String jndiResourceName) {
+                                 String jndiResourceName, int statementLimit) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
         SqlDataSourceVO sqlDataSourceVO = createSqlDataSourceVO(driverClassname, connectionUrl, username, password,
-                selectStatement, rowBasedQuery, jndiResource, jndiResourceName);
+                selectStatement, rowBasedQuery, jndiResource, jndiResourceName, statementLimit);
         JdbcOperationsTester tester = new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO);
         tester.start();
         user.setTestingUtility(tester);

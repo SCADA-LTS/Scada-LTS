@@ -35,12 +35,12 @@
         dataSourceToSave.cleanSession=$get("cleanSession");
         dataSourceToSave.brokerMode=$get("brokerMode");
 
-        if(!isIntValueValid(dataSourceToSave.updateAttempts)) {
+        if(isValid(dataSourceToSave.updateAttempts)) {
+            DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+        } else {
             let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
             showDwrMessages([message]);
-        }
-        else {
-            DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+            stopImageFader("dsSaveImg");
         }
   }
   function editPointCBImpl(locator) {
