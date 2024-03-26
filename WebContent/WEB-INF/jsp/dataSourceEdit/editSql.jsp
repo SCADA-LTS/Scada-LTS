@@ -92,6 +92,7 @@
       if(statementLimit == 0 && !selectWithLimitLowerCaseRegex.test(selectStatementLowerCase)) {
         let result = confirm('<fmt:message key="dsEdit.sql.statementLimit.warning"/>');
         if(!result) {
+           stopImageFader("dsSaveImg");
            return;
         }
       }
@@ -103,6 +104,7 @@
       } else {
         let message = createValidationMessage("statementLimit","<fmt:message key="badIntegerFormat"/>");
         showDwrMessages([message]);
+        stopImageFader("dsSaveImg");
       }
   }
   
