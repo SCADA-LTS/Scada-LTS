@@ -1105,3 +1105,19 @@ function isInt32(state) {
     return Number.parseInt(state) === view.getInt32(1);
 }
 
+function isIntValueValid(value) {
+    let trimValue = value;
+    if(typeof value === "string") {
+        let trimValue = value.trim();
+    }
+    return trimValue === "" || isPositiveInt(trimValue)
+}
+
+function isPositiveInt(value) {
+    let trimValue = value.trim();
+    if(typeof value === "string") {
+        let trimValue = value.trim();
+    }
+    return isInt32(trimValue) && trimValue >= 0;
+}
+
