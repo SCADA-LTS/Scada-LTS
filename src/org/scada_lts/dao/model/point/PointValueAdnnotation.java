@@ -23,6 +23,7 @@ package org.scada_lts.dao.model.point;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
+@Deprecated
 public class PointValueAdnnotation {
 
 

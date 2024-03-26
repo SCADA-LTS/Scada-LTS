@@ -9,18 +9,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public enum SvgEnvKeys {
+public enum SvgEnv {
     SVG_ONLY_XML_KEY("svg.validator.only-xml"),
     SVG_VALIDATOR_ENABLED_KEY("svg.validator.enabled"),
     SVG_SCHEMA_PATH_KEY("svg.validator.schemas"),
     SVG_IGNORE_TAGS_KEY("svg.validator.tags.ignore"),
-    SVG_IGNORE_MESSAGES_KEY("svg.validator.messages.ignore");
+    SVG_IGNORE_MESSAGES_KEY("svg.validator.messages.ignore"),
+    SVG_VALIDATOR_DISALLOW_DOCTYPE_DECL_ENABLED_KEY("svg.validator.disallow-doctype-decl.enabled");
 
-    private static final Log LOG = LogFactory.getLog(SvgEnvKeys.class);
+    private static final Log LOG = LogFactory.getLog(SvgEnv.class);
 
     private final String key;
 
-    SvgEnvKeys(String key) {
+    SvgEnv(String key) {
         this.key = key;
     }
 
@@ -43,6 +44,15 @@ public enum SvgEnvKeys {
         } catch (IOException e) {
             LOG.warn(e.getMessage());
             return true;
+        }
+    }
+
+    public static boolean isDisallowDoctypeDeclarationEnabled() {
+        try {
+            return ScadaConfig.getInstance().getBoolean(SVG_VALIDATOR_DISALLOW_DOCTYPE_DECL_ENABLED_KEY.getKey(), false);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 
@@ -83,6 +93,6 @@ public enum SvgEnvKeys {
     }
 
     public static Map<String, String> getConfig() {
-        return Stream.of(SvgEnvKeys.values()).collect(Collectors.toMap(SvgEnvKeys::getKey, a -> get(a.getKey())));
+        return Stream.of(SvgEnv.values()).collect(Collectors.toMap(SvgEnv::getKey, a -> get(a.getKey())));
     }
 }

@@ -19,6 +19,7 @@ public class JsonSettingsMisc implements Serializable {
 
     public JsonSettingsMisc() {}
 
+    @Deprecated(since = "2.7.7.1")
     public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen, boolean hideShortcutDisableFullScreen, int eventPendingLimit, boolean eventPendingCacheEnabled, String webResourceGraphicsPath, String webResourceUploadsPath) {
         this.uiPerformance = uiPerformance;
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;

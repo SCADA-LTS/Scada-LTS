@@ -32,7 +32,6 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
@@ -289,7 +288,7 @@ public class EventService implements MangoEvent {
 				}
 				attachRelationalInfo(results);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 		return results;

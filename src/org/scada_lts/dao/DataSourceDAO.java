@@ -17,7 +17,7 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
+
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;

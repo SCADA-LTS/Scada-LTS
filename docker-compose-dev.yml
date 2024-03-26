@@ -22,7 +22,7 @@ services:
     scadalts:
         image: scadalts/scadalts:latest
         environment:
-            - CATALINA_OPTS=-Xmx512m -Xms512m
+            - CATALINA_OPTS=-Xmx2G -Xms2G
             - JPDA_ADDRESS=0.0.0.0:8000
             - JPDA_TRANSPORT=dt_socket
         ports: 
@@ -33,7 +33,7 @@ services:
         expose: ["8080", "8000"]
         volumes:
             - ./tomcat_log:/usr/local/tomcat/logs:rw
-            - ./tomcat/webapps:/usr/local/tomcat/webapps:rw
+            #- ./tomcat_webapps:/usr/local/tomcat/webapps:rw
         links:
             - database:database
             - hivemq:hivemq
@@ -47,7 +47,7 @@ services:
             - /usr/local/tomcat/bin/catalina.sh
             - jpda
             - run
-    hivemq:
+    mqtt:
         image: hivemq/hivemq4:latest
         ports: 
             - "8081:8080"

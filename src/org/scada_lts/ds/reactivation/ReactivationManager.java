@@ -5,11 +5,12 @@ import com.serotonin.mango.vo.dataSource.http.HttpRetrieverDataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.utils.Key;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.quartz.ScadaScheduler;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.AbstractMap;
 import java.util.Date;
@@ -33,15 +34,10 @@ public class ReactivationManager {
     private ConcurrentHashMap<Integer, Key> sleepDsIndexIdDataSource = new ConcurrentHashMap<>();
 
     private static final ReactivationManager instance = new ReactivationManager();
-    private Scheduler scheduler;
+    private final ScadaScheduler scheduler;
 
     private ReactivationManager() {
-        try {
-            this.scheduler = new StdSchedulerFactory().getScheduler();
-            this.scheduler.start();
-        } catch (SchedulerException e) {
-            LOG.error(e);
-        }
+        this.scheduler = ApplicationBeans.getBean("scadaScheduler", ScadaScheduler.class);
     }
 
     protected void removeInfoAboutJob(String keyNameJob) {
@@ -93,13 +89,7 @@ public class ReactivationManager {
             trigger.setRepeatInterval(interval);
             trigger.setName("Quartz - trigger-" + sj.getClass() + "");
 
-            try {
-                scheduler.scheduleJob(job, trigger);
-            } catch (SchedulerException e) {
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace(e);
-                }
-            }
+            scheduler.schedule(job, trigger);
         }
 
     }
@@ -115,9 +105,8 @@ public class ReactivationManager {
             Key key = sleepDsIndexIdDataSource.get(idDs);
 
             if (scheduler.isStarted() && key != null) {
-                Trigger[] trigers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
-                if ((trigers != null) && (trigers.length > 0)) {
-                    return scheduler.getTriggersOfJob(key.getName(), key.getGroup())[0].getNextFireTime().getTime() - new Date().getTime();
+                if (scheduler.checkFire(key)) {
+                    return scheduler.getTimeToNextFire(key);
                 } else {
                     return ERROR;
                 }
@@ -135,8 +124,7 @@ public class ReactivationManager {
         try {
             Key key = sleepDsIndexIdDataSource.get(idDs);
             if (key != null) {
-                Trigger[] triggers = scheduler.getTriggersOfJob(key.getName(), key.getGroup());
-                if (triggers.length > 0) {
+                if (scheduler.checkFire(key)) {
                     result = true;
                 } else {
                     sleepDsIndexIdDataSource.remove(idDs);
@@ -154,10 +142,8 @@ public class ReactivationManager {
         Key key = sleepDsIndexIdDataSource.get(idDs);
         try {
             if (key != null) {
-                scheduler.deleteJob(key.getName(), key.getGroup());
+                scheduler.stop(key);
             }
-        } catch (SchedulerException e) {
-            LOG.error(e);
         } finally {
             if (key != null) {
                 removeInfoAboutJob(key.getName());

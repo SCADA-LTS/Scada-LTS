@@ -14,7 +14,7 @@ public class ChangePointValueDataPointRtMock extends DataPointRT implements IDat
     private Iterator<PointValueTime> pointValueTimes;
 
     public ChangePointValueDataPointRtMock(List<PointValueTime> pointValueTimes) {
-        super(null);
+        super(new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE), null);
         this.pointValueTimes = pointValueTimes.iterator();
     }
 

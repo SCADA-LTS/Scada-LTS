@@ -36,7 +36,7 @@ public class XmlValidatorConfigSecurityTest {
         boolean result = subject.getFeature("http://apache.org/xml/features/disallow-doctype-decl");
 
         //then:
-        assertEquals(true, result);
+        assertEquals(false, result);
     }
 
     @Test

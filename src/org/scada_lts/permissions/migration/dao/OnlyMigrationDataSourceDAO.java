@@ -17,7 +17,7 @@
  */
 package org.scada_lts.permissions.migration.dao;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;

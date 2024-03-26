@@ -99,11 +99,11 @@ public class MessagingChannelsMultiThreadTest {
         };
 
         DataPointVO dataPoint1 = TestUtils.newPointSettable(1, -1);
-        dataPointRT1 = new DataPointRT(dataPoint1);
+        dataPointRT1 = new DataPointRT(dataPoint1, null);
         DataPointVO dataPoint2 = TestUtils.newPointSettable(2, -1);
-        dataPointRT2 = new DataPointRT(dataPoint2);
+        dataPointRT2 = new DataPointRT(dataPoint2, null);
         DataPointVO dataPoint3 = TestUtils.newPointSettable(3, -1);
-        dataPointRT3 = new DataPointRT(dataPoint3);
+        dataPointRT3 = new DataPointRT(dataPoint3, null);
 
     }
 

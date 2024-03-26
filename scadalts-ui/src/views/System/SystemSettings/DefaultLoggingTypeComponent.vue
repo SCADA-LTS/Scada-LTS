@@ -82,6 +82,7 @@ export default {
 				title: 'systemsettings.loggingtype.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 		sumarizeDataChanges() {

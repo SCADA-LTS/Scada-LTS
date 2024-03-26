@@ -230,6 +230,7 @@ public class EmportDwr extends BaseDwr {
 				JsonObject root = value.toJsonObject();
 				ImportTask importTask = new ImportTask(reader, root, bundle,
 						user);
+				Common.ctx.getBackgroundProcessing().addWorkItem(importTask);
 				user.setImportTask(importTask);
 				response.addData("importStarted", true);
 			} else {

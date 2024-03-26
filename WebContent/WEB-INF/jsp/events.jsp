@@ -123,21 +123,13 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(!isValid(eventId.value)) {
+        if(!isIntValueValid(eventId.value)) {
             $set("searchMessage", $get("eventIdLabel") + " - Incorrect input data type");
-        } else if(!isValid(maxResults.value)) {
+        } else if(!isIntValueValid(maxResults.value)) {
             $set("searchMessage", $get("maxResultsLabel") + " - Incorrect input data type");
         } else {
             doSearchOld();
         }
-    }
-
-    function isValid(value) {
-      return value == "" || isPositiveInt(value);
-    }
-
-    function isPositiveInt(value) {
-      return isInt32(value) && value >= 0;
     }
 
     function silenceAll() {

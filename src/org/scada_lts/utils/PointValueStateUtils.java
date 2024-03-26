@@ -1,11 +1,14 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.dataImage.PointValueState;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.RestApiSource;
+import com.serotonin.mango.vo.User;
 import com.serotonin.util.ObjectUtils;
 
 public final class PointValueStateUtils {
@@ -63,11 +66,12 @@ public final class PointValueStateUtils {
     public static boolean isBackdated(PointValueTime newValue, PointValueState oldState, SetPointSource source) {
         return newValue != null && !oldState.isEmpty()
                 && newValue.getTime() < oldState.getNewValue().getTime()
-                && !isSetPointHandler(source);
+                && !isSetPoint(source);
     }
 
-    public static boolean isSetPointHandler(SetPointSource source) {
-        return source instanceof SetPointHandlerRT;
+    public static boolean isSetPoint(SetPointSource source) {
+        return source instanceof SetPointHandlerRT || source instanceof User
+                || source instanceof PointLinkSetPointSource || source instanceof RestApiSource;
     }
 
     private static boolean isChange(PointValueTime newValue, PointValueState oldState,

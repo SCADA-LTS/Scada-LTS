@@ -17,7 +17,7 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -100,6 +100,26 @@ public class LoggedUsers implements ILoggedUsers {
         }
     }
 
+    @Override
+    public Collection<User> getUsers() {
+        lock.readLock().lock();
+        try {
+            return loggedUsers.values();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public User getUser(int id) {
+        lock.readLock().lock();
+        try {
+            return loggedUsers.get(id);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
     private static void update(User user, Map<Integer, User> loggedUsers,
                                Map<Integer, List<HttpSession>> loggedSessions,
                                ThreadLocal<String> blocked) {

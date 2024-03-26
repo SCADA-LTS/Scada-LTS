@@ -249,14 +249,7 @@ abstract public class BaseDwr {
 
         return c;
     }
-    protected String getOwnerNameOfChangePointValue(String pointvalue){
-        PointValueAdnnotationsDAO p = new PointValueAdnnotationsDAO();
-        //PointValueCache pvc = new PointValueCache();
-        //point
-        UserDao userDao = new UserDao();
-        User a =userDao.getUser(1);
-        return a.getUsername();
-    }
+
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 

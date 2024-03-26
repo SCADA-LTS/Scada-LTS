@@ -77,5 +77,11 @@ public interface MangoPointValues {
 	long getEndTime(List<Integer> dataPointIds);
 	
 	List<Long> getFiledataIds();
+
+	PointValueTime savePointValueSync(int pointId,
+									  PointValueTime pointValue, SetPointSource source);
+
+	void savePointValueAsync(int pointId, PointValueTime pointValue,
+							 SetPointSource source);
 	
 }

@@ -18,6 +18,8 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.*;
+import org.scada_lts.web.beans.GetApplicationBeans;
+import org.springframework.context.ApplicationContext;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 import utils.ScheduledInactiveEventTestUtils;
@@ -81,7 +83,9 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
                                                               boolean dailyLimitSentEmails,
                                                               CommunicationChannelType type,
                                                               int invokeUnscheduleEventTimes) {
-
+        GetApplicationBeans getApplicationBeans = new GetApplicationBeans();
+        ApplicationContext applicationContext = mock(ApplicationContext.class);
+        getApplicationBeans.setApplicationContext(applicationContext);
         this.invokeUnscheduleEventTimes = invokeUnscheduleEventTimes;
         this.channelType = type;
         this.dailyLimitSentEmails = dailyLimitSentEmails;

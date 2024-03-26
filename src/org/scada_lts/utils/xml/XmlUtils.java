@@ -2,6 +2,7 @@ package org.scada_lts.utils.xml;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.svg.SvgEnv;
 import org.scada_lts.utils.security.SafeFile;
 import org.scada_lts.utils.security.SafeMultipartFile;
 import org.scada_lts.utils.security.SafeZipEntry;
@@ -26,7 +27,7 @@ public final class XmlUtils {
     private XmlUtils() {}
 
     public static Validator newRestrictionValidator(Schema schema) throws SAXNotSupportedException, SAXNotRecognizedException {
-        return newValidator(schema, a -> false, a -> false);
+        return newValidator(schema, a -> false, a -> false, true);
     }
 
     public static Validator newValidator(Schema schema, Predicate<String> isIgnoreErrorMsg) throws SAXNotSupportedException, SAXNotRecognizedException {
@@ -36,9 +37,16 @@ public final class XmlUtils {
     public static Validator newValidator(Schema schema,
                                          Predicate<String> isIgnoreErrorMsg,
                                          Predicate<String> isIgnoreWarnMsg) throws SAXNotSupportedException, SAXNotRecognizedException {
+        return newValidator(schema, isIgnoreErrorMsg, isIgnoreWarnMsg, SvgEnv.isDisallowDoctypeDeclarationEnabled());
+    }
+
+    public static Validator newValidator(Schema schema,
+                                         Predicate<String> isIgnoreErrorMsg,
+                                         Predicate<String> isIgnoreWarnMsg,
+                                         boolean disallowDoctypeDeclarationEnabled) throws SAXNotSupportedException, SAXNotRecognizedException {
         Validator validator = schema.newValidator();
         validator.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        validator.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        validator.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disallowDoctypeDeclarationEnabled);
         validator.setFeature("http://xml.org/sax/features/external-general-entities", false);
         validator.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         validator.setErrorHandler(new ErrorHandler() {
@@ -69,9 +77,13 @@ public final class XmlUtils {
     }
 
     public static DocumentBuilderFactory newDocumentBuilderFactory() throws ParserConfigurationException {
+        return newDocumentBuilderFactory(SvgEnv.isDisallowDoctypeDeclarationEnabled());
+    }
+
+    public static DocumentBuilderFactory newDocumentBuilderFactory(boolean disallowDoctypeDeclarationEnabled) throws ParserConfigurationException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disallowDoctypeDeclarationEnabled);
         documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);

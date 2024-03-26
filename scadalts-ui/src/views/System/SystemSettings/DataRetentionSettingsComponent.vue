@@ -194,6 +194,7 @@ export default {
 				title: 'systemsettings.dataRetention.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

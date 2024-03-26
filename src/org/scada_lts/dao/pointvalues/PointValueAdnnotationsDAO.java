@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
-import org.scada_lts.dao.PointValuesWithAdnotationAboutChangeOwner;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,7 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation>, PointValuesWithAdnotationAboutChangeOwner<PointValueAdnnotation> {
+
+@Deprecated
+public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation> {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueAdnnotationsDAO.class);
 	
@@ -137,16 +138,6 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 			instance = new PointValueAdnnotationsDAO();
 		}
 		return instance;
-	}
-
-	@Override
-	public List<PointValueAdnnotation> findAllWithAdnotationsAboutChangeOwner() {
-		return (List<PointValueAdnnotation>) DAO.getInstance().getJdbcTemp().query(POINT_VALUE_ADNNOTATIONS_SELECT_WITH_OWNER_OF_CHANGE, new Object[]{ }, new PointValueAdnnotationRowMapperWithAdnnotationAboutChangeOwner());
-	}
-
-	@Override
-	public List<PointValueAdnnotation> findAllWithUserName() {
-		return null;
 	}
 
 	@Override

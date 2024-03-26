@@ -37,7 +37,9 @@ public class ReportPointInfo {
     public String getExtendedName() {
         return deviceName + " - " + pointName;
     }
-
+    public String getExtendedNameForReport() {
+        return ImageChartUtils.calculatePointNameForReport(getExtendedName());
+    }
     public int getReportPointId() {
         return reportPointId;
     }

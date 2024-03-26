@@ -18,7 +18,7 @@ package org.scada_lts.dao;
  *
  */
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.apache.commons.logging.Log;

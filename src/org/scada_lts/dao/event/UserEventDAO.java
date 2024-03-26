@@ -137,12 +137,6 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		}
 	}
 
-
-	@Override
-	public List<UserEvent> findAllWithUserName() {
-		return null;
-	}
-
 	@Override
 	public List<UserEvent> findAll() {
 		return (List<UserEvent>) DAO.getInstance().getJdbcTemp().query(USER_EVENT_SELECT, new Object[]{ }, new UserEventRowMapper());

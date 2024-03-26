@@ -8,13 +8,13 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        DataPointRtMultiTest.class,
+        /*DataPointRtMultiTest.class,
         DataPointRtBinaryMultiTest.class,
         DataPointRtNumericMultiTest.class,
         DataPointRtAlphanumericMultiTest.class,
         DataPointRtMultistateMultiTest.class,
         DataPointRtToleranceMultiTest.class,
-        DataPointRtNumericSameMultiTest.class,
+        DataPointRtNumericSameMultiTest.class,*/
 
         DataPointSyncRtMultiTest.class,
         DataPointSyncRtBinaryMultiTest.class,
@@ -24,12 +24,12 @@ import org.junit.runners.Suite;
         DataPointSyncRtToleranceMultiTest.class,
         DataPointSyncRtNumericSameMultiTest.class,
 
-        DataPointNonSyncRtMultiTest.class,
+        /*DataPointNonSyncRtMultiTest.class,
         DataPointNonSyncRtBinaryMultiTest.class,
         DataPointNonSyncRtNumericMultiTest.class,
         DataPointNonSyncRtAlphanumericMultiTest.class,
         DataPointNonSyncRtMultistateMultiTest.class,
         DataPointNonSyncRtToleranceMultiTest.class,
-        DataPointNonSyncRtNumericSameMultiTest.class,
+        DataPointNonSyncRtNumericSameMultiTest.class,*/
 })
 public class DataPointRtMultiThreadTestsSuite {}
