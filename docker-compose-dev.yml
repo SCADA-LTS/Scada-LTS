@@ -36,7 +36,9 @@ services:
             #- ./tomcat_webapps:/usr/local/tomcat/webapps:rw
         links:
             - database:database
-            - hivemq:hivemq
+            - mqtt:mqtt
+            - amqp:amqp
+            - smtp4dev:smtp4dev
         command:
             - /usr/bin/wait-for-it
             - --host=database
@@ -49,7 +51,27 @@ services:
             - run
     mqtt:
         image: hivemq/hivemq4:latest
+        environment:
+            HIVEMQ_DEFAULT_USER: "admin"
+            HIVEMQ_DEFAULT_PASS: "hivemq"
         ports: 
             - "8081:8080"
             - "1883:1883"
         expose: ["8081", "1883"]
+    amqp:
+        image: library/rabbitmq:management
+        environment:
+            RABBITMQ_DEFAULT_USER: "admin"
+            RABBITMQ_DEFAULT_PASS: "rabbitmq"
+            RABBITMQ_DEFAULT_VHOST: "/"
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+        expose: ["15672", "5672"]
+    smtp4dev:
+        image: rnwood/smtp4dev:latest
+        ports:
+            - '5000:80'
+            - '25:25'
+            - '143:143'
+        expose: ["5000", "25", "143"]
