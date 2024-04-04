@@ -43,7 +43,7 @@ class MessagingChannelsImpl implements MessagingChannels {
     @Override
     public void initChannel(DataPointRT dataPoint, Supplier<MessagingChannel> create) {
         try {
-            getChannel(dataPoint).orElseGet(() -> operationChannels.createChannelIfNotExists(dataPoint.getId(), a -> create.get()));
+            getChannelIfOpen(dataPoint).orElseGet(() -> operationChannels.createChannelIfNotExists(dataPoint.getId(), a -> create.get()));
         } catch (MessagingChannelException e) {
             throw e;
         } catch (Exception e) {
@@ -53,7 +53,7 @@ class MessagingChannelsImpl implements MessagingChannels {
 
     @Override
     public void publish(DataPointRT dataPoint, String message) {
-        getChannel(dataPoint).ifPresent(channel -> {
+        getChannelIfOpen(dataPoint).ifPresent(channel -> {
             try {
                 channel.publish(message);
             } catch (MessagingChannelException e) {
@@ -85,8 +85,11 @@ class MessagingChannelsImpl implements MessagingChannels {
                 "operationChannels=" + operationChannels + '}';
     }
 
-    private Optional<MessagingChannel> getChannel(DataPointRT dataPoint) {
+    private Optional<MessagingChannel> getChannelIfOpen(DataPointRT dataPoint) {
         MessagingChannel channel = operationChannels.getChannels().get(dataPoint.getId());
-        return Optional.ofNullable(channel);
+        if(channel != null && channel.isOpen())
+            return Optional.of(channel);
+        removeChannel(dataPoint);
+        return Optional.empty();
     }
 }
