@@ -123,9 +123,9 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(!isIntValueValid(eventId.value)) {
+        if(!isValid(eventId.value)) {
             $set("searchMessage", $get("eventIdLabel") + " - Incorrect input data type");
-        } else if(!isIntValueValid(maxResults.value)) {
+        } else if(!isValid(maxResults.value)) {
             $set("searchMessage", $get("maxResultsLabel") + " - Incorrect input data type");
         } else {
             doSearchOld();
