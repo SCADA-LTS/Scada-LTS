@@ -4,6 +4,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
 import org.scada_lts.login.ILoggedUsers;
 import com.serotonin.mango.vo.User;
@@ -163,10 +164,10 @@ public class ApplicationBeans {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
             } catch (NoSuchBeanDefinitionException | IllegalStateException ex) {
-                LOG.warn(ex);
+                LOG.warn("beanName: " + beanName + ", type: " + clazz.getName() + ", " +  LoggingUtils.exceptionInfo(ex));
                 return Optional.empty();
             } catch (Exception ex) {
-                LOG.error(ex.getMessage(), ex);
+                LOG.error("beanName: " + beanName + ", type: " + clazz.getName() + ", " + LoggingUtils.exceptionInfo(ex), ex);
                 return Optional.empty();
             }
         }
@@ -176,7 +177,7 @@ public class ApplicationBeans {
         try {
             return get(beanName, clazz);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error("beanName: " + beanName + ", type: " + clazz.getName() + ", " + LoggingUtils.exceptionInfo(ex), ex);
             return null;
         }
     }
