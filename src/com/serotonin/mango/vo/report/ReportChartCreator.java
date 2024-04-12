@@ -460,6 +460,7 @@ public class ReportChartCreator {
         private TimeSeries numericTimeSeries;
         private DiscreteTimeSeries discreteTimeSeries;
         private AbstractDataQuantizer quantizer;
+        private HashMap<String, Integer> nameCount = new HashMap<>();
 
         public StreamHandler(long start, long end, int imageWidth, boolean createExportFile, ResourceBundle bundle) {
             pointStatistics = new ArrayList<PointStatistics>();
@@ -489,6 +490,8 @@ public class ReportChartCreator {
 
         public void startPoint(ReportPointInfo pointInfo) {
             donePoint();
+
+            changeNameDuplicates(pointInfo);
 
             point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
             point.setName(pointInfo.getExtendedNameForReport());
@@ -591,6 +594,17 @@ public class ReportChartCreator {
                 ImageChartUtils.addSecond(numericTimeSeries, time, MangoValue.numberValue(value));
             else if (discreteTimeSeries != null)
                 discreteTimeSeries.addValueTime(new PointValueTime(value, time));
+        }
+
+        public void changeNameDuplicates(ReportPointInfo pointInfo) {
+            String extendedName = pointInfo.getExtendedNameForReport();
+            if (nameCount.containsKey(extendedName)) {
+                int count = nameCount.get(extendedName);
+                nameCount.put(extendedName, count + 1);
+                pointInfo.setPointName(pointInfo.getPointName() + " (" + count + ")");
+            } else {
+                nameCount.put(extendedName, 1);
+            }
         }
     }
 }

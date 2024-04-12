@@ -142,7 +142,7 @@ public class ImageChartUtils {
             int intervalIndex = 1;
             for (int i = 0; i < pointTimeSeriesCollection.getDiscreteSeriesCount(); i++) {
                 DiscreteTimeSeries dts = pointTimeSeriesCollection.getDiscreteTimeSeries(i);
-                TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
+                TimeSeries ts = new TimeSeries(dts.getName(), null, null);
 
                 for (PointValueTime pvt : dts.getValueTimes())
                     ImageChartUtils.addSecond(ts, pvt.getTime(),
