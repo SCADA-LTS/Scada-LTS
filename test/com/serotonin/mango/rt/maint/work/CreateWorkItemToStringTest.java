@@ -1,6 +1,6 @@
 package com.serotonin.mango.rt.maint.work;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -12,14 +12,14 @@ import org.scada_lts.mango.service.SystemSettingsService;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SystemSettingsService.class})
+@PrepareForTest({SystemSettingsService.class, AbstractBeforeAfterWorkItem.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class CreateWorkItemToStringTest {
 
-    @BeforeClass
-    public static void config() throws Exception {
+    @Before
+    public void config() throws Exception {
         SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);
         PowerMockito.whenNew(SystemSettingsService.class)
                 .withNoArguments()
