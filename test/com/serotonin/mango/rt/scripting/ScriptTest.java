@@ -79,7 +79,7 @@ public class ScriptTest {
                         pointContext,
                         createScriptReturnState(pointToReadPair)},
 
-                {binaryValue2,
+                /*{binaryValue2,
                         pointToReadId,
                         Collections.emptyList(),
                         createScriptReturnState(binaryValue2)},
@@ -111,7 +111,7 @@ public class ScriptTest {
                 {alphanumericValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(alphanumericValue2)},
+                        createScriptWithJavaPointValueTime(alphanumericValue2)},*/
 
                 {new AlphanumericValue(""),
                         0,

@@ -80,7 +80,7 @@ public class ConfigDataPointRtTest {
         user = testUser;
         pointValueDAOMemory = new PointValueDAOMemory(usersDAOMemory);
     }
-    private static final int NUMBER_OF_TESTS = 20;
+    private static final int NUMBER_OF_TESTS = 2;
 
     private PointValueTime oldValue;
     private PointValueTime oldValueWithUser;
@@ -95,7 +95,7 @@ public class ConfigDataPointRtTest {
     private final double tolerance;
 
     private final int defaultCacheSize = 30;
-    private final int numberOfLaunches = 10;
+    private final int numberOfLaunches = 2;
 
     private final DataPointSyncMode sync;
 

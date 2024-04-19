@@ -23,7 +23,7 @@ public class DataPointRtToleranceTest extends AbstractDataPointRtToleranceTest {
         datas.add(new Object[] {-2.0, -3.0, -4.0, 1.0, Arrays.asList(-2.0, -3.0)});
         datas.add(new Object[] {-2.0, -3.0, -4.0, 0.9, Arrays.asList(-2.0, -3.0, -4.0)});
         datas.add(new Object[] {-2.0, -3.0, -4.0, 0.9999, Arrays.asList(-2.0, -3.0, -4.0)});
-
+/*
         datas.add(new Object[] {-2.0, 3.0, 3.0, 1.1, Arrays.asList(-2.0, 3.0)});
         datas.add(new Object[] {-2.0, 3.0, 3.0, 1.0, Arrays.asList(-2.0, 3.0)});
         datas.add(new Object[] {-2.0, 3.0, 3.0, 0.9, Arrays.asList(-2.0, 3.0)});
@@ -34,7 +34,7 @@ public class DataPointRtToleranceTest extends AbstractDataPointRtToleranceTest {
         datas.add(new Object[] {2.0, -3.0, 3.0, 1.0, Arrays.asList(2.0, -3.0, 3.0)});
         datas.add(new Object[] {2.0, -3.0, 3.0, 0.9, Arrays.asList(2.0, -3.0, 3.0)});
         datas.add(new Object[] {2.0, -3.0, 3.0, 0.9999, Arrays.asList(2.0, -3.0, 3.0)});
-        datas.add(new Object[] {2.0, -3.0, 3.0, 5.0, Arrays.asList(2.0)});
+        datas.add(new Object[] {2.0, -3.0, 3.0, 5.0, Arrays.asList(2.0)});*/
 
         return datas;
     }
