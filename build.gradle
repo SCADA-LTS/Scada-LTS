@@ -219,5 +219,6 @@ test {
         includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
         includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
+        includeTestsMatching "com.serotonin.mango.util.StartStopDataPointsUtilsTestsSuite"
     }
 }

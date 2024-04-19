@@ -49,7 +49,11 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
 
     @Override
     protected void savePointValue(PointValueTime newValue, SetPointSource source,
-                                boolean async) {
+                                  boolean async) {
+        if(isBlocked()) {
+            return;
+        }
+
         // Null values are not very nice, and since they don't have a specific
         // meaning they are hereby ignored.
         if (newValue == null)

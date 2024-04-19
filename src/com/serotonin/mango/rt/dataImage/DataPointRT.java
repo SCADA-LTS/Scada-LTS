@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.scada_lts.utils.PointValueStateUtils.isSetPoint;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
+public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 
@@ -197,7 +197,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	}
 
 	protected void savePointValue(PointValueTime newValue, SetPointSource source,
-			boolean async) {
+								  boolean async) {
+		if(isBlocked()) {
+			return;
+		}
+
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
 		if (newValue == null)
