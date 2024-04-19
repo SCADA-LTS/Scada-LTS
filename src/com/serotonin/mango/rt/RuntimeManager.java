@@ -119,12 +119,11 @@ public class RuntimeManager {
 
 
 	private volatile boolean started = false;
-	private volatile boolean startedDataPoints = false;
 
 	//
 	// Lifecycle
 	synchronized public void initialize(boolean safe) {
-		if (started || startedDataPoints)
+		if (started)
 			throw new ShouldNeverHappenException(
 					"RuntimeManager already started");
 
@@ -1076,21 +1075,12 @@ public class RuntimeManager {
 		return started;
 	}
 
-	public boolean isStartedDataPoints() {
-		return startedDataPoints;
-	}
-
 	private void startPoints() {
-		try {
-			DataPointService dataPointService = new DataPointService();
-			StartStopDataPointsUtils.startPoints(dataPointService, this::startDataPointSafe, this::getDataPoint, this::getRunningDataSource);
-		} finally {
-			this.startedDataPoints = true;
-		}
+		DataPointService dataPointService = new DataPointService();
+		StartStopDataPointsUtils.startPoints(dataPointService, this::startDataPointSafe, this::getDataPoint, this::getRunningDataSource);
 	}
 
 	private void stopPoints() {
-		this.startedDataPoints = false;
 		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
 	}
 }

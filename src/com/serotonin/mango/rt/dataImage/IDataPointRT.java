@@ -27,8 +27,4 @@ public interface IDataPointRT extends IDataPoint, ILifecycle, TimeoutClient,
     void initialize();
     @Override
     void terminate();
-
-    default boolean isBlocked() {
-        return !Common.ctx.getRuntimeManager().isStartedDataPoints();
-    }
 }

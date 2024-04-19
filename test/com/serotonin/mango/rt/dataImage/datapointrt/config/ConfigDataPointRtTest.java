@@ -215,7 +215,7 @@ public class ConfigDataPointRtTest {
 
         RuntimeManager runtimeManager = new RuntimeManager();
         runtimeManagerMock = mock(RuntimeManager.class);
-        when(runtimeManagerMock.isStartedDataPoints()).thenReturn(true);
+
         doAnswer(a -> {
             runtimeManager.saveDataPoint((DataPointVO)a.getArguments()[0]);
             return null;

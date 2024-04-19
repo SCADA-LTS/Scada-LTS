@@ -198,10 +198,6 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 
 	protected void savePointValue(PointValueTime newValue, SetPointSource source,
 								  boolean async) {
-		if(isBlocked()) {
-			return;
-		}
-
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
 		if (newValue == null)
