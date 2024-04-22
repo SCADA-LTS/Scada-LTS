@@ -15,8 +15,6 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
     private List<IntValuePair> context = new ArrayList<>();
     @JsonRemoteProperty
     private String script;
-    @JsonRemoteProperty
-    private boolean settable;
     private UpdateEventType updateEvent = UpdateEventType.CONTEXT_CHANGE;
     @JsonRemoteProperty
     private String updateCronPattern;
@@ -50,16 +48,6 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
 
     public void setScript(String script) {
         this.script = script;
-    }
-
-    @Override
-    public boolean isSettable() {
-        return settable;
-    }
-
-    @Override
-    public void setSettable(boolean settable) {
-        this.settable = settable;
     }
 
     public UpdateEventType getUpdateEvent() {
@@ -97,7 +85,7 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
     @Override
     public MetaPointLocatorVO parsePointLocatorData() {
         MetaPointLocatorVO  plVO = new MetaPointLocatorVO();
-        plVO.setSettable(this.isSettable());
+        plVO.setSettable(this.isSettable() != null ? this.isSettable() : plVO.isSettable());
         plVO.setDataTypeId(this.getDataTypeId());
         plVO.setContext(this.getContext());
         plVO.setScript(this.getScript());

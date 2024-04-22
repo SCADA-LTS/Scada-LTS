@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import org.scada_lts.monitor.IMonitoredValues;
 import gnu.io.CommPortIdentifier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
@@ -52,7 +53,7 @@ import com.serotonin.mango.view.custom.CustomView;
 import com.serotonin.mango.vo.CommPortProxy;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
-import com.serotonin.monitor.MonitoredValues;
+import org.scada_lts.monitor.ConcurrentMonitoredValues;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.RealTimeTimer;
 import com.serotonin.util.PropertiesUtils;
@@ -76,7 +77,7 @@ public class Common {
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
 
-	public static final MonitoredValues MONITORED_VALUES = new MonitoredValues();
+	public static final IMonitoredValues MONITORED_VALUES = new ConcurrentMonitoredValues();
 
 	private static String environmentProfileName = "env";
 

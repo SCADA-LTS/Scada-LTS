@@ -134,11 +134,6 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
     }
 
 	@Override
-	public List<CompoundEventDetectorVO> findAllWithUserName() {
-		return null;
-	}
-
-	@Override
 	public List<CompoundEventDetectorVO> findAll() {
 		return (List<CompoundEventDetectorVO>) DAO.getInstance().getJdbcTemp().query(COMPOUND_EVENT_DETECTOR_SELECT+" order by name", new Object[]{}, new CompoundEventDetectorRowMapper());
 	}

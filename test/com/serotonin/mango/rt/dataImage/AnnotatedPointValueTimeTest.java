@@ -9,28 +9,24 @@ public class AnnotatedPointValueTimeTest {
     public void annotaionPartShouldExistInAnnotationPointValueTime_Test(){
 
         // that AnnotaionPartWhichShouldBeVisibleOnGui will be visible on GUI after text "User:"
-        String AnnotaionPartWhichShouldBeVisibleOnGui = "admin";
+        String username = "admin";
 
-        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(
-                AnnotaionPartWhichShouldBeVisibleOnGui,
-                new PointValueTimeTest().getMangoValueWithBinaryDataType(),
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(null,
                 0,
                 SetPointSource.Types.USER,
-                SetPointSource.Types.USER);
+                -1);
+        annotatedPointValueTime.setSourceDescriptionArgument(username);
 
-        Assert.assertEquals(AnnotaionPartWhichShouldBeVisibleOnGui, annotatedPointValueTime.getSourceDescriptionArgument());
+        Assert.assertEquals(username, annotatedPointValueTime.getSourceDescriptionArgument());
     }
     @Test
     public void annotaionPartShouldBeAnEmptyInPointValueTime_Test(){
-
-        String EMPTY_STRING = "";
-
         AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(
                 new PointValueTimeTest().getMangoValueWithBinaryDataType(),
                 0,
                 SetPointSource.Types.USER,
-                SetPointSource.Types.USER);
+                -1);
 
-        Assert.assertEquals(EMPTY_STRING, annotatedPointValueTime.getSourceDescriptionArgument());
+        Assert.assertEquals("", annotatedPointValueTime.getSourceDescriptionArgument());
     }
 }

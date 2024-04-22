@@ -158,7 +158,7 @@ public class ReportInstanceDataDAO {
 			LOG.trace("insertInstanceData(Object[] params, final int reportPointId, final String timestampSql) reportPointId:" + reportPointId + ", timestampSql:" + timestampSql);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+		int value = DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSTANCE_DATA_INSERT_FIRST + reportPointId + REPORT_INSTANCE_DATA_INSERT_SECOND + timestampSql);
@@ -167,7 +167,7 @@ public class ReportInstanceDataDAO {
 			}
 		});
 
-		return reportPointId;
+		return value;
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

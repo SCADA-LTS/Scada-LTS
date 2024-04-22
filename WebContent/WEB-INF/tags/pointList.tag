@@ -23,7 +23,7 @@
 
 <table cellpadding="0" cellspacing="0" id="pointProperties" style="display:none; width:60%;">
   <tr>
-    <td valign="top">
+    <td valign="top" style="width: 70%">
       <div class="borderDiv marR marB">
         <table width="100%">
           <tr>
@@ -44,7 +44,7 @@
     </td>
 
     <td>
-      <div id="pointDetails" class="borderDiv marB" style="display: none;">
+      <div id="pointDetails" class="borderDiv marB" style="display: none; width: 100%;position: relative;">
         <table width="100%">
           <tr>
             <td>

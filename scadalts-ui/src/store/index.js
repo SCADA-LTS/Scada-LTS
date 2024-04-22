@@ -74,7 +74,7 @@ export default new Vuex.Store({
 			// useCredentials: true,
 			// credentials: 'same-origin',
 		},
-		webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
+		webSocketUrl: 'http://localhost:8080/Scada-LTS/ws-scada/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },

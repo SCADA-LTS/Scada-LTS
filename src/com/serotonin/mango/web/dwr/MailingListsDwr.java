@@ -94,11 +94,6 @@ public class MailingListsDwr extends BaseDwr {
 		ml.setCronPattern(cronPattern);
 		ml.setCollectInactiveEmails(collectInactiveEmails);
 
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!mailingListDao.isXidUnique(xid, id))
-			response.addContextualMessage("xid", "validate.xidUsed");
-
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {

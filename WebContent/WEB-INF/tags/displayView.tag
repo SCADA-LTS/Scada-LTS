@@ -19,6 +19,14 @@
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
+<script type="text/javascript">
+    dojo.addOnLoad(function() {
+        const viewBackground = document.getElementById("viewBackground");
+        if(!viewBackground.src.includes("spacer.gif")) {
+            loadDefaultSizeContainer('${view.backgroundFilename}','viewBackground');
+        }
+    })
+</script>
 <div id="viewContainer">
 <div id="viewContent" width="${view.width}" height="${view.height}">
   <c:choose>

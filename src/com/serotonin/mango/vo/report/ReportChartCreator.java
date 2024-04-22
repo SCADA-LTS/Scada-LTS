@@ -56,12 +56,15 @@ public class ReportChartCreator {
     /**
      * This image width is specifically chosen such that the report will print on a single page width in landscape.
      */
-    private static final int IMAGE_WIDTH = 930;
-    private static final int IMAGE_HEIGHT = 400;
+    private static final int IMAGE_WIDTH_PIXELS = 930;
+    private static final int IMAGE_HEIGHT_PIXELS = 400;
+    private static final int POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
+    private static final int LINE_LENGTH_IN_LEGEND_LIMIT = 161;
+    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT = 64;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
-    public static final int POINT_IMAGE_WIDTH = 440;
-    public static final int POINT_IMAGE_HEIGHT = 250; // 340
+    public static final int POINT_IMAGE_WIDTH_PIXELS = 440;
+    public static final int POINT_IMAGE_HEIGHT_PIXELS = 250; // 340
 
     String inlinePrefix;
     private String html;
@@ -79,7 +82,7 @@ public class ReportChartCreator {
         this.bundle = bundle;
     }
 
-    /**
+	/**
      * Uses the given parameters to create the data for the fields of this class. Once the content has been created the
      * getters for the fields can be used to retrieve.
      * 
@@ -97,7 +100,7 @@ public class ReportChartCreator {
 
         // Use a stream handler to get the report data from the database.
         StreamHandler handler = new StreamHandler(reportInstance.getReportStartTime(),
-                reportInstance.getReportEndTime(), IMAGE_WIDTH, createExportFile, bundle);
+                reportInstance.getReportEndTime(), IMAGE_WIDTH_PIXELS, createExportFile, bundle);
         // Process the report content with the handler.
         reportDao.reportInstanceData(reportInstance.getId(), handler);
 
@@ -131,7 +134,7 @@ public class ReportChartCreator {
             if (ptsc.hasData()) {
                 if (inlinePrefix != null)
                     model.put("chartName", inlinePrefix + pointStat.getChartName());
-                pointStat.setImageData(ImageChartUtils.getChartData(ptsc, POINT_IMAGE_WIDTH, POINT_IMAGE_HEIGHT));
+                pointStat.setImageData(ImageChartUtils.getChartData(ptsc, POINT_IMAGE_WIDTH_PIXELS, POINT_IMAGE_HEIGHT_PIXELS));
             }
         }
 
@@ -144,8 +147,9 @@ public class ReportChartCreator {
                 // The path comes from the servlet path definition in web.xml.
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
-
-            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH, IMAGE_HEIGHT);
+            int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT);
+            imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
         List<EventInstance> events = null;
@@ -255,7 +259,15 @@ public class ReportChartCreator {
         return pointStatistics;
     }
 
-    public class PointStatistics {
+    public static int getDataPointExtendedNameLengthLimit(){
+        return DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT;
+    }
+
+    public static int getLineLengthInLegendLimit() {
+        return LINE_LENGTH_IN_LEGEND_LIMIT;
+    }
+
+    public static class PointStatistics {
         private final int reportPointId;
         private String name;
         private int dataType;
@@ -268,8 +280,11 @@ public class ReportChartCreator {
         private DiscreteTimeSeries discreteTimeSeries;
         private byte[] imageData;
 
-        public PointStatistics(int reportPointId) {
+        private String inlinePrefix;
+
+        public PointStatistics(int reportPointId, String inlinePrefix) {
             this.reportPointId = reportPointId;
+            this.inlinePrefix = inlinePrefix;
         }
 
         public String getName() {
@@ -475,8 +490,8 @@ public class ReportChartCreator {
         public void startPoint(ReportPointInfo pointInfo) {
             donePoint();
 
-            point = new PointStatistics(pointInfo.getReportPointId());
-            point.setName(pointInfo.getExtendedName());
+            point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
+            point.setName(pointInfo.getExtendedNameForReport());
             point.setDataType(pointInfo.getDataType());
             point.setDataTypeDescription(DataTypes.getDataTypeMessage(pointInfo.getDataType()).getLocalizedMessage(
                     bundle));
@@ -501,7 +516,7 @@ public class ReportChartCreator {
                 quantizer = new NumericDataQuantizer(start, end, imageWidth, this);
 
                 discreteTimeSeries = null;
-                numericTimeSeries = new TimeSeries(pointInfo.getExtendedName(), null, null, Second.class);
+                numericTimeSeries = new TimeSeries(pointInfo.getExtendedNameForReport(), null, null, Second.class);
                 numericTimeSeries.setRangeDescription(point.getTextRenderer().getMetaText());
                 point.setNumericTimeSeries(numericTimeSeries);
                 point.setNumericTimeSeriesColor(colour);
@@ -512,7 +527,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new MultistateDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedName(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())
@@ -523,7 +538,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new BinaryDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedName(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())

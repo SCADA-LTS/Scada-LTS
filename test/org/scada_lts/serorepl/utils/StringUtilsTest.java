@@ -192,7 +192,7 @@ public class StringUtilsTest {
         System.out.println(org.scada_lts.serorepl.utils.StringUtils.replaceMacros(" si            emano \n kolano mariano \nitaliano enter to byl \nczy nie enter? ", System.getProperties()));
     }
 
-    @Test
+    @Test @Deprecated
     public void truncate2Parameters() throws Exception {
         assertEquals(StringUtils.truncate("abcd", 3, "XXX"),
                 org.scada_lts.serorepl.utils.StringUtils.truncate("abcd", 3, "XXX")
