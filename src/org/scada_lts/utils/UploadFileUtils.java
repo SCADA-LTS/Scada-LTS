@@ -335,6 +335,7 @@ public final class UploadFileUtils {
         if (!StringUtils.isEmpty(normalizedPath) && (normalizedPath.endsWith(normalizedFolder)
                 || normalizedPath.endsWith(normalizedFolder + File.separator))) {
             path = getAbsoluteResourcePath(normalizedPath);
+            createPath(path, notExistsPath(), a -> {});
         } else {
             path = getAppContextSystemFilePath(normalizedFolder);
         }

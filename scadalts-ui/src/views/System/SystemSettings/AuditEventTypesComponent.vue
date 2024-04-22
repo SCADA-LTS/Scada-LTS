@@ -133,6 +133,7 @@ export default {
 				title: 'systemsettings.audit.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

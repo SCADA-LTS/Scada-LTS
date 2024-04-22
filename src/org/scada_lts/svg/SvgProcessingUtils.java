@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static org.scada_lts.svg.SvgEnvKeys.*;
+import static org.scada_lts.svg.SvgEnv.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.normalizeSeparator;
 import static org.scada_lts.utils.xml.XmlUtils.newValidator;
@@ -36,7 +36,7 @@ final class SvgProcessingUtils {
     private static final Log LOG = LogFactory.getLog(SvgProcessingUtils.class);
 
     public static boolean isValidatorEnabled() {
-        return SvgEnvKeys.isEnabled();
+        return isEnabled();
     }
 
     public static boolean isSvg(Document document) {

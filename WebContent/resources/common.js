@@ -1114,4 +1114,21 @@ function assigneeEvent(eventId) {
     MiscDwr.assigneeEvent(eventId);
 }
 
+function isValid(value) {
+    let trimValue = trim(value);
+    return trimValue === "" || isPositiveInt(trimValue)
+}
+
+function isPositiveInt(value) {
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0;
+}
+
+function trim(value) {
+    let result = value;
+    if(typeof value === "string") {
+        result = value.trim();
+    }
+    return result;
+}
 
