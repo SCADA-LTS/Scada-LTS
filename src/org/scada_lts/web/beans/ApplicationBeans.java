@@ -4,9 +4,9 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
 import org.scada_lts.login.ILoggedUsers;
-import org.scada_lts.login.LoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -150,34 +150,24 @@ public class ApplicationBeans {
     }
 
     public static ILoggedUsers getLoggedUsersBean() {
-        return getBeanFromContext("loggedUsers", LoggedUsers.class);
+        return getBeanFromContext("loggedUsers", ILoggedUsers.class);
     }
 
-    @Deprecated
     public static class Lazy {
 
         private Lazy() {}
-        @Deprecated
-        public static Optional<UserEventServiceWebSocket> getUserEventServiceWebsocketBean() {
-            return getBeanFromContext("userEventServiceWebSocket", UserEventServiceWebSocket.class);
+
+        public static Optional<ILoggedUsers> getLoggedUsersBean() {
+            return getBeanFromContext("loggedUsers", ILoggedUsers.class);
         }
-        @Deprecated
-        public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
-            return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
-        }
-        @Deprecated
-        public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
-            return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
-        }
-        @Deprecated
         private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
-            } catch (NoSuchBeanDefinitionException ex) {
-                LOG.warn(ex);
+            } catch (NoSuchBeanDefinitionException | IllegalStateException ex) {
+                LOG.warn("beanName: " + beanName + ", type: " + clazz.getName() + ", " +  LoggingUtils.exceptionInfo(ex));
                 return Optional.empty();
             } catch (Exception ex) {
-                LOG.error(ex.getMessage(), ex);
+                LOG.error("beanName: " + beanName + ", type: " + clazz.getName() + ", " + LoggingUtils.exceptionInfo(ex), ex);
                 return Optional.empty();
             }
         }
@@ -187,7 +177,7 @@ public class ApplicationBeans {
         try {
             return get(beanName, clazz);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error("beanName: " + beanName + ", type: " + clazz.getName() + ", " + LoggingUtils.exceptionInfo(ex), ex);
             return null;
         }
     }

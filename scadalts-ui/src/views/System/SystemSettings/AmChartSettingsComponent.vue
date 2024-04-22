@@ -115,6 +115,7 @@ export default {
 				title: 'systemsettings.amcharts.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

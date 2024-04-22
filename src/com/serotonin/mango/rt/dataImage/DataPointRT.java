@@ -84,6 +84,8 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	private final PointValueService pointValueService;
 	private final DataPointServiceWebSocket dataPointServiceWebSocket;
 
+	private volatile boolean initialized;
+
 	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator) {
 		this.vo = vo;
 		this.pointLocator = pointLocator;
@@ -590,6 +592,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 		initializeIntervalLogging();
 		notifyWebSocketStateSubscribers(true);
+		this.initialized = true;
 	}
 
 	public void terminate() {
@@ -603,6 +606,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 		Common.ctx.getEventManager().cancelEventsForDataPoint(vo.getId());
 		notifyWebSocketStateSubscribers(false);
+		this.initialized = false;
 	}
 
 	public void joinTermination() {
@@ -627,5 +631,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 	public boolean isSetUnreliable() {
 		return DataPointUnreliableUtils.isSetUnreliable(this, true);
+  }
+  
+	public boolean isInitialized() {
+		return initialized;
 	}
 }

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
@@ -275,6 +276,8 @@ public class RuntimeManager {
 		for (PointLinkRT pointLink : pointLinks)
 			stopPointLink(pointLink.getId());
 
+		markAsTerminatingAll();
+
 		// First stop meta data sources.
 		for (DataSourceRT dataSource : runningDataSources) {
 			if (dataSource instanceof MetaDataSourceRT)
@@ -400,7 +403,9 @@ public class RuntimeManager {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
 				return;
-
+			if(dataSource instanceof PollingDataSource) {
+				((PollingDataSource)dataSource).markAsTerminating();
+			}
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -412,6 +417,14 @@ public class RuntimeManager {
 
 			dataSource.joinTermination();
 			LOG.info("Data source '" + dataSource.getName() + "' stopped");
+		}
+	}
+
+	public void markAsTerminatingAll() {
+		for(DataSourceRT dataSource: runningDataSources) {
+			if(dataSource instanceof PollingDataSource) {
+				((PollingDataSource)dataSource).markAsTerminating();
+			}
 		}
 	}
 

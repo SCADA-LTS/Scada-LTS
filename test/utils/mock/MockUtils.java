@@ -27,15 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class MockUtils {
 
     public static void configMock(RuntimeManager runtimeManager, User user) throws Exception {
-        ContextWrapper contextWrapper = mock(ContextWrapper.class);
-        ServletContext servletContext = new ServletContextMock(a ->
-                a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
-        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
-
-        Common.ctx = contextWrapper;
-        when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
-        when(contextWrapper.getServletContext()).thenReturn(servletContext);
-        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
+        configMockContextWrapper(runtimeManager);
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)
@@ -65,6 +57,18 @@ public class MockUtils {
         when(Common.getEnvironmentProfile()).thenReturn(propertiesUtils);
     }
 
+    public static void configMockContextWrapper(RuntimeManager runtimeManager) {
+        ContextWrapper contextWrapper = mock(ContextWrapper.class);
+        ServletContext servletContext = new ServletContextMock(a ->
+                a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
+        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
+  
+        when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
+        when(contextWrapper.getServletContext()).thenReturn(servletContext);
+        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
+        Common.ctx = contextWrapper;
+    }
+  
     public static void configDaoMock() throws Exception {
         mockStatic(ApplicationBeans.class);
 

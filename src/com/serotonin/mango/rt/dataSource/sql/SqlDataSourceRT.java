@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,6 +48,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.springframework.jdbc.core.*;
 
+import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createJdbcOperations;
 
 /**
@@ -116,7 +118,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 	@Override
 	protected void doPoll(long time) {
 		if (jdbcOperations == null) {
-			LOG.warn("[SQL] jdbcOperations is null!");
+			LOG.warn("[SQL] jdbcOperations is null! " + LoggingUtils.dataSourceInfo(this));
 			return;
 		}
 
@@ -124,24 +126,25 @@ public class SqlDataSourceRT extends PollingDataSource {
 		// wouldn't need to bother polling at all,
 		// but for now this will do.
 		if (StringUtils.isEmpty(vo.getSelectStatement())) {
-			LOG.warn("[SQL] selectStatement is null!");
+			LOG.warn("[SQL] selectStatement is null! " + LoggingUtils.dataSourceInfo(this));
 			return;
 		}
 
 		try {
 
 			if (timeoutCount >= timeoutsToReconnect) {
-				LOG.warn("[SQL] Trying to reconnect !");
+				LOG.warn("[SQL] Trying to reconnect ! " + LoggingUtils.dataSourceInfo(this));
 				timeoutCount = 0;
 				initialize();
 			} else {
+				String selectStatement = addLimitIfWithout(vo.getSelectStatement(), vo.getStatementLimit());
 				if (vo.isRowBasedQuery()) {
-					jdbcOperations.query(vo.getSelectStatement(), resultSet -> {
+					jdbcOperations.query(selectStatement, resultSet -> {
 						updateByRowId(time, resultSet);
 						return null;
 					});
 				} else {
-					jdbcOperations.query(vo.getSelectStatement(), resultSet -> {
+					jdbcOperations.query(selectStatement, resultSet -> {
 						updateByColumn(time, resultSet);
 						return null;
 					});
@@ -152,7 +155,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 			raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 					getExceptionMessage(e));
 			timeoutCount++;
-			LOG.error("[SQL] Poll Failed !: " + e.getMessage());
+			LOG.error("[SQL] Poll Failed !: " + LoggingUtils.dataSourceInfo(this) + "," + LoggingUtils.exceptionInfo(e));
 		}
 	}
 

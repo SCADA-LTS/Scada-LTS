@@ -111,7 +111,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         if (serverPortNumber < 0) {
             response.addContextualMessage("serverPortNumber",VALIDATE_INVALID_VALUE);
         }
-        if (updateAttempts < 0 || updateAttempts > 10) {
+        if (updateAttempts < 0) {
             response.addContextualMessage("updateAttempts", "validate.updateAttempts");
         }
 

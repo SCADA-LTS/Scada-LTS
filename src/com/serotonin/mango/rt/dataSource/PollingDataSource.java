@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +47,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private TimerTask timerTask;
     private volatile Thread jobThread;
     private long jobThreadStartTime;
+    private volatile boolean markAsTerminating = false;
 
     public PollingDataSource(DataSourceVO<?> vo) {
         super(vo);
@@ -58,6 +60,9 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     }
 
     public void scheduleTimeout(long fireTime) {
+        if(isMarkAsTerminating()) {
+            return;
+        }
         if (jobThread != null) {
             // There is another poll still running, so abort this one.
             LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
@@ -142,5 +147,18 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     @Override
     protected List<DataPointRT> getDataPoints() {
         return dataPoints;
+    }
+  
+    public boolean isMarkAsTerminating() {
+        if(markAsTerminating) {
+            LOG.error(LoggingUtils.dataSourceInfo(this) + " is terminating.");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void markAsTerminating() {
+        this.markAsTerminating = true;
     }
 }

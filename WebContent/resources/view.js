@@ -567,7 +567,7 @@ mango.view.graphic.HorizontalLevel.setValue = function(viewComponentId, value) {
 async function loadDefaultSizeContainer(fileUrl, containerId) {
     const notFoundFile = await isNotFoundFile(fileUrl);
     const container = document.getElementById(containerId);
-    if(notFoundFile) {
+    if(notFoundFile || fileUrl.endsWith('.svg')) {
         container.width=1920;
         container.height=1080;
     } else {
