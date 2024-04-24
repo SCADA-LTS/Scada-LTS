@@ -1,6 +1,5 @@
 package com.serotonin.mango.rt.dataImage;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.timeout.TimeoutClient;
