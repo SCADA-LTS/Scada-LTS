@@ -236,7 +236,7 @@ test {
             def output = "Class: " + desc.displayName + " Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped) runtime: " + (result.endTime - result.startTime) + " [ms]"
             def startItem = '|  ', endItem = '  |'
             def repeatLength = startItem.length() + output.length() + endItem.length()
-            println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            println '\n\r' + ('-' * repeatLength) + '\n\r' + startItem + output + endItem + '\n\r' + ('-' * repeatLength) + ('\n\r' * 2)
         }
     }
 }
