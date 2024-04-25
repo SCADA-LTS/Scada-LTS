@@ -220,4 +220,23 @@ test {
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
         includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
     }
+
+    testLogging {
+
+        //exceptionFormat = "full"
+        showStandardStreams = true
+
+        afterTest { desc, result ->
+            def runtime = result.endTime - result.startTime
+            if(runtime > 150)
+                println "Class: " + desc.className + " Test: " + desc.displayName + " Results: ${result.resultType} Runtime: " + runtime + " [ms]"
+        }
+
+        afterSuite { desc, result ->
+            def output = "Class: " + desc.displayName + " Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped) runtime: " + (result.endTime - result.startTime) + " [ms]"
+            def startItem = '|  ', endItem = '  |'
+            def repeatLength = startItem.length() + output.length() + endItem.length()
+            println '\n\r' + ('-' * repeatLength) + '\n\r' + startItem + output + endItem + '\n\r' + ('-' * repeatLength) + ('\n\r' * 2)
+        }
+    }
 }

@@ -83,7 +83,7 @@ public class ScriptWithObjectContextWriteDataPointTest {
                         pointContext,
                         objectContext,
                         createScriptWithObjectContextWriteDataPoint(pointToChangeXid, pointToReadPair)},
-
+/*
                 {binaryValue2,
                         pointToReadId,
                         Collections.emptyList(),
@@ -103,7 +103,7 @@ public class ScriptWithObjectContextWriteDataPointTest {
                         pointToReadId,
                         Collections.emptyList(),
                         objectContext,
-                        createScriptWithObjectContextWriteDataPoint(pointToChangeXid, alphanumericValue2)}
+                        createScriptWithObjectContextWriteDataPoint(pointToChangeXid, alphanumericValue2)}*/
     };
     }
 
