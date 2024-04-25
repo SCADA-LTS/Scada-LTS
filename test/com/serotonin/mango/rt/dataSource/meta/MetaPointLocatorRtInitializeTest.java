@@ -36,7 +36,7 @@ public class MetaPointLocatorRtInitializeTest {
     public static Object[] data() {
         return new Object[] {
                 new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE, 1},
-                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE, 0},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE, 1},
                 new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CRON, 0},
                 new Object[] {Common.TimePeriods.MINUTES, 0},
                 new Object[] {Common.TimePeriods.HOURS, 0},

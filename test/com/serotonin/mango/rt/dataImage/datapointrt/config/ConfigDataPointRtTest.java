@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.dataImage.datapointrt.config;
 
 import br.org.scadabr.db.utils.TestUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.PointValueDao;
@@ -35,7 +34,6 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.login.ILoggedUsers;
-import org.scada_lts.login.LoggedUsers;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
@@ -43,14 +41,11 @@ import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.beans.GetApplicationBeans;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import utils.PointValueDAOMemory;
 import org.springframework.context.ApplicationContext;
 import utils.UsersDAOMemory;
 import utils.mock.MockUtils;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -215,6 +210,7 @@ public class ConfigDataPointRtTest {
 
         RuntimeManager runtimeManager = new RuntimeManager();
         runtimeManagerMock = mock(RuntimeManager.class);
+
         doAnswer(a -> {
             runtimeManager.saveDataPoint((DataPointVO)a.getArguments()[0]);
             return null;
