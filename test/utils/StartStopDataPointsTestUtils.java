@@ -37,8 +37,8 @@ public final class StartStopDataPointsTestUtils {
             if (point.getPointLocator() instanceof MetaPointLocatorVO) {
                 MetaPointLocatorVO pointLocator = point.getPointLocator();
                 List<IntValuePair> context = pointLocator.getContext();
-                if (Objects.nonNull(context) && !context.isEmpty() && isRunningContext(runningDataPoints, context)) {
-                    throw new IllegalStateException("Context running!");
+                if (Objects.nonNull(context) && !context.isEmpty() && !isRunningContext(runningDataPoints, context)) {
+                    throw new IllegalStateException("Context not running!");
                 }
             }
             point.setEnabled(false);

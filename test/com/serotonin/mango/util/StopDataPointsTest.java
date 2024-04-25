@@ -1,5 +1,6 @@
 package com.serotonin.mango.util;
 
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Assert;
@@ -91,5 +92,118 @@ public class StopDataPointsTest extends AbstractStartStopDataPointsUtilsTest {
         for(DataPointVO dataPointRT: getDataPoints()) {
             Assert.assertEquals(false, dataPointRT.isEnabled());
         }
+    }
+
+    @Test
+    public void when_stopPoints_for_meta_point_with_context_then_not_running_point() {
+
+        //given:
+        getMetaPointLocator1().setContext(List.of(new IntValuePair(2, "")));
+        getDataPoint1().setPointLocator(getMetaPointLocator1());
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+    }
+
+    @Test
+    public void when_stopPoints_for_meta_point_with_context_with_one_point_enabled_then_not_running_point() {
+
+        //given:
+        getMetaPointLocator1().setContext(List.of(new IntValuePair(2, "")));
+        getDataPoint1().setPointLocator(getMetaPointLocator1());
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+    }
+
+    @Test
+    public void when_stopPoints_for_meta_point_disabled_then_not_running_point() {
+
+        //given:
+        getDataPoint1().setPointLocator(getMetaPointLocator1());
+        getDataPoint1().setEnabled(false);
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+    }
+
+    @Test
+    public void when_stopPoints_for_point_disabled_then_not_running_point() {
+
+        //given:
+        getDataPoint1().setEnabled(false);
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+    }
+
+    @Test
+    public void when_stopPoints_for_meta_point_with_context_with_two_points_enabled_then_not_running_point() {
+
+        //given:
+        getMetaPointLocator1().setContext(List.of(new IntValuePair(2, ""), new IntValuePair(3, "")));
+        getDataPoint1().setPointLocator(getMetaPointLocator1());
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+    }
+
+    @Test
+    public void when_stopPoints_for_two_meta_points_with_context_with_same_other_point_then_not_running_two_meta_points() {
+
+        //given:
+        getMetaPointLocator1().setContext(List.of(new IntValuePair(3, "")));
+        getDataPoint1().setPointLocator(getMetaPointLocator1());
+
+        getMetaPointLocator2().setContext(List.of(new IntValuePair(3, "")));
+        getDataPoint2().setPointLocator(getMetaPointLocator1());
+
+        Map<Integer, DataPointRT> runningDataPoints = new HashMap<>();
+
+        StartStopDataPointsUtils.startPoints(getDataPointServiceMock(), startPoints(runningDataPoints), runningDataPoints::get,
+                a -> getDataSourceRtMock());
+
+        //when:
+        StartStopDataPointsUtils.stopPoints(runningDataPoints.values(), stopPoints(runningDataPoints), runningDataPoints::get);
+
+        //then:
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint1().getId()));
+        Assert.assertEquals(null, runningDataPoints.get(getDataPoint2().getId()));
     }
 }
