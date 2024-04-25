@@ -20,6 +20,8 @@ package com.serotonin.mango.vo.report;
 
 import java.awt.Paint;
 import java.util.ArrayList;
+
+import java.util.Comparator;
 import java.util.List;
 
 import org.jfree.data.time.Second;
@@ -51,8 +53,9 @@ public class PointTimeSeriesCollection {
 
     public void addDiscreteTimeSeries(DiscreteTimeSeries discreteTimeSeries) {
         if (discreteTimeSeriesCollection == null)
-            discreteTimeSeriesCollection = new ArrayList<DiscreteTimeSeries>();
+            discreteTimeSeriesCollection = new ArrayList<>();
         discreteTimeSeriesCollection.add(discreteTimeSeries);
+        discreteTimeSeriesCollection.sort(Comparator.comparing(DiscreteTimeSeries::getName));
     }
 
     public boolean hasData() {
@@ -99,8 +102,10 @@ public class PointTimeSeriesCollection {
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
 
         int intervalIndex = 1;
+        int index = 0;
         for (DiscreteTimeSeries dts : discreteTimeSeriesCollection) {
-            TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
+            SeriesIdentifier seriesIdentifier = new SeriesIdentifier(++index, dts.getName());
+            TimeSeries ts = new TimeSeries(seriesIdentifier, null, null, Second.class);
 
             for (PointValueTime pvt : dts.getValueTimes())
                 ImageChartUtils.addSecond(ts, pvt.getTime(), numericMin

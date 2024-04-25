@@ -35,7 +35,6 @@ import com.serotonin.web.taglib.DateFunctions;
 import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
@@ -121,6 +120,8 @@ public class ReportChartCreator {
         model.put("NUMERIC", DataTypes.NUMERIC);
         model.put("IMAGE", DataTypes.IMAGE);
         model.put("toYear", DateUtils.getCurrentYearInt());
+
+        pointStatistics.sort(Comparator.comparing(PointStatistics::getName));
 
         // Create the individual point charts
         for (PointStatistics pointStat : pointStatistics) {
@@ -500,6 +501,7 @@ public class ReportChartCreator {
                 point.setStartValue(pointInfo.getTextRenderer().getText(pointInfo.getStartValue(),
                         TextRenderer.HINT_FULL));
             pointStatistics.add(point);
+            pointStatistics.sort(Comparator.comparing(PointStatistics::getName));
 
             Color colour = null;
             try {
@@ -516,7 +518,8 @@ public class ReportChartCreator {
                 quantizer = new NumericDataQuantizer(start, end, imageWidth, this);
 
                 discreteTimeSeries = null;
-                numericTimeSeries = new TimeSeries(pointInfo.getExtendedNameForReport(), null, null, Second.class);
+                SeriesIdentifier seriesIdentifier = new SeriesIdentifier(pointInfo.getReportPointId(), pointInfo.getExtendedNameForReport());
+                numericTimeSeries = new TimeSeries(seriesIdentifier, null, null);
                 numericTimeSeries.setRangeDescription(point.getTextRenderer().getMetaText());
                 point.setNumericTimeSeries(numericTimeSeries);
                 point.setNumericTimeSeriesColor(colour);
