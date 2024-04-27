@@ -104,6 +104,7 @@ public class ReportChartCreator {
         reportDao.reportInstanceData(reportInstance.getId(), handler);
 
         pointStatistics = handler.getPointStatistics();
+        pointStatistics.sort(Comparator.comparing(PointStatistics::getName));
         UsedImagesDirective inlineImages = new UsedImagesDirective();
 
         // Prepare the model for the content rendering.
@@ -120,8 +121,6 @@ public class ReportChartCreator {
         model.put("NUMERIC", DataTypes.NUMERIC);
         model.put("IMAGE", DataTypes.IMAGE);
         model.put("toYear", DateUtils.getCurrentYearInt());
-
-        pointStatistics.sort(Comparator.comparing(PointStatistics::getName));
 
         // Create the individual point charts
         for (PointStatistics pointStat : pointStatistics) {

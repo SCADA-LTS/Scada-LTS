@@ -138,13 +138,12 @@ public class ImageChartUtils {
             double interval = (numericMax - numericMin) / (discreteValueCount + 1);
 
             TimeSeriesCollection timeSeriesCollection = pointTimeSeriesCollection.createTimeSeriesCollection(numericMin, interval);
-            int intervalIndex;
 
             plot.setDataset(DISCRETE_DATA_INDEX, timeSeriesCollection);
 
             // Add the value annotations.
             double annoX = plot.getDomainAxis().getLowerBound();
-            intervalIndex = 1;
+            int intervalIndex = 1;
             for (int i = 0; i < pointTimeSeriesCollection.getDiscreteSeriesCount(); i++) {
                 DiscreteTimeSeries dts = pointTimeSeriesCollection.getDiscreteTimeSeries(i);
                 if (dts.getPaint() != null)

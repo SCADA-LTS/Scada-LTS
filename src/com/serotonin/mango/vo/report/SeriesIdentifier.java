@@ -15,10 +15,10 @@ public class SeriesIdentifier implements Comparable<SeriesIdentifier> {
     @Override
     public int compareTo(SeriesIdentifier o) {
         int nameComparison = this.name.compareTo(o.name);
-        if (nameComparison != 0) {
-            return nameComparison;
+        if (nameComparison == 0) {
+            return Integer.compare(this.id, o.id);
         }
-        return Integer.compare(this.id, o.id);
+        return nameComparison;
     }
 
     @Override
