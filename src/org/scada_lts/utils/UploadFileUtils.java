@@ -10,10 +10,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.svg.SvgUtils;
 import org.scada_lts.utils.security.*;
+import org.scada_lts.utils.xml.XmlUtils;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,8 +34,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.scada_lts.svg.SvgUtils.isSvg;
-import static org.scada_lts.utils.PathSecureUtils.decodePath;
-import static org.scada_lts.utils.PathSecureUtils.getAppContextSystemFilePath;
+import static org.scada_lts.utils.PathSecureUtils.*;
 import static org.scada_lts.utils.ScadaMimeTypeUtils.*;
 import static org.scada_lts.utils.xml.XmlUtils.isXml;
 
@@ -162,6 +167,17 @@ public final class UploadFileUtils {
         return isImageBitmap(safeFile);
     }
 
+    public static boolean isImageSvg(File file) {
+        SafeFile safeFile;
+        try {
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.warn(ex.getMessage());
+            return false;
+        }
+        return isSvg(safeFile);
+    }
+
     public static void loadGraphics(ViewGraphicLoader loader, List<ImageSet> imageSets, List<DynamicImage> dynamicImages) {
         for(Path path: getGraphicsSystemFilePaths()) {
             loadGraphics(loader, imageSets, dynamicImages, path);
@@ -202,6 +218,39 @@ public final class UploadFileUtils {
             return Paths.get(decoded.replace(UPLOADS_PATH, ""));
         }
         return Paths.get(decoded);
+    }
+
+    public static UploadImage createUploadImage(File file) {
+        BufferedImage bimg = null;
+        try {
+            bimg = ImageIO.read(file);
+        } catch (Exception e) {
+            LOG.warn("file: " + file.getName() + ", msg: " + e.getMessage());
+        }
+        int width = -1;
+        int height = -1;
+        if(bimg != null) {
+            width = bimg.getWidth();
+            height = bimg.getHeight();
+        } else {
+            SafeFile safeFile = null;
+            try {
+                safeFile = SafeFile.safe(file);
+            } catch (Exception e) {
+                LOG.warn("file: " + file.getName() + ", msg: " + e.getMessage());
+            }
+            if(SvgUtils.isSvg(safeFile)) {
+                Document document = XmlUtils.createDocumentXml(safeFile).orElse(null);
+                if(document != null) {
+                    Node svg = XmlUtils.getFirstNodeByTagName(document, "svg");
+                    if (svg != null) {
+                        width = XmlUtils.getIntValue(svg, "width");
+                        height = XmlUtils.getIntValue(svg, "height");
+                    }
+                }
+            }
+        }
+        return new UploadImage(file.getName(), getPartialPath(file), width, height);
     }
 
     private static boolean isThumbsFile(SafeFile file) {
@@ -335,6 +384,7 @@ public final class UploadFileUtils {
         if (!StringUtils.isEmpty(normalizedPath) && (normalizedPath.endsWith(normalizedFolder)
                 || normalizedPath.endsWith(normalizedFolder + File.separator))) {
             path = getAbsoluteResourcePath(normalizedPath);
+            createPath(path, notExistsPath(), a -> {});
         } else {
             path = getAppContextSystemFilePath(normalizedFolder);
         }

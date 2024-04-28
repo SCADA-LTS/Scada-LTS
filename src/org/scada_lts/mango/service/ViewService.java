@@ -20,7 +20,6 @@ package org.scada_lts.mango.service;
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,6 +36,7 @@ import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.*;
 
+import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -52,10 +52,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-
 import static java.util.stream.Collectors.toList;
-import static org.scada_lts.utils.PathSecureUtils.getPartialPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.*;
 import static org.scada_lts.utils.StaticImagesUtils.getUploadsSystemFilePath;
@@ -234,23 +231,7 @@ public class ViewService {
 		Path path = Paths.get(getUploadsSystemFileToWritePath() + FILE_SEPARATOR + multipartFile.getOriginalFilename());
 		return toSecurePath(path)
 				.flatMap(dist -> transferTo(multipartFile, dist))
-				.map(this::createUploadImage);
-	}
-
-	private UploadImage createUploadImage(File file) {
-		BufferedImage bimg = null;
-		try {
-			bimg = ImageIO.read(file);
-		} catch (IOException e) {
-			LOG.warn(e.getMessage());
-		}
-		int width = -1;
-		int height = -1;
-		if(bimg != null) {
-			width = bimg.getWidth();
-			height = bimg.getHeight();
-		}
-		return new UploadImage(file.getName(), getPartialPath(file), width, height);
+				.map(UploadFileUtils::createUploadImage);
 	}
 
 	public boolean checkUserViewPermissions(User user, View view) {

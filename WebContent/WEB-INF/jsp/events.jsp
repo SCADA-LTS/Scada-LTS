@@ -132,14 +132,6 @@
         }
     }
 
-    function isValid(value) {
-      return value == "" || isPositiveInt(value);
-    }
-
-    function isPositiveInt(value) {
-      return isInt32(value) && value >= 0;
-    }
-
     function silenceAll() {
     	MiscDwr.silenceAll(function(result) {
     		var silenced = result.data.silenced;

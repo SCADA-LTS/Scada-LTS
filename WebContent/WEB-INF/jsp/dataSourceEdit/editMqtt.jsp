@@ -35,8 +35,14 @@
         dataSourceToSave.cleanSession=$get("cleanSession");
         dataSourceToSave.brokerMode=$get("brokerMode");
 
-        DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
-    }
+        if(isValid(dataSourceToSave.updateAttempts)) {
+            DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
+        } else {
+            let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
+            showDwrMessages([message]);
+            stopImageFader("dsSaveImg");
+        }
+  }
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
         $set("writable", locator.writable);
@@ -45,7 +51,7 @@
         $set("retained", locator.retained);
         $set("qos", locator.qos);
         $set("clientId", locator.clientId);
-    }
+  }
   function savePointImpl(locator) {
     delete locator.relinquishable;
     locator.settable = $get("settable");
@@ -59,7 +65,7 @@
 
     DataSourceEditDwr.saveMqttPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
-    }
+  }
 </script>
 
 

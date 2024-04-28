@@ -34,7 +34,6 @@ import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.utils.PointValueStateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +62,6 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
-    }
-    public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-    }
-
-    public DataPointNonSyncRT(DataPointVO vo) {
-        super(vo);
     }
 
     @Override

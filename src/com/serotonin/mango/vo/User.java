@@ -223,12 +223,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	@Override
 	public void valueBound(HttpSessionBindingEvent event) {
-		ApplicationBeans.getLoggedUsersBean().addUser(this, event.getSession());
+		ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> loggedUsers.addUser(this, event.getSession()));
 	}
 
 	@Override
 	public void valueUnbound(HttpSessionBindingEvent event) {
-		ApplicationBeans.getLoggedUsersBean().removeUser(this, event.getSession());
+		ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> loggedUsers.removeUser(this, event.getSession()));
 	}
 
 	// Convenience method for JSPs

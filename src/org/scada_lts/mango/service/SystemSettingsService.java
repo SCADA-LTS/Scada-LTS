@@ -132,14 +132,14 @@ public class SystemSettingsService {
         JsonSettingsMisc json = new JsonSettingsMisc();
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
         json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
-        json.setHideShortcutDisableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
-        json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
-        json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, 100));
-        json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, false));
-        json.setThreadsNameAdditionalLength(SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, 255));
-        json.setWorkItemsReportingEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, true));
-        json.setWorkItemsReportingItemsPerSecondEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, true));
-        json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 20000));
+        json.setHideShortcutDisableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
+        json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE));
+        json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT));
+        json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED));
+        json.setThreadsNameAdditionalLength(SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH));
+        json.setWorkItemsReportingEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED));
+        json.setWorkItemsReportingItemsPerSecondEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED));
+        json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT));
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         return json;
@@ -362,7 +362,7 @@ public class SystemSettingsService {
 
     public AggregateSettings getAggregateSettings() {
         AggregateSettings aggregateSettings = new AggregateSettings();
-        aggregateSettings.setEnabled(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.AGGREGATION_ENABLED));
+        aggregateSettings.setEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.AGGREGATION_ENABLED));
         aggregateSettings.setValuesLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT));
 
         try {

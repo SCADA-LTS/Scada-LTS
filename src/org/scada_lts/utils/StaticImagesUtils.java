@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,8 +25,12 @@ public final class StaticImagesUtils {
 
     public static ResponseEntity<String> getAndSendImage(HttpServletRequest request, HttpServletResponse response) {
         File file = getSystemFileByRequest(request);
-        if(!Files.exists(file.toPath()) && Files.notExists(file.toPath()))
+        boolean exists = Files.exists(file.toPath());
+        boolean notExists = Files.notExists(file.toPath());
+        if(!exists && notExists)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(exists == notExists)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         if(!UploadFileUtils.isToUploads(file))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
@@ -60,6 +65,11 @@ public final class StaticImagesUtils {
         int bufferSize = 2048;
         byte[] data = new byte[bufferSize];
         int len;
+        String contentType = Files.probeContentType(file.toPath());
+        response.setContentType(contentType);
+        UploadImage image = UploadFileUtils.createUploadImage(file);
+        response.addIntHeader("img-height", image.getHeight());
+        response.addIntHeader("img-width", image.getWidth());
         try (InputStream inputStream = new FileInputStream(file);
              ServletOutputStream output = response.getOutputStream()) {
             while ((len = inputStream.read(data, 0, bufferSize)) != -1) {

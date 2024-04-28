@@ -33,7 +33,7 @@
       dwr.util.removeAllRows("sqlTestResults");
       DataSourceEditDwr.sqlTestStatement($get("driverClassname"), $get("connectionUrl"), $get("username"), 
               $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-              $get("jndiResourceName"), sqlTestCB);
+              $get("jndiResourceName"), $get("statementLimit"), sqlTestCB);
   }
   
   function sqlTestCB() {
@@ -85,10 +85,27 @@
   }
 
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
-              $get("jndiResourceName"), saveDataSourceCB);
+      let statementLimit = $get("statementLimit");
+      let selectStatement = $get("selectStatement");
+      let selectStatementLowerCase = selectStatement.toLowerCase();
+      let selectWithLimitLowerCaseRegex = new RegExp("${selectWithLimitLowerCaseRegex}");
+      if(statementLimit == 0 && !selectWithLimitLowerCaseRegex.test(selectStatementLowerCase)) {
+        let result = confirm('<fmt:message key="dsEdit.sql.statementLimit.warning"/>');
+        if(!result) {
+           stopImageFader("dsSaveImg");
+           return;
+        }
+      }
+      if(isValid(statementLimit)) {
+        DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
+                  $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
+                  $get("password"), selectStatement, $get("rowBasedQuery"), $get("jndiResource"),
+                  $get("jndiResourceName"), statementLimit, saveDataSourceCB);
+      } else {
+        let message = createValidationMessage("statementLimit","<fmt:message key="badIntegerFormat"/>");
+        showDwrMessages([message]);
+        stopImageFader("dsSaveImg");
+      }
   }
   
   function writePointListImpl(points) {
@@ -148,6 +165,10 @@
           show("isNotJndiResource");
       }
   }
+
+  function isValid(value) {
+      return value == "" || (isInt32(value) && value >= 0);
+  }
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.sql.desc"/></c:set>
@@ -201,8 +222,13 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.sql.select"/></td>
           <td class="formField">
-            <textarea id="selectStatement" rows="10" cols="45">${dataSource.selectStatement}</textarea>
+            <textarea id="selectStatement" rows="10" cols="45"><c:out value="${dataSource.selectStatement}"/></textarea>
           </td>
+        </tr>
+
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.statementLimit"/></td>
+          <td class="formField"><input id="statementLimit" type="number" value="${dataSource.statementLimit}"/></td>
         </tr>
         
         <tr>

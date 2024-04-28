@@ -21,20 +21,17 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.util.StartStopDataPointsUtils;
 import com.serotonin.mango.view.event.NoneEventRenderer;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
-import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -270,6 +267,10 @@ public class RuntimeManager {
 		for (PointLinkRT pointLink : pointLinks)
 			stopPointLink(pointLink.getId());
 
+		stopPoints();
+
+		markAsTerminatingAll();
+
 		// First stop meta data sources.
 		for (DataSourceRT dataSource : runningDataSources) {
 			if (dataSource instanceof MetaDataSourceRT)
@@ -395,7 +396,6 @@ public class RuntimeManager {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
 				return;
-
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -408,6 +408,10 @@ public class RuntimeManager {
 			dataSource.joinTermination();
 			LOG.info("Data source '" + dataSource.getName() + "' stopped");
 		}
+	}
+
+	public void markAsTerminatingAll() {
+		PollingDataSource.markAsTerminating();
 	}
 
 	//
@@ -505,7 +509,7 @@ public class RuntimeManager {
 		try {
 			startDataPoint(vo);
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			LOG.error(ex.getMessage() + " - " + LoggingUtils.dataPointInfo(vo) + " : ", ex);
 			stopDataPointSafe(vo.getId());
 		}
 	}
@@ -523,8 +527,14 @@ public class RuntimeManager {
 				if (l != null)
 					l.pointTerminated();
 				p.terminate();
+				DataPointVO point = p.getVO();
+				LOG.info("Data point '" + point.getExtendedName() + "' stopped");
 			}
 		}
+	}
+
+	private void stopDataPointSafe(DataPointVO dataPoint) {
+		stopDataPointSafe(dataPoint.getId());
 	}
 
 	private void stopDataPointSafe(int dataPointId) {
@@ -567,11 +577,6 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		if(source instanceof User){
-			setDataPointValue(dataPointId,
-					new PointValueTime(value, System.currentTimeMillis(),((User)source).getUsername()), source);
-		}
-		else
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
 	}
@@ -1071,74 +1076,11 @@ public class RuntimeManager {
 	}
 
 	private void startPoints() {
-
 		DataPointService dataPointService = new DataPointService();
-		List<DataPointVO> allPoints = dataPointService.getDataPoints(null, true);
-		List<DataPointVO> nonMetaDataPoints = allPoints.stream()
-				.filter(a -> !(a.getPointLocator() instanceof MetaPointLocatorVO))
-				.collect(Collectors.toList());
-		List<DataPointVO> metaDataPoints = allPoints.stream()
-				.filter(a -> a.getPointLocator() instanceof MetaPointLocatorVO)
-				.collect(Collectors.toList());
-
-		run(nonMetaDataPoints);
-
-		List<DataPointVO> toRunning = new ArrayList<>();
-		Set<Integer> toCheck = new HashSet<>();
-		int safe = 10;
-		for(DataPointVO dataPoint: metaDataPoints) {
-			collectMetaDataPointsFromContext(toCheck, toRunning, dataPoint, safe, allPoints);
-		}
-
-		run(toRunning);
-		run(metaDataPoints);
+		StartStopDataPointsUtils.startPoints(dataPointService, this::startDataPointSafe, this::getDataPoint, this::getRunningDataSource);
 	}
 
-	private void run(List<DataPointVO> dataPoints) {
-		for(DataPointVO dataPoint: dataPoints) {
-			if(dataPoint.isEnabled()) {
-				DataPointRT dataPointRT = getDataPoint(dataPoint.getId());
-				if(dataPointRT == null) {
-					startDataPointSafe(dataPoint);
-				}
-			}
-		}
-	}
-
-	private void collectMetaDataPointsFromContext(Set<Integer> toCheck, List<DataPointVO> toRunning,
-												  DataPointVO dataPoint, int safe,
-												  List<DataPointVO> allPoints) {
-		if(safe < 0) {
-			LOG.error("Recursion level exceeded: " + LoggingUtils.dataPointInfo(dataPoint));
-			return;
-		}
-		if(dataPoint.isEnabled()) {
-			PointLocatorVO pointLocator = dataPoint.getPointLocator();
-			if(pointLocator instanceof MetaPointLocatorVO) {
-				MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
-				if (metaPointLocator.getContext() != null && !metaPointLocator.getContext().isEmpty()) {
-					for (IntValuePair intValuePair : metaPointLocator.getContext()) {
-						if(intValuePair.getKey() > 0) {
-							DataPointRT dataPointRT = getDataPoint(intValuePair.getKey());
-							if (dataPointRT == null) {
-								DataPointVO fromContextDataPoint = allPoints.stream()
-										.filter(a -> a.getId() == intValuePair.getKey())
-										.findAny()
-										.orElse(null);
-								if (fromContextDataPoint != null) {
-									if (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
-										collectMetaDataPointsFromContext(toCheck, toRunning, fromContextDataPoint, --safe, allPoints);
-									}
-									if (!toCheck.contains(fromContextDataPoint.getId())) {
-										toCheck.add(fromContextDataPoint.getId());
-										toRunning.add(fromContextDataPoint);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	private void stopPoints() {
+		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
 	}
 }
