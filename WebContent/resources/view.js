@@ -565,18 +565,23 @@ mango.view.graphic.HorizontalLevel.setValue = function(viewComponentId, value) {
 };
 
 async function loadDefaultSizeContainer(fileUrl, containerId) {
-    const notFoundFile = await isNotFoundFile(fileUrl);
+    const response = await fetch(fileUrl);
+    const notFoundFile = await isNotFoundFile(response);
     const container = document.getElementById(containerId);
-    if(notFoundFile || fileUrl.endsWith('.svg')) {
-        container.width=1920;
-        container.height=1080;
+    const width = response.headers.get("img-width");
+    const height = response.headers.get("img-height");
+    if(notFoundFile || (width == "-1" || height == "-1")) {
+        container.width = 1920;
+        container.height = 1080;
+    }else if (width && height) {
+        container.width = width;
+        container.height = height;
     } else {
-        container.removeAttribute("width");
-        container.removeAttribute("height");
-    }
+         container.removeAttribute("width");
+         container.removeAttribute("height");
+     }
 }
 
-async function isNotFoundFile(fileUrl) {
-    const response = await fetch(fileUrl);
+async function isNotFoundFile(response) {
     return response.status === 404;
 }

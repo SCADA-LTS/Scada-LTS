@@ -47,7 +47,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private TimerTask timerTask;
     private volatile Thread jobThread;
     private long jobThreadStartTime;
-    private volatile boolean markAsTerminating = false;
+    private static volatile boolean markAsTerminating = false;
 
     public PollingDataSource(DataSourceVO<?> vo) {
         super(vo);
@@ -158,7 +158,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         }
     }
 
-    public void markAsTerminating() {
-        this.markAsTerminating = true;
+    public static void markAsTerminating() {
+        markAsTerminating = true;
     }
 }

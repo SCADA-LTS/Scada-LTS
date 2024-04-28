@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -66,6 +67,9 @@ public final class StaticImagesUtils {
         int len;
         String contentType = Files.probeContentType(file.toPath());
         response.setContentType(contentType);
+        UploadImage image = UploadFileUtils.createUploadImage(file);
+        response.addIntHeader("img-height", image.getHeight());
+        response.addIntHeader("img-width", image.getWidth());
         try (InputStream inputStream = new FileInputStream(file);
              ServletOutputStream output = response.getOutputStream()) {
             while ((len = inputStream.read(data, 0, bufferSize)) != -1) {

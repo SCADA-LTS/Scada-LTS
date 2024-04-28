@@ -62,7 +62,7 @@ public class MockUtils {
         ServletContext servletContext = new ServletContextMock(a ->
                 a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
         BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
-  
+
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
         when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);

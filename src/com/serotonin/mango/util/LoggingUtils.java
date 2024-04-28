@@ -33,9 +33,9 @@ public final class LoggingUtils {
     public static String dataPointInfo(DataPointVO dataPoint) {
         if(dataPoint == null)
             return "";
-        String info = "datapoint: {0} (id: {1}, xid: {2}, dataSourceId: {3}, dataSourceName: {4})";
-        return MessageFormat.format(info, dataPoint.getName(), String.valueOf(dataPoint.getId()),
-                dataPoint.getXid(), dataPoint.getDataSourceId(), dataPoint.getDataSourceName());
+        String info = "datapoint: {0} (id: {1}, xid: {2}, dataSourceId: {3}, dataSourceXid: {4}, dataSourceName: {5})";
+        return MessageFormat.format(info, dataPoint.getExtendedName(), String.valueOf(dataPoint.getId()),
+                dataPoint.getXid(), dataPoint.getDataSourceId(), dataPoint.getDataSourceXid(), dataPoint.getDataSourceName());
     }
 
     public static String dataSourceInfo(DataSourceRT dataSource) {

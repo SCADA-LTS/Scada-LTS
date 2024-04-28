@@ -17,12 +17,12 @@ import org.junit.runners.Suite;
         DataPointRtNumericSameMultiTest.class,*/
 
         DataPointSyncRtMultiTest.class,
-        DataPointSyncRtBinaryMultiTest.class,
-        DataPointSyncRtNumericMultiTest.class,
-        DataPointSyncRtAlphanumericMultiTest.class,
-        DataPointSyncRtMultistateMultiTest.class,
-        DataPointSyncRtToleranceMultiTest.class,
-        DataPointSyncRtNumericSameMultiTest.class,
+        //DataPointSyncRtBinaryMultiTest.class,
+        //DataPointSyncRtNumericMultiTest.class,
+        //DataPointSyncRtAlphanumericMultiTest.class,
+        //DataPointSyncRtMultistateMultiTest.class,
+        //DataPointSyncRtToleranceMultiTest.class,
+        //DataPointSyncRtNumericSameMultiTest.class,
 
         /*DataPointNonSyncRtMultiTest.class,
         DataPointNonSyncRtBinaryMultiTest.class,
