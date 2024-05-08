@@ -1,0 +1,13 @@
+{
+    "flatpickrFile": "resources/fuscabr/lib/flatpickr/flatpickr.min.js",
+    "flatpickrCSSFile": "resources/fuscabr/lib/flatpickr/flatpickr.min.css",
+    "flatpickrLocaleFile": "resources/fuscabr/lib/flatpickr/l10ns/allLocales.min.js",
+    "detectBrowserLocale": true,
+
+    "rules": [{
+            "desc": "Calendar entries in Graphical Views",
+            "pages": [ "views.shtm", "view_edit.shtm" ],
+            "inputSelector": "#viewContent > div:not(.windowDiv) input[type='text'][id^='chartComparator']"
+        }
+    ]
+}
