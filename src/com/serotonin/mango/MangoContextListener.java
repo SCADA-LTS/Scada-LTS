@@ -92,6 +92,11 @@ public class MangoContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent evt) {
 		try {
 			initialized(evt);
+			// Notify the event manager of the startup.
+			SystemEventType.raiseEvent(new SystemEventType(
+					SystemEventType.TYPE_SYSTEM_STARTUP), System
+					.currentTimeMillis(), false, new LocalizableMessage(
+					"event.system.startup"));
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw ex;
@@ -163,11 +168,7 @@ public class MangoContextListener implements ServletContextListener {
 		
 		scriptContextInitialize();
 
-		// Notify the event manager of the startup.
-		SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_SYSTEM_STARTUP), System
-				.currentTimeMillis(), false, new LocalizableMessage(
-				"event.system.startup"));
+
 
 
 		try {
