@@ -48,7 +48,6 @@ import org.jfree.ui.TextAnchor;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.mindprod.StripEntities;
 import com.serotonin.util.StringUtils;
 
@@ -137,27 +136,14 @@ public class ImageChartUtils {
             // Plot the data
             int discreteValueCount = pointTimeSeriesCollection.getDiscreteValueCount();
             double interval = (numericMax - numericMin) / (discreteValueCount + 1);
-            TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
 
-            int intervalIndex = 1;
-            for (int i = 0; i < pointTimeSeriesCollection.getDiscreteSeriesCount(); i++) {
-                DiscreteTimeSeries dts = pointTimeSeriesCollection.getDiscreteTimeSeries(i);
-                TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
-
-                for (PointValueTime pvt : dts.getValueTimes())
-                    ImageChartUtils.addSecond(ts, pvt.getTime(),
-                            numericMin + (interval * (dts.getValueIndex(pvt.getValue()) + intervalIndex)));
-
-                timeSeriesCollection.addSeries(ts);
-
-                intervalIndex += dts.getDiscreteValueCount();
-            }
+            TimeSeriesCollection timeSeriesCollection = pointTimeSeriesCollection.createTimeSeriesCollection(numericMin, interval);
 
             plot.setDataset(DISCRETE_DATA_INDEX, timeSeriesCollection);
 
             // Add the value annotations.
             double annoX = plot.getDomainAxis().getLowerBound();
-            intervalIndex = 1;
+            int intervalIndex = 1;
             for (int i = 0; i < pointTimeSeriesCollection.getDiscreteSeriesCount(); i++) {
                 DiscreteTimeSeries dts = pointTimeSeriesCollection.getDiscreteTimeSeries(i);
                 if (dts.getPaint() != null)

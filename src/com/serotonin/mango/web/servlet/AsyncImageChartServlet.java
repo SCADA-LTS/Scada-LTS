@@ -16,6 +16,7 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.report.DiscreteTimeSeries;
 import com.serotonin.mango.vo.report.ImageChartUtils;
 import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
+import com.serotonin.mango.vo.report.SeriesIdentifier;
 import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
@@ -199,7 +200,8 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
             int dataType = dp.getPointLocator().getDataTypeId();
 
             if (dataType == DataTypes.NUMERIC) {
-                ts = new TimeSeries(dp.getName(), null, null, Second.class);
+                SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
+                ts = new TimeSeries(seriesIdentifier, null, null, Second.class);
                 quantizer = new NumericDataQuantizer(from, to, imageWidth, this);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
