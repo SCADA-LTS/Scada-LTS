@@ -6,9 +6,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import com.serotonin.mango.Common;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
 public class WorkItemMonitor extends TimerTask {
+
+    private static final Log LOG = LogFactory.getLog(WorkItemMonitor.class);
     private static final long TIMEOUT = 1000 * 10; // Run every ten seconds.
 
     /**
@@ -40,6 +44,11 @@ public class WorkItemMonitor extends TimerTask {
 
     @Override
     public void run(long fireTime) {
+        if(Common.ctx == null || Common.ctx.getBackgroundProcessing() == null) {
+            LOG.warn("Scada-LTS context terminated");
+            return;
+        }
+
         BackgroundProcessing bp = Common.ctx.getBackgroundProcessing();
 
         mediumPriorityServiceQueueSize.setValue(bp.getMediumPriorityServiceQueueSize());
