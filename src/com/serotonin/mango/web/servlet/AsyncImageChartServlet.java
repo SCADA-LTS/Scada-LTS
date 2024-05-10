@@ -198,21 +198,21 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
             }
 
             int dataType = dp.getPointLocator().getDataTypeId();
+            SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
 
             if (dataType == DataTypes.NUMERIC) {
-                SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
                 ts = new TimeSeries(seriesIdentifier, null, null, Second.class);
                 quantizer = new NumericDataQuantizer(from, to, imageWidth, this);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.MULTISTATE) {
                 quantizer = new MultistateDataQuantizer(from, to, imageWidth, this);
-                dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                dts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.BINARY) {
                 quantizer = new BinaryDataQuantizer(from, to, imageWidth, this);
-                dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                dts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
         }
