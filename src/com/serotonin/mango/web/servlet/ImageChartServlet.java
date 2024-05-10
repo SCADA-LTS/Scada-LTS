@@ -161,7 +161,8 @@ public class ImageChartServlet extends BaseInfoServlet {
                         ptsc.addNumericTimeSeries(ts, colour);
                     }
                     else {
-                        DiscreteTimeSeries ts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                        SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
+                        DiscreteTimeSeries ts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                         for (PointValueTime pv : data)
                             ts.addValueTime(pv);
                         ptsc.addDiscreteTimeSeries(ts);
