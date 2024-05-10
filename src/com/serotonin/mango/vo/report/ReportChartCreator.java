@@ -35,7 +35,6 @@ import com.serotonin.web.taglib.DateFunctions;
 import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
@@ -105,6 +104,7 @@ public class ReportChartCreator {
         reportDao.reportInstanceData(reportInstance.getId(), handler);
 
         pointStatistics = handler.getPointStatistics();
+
         UsedImagesDirective inlineImages = new UsedImagesDirective();
 
         // Prepare the model for the content rendering.
@@ -269,7 +269,7 @@ public class ReportChartCreator {
 
     public static class PointStatistics {
         private final int reportPointId;
-        private String name;
+        private Comparable name;
         private int dataType;
         private String dataTypeDescription;
         private String startValue;
@@ -287,11 +287,11 @@ public class ReportChartCreator {
             this.inlinePrefix = inlinePrefix;
         }
 
-        public String getName() {
+        public Comparable getName() {
             return name;
         }
 
-        public void setName(String name) {
+        public void setName(Comparable name) {
             this.name = name;
         }
 
@@ -453,7 +453,7 @@ public class ReportChartCreator {
         File exportFile;
         private ReportCsvStreamer reportCsvStreamer;
 
-        private final List<PointStatistics> pointStatistics;
+        private final Map<Comparable, PointStatistics> pointStatistics;
         private final PointTimeSeriesCollection pointTimeSeriesCollection;
 
         private PointStatistics point;
@@ -462,7 +462,7 @@ public class ReportChartCreator {
         private AbstractDataQuantizer quantizer;
 
         public StreamHandler(long start, long end, int imageWidth, boolean createExportFile, ResourceBundle bundle) {
-            pointStatistics = new ArrayList<PointStatistics>();
+            pointStatistics = new TreeMap<>();
             pointTimeSeriesCollection = new PointTimeSeriesCollection();
 
             this.start = start;
@@ -480,7 +480,7 @@ public class ReportChartCreator {
         }
 
         public List<PointStatistics> getPointStatistics() {
-            return pointStatistics;
+            return new ArrayList<>(pointStatistics.values());
         }
 
         public PointTimeSeriesCollection getPointTimeSeriesCollection() {
@@ -489,9 +489,9 @@ public class ReportChartCreator {
 
         public void startPoint(ReportPointInfo pointInfo) {
             donePoint();
-
+            SeriesIdentifier seriesIdentifier = new SeriesIdentifier(pointInfo.getReportPointId(), pointInfo.getExtendedNameForReport());
             point = new PointStatistics(pointInfo.getReportPointId(), inlinePrefix);
-            point.setName(pointInfo.getExtendedNameForReport());
+            point.setName(seriesIdentifier);
             point.setDataType(pointInfo.getDataType());
             point.setDataTypeDescription(DataTypes.getDataTypeMessage(pointInfo.getDataType()).getLocalizedMessage(
                     bundle));
@@ -499,7 +499,7 @@ public class ReportChartCreator {
             if (pointInfo.getStartValue() != null)
                 point.setStartValue(pointInfo.getTextRenderer().getText(pointInfo.getStartValue(),
                         TextRenderer.HINT_FULL));
-            pointStatistics.add(point);
+            pointStatistics.put(point.getName(), point);
 
             Color colour = null;
             try {
@@ -516,7 +516,8 @@ public class ReportChartCreator {
                 quantizer = new NumericDataQuantizer(start, end, imageWidth, this);
 
                 discreteTimeSeries = null;
-                numericTimeSeries = new TimeSeries(pointInfo.getExtendedNameForReport(), null, null, Second.class);
+
+                numericTimeSeries = new TimeSeries(seriesIdentifier, null, null);
                 numericTimeSeries.setRangeDescription(point.getTextRenderer().getMetaText());
                 point.setNumericTimeSeries(numericTimeSeries);
                 point.setNumericTimeSeriesColor(colour);
@@ -527,7 +528,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new MultistateDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(seriesIdentifier, pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())
@@ -538,7 +539,7 @@ public class ReportChartCreator {
                 point.setStats(new StartsAndRuntimeList(pointInfo.getStartValue(), start, end));
                 quantizer = new BinaryDataQuantizer(start, end, imageWidth, this);
 
-                discreteTimeSeries = new DiscreteTimeSeries(pointInfo.getExtendedNameForReport(), pointInfo.getTextRenderer(),
+                discreteTimeSeries = new DiscreteTimeSeries(seriesIdentifier, pointInfo.getTextRenderer(),
                         colour);
                 point.setDiscreteTimeSeries(discreteTimeSeries);
                 if (pointInfo.isConsolidatedChart())
