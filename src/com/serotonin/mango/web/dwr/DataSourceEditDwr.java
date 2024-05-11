@@ -212,6 +212,7 @@ import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
 
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyPoint;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
@@ -2968,5 +2969,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveRadiuinoPointLocator(int id, String xid,
                                                     String name, RadiuinoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
+    }
+
+    public int copyDataPoint(final int dataSourceId, final int dataPointId){
+        DataSourceService dataSourceService = new DataSourceService();
+        DataSourceVO<?> dataSource = dataSourceService.getDataSource(dataSourceId);
+
+        DataPointService dataPointService = new DataPointService();
+        DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
+        return copyPoint(dataSource, dataPoint, new DataPointService());
     }
 }

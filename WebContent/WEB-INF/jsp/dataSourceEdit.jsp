@@ -58,6 +58,10 @@
         		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
         });
 
+		pointListColumnFunctions.push(function(p) {
+				return writeImage("editImg"+ p.id, null, "icon_ds_add", "<fmt:message key="common.copy"/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ")");
+		});
+
         var headers = $("pointListHeaders");
         var td;
         for (var i=0; i<pointListColumnHeaders.length; i++) {
@@ -328,6 +332,12 @@
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
     }
+
+	function copyDataPoint(fromDataSourceId, dataPointId) {
+		return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(toDataPointId) {
+			window.location = "data_point_edit.shtm?dpid=" + toDataPointId;
+		});
+	}
   </script>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">

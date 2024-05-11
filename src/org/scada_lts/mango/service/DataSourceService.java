@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyPoints;
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 
 /**
@@ -212,33 +213,8 @@ public class DataSourceService implements MangoDataSource {
 		copyPermissions(dataSource.getId(), dataSourceCopy.getId());
 
 		//Copy points
-		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
-			DataPointVO dataPointCopy = dataPoint.copy();
-			dataPointCopy.setId(Common.NEW_ID);
-			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-			dataPointCopy.setName(dataPoint.getName());
-			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
-			dataPointCopy.setDataSourceName(dataSourceCopy.getName());
-			dataPointCopy.setDeviceName(dataSourceCopy.getName());
-			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
-			dataPointCopy.getComments().clear();
+		copyPoints(dataSourceId, dataSourceCopy, new DataPointService());
 
-			if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
-				MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
-				pointLocator.setClientId(MqttUtils.generateUniqueClientId());
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-
-			//Copy event detectors
-			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
-				pointEventDetector.setId(Common.NEW_ID);
-				pointEventDetector.setXid(new DataPointService().generateEventDetectorUniqueXid(dataPointCopy.getId()));
-				pointEventDetector.njbSetDataPoint(dataPointCopy);
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-			//Copy permissions
-			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
-		}
 		return dataSourceCopy.getId();
 	}
 

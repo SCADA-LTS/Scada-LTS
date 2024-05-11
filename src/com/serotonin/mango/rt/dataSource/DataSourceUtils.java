@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.BinaryValue;
@@ -33,8 +34,16 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.text.MultistateRenderer;
 import com.serotonin.mango.view.text.MultistateValue;
 import com.serotonin.mango.view.text.TextRenderer;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.jfree.util.Log;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.utils.MqttUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -151,5 +160,49 @@ public class DataSourceUtils {
 		}
 
 		return null;
+	}
+
+	public static int copyDataPoint(final int dataSourceId, final int dataPointId){
+		DataSourceService dataSourceService = new DataSourceService();
+		DataSourceVO<?> dataSource = dataSourceService.getDataSource(dataSourceId);
+
+		DataPointService dataPointService = new DataPointService();
+		DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
+		return copyPoint(dataSource, dataPoint, new DataPointService());
+	}
+
+	public static void copyPoints(int dataSourceId, DataSourceVO<?> dataSourceCopy, DataPointService dataPointService) {
+		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
+			copyPoint(dataSourceCopy, dataPoint, dataPointService);
+		}
+	}
+
+	public static int copyPoint(DataSourceVO<?> dataSourceCopy, DataPointVO dataPoint, DataPointService dataPointService) {
+		DataPointVO dataPointCopy = dataPoint.copy();
+		dataPointCopy.setId(Common.NEW_ID);
+		dataPointCopy.setXid(new DataPointService().generateUniqueXid());
+		dataPointCopy.setName(dataPoint.getName());
+		dataPointCopy.setDataSourceId(dataSourceCopy.getId());
+		dataPointCopy.setDataSourceName(dataSourceCopy.getName());
+		dataPointCopy.setDeviceName(dataSourceCopy.getName());
+		dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
+		dataPointCopy.getComments().clear();
+
+		if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
+			MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
+			pointLocator.setClientId(MqttUtils.generateUniqueClientId());
+		}
+		dataPointService.saveDataPoint(dataPointCopy);
+
+		//Copy event detectors
+		for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
+			pointEventDetector.setId(Common.NEW_ID);
+			pointEventDetector.setXid(new DataPointService().generateEventDetectorUniqueXid(dataPointCopy.getId()));
+			pointEventDetector.njbSetDataPoint(dataPointCopy);
+		}
+		dataPointService.saveDataPoint(dataPointCopy);
+		//Copy permissions
+		dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
+		return dataPointCopy.getId();
 	}
 }
