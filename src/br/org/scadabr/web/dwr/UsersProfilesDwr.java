@@ -80,8 +80,8 @@ public class UsersProfilesDwr {
 		List<WatchList> watchlists = watchlistDao.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewService viewDao = new ViewService();
-		List<View> views = viewDao.getSimpleViews().stream()
+		ViewService viewService = new ViewService();
+		List<View> views = viewService.getSimpleViews().stream()
 				.map(toView())
 				.collect(Collectors.toList());
 		initData.put("views", views);

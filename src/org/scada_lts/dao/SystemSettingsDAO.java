@@ -440,7 +440,7 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_USERS_PROFILES);
 
 		ApplicationBeans.getBean("userCache", UserCacheable.class).resetCache();
-		ApplicationBeans.getBean("viewCache", ViewCachable.class).resetCache();
+		ApplicationBeans.getBean("viewCache", ViewCacheable.class).resetCache();
 		ApplicationBeans.getBean("pointEventDetectorCache", PointEventDetectorCacheable.class).resetCache();
 		ApplicationBeans.getBean("usersProfileCache", UsersProfileCacheable.class).resetCache();
 		ApplicationBeans.getBean("highestAlarmLevelCache", HighestAlarmLevelCacheable.class).resetCache();
