@@ -255,6 +255,9 @@
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
 
+        lt = Math.trunc(lt);
+        tp = Math.trunc(tp);
+
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp, viewId);
     }

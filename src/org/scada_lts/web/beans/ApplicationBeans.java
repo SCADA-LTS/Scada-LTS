@@ -119,7 +119,7 @@ public class ApplicationBeans {
     }
 
     public static IViewDAO getViewDaoBean() {
-        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ViewCachable.CACHE_ENABLED_KEY, true);
+        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ViewCacheable.CACHE_ENABLED_KEY, true);
         return viewCacheEnabled ?
                 getBeanFromContext("viewDaoWithCache", IViewDAO.class) :
                 getBeanFromContext("viewDAO", IViewDAO.class);
