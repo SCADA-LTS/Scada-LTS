@@ -29,7 +29,6 @@
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
             name : '${sst:quotEncode(dp.extendedName)}',
-            xid : '${dp.xid}',
             type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
         };
       </c:forEach>
@@ -111,7 +110,6 @@
           contextArray[contextArray.length] = {
               pointId : pointId,
               pointName : data.name,
-              xid : data.xid,
               pointType : data.type,
               scriptVarName : scriptVarName
           };
@@ -138,7 +136,6 @@
           dwr.util.addRows("contextTable", contextArray,
               [
                   function(data) { return data.pointName; },
-                  function(data) { return data.xid; },
                   function(data) { return data.pointType; },
                   function(data) {
                           return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
@@ -250,7 +247,6 @@
         <tbody id="contextTableHeaders" style="display:none;">
           <tr class="smRowHeader">
             <td><fmt:message key="dsEdit.meta.pointName"/></td>
-            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
             <td><fmt:message key="dsEdit.pointDataType"/></td>
             <td><fmt:message key="dsEdit.meta.var"/></td>
             <td></td>
