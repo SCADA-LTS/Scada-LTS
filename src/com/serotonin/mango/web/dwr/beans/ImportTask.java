@@ -173,9 +173,6 @@ public class ImportTask extends ProgressiveTask {
 		systemSettings = nonNullList(root, EmportDwr.SYSTEM_SETTINGS);
 		usersProfiles = nonNullList(root, EmportDwr.USERS_PROFILES);
 		reports = nonNullList(root, EmportDwr.REPORTS);
-
-		Common.timer.execute(this, WorkItemPriority.HIGH + " - " + this.getClass().getName());
-
 	}
 
 	private void preloadDataPoints() {

@@ -7,10 +7,13 @@ public interface WorkItemMetrics {
     boolean isSuccess();
     boolean isWorkFailed();
     boolean isRunning();
-    int getExecutedMs();
+    long getExecutedNanos();
+    long getExecutedMs();
+    long getTimeInitNanos();
+    long getTimeInitMs();
     String getFailedMessage();
-    String getWorkFailedMessage();
     String getThreadName();
     LocalDateTime getCreatedDate();
     LocalDateTime getExecutedDate();
+    LocalDateTime getStartedDate();
 }

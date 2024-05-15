@@ -91,4 +91,12 @@ public interface PointEventDetectorCacheable {
     default List<PointEventDetectorVO> put(int dataPointId, List<PointEventDetectorVO> detectors) {
         return detectors;
     }
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "point_event_detector_list_by_data_point_id", allEntries = true),
+            @CacheEvict(cacheNames = "point_event_detector", allEntries = true),
+            @CacheEvict(cacheNames = "point_event_detector_by_xid_and_data_point_id", allEntries = true),
+            @CacheEvict(cacheNames = "data_point_id_by_point_event_detector_id", allEntries = true)
+    })
+    default void resetCache() {}
 }

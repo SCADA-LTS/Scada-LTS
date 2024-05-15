@@ -2,36 +2,37 @@ package org.scada_lts.quartz;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.*;
 
 public class CronTriggerScheduler {
 
     private static final Log LOG = LogFactory.getLog(CronTriggerScheduler.class);
-
-    private final StdSchedulerFactory factory;
     private final CronTrigger trigger;
     private final JobDetail job;
+    private final ScadaScheduler scheduler;
 
-    public CronTriggerScheduler(StdSchedulerFactory factory,
+    public CronTriggerScheduler(ScadaScheduler scadaScheduler,
                                 CronTrigger trigger,
                                 JobDetail job) {
-        this.factory = factory;
         this.trigger = trigger;
         this.job = job;
+        this.scheduler = scadaScheduler;
     }
 
     public void schedule(String cronExpression) {
         try {
             trigger.setCronExpression(cronExpression);
-            Scheduler scheduler = factory.getScheduler();
-            scheduler.start();
-            scheduler.scheduleJob(job, trigger);
-            LOG.info(job.getName() + " scheduled, cron: " + trigger.getCronExpression());
+            scheduler.schedule(job, trigger);
         } catch (Exception e) {
-            LOG.warn(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
+    }
+
+    public void start() {
+        scheduler.start(job, trigger);
+    }
+
+    public void stop() {
+        scheduler.stop(job.getKey());
     }
 }

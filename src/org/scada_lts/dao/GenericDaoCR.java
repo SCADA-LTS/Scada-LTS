@@ -32,7 +32,6 @@ public interface GenericDaoCR<T> {
 	
 	static final String LIMIT = " LIMIT ";
 	static final int NO_LIMIT = 0;
-	List<T> findAllWithUserName();
 	List<T> findAll();
 	
 	/**

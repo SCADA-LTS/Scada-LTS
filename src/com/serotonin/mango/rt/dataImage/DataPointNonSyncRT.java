@@ -38,6 +38,9 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.serotonin.mango.rt.dataImage.PointValueState.newState;
+import static org.scada_lts.utils.PointValueStateUtils.isBackdated;
+
 public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
     private static final Log LOG = LogFactory.getLog(DataPointNonSyncRT.class);
 
@@ -59,13 +62,6 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
-    }
-    public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-    }
-
-    public DataPointNonSyncRT(DataPointVO vo) {
-        super(vo);
     }
 
     @Override
@@ -112,10 +108,9 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
             return;
         }
 
-        PointValueTime oldValue = getOldAndSetNew(newValue);
+        PointValueTime oldValue = getOldAndSetNew(newValue, source);
 
-        boolean backdated = oldValue != null
-                && newValue.getTime() < oldValue.getTime();
+        boolean backdated = isBackdated(newValue, newState(oldValue, PointValueState.empty(), getVO()), source);
 
         // Determine whether the new value qualifies for logging.
         boolean logValue;
@@ -169,7 +164,7 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
 
         // Ignore historical values.
-        if (oldValue == null || newValue.getTime() >= oldValue.getTime()) {
+        if (!backdated) {
             fireEvents(oldValue, newValue, source != null, false);
         } else
             fireEvents(null, newValue, false, true);
@@ -177,14 +172,14 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     @Override
     public PointValueTime getPointValue() {
-        return getOldAndSetNew(null);
+        return getOldAndSetNew(null, null);
     }
 
-    private PointValueTime getOldAndSetNew(PointValueTime newValue) {
+    private PointValueTime getOldAndSetNew(PointValueTime newValue, SetPointSource source) {
         if(newValue == null) {
             return pointValue;
         }
-        if(pointValue == null || newValue.getTime() >= pointValue.getTime()) {
+        if(!isBackdated(newValue, newState(pointValue, PointValueState.empty(), getVO()), source)) {
             PointValueTime oldValue = pointValue;
             pointValue = newValue;
             return oldValue;

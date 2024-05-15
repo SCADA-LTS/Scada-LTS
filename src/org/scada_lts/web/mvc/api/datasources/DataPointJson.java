@@ -1,17 +1,16 @@
 package org.scada_lts.web.mvc.api.datasources;
 
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 
 import java.util.ArrayList;
 
 public class DataPointJson {
 
-    private int id;
+    private Integer id;
     private String xid;
     private String name;
     private String description;
-    private boolean enabled;
+    private Boolean enabled;
     private int dataSourceTypeId;
     private int dataSourceId;
     private String deviceName;
@@ -19,7 +18,7 @@ public class DataPointJson {
     private String datasourceName;
     private String dataSourceXid;
     private int typeId;
-    private boolean settable;
+    private Boolean settable;
 
     public DataPointJson() {}
 
@@ -41,7 +40,7 @@ public class DataPointJson {
 
     public DataPointVO createDataPointVO() {
         DataPointVO dpVO = new DataPointVO();
-        dpVO.setId(this.id);
+        dpVO.setId(this.getId() != null ? this.id : 0);
         dpVO.setXid(this.xid);
         dpVO.setName(this.name);
         dpVO.setDescription(this.description);
@@ -49,7 +48,7 @@ public class DataPointJson {
         dpVO.setDataSourceTypeId(this.dataSourceTypeId);
         dpVO.setDataSourceId(this.dataSourceId);
         dpVO.setDeviceName(this.deviceName);
-        dpVO.setPointLocator((PointLocatorVO) this.pointLocator.parsePointLocatorData());
+        dpVO.setPointLocator(this.pointLocator.parsePointLocatorData());
         dpVO.setEventDetectors(new ArrayList<>());
         dpVO.setDataSourceName(this.datasourceName);
         dpVO.setDataSourceXid(this.dataSourceXid);
@@ -57,11 +56,11 @@ public class DataPointJson {
         return dpVO;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -89,11 +88,11 @@ public class DataPointJson {
         this.description = description;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -145,11 +144,11 @@ public class DataPointJson {
         this.typeId = typeId;
     }
 
-    public boolean isSettable() {
+    public Boolean isSettable() {
         return settable;
     }
 
-    public void setSettable(boolean settable) {
+    public void setSettable(Boolean settable) {
         this.settable = settable;
     }
 

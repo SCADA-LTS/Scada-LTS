@@ -80,7 +80,7 @@
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
-            $set("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>", JSON.stringify(settings.<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>, null, 2));
             httpUseProxyChange();
             
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>);
@@ -100,6 +100,18 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>);
+
+            setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
+            setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/> || !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
+
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
@@ -264,6 +276,23 @@
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"), !proxy);
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"), !proxy);
     }
+
+    function workItemsReportingEnabledChange() {
+        var workItemsReportingEnabled = $("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>").checked;
+        if(!workItemsReportingEnabled) {
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>", false);
+            workItemsReportingItemsPerSecondEnabledChange();
+        }
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !workItemsReportingEnabled);
+    }
+
+    function workItemsReportingItemsPerSecondEnabledChange() {
+        var workItemsReportingItemsPerSecondEnabled = $("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>").checked;
+        if(!workItemsReportingItemsPerSecondEnabled) {
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>", 0);
+        }
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !workItemsReportingItemsPerSecondEnabled);
+    }
     
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
@@ -273,6 +302,12 @@
                 $get("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
@@ -887,6 +922,44 @@
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
          </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.enabled"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingEnabledChange()"/>
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingItemsPerSecondEnabledChange()"/>
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>" type="number" class="formShort"/>
+         </td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.threads.name.additional.length"/></td>
+         <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>" type="number" class="formShort"/>
+         </td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemsettings.webresource.graphics.path"/></td>
+          <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          </td>
+          <td colspan="2" id="uploadsPathMessage" class="formError"></td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemsettings.webresource.uploads.path"/></td>
+          <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          </td>
+          <td colspan="2" id="graphicsPathMessage" class="formError"></td>
         </tr>
         <tr>
           <td colspan="2" id="miscMessage" class="formError"></td>

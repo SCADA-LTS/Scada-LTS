@@ -16,6 +16,7 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.report.DiscreteTimeSeries;
 import com.serotonin.mango.vo.report.ImageChartUtils;
 import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
+import com.serotonin.mango.vo.report.SeriesIdentifier;
 import com.serotonin.sync.Synchronizer;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
@@ -197,20 +198,21 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
             }
 
             int dataType = dp.getPointLocator().getDataTypeId();
+            SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
 
             if (dataType == DataTypes.NUMERIC) {
-                ts = new TimeSeries(dp.getName(), null, null, Second.class);
+                ts = new TimeSeries(seriesIdentifier, null, null, Second.class);
                 quantizer = new NumericDataQuantizer(from, to, imageWidth, this);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.MULTISTATE) {
                 quantizer = new MultistateDataQuantizer(from, to, imageWidth, this);
-                dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                dts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
             else if (dataType == DataTypes.BINARY) {
                 quantizer = new BinaryDataQuantizer(from, to, imageWidth, this);
-                dts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                dts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                 loadData(quantizer, pointValueService, dataPointId, from, to);
             }
         }

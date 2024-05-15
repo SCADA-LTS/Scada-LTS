@@ -6,11 +6,12 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 
-public class ViewCache implements ViewCachable {
+public class ViewCache implements ViewCacheable {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(ViewCache.class);
     private final ViewDAO viewDAO;
@@ -20,9 +21,9 @@ public class ViewCache implements ViewCachable {
     }
 
     @Override
-    public List<ScadaObjectIdentifier> findIdentifiers() {
-        LOG.info("no cache: findAll");
-        return viewDAO.findIdentifiers();
+    public List<BaseObjectIdentifier> findIdentifiers() {
+        LOG.info("no cache: findIdentifiers");
+        return viewDAO.findBaseIdentifiers();
     }
 
     @Override
@@ -77,11 +78,6 @@ public class ViewCache implements ViewCachable {
     public View findById(int viewId) {
         LOG.info("no cache: viewId: " + viewId);
         return viewDAO.findById(viewId);
-    }
-
-    @Override
-    public void deleteViewForUser(int viewId) {
-        LOG.info("no cache: viewId: " + viewId);
     }
 
     @Override

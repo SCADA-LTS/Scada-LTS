@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
@@ -31,7 +32,6 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
@@ -75,19 +75,50 @@ public class EventService implements MangoEvent {
 		systemSettingsService = new SystemSettingsService();
 	}
 
-	class UserPendingEventRetriever implements Runnable {
+	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem implements Runnable {
 		private final int userId;
+		private final String details;
 
-		UserPendingEventRetriever(int userId) {
+		@Deprecated
+		public UserPendingEventRetriever(int userId) {
 			this.userId = userId;
+			this.details = "";
+		}
+
+		UserPendingEventRetriever(int userId, String details) {
+			this.userId = userId;
+			this.details = details;
 		}
 
 		@Override
 		public void run() {
+			super.execute();
+		}
+
+		@Override
+		public void work() {
 			addToCache(
 					userId,
 					getPendingEvents(EventType.EventSources.DATA_POINT, -1,
 							userId));
+		}
+
+		@Override
+		public int getPriority() {
+			return WorkItemPriority.HIGH.getPriority();
+		}
+
+		@Override
+		public String toString() {
+			return "UserPendingEventRetriever{" +
+					"userId=" + userId +
+					", details='" + details + '\'' +
+					'}';
+		}
+
+		@Override
+		public String getDetails() {
+			return this.toString();
 		}
 	}
 
@@ -188,7 +219,9 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-		return eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		List<EventInstance> lst = eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		attachRelationInfo(lst);
+		return lst;
 	}
 
 	@Override
@@ -200,8 +233,8 @@ public class EventService implements MangoEvent {
 			userEvents = Collections.emptyList();
 			addToCache(userId, userEvents);
 			//TODO rewrite to delete relation of seroUtils
-			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId);
-			Common.timer.execute(userPendingEventRetriever, WorkItemPriority.HIGH + " - dataPointId: " + dataPointId + ", userId: " + userId + " - " + userPendingEventRetriever.getClass().getName());
+			UserPendingEventRetriever userPendingEventRetriever = new UserPendingEventRetriever(userId, "dataPointId: " + dataPointId);
+			Common.ctx.getBackgroundProcessing().addWorkItem(userPendingEventRetriever);
 		}
 		List<EventInstance> list = null;
 		for (EventInstance e : userEvents) {
@@ -255,7 +288,7 @@ public class EventService implements MangoEvent {
 				}
 				attachRelationalInfo(results);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 		return results;

@@ -18,6 +18,13 @@ public final class ThreadInfoApiUtils {
                 .collect(groupBy), comparator);
     }
 
+    public static <K,V> Map<K, V> groupByAndSort(List<Thread> threads,
+                                                 Collector<Thread, ?, Map<K, V>> groupBy,
+                                                 Comparator<Map.Entry<K, V>> comparator) {
+        return sorted(threads.stream()
+                .collect(groupBy), comparator);
+    }
+
     public static <K, V> Map<K, V> sorted(Map<K, V> map, Comparator<Map.Entry<K, V>> comparator) {
         return map.entrySet().stream()
                 .sorted(comparator)
@@ -26,7 +33,7 @@ public final class ThreadInfoApiUtils {
                 }, LinkedHashMap::new));
     }
 
-    public static Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, List<Value>>> groupBy() {
+    public static Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, List<Value>>> groupByClassName() {
         return Collectors.groupingBy(
                 entry -> Stream.of(entry.getValue())
                         .map(StackTraceElement::getClassName)
@@ -92,7 +99,15 @@ public final class ThreadInfoApiUtils {
         return new HashMap<>(Thread.getAllStackTraces());
     }
 
-    public static class Value {
+    public static List<Thread> getThreads() {
+        return getThreadStack().keySet().stream()
+                .sorted(Comparator.comparing(Thread::getId).reversed()
+                        .thenComparing(Thread::getName)
+                        .thenComparing(Thread::getState))
+                .collect(Collectors.toList());
+    }
+
+    public static class Value implements Comparable<Value> {
         private String value;
 
         public Value(String value) {
@@ -123,6 +138,13 @@ public final class ThreadInfoApiUtils {
         @Override
         public String toString() {
             return value;
+        }
+
+        @Override
+        public int compareTo(Value o) {
+            if(this.value == null || o.value == null)
+                return -1;
+            return this.value.compareTo(o.value);
         }
     }
 }

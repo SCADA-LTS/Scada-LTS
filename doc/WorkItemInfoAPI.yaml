@@ -1,10 +1,10 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://localhost:8080/ScadaBR/api'
+  - url: 'http://localhost:8080/Scada-LTS/api'
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.7.5
+  version: 2.7.6.1
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
@@ -18,12 +18,173 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
+      description: 'Get work items executed and not executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed and not executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/priority/{priority}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/priority/{priority}/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed and not executed by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/:
+    get:
+      tags:
+        - WorkItemInfoAPI
       description: 'Get work items not executed'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by-classes/:
+  /work-items/not-executed/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items not executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -32,11 +193,47 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by-classes/count/:
+  /work-items/not-executed/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items not executed by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
       description: 'Grouping work items not executed by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items not executed by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items not executed by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/not-executed/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items not executed by priority then count'
       responses:
         '200':
           description: "Get successful"
@@ -50,7 +247,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by-classes/:
+  /work-items/executed/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/executed/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -59,7 +265,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/executed/group-by-classes/count/:
+  /work-items/executed/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by class then statistic'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/executed/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -68,115 +283,106 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/failed/:
+  /work-items/executed/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items fail executed'
+      description: 'Grouping work items executed by priority'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/failed/group-by-classes/:
+  /work-items/executed/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items fail executed by class'
+      description: 'Grouping work items executed by priority then statistic'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/failed/group-by-classes/count/:
+  /work-items/executed/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items fail executed by class then count'
+      description: 'Grouping work items executed by priority then count'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/:
+  /work-items/executed/success/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items running'
+      description: 'Get work items success'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by-classes/:
+  /work-items/executed/success/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items running by class'
+      description: 'Get metrics work items success'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/running/group-by-classes/count/:
+  /work-items/executed/success/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items running by class then count'
+      description: 'Grouping work items success by class'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/success/:
+  /work-items/executed/success/group-by/classes/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items success executed'
+      description: 'Grouping work items success by class then metrics'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/success/group-by-classes/:
+  /work-items/executed/success/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items success executed by class'
+      description: 'Grouping work items success by class then count'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/success/group-by-classes/count/:
+  /work-items/executed/success/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items success executed by class then count'
+      description: 'Grouping work items success by priority'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/all/:
+  /work-items/executed/success/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed and not executed'
+      description: 'Grouping work items success by priority then metrics'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/all/group-by-classes/:
+  /work-items/executed/success/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items all by class'
+      description: 'Grouping work items success by priority then count'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/all/group-by-classes/count/:
-    get:
-      tags:
-        - WorkItemInfoAPI
-      description: 'Grouping work items all by class then count'
-      responses:
-        '200':
-          description: "Get successful"
-          headers: { }
-  /work-items/longer/{executedMs}/:
+  /work-items/executed/longer/{executedMs}/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -191,7 +397,22 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/group-by-classes/:
+  /work-items/executed/longer/{executedMs}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed longer than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/longer/{executedMs}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -206,7 +427,22 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/longer/{executedMs}/group-by-classes/count/:
+  /work-items/executed/longer/{executedMs}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/longer/{executedMs}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -221,6 +457,251 @@ paths:
           required: true
           schema:
             type: 'integer'
+  /work-items/executed/longer/{executedMs}/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/longer/{executedMs}/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/longer/{executedMs}/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed less than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/less/{executedMs}/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/executed/priority/{priority}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/executed/priority/{priority}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/executed/priority/{priority}/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed filtering by priority grouping by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/executed/priority/{priority}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed filtering by priority grouping by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/executed/priority/{priority}/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed filtering by priority grouping by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
   /work-items/history/longer/{executedMs}/:
     get:
       tags:
@@ -236,7 +717,22 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by-classes/:
+  /work-items/history/longer/{executedMs}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items executed longer than executedMs from History'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/history/longer/{executedMs}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -251,11 +747,71 @@ paths:
           required: true
           schema:
             type: 'integer'
-  /work-items/history/longer/{executedMs}/group-by-classes/count/:
+  /work-items/history/longer/{executedMs}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by class from History then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/history/longer/{executedMs}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
       description: 'Get work items executed longer than executedMs by class then count from History'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/history/longer/{executedMs}/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority from History'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/history/longer/{executedMs}/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority from History then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/history/longer/{executedMs}/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs by priority then count from History'
       responses:
         '200':
           description: "Get successful"
@@ -282,7 +838,23 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/group-by-classes/:
+  /work-items/history/priority/{priority}/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items all filtering by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/history/priority/{priority}/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -298,7 +870,23 @@ paths:
           schema:
             type: 'string'
             enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/history/priority/{priority}/group-by-classes/count/:
+  /work-items/history/priority/{priority}/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items all filtering by priority and group by classes then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'priority'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/history/priority/{priority}/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -323,7 +911,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by-classes/:
+  /work-items/history/process/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics process work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/process/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -332,7 +929,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/history/process/group-by-classes/count/:
+  /work-items/history/process/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get process work items and group by classes then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/process/group-by/classes/count/:
     get:
       tags:
         - WorkItemInfoAPI
@@ -341,99 +947,249 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/less/{executedMs}/:
+  /work-items/history/process/group-by/priority/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed less than executedMs'
+      description: 'Get process work items and group by priority'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'executedMs'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-  /work-items/less/{executedMs}/group-by-classes/:
+  /work-items/history/process/group-by/priority/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed less than executedMs by class'
+      description: 'Get process work items and group by priority then metrics'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'executedMs'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-  /work-items/less/{executedMs}/group-by-classes/count/:
+  /work-items/history/process/group-by/priority/count/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed less than executedMs by class then count'
+      description: 'Get process work items and group by priority then count'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'executedMs'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
-  /work-items/priority/{priority}/:
+  /work-items/history/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items all filtering by priority'
+      description: 'Get work items executed'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'priority'
-          in: 'path'
-          required: true
-          schema:
-            type: 'string'
-            enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/priority/{priority}/group-by-classes/:
+  /work-items/history/metrics/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items all filtering by priority grouping by class'
+      description: 'Get metrics work items executed'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'priority'
-          in: 'path'
-          required: true
-          schema:
-            type: 'string'
-            enum: [ HIGH, MEDIUM, LOW ]
-  /work-items/priority/{priority}/group-by-classes/count/:
+  /work-items/history/group-by/classes/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items all filtering by priority grouping by class then count'
+      description: 'Grouping work items executed by class'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-      parameters:
-        - name: 'priority'
-          in: 'path'
-          required: true
-          schema:
-            type: 'string'
-            enum: [ HIGH, MEDIUM, LOW ]
+  /work-items/history/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items executed by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items fail executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items fail executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/history/failed/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items running'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get metrics work items running'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/classes/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/classes/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/classes/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by class then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/priority/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by priority'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/priority/metrics/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by priority then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/running/group-by/priority/count/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items running by priority then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
   /work-items/scheduled/:
     get:
       tags:
@@ -443,7 +1199,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by-classes/:
+  /work-items/scheduled/metrics/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Get metrics active scheduled work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/scheduled/group-by/classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -452,7 +1217,16 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/scheduled/group-by-classes/count/:
+  /work-items/scheduled/group-by/classes/metrics/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Grouping active scheduled work items by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/scheduled/group-by/classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -461,11 +1235,38 @@ paths:
         '200':
           description: "Get successful"
           headers: { }
+  /work-items/scheduled/group-by/states/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Grouping active scheduled work items by states'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/scheduled/group-by/states/metrics/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Grouping active scheduled work items by states then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/scheduled/group-by/states/count/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Grouping active scheduled work items by states then count'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
   /work-items/scheduled/states/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
-      description: 'Get active scheduled work items'
+      description: 'Get states scheduled work items'
       responses:
         '200':
           description: "Get successful"
@@ -486,7 +1287,23 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/group-by-classes/:
+  /work-items/scheduled/states/{state}/metrics/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Get metrics active scheduled work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
+  /work-items/scheduled/states/{state}/group-by/classes/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI
@@ -502,7 +1319,23 @@ paths:
           schema:
             type: 'string'
             enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
-  /work-items/scheduled/states/{state}/group-by-classes/count/:
+  /work-items/scheduled/states/{state}/group-by/classes/metrics/:
+    get:
+      tags:
+        - ScheduledWorkItemInfoAPI
+      description: 'Grouping active scheduled work items by class then metrics'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [ VIRGIN, CANCELLED, EXECUTED, SCHEDULED ]
+  /work-items/scheduled/states/{state}/group-by/classes/count/:
     get:
       tags:
         - ScheduledWorkItemInfoAPI

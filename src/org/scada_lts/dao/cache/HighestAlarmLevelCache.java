@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IHighestAlarmLevelDAO;
 import org.scada_lts.dao.model.UserAlarmLevel;
 
-public class HighestAlarmLevelCache implements HighestAlarmLevelCachable {
+public class HighestAlarmLevelCache implements HighestAlarmLevelCacheable {
 
     private static final Log LOG = LogFactory.getLog(HighestAlarmLevelCache.class);
 
@@ -34,7 +34,7 @@ public class HighestAlarmLevelCache implements HighestAlarmLevelCachable {
     }
 
     @Override
-    public void resetAlarmLevels() {
+    public void resetCache() {
         LOG.debug("resetAlarmLevels");
     }
 

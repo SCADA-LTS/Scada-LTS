@@ -61,17 +61,68 @@
                             dense
                         ></v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.workItemsReportingEnabled"
+                            :label="$t('systemsettings.workitems.reporting.enabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-switch
+                            v-model="miscSettings.workItemsReportingItemsPerSecondEnabled"
+                            :label="$t('systemsettings.workitems.reporting.itemspersecond.enabled')"
+                            @change="watchDataChange()"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.workItemsReportingItemsPerSecondLimit"
+                            :label="$t('systemsettings.workitems.reporting.itemspersecond.limit')"
+                            @change="watchDataChange()"
+                            type="number"
+                            dense
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.threadsNameAdditionalLength"
+                            :label="$t('systemsettings.threads.name.additional.length')"
+                            @change="watchDataChange()"
+                            type="number"
+                            dense
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.webResourceGraphicsPath"
+                          :label="$t('systemsettings.webresource.graphics.path')"
+                          @change="watchDataChange()"
+                          :rules="[validateGraphicsPath]"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.webResourceUploadsPath"
+                          :label="$t('systemsettings.webresource.uploads.path')"
+                          @change="watchDataChange()"
+                          :rules="[validateUploadsPath]"
+                      ></v-text-field>
+                    </v-col>
                 </v-row>
 			</v-card-text>
 		</v-card>
 	</v-col>
 </template>
 <script>
+import path from "path";
+
 export default {
 	name: 'MiscSettingsComponent',
 
 	data() {
 		return {
+			validatedPaths: [],
 			miscSettings: undefined,
 			miscSettingsStore: undefined,
 			isMiscSettingsEdited: false,
@@ -143,6 +194,7 @@ export default {
 				title: 'systemsettings.misc.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: this.validateForm(this.validatedPaths)
 			});
 		},
 
@@ -192,6 +244,36 @@ export default {
 			}
 			return value;
 		},
+    validateGraphicsPath(v) {
+      let validGraphicsKey = "validGraphics"
+      if(this.validatedPaths.some(item => item.key === validGraphicsKey)) {
+          this.validatedPaths = this.validatedPaths.filter(item => item.key !== validGraphicsKey);
+      }
+      if (v === 'graphics' || v === 'graphics' + path.sep || v.endsWith(path.sep + 'graphics') || v.endsWith(path.sep + 'graphics' + path.sep)) {
+        this.validatedPaths.push({key: validGraphicsKey,value: true})
+        return true;
+      } else {
+        this.validatedPaths.push({key: validGraphicsKey,value: false})
+        return this.$t("systemsettings.webresource.graphics.path.wrong", {0: path.sep});
+      }
+    },
+    validateUploadsPath(v) {
+      let validUploadsKey = "validUploads"
+      if(this.validatedPaths.some(item => item.key === validUploadsKey)) {
+          this.validatedPaths = this.validatedPaths.filter(item => item.key !== validUploadsKey);
+      }
+      if (v === 'uploads' || v === 'uploads' + path.sep || v.endsWith(path.sep + 'uploads') || v.endsWith(path.sep + 'uploads' + path.sep)) {
+        this.validatedPaths.push({key: validUploadsKey, value: true});
+        return true;
+      } else {
+        this.validatedPaths.push({key: validUploadsKey, value: false})
+        return this.$t("systemsettings.webresource.uploads.path.wrong", {0: path.sep});
+      }
+    },
+    validateForm(paths) {
+      const result = paths.every(item => item.value);
+      return result;
+    }
 	},
 };
 </script>

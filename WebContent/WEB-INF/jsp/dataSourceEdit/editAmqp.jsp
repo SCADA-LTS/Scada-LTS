@@ -38,7 +38,13 @@
         dataSourceToSave.protocolVersion=$get("protocolVersion");
         dataSourceToSave.brokerMode=$get("brokerMode");
 
-        DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
+        if(isValid(dataSourceToSave.updateAttempts)) {
+            DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
+        } else {
+            let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
+            showDwrMessages([message]);
+            stopImageFader("dsSaveImg");
+        }
     }
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);

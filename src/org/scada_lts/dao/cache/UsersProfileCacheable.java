@@ -154,4 +154,21 @@ public interface UsersProfileCacheable {
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true)
     })
     default void resetCacheWatchListPermissions() {}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
+            @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
+            @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datasource_list_by_profile", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datapoint_list_by_profile", allEntries = true),
+            @CacheEvict(cacheNames = "permission_watchlist_list_by_profile", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_profile", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
+            @CacheEvict(cacheNames = "permission_watchlist_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datapoint_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "permission_datasource_list_by_user", allEntries = true)
+    })
+    default void resetCache() {}
 }

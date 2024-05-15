@@ -47,16 +47,6 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         this.pointValueState = PointValueState.empty();
     }
 
-    public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-        this.pointValueState = PointValueState.empty();
-    }
-
-    public DataPointSynchronizedRT(DataPointVO vo) {
-        super(vo);
-        this.pointValueState = PointValueState.empty();
-    }
-
     @Override
     protected void savePointValue(PointValueTime newValue, SetPointSource source,
                                 boolean async) {
@@ -101,7 +91,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
             return;
         }
 
-        createAndUpdateState(newValue, getVO()).ifPresent(state -> {
+        createAndUpdateState(newValue, getVO(), source).ifPresent(state -> {
             try {
                 savePointValue(source, async, state);
             } catch (Exception ex) {
@@ -124,7 +114,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     public void initialize() {
         // Get the latest value for the point from the database.
         PointValueTime lastValue = getPointValueCache().getLatestPointValue();
-        createAndUpdateState(lastValue, getVO());
+        createAndUpdateState(lastValue, getVO(), null);
         super.initialize();
     }
 
@@ -133,7 +123,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         getPointValueCache().reset();
         if (getVO().getLoggingType() != DataPointVO.LoggingTypes.NONE) {
             PointValueTime lastValue = getPointValueCache().getLatestPointValue();
-            createAndUpdateState(lastValue, getVO());
+            createAndUpdateState(lastValue, getVO(), null);
         }
     }
 
@@ -195,11 +185,13 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         return "DataPointSynchronizedRT(id=" + getId() + ", name=" + getVO().getName() + ")";
     }
 
-    private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo) {
+    private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo, SetPointSource source) {
         lock.writeLock().lock();
         try {
-            pointValueState = PointValueState.newState(newValue, pointValueState, vo);
-            return Optional.of(pointValueState);
+            PointValueState state = PointValueState.newState(newValue, pointValueState, vo, source);
+            if(!state.isBackdated())
+                pointValueState = state;
+            return Optional.of(state);
         } catch(Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();

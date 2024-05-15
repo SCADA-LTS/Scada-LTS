@@ -1,10 +1,10 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://localhost:8080/ScadaBR/api'
+  - url: 'http://localhost:8080/Scada-LTS/api'
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.7.2
+  version: 2.7.6.1
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
@@ -19,6 +19,15 @@ paths:
       tags:
         - ThreadInfoAPI
       description: 'Get all threads'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+  /threads/metrics/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get metrics threads'
       responses:
         '200':
           description: 'Get successful'
@@ -46,6 +55,15 @@ paths:
       tags:
         - ThreadInfoAPI
       description: 'Get all thread classes'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+  /threads/group-by/classes/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Group threads by thread'
       responses:
         '200':
           description: 'Get successful'
@@ -145,6 +163,22 @@ paths:
       tags:
         - StateThreadInfoAPI
       description: 'Get threads for state'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+            enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
+  /threads/states/{state}/metrics/:
+    get:
+      tags:
+        - StateThreadInfoAPI
+      description: 'Get metrics threads for state'
       responses:
         '200':
           description: 'Get successful'

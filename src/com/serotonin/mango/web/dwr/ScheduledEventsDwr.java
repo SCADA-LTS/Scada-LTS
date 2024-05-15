@@ -93,11 +93,6 @@ public class ScheduledEventsDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!scheduledEventDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-
         se.validate(response);
 
         // Save the scheduled event

@@ -3,6 +3,7 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.HttpParameterUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,10 @@ public final class ViewControllerUtils {
         View view = edit ? getViewCurrentEdit(request) : getViewCurrent(request, viewService, edit);
         if(view == null) {
             view = HttpParameterUtils.getObject("emptyView", request, View.class).orElseGet(View::new);
+        }
+        String viewName = HttpParameterUtils.getValue("view.name", request, a -> a).orElse("");
+        if(!StringUtils.isEmpty(viewName)) {
+            view.setName(viewName);
         }
         return view;
     }

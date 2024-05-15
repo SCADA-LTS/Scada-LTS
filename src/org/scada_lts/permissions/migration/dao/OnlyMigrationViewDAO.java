@@ -24,16 +24,12 @@ import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -405,6 +401,11 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 
 	@Override
 	public View findByName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<BaseObjectIdentifier> findBaseIdentifiers() {
 		throw new UnsupportedOperationException();
 	}
 }

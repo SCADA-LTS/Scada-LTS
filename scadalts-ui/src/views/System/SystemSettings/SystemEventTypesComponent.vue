@@ -132,6 +132,7 @@ export default {
 				title: 'systemsettings.event.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

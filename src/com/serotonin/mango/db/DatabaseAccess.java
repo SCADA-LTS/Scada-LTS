@@ -41,44 +41,44 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.StringUtils;
 
 abstract public class DatabaseAccess {
-	private final Log log = LogFactory.getLog(DatabaseAccess.class);
+	private final static Log log = LogFactory.getLog(DatabaseAccess.class);
 
 	public enum DatabaseType {
 		DERBY {
 			@Override
-			DatabaseAccess getImpl(ServletContext ctx) {
-				return new DerbyAccess(ctx);
+			DatabaseAccess getImpl() {
+				return new DerbyAccess();
 			}
 		},
 		MSSQL {
 			@Override
-			DatabaseAccess getImpl(ServletContext ctx) {
-				return new MSSQLAccess(ctx);
+			DatabaseAccess getImpl() {
+				return new MSSQLAccess();
 			}
 		},
 		MYSQL {
 			@Override
-			DatabaseAccess getImpl(ServletContext ctx) {
-				return new MySQLAccess(ctx);
+			DatabaseAccess getImpl() {
+				return new MySQLAccess();
 			}
 		},
 		POSTGRES {
 			@Override
-			DatabaseAccess getImpl(ServletContext ctx) {
-				return new PostgreSQLAccess(ctx);
+			DatabaseAccess getImpl() {
+				return new PostgreSQLAccess();
 			}
 		},
 		ORACLE11G {
 			@Override
-			DatabaseAccess getImpl(ServletContext ctx) {
-				return new Oracle11GAccess(ctx);
+			DatabaseAccess getImpl() {
+				return new Oracle11GAccess();
 			}
 		};
 
-		abstract DatabaseAccess getImpl(ServletContext ctx);
+		abstract DatabaseAccess getImpl();
 	}
 
-	public static DatabaseAccess createDatabaseAccess(ServletContext ctx) {
+	public static DatabaseAccess createDatabaseAccess() {
 
 		String type = Common.getEnvironmentProfile().getString("db.type",
 				"derby");
@@ -87,35 +87,23 @@ abstract public class DatabaseAccess {
 		if (dt == null)
 			throw new IllegalArgumentException("Unknown database type: " + type);
 
-		return dt.getImpl(ctx);
+		return dt.getImpl();
 	}
 
 	public static DatabaseAccess getDatabaseAccess() {
 		return Common.ctx.getDatabaseAccess();
 	}
 
-	protected final ServletContext ctx;
-
-	protected DatabaseAccess(ServletContext ctx) {
-		this.ctx = ctx;
+	protected DatabaseAccess() {
+		initDataSource();
 	}
 
-	public void initialize() {
-		if (Common.getEnvironmentProfile().getString("db.datasource", "false")
-				.equals("true")) {
-			initializeImpl(
-					"",
-					Common.getEnvironmentProfile().getString(
-							"db.datasourceName"));
-		} else {
-			initializeImpl("");
-		}
-
+	public void initialize(ServletContext ctx) {
 		ExtendedJdbcTemplate ejt = new ExtendedJdbcTemplate();
 		ejt.setDataSource(getDataSource());
 
 		try {
-			if (newDatabaseCheck(ejt)) {
+			if (newDatabaseCheck(ejt, ctx)) {
 				// Check if we should convert from another database.
 				String convertTypeStr = null;
 				try {
@@ -133,7 +121,7 @@ abstract public class DatabaseAccess {
 						throw new IllegalArgumentException(
 								"Unknown convert database type: " + convertType);
 
-					DatabaseAccess sourceAccess = convertType.getImpl(ctx);
+					DatabaseAccess sourceAccess = convertType.getImpl();
 					sourceAccess.initializeImpl("convert.");
 
 					DBConvert convert = new DBConvert();
@@ -184,6 +172,18 @@ abstract public class DatabaseAccess {
 		postInitialize(ejt);
 	}
 
+	private void initDataSource() {
+		if (Common.getEnvironmentProfile().getString("db.datasource", "false")
+				.equals("true")) {
+			initializeImpl(
+					"",
+					Common.getEnvironmentProfile().getString(
+							"db.datasourceName"));
+		} else {
+			initializeImpl("");
+		}
+	}
+
 	abstract public DatabaseType getType();
 
 	abstract public void terminate();
@@ -206,7 +206,7 @@ abstract public class DatabaseAccess {
 		// no op - override as necessary
 	}
 
-	abstract protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt);
+	abstract protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx);
 
 	abstract public void runScript(String[] script, final OutputStream out)
 			throws Exception;

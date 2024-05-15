@@ -7,42 +7,46 @@ import org.junit.Test;
 public class PointValueTimeTest {
 
     private final String WHO_CHANGED_VALUE = "test";
-    private boolean createInstanceWithVWhoValuedValue;
 
     @Test
     public void thisPointValueTimeInstanceShouldNotHavePropertyWhoChangedValue_Test(){
-        createInstanceWithVWhoValuedValue=false;
 
-        Assert.assertTrue( createPointValueTime( createInstanceWithVWhoValuedValue ).getWhoChangedValue() != null);
+        //given:
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(MangoValue.objectToValue(1), -1, SetPointSource.Types.USER, 1);
+        annotatedPointValueTime.setSourceDescriptionArgument(WHO_CHANGED_VALUE);
+
+        //when:
+        String username = annotatedPointValueTime.getSourceDescriptionArgument();
+
+        //then:
+        Assert.assertTrue( username != null);
     }
 
     @Test
     public void thisPointValueTimeInstanceShouldHavePropertyWhoChangedValueAsAnEmptyString_Test(){
-        createInstanceWithVWhoValuedValue=false;
 
-        PointValueTime pointValueTime = createPointValueTime( createInstanceWithVWhoValuedValue );
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(MangoValue.objectToValue(1), -1, SetPointSource.Types.USER, 1);
+        annotatedPointValueTime.setSourceDescriptionArgument("");
 
-        String EMPTY_STRING = "";
+        String username = annotatedPointValueTime.getSourceDescriptionArgument();
 
-        Assert.assertTrue(
-                pointValueTime.getWhoChangedValue() != null &&
-                pointValueTime.getWhoChangedValue().equals(EMPTY_STRING)
-                );
+        Assert.assertTrue(username != null && username.equals(""));
     }
 
     @Test
     public void thisPointValueTimeInstanceShouldHaveCertainPropertyWhoChangedValue_Test(){
-        createInstanceWithVWhoValuedValue=true;
 
-        Assert.assertEquals(WHO_CHANGED_VALUE,  createPointValueTime( createInstanceWithVWhoValuedValue ).getWhoChangedValue() );
+        //given:
+        AnnotatedPointValueTime annotatedPointValueTime = new AnnotatedPointValueTime(MangoValue.objectToValue(1), -1, SetPointSource.Types.USER, 1);
+        annotatedPointValueTime.setSourceDescriptionArgument(WHO_CHANGED_VALUE);
+
+        //when:
+        String username = annotatedPointValueTime.getSourceDescriptionArgument();
+
+        //then:
+        Assert.assertEquals(WHO_CHANGED_VALUE, username);
     }
 
-    private  PointValueTime createPointValueTime(boolean createInstanceWithVWhoValuedValue){
-
-        return createInstanceWithVWhoValuedValue
-                ?new PointValueTime( createMangoValue(), 0, WHO_CHANGED_VALUE)
-                :new PointValueTime( createMangoValue(), 0);
-    }
     public MangoValue getMangoValueWithBinaryDataType(){
         return createMangoValue();
     }

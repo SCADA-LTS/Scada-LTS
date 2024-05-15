@@ -55,7 +55,8 @@
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
-        }    
+        	loadDefaultSizeContainer('${form.view.backgroundFilename}','viewBackground');
+        }
     }
     
     function addViewComponent() {
@@ -253,6 +254,9 @@
         // Remove the 'px's from the positions.
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
+
+        lt = Math.trunc(lt);
+        tp = Math.trunc(tp);
 
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp, viewId);
@@ -598,7 +602,7 @@
                         padding-right:1px;padding-bottom:1px;">
                   <c:choose>
                     <c:when test="${empty form.view.backgroundFilename}">
-                      <img id="viewBackground" src="images/spacer.gif" alt="" width="740" height="500"
+                      <img id="viewBackground" src="images/spacer.gif" alt=""
                               style="top:1px;left:1px;"/>
                     </c:when>
                     <c:otherwise>

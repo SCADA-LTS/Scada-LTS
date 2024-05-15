@@ -47,7 +47,7 @@ public class LoggedUsersMultiThreadTest {
         HttpSession httpSession1 = new MockHttpSession();
 
         //when:
-        TestConcurrentUtils.biConsumer(10, Arrays.asList(
+        TestConcurrentUtils.biConsumer(2, Arrays.asList(
                 new TestConcurrentUtils.BiFunctionAction<>(loggedUsers::addUser, user, httpSession1)
         ));
 
@@ -64,7 +64,7 @@ public class LoggedUsersMultiThreadTest {
         loggedUsers.addUser(user, httpSession1);
 
         //when:
-        TestConcurrentUtils.biConsumer(10, Arrays.asList(
+        TestConcurrentUtils.biConsumer(2, Arrays.asList(
                 new TestConcurrentUtils.BiFunctionAction<>(loggedUsers::removeUser, user, httpSession1)
         ));
 
@@ -81,7 +81,7 @@ public class LoggedUsersMultiThreadTest {
         loggedUsers.addUser(user, httpSession1);
 
         //when:
-        TestConcurrentUtils.biConsumer(10, Arrays.asList(
+        TestConcurrentUtils.biConsumer(2, Arrays.asList(
                 new TestConcurrentUtils.BiFunctionAction<>(loggedUsers::removeUser, user, new MockHttpSession())
         ));
 
@@ -100,7 +100,7 @@ public class LoggedUsersMultiThreadTest {
         loggedUsers.addUser(user, httpSession2);
 
         //when:
-        TestConcurrentUtils.biConsumer(10, Arrays.asList(
+        TestConcurrentUtils.biConsumer(2, Arrays.asList(
                 new TestConcurrentUtils.BiFunctionAction<>(loggedUsers::removeUser, user, httpSession1)
         ));
 

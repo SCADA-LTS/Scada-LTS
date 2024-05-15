@@ -26,9 +26,7 @@ import java.util.stream.Collectors;
 import br.org.scadabr.vo.permission.ViewAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.IdName;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
+import org.scada_lts.dao.model.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -105,6 +103,13 @@ public class ViewDAO implements IViewDAO {
             + COLUMN_NAME_NAME+" "
             + "from "
             + "mangoViews";
+
+	private static final String VIEW_BASE_IDENTIFIER_SELECT = ""
+			+"select "
+			+ COLUMN_NAME_ID+", "
+			+ COLUMN_NAME_XID+" "
+			+ "from "
+			+ "mangoViews";
 	
 	private static final String VIEW_FILTER_BASE_ON_ID=""
 			 +COLUMN_NAME_ID+"=?";
@@ -228,6 +233,10 @@ public class ViewDAO implements IViewDAO {
 	private static final String VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME = ""
 			+ VIEW_IDENTIFIER_SELECT + " "
 			+ "order by "+COLUMN_NAME_NAME;
+
+	private static final String VIEW_BASE_IDENTIFIER_SELECT_ORDER_BY_ID = ""
+			+ VIEW_BASE_IDENTIFIER_SELECT + " "
+			+ "order by "+COLUMN_NAME_ID;
 
 	// @formatter:on
 	
@@ -421,6 +430,15 @@ public class ViewDAO implements IViewDAO {
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	@Override
+	public List<BaseObjectIdentifier> findBaseIdentifiers() {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_BASE_IDENTIFIER_SELECT_ORDER_BY_ID, new Object[]{},
+				new BaseObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.build());
+	}
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

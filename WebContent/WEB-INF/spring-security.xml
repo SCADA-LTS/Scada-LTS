@@ -72,6 +72,50 @@
         <session-management session-fixation-protection="none"/>
     </http>
 
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/work-items/**"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" requires-channel="https"/>
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="none"/>
+    </http>
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/threads/**"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" requires-channel="https"/>
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="none"/>
+    </http>
+
     <http use-expressions="true" disable-url-rewriting="true"
           authentication-manager-ref="authenticationManager">
         <headers>
@@ -90,7 +134,6 @@
         <intercept-url pattern="/logout.htm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
         <!-- Static resources -->
-        <intercept-url pattern="/graphics/**" access="permitAll" />
         <intercept-url pattern="/images/**" access="permitAll" />
         <intercept-url pattern="/img/**" access="permitAll" />
         <intercept-url pattern="/assets/**" access="permitAll" />
@@ -99,7 +142,9 @@
         <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/static/**" access="permitAll" />
         <intercept-url pattern="/audio/**" access="permitAll" />
-        <intercept-url pattern="/uploads/**" access="permitAll" />
+
+        <intercept-url pattern="/graphics/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/uploads/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
 
         <!-- Monitoring -->
         <intercept-url pattern="/monitoring/**" access="permitAll" />
@@ -325,6 +370,12 @@
         <!-- DataPoint GET -->
         <intercept-url pattern="/api/datapoint/getAll" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
         <intercept-url pattern="/api/datapoint" access="@guard.hasDataPointReadPermission(request)" method="GET" />
+
+        <!-- DataPoint POST/PUT -->
+        <intercept-url pattern="/api/datapoint" access="hasRole('ROLE_ADMIN')" method="POST" />
+        <intercept-url pattern="/api/datapoint" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/datapoint/disabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/datapoint/enabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
 
         <!-- DataSource GET -->
         <intercept-url pattern="/api/datasource" access="@guard.hasDataSourceReadPermission(request)" method="GET" />

@@ -7,6 +7,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
 
 public class ViewDaoWithCache implements IViewDAO {
 
-    private final ViewCachable viewCache;
+    private final ViewCacheable viewCache;
 
-    public ViewDaoWithCache(ViewCachable viewCache) {
+    public ViewDaoWithCache(ViewCacheable viewCache) {
         this.viewCache = viewCache;
     }
 
@@ -49,12 +50,14 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public List<View> findAll() {
-        List<ScadaObjectIdentifier> identifiers = viewCache.findIdentifiers();
+        List<BaseObjectIdentifier> identifiers = viewCache.findIdentifiers();
         List<View> views = new ArrayList<>();
-        for(ScadaObjectIdentifier identifier: identifiers) {
+        for(BaseObjectIdentifier identifier: identifiers) {
             View view = viewCache.findById(identifier.getId());
-            applyShareUsers(view);
-            views.add(view);
+            if(view != null) {
+                applyShareUsers(view);
+                views.add(view);
+            }
         }
         return views;
     }
@@ -116,6 +119,15 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public List<ScadaObjectIdentifier> findIdentifiers() {
+        return viewCache.findIdentifiers().stream().map(a -> {
+            View view = viewCache.findById(a.getId());
+            ScadaObjectIdentifier scadaObjectIdentifier = new ScadaObjectIdentifier(a.getId(), a.getXid(), view.getName());
+            return scadaObjectIdentifier;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BaseObjectIdentifier> findBaseIdentifiers() {
         return viewCache.findIdentifiers();
     }
 
@@ -133,10 +145,6 @@ public class ViewDaoWithCache implements IViewDAO {
                 .filter(view -> GetViewsWithAccess.hasViewReadPermission(User.onlyIdAndProfile(userId, profileId), view))
                 .collect(Collectors.toList());
     }
-
-    @Override
-    @Deprecated
-    public void deleteViewForUser(int viewId) {}
 
     @Override
     public void deleteViewForUser(int viewId, int userId) {

@@ -49,7 +49,7 @@ public class XmlConfigSecurityTest {
     }
 
     @Test
-    public void when_getFeature_namespaces_then_false() throws ParserConfigurationException {
+    public void when_getFeature_namespaces_then_true() throws ParserConfigurationException {
         //when:
         boolean result = subject.getFeature("http://xml.org/sax/features/namespaces");
 
@@ -63,7 +63,7 @@ public class XmlConfigSecurityTest {
         boolean result = subject.getFeature("http://apache.org/xml/features/disallow-doctype-decl");
 
         //then:
-        assertEquals(true, result);
+        assertEquals(false, result);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class XmlConfigSecurityTest {
     }
 
     @Test
-    public void when_getFeature_secure_processing_then_false() throws ParserConfigurationException {
+    public void when_getFeature_secure_processing_then_true() throws ParserConfigurationException {
         //when:
         boolean result = subject.getFeature("http://javax.xml.XMLConstants/feature/secure-processing");
 

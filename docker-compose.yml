@@ -22,7 +22,7 @@ services:
     scadalts:
         image: scadalts/scadalts:latest
         environment:
-            - CATALINA_OPTS=-Xmx512m -Xms512m
+            - CATALINA_OPTS=-Xmx2G -Xms2G
         ports: 
             - "8080:8080"
         depends_on: 
@@ -41,3 +41,9 @@ services:
             - --
             - /usr/local/tomcat/bin/catalina.sh
             - run
+    mqtt:
+        image: hivemq/hivemq4:latest
+        ports:
+            - "8081:8080"
+            - "1883:1883"
+        expose: [ "8081", "1883" ]

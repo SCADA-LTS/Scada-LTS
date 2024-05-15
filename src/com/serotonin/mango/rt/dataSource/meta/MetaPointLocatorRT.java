@@ -42,6 +42,7 @@ import com.serotonin.timer.AbstractTimer;
 import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
+import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,6 +110,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         initialized = true;
 
         initializeTimerTask();
+
+        if(dataPoint.isInitialized() && (vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
+                || vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)) {
+            execute(System.currentTimeMillis(), new ArrayList<>(), true, dataPoint);
+        }
     }
 
     protected void initializeTimerTask() {
@@ -227,8 +233,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             execute(updateTime, sourceIds);
         }
     }
+    private void execute(long runtime, List<Integer> sourceIds) {
+        execute(runtime, sourceIds, false, dataPoint);
+    }
 
-    void execute(long runtime, List<Integer> sourceIds) {
+    private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode, DataPointRT dataPoint) {
         if (context == null) {
             LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
@@ -254,12 +263,13 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor executor = new ScriptExecutor();
             try {
-                PointValueTime pvt = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
+                PointValueTime valueTime = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
                         vo.getDataTypeId(), runtime);
-                if (pvt.getValue() == null)
+                PointValueTime previousValueTime = dataPoint.getPointValue();
+                if (valueTime.getValue() == null)
                     handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else
-                    updatePoint(pvt);
+                else if(isUpdatePoint(initializeMode, valueTime, previousValueTime, vo))
+                    updatePoint(valueTime);
             }
             catch (ScriptException e) {
                 handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
@@ -289,7 +299,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
     }
 
-    private void execute(PointValueTime newValue) {
+    private void execute(PointValueTime value) {
+        execute(value, false);
+    }
+
+    private void execute(PointValueTime newValue, boolean initializeMode) {
         // Check for infinite loops
         List<Integer> sourceIds;
         if (threadLocal.get() == null)
@@ -299,7 +313,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         long time = newValue.getTime();
         if (vo.getExecutionDelaySeconds() == 0)
-            execute(time, sourceIds);
+            execute(time, sourceIds, initializeMode, dataPoint);
         else {
             synchronized (LOCK) {
                 if (initialized) {
@@ -317,5 +331,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void handleError(long runtime, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
+    }
+
+    private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {
+        return !initializeMode || (metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
+                && metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)
+                || (previousValueTime == null || !ObjectUtils.isEqual(valueTime.getValue(), previousValueTime.getValue()));
     }
 }
