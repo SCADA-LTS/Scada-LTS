@@ -57,7 +57,7 @@ var invalid_html = "";
 
 // Get datapoint identifiers (ID/XID)
 function getDataPointIds(identifier) {
-    var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+    var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 
     var point_id = dp.getId();
@@ -76,7 +76,7 @@ function getDataPointType(identifier) {
 		5: "IMAGE"
 	}
 
-	var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+	var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 	var locator = dp.getPointLocator();
 	return types[locator.getDataTypeId()];

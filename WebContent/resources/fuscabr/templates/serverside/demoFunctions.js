@@ -21,7 +21,7 @@ function getDataPointType(identifier) {
 		5: "IMAGE"
 	}
 
-	var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+	var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 	var locator = dp.getPointLocator();
 	return types[locator.getDataTypeId()];
@@ -35,7 +35,7 @@ function getDataPointType(identifier) {
 // To run it you must have write permission for the Graphical
 // View.
 function setPoint(pointIdentifier, value) {
-    var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+    var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var pointId = dpDAO.getDataPoint(pointIdentifier).getId();
     return "mango.view.setPoint(" + pointId + "," + pointComponent.id + "," + value + ");";
 }
@@ -92,7 +92,7 @@ function getUserInfo() {
 // This function returns an object with useful data point
 // informations (id, xid, point name and data source name)
 function getDataPointInfo(identifier) {
-    var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+    var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 
     var pointId = dp.getId();
@@ -107,7 +107,7 @@ function getDataPointInfo(identifier) {
 // that returns only the data point ID (useful to get an ID
 // from a XID)
 function getDataPointId(identifier) {
-    var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+    var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
     return dp.getId();
 }

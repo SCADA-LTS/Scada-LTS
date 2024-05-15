@@ -90,7 +90,7 @@ function createCSVHistory(point, startTime) {
 
 // Get data point information (id, xid, point name and data source name)
 function getDataPointInfo(identifier) {
-    var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+    var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 
     var pointId = dp.getId();

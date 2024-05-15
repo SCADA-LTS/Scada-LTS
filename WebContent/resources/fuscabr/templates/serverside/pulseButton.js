@@ -37,8 +37,8 @@ var command = "";
 command += "var setPoint = ViewDwr.setViewPoint;"
 command += "if (window.location.pathname.includes(&quot;views.shtm&quot;)) {";
 command +=      "show(c" + pc_id + "Changing);";
-command +=      "setPoint(" + pc_id + ", " + value_on_click + ", function() {";
-command +=          "setPoint(" + pc_id + ", " + !value_on_click + ", function() {";
+command +=      "setPoint(" + pc_id + ", " + value_on_click + ", mango.longPoll.pollRequest.viewId, function() {";
+command +=          "setPoint(" + pc_id + ", " + !value_on_click + ", mango.longPoll.pollRequest.viewId, function() {";
 command +=              "hide(c" + pc_id + "Changing);";
 command +=          "});";
 command +=      "});";
@@ -78,7 +78,7 @@ function getDataPointType(identifier) {
 		5: "IMAGE"
 	}
 
-	var dpDAO = new com.serotonin.mango.db.dao.DataPointDao();
+	var dpDAO = new org.scada_lts.mango.service.DataPointService();
     var dp = dpDAO.getDataPoint(identifier);
 	var locator = dp.getPointLocator();
 	return types[locator.getDataTypeId()];
