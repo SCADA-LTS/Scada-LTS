@@ -4,7 +4,7 @@
     "templatesLoadTimeout": 15000,
     
     "htmlTemplates": [
-		{ "file": "acnowledgeAlarms.html", "i18n": "acknowledge_alarms", "desc": "Acknowledge alarms button" },
+		{ "file": "acknowledgeAlarms.html", "i18n": "acknowledge_alarms", "desc": "Acknowledge alarms button" },
         { "file": "buttonChangePage.html", "i18n": "button_change_page", "desc": "Button (change page)" },
         { "file": "clock.html", "i18n": "clock", "desc": "Digital clock" },
         { "file": "fullScreen.html", "i18n": "full_screen", "desc": "Toggle Full Screen" },
