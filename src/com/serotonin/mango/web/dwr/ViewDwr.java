@@ -428,11 +428,17 @@ public class ViewDwr extends BaseDwr {
 
 	
 	public void setViewComponentLocation(String viewComponentId, int x, int y, int viewId) {
+		if(x < 0)
+			x = 0;
+		if(y < 0)
+			y = 0;
 		getViewComponent(viewComponentId, viewId).setLocation(x, y);
 	}
 
 	
 	public void setViewComponentZIndex(String viewComponentId, int zIndex, int viewId) {
+		if(zIndex < 1)
+			zIndex = 1;
 		getViewComponent(viewComponentId, viewId).setZ(zIndex);
 	}
 

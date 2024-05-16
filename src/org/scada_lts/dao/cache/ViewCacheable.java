@@ -3,12 +3,12 @@ package org.scada_lts.dao.cache;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.springframework.cache.annotation.*;
 
 import java.util.List;
 
-public interface ViewCachable {
+public interface ViewCacheable {
 
     String CACHE_ENABLED_KEY = "view.cache.enabled";
 
@@ -39,15 +39,7 @@ public interface ViewCachable {
     void update(View view);
 
     @Cacheable(cacheNames = "view_list", key = "'views'")
-    List<ScadaObjectIdentifier> findIdentifiers();
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #p0")
-    })
-    @Deprecated
-    void deleteViewForUser(int viewId);
+    List<BaseObjectIdentifier> findIdentifiers();
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#p1"),

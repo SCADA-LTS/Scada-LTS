@@ -327,7 +327,7 @@
   <bean id="updatePendingEventsJobDetail" class="org.quartz.JobDetail">
     <constructor-arg value="Quartz - job-UpdatePendingEvents"/>
     <constructor-arg value="DEFAULT"/>
-    <constructor-arg value="org.scada_lts.quartz.UpdatePointHierarchyCache" type="java.lang.Class"/>
+    <constructor-arg value="org.scada_lts.quartz.UpdatePendingEvents" type="java.lang.Class"/>
   </bean>
 
   <bean id="updatePendingEventsScheduler" class="org.scada_lts.quartz.SimpleTriggerScheduler" destroy-method="stop">
