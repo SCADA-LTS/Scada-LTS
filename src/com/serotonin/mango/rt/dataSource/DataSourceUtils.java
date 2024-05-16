@@ -181,7 +181,7 @@ public class DataSourceUtils {
 		DataPointVO dataPointCopy = dataPoint.copy();
 		dataPointCopy.setId(Common.NEW_ID);
 		dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-		dataPointCopy.setName(dataPoint.getName());
+		dataPointCopy.setName(Common.getMessage("common.copyPrefix", dataPoint.getName()));
 		dataPointCopy.setDataSourceId(dataSourceCopy.getId());
 		dataPointCopy.setDataSourceName(dataSourceCopy.getName());
 		dataPointCopy.setDeviceName(dataSourceCopy.getName());
@@ -192,7 +192,6 @@ public class DataSourceUtils {
 			MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
 			pointLocator.setClientId(MqttUtils.generateUniqueClientId());
 		}
-		dataPointService.saveDataPoint(dataPointCopy);
 
 		//Copy event detectors
 		for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {

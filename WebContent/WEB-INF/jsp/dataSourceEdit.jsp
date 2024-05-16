@@ -58,6 +58,8 @@
         		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
         });
 
+		pointListColumnHeaders.push("");
+
 		pointListColumnFunctions.push(function(p) {
 				return writeImage("editImg"+ p.id, null, "icon_ds_add", "<fmt:message key="common.copy"/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ")");
 		});
