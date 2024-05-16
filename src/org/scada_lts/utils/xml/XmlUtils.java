@@ -8,6 +8,8 @@ import org.scada_lts.utils.security.SafeMultipartFile;
 import org.scada_lts.utils.security.SafeZipEntry;
 import org.scada_lts.utils.security.SafeZipFile;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.*;
 
 import javax.xml.XMLConstants;
@@ -18,6 +20,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import java.io.*;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public final class XmlUtils {
@@ -144,6 +147,35 @@ public final class XmlUtils {
         } catch (Exception ex) {
             LOG.warn(ex.getMessage());
             return Optional.empty();
+        }
+    }
+
+    public static Node getFirstNodeByTagName(Document documente, String tagName) {
+        return getNodeByTagName(documente, tagName, 0);
+    }
+
+    public static Node getNodeByTagName(Document document, String tagName, int index) {
+        NodeList element = document.getElementsByTagName(tagName);
+        return element.item(index);
+    }
+
+    public static int getIntValue(Node node, String attrName) {
+        return getNodeValue(node, attrName, value -> {
+            try {
+                return Integer.parseInt(value);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+                return -1;
+            }
+        });
+    }
+
+    public static <T> T getNodeValue(Node node, String attrName, Function<String, T> converter) {
+        Node valueNode = node.getAttributes().getNamedItem(attrName);
+        if(valueNode != null) {
+            return converter.apply(valueNode.getNodeValue());
+        } else {
+            return converter.apply("");
         }
     }
 

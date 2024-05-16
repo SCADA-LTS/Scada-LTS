@@ -33,6 +33,8 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.UploadFileUtils;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 
 import static org.scada_lts.utils.UploadFileUtils.*;
 
@@ -95,7 +97,7 @@ public class ViewGraphicLoader {
                     textY = getIntProperty(props, "text.y", textY);
                 }
             }
-            else if(isImageBitmap(file)) {
+            else if(isImageBitmap(file) || isImageSvg(file)) {
                 // Image file. Subtract the load path from the image path
                 String imageUrl = file.getPath().substring(path.toString().length());
                 if(imageUrl.startsWith("/") || imageUrl.startsWith("\\")) {
@@ -111,8 +113,8 @@ public class ViewGraphicLoader {
         }
 
         if (!imageUrls.isEmpty()) {
+            String imageSystemFilePath = path + File.separator + normalizeSeparator(imageUrls.get(0));
             if (width == -1 || height == -1) {
-                String imageSystemFilePath = path + File.separator + normalizeSeparator(imageUrls.get(0));
                 Image image = Toolkit.getDefaultToolkit().getImage(imageSystemFilePath);
                 MediaTracker tracker = new MediaTracker(new Container());
                 tracker.addImage(image, 0);
@@ -122,6 +124,16 @@ public class ViewGraphicLoader {
                     width = image.getWidth(null);
                 if (height == -1)
                     height = image.getHeight(null);
+            }
+
+            if (width == -1 || height == -1) {
+                File file = new File(imageSystemFilePath);
+                UploadImage image = UploadFileUtils.createUploadImage(file);
+
+                if (width == -1)
+                    width = image.getWidth();
+                if (height == -1)
+                    height = image.getHeight();
             }
 
             if (width == -1 || height == -1)

@@ -34,7 +34,6 @@ import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.utils.PointValueStateUtils;
 
 import java.util.ArrayList;
 import java.util.List;

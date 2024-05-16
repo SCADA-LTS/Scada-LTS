@@ -85,6 +85,7 @@
                 pointsArray[i] = {
                         "id":point.id,
                         "name":point.extendName,
+                        "xid":point.xid,
                         "type":point.dataType,
                         };
             }
@@ -205,6 +206,7 @@
                 pointId : pointId,
                 pointName : data.name,
                 pointType : data.type,
+                xid : data.xid,
                 scriptVarName : scriptVarName
             };
         }
@@ -230,6 +232,7 @@
             dwr.util.addRows("contextTable", contextArray,
                 [
                     function(data) { return data.pointName; },
+                    function(data) { return data.xid; },
                     function(data) { return data.pointType; },
                     function(data) {
                             return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
@@ -427,6 +430,7 @@
 			        <tbody id="contextTableHeaders" style="display:none;">
 			          <tr class="smRowHeader">
 			            <td><fmt:message key="dsEdit.meta.pointName"/></td>
+			            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
 			            <td><fmt:message key="dsEdit.pointDataType"/></td>
 			            <td><fmt:message key="dsEdit.meta.var"/></td>
 			            <td></td>
