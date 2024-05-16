@@ -7,9 +7,9 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_7_7__AddAssigneeColumnsToEvents extends BaseJavaMigration {
+public class V2_8_0__AddAssigneeColumnsToEvents extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_7_7__AddAssigneeColumnsToEvents.class);
+    private static final Log LOG = LogFactory.getLog(V2_8_0__AddAssigneeColumnsToEvents.class);
 
     @Override
     public void migrate(Context context) throws Exception {
