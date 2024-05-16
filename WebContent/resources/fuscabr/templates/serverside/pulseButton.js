@@ -47,7 +47,7 @@ command += "else if (window.location.pathname.includes(&quot;public_view.htm&quo
 command +=      "setPoint = ViewDwr.setViewPointAnon;";
 command +=      "show(c" + pc_id + "Changing);";
 command +=      "setPoint(mango.view.anon.viewId, " + pc_id + ", " + value_on_click + ", function() {";
-command +=          "setPoint(mango.view.anon.viewId, " + pc_id + ", " + value_on_click + ", function() {";
+command +=          "setPoint(mango.view.anon.viewId, " + pc_id + ", " + !value_on_click + ", function() {";
 command +=              "hide(c" + pc_id + "Changing);";
 command +=          "});";
 command +=      "});";
