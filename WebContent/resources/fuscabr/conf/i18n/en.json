@@ -1,0 +1,62 @@
+{
+	"align": {
+		"align_elements": "Align Elements",
+		"align_options": "Align options:",
+		"start_alignment": "Start alignment",
+		"stop_alignment": "Stop alignment (Esc)",
+		"align": "Align:",
+		"align_left": "Left (A)",
+		"align_right": "Right (D)",
+		"align_top": "Top (W)",
+		"align_bottom": "Bottom (X)",
+		"anchor": "Anchor",
+		"anchor_position": "Anchor position:",
+		"clear_selection": "Clear selection (S)",
+		"cannot_delete_components": "You cannot delete components while the alignment mode is active!",
+		"center": "Center:",
+		"center_horizontally": "Horizontally (F)",
+		"center_vertically": "Vertically (G)",
+		"distribute": "Distribute:",
+		"distribute_horizontally": "Horizontally (R)",
+		"distribute_vertically": "Vertically (T)",
+		"elements_follow_anchor": "Elements follow anchor",
+		"move_with_arrows": "Move with keyboard arrows",
+		"fuscabr_library": "FUScaBR Library"
+	},
+	
+	"csnippet": {
+		"apply": "Apply",
+		"template": "Template:",
+		
+
+		"acknowledge_alarms": "Acknowledge alarms button",
+		"button_change_page": "Button (change page)",
+		"button_logout": "Button (logout)",
+		"clock": "Digital clock",
+		"full_screen": "Toggle Full Screen",
+		"html_image": "HTML image",
+		"run_multiple_scripts": "Run multiple ScadaBR scripts",
+		"silence_alarms": "Silence alarms button",
+		"simple_text": "Simple text example",
+
+		"active_users_table": "Active users table",
+		"binary_text": "Binary text",
+		"change_password": "Change user password (experimental)",
+		"checkbox": "Checkbox",
+		"customizable_data_point": "Customizable data point",
+		"demo_functions": "Demo functions",
+		"drop_down_selector": "Drop-down selector",
+		"fuscabr_chart_time": "FUScaBR Chart (time based)",
+		"fuscabr_chart_latest": "FUScaBR Chart (latest values)",
+		"gauge": "Gauge",
+		"history_csv": "Point values history download (CSV)",
+		"horizontal_bar": "Bar (horizontal)",
+		"vertical_bar": "Bar (vertical)",
+		"image_button": "Button (image)",
+		"image_sequence": "Image sequence",
+		"numeric_selector": "Numeric selector",
+		"pulse_button": "Button (pulse)",
+		"show_username": "Show username",
+		"slider": "Slider selector"
+	}
+}

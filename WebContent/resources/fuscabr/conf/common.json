@@ -1,0 +1,45 @@
+{
+		"language": "en",
+		"languageFile": "resources/fuscabr/conf/i18n/en.json",
+		
+		"modulesPath": "resources/fuscabr/modules/minified/",
+		"modules": [
+			{
+				"name": "align",
+				"enabled": true,
+				"file": "align.js",
+				"pages": [ "view_edit.shtm" ]
+			},
+			{
+				"name": "chart",
+				"enabled": true,
+				"file": "chart.js",
+				"pages": [ "views.shtm", "view_edit.shtm", "public_view.htm" ]
+			},
+			{
+				"name": "ceditor",
+				"enabled": true,
+				"file": "ceditor.js",
+				"pages": [ "sql.shtm", "emport.shtm", "view_edit.shtm", "point_links.shtm",
+						   "compound_events.shtm", "data_source_edit.shtm", "scripting.shtm" ]
+			},
+			{
+				"name": "calendar",
+				"enabled": true,
+				"file": "calendar.js",
+				"pages": [ "views.shtm", "view_edit.shtm", "public_view.htm" ]
+			},
+			{
+				"name": "csnippet",
+				"enabled": true,
+				"file": "csnippet.js",
+				"pages": [ "view_edit.shtm" ]
+			},
+			{
+				"name": "fixes",
+				"enabled": true,
+				"file": "fixes.js",
+				"pages": [ "view_edit.shtm" ]
+			}
+		]
+}
