@@ -27,8 +27,8 @@ var change_button = "Change password";
 var change_success = "Success! Password changed.";
 
 // Error messages (translate to your language)
-var err_dont_match = "Error! <<New password>> and <<Confirm new password>> fields do not match.";
-var err_wrong_psswd = "Error! Wrong password in field <<Current password>>.";
+var err_dont_match = "Error! New password and Confirm new password fields do not match.";
+var err_wrong_psswd = "Error! Wrong password in field Current password.";
 var err_blocked_psswd = "Error! You cannot use the password 1234!";
 var err_empty_fields = "Error! All fields must be filled.";
 
@@ -111,7 +111,7 @@ function createCommandStr() {
 
 // This function changes the user password
 function changePassword() {
-    var userDAO = new com.serotonin.mango.db.dao.UserDao();
+    var userDAO = new org.scada_lts.mango.service.UserService();
     var userId = new com.serotonin.mango.Common.getUser().getId();
     var user = userDAO.getUser(userId);
     
@@ -119,7 +119,7 @@ function changePassword() {
     var currPasswd = new com.serotonin.mango.Common.encrypt(passwords[0]);
     var newPasswd = passwords[1];
 
-    var pvDAO = new com.serotonin.mango.db.dao.PointValueDao();
+    var pvDAO = new org.scada_lts.mango.service.PointValueService();
     try {
         backgroundSetPoint(point.id, "1234");
         // Try to clear point values history (for privacy)
@@ -127,8 +127,7 @@ function changePassword() {
     } catch (e) {
         s += "<script> mango.view.setPoint(" + point.id + ", " + pointComponent.id + ", \"1234\"); </script>";
     };
-
-    if (user.getPassword().equals(currPasswd)) {
+    if (user.password.equals(currPasswd)) {
         user.setPassword(new com.serotonin.mango.Common.encrypt(newPasswd));
         userDAO.saveUser(user);
         return 1;
@@ -140,7 +139,7 @@ function changePassword() {
 // This function tries to set a data point in background.
 // It can fail if you don't have necessary permissions.
 function backgroundSetPoint(pointId, newValue) {
-    var pvDAO = new com.serotonin.mango.db.dao.PointValueDao();
+    var pvDAO = new org.scada_lts.mango.service.PointValueService();
     var lastValue = pvDAO.getLatestPointValue(pointId).value;
 
     if (typeof newValue == "string")
