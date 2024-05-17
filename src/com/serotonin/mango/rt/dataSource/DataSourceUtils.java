@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.jfree.util.Log;
@@ -44,6 +46,8 @@ import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.utils.MqttUtils;
+
+import static net.bull.javamelody.internal.common.I18N.getResourceBundle;
 
 /**
  * @author Matthew Lohbihler
@@ -181,7 +185,7 @@ public class DataSourceUtils {
 		DataPointVO dataPointCopy = dataPoint.copy();
 		dataPointCopy.setId(Common.NEW_ID);
 		dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-		dataPointCopy.setName(Common.getMessage("common.copyPrefix", dataPoint.getName()));
+		dataPointCopy.setName(getCopyName(getResourceBundle(), dataPoint.getName(), 250));
 		dataPointCopy.setDataSourceId(dataSourceCopy.getId());
 		dataPointCopy.setDataSourceName(dataSourceCopy.getName());
 		dataPointCopy.setDeviceName(dataSourceCopy.getName());
@@ -203,5 +207,8 @@ public class DataSourceUtils {
 		//Copy permissions
 		dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
 		return dataPointCopy.getId();
+	}
+	public static String getCopyName(ResourceBundle bundle, String originalName, int lengthLimit) {
+		return StringUtils.truncate(Common.getMessage("common.copyPrefix", originalName), lengthLimit);
 	}
 }

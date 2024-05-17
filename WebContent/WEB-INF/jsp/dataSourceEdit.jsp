@@ -24,6 +24,7 @@
     var currentPoint;
     var pointListColumnFunctions = new Array();
     var pointListOptions;
+    var copiedDataPointId;
     
     function init() {
         var pointListColumnHeaders = new Array();
@@ -49,20 +50,11 @@
         pointListColumnHeaders.push("");
         
         pointListColumnFunctions.push(function(p) {
-                return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="pointDetails.editPoint"/>", "editPoint("+ p.id +")");
+            var style = 'padding: 5px;';
+            return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="pointDetails.editPoint"/>", "editPoint("+ p.id +")", style) +
+                    writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'", style) +
+                    writeImage("editImg"+ p.id, null, "icon_ds_add", "<fmt:message key="common.copy"/>", "copyDataPointAndRefresh(" + ${dataSource.id} + ", " + p.id + ");", style);
         });
-
-        pointListColumnHeaders.push("");
-
-        pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
-        });
-
-		pointListColumnHeaders.push("");
-
-		pointListColumnFunctions.push(function(p) {
-				return writeImage("editImg"+ p.id, null, "icon_ds_add", "<fmt:message key="common.copy"/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ")");
-		});
 
         var headers = $("pointListHeaders");
         var td;
@@ -335,11 +327,26 @@
     	writePointList(points);
     }
 
-	function copyDataPoint(fromDataSourceId, dataPointId) {
-		return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(toDataPointId) {
-			window.location = "data_point_edit.shtm?dpid=" + toDataPointId;
-		});
-	}
+    function copyDataPoint(fromDataSourceId, dataPointIdToCopy, callback) {
+        return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointIdToCopy, function(response) {
+            if (callback) {
+                callback(response);
+            }
+        });
+    }
+
+
+    function copyDataPointAndRefresh(fromDataSourceId, dataPointIdToCopy) {
+        copyDataPoint(fromDataSourceId, dataPointIdToCopy, async function(newDataPointId) {
+            await new Promise((resolve, reject) => {
+                DataSourceEditDwr.getPoints(response => {
+                    writePointList(response);
+                    resolve();
+                });
+            });
+            editPoint(newDataPointId);
+        });
+    }
   </script>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">

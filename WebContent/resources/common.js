@@ -805,6 +805,22 @@ function writeImage(id, src, png, title, onclick) {
     return result;
 }
 
+function writeImage(id, src, png, title, onclick, style) {
+    var result = '<img class="ptr"';
+    if (id)
+        result += ' id="'+ id +'"';
+    if (src)
+        result += ' src="'+ src +'"';
+    if (png && !src)
+        result += ' src="images/'+ png +'.png"';
+    if (title)
+        result += ' alt="'+ title +'" title="'+ title +'"';
+    if (style)
+        result += ' style="'+ style +'"';
+    result += ' onclick="'+ onclick +'"/>';
+    return result;
+}
+
 function writeImageSQuote(id, src, png, title, onclick) {
     var result = "<img class='ptr'";
     if (id)

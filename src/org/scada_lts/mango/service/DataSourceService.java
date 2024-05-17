@@ -19,6 +19,7 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
@@ -205,7 +206,7 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceCopy.setState(new UserCpChangeEnableStateDs());
 
 		//TODO seroUtils
-		dataSourceCopy.setName(StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
+		dataSourceCopy.setName(DataSourceUtils.getCopyName(bundle, dataSource.getName(), 40));
 
 		saveDataSource(dataSourceCopy);
 
