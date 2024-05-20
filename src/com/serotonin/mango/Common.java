@@ -35,6 +35,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.directwebremoting.WebContext;
@@ -60,6 +62,7 @@ import com.serotonin.util.PropertiesUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.serial.SerialPortUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Common {
@@ -473,8 +476,7 @@ public class Common {
 		managerParams.setConnectionTimeout(timeout);
 		managerParams.setSoTimeout(timeout);
 
-		HttpClientParams params = new HttpClientParams();
-		params.setSoTimeout(timeout);
+		HttpClientParams params = createHttpClientParams(timeout);
 
 		HttpClient client = new HttpClient();
 		client.getHttpConnectionManager().setParams(managerParams);
@@ -541,4 +543,24 @@ public class Common {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
 	}
 
+	public static GetMethod createGetMethod(String url) {
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setFollowRedirects(SystemSettingsUtils.isHttpFollowRedirects());
+		return getMethod;
+	}
+
+	public static PostMethod createPostMethod(String url) {
+		PostMethod postMethod = new PostMethod(url);
+		postMethod.setFollowRedirects(SystemSettingsUtils.isHttpFollowRedirects());
+		return postMethod;
+	}
+
+	private static HttpClientParams createHttpClientParams(int timeout) {
+		HttpClientParams params = new HttpClientParams();
+		params.setSoTimeout(timeout);
+		params.setParameter(HttpClientParams.REJECT_RELATIVE_REDIRECT, SystemSettingsUtils.isHttpRejectRelativeRedirect());
+		params.setParameter(HttpClientParams.MAX_REDIRECTS, SystemSettingsUtils.getHttpMaxRedirects());
+		params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, SystemSettingsUtils.isHttpAllowCircularRedirects());
+		return params;
+	}
 }
