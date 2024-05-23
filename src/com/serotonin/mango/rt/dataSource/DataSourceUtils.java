@@ -22,9 +22,11 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.BinaryValue;
@@ -33,8 +35,15 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.text.MultistateRenderer;
 import com.serotonin.mango.view.text.MultistateValue;
 import com.serotonin.mango.view.text.TextRenderer;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.utils.MqttUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -151,5 +160,37 @@ public class DataSourceUtils {
 		}
 
 		return null;
+	}
+
+	public static DataPointVO copyAndSaveDataPoint(DataSourceVO<?> dataSource, DataPointVO dataPoint, DataPointService dataPointService) {
+		DataPointVO dataPointCopy = dataPoint.copy();
+		dataPointCopy.setId(Common.NEW_ID);
+		dataPointCopy.setXid(new DataPointService().generateUniqueXid());
+		dataPointCopy.setName(generateCopyName(Common.getBundle(), dataPoint.getName(), 250));
+		dataPointCopy.setDataSourceId(dataSource.getId());
+		dataPointCopy.setDataSourceName(dataSource.getName());
+		dataPointCopy.setDeviceName(dataSource.getName());
+		dataPointCopy.setEnabled(false);
+		dataPointCopy.getComments().clear();
+
+		if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
+			MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
+			pointLocator.setClientId(MqttUtils.generateUniqueClientId());
+		}
+
+		//Copy event detectors
+		for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
+			pointEventDetector.setId(Common.NEW_ID);
+			pointEventDetector.setXid(new DataPointService().generateEventDetectorUniqueXid(dataPointCopy.getId()));
+			pointEventDetector.njbSetDataPoint(dataPointCopy);
+		}
+		dataPointService.saveDataPoint(dataPointCopy);
+		//Copy permissions
+		dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
+		return dataPointCopy;
+	}
+
+	public static String generateCopyName(ResourceBundle bundle, String name, int length) {
+		return StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", name), length);
 	}
 }
