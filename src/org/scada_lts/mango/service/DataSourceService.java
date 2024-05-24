@@ -24,22 +24,17 @@ import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
-import org.scada_lts.utils.MqttUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -52,6 +47,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyAndSaveDataPoint;
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.generateCopyName;
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 
 /**
@@ -204,7 +201,7 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceCopy.setState(new UserCpChangeEnableStateDs());
 
 		//TODO seroUtils
-		dataSourceCopy.setName(StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
+		dataSourceCopy.setName(generateCopyName(bundle, dataSource.getName(), 40));
 
 		saveDataSource(dataSourceCopy);
 
@@ -213,31 +210,7 @@ public class DataSourceService implements MangoDataSource {
 
 		//Copy points
 		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
-			DataPointVO dataPointCopy = dataPoint.copy();
-			dataPointCopy.setId(Common.NEW_ID);
-			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-			dataPointCopy.setName(dataPoint.getName());
-			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
-			dataPointCopy.setDataSourceName(dataSourceCopy.getName());
-			dataPointCopy.setDeviceName(dataSourceCopy.getName());
-			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
-			dataPointCopy.getComments().clear();
-
-			if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
-				MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
-				pointLocator.setClientId(MqttUtils.generateUniqueClientId());
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-
-			//Copy event detectors
-			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
-				pointEventDetector.setId(Common.NEW_ID);
-				pointEventDetector.setXid(new DataPointService().generateEventDetectorUniqueXid(dataPointCopy.getId()));
-				pointEventDetector.njbSetDataPoint(dataPointCopy);
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-			//Copy permissions
-			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
+			copyAndSaveDataPoint(dataSourceCopy, dataPoint, dataPointService);
 		}
 		return dataSourceCopy.getId();
 	}

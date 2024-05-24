@@ -46,16 +46,14 @@
         if (typeof appendPointListColumnFunctions == 'function')
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
-        pointListColumnHeaders.push("");
+        pointListColumnHeaders.push(function(td) {
+			td.width = "8%";
+		});
         
         pointListColumnFunctions.push(function(p) {
-                return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="pointDetails.editPoint"/>", "editPoint("+ p.id +")");
-        });
-
-        pointListColumnHeaders.push("");
-
-        pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+			return	writeImage("editImg" + p.id, null, "icon_ds_edit", "<fmt:message key='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
+					writeImage("editImg" + p.id, null, "icon_comp_edit", "<fmt:message key='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
+					writeImage("editImg" + p.id, null, "icon_ds_add", "<fmt:message key='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");");
         });
 
         var headers = $("pointListHeaders");
@@ -327,6 +325,13 @@
     function enableAllPointsCB(points) {
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
+    }
+    
+    function copyDataPoint(fromDataSourceId, dataPointId) {
+        return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(response) {
+            writePointList(response.data.points);
+            editPoint(response.data.id);
+        });
     }
   </script>
 
