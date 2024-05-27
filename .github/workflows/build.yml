@@ -173,15 +173,13 @@ jobs:
 
   deploy-docker:
     name: Deploy Scada-LTS as Docker Image
-    needs: [ war ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Load WAR file to cache
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-war-${{ github.run_id }}
-          path: ./build/libs/Scada-LTS.war
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -193,17 +191,19 @@ jobs:
         with:
           images: scadalts/scadalts
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Build and push nightly Docker image
         if: ${{ startsWith(github.base_ref, 'release') || startsWith(github.base_ref, 'preview') }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: scadalts/scadalts:nightly
           labels: ${{ steps.meta.outputs.labels }}
