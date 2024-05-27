@@ -123,11 +123,25 @@
 		
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(!isValid(eventId.value)) {
-            $set("searchMessage", $get("eventIdLabel") + " - Incorrect input data type");
-        } else if(!isValid(maxResults.value)) {
-            $set("searchMessage", $get("maxResultsLabel") + " - Incorrect input data type");
-        } else {
+        if (!isValid(eventId.value)) {
+            let eventIdMessage = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([eventIdMessage]);
+        }
+        else {
+            let eventIdMessage = createValidationMessage("eventId", null);
+            showDwrMessages([eventIdMessage]);
+        }
+
+        if (!isValid(maxResults.value)) {
+            let maxResultsMessage = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([maxResultsMessage]);
+        }
+        else {
+            let maxResultsMessage = createValidationMessage("maxResults", null);
+            showDwrMessages([maxResultsMessage]);
+        }
+
+        if (isValid(eventId.value) && isValid(maxResults.value)) {
             doSearchOld();
         }
     }
