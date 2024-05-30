@@ -93,7 +93,13 @@ export default {
 	},
 
 	mounted() {
-		this.fetchSynopticPanelList();
+		this.fetchSynopticPanelList().then(() => {
+			// If path contains an id of a synoptic load it without selecting it manually
+			const panelId = this.$router.currentRoute.params.id
+			if(panelId !== undefined){
+				this.selectSynopticPanel(panelId)
+			}
+		})
 	},
 
 	methods: {
