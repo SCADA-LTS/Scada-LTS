@@ -74,15 +74,6 @@ Using parameter `-PskipUi=true` you can reduce the compilation time for example 
 made no change. More details how to build and develop the Frontend sub-project is described
 in [readme.md file in scadalts-ui](./scadalts-ui/README.md) directory.
 
-### Build docker image
-
-To build a Scada-LTS docker image you only need Docker. To install it follow [this manual](https://docs.docker.com/engine/install/)
-
-| Command | Explanation |
-| ---- | ---- |
-| ```./docker-multiarch.sh scadalts/scadalts:latest amd64``` | Build Scada-LTS docker container for amd64 platform. |
-| ```./docker-multiarch.sh scadalts/scadalts:latest arm64``` | Build Scada-LTS docker container for arm64 platform. |
-
 ###Ant tasks
 `@depracated`
 #### Examples of run tasks
