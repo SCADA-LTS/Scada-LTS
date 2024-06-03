@@ -1,5 +1,5 @@
 # Docker compose file to manage your deployed images.
-# Use MySQL server 5.7 and latest Scada-LTS local build.
+# Use MySQL server 8.0.32 and latest Scada-LTS local build.
 # Using attached webapps folder as developer you will be able to modify the static content from host os.
 # Attach shell to stop the tomcat instance and then you will be able to run in JPDA mode.
 version: '3'
