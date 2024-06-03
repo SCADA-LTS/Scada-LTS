@@ -173,9 +173,15 @@ jobs:
 
   deploy-docker:
     name: Deploy Scada-LTS as Docker Image
+    needs: [ war ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Load WAR file to cache
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-war-${{ github.run_id }}
+          path: ./build/libs/Scada-LTS.war
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
