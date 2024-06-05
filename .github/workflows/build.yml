@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -54,8 +53,6 @@ jobs:
   buildui:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -112,7 +109,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -163,8 +159,6 @@ jobs:
     name: Deploy Scada-LTS as Artifact
     needs: [war]
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Load WAR file to cache
         uses: actions/cache@v3
@@ -181,8 +175,6 @@ jobs:
     name: Deploy Scada-LTS as Docker Image
     needs: [ war ]
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Load WAR file to cache
