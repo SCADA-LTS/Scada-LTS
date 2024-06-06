@@ -32,7 +32,7 @@ jobs:
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           check_name: Java JUnit Test Results
@@ -75,7 +75,7 @@ jobs:
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
       - name: Show Mocha Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           check_name: Java Script Mocha Unit Test Results
