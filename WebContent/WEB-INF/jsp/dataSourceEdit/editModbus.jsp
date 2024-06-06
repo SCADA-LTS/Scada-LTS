@@ -67,7 +67,6 @@
   }
   
   function locatorTest() {
-      setDisabled("locatorTestBtn", true);
       
       var locator = {};
       locator.slaveId = $get("test_slaveId");
