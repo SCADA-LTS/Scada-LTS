@@ -67,18 +67,35 @@
   }
   
   function locatorTest() {
-      setDisabled("locatorTestBtn", true);
-      
-      var locator = {};
-      locator.slaveId = $get("test_slaveId");
-      locator.range = $get("test_range");
-      locator.modbusDataType = $get("test_modbusDataType");
-      locator.offset = $get("test_offset");
-      locator.bit = $get("test_bit");
-      locator.registerCount = $get("test_registerCount");
-      locator.charset = $get("test_charset");
-      
-      locatorTestImpl(locator);
+
+      hideContextualMessages("locatorTestDiv");
+      if (!isValid($get("test_slaveId"))) {
+            let slaveIdMessage = createValidationMessage("test_slaveId", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([slaveIdMessage]);
+      }  else if (!isValid($get("test_offset"))) {
+            let offsetMessage = createValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([offsetMessage]);
+      }  else if(!isValid($get("test_bit"))) {
+            let bitMessage = createValidationMessage("test_bit", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([bitMessage]);
+      }  else if(!isByte($get("test_bit"))) {
+          let bitMessage = createValidationMessage("test_bit", "<fmt:message key='validate.0to15'/>");
+          showDwrMessages([bitMessage]);
+      }  else if(!isValid($get("test_registerCount"))) {
+            let registerCountMessage = createValidationMessage("test_registerCount", "<fmt:message key='badIntegerFormat'/>");
+            showDwrMessages([registerCountMessage]);
+      } else {
+          var locator = {};
+          locator.slaveId = $get("test_slaveId");
+          locator.range = $get("test_range");
+          locator.modbusDataType = $get("test_modbusDataType");
+          locator.offset = $get("test_offset");
+          locator.bit = $get("test_bit");
+          locator.registerCount = $get("test_registerCount");
+          locator.charset = $get("test_charset");
+
+          locatorTestImpl(locator);
+      }
   }
   
   function locatorTestCB(response) {

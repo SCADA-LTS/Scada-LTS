@@ -1123,3 +1123,14 @@ function trim(value) {
     return result;
 }
 
+function isByte(value) {
+    let num = Number(value);
+
+    if (!isNaN(num) && Number.isInteger(num)) {
+        if (num >= -128 && num <= 127) {
+            return true;
+        }
+    }
+    return false;
+}
+
