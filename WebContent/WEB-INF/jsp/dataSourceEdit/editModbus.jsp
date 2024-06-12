@@ -86,7 +86,7 @@
       }  else if(!isValid(registerCount)) {
           createAndDisplayValidationMessage("test_registerCount", "<fmt:message key='badIntegerFormat'/>");
       } else {
-          var locator = {};
+          let locator = {};
           locator.slaveId = slaveId;
           locator.range = range
           locator.modbusDataType = modbusDataType;
