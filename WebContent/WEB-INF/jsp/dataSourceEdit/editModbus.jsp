@@ -75,9 +75,6 @@
       }  else if (!isValid($get("test_offset"))) {
             let offsetMessage = createValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>");
             showDwrMessages([offsetMessage]);
-      }  else if(!isValid($get("test_bit"))) {
-            let bitMessage = createValidationMessage("test_bit", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([bitMessage]);
       }  else if(!isByte($get("test_bit"))) {
           let bitMessage = createValidationMessage("test_bit", "<fmt:message key='validate.0to15'/>");
           showDwrMessages([bitMessage]);
