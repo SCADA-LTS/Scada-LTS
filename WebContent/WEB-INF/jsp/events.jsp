@@ -119,7 +119,7 @@
 //         console.log(x);
 //         x.setDate(x.today);
 		time = new Date($("datePicker"));
-		hideContextualMessages("eventWindow");
+		hideContextualMessages("eventSearchForm");
 //         doSearch(0,time.getTime());
         console.log("newSearch");
         if (!isValid(eventId.value)) {
@@ -171,7 +171,7 @@
     <div id="hourglass" style="padding:6px;text-align:center;"><tag:img png="hourglass"/></div>
   </div>
   
-  <div class="borderDiv" style="clear:left;float:left;" id="eventWindow">
+  <div class="borderDiv" style="clear:left;float:left;" id="eventSearchForm">
     <div class="smallTitle titlePadding"><fmt:message key="events.search"/></div>
     <div>
       <table>
