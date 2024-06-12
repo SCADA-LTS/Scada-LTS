@@ -68,28 +68,32 @@
   
   function locatorTest() {
 
+      let slaveId = parseInt($get("test_slaveId"));
+      let range = $get("test_range");
+      let modbusDataType = $get("test_modbusDataType");
+      let offset = parseInt($get("test_offset"));
+      let bit = parseInt($get("test_bit"));
+      let registerCount = parseInt($get("test_registerCount"));
+      let charset = $get("test_charset");
+
       hideContextualMessages("locatorTestDiv");
-      if (!isValid($get("test_slaveId"))) {
-            let slaveIdMessage = createValidationMessage("test_slaveId", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([slaveIdMessage]);
-      }  else if (!isValid($get("test_offset"))) {
-            let offsetMessage = createValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([offsetMessage]);
-      }  else if(!isByte($get("test_bit"))) {
-          let bitMessage = createValidationMessage("test_bit", "<fmt:message key='validate.0to15'/>");
-          showDwrMessages([bitMessage]);
-      }  else if(!isValid($get("test_registerCount"))) {
-            let registerCountMessage = createValidationMessage("test_registerCount", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([registerCountMessage]);
+      if (!isValid(slaveId)) {
+          createAndDisplayValidationMessage("test_slaveId", "<fmt:message key='badIntegerFormat'/>");
+      }  else if (!isValid(offset)) {
+          createAndDisplayValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>");
+      }  else if(!isPositiveByte(bit)) {
+          createAndDisplayValidationMessage("test_bit", "<fmt:message key='validate.invalidValue'/>");
+      }  else if(!isValid(registerCount)) {
+          createAndDisplayValidationMessage("test_registerCount", "<fmt:message key='badIntegerFormat'/>");
       } else {
           var locator = {};
-          locator.slaveId = $get("test_slaveId");
-          locator.range = $get("test_range");
-          locator.modbusDataType = $get("test_modbusDataType");
-          locator.offset = $get("test_offset");
-          locator.bit = $get("test_bit");
-          locator.registerCount = $get("test_registerCount");
-          locator.charset = $get("test_charset");
+          locator.slaveId = slaveId;
+          locator.range = range
+          locator.modbusDataType = modbusDataType;
+          locator.offset = offset;
+          locator.bit = bit;
+          locator.registerCount = registerCount;
+          locator.charset = charset;
 
           locatorTestImpl(locator);
       }

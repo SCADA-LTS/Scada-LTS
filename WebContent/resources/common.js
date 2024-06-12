@@ -1043,7 +1043,10 @@ function createValidationMessage(node, message) {
     return {contextKey:node, contextualMessage:message};
 }
 
-
+function createAndDisplayValidationMessage(node, message){
+    let messageToDisplay = createValidationMessage(node, message);
+    showDwrMessages([messageToDisplay]);
+}
 
 function updateChartComparatorComponent(idPrefix, width, height) {
 	var fromDate = $get(idPrefix+"_fromDate1");
@@ -1123,7 +1126,7 @@ function trim(value) {
     return result;
 }
 
-function isByte(value) {
+function isPositiveByte(value) {
     let num = Number(value);
     return !!(isValid(num) && num <= 127);
 }
