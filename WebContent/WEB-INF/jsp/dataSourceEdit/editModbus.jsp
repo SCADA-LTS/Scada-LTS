@@ -67,32 +67,34 @@
   }
   
   function locatorTest() {
+      setDisabled("locatorTestBtn", true);
 
-      let slaveId = parseInt($get("test_slaveId"));
+      let slaveId = $get("test_slaveId");
       let range = $get("test_range");
       let modbusDataType = $get("test_modbusDataType");
-      let offset = parseInt($get("test_offset"));
-      let bit = parseInt($get("test_bit"));
-      let registerCount = parseInt($get("test_registerCount"));
+      let offset = $get("test_offset");
+      let bit = $get("test_bit");
+      let registerCount = $get("test_registerCount");
       let charset = $get("test_charset");
 
+      hideGenericMessages("locatorTestGeneric");
       hideContextualMessages("locatorTestDiv");
-      if (!isValid(slaveId)) {
+      if (!isPositiveInt(slaveId)) {
           createAndDisplayValidationMessage("test_slaveId", "<fmt:message key='badIntegerFormat'/>");
-      }  else if (!isValid(offset)) {
+      }  else if (!isPositiveInt(offset)) {
           createAndDisplayValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>");
       }  else if(!isPositiveByte(bit)) {
           createAndDisplayValidationMessage("test_bit", "<fmt:message key='validate.invalidValue'/>");
-      }  else if(!isValid(registerCount)) {
+      }  else if(!isPositiveInt(registerCount)) {
           createAndDisplayValidationMessage("test_registerCount", "<fmt:message key='badIntegerFormat'/>");
       } else {
           let locator = {};
-          locator.slaveId = slaveId;
+          locator.slaveId = parseInt(slaveId);
           locator.range = range
           locator.modbusDataType = modbusDataType;
-          locator.offset = offset;
-          locator.bit = bit;
-          locator.registerCount = registerCount;
+          locator.offset = parseInt(offset);
+          locator.bit = parseInt(bit);
+          locator.registerCount = parseInt(registerCount);
           locator.charset = charset;
 
           locatorTestImpl(locator);

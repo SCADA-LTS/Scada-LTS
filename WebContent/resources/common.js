@@ -1127,7 +1127,7 @@ function trim(value) {
 }
 
 function isPositiveByte(value) {
-    let num = Number(value);
-    return !!(isValid(num) && num <= 127);
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0 && trimValue <= 127;
 }
 
