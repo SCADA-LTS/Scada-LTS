@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
-import org.scada_lts.utils.ReflectionUtils;
+import org.scada_lts.utils.ReflectionTestUtils;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +28,7 @@ public class CopyDataSourceVOTest {
     private final DataSourceVO<?> expected;
 
     public CopyDataSourceVOTest(DataSourceVO<?> dataSource, String dataSourceTypeName) {
-        this.expected = (DataSourceVO<?>) ReflectionUtils.settingRandom(dataSource);
+        this.expected = (DataSourceVO<?>) ReflectionTestUtils.settingRandom(dataSource);
     }
 
     @Test

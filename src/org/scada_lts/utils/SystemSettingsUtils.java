@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
-import static org.scada_lts.utils.BlockingQueuesUtils.parseObjects;
+import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
 
 public final class SystemSettingsUtils {
 
