@@ -61,6 +61,7 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
+import org.scada_lts.config.ThreadPoolExecutorConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
@@ -79,10 +80,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
@@ -118,8 +117,7 @@ public class MangoContextListener implements ServletContextListener {
 		ScadaVersion.getInstance().printScadaVersionProperties(log);
 
 		// Initialize the timer
-		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,
-				TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
+		Common.timer.init(createPool(ThreadPoolExecutorConfig.Priority.HIGH));
 
 		// Create all the stuff we need.
 		constantsInitialize(ctx);

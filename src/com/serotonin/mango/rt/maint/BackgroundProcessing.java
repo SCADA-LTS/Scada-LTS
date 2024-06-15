@@ -28,6 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+import org.scada_lts.config.ThreadPoolExecutorConfig;
+
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -95,10 +98,9 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
-				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		mediumPriorityService = createPool(ThreadPoolExecutorConfig.Priority.MEDIUM);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
-		lowPriorityService = Executors.newSingleThreadExecutor();
+		lowPriorityService = createPool(ThreadPoolExecutorConfig.Priority.LOW);
 	}
 
 	public void terminate() {

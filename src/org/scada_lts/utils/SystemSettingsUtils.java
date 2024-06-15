@@ -6,12 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.config.ThreadPoolExecutorConfig;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
+import static org.scada_lts.utils.BlockingQueuesUtils.parseObjects;
 
 public final class SystemSettingsUtils {
 
@@ -351,6 +355,72 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return "";
+        }
+    }
+
+    public static String getThreadExecutorBlockingQueueInterfaceImpl(ThreadPoolExecutorConfig.Priority priority) {
+        String defaultValue = "java.util.concurrent.LinkedBlockingQueue";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL), defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static Object[] getThreadExecutorBlockingQueueInterfaceImplArgs(ThreadPoolExecutorConfig.Priority priority) {
+        Object[] defaultValue = new Object[0];
+        String defaultValue1 = "";
+        try {
+            String args = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL_ARGS), defaultValue1);
+            String argsTypes = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL_ARGS_TYPES), defaultValue1);
+            return parseObjects(args, argsTypes);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getThreadExecutorCorePoolSize(ThreadPoolExecutorConfig.Priority priority) {
+        int defaultValue = 1;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.CORE_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getThreadExecutorMaximumPoolSize(ThreadPoolExecutorConfig.Priority priority) {
+        int defaultValue = 1;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.MAXIMUM_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static long getThreadExecutorKeepAliveTime(ThreadPoolExecutorConfig.Priority priority) {
+        long defaultValue = 0;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.KEEP_ALIVE_TIME), String.valueOf(defaultValue));
+            return Long.parseLong(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static String getThreadExecutorTimeUnitEnumValue(ThreadPoolExecutorConfig.Priority priority) {
+        String defaultValue = "MILLISECONDS";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.TIME_UNIT_ENUM_VALUE), defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
         }
     }
 }
