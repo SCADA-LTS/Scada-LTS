@@ -532,7 +532,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         } catch (IllegalCharsetNameException e) {
             response.addMessage(new LocalizableMessage(
                     "validate.invalidCharset"));
-        } catch (ModbusIdException e) {
+        } catch (Exception e) {
             response.addMessage(new LocalizableMessage("common.default", e.getLocalizedMessage()));
         } finally
         {

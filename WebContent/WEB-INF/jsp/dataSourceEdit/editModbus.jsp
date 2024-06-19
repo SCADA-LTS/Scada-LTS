@@ -90,8 +90,8 @@
       } else {
           let locator = {};
           locator.slaveId = parseInt(slaveId);
-          locator.range = range
-          locator.modbusDataType = modbusDataType;
+          locator.range = parseInt(range);
+          locator.modbusDataType = parseInt(modbusDataType);
           locator.offset = parseInt(offset);
           locator.bit = parseInt(bit);
           locator.registerCount = parseInt(registerCount);
