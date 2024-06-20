@@ -60,37 +60,14 @@
 
     let messages = [];
 
-    if (!isPositiveInt(temp.updatePeriods)){
-      messages.push(createValidationMessage("updatePeriods", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if (!isPositiveInt(temp.updatePeriodType)){
-      messages.push(createValidationMessage("updatePeriodType", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if (!isPositiveInt(temp.timeout)){
-      messages.push(createValidationMessage("timeout", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.retries)) {
-      messages.push(createValidationMessage("retries", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.maxReadBitCount)) {
-      messages.push(createValidationMessage("maxReadBitCount", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.maxReadRegisterCount)) {
-      messages.push(createValidationMessage("maxReadRegisterCount", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.maxWriteRegisterCount)) {
-      messages.push(createValidationMessage("maxWriteRegisterCount", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.port)) {
-      messages.push(createValidationMessage("port", "<fmt:message key='badIntegerFormat'/>"));
-    }
+    validateValue("updatePeriods", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
+    validateValue("updatePeriodType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
+    validateValue("timeout", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
+    validateValue("retries", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
+    validateValue("maxReadBitCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
+    validateValue("maxReadRegisterCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
+    validateValue("maxWriteRegisterCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
+    validateValue("port", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.port, messages);
 
     return messages;
   }

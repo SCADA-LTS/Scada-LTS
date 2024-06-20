@@ -70,31 +70,21 @@
 
     let messages = [];
 
-    if (!isPositiveInt(temp.slaveId)) {
-      messages.push(createValidationMessage("test_slaveId", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.range)) {
-      messages.push(createValidationMessage("test_range", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveInt(temp.modbusDataType)) {
-      messages.push(createValidationMessage("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if (!isPositiveInt(temp.offset)) {
-      messages.push(createValidationMessage("test_offset", "<fmt:message key='badIntegerFormat'/>"));
-    }
-
-    if(!isPositiveByte(temp.bit)) {
-      messages.push(createValidationMessage("test_bit", "<fmt:message key='validate.invalidValue'/>"));
-    }
-
-    if(!isPositiveInt(temp.registerCount)) {
-      messages.push(createValidationMessage("test_registerCount", "<fmt:message key='validate.invalidValue'/>"));
-    }
+    validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.slaveId, messages);
+    validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.range, messages);
+    validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
+    validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
+    validateValue("test_bit", "<fmt:message key='badIntegerFormat'/>", isPositiveByte, temp.bit, messages);
+    validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.registerCount, messages);
 
     return messages;
+  }
+
+  function validateValue(htmlId, messageText, validate, value, messages) {
+    if(!validate(value)) {
+      let message = createValidationMessage(htmlId, messageText);
+      messages.push(message);
+    }
   }
 
   function createTempLocator(){
