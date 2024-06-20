@@ -74,7 +74,7 @@
     validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.range, messages);
     validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
     validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
-    validateValue("test_bit", "<fmt:message key='badIntegerFormat'/>", isPositiveByte, temp.bit, messages);
+    validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, temp.bit, messages);
     validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.registerCount, messages);
 
     return messages;
