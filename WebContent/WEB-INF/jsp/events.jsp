@@ -122,15 +122,25 @@
 		hideContextualMessages("eventSearchForm");
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if (!isValid(eventId.value)) {
-            let eventIdMessage = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([eventIdMessage]);
-        } else if(!isValid(maxResults.value)) {
-            let maxResultsMessage = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
-            showDwrMessages([maxResultsMessage]);
+        let messages = validateSearchForm();
+        if(messages.length > 0) {
+            showDwrMessages(messages);
         } else {
             doSearchOld();
         }
+    }
+
+    function validateSearchForm(){
+      let messages = [];
+      if (!isValid(eventId.value)) {
+        let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
+        messages.push(message);
+      }
+      if(!isValid(maxResults.value)) {
+        let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
+        messages.push(message)
+      }
+      return messages;
     }
 
     function silenceAll() {
