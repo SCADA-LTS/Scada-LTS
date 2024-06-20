@@ -55,13 +55,118 @@
       DataSourceEditDwr.testModbusIpData($get("timeout"), $get("retries"), $get("transportType"), $get("host"), 
               $get("port"), $get("encapsulated"), slaveId, range, offset, length, dataTestCB);
   }
+
+  function validateModbusProperties(temp){
+
+    let messages = [];
+
+    if (!isPositiveInt(temp.updatePeriods)){
+      messages.push(createValidationMessage("updatePeriods", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if (!isPositiveInt(temp.updatePeriodType)){
+      messages.push(createValidationMessage("updatePeriodType", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if (!isPositiveInt(temp.timeout)){
+      messages.push(createValidationMessage("timeout", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if(!isPositiveInt(temp.retries)) {
+      messages.push(createValidationMessage("retries", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if(!isPositiveInt(temp.maxReadBitCount)) {
+      messages.push(createValidationMessage("maxReadBitCount", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if(!isPositiveInt(temp.maxReadRegisterCount)) {
+      messages.push(createValidationMessage("maxReadRegisterCount", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if(!isPositiveInt(temp.maxWriteRegisterCount)) {
+      messages.push(createValidationMessage("maxWriteRegisterCount", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    if(!isPositiveInt(temp.port)) {
+      messages.push(createValidationMessage("port", "<fmt:message key='badIntegerFormat'/>"));
+    }
+
+    return messages;
+  }
+
+  function createTempModbusData(){
+
+    let dataSourceName = $get("dataSourceName");
+    let dataSourceXid = $get("dataSourceXid");
+    let updatePeriods = $get("updatePeriods");
+    let updatePeriodType = $get("updatePeriodType");
+    let quantize = $get("quantize");
+    let timeout = $get("timeout");
+    let retries = $get("retries");
+    let contiguousBatches = $get("contiguousBatches");
+    let createSlaveMonitorPoints = $get("createSlaveMonitorPoints");
+    let maxReadBitCount = $get("maxReadBitCount");
+    let maxReadRegisterCount = $get("maxReadRegisterCount");
+    let maxWriteRegisterCount = $get("maxWriteRegisterCount");
+    let transportType = $get("transportType");
+    let host = $get("host");
+    let port = $get("port");
+    let encapsulated = $get("encapsulated");
+    let createSocketMonitorPoint = $get("createSocketMonitorPoint");
+
+    let temp = {};
+    temp.dataSourceName = dataSourceName;
+    temp.dataSourceXid = dataSourceXid;
+    temp.updatePeriods = updatePeriods;
+    temp.updatePeriodType = updatePeriodType;
+    temp.quantize = quantize;
+    temp.timeout = timeout;
+    temp.retries = retries;
+    temp.contiguousBatches = contiguousBatches;
+    temp.createSlaveMonitorPoints = createSlaveMonitorPoints;
+    temp.maxReadBitCount = maxReadBitCount;
+    temp.maxReadRegisterCount = maxReadRegisterCount;
+    temp.maxWriteRegisterCount = maxWriteRegisterCount;
+    temp.transportType = transportType
+    temp.host = host;
+    temp.port = port;
+    temp.encapsulated = encapsulated;
+    temp.createSocketMonitorPoint = createSocketMonitorPoint;
+
+    return temp;
+  }
   
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveModbusIpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("quantize"), $get("timeout"), $get("retries"), $get("contiguousBatches"),
-              $get("createSlaveMonitorPoints"), $get("maxReadBitCount"), $get("maxReadRegisterCount"), 
-              $get("maxWriteRegisterCount"), $get("transportType"), $get("host"), $get("port"), $get("encapsulated"), $get("createSocketMonitorPoint"),
-              saveDataSourceCB);
+
+    let temp = createTempModbusData();
+
+    let messages = validateModbusProperties(temp);
+
+    if(messages.length > 0) {
+      showDwrMessages(messages);
+    } else {
+      let dataSourceName = temp.dataSourceName;
+      let dataSourceXid = temp.dataSourceXid;
+      let updatePeriods = parseInt(temp.updatePeriods);
+      let updatePeriodType = parseInt(temp.updatePeriodType);
+      let quantize = temp.quantize;
+      let timeout = parseInt(temp.timeout);
+      let retries = parseInt(temp.retries);
+      let contiguousBatches = temp.contiguousBatches;
+      let createSlaveMonitorPoints = temp.createSlaveMonitorPoints;
+      let maxReadBitCount = parseInt(temp.maxReadBitCount);
+      let maxReadRegisterCount = parseInt(temp.maxReadRegisterCount);
+      let maxWriteRegisterCount = parseInt(temp.maxWriteRegisterCount);
+      let transportType = temp.transportType;
+      let host = temp.host;
+      let port = parseInt(temp.port);
+      let encapsulated = temp.encapsulated;
+      let createSocketMonitorPoint = temp.createSocketMonitorPoint;
+        DataSourceEditDwr.saveModbusIpDataSource(dataSourceName, dataSourceXid, updatePeriods,
+                updatePeriodType, quantize, timeout, retries, contiguousBatches, createSlaveMonitorPoints, maxReadBitCount, maxReadRegisterCount,
+                maxWriteRegisterCount, transportType, host, port, encapsulated, createSocketMonitorPoint, saveDataSourceCB);
+    }
   }
 </script>
 

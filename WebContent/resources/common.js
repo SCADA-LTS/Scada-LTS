@@ -1043,11 +1043,6 @@ function createValidationMessage(node, message) {
     return {contextKey:node, contextualMessage:message};
 }
 
-function createAndDisplayValidationMessage(node, message){
-    let messageToDisplay = createValidationMessage(node, message);
-    showDwrMessages([messageToDisplay]);
-}
-
 function updateChartComparatorComponent(idPrefix, width, height) {
 	var fromDate = $get(idPrefix+"_fromDate1");
 	var toDate = $get(idPrefix+"_toDate1");
