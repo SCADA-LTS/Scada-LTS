@@ -122,7 +122,11 @@
 		hideContextualMessages("eventSearchForm");
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        let messages = validateSearchForm();
+
+        let temp = createSearchFormConfigTemp();
+
+        let messages = validateSearchForm(temp);
+
         if(messages.length > 0) {
             showDwrMessages(messages);
         } else {
@@ -130,13 +134,21 @@
         }
     }
 
-    function validateSearchForm(){
+    function createSearchFormConfigTemp(){
+        let searchForm = {}
+        searchForm.eventId = $get("eventId");
+        searchForm.maxResults = $get("maxResults");
+        return searchForm;
+    }
+
+    function validateSearchForm(searchForm){
       let messages = [];
-      if (!isValid(eventId.value)) {
+
+      if (!isValid(searchForm.eventId)) {
         let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
         messages.push(message);
       }
-      if(!isValid(maxResults.value)) {
+      if(!isValid(searchForm.maxResults)) {
         let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
         messages.push(message)
       }
