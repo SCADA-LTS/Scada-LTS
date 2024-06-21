@@ -68,44 +68,44 @@
 
   function validateLocatorTest(locator){
 
-    let messages = [];
+      let messages = [];
 
-    validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.slaveId, messages);
-    validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.range, messages);
-    validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.modbusDataType, messages);
-    validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.offset, messages);
-    validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, locator.bit, messages);
-    validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.registerCount, messages);
+      validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.slaveId, messages);
+      validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.range, messages);
+      validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.modbusDataType, messages);
+      validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.offset, messages);
+      validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, locator.bit, messages);
+      validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.registerCount, messages);
 
-    return messages;
+      return messages;
   }
 
   function validateValue(htmlId, messageText, validate, value, messages) {
-    if(!validate(value)) {
-      let message = createValidationMessage(htmlId, messageText);
-      messages.push(message);
-    }
+      if(!validate(value)) {
+          let message = createValidationMessage(htmlId, messageText);
+          messages.push(message);
+      }
   }
 
   function createLocatorConfigTemp(){
-    let slaveId = $get("test_slaveId");
-    let range = $get("test_range");
-    let modbusDataType = $get("test_modbusDataType");
-    let offset = $get("test_offset");
-    let bit = $get("test_bit");
-    let registerCount = $get("test_registerCount");
-    let charset = $get("test_charset");
+      let slaveId = $get("test_slaveId");
+      let range = $get("test_range");
+      let modbusDataType = $get("test_modbusDataType");
+      let offset = $get("test_offset");
+      let bit = $get("test_bit");
+      let registerCount = $get("test_registerCount");
+      let charset = $get("test_charset");
 
-    let temp = {};
-    temp.slaveId = slaveId;
-    temp.range = range;
-    temp.modbusDataType = modbusDataType;
-    temp.offset = offset;
-    temp.bit = bit;
-    temp.registerCount = registerCount;
-    temp.charset = charset;
+      let temp = {};
+      temp.slaveId = slaveId;
+      temp.range = range;
+      temp.modbusDataType = modbusDataType;
+      temp.offset = offset;
+      temp.bit = bit;
+      temp.registerCount = registerCount;
+      temp.charset = charset;
 
-    return temp;
+      return temp;
   }
 
   
@@ -126,7 +126,7 @@
       let messages = modbusMessages.concat(messagesLocator);
 
       if(messages.length > 0) {
-        showDwrMessages(messages);
+          showDwrMessages(messages);
       } else {
           let locator = {};
           locator.slaveId = parseInt(locatorConfigTemp.slaveId);
