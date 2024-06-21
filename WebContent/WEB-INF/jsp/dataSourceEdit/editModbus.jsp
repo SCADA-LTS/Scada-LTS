@@ -66,16 +66,16 @@
       setDisabled("scanCancelBtn", !scanning);
   }
 
-  function validateLocatorTest(temp){
+  function validateLocatorTest(locator){
 
     let messages = [];
 
-    validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.slaveId, messages);
-    validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.range, messages);
-    validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
-    validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.modbusDataType, messages);
-    validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, temp.bit, messages);
-    validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.registerCount, messages);
+    validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.slaveId, messages);
+    validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.range, messages);
+    validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.modbusDataType, messages);
+    validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.offset, messages);
+    validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, locator.bit, messages);
+    validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.registerCount, messages);
 
     return messages;
   }
@@ -87,7 +87,7 @@
     }
   }
 
-  function createTempLocator(){
+  function createLocatorConfigTemp(){
     let slaveId = $get("test_slaveId");
     let range = $get("test_range");
     let modbusDataType = $get("test_modbusDataType");
@@ -112,30 +112,30 @@
   function locatorTest() {
       setDisabled("locatorTestBtn", true);
 
-      let temp =  createTempLocator();
-      let tempModbusData = createTempModbusData();
+      let locatorConfigTemp =  createLocatorConfigTemp();
+      let modbusConfigTemp = createModbusConfigTemp();
 
       hideGenericMessages("locatorTestGeneric");
       hideContextualMessages("locatorTestDiv");
       hideContextualMessages("dataSourceProperties");
 
-      let messagesModbus = validateModbusProperties(tempModbusData);
+      let modbusMessages = validateModbusConfig(modbusConfigTemp);
 
-      let messagesLocator = validateLocatorTest(temp);
+      let messagesLocator = validateLocatorTest(locatorConfigTemp);
 
-      let messages = messagesModbus.concat(messagesLocator);
+      let messages = modbusMessages.concat(messagesLocator);
 
       if(messages.length > 0) {
         showDwrMessages(messages);
       } else {
           let locator = {};
-          locator.slaveId = parseInt(temp.slaveId);
-          locator.range = parseInt(temp.range);
-          locator.modbusDataType = parseInt(temp.modbusDataType);
-          locator.offset = parseInt(temp.offset);
-          locator.bit = parseInt(temp.bit);
-          locator.registerCount = parseInt(temp.registerCount);
-          locator.charset = temp.charset;
+          locator.slaveId = parseInt(locatorConfigTemp.slaveId);
+          locator.range = parseInt(locatorConfigTemp.range);
+          locator.modbusDataType = parseInt(locatorConfigTemp.modbusDataType);
+          locator.offset = parseInt(locatorConfigTemp.offset);
+          locator.bit = parseInt(locatorConfigTemp.bit);
+          locator.registerCount = parseInt(locatorConfigTemp.registerCount);
+          locator.charset = locatorConfigTemp.charset;
 
           locatorTestImpl(locator);
       }
