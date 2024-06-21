@@ -39,6 +39,7 @@
   
   function initImpl() {
 	  checkTransportType($get("transportType"));
+	  changeRange("test_")
   }
 
   function scanImpl() {

@@ -1,5 +1,6 @@
 package com.serotonin.mango.rt.dataSource.meta;
 
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.RuntimeManager;
@@ -18,6 +19,10 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import utils.mock.MockUtils;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -35,15 +40,24 @@ public class MetaPointLocatorRtInitializeTest {
     @Parameterized.Parameters(name= "{index}: Update event type: {0}, Expected times of invocation: {1}")
     public static Object[] data() {
         return new Object[] {
-                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE, 1},
-                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE, 1},
-                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CRON, 0},
-                new Object[] {Common.TimePeriods.MINUTES, 0},
-                new Object[] {Common.TimePeriods.HOURS, 0},
-                new Object[] {Common.TimePeriods.DAYS, 0},
-                new Object[] {Common.TimePeriods.WEEKS, 0},
-                new Object[] {Common.TimePeriods.MONTHS, 0},
-                new Object[] {Common.TimePeriods.YEARS, 0},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE, 1, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE, 1, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CRON, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.MINUTES, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.HOURS, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.DAYS, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.WEEKS, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.MONTHS, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {Common.TimePeriods.YEARS, 0, Arrays.asList(new IntValuePair(1,"abc"))},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE, 0, Collections.emptyList()},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE, 0, Collections.emptyList()},
+                new Object[] {MetaPointLocatorVO.UPDATE_EVENT_CRON, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.MINUTES, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.HOURS, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.DAYS, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.WEEKS, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.MONTHS, 0, Collections.emptyList()},
+                new Object[] {Common.TimePeriods.YEARS, 0, Collections.emptyList()}
         };
     }
 
@@ -53,7 +67,7 @@ public class MetaPointLocatorRtInitializeTest {
     private final MetaPointLocatorRT metaPointLocatorRT;
     private RealTimeTimer timer;
 
-    public MetaPointLocatorRtInitializeTest(int updateEvent, int expectedInvocationTimes){
+    public MetaPointLocatorRtInitializeTest(int updateEvent, int expectedInvocationTimes, List<IntValuePair> context) {
         this.expectedInvocationTimes = expectedInvocationTimes;
         dataPoint = mock(DataPointRT.class);
 
@@ -61,6 +75,7 @@ public class MetaPointLocatorRtInitializeTest {
         metaPointLocatorVO.setUpdateEvent(updateEvent);
         metaPointLocatorVO.setDataTypeId(DataTypes.NUMERIC);
         metaPointLocatorVO.setScript("return 1;");
+        metaPointLocatorVO.setContext(context);
 
         if(metaPointLocatorVO.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CRON) {
             metaPointLocatorVO.setUpdateCronPattern("30 30 12 ? * * *");
@@ -75,6 +90,10 @@ public class MetaPointLocatorRtInitializeTest {
         timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
         MockUtils.configMockContextWrapper(runtimeManagerMock);
+        DataPointRT fromContextDataPoint = mock(DataPointRT.class);
+        when(fromContextDataPoint.getDataTypeId()).thenReturn(1);
+        when(runtimeManagerMock.getDataPoint(eq(1))).thenReturn(fromContextDataPoint);
+
         when(dataPoint.isInitialized()).thenReturn(true);
         when(dataPoint.getPointValue()).thenReturn(mock(PointValueTime.class));
 
