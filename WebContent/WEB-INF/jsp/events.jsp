@@ -118,14 +118,14 @@
 //         var x = dojo.widget.byId("datePicker");
 //         console.log(x);
 //         x.setDate(x.today);
-		time = new Date($("datePicker"));
-		hideContextualMessages("eventSearchForm");
+        time = new Date($("datePicker"));
+        hideContextualMessages("eventSearchForm");
 //         doSearch(0,time.getTime());
         console.log("newSearch");
 
-        let temp = createSearchFormConfigTemp();
+        let searchConfigTemp = createSearchConfigTemp();
 
-        let messages = validateSearchForm(temp);
+        let messages = validateSearchParameters(searchConfigTemp);
 
         if(messages.length > 0) {
             showDwrMessages(messages);
@@ -134,25 +134,25 @@
         }
     }
 
-    function createSearchFormConfigTemp(){
-        let searchForm = {}
-        searchForm.eventId = $get("eventId");
-        searchForm.maxResults = $get("maxResults");
-        return searchForm;
+    function createSearchConfigTemp(){
+        let searchConfig = {}
+        searchConfig.eventId = $get("eventId");
+        searchConfig.maxResults = $get("maxResults");
+        return searchConfig;
     }
 
-    function validateSearchForm(searchForm){
-      let messages = [];
+    function validateSearchParameters(parametersToCheck){
+        let messages = [];
 
-      if (!isValid(searchForm.eventId)) {
-        let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
-        messages.push(message);
-      }
-      if(!isValid(searchForm.maxResults)) {
-        let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
-        messages.push(message)
-      }
-      return messages;
+        if (!isValid(parametersToCheck.eventId)) {
+            let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
+            messages.push(message);
+        }
+        if(!isValid(parametersToCheck.maxResults)) {
+            let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
+            messages.push(message)
+        }
+        return messages;
     }
 
     function silenceAll() {
