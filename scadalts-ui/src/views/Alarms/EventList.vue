@@ -421,7 +421,15 @@ export default {
 	},
 	mounted() {
 		this.mountedTs = this.$dayjs()
-		this.fetchEventList();
+		let stompClient = this.$store.state.webSocketModule.webSocket;
+		let fetchEventList = this.fetchEventList;
+        stompClient.subscribe("/app/event/update/register", function(register) {
+            //console.log("/app/event/update/register register.body: EventList.vue: "+register.body);
+            let subscription = stompClient.subscribe("/topic/event/update/"+register.body, fetchEventList);
+            if(subscription) {
+                setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
+            }
+        });
 	},
 	computed: {
 		alarmFlags() {

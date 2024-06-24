@@ -137,8 +137,12 @@ public class MessagingDataSourceRT extends PollingDataSource {
                     dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
                 }
             } catch (Exception e) {
-                updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
                 LOG.warn(exceptionInfo(e), e);
+                int dataPointId = dataPoint.getId();
+                AtomicInteger counter = updateAttemptsCounters.get(dataPointId);
+                if(counter != null) {
+                    counter.incrementAndGet();
+                }
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e));
                 dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);

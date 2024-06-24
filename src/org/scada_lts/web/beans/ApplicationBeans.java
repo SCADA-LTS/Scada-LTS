@@ -145,10 +145,6 @@ public class ApplicationBeans {
         return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
     }
 
-    public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
-        return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
-    }
-
     public static ILoggedUsers getLoggedUsersBean() {
         return getBeanFromContext("loggedUsers", ILoggedUsers.class);
     }

@@ -147,7 +147,14 @@ export default {
 	methods: {
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;
-			this.alarmSubscription = this.$store.state.webSocketModule.webSocket.subscribe(`/topic/alarm`, this.getHighestAlarmLevel);
+			let stompClient = this.$store.state.webSocketModule.webSocket;
+			let getHighestAlarmLevel = this.getHighestAlarmLevel;
+            this.alarmSubscription = stompClient.subscribe("/app/alarmLevel/register", function(register) {
+                let subscription = stompClient.subscribe("/topic/alarmLevel/"+register.body, getHighestAlarmLevel);
+                if(subscription) {
+                    setTimeout(function() {stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - /app/alarmLevel")}, 1500);
+                }
+            });
 		},
 
 		unSubscribeAlarms() {
