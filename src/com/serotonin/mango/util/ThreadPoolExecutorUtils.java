@@ -1,6 +1,6 @@
 package com.serotonin.mango.util;
 
-import org.scada_lts.config.ThreadPoolExecutorConfig;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.scada_lts.utils.BlockingQueuesUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.TimeUnitUtils;
@@ -11,7 +11,7 @@ public final class ThreadPoolExecutorUtils {
 
     private ThreadPoolExecutorUtils() {}
 
-    public static ThreadPoolExecutor createPool(ThreadPoolExecutorConfig.Priority priority) {
+    public static ThreadPoolExecutor createPool(WorkItemPriority priority) {
 
         int corePoolSize = SystemSettingsUtils.getThreadExecutorCorePoolSize(priority);
         int maximumPoolSize = SystemSettingsUtils.getThreadExecutorMaximumPoolSize(priority);
@@ -22,7 +22,7 @@ public final class ThreadPoolExecutorUtils {
                 .orElse(TimeUnit.SECONDS);
         BlockingQueue<Runnable> blockingQueue = BlockingQueuesUtils
                 .newBlockingQueue(SystemSettingsUtils.getThreadExecutorBlockingQueueInterfaceImpl(priority),
-                        priority == ThreadPoolExecutorConfig.Priority.HIGH ? new SynchronousQueue<>() : new LinkedBlockingQueue<>(), objects);
+                        priority == WorkItemPriority.HIGH ? new SynchronousQueue<>() : new LinkedBlockingQueue<>(), objects);
         return createThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, timeUnit, blockingQueue);
     }
 

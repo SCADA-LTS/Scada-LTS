@@ -1,12 +1,12 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.web.ContextWrapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scada_lts.config.ThreadPoolExecutorConfig;
 
 import javax.servlet.ServletContext;
 
@@ -25,13 +25,13 @@ public class ThreadPoolExecutorConfigSystemSettingsUtilsTest {
     @Parameterized.Parameters(name = "{index}: priority: {0}, blockingQueueInterfaceImpl: {1}, corePoolSize: {2}, maximumPoolSize: {3}, keepAliveTime: {4}, timeUnitEnumValue: {5}")
     public static List<Object[]> data() {
         List<Object[]> datas = new ArrayList<>();
-        datas.add(new Object[] {ThreadPoolExecutorConfig.Priority.LOW, "java.util.concurrent.LinkedBlockingQueue", 1, 1, 0L, "MILLISECONDS", new Object[]{3, 4L}});
-        datas.add(new Object[] {ThreadPoolExecutorConfig.Priority.MEDIUM, "java.util.concurrent.LinkedBlockingQueue", 3, 100, 60L, "SECONDS", new Object[]{"abc", true}});
-        datas.add(new Object[] {ThreadPoolExecutorConfig.Priority.HIGH, "java.util.concurrent.SynchronousQueue", 0, 1000, 30L, "SECONDS", new Object[]{}});
+        datas.add(new Object[] {WorkItemPriority.LOW, "java.util.concurrent.LinkedBlockingQueue", 1, 1, 0L, "MILLISECONDS", new Object[]{3, 4L}});
+        datas.add(new Object[] {WorkItemPriority.MEDIUM, "java.util.concurrent.LinkedBlockingQueue", 3, 100, 60L, "SECONDS", new Object[]{"abc", true}});
+        datas.add(new Object[] {WorkItemPriority.HIGH, "java.util.concurrent.SynchronousQueue", 0, 1000, 30L, "SECONDS", new Object[]{}});
         return datas;
     }
 
-    private final ThreadPoolExecutorConfig.Priority priority;
+    private final WorkItemPriority priority;
     private final String blockingQueueInterfaceImpl;
     private final int corePoolSize;
     private final int maximumPoolSize;
@@ -39,7 +39,7 @@ public class ThreadPoolExecutorConfigSystemSettingsUtilsTest {
     private final String timeUnitEnumValue;
     private final Object[] args;
 
-    public ThreadPoolExecutorConfigSystemSettingsUtilsTest(ThreadPoolExecutorConfig.Priority priority, String blockingQueueInterfaceImpl, int corePoolSize, int maximumPoolSize, long keepAliveTime, String timeUnitEnumValue, Object[] args) {
+    public ThreadPoolExecutorConfigSystemSettingsUtilsTest(WorkItemPriority priority, String blockingQueueInterfaceImpl, int corePoolSize, int maximumPoolSize, long keepAliveTime, String timeUnitEnumValue, Object[] args) {
         this.priority = priority;
         this.blockingQueueInterfaceImpl = blockingQueueInterfaceImpl;
         this.corePoolSize = corePoolSize;

@@ -1,5 +1,7 @@
 package org.scada_lts.config;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+
 /**
  * Enum with chain keys for thread pool config
  *
@@ -27,23 +29,7 @@ public enum ThreadPoolExecutorConfig {
         return name;
     }
 
-    public enum Priority {
-        LOW("low-priority."),
-        MEDIUM("medium-priority."),
-        HIGH("high-priority.");
-
-        private final String name;
-
-        Priority(String priority) {
-            this.name = priority;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    public static String getKey(Priority priority, ThreadPoolExecutorConfig param) {
+    public static String getKey(WorkItemPriority priority, ThreadPoolExecutorConfig param) {
         return "thread-pool-executor." + priority.getName() + param.getName();
     }
 }

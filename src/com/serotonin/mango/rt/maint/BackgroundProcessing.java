@@ -22,13 +22,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.*;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
-import org.scada_lts.config.ThreadPoolExecutorConfig;
 
 import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 
@@ -63,10 +63,10 @@ public class BackgroundProcessing implements ILifecycle {
 			}
 		};
 
-		if (item.getPriority() == WorkItem.PRIORITY_HIGH)
+		if (item.getPriorityType() == WorkItemPriority.HIGH)
 			Common.timer.execute(runnable);
 
-		else if (item.getPriority() == WorkItem.PRIORITY_MEDIUM)
+		else if (item.getPriorityType() == WorkItemPriority.MEDIUM)
 			mediumPriorityService.execute(new Runnable() {
 				public void run() {
 					try {
@@ -98,9 +98,9 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = createPool(ThreadPoolExecutorConfig.Priority.MEDIUM);
+		mediumPriorityService = createPool(WorkItemPriority.MEDIUM);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
-		lowPriorityService = createPool(ThreadPoolExecutorConfig.Priority.LOW);
+		lowPriorityService = createPool(WorkItemPriority.LOW);
 	}
 
 	public void terminate() {

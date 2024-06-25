@@ -33,6 +33,7 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.WorkItemMonitor;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
@@ -61,7 +62,6 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
-import org.scada_lts.config.ThreadPoolExecutorConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
@@ -117,7 +117,7 @@ public class MangoContextListener implements ServletContextListener {
 		ScadaVersion.getInstance().printScadaVersionProperties(log);
 
 		// Initialize the timer
-		Common.timer.init(createPool(ThreadPoolExecutorConfig.Priority.HIGH));
+		Common.timer.init(createPool(WorkItemPriority.HIGH));
 
 		// Create all the stuff we need.
 		constantsInitialize(ctx);
