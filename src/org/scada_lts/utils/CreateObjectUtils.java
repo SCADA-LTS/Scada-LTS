@@ -27,7 +27,7 @@ public final class CreateObjectUtils {
             Object object = type.getDeclaredConstructor(argsTypes).newInstance(args);
             return defaultInterface.cast(object);
         } catch (Throwable e) {
-            LOG.error(e);
+            LOG.error(e.getMessage());
             return defaultImpl;
         }
     }
@@ -39,7 +39,8 @@ public final class CreateObjectUtils {
         String[] values = valuesAsString.split(";");
         String[] valueTypes = valueTypesAsString.split(";");
         if(values.length != valueTypes.length) {
-            throw new IllegalStateException("Arrays values.length != valueTypes.length!");
+            LOG.error("Arrays values.length != valueTypes.length!");
+            return new Object[0];
         }
         List<Object> objects = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,8 +50,9 @@ public final class CreateObjectUtils {
             try {
                 Class<?> clazz = Class.forName(valueTypes[i]);
                 objects.add(objectMapper.readValue(values[i], toPrimitiveType(clazz)));
-            } catch (Throwable throwable) {
-                throw new IllegalStateException(throwable);
+            } catch (Throwable e) {
+                LOG.error(e.getMessage());
+                return new Object[0];
             }
         }
         return objects.toArray(Object[]::new);
