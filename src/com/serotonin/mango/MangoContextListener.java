@@ -219,16 +219,17 @@ public class MangoContextListener implements ServletContextListener {
 		runtimeManagerTerminate(ctx);
 		eventManagerTerminate(ctx);
 		utilitiesTerminate(ctx);
+		highPriorityServiceTerminate();
 		databaseTerminate(ctx);
-
-		Common.timer.cancel();
-		Common.timer.getExecutorService().shutdown();
 
 		Common.ctx = null;
 
 		log.info("Scada-LTS context terminated");
 	}
-	
+
+	private void highPriorityServiceTerminate() {
+		Common.timer.cancel();
+	}
 	/**
 	 * Set global permission for the ScriptEngine 
 	 */
@@ -477,10 +478,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void utilitiesTerminate(ContextWrapper ctx) {
+		log.info("Stopping BackgroundProcessing");
 		BackgroundProcessing bp = ctx.getBackgroundProcessing();
 		if (bp != null) {
 			bp.terminate();
 			bp.joinTermination();
+			if(bp.isTerminated())
+				log.info("Stopped BackgroundProcessing");
+			else
+				log.info("Stopped BackgroundProcessing Fail");
+		} else {
+			log.info("BackgroundProcessing is null");
 		}
 	}
 
@@ -495,10 +503,14 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void eventManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping EventManager");
 		EventManager em = ctx.getEventManager();
 		if (em != null) {
 			em.terminate();
 			em.joinTermination();
+			log.info("Stopped EventManager");
+		} else {
+			log.info("EventManager is null");
 		}
 	}
 	
@@ -553,10 +565,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void runtimeManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping RuntimeManager");
 		RuntimeManager rtm = ctx.getRuntimeManager();
 		if (rtm != null) {
 			rtm.terminate();
 			rtm.joinTermination();
+			if(!rtm.isStarted())
+				log.info("Stopped RuntimeManager");
+			else
+				log.info("Stopped RuntimeManager Fail");
+		} else {
+			log.info("RuntimeManager is null");
 		}
 	}
 

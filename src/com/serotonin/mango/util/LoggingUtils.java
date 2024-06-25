@@ -17,6 +17,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
+import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
@@ -207,6 +208,13 @@ public final class LoggingUtils {
         }
         String info = "batchWriteBehindEntry: pointId: {0}, dataType: {1}, time: {2}, dvalue: {3}";
         return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
+    }
+
+    public static String publisherInfo(PublisherVO<?> publisher) {
+        if(publisher == null)
+            return "";
+        String info =  "publisher: {0} (id: {1}, xid: {2}, type: {3})";
+        return MessageFormat.format(info, publisher.getName(), publisher.getId(), publisher.getXid(), publisher.getType());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

@@ -541,4 +541,7 @@ public class Common {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
 	}
 
+	public static boolean isTerminating() {
+		return ctx == null || ctx.getBackgroundProcessing() == null || ctx.getBackgroundProcessing().isTerminating();
+	}
 }
