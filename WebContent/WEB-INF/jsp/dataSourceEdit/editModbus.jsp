@@ -88,22 +88,14 @@
   }
 
   function createLocatorConfigTemp(){
-      let slaveId = $get("test_slaveId");
-      let range = $get("test_range");
-      let modbusDataType = $get("test_modbusDataType");
-      let offset = $get("test_offset");
-      let bit = $get("test_bit");
-      let registerCount = $get("test_registerCount");
-      let charset = $get("test_charset");
-
       let temp = {};
-      temp.slaveId = slaveId;
-      temp.range = range;
-      temp.modbusDataType = modbusDataType;
-      temp.offset = offset;
-      temp.bit = bit;
-      temp.registerCount = registerCount;
-      temp.charset = charset;
+      temp.slaveId = $get("test_slaveId");
+      temp.range = $get("test_range");
+      temp.modbusDataType = $get("test_modbusDataType");
+      temp.offset = $get("test_offset");
+      temp.bit = $get("test_bit");
+      temp.registerCount = $get("test_registerCount");
+      temp.charset = $get("test_charset");
 
       return temp;
   }
