@@ -1123,7 +1123,7 @@ function trim(value) {
     return result;
 }
 
-scadalts = {}
+const scadalts = {}
 scadalts.websocket = {};
 scadalts.websocket.client = {};
 scadalts.websocket.endpoints = {};
@@ -1136,7 +1136,6 @@ function errorCallbackWebsocket(error) {
 function connectCallbackWebsocket(frame) {
     console.log('Connected to WebSocket');
     let maxAlarmLevel = -1;
-    let send = false;
     let stompClient = getStompClient();
     if(!stompClient) {
         console.log('Stomp Client is not initialized!');
