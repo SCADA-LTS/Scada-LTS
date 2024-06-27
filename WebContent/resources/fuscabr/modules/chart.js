@@ -1,6 +1,6 @@
 /******************************************
  * FUScaBR - "Funções úteis para o ScadaBR"
- * License: MIT
+ * Version 2.0 - License: MIT
  ******************************************/
  "use strict";
 
@@ -141,8 +141,8 @@ fuscabr.chart = {
 			element.options.animation.duration = (conf.animations == true) ? 1000 : 0;
 			changed = true;
 		}
-		foo = element.options.title;
-		if (foo.display != conf.showTitle || foo.text != conf.title) {
+		foo = element.options.title.display;
+		if (foo != conf.showTitle) {
 			element.options.title.display = conf.showTitle;
 			element.options.title.text = conf.title;
 			changed = true;
@@ -169,15 +169,10 @@ fuscabr.chart = {
 			newData = conf.data.datasets[i].backgroundColor;
 			if (chartData != newData) {
 				element.data.datasets[i].backgroundColor = newData;
-				changed = true;
-			}
-			
-			chartData = element.data.datasets[i].borderColor;
-			newData = conf.data.datasets[i].borderColor;
-			if (chartData != newData) {
 				element.data.datasets[i].borderColor = newData;
 				changed = true;
 			}
+			
 		}
 		
 		if (this.conf.enableDatapointWarnings) {
