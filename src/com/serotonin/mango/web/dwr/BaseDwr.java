@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
@@ -93,8 +89,7 @@ abstract public class BaseDwr {
         model.put("componentId", componentId);
         model.put("point", pointVO);
         model.put("pointRT", point);
-        model.put(MODEL_ATTR_RESOURCE_BUNDLE, getResourceBundle());
-
+        model.put(MODEL_ATTR_RESOURCE_BUNDLE, Common.getBundle());
         PointValueTime pointValue = null;
         if (point == null)
             model.put("disabled", "true");
