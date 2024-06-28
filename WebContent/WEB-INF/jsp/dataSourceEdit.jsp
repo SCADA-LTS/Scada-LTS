@@ -117,7 +117,7 @@
         else {
             showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
             DataSourceEditDwr.getPoints(writePointList);
-			window.location = "data_source_edit.shtm?dsid=" + response.data.id;
+            window.location = "data_source_edit.shtm?dsid=" + response.data.id;
         }
         getAlarms();
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - done");
