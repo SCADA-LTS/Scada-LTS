@@ -76,8 +76,8 @@ public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
     @Override

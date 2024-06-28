@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public final class ReflectionUtils {
+public final class ReflectionTestUtils {
 
     private static final Map<Class<?>, Supplier<Object>> objectGenerators = new HashMap<>();
     private static final Random random = new Random();
@@ -31,7 +31,7 @@ public final class ReflectionUtils {
         objectGenerators.put(MqttVersion.class, () -> MqttVersion.V5_0_MQTT);
     }
 
-    private ReflectionUtils() {}
+    private ReflectionTestUtils() {}
 
     public static Object settingRandom(Object object) {
         List<Method> setters = getSetters(object.getClass());
@@ -62,8 +62,6 @@ public final class ReflectionUtils {
             }
             if(parameter.length == 2) {
                 try {
-                    method.invoke(object, objectGenerators.get(parameter[0]).get(),
-                            objectGenerators.get(parameter[1]).get());
                     if(!objectGenerators.containsKey(parameter[0]))
                         throw new IllegalStateException("Not exists generator for type: " + parameter[0].getName());
                     if(!objectGenerators.containsKey(parameter[1]))

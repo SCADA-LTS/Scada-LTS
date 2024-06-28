@@ -22,12 +22,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.*;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -60,10 +63,10 @@ public class BackgroundProcessing implements ILifecycle {
 			}
 		};
 
-		if (item.getPriority() == WorkItem.PRIORITY_HIGH)
+		if (item.getPriorityType() == WorkItemPriority.HIGH)
 			Common.timer.execute(runnable);
 
-		else if (item.getPriority() == WorkItem.PRIORITY_MEDIUM)
+		else if (item.getPriorityType() == WorkItemPriority.MEDIUM)
 			mediumPriorityService.execute(new Runnable() {
 				public void run() {
 					try {
@@ -95,10 +98,9 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
-				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		mediumPriorityService = createPool(WorkItemPriority.MEDIUM);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
-		lowPriorityService = Executors.newSingleThreadExecutor();
+		lowPriorityService = createPool(WorkItemPriority.LOW);
 	}
 
 	public void terminate() {

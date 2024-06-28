@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -350,8 +351,8 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override
