@@ -50,7 +50,8 @@
 	
 	shortcut.add("Ctrl+Shift+F",function() {
 	    var forceFullScreenMode = ${forceFullScreenMode};
-	    if(!forceFullScreenMode || ${isAdmin})
+	    var isAdmin = ${isAdmin};
+	    if(!forceFullScreenMode || isAdmin)
 	        closeFullScreen();
 	});
 	
