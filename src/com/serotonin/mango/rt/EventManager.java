@@ -208,7 +208,7 @@ public class EventManager implements ILifecycle {
 
 			evt.returnToNormal(time, cause);
 			eventService.saveEvent(evt);
-			notifyEventAck(evt.getId());
+			notifyEventRtn(evt);
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
 
@@ -225,7 +225,7 @@ public class EventManager implements ILifecycle {
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
-		notifyEventAck(evt.getId());
+		notifyEventRtn(evt);
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
 	}
@@ -487,6 +487,17 @@ public class EventManager implements ILifecycle {
 		if(eventId != Common.NEW_ID) {
 			for (User user : userService.getActiveUsers())
 				notifyEventAck(eventId, user);
+		}
+	}
+
+	public void notifyEventRtn(EventInstance evt, User user) {
+		NotifyEventUtils.notifyEventRtn(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
+	}
+
+	public void notifyEventRtn(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : userService.getActiveUsers())
+				notifyEventRtn(event, user);
 		}
 	}
 

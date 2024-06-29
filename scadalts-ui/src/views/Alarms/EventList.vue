@@ -412,6 +412,7 @@ tbody tr:nth-of-type(odd) {
 import store from '../../store';
 import RangeChartComponent from '../../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import {getEventList} from '../../utils/common';
 
 export default {
 	name: 'EventList',
@@ -422,10 +423,10 @@ export default {
 	mounted() {
 		this.mountedTs = this.$dayjs()
 		let stompClient = this.$store.state.webSocketModule.webSocket;
-		let fetchEventList = this.fetchEventList;
+		let fetchEvent = this.fetchEvent;
+		let searchFilters = this.searchFilters;
         stompClient.subscribe("/app/event/update/register", function(register) {
-            //console.log("/app/event/update/register register.body: EventList.vue: "+register.body);
-            let subscription = stompClient.subscribe("/topic/event/update/"+register.body, fetchEventList);
+            let subscription = stompClient.subscribe("/topic/event/update/"+register.body, function(message) {fetchEvent(message, searchFilters)});
             if(subscription) {
                 setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
             }
@@ -792,7 +793,36 @@ export default {
 	  	open(item, item2) {
 			this.selectedEventId = item.id;
 	  	},
-		
-	},
-};
+        fetchEvent(message, searchFilters) {
+            if(message) {
+                let event = JSON.parse(message.body);
+                let sortBy = searchFilters.sortBy;
+                let sortDesc = searchFilters.sortDesc;
+
+                if(sortBy.length == 0) {
+                    sortBy = ['id'];
+                }
+
+                if(sortDesc.length == 0) {
+                    sortDesc = [true];
+                }
+
+                this.loading = true;
+
+                let temp = getEventList(event, sortBy, sortDesc, this.eventList);
+
+                if(temp.length == 0) {
+                    this.fetchEventList();
+                } else {
+                    this.eventList = temp;
+                }
+
+                this.loading = false;
+
+            } else {
+                console.log('fetchEvent: no exist');
+            }
+        }
+	}
+}
 </script>
