@@ -122,8 +122,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
     static class ProcessTimeout extends AbstractBeforeAfterWorkItem {
@@ -146,8 +146,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         public void interrupt() {
@@ -229,8 +229,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override
@@ -280,36 +280,4 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     public String getDetails() {
         return this.toString();
     }
-
-    //
-    // public static void main(String[] args) throws Exception {
-    // // ServletContext ctx = new DummyServletContext();
-    // BackgroundProcessing bp = new BackgroundProcessing();
-    // bp.initialize();
-    // // ctx.setAttribute(Common.ContextKeys.BACKGROUND_PROCESSING, bp);
-    // // Common.ctx = new ContextWrapper(ctx);
-    // // ProcessWorkItem.queueProcess("");
-    // // bp.terminate();
-    //        
-    // // //ProcessBuilder pb = new ProcessBuilder("cmd /c dir");
-    // // ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "dir");
-    // // pb.redirectErrorStream(true);
-    // // Process process = pb.start();
-    // Process process = Runtime.getRuntime().exec("cmd /c java -version");
-    //        
-    // InputReader out = new InputReader(process.getInputStream());
-    // InputReader err = new InputReader(process.getErrorStream());
-    //        
-    // bp.addWorkItem(out);
-    // bp.addWorkItem(err);
-    //        
-    // process.waitFor();
-    // out.join();
-    // err.join();
-    // process.destroy();
-    // bp.terminate();
-    //        
-    // System.out.println("out: "+ out.getInput());
-    // System.out.println("err: "+ err.getInput());
-    // }
 }

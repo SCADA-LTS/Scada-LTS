@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -217,8 +218,9 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             return saveFailure;
         }
 
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        @Override
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override

@@ -1,22 +1,26 @@
 /******************************************
  * FUScaBR - "Funções úteis para o ScadaBR"
- * License: MIT
+ * Version 2.0 - License: MIT
  ******************************************/
 "use strict";
 
 fuscabr.align = {
+	// This stores items selected in alignment process
 	selectedItems: [],
-	lastAnchorPosition: {},
-	currentAnchorPosition: {},
-	elementsFollowAnchor: false,
+
+
+
+
+/* 
+ *	User interface methods
+ */	 
+
+
+
+	cannotDeleteWarning: function() {
+		alert(fuscabr.common.i18n.align["cannot_delete_components"]);
+	},
 	
-
-	/**
-	 *	Interface-related methods
-	 */
-
-
-	// Create the Graphical User Interface (GUI) for alignments
 	createInterface: function() {	
 		if(!document.getElementById("fuscabr-align")) {
 			var gui = document.createElement("div");
@@ -31,20 +35,6 @@ fuscabr.align = {
 		}
 	},
 
-	// Show (or hide) alignment GUI
-	showInterface: function(show) {
-		if (show) {
-			document.getElementById("fuscabr-align-start-stop").value = fuscabr.common.i18n.align["stop_alignment"];
-			document.getElementById("fuscabr-align-start-stop").setAttribute("onclick", "fuscabr.align.stop()");
-			document.getElementById("fuscabr-align-controls").style.display = "";
-		} else {
-			document.getElementById("fuscabr-align-start-stop").value = fuscabr.common.i18n.align["start_alignment"];
-			document.getElementById("fuscabr-align-start-stop").setAttribute("onclick", "fuscabr.align.start()");
-			document.getElementById("fuscabr-align-controls").style.display = "none";
-		}
-	},
-
-	// Localize the alignment GUI
 	localizeInterface: function() {
 		var localizable = document.querySelectorAll("#fuscabr-align *[data-i18n]");
 		for (var i of localizable) {
@@ -54,307 +44,172 @@ fuscabr.align = {
 		}
 	},
 
-	// Prevent View elements from being deleted while alignment mode is active
-	preventDeleteElements: function(enable) {
-		if (enable) {
-			this.deleteViewComponentBackup = deleteViewComponent;
-			deleteViewComponent = function() {
-				alert(fuscabr.common.i18n.align["cannot_delete_components"]);
-			}
-		} else {
-			deleteViewComponent = this.deleteViewComponentBackup;
-			this.deleteViewComponentBackup = null;
-		}
-	},
 
 
-	/**
-	 *	"Selection Mode" related methods
-	 */
+/*
+ *	Responsivity methods
+ */
 
 
-	startSelectionMode: function() {
-		// This trigger updates selectable elements after add
-		// new elements to the Graphical View
-		if (!document.getElementById("fuscabr-update-trigger")) {
-			var updateTrigger = document.querySelector("img[onclick='addViewComponent()']");
-			updateTrigger.addEventListener("click", fuscabr.align.updateSelectionMode);
-			updateTrigger.id = "fuscabr-update-trigger";
-		}
-	
-		// Make all View components selectable
+
+	// Create listeners for mouse responsivity
+	createListeners: function() {
 		var elements = document.querySelectorAll("#viewContent > div:not(.fuscabr-align):not(.windowDiv)");
-		for (var element of elements) {
-			this.hoverResponsivity(element, true);
-			element.classList.add("fuscabr-align");
-
-			// Create a div to prevent accidental clicks
-			var pcDiv = document.createElement("div");
-			pcDiv.classList.add("fuscabr-align-preventclick");
-			pcDiv.style = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;";
-			element.appendChild(pcDiv);
+		for (var i of elements) {
+			// Create listeners
+			i.addEventListener("mouseover", fuscabr.align.drawHoverBorder);
+			i.addEventListener("mouseout", fuscabr.align.clearBorder);
+			i.addEventListener("click", fuscabr.align.selectItem);
+			i.classList.add("fuscabr-align");
 		}
 	},
 
-	stopSelectionMode: function() {	
-		// Remove update trigger
-		var updateTrigger = document.getElementById("fuscabr-update-trigger");
-		updateTrigger.removeEventListener("click", fuscabr.align.updateSelectionMode);
-		updateTrigger.id = "";
-
-		// Make all View components not selectable
+	// Remove mouse listeners
+	removeListeners: function() {	
 		var elements = document.querySelectorAll("#viewContent > div.fuscabr-align");
-		for (var element of elements) {
-			this.hoverResponsivity(element, false);
-			element.classList.remove("fuscabr-align");
-
-			// Remove accidental click protection
-			element.querySelector(".fuscabr-align-preventclick").remove();
+		for (var i of elements) {
+			// Remove listeners
+			i.removeEventListener("mouseover", fuscabr.align.drawHoverBorder);
+			i.removeEventListener("mouseout", fuscabr.align.clearBorder);
+			i.removeEventListener("click", fuscabr.align.selectItem);
+			
+			// Remove borders
+			i.style.margin = "";
+			i.style.border = "";
+			i.classList.remove("fuscabr-align");
 		}
 		
-		// Unselect previously selected items
-		for (var i = 0; i < this.selectedItems.length; i++) {
-			if (i == 0)
-				this.unmakeAnchor(this.selectedItems[i]);
-			else
-				this.unmakeSelected(this.selectedItems[i]);
+		// Remove anchor-specific listeners
+		if (fuscabr.align.selectedItems.length) {
+			this.selectedItems[0].removeEventListener("mouseup", fuscabr.align.getAnchorPosition);
+			document.getElementById("fuscabr-anchor").remove();
 		}
-		this.selectedItems = [];
 	},
 
-	updateSelectionMode: function() {
-		setTimeout(function() {
-			fuscabr.align.startSelectionMode.call(fuscabr.align);
-		}, 200);
+	// Update listeners (create new ones with delay)
+	updateListeners: function() {
+		setTimeout(fuscabr.align.createListeners, 200);
 	},
 
-	// Enable or disable responsiveness to mouse clicks or hovering
-	hoverResponsivity: function(element, enable) {
+	// Create keyboard shortcuts for alignments
+	alignKeyboardShortcuts: function() {
+		if (event.code == "KeyA") {
+			fuscabr.align.alignLeft();
+		} else if (event.code == "KeyD") {
+			fuscabr.align.alignRight();
+		} else if (event.code == "KeyW") {
+			fuscabr.align.alignTop();
+		} else if (event.code == "KeyX") {
+			fuscabr.align.alignBottom();
+		} else if (event.code == "KeyF") {
+			fuscabr.align.centerHorizontal();
+		} else if (event.code == "KeyG") {
+			fuscabr.align.centerVertical();
+		} else if (event.code == "KeyR") {
+			fuscabr.align.distributeHorizontal();
+		} else if (event.code == "KeyT") {
+			fuscabr.align.distributeVertical();
+		} else if (event.code == "Escape") {
+			fuscabr.align.stop();
+		} else if (event.code == "KeyS") {
+			fuscabr.align.restart();
+		}
+	},
+	
+	// Create keyboard shortcuts for anchor moving
+	moveKeyboardShortcuts: function(e) {
+		var offset = fuscabr.align.conf.moveAnchorOffset;
+		if (event.code == "ArrowUp") {
+			e.preventDefault();
+			fuscabr.align.relativeMoveAnchor(0, -(offset));
+		} else if (event.code == "ArrowDown") {
+			fuscabr.align.relativeMoveAnchor(0, +(offset));
+			event.preventDefault();
+		} else if (event.code == "ArrowLeft") {
+			fuscabr.align.relativeMoveAnchor(-(offset), 0);
+			event.preventDefault();
+		} else if (event.code == "ArrowRight") {
+			fuscabr.align.relativeMoveAnchor(+(offset), 0);
+			event.preventDefault();
+		}
+	},
+
+	// Add or remove keyboard moving listeners
+	enableKeyboardMoving: function(enable) {
 		if (enable) {
-			element.addEventListener("mouseover", fuscabr.align.drawHoverBorder);
-			element.addEventListener("mouseout", fuscabr.align.clearHoverBorder);
-			element.addEventListener("click", fuscabr.align.selectItem);
+			window.addEventListener("keydown", fuscabr.align.moveKeyboardShortcuts);
 		} else {
-			element.removeEventListener("mouseover", fuscabr.align.drawHoverBorder);
-			element.removeEventListener("mouseout", fuscabr.align.clearHoverBorder);
-			element.removeEventListener("click", fuscabr.align.selectItem);
-			// Clear remanescent borders
-			element.style.margin = "";
-			element.style.border = "";
+			window.removeEventListener("keydown", fuscabr.align.moveKeyboardShortcuts);
 		}
 	},
-
+	
+	// Draw a border when mouse is over a DIV
 	drawHoverBorder: function() {
 		var conf = fuscabr.align.conf;
 		this.style.margin = "-2px";
 		this.style.border = "2px solid " + conf.hoverBorderColor;
 	},
 
-	clearHoverBorder: function() {
+	// Clear the border when mouse leaves a DIV
+	clearBorder: function() {
 		this.style.margin = "";
 		this.style.border = "";
 	},
 
-
-	/**
-	 *	Element selection and anchor-related methods
-	 *
-	 *	In FUScaBR Align module, the "anchor element" is always
-	 *	the first selected element. This element is used as a
-	 *	reference to alignment methods (except for "distribution").
-	 */
-
-
-	// Select elements that can be aligned
+	// Select a DIV when clicked
 	selectItem: function() {
-		fuscabr.align.selectedItems.push(this);
-
-		// Remove responsivity
-		fuscabr.align.hoverResponsivity(this, false);
-
-		// Select the element
-		if (fuscabr.align.selectedItems.length == 1)
-			fuscabr.align.makeAnchor(this);
-		else
-			fuscabr.align.makeSelected(this);
-	},
-
-	makeSelected: function(element) {
-		var conf = fuscabr.align.conf;
-		element.style.margin = "-2px";
-		element.style.border = "2px solid " + conf.elementBorderColor;
-	},
-
-	unmakeSelected: function(element) {
-		element.style.margin = "";
-		element.style.border = "";
-	},
-
-	makeAnchor: function(element) {
-		var conf = fuscabr.align.conf;
-		// Anchor borders
-		element.style.margin = "-2px";
-		element.style.border = "2px solid " + conf.anchorBorderColor;
-		// Anchor label
-		var label = document.createElement("span");
-		label.id = "fuscabr-anchor";
-		label.innerHTML = fuscabr.common.i18n.align["anchor"] || "Anchor";
-		label.style = "text-transform: uppercase; font-size: 9px; z-index: 20; \
-						position: absolute; top: -15px; color: " + conf.anchorBorderColor;
-		element.appendChild(label);
-		// Anchor listeners
-		element.addEventListener("mouseup", fuscabr.align.updateAnchorPosition);
+		// Remove listeners from that element
+		this.removeEventListener("mouseover", fuscabr.align.drawHoverBorder);
+		this.removeEventListener("mouseout", fuscabr.align.clearBorder);
+		this.removeEventListener("click", fuscabr.align.selectItem);
 		
-		fuscabr.align.updateAnchorPosition(true);
-	},
-
-	unmakeAnchor: function(element) {
-		// Remove borders
-		this.unmakeSelected(element);
-		// Remove label
-		document.getElementById("fuscabr-anchor").remove();
-		// Remove listeners
-		element.removeEventListener("mouseup", fuscabr.align.updateAnchorPosition);
-		// Clear anchor position in GUI
-		document.getElementById("fuscabr-align-x-anchor").value = "";
-		document.getElementById("fuscabr-align-y-anchor").value = "";
-	},	
-
-	enableAnchorFollowing: function(enable) {
-		if (enable) {
-			this.elementsFollowAnchor = true;
+		// Add element to "selectedItems" array
+		fuscabr.align.selectedItems.push(this);
+		
+		// Create a new border around the element
+		var conf = fuscabr.align.conf;
+		if (fuscabr.align.selectedItems.length == 1) {
+			// Anchor element
+			var label = document.createElement("span");
+			label.id = "fuscabr-anchor";
+			label.innerHTML = fuscabr.common.i18n.align["anchor"] || "Anchor";
+			label.style = "text-transform: uppercase; font-size: 9px; z-index: 20; \
+			               position: absolute; top: -15px; color: " + conf.anchorBorderColor;
+			this.appendChild(label);
+			this.style.margin = "-2px";
+			this.style.border = "2px solid " + conf.anchorBorderColor;
+			this.addEventListener("mouseup", fuscabr.align.getAnchorPosition);
+			fuscabr.align.getAnchorPosition();
 		} else {
-			this.elementsFollowAnchor = false;
-			document.getElementById("fuscabr-anchor-following").checked = false;
+			// Other elements
+			this.style.margin = "-2px";
+			this.style.border = "2px solid " + conf.elementBorderColor; // Orange border for other elements
 		}
 	},
 
-	// Get current position of anchor element
+
+
+/*
+ *	Align/move methods
+ */
+ 
+ 
+ 
+	// Get anchor's (first selected element) position
 	getAnchorPosition: function() {
 		// Get anchor's CSS position
 		var xPos = fuscabr.align.selectedItems[0].style.left.replace("px", "");
 		var yPos = fuscabr.align.selectedItems[0].style.top.replace("px", "");
 		
-		return {x: xPos, y: yPos};
-	},
-
-	// Update current position of anchor element
-	updateAnchorPosition: function() {
-		// Get anchor's CSS position
-		var pos = fuscabr.align.getAnchorPosition();
-		
-		if (fuscabr.align.currentAnchorPosition != {})
-			fuscabr.align.lastAnchorPosition = fuscabr.align.currentAnchorPosition;
-
-		fuscabr.align.currentAnchorPosition = pos;
-
 		// Update GUI position values
-		document.getElementById("fuscabr-align-x-anchor").value = pos.x;
-		document.getElementById("fuscabr-align-y-anchor").value = pos.y;
-
-		updateViewComponentLocation(fuscabr.align.selectedItems[0].id);
-
-		if (fuscabr.align.elementsFollowAnchor) {
-			fuscabr.align.followAnchor();
-		}
-	},
-
-
-	/**
-	 *	Keyboard shortcut methods
-	 */
-
-
-	// Enable/disable shortcuts to move the anchor
-	enableMovingShortcuts: function(enable) {
-		if (enable) {
-			window.addEventListener("keydown", fuscabr.align.moveKeyboardShortcuts);
-		} else {
-			window.removeEventListener("keydown", fuscabr.align.moveKeyboardShortcuts);
-			document.getElementById("fuscabr-keyboard-moving").checked = false;
-		}
-	},
-
-	// Enable/disable shortcuts to align elements
-	enableAlignShortcuts: function(enable) {
-		if (enable)
-			document.body.addEventListener("keyup", fuscabr.align.alignKeyboardShortcuts);
-		else
-			document.body.removeEventListener("keyup", fuscabr.align.alignKeyboardShortcuts);
-	},
-
-	// Define keyboard shortcuts to alignment functions
-	alignKeyboardShortcuts: function(evt) {
-		if (evt.code == "KeyA") {
-			fuscabr.align.alignLeft();
-		} else if (evt.code == "KeyD") {
-			fuscabr.align.alignRight();
-		} else if (evt.code == "KeyW") {
-			fuscabr.align.alignTop();
-		} else if (evt.code == "KeyX") {
-			fuscabr.align.alignBottom();
-		} else if (evt.code == "KeyF") {
-			fuscabr.align.centerHorizontal();
-		} else if (evt.code == "KeyG") {
-			fuscabr.align.centerVertical();
-		} else if (evt.code == "KeyR") {
-			fuscabr.align.distributeHorizontal();
-		} else if (evt.code == "KeyT") {
-			fuscabr.align.distributeVertical();
-		} else if (evt.code == "Escape") {
-			fuscabr.align.stop();
-		} else if (evt.code == "KeyS") {
-			fuscabr.align.restart();
-		}
-	},
-	
-	// Define shortcuts to use keyboard arrows in anchor moving
-	moveKeyboardShortcuts: function(evt) {
-		var offset = fuscabr.align.conf.moveAnchorOffset;
-		if (evt.code == "ArrowUp") {
-			evt.preventDefault();
-			fuscabr.align.relativeMoveAnchor(0, -(offset));
-		} else if (evt.code == "ArrowDown") {
-			fuscabr.align.relativeMoveAnchor(0, +(offset));
-			evt.preventDefault();
-		} else if (evt.code == "ArrowLeft") {
-			fuscabr.align.relativeMoveAnchor(-(offset), 0);
-			evt.preventDefault();
-		} else if (evt.code == "ArrowRight") {
-			fuscabr.align.relativeMoveAnchor(+(offset), 0);
-			evt.preventDefault();
-		}
-	},
- 
-
-	/**
-	 *	Moving/align methods
-	 */
- 
-
-	// Move all selected elements to follow anchor displacement
-	followAnchor: function() {
-		var cap = this.currentAnchorPosition;
-		var lap = this.lastAnchorPosition;
+		document.getElementById("fuscabr-align-x-anchor").value = xPos;
+		document.getElementById("fuscabr-align-y-anchor").value = yPos;
 		
-		var xOffset = cap.x - lap.x;
-		var yOffset = cap.y - lap.y;
-
-		var elements = fuscabr.align.selectedItems;
-
-		for (var i = 1; i < elements.length; i++) {
-			var currentX = parseInt(elements[i].style.left.replace("px", ""));
-			var currentY = parseInt(elements[i].style.top.replace("px", ""));
-
-			elements[i].style.left = (currentX + xOffset) + "px";
-			elements[i].style.top =  (currentY + yOffset) + "px";
-
-			updateViewComponentLocation(elements[i].id);
-		}
-
+		// Return current position
+		return [xPos, yPos];
 	},
 
-	// Move anchor to an absolute coordinate (called from GUI)
+	// Move anchor absolutely (by GUI)
 	absoluteMoveAnchor: function() {
 		// Get position specified in GUI
 		var xPos = document.getElementById("fuscabr-align-x-anchor").value;
@@ -363,26 +218,29 @@ fuscabr.align = {
 		// Update position
 		fuscabr.align.selectedItems[0].style.left = Math.round(xPos) + "px";
 		fuscabr.align.selectedItems[0].style.top = Math.round(yPos) + "px";
-		
-		fuscabr.align.updateAnchorPosition();
+		updateViewComponentLocation(fuscabr.align.selectedItems[0].id);
 	},
 
-	// Move anchor relatively (called from keyboard arrows shortcut)
+	// Move anchor relatively (by keyboard)
 	relativeMoveAnchor: function(xOffset, yOffset) {
 		// Get actual position
 		var pos = fuscabr.align.getAnchorPosition();
 		
 		// Calc the offset and move anchor
 		if (xOffset) {
-			var newX = pos.x - (pos.x % xOffset) + xOffset;
+			var newX = pos[0];
+			newX = pos[0] - (pos[0] % xOffset) + xOffset;
 			fuscabr.align.selectedItems[0].style.left = Math.round(newX) + "px";
 		}
 		if (yOffset) {
-			var newY = pos.y - (pos.y % yOffset) + yOffset;
+			var newY = pos[1];
+			newY = pos[1] - (pos[1] % yOffset) + yOffset;
 			fuscabr.align.selectedItems[0].style.top = Math.round(newY) + "px";
 		}
 		
-		fuscabr.align.updateAnchorPosition();
+		// Update positon
+		fuscabr.align.getAnchorPosition();
+		updateViewComponentLocation(fuscabr.align.selectedItems[0].id);
 	},
 
 	// Align elements to the left
@@ -509,13 +367,6 @@ fuscabr.align = {
 		}
 		space = space / foo;
 		
-		// Disable anchor following
-		var followingDisabled = false;
-		if (this.elementsFollowAnchor) {
-			this.elementsFollowAnchor = false;
-			followingDisabled = true;
-		}
-
 		// Position elements equally spaced from each other
 		for (var i = 1; i < foo; i++) {
 			var pastX = Number(copyArray[(i - 1)].style.left.replace("px", ""));
@@ -526,13 +377,7 @@ fuscabr.align = {
 			updateViewComponentLocation(copyArray[i].id);
 			
 			// Update anchor position
-			this.updateAnchorPosition();
-		}
-
-		// Re-enable anchor following
-		if (followingDisabled) {
-			this.elementsFollowAnchor = true;
-			followingDisabled = false;
+			this.getAnchorPosition();
 		}
 		
 	},
@@ -563,13 +408,6 @@ fuscabr.align = {
 		}
 		space = space / foo;
 		
-		// Disable anchor following
-		var followingDisabled = false;
-		if (this.elementsFollowAnchor) {
-			this.elementsFollowAnchor = false;
-			followingDisabled = true;
-		}
-
 		// Position elements equally spaced from each other
 		for (var i = 1; i < foo; i++) {
 			var pastY = Number(copyArray[(i - 1)].style.top.replace("px", ""));
@@ -580,44 +418,62 @@ fuscabr.align = {
 			updateViewComponentLocation(copyArray[i].id);
 			
 			// Update anchor position
-			this.updateAnchorPosition();
+			this.getAnchorPosition();
 		}
 		
-		// Re-enable anchor following
-		if (followingDisabled) {
-			this.elementsFollowAnchor = true;
-			followingDisabled = false;
-		}
 	},
 
 
-	/**
-	 *	Main methods
-	 */
+	
+/*
+ *  Main methods
+ */
 
 
-	// Start alignment
+
+	// Start alignment mode
 	start: function() {
-		this.startSelectionMode();
-		this.enableAlignShortcuts(true);
-		this.preventDeleteElements(true);
-		this.showInterface(true);
+		// Create several listeners
+		document.querySelector("img[onclick='addViewComponent()']").addEventListener("click", fuscabr.align.updateListeners);
+		document.body.addEventListener("keyup", fuscabr.align.alignKeyboardShortcuts);
+		this.createListeners();
+		// Clear selected items
+		this.selectedItems = [];
+		// Disable delete elements ability
+		this.deleteComponentBackup = deleteViewComponent;
+		deleteViewComponent = this.cannotDeleteWarning;
+		// Show all GUI controls
+		document.getElementById("fuscabr-align-start-stop").value = fuscabr.common.i18n.align["stop_alignment"];
+		document.getElementById("fuscabr-align-start-stop").setAttribute("onclick", "fuscabr.align.stop()");
+		document.getElementById("fuscabr-align-controls").style.display = "";
 	},
 
-	// Stop alignment
+	// Stop alignment mode
 	stop: function() {
-		this.stopSelectionMode();
-		this.enableAlignShortcuts(false);
-		this.enableMovingShortcuts(false);
-		this.enableAnchorFollowing(false);
-		this.preventDeleteElements(false);
-		this.showInterface(false);
+		// Remove all listeners
+		document.querySelector("img[onclick='addViewComponent()']").removeEventListener("click", fuscabr.align.updateListeners);
+		document.body.removeEventListener("keyup", fuscabr.align.alignKeyboardShortcuts);
+		this.removeListeners();
+		// Disable moving by keyboard arrows
+		this.enableKeyboardMoving(false);
+		document.getElementById("fuscabr-keyboard-moving").checked = false;
+		// Clear selected items
+		this.selectedItems = [];
+		// Enable delete elements ability
+		deleteViewComponent = this.deleteComponentBackup;
+		// Hide GUI alignment controls
+		document.getElementById("fuscabr-align-start-stop").value = fuscabr.common.i18n.align["start_alignment"];
+		document.getElementById("fuscabr-align-start-stop").setAttribute("onclick", "fuscabr.align.start()");
+		document.getElementById("fuscabr-align-controls").style.display = "none";
 	},
 
 	// Restart alignment (clear selection)
 	restart: function() {
-		this.stopSelectionMode();
-		this.startSelectionMode();
+		this.removeListeners();
+		this.createListeners();
+		this.selectedItems = [];
+		document.getElementById("fuscabr-align-x-anchor").value = "";
+		document.getElementById("fuscabr-align-y-anchor").value = "";
 	},
 
 	// Get module settings

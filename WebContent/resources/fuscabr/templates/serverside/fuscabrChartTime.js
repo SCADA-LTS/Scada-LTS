@@ -3,15 +3,10 @@
 // Points to be included in chart (ID or XID)
 var reading_points = [ point.id ];
 
-// Color of fill in each series in the graph
+// Color of each series in the graph
 // (the position of each color corresponds
 // to a point in "reading_array" variable) 
-var fill_colors = [ '#FF9421CC' ];
-
-// Color of stroke in each series in the graph
-// (the position of each color corresponds
-// to a point in "reading_array" variable) 
-var stroke_colors = [ '#FF9421CC' ];
+var series_colors = [ '#FF9421CC' ];
 
 // Description of each series in the graph
 // (each description corresponds to a point
@@ -142,8 +137,8 @@ function createJSONDatasets() {
 		foo +=	'{';
 		foo +=		'"label":"' + descriptions[i] + '",';
 		foo +=		'"data":' + reading_array + ',';
-		foo +=		'"backgroundColor":"' + fill_colors[i] + '",';
-		foo +=		'"borderColor":"' + stroke_colors[i] + '"';
+		foo +=		'"backgroundColor":"' + series_colors[i] + '",';
+		foo +=		'"borderColor":"' + series_colors[i] + '"';
 		foo +=	'}';
 		
 

@@ -66,8 +66,9 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 
 	public ReportWorkItem() {}
 
-	public int getPriority() {
-		return WorkItem.PRIORITY_LOW;
+	@Override
+	public WorkItemPriority getPriorityType() {
+		return WorkItemPriority.LOW;
 	}
 
 	public static void queueReport(ReportVO report) {

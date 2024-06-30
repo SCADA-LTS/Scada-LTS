@@ -104,8 +104,8 @@ public class EventService implements MangoEvent {
 		}
 
 		@Override
-		public int getPriority() {
-			return WorkItemPriority.HIGH.getPriority();
+		public WorkItemPriority getPriorityType() {
+			return WorkItemPriority.HIGH;
 		}
 
 		@Override
