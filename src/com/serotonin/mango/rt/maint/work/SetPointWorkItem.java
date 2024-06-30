@@ -24,6 +24,9 @@ import java.util.List;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * @author Matthew Lohbihler
@@ -37,7 +40,9 @@ public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
     private final SetPointSource source;
     private final List<String> sourceIds;
 
-    public SetPointWorkItem(int targetPointId, PointValueTime pvt, SetPointSource source) {
+    private final EventType eventType;
+
+    public SetPointWorkItem(int targetPointId, PointValueTime pvt, SetPointSource source, EventType eventType) {
         this.targetPointId = targetPointId;
         this.pvt = pvt;
         this.source = source;
@@ -46,6 +51,8 @@ public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
             sourceIds = new ArrayList<String>();
         else
             sourceIds = threadLocal.get();
+
+        this.eventType = eventType;
     }
 
     @Override
@@ -73,6 +80,16 @@ public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
         finally {
             threadLocal.remove();
         }
+    }
+
+    @Override
+    public void workSuccess() {
+        SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
+    }
+
+    @Override
+    public void workFail(Throwable exception) {
+        SystemEventType.raiseEvent(eventType, System.currentTimeMillis(), true, new LocalizableMessage("common.default", exception.getMessage()));
     }
 
     @Override

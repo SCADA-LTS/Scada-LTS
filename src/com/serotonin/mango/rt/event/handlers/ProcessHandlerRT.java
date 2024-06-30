@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.ProcessWorkItem;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.util.StringUtils;
@@ -28,22 +29,22 @@ import com.serotonin.util.StringUtils;
  */
 public class ProcessHandlerRT extends EventHandlerRT {
     public ProcessHandlerRT(EventHandlerVO vo) {
-        this.vo = vo;
+        super(vo, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_PROCESS_FAILURE, vo.getId()));
     }
 
     @Override
     public void eventRaised(EventInstance evt) {
-        executeCommand(vo.getActiveProcessCommand());
+        executeCommand(getVo().getActiveProcessCommand());
     }
 
     @Override
     public void eventInactive(EventInstance evt) {
-        executeCommand(vo.getInactiveProcessCommand());
+        executeCommand(getVo().getInactiveProcessCommand());
     }
 
     private void executeCommand(String command) {
         if (StringUtils.isEmpty(command))
             return;
-        ProcessWorkItem.queueProcess(command, vo);
+        ProcessWorkItem.queueProcess(command, getVo(), getEventType());
     }
 }

@@ -140,8 +140,8 @@ public class MangoContextListener implements ServletContextListener {
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
-		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
+		utilitiesInitialize(ctx);
 
 		try {
 			ApplicationBeans.getPointEventDetectorDaoBean().init();
