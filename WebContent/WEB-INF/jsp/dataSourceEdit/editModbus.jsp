@@ -102,7 +102,6 @@
 
   
   function locatorTest() {
-      setDisabled("locatorTestBtn", true);
 
       let locatorConfigTemp =  createLocatorConfigTemp();
       let modbusConfigTemp = createModbusConfigTemp();
