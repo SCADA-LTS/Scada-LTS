@@ -1043,8 +1043,6 @@ function createValidationMessage(node, message) {
     return {contextKey:node, contextualMessage:message};
 }
 
-
-
 function updateChartComparatorComponent(idPrefix, width, height) {
 	var fromDate = $get(idPrefix+"_fromDate1");
 	var toDate = $get(idPrefix+"_toDate1");
@@ -1121,5 +1119,10 @@ function trim(value) {
         result = value.trim();
     }
     return result;
+}
+
+function isPositiveByte(value) {
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0 && trimValue <= 127;
 }
 
