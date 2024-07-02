@@ -151,9 +151,50 @@
   }
   
   function dataTest() {
-      setDisabled("dataTestBtn", true);
-      dataTestImpl($get("dataTest_slaveId"), $get("dataTest_range"), $get("dataTest_offset"), $get("dataTest_length"));
-      hideGenericMessages("dataTestGeneric");
+      let dataTestConfigTemp = createTestDataTemp();
+      let modbusConfigTemp = createModbusConfigTemp();
+
+      hideContextualMessages("dataTestDiv");
+
+      let testDataMessages = validateTestData(dataTestConfigTemp);
+      let modbusMessages = validateModbusConfig(modbusConfigTemp);
+
+      let messages = modbusMessages.concat(testDataMessages);
+
+      if(messages.length > 0) {
+          showDwrMessages(messages);
+      } else {
+          let slaveId = parseInt(dataTestConfigTemp.slaveId);
+          let range = parseInt(dataTestConfigTemp.range);
+          let offset = parseInt(dataTestConfigTemp.offset);
+          let length = parseInt(dataTestConfigTemp.length);
+
+          dataTestImpl(slaveId, range, offset, length);
+          hideGenericMessages("dataTestGeneric");
+      }
+  }
+
+  function validateTestData(testData){
+
+      let messages = [];
+
+      validateValue("dataTest_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.slaveId, messages);
+      validateValue("dataTest_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.range, messages);
+      validateValue("dataTest_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.offset, messages);
+      validateValue("dataTest_length", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.length, messages);
+
+      return messages;
+  }
+
+  function createTestDataTemp(){
+      let temp = {};
+
+      temp.slaveId = $get("dataTest_slaveId");
+      temp.range = $get("dataTest_range");
+      temp.offset = $get("dataTest_offset");
+      temp.length = $get("dataTest_length");
+
+      return temp;
   }
   
   function dataTestCB(response) {
@@ -419,7 +460,7 @@
       </table>
     </div>
     
-    <div class="borderDiv marB marR" style="float:left;">
+    <div class="borderDiv marB marR" style="float:left;" id="dataTestDiv">
       <table>
         <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.dataTest"/></td></tr>
         
