@@ -103,6 +103,7 @@
       let messages = validateModbusConfig(temp);
 
       if(messages.length > 0) {
+          stopImageFader("dsSaveImg");
 		  showDwrMessages(messages);
       } else {
 		  let dataSourceName = temp.dataSourceName;

@@ -117,6 +117,7 @@
       let messages = modbusMessages.concat(messagesLocator);
 
       if(messages.length > 0) {
+          stopImageFader("dsSaveImg");
           showDwrMessages(messages);
       } else {
           let locator = {};
