@@ -90,6 +90,7 @@ abstract public class BaseDwr {
         model.put("point", pointVO);
         model.put("pointRT", point);
         model.put(MODEL_ATTR_RESOURCE_BUNDLE, getResourceBundle());
+
         PointValueTime pointValue = null;
         if (point == null)
             model.put("disabled", "true");
