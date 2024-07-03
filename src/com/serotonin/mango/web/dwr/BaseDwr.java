@@ -89,7 +89,7 @@ abstract public class BaseDwr {
         model.put("componentId", componentId);
         model.put("point", pointVO);
         model.put("pointRT", point);
-        model.put(MODEL_ATTR_RESOURCE_BUNDLE, Common.getBundle());
+        model.put(MODEL_ATTR_RESOURCE_BUNDLE, getResourceBundle());
         PointValueTime pointValue = null;
         if (point == null)
             model.put("disabled", "true");
@@ -297,10 +297,7 @@ abstract public class BaseDwr {
     }
 
     protected ResourceBundle getResourceBundle() {
-        WebContext webContext = WebContextFactory.get();
-        LocalizationContext localizationContext = (LocalizationContext) Config.get(webContext.getHttpServletRequest(),
-                Config.FMT_LOCALIZATION_CONTEXT);
-        return localizationContext.getResourceBundle();
+        return Common.getBundle();
     }
 
     public static String generateContent(HttpServletRequest request, String snippet, Map<String, Object> model) {
