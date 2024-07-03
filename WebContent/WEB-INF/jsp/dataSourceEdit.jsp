@@ -18,6 +18,12 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp"%>
 <%@page import="com.serotonin.mango.Common"%>
+<style>
+.icon-container {
+display: flex;
+justify-content: space-evenly;
+}
+</style>
 
 <tag:page dwr="DataSourceEditDwr" onload="init">
 	<script type="text/javascript">
@@ -47,13 +53,15 @@
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
         pointListColumnHeaders.push(function(td) {
-			td.width = "8%";
+			td.width = "50px";
 		});
         
         pointListColumnFunctions.push(function(p) {
-			return	writeImage("editImg" + p.id, null, "icon_ds_edit", "<fmt:message key='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
-					writeImage("editImg" + p.id, null, "icon_comp_edit", "<fmt:message key='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
-					writeImage("editImg" + p.id, null, "icon_ds_add", "<fmt:message key='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");");
+            return '<div class="icon-container">' +
+                writeImage("editImg" + p.id, null, "icon_ds_edit", "<fmt:message key='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
+                writeImage("editImg" + p.id, null, "icon_comp_edit", "<fmt:message key='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
+                writeImage("editImg" + p.id, null, "icon_ds_add", "<fmt:message key='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");") +
+                '</div>';
         });
 
         var headers = $("pointListHeaders");
