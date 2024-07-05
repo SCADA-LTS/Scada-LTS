@@ -18,7 +18,7 @@
 */
 :root {
     --slts-color-primary: #20852e;
-    --slts-color-primary-text: #cdcdcd;
+    --slts-color-primary-text: #ffffff;
     --slts-color-secondary: #ffffff;
     --slts-color-secondary-lighter: #223721;
     --slts-color-secondary-lighter-alt: #d1cccc;
@@ -290,4 +290,25 @@ html > body .dojoTreeNodeLabelTitle {
   border-style: solid;
   padding: 1px 5px;
   color: black;
+}
+
+a img {
+  margin: 0;
+  padding: 0.2rem;
+  height: 44px;
+  transition: all 0.3s ease-in-out; }
+  a img:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  a img:focus {
+    background-color: red; }
+
+img.ptr {
+  margin: 0;
+  padding: 0.2rem;
+  height: 44px;
+  transition: all 0.3s ease-in-out; }
+  img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51); }
+  img.ptr:focus {
+    background-color: red; }
 }
