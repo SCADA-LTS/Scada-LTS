@@ -47,7 +47,7 @@
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
         pointListColumnHeaders.push(function(td) {
-			td.width = "7%";
+			td.width = "8%";
 		});
         
         pointListColumnFunctions.push(function(p) {
