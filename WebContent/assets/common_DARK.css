@@ -292,23 +292,13 @@ html > body .dojoTreeNodeLabelTitle {
   color: black;
 }
 
-a img {
-  margin: 0;
-  padding: 0.2rem;
-  height: 44px;
-  transition: all 0.3s ease-in-out; }
-  a img:hover {
-    background: rgba(96, 125, 139, 0.51); }
-  a img:focus {
-    background-color: red; }
+a img:hover, img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51);
+}
 
-img.ptr {
+#pointProperties img.ptr {
   margin: 0;
-  padding: 0.2rem;
-  height: 44px;
-  transition: all 0.3s ease-in-out; }
-  img.ptr:hover {
-    background: rgba(96, 125, 139, 0.51); }
-  img.ptr:focus {
-    background-color: red; }
+  padding: 0.1rem;
+  height: 16px;
+  transition: all 0.3s ease-in-out;
 }
