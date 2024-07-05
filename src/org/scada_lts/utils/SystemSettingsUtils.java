@@ -53,6 +53,7 @@ public final class SystemSettingsUtils {
     public static final String THREADS_NAME_ADDITIONAL_LENGTH_KEY = "threads.name.additional.length";
     public static final String WEB_RESOURCE_GRAPHICS_PATH_KEY = "webresource.graphics.path";
     public static final String WEB_RESOURCE_UPLOADS_PATH_KEY = "webresource.uploads.path";
+    public static final String WEBSOCKET_CLIENT_SOCKJS_URL_KEY = "websocket.client.sockjs.url";
 
     public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_ROWS_KEY = "workitems.config.BatchWriteBehind.maxRows";
     public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_INSTANCES_KEY = "workitems.config.BatchWriteBehind.maxInstances";
@@ -371,6 +372,15 @@ public final class SystemSettingsUtils {
         }
     }
 
+    public static String getWebsocketClientSockjsUrl() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(WEBSOCKET_CLIENT_SOCKJS_URL_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+  
     public static String getThreadExecutorBlockingQueueInterfaceImpl(WorkItemPriority priority) {
         String defaultValue = "java.util.concurrent.LinkedBlockingQueue";
         try {

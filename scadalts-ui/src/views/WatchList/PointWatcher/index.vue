@@ -207,10 +207,15 @@ export default {
 
 	mounted() {
 		this.fetchDataPointDetails();
-		this.$store.state.webSocketModule.webSocket.subscribe(
-			`/topic/alarm`,
-			this.wsOnEventRaised
-		);
+		let stompClient = this.$store.state.webSocketModule.webSocket;
+		let wsOnEventRaised = this.wsOnEventRaised;
+        stompClient.subscribe("/app/event/update/register", function(register) {
+            //console.log("/app/event/update/register register.body: "+register.body);
+            let subscription = stompClient.subscribe("/topic/event/update/"+register.body, wsOnEventRaised);
+            if(subscription) {
+                setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
+            }
+        });
 	},
 
 	watch: {
@@ -243,9 +248,7 @@ export default {
 		},
 
 		wsOnEventRaised(data) {
-			if (data.body === 'Event Raised') {
-				this.$store.dispatch('updateWatchListEventList');
-			}
+			this.$store.dispatch('updateWatchListEventList');
 		},
 
 		updatePointValue(data) {

@@ -154,85 +154,9 @@
       }
 
     <c:if test="${isLoggedToScadaUser}">
-        var errorCallback = function(error) {
-            alert("Connect error:" + error);
-        }
-
-        var stompClient = null;
-
-        var maxAlarmLevel = -1;
-
-        var connectCallback = function(frame) {
-            //console.log('Connected: ' + frame);
-
-            stompClient.subscribe("/app/alarmLevel/register", function(message) {
-                //console.log("message[/app/alarmLevel/register]:" + message.body);
-                stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
-                    var response = JSON.parse(message.body);
-                    var alarmLevel = parseInt(response.alarmlevel);
-                    //console.log("response.alarmLevel: "+response.alarmlevel);
-                    if (alarmLevel > 0) {
-                        maxAlarmLevel = alarmLevel;
-                        document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
-                        setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
-                        setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
-                        document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
-                        document.getElementById("__header__alarmLevelImg").style.visibility='visible';
-                    }
-                    else {
-                        document.getElementById("__header__alarmLevelText").innerHTML = "";
-                        document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
-                        document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
-                    }
-                })
-                stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-            });
-
-            stompClient.subscribe("/app/event/update/register", function(message) {
-                stompClient.subscribe("/topic/event/update/"+message.body, function(message) {
-                    var response = JSON.parse(message.body);
-                    var alarmLevel = parseInt(response.alarmLevel);
-                    if (alarmLevel > 0) {
-                        if(!response.silenced && response.action == 'CREATE' && response.active) {
-                            if(alarmLevel >= maxAlarmLevel) {
-                                mango.soundPlayer.playOnce("level"+ alarmLevel);
-                                if(!mango.header.evtVisualizer.started) {
-                                    mango.header.evtVisualizer.start();
-                                    setTimeout(function() {mango.header.evtVisualizer.stop()}, 5000);
-                                }
-                            }
-                        }
-                    }
-                })
-                stompClient.send("/app/event/update", {priority: 1}, "STOMP - gimme my event");
-            });
-        };
-
-        function connect(url, headers, errorCallback, connectCallback) {
-            var socket = new SockJS(url);
-            var stompClient = Stomp.over(socket);
-            stompClient.heartbeat.outgoing = 20000;
-            stompClient.heartbeat.incoming = 0;
-            stompClient.debug = null;
-            stompClient.connect(headers, connectCallback, errorCallback);
-            return stompClient;
-        }
-
-        function disconnect() {
-            if(stompClient != null) {
-                console.log("Disconnecting...");
-                stompClient.disconnect(function() {
-                    console.log("Disconnected");
-                    stompClient = null;
-                });
-            }
-        }
 
         function onloadHandler() {
-           var location = window.location;
-           var appName = location.pathname.split("/")[1];
-           var myLocation = location.origin + "/" + appName+ "/";
-           stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
+            onloadHandlerWebsocket();
         }
 
         function setAlarmLevelText(alarmLevel, textNode) {
@@ -268,7 +192,7 @@
 
         window.addEventListener('beforeunload', (event) => {
             try {
-                disconnect();
+                disconnectWebsocket();
             } catch(error) {}
         });
     </c:if>
@@ -372,7 +296,7 @@
 
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
-          <span onclick="disconnect()">
+          <span onclick="disconnectWebsocket()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
@@ -382,7 +306,7 @@
       <c:if test="${isRolePublic}">
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
-          <span onclick="disconnect()">
+          <span onclick="disconnectWebsocket()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>

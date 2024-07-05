@@ -21,6 +21,7 @@ import watchListModule from './watchList';
 import notificationModule from './notificationStore';
 import webSocketModule from './websocketStore';
 import staticResources from './static';
+import {getAppLocation} from '../utils/common';
 
 import axios from 'axios';
 
@@ -74,7 +75,7 @@ export default new Vuex.Store({
 			// useCredentials: true,
 			// credentials: 'same-origin',
 		},
-		webSocketUrl: 'http://localhost:8080/Scada-LTS/ws-scada/alarmLevel',
+		webSocketUrl: 'ws-scada/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -97,14 +98,7 @@ export default new Vuex.Store({
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
-			let locale = window.location.pathname.split('/')[1];
-			if (!!locale) {
-				locale += '/';
-			}
-			let protocol = window.location.protocol;
-			let host = window.location.host.split(':');
-
-			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
+            state.webSocketUrl = getAppLocation() + state.webSocketUrl;
 		},
 
 		updateRequestTimeout(state, timeout) {

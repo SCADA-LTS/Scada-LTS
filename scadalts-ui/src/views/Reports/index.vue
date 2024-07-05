@@ -11,11 +11,9 @@
 	</div>
 </template>
 <script>
-import browserMixin from '../../utils/browser-utils';
+import {getAppLocation} from '../../../utils/common';
 
 export default {
-
-	mixins: [browserMixin],
 
 	data() {
 		return {
@@ -26,7 +24,7 @@ export default {
 
 	computed: {
 		location() {
-			return this.convertBrowserPath(this.url);
+			return getAppLocation() + this.url;
 		}
 	}    
 }

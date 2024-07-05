@@ -164,6 +164,9 @@ task buildRunDebugProd(type: GradleBuild) {
 
 task clearProject (type: Delete) {
     delete "build"
+    delete "scadalts-ui/dist"
+    delete "WebContent/resources/js-ui"
+    delete "WebContent/img"
 }
 
 test {

@@ -203,11 +203,7 @@ export default {
 			commentVisible: false,
 			activeUserId: -1,
 			newComment: '',
-			hideSkeleton: false,
-
-			wsCallback: () => {				
-				this.wsSubscribeTopic(`alarm`, this.wsOnEventRaised);		
-			},
+			hideSkeleton: false
 		};
 	},
 
@@ -215,14 +211,21 @@ export default {
 		this.refresh();
 		this.fetchDataPointEvents();
 		this.hideSkeleton = true;
+
+        let stompClient = this.$store.state.webSocketModule.webSocket;
+        let wsOnEventRaised = this.wsOnEventRaised;
+        stompClient.subscribe("/app/event/update/register", function(register) {
+            let subscription = stompClient.subscribe("/topic/event/update/"+register.body, wsOnEventRaised);
+            if(subscription) {
+                setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
+            }
+        });
 	},
 
 	methods: {
 
 		wsOnEventRaised(event) {
-			if(event.body === "Event Raised") {
-				this.fetchDataPointEvents();
-			};
+			this.fetchDataPointEvents();
 		},
 
 		refresh() {
