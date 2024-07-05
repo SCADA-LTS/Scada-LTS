@@ -74,8 +74,8 @@ public abstract class ProgressiveTask extends AbstractBeforeAfterWorkItem implem
     protected abstract void runImpl();
 
     @Override
-    public int getPriority() {
-        return WorkItemPriority.HIGH.getPriority();
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
     @Override

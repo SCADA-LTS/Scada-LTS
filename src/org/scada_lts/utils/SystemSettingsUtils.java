@@ -4,14 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
+
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
+import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
+
+import org.scada_lts.config.ThreadPoolExecutorConfig;
 
 public final class SystemSettingsUtils {
 
@@ -46,6 +53,16 @@ public final class SystemSettingsUtils {
     public static final String THREADS_NAME_ADDITIONAL_LENGTH_KEY = "threads.name.additional.length";
     public static final String WEB_RESOURCE_GRAPHICS_PATH_KEY = "webresource.graphics.path";
     public static final String WEB_RESOURCE_UPLOADS_PATH_KEY = "webresource.uploads.path";
+
+    public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_ROWS_KEY = "workitems.config.BatchWriteBehind.maxRows";
+    public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_INSTANCES_KEY = "workitems.config.BatchWriteBehind.maxInstances";
+    public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_SPAWN_THRESHOLD_KEY = "workitems.config.BatchWriteBehind.spawnThreshold";
+
+    public static final String HTTP_PROTOCOL_REJECT_RELATIVE_REDIRECT_KEY = "http.protocol.reject-relative-redirect";
+    public static final String HTTP_PROTOCOL_METHOD_FOLLOW_REDIRECTS_KEY = "http.protocol.method.follow-redirects";
+    public static final String HTTP_PROTOCOL_MAX_REDIRECTS_KEY = "http.protocol.max-redirects";
+    public static final String HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY = "http.protocol.allow-circular-redirects";
+    public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -351,6 +368,152 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return "";
+        }
+    }
+
+    public static String getThreadExecutorBlockingQueueInterfaceImpl(WorkItemPriority priority) {
+        String defaultValue = "java.util.concurrent.LinkedBlockingQueue";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL), defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static Object[] getThreadExecutorBlockingQueueInterfaceImplArgs(WorkItemPriority priority) {
+        Object[] defaultValue = new Object[0];
+        String defaultValue1 = "";
+        try {
+            String args = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL_ARGS), defaultValue1);
+            String argsTypes = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.BLOCKING_QUEUE_INTERFACE_IMPL_ARGS_TYPES), defaultValue1);
+            return parseObjects(args, argsTypes);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getThreadExecutorCorePoolSize(WorkItemPriority priority) {
+        int defaultValue = 1;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.CORE_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getThreadExecutorMaximumPoolSize(WorkItemPriority priority) {
+        int defaultValue = 1;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.MAXIMUM_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static long getThreadExecutorKeepAliveTime(WorkItemPriority priority) {
+        long defaultValue = 0;
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.KEEP_ALIVE_TIME), String.valueOf(defaultValue));
+            return Long.parseLong(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static String getThreadExecutorTimeUnitEnumValue(WorkItemPriority priority) {
+        String defaultValue = "MILLISECONDS";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(getKey(priority, ThreadPoolExecutorConfig.TIME_UNIT_ENUM_VALUE), defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getWorkItemsConfigBatchWriteBehindMaxRows() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_ROWS_KEY, "255");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 255;
+        }
+    }
+
+    public static int getWorkItemsConfigBatchWriteBehindMaxInstances() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_INSTANCES_KEY, "255");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 255;
+        }
+    }
+
+    public static int getWorkItemsConfigBatchWriteBehindSpawnThreshold() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_SPAWN_THRESHOLD_KEY, "255");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 255;
+        }
+    }
+
+    public static int getHttpMaxRedirects() {
+        try {
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_MAX_REDIRECTS_KEY, "100");
+            return Integer.parseInt(eventPendingLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static boolean isHttpAllowCircularRedirects() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY, "false");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isHttpRejectRelativeRedirect() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_REJECT_RELATIVE_REDIRECT_KEY, "true");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static boolean isHttpFollowRedirects() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_METHOD_FOLLOW_REDIRECTS_KEY, "false");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static int getHttpTimeoutMs() {
+        try {
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_TIMEOUT_MS_KEY, "15001");
+            return Integer.parseInt(eventPendingLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 15001;
         }
     }
 }

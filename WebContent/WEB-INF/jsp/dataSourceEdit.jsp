@@ -47,7 +47,7 @@
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
         pointListColumnHeaders.push(function(td) {
-			td.width = "8%";
+			td.width = "10%";
 		});
         
         pointListColumnFunctions.push(function(p) {
@@ -71,7 +71,7 @@
                 rowCreator: function(options) {
                     var tr = document.createElement("tr");
                     tr.mangoId = "p"+ options.rowData.id;
-                    tr.className = ""+ (options.rowIndex % 2 == 0 ? "" : "rowAlt");
+                    tr.className = "row"+ (options.rowIndex % 2 == 0 ? "" : " rowAlt");
                     return tr;
                 },
                 cellCreator: function(options) {
@@ -117,6 +117,7 @@
         else {
             showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
             DataSourceEditDwr.getPoints(writePointList);
+            window.location = "data_source_edit.shtm?dsid=" + response.data.id;
         }
         getAlarms();
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - done");

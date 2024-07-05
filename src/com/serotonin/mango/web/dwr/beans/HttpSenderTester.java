@@ -32,6 +32,9 @@ import com.serotonin.mango.rt.publish.httpSender.HttpSenderRT;
 import com.serotonin.web.http.HttpUtils;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import static com.serotonin.mango.Common.createGetMethod;
+import static com.serotonin.mango.Common.createPostMethod;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -56,7 +59,7 @@ public class HttpSenderTester extends Thread implements TestingUtility {
     public void run() {
         HttpMethodBase method;
         if (usePost) {
-            PostMethod post = new PostMethod(url);
+            PostMethod post = createPostMethod(url);
             post.addParameters(convertToNVPs(staticParameters));
             if (staticHeaders.stream().filter(o -> o.getKey().equals("Content-Type")).findAny().filter(o -> o.getValue().equals("application/json")).isPresent()) {
                 try {
@@ -69,11 +72,10 @@ public class HttpSenderTester extends Thread implements TestingUtility {
             method = post;
         }
         else {
-            GetMethod get = new GetMethod(url);
+            GetMethod get = createGetMethod(url);
             get.setQueryString(convertToNVPs(staticParameters));
             method = get;
         }
-        method.setFollowRedirects(false);
         // Add a recognizable header
         method.addRequestHeader("User-Agent", HttpSenderRT.USER_AGENT);
 

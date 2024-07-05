@@ -17,13 +17,6 @@
 				"pages": [ "views.shtm", "view_edit.shtm", "public_view.htm" ]
 			},
 			{
-				"name": "ceditor",
-				"enabled": true,
-				"file": "ceditor.js",
-				"pages": [ "sql.shtm", "emport.shtm", "view_edit.shtm", "point_links.shtm",
-						   "compound_events.shtm", "data_source_edit.shtm", "scripting.shtm" ]
-			},
-			{
 				"name": "calendar",
 				"enabled": true,
 				"file": "calendar.js",

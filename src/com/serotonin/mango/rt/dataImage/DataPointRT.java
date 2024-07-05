@@ -27,7 +27,7 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
-import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
@@ -546,8 +546,8 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		}
 
 		@Override
-		public int getPriority() {
-			return WorkItem.PRIORITY_MEDIUM;
+		public WorkItemPriority getPriorityType() {
+			return WorkItemPriority.MEDIUM;
 		}
 
 		@Override

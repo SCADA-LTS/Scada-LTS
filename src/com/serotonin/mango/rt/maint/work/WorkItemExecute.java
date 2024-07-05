@@ -14,7 +14,7 @@ public class WorkItemExecute implements Comparable<WorkItemExecute> {
         this.className = workItem.getClass().getName();
         this.workItem = workItem;
         this.serial = serial;
-        this.priority = WorkItemPriority.priorityOf(workItem.getPriority());
+        this.priority = workItem.getPriorityType();
     }
     public WorkItem getWorkItem() {
         return workItem;

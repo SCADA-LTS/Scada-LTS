@@ -19,6 +19,7 @@
 --%><%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %><%--
 --%><%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %><%--
 --%><fmt:setBundle basename="messages" /><%--
+--%><fmt:setLocale scope='session' value="${sessionScope.get('org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE')}"/><%--
 --%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %><%--
 --%><%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %><%--
 --%><%@ taglib prefix="mango" uri="/WEB-INF/tld/mango.tld" %><%--
