@@ -59,6 +59,12 @@ public final class SystemSettingsUtils {
     public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_MAX_INSTANCES_KEY = "workitems.config.BatchWriteBehind.maxInstances";
     public static final String WORK_ITEMS_CONFIG_BATCH_WRITE_BEHIND_SPAWN_THRESHOLD_KEY = "workitems.config.BatchWriteBehind.spawnThreshold";
 
+    public static final String HTTP_PROTOCOL_REJECT_RELATIVE_REDIRECT_KEY = "http.protocol.reject-relative-redirect";
+    public static final String HTTP_PROTOCOL_METHOD_FOLLOW_REDIRECTS_KEY = "http.protocol.method.follow-redirects";
+    public static final String HTTP_PROTOCOL_MAX_REDIRECTS_KEY = "http.protocol.max-redirects";
+    public static final String HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY = "http.protocol.allow-circular-redirects";
+    public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -468,6 +474,56 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 255;
+        }
+    }
+
+    public static int getHttpMaxRedirects() {
+        try {
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_MAX_REDIRECTS_KEY, "100");
+            return Integer.parseInt(eventPendingLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
+        }
+    }
+
+    public static boolean isHttpAllowCircularRedirects() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY, "false");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isHttpRejectRelativeRedirect() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_REJECT_RELATIVE_REDIRECT_KEY, "true");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static boolean isHttpFollowRedirects() {
+        try {
+            String eventPendingCache = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_METHOD_FOLLOW_REDIRECTS_KEY, "false");
+            return Boolean.parseBoolean(eventPendingCache);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static int getHttpTimeoutMs() {
+        try {
+            String eventPendingLimit = ScadaConfig.getInstance().getConf().getProperty(HTTP_PROTOCOL_TIMEOUT_MS_KEY, "15001");
+            return Integer.parseInt(eventPendingLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 15001;
         }
     }
 }

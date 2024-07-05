@@ -182,7 +182,7 @@ public class EventManager implements ILifecycle {
 									time,
 									false,
 									getAlarmLevelChangeMessage(
-											"event.alarmMaxIncreased", oldValue));
+											"event.alarmMaxIncreased", oldValue, alarmLevel));
 				}
 			}
 
@@ -229,11 +229,6 @@ public class EventManager implements ILifecycle {
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
 	}
-
-	@Deprecated
-	public long getLastAlarmTimestamp() {
-		return lastAlarmTimestamp;
-	}
 	
 	public void setLastAlarmTimestamp(long alarmTimestamp) {
 		this.lastAlarmTimestamp = alarmTimestamp;
@@ -268,6 +263,14 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	public void cancelEventsForHandler(int handlerId) {
+		for (EventInstance e : activeEvents) {
+			if (e.getEventType().getEventHandlerId() == handlerId)
+				deactivateEvent(e, System.currentTimeMillis(),
+						EventInstance.RtnCauses.SOURCE_DISABLED);
+		}
+	}
+
 	private void resetHighestAlarmLevel(long time, boolean init) {
 		int max = 0;
 		for (EventInstance e : activeEvents) {
@@ -285,7 +288,7 @@ public class EventManager implements ILifecycle {
 						time,
 						false,
 						getAlarmLevelChangeMessage("event.alarmMaxIncreased",
-								oldValue));
+								oldValue, max));
 			} else if (max < highestActiveAlarmLevel) {
 				int oldValue = highestActiveAlarmLevel;
 				highestActiveAlarmLevel = max;
@@ -295,16 +298,16 @@ public class EventManager implements ILifecycle {
 						time,
 						false,
 						getAlarmLevelChangeMessage("event.alarmMaxDecreased",
-								oldValue));
+								oldValue, max));
 			}
 		}
 	}
 
 	private LocalizableMessage getAlarmLevelChangeMessage(String key,
-			int oldValue) {
+			int oldValue, int newValue) {
 		return new LocalizableMessage(key,
 				AlarmLevels.getAlarmLevelMessage(oldValue),
-				AlarmLevels.getAlarmLevelMessage(highestActiveAlarmLevel));
+				AlarmLevels.getAlarmLevelMessage(newValue));
 	}
 
 	//
@@ -390,11 +393,6 @@ public class EventManager implements ILifecycle {
 		}
 		if (rts != null)
 			evt.setHandlers(rts);
-	}
-
-	@Deprecated
-	public void handleRaiseEvent(EventInstance evt) {
-		handleRaiseEvent(evt, Collections.emptySet());
 	}
 
 	private void handleRaiseEvent(EventInstance evt,
@@ -516,5 +514,4 @@ public class EventManager implements ILifecycle {
 	public void notifyEventUpdate(User user, WsEventMessage message) {
 		NotifyEventUtils.notifyEventUpdate(user, message, userEventServiceWebSocket);
 	}
-
 }
