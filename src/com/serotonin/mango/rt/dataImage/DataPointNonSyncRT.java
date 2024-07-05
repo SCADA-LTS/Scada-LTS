@@ -24,6 +24,7 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.view.stats.AnalogStatistics;
 import com.serotonin.mango.view.stats.IValueTime;
@@ -284,6 +285,10 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     @Override
     public void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataPointInfo(getVO()));
+            return;
+        }
         synchronized (intervalLoggingLock) {
             DataPointVO vo = getVO();
             MangoValue value;

@@ -364,6 +364,10 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	}
 
 	public void scheduleTimeout(long fireTime) {
+		if(Common.isTerminating()) {
+			LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataPointInfo(getVO()));
+			return;
+		}
 		synchronized (intervalLoggingLock) {
 			MangoValue value;
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.INSTANT)
