@@ -69,8 +69,7 @@ public class BackgroundProcessing implements ILifecycle {
 			}
 		};
 
-		if (item.getPriorityType() == 
-        .HIGH)
+		if (item.getPriorityType() == WorkItemPriority.HIGH)
 			Common.timer.execute(runnable);
 
 		else if (item.getPriorityType() == WorkItemPriority.MEDIUM)
