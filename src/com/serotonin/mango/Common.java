@@ -546,8 +546,8 @@ public class Common {
 
 	public static boolean isTerminating() {
 		return ctx == null || ctx.getBackgroundProcessing() == null || ctx.getBackgroundProcessing().isTerminating();
-  }
-  
+  	}
+
 	public static GetMethod createGetMethod(String url) {
 		GetMethod getMethod = new GetMethod(url);
 		getMethod.setFollowRedirects(SystemSettingsUtils.isHttpFollowRedirects());
