@@ -54,13 +54,6 @@ export default {
 		} else {
 			console.log('Err get viewId');
 		}
-
-		setInterval(
-			function () {
-				this.check(this.id);
-			}.bind(this),
-			this.timeToCheckRefresh,
-		);
 	}
 };
 </script>

@@ -727,7 +727,6 @@ export default {
 			}
 			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
-			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},
 		async fetchEventSelected() {
 			this.loading = true;
