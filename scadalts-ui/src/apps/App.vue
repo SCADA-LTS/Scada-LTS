@@ -68,8 +68,7 @@
 </template>
 
 <script>
-import NavigationBar from '../layout/NavigationBar.vue'
-import webSocketMixin from '@/utils/web-socket-utils';
+import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
@@ -136,7 +135,6 @@ export default {
     			this.$store.dispatch('getUserInfo');
     	}
 		this.$store.dispatch('getLocaleInfo');
-		this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		this.connectToWebSocket();
 	},
 
