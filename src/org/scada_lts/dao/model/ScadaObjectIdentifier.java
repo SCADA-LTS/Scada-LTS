@@ -14,7 +14,10 @@ public class ScadaObjectIdentifier extends BaseObjectIdentifier {
 
     private String name;
 
-    public ScadaObjectIdentifier() {}
+    public ScadaObjectIdentifier() {
+        super(-1, "");
+        this.baseObjectIdentifier = new BaseObjectIdentifier(-1, "");
+    }
 
     public ScadaObjectIdentifier(int id, String xid, String name) {
         super(id, xid);
