@@ -84,6 +84,7 @@ Vue.use(svgJS);
 Vue.config.devtools = true;
 
 if (window.location.href.indexOf('app.shtm') != -1) {
+    console.log('app.shtm');
     new Vue({
         router,
         store,
