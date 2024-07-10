@@ -117,7 +117,7 @@ public class PlcAlarmsAPI {
         LOG.info(request.getRequestURL());
 
         User user = Common.getUser(request);
-        if (user != null && user.isAdmin()) {
+        if (user != null) {
             String value = validateBetweenZeroTo9999("limit", limit);
             if (!value.isEmpty()) {
                 return new ResponseEntity<>(value, HttpStatus.BAD_REQUEST);
@@ -162,7 +162,7 @@ public class PlcAlarmsAPI {
         LOG.info(request.getRequestURL());
 
         User user = Common.getUser(request);
-        if (user != null && user.isAdmin()) {
+        if (user != null) {
             String value = validateDateFormat(dayDate) +
                     validateNumberFormat("offset", offset) +
                     validateBetweenZeroTo9999("limit", limit);

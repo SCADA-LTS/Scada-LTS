@@ -1043,8 +1043,6 @@ function createValidationMessage(node, message) {
     return {contextKey:node, contextualMessage:message};
 }
 
-
-
 function updateChartComparatorComponent(idPrefix, width, height) {
 	var fromDate = $get(idPrefix+"_fromDate1");
 	var toDate = $get(idPrefix+"_toDate1");
@@ -1115,6 +1113,11 @@ function isPositiveInt(value) {
     return isInt32(trimValue) && trimValue >= 0;
 }
 
+function isPositiveByte(value) {
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0 && trimValue <= 127;
+}
+
 function trim(value) {
     let result = value;
     if(typeof value === "string") {
@@ -1123,3 +1126,137 @@ function trim(value) {
     return result;
 }
 
+const scadalts = {}
+scadalts.websocket = {};
+scadalts.websocket.client = {};
+scadalts.websocket.endpoints = {};
+scadalts.websocket.endpoints.main = 'ws-scada';
+
+function errorCallbackWebsocket(error) {
+    alert("Connect error:" + error);
+}
+
+function connectCallbackWebsocket(frame) {
+    console.log('Connected to WebSocket');
+    let maxAlarmLevel = -1;
+    let stompClient = getStompClient();
+    if(!stompClient) {
+        console.log('Stomp Client is not initialized!');
+        return;
+    }
+    stompClient.subscribe("/app/alarmLevel/register", function(register) {
+        //console.log("/topic/alarmLevel/register register.body: "+register.body);
+        let subscription = stompClient.subscribe("/topic/alarmLevel/"+register.body, function(message) {
+            let response = JSON.parse(message.body);
+            let alarmLevel = parseInt(response.alarmLevel);
+            //console.log("/topic/alarmLevel/ response.alarmLevel: "+response.alarmLevel);
+            if (alarmLevel > 0) {
+                maxAlarmLevel = alarmLevel;
+                document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+                setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+                setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+                document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
+                document.getElementById("__header__alarmLevelImg").style.visibility='visible';
+            } else {
+                document.getElementById("__header__alarmLevelText").innerHTML = "";
+                document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
+                document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
+            }
+        });
+        if(subscription) {
+            setTimeout(function() {stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - /app/alarmLevel")}, 1500);
+        }
+    });
+
+    stompClient.subscribe("/app/event/update/register", function(register) {
+        //console.log("/app/event/update/register register.body: "+register.body);
+        let subscription = stompClient.subscribe("/topic/event/update/"+register.body, function(message) {
+            let response = JSON.parse(message.body);
+            let alarmLevel = parseInt(response.alarmLevel);
+            //console.log("/topic/event/update/ response.alarmLevel: "+response.alarmLevel);
+            if (alarmLevel > 0) {
+                if(!response.silenced && response.action == 'CREATE' && response.active) {
+                    if(alarmLevel >= maxAlarmLevel) {
+                        mango.soundPlayer.playOnce("level"+ alarmLevel);
+                        if(!mango.header.evtVisualizer.started) {
+                            mango.header.evtVisualizer.start();
+                            setTimeout(function() {mango.header.evtVisualizer.stop()}, 5000);
+                        }
+                    }
+                }
+            }
+        });
+        if(subscription) {
+            setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
+        }
+    });
+};
+
+function connectWebsocket(url, headers, errorCallbackWebsocket, connectCallbackWebsocket) {
+    let socket = new SockJS(url);
+    let stompClient = Stomp.over(socket);
+    stompClient.heartbeat.outgoing = 20000;
+    stompClient.heartbeat.incoming = 0;
+    stompClient.reconnect_delay = 5000;
+    stompClient.debug = null;
+    stompClient.connect(headers, connectCallbackWebsocket, errorCallbackWebsocket);
+    return stompClient;
+}
+
+function disconnectWebsocket() {
+    let stompClient = getStompClient();
+    if(stompClient != null) {
+        console.log("Disconnecting...");
+        stompClient.disconnect(function() {
+            console.log("Disconnected");
+            removeStompClient();
+        });
+    }
+}
+
+function onloadHandlerWebsocket() {
+    let endpoint = scadalts.websocket.endpoints.main;
+    scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+}
+
+function getAppLocation() {
+   let location = window.location;
+   let pattern = location.origin + "/(.*?)/";
+   let myLocation = location.origin + "/";
+   let groups = location.href.match(pattern);
+   if(groups && groups.length > 1 && groups[1]) {
+       let appName = groups[1];
+       if(!appName.includes('.html') && !appName.includes('.htm') && !appName.includes('.shtm') && !appName.includes('#'))
+            myLocation = location.origin + "/" + appName+ "/";
+   }
+   return myLocation;
+}
+
+function getStompClient() {
+    return scadalts.websocket.client;
+}
+
+function removeStompClient() {
+    return scadalts.websocket.client = null;
+}
+
+function OnListUserSessions() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/listusers", function(message) {
+		console.log("message[/app/listusers]:\n" + message.body);
+	} );
+}
+
+function OnListSessionsAttributes() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/session", function(message) {
+		console.log("message[/app/session]:\n" + message.body);
+	} );
+}
+
+function OnListWebsocketStats() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/websocketStats", function(message) {
+		console.log("message[/app/websocketStats]:\n" + message.body);
+	} );
+}

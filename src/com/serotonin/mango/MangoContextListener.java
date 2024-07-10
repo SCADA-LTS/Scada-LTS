@@ -33,6 +33,7 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.WorkItemMonitor;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
@@ -79,10 +80,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
@@ -118,8 +117,7 @@ public class MangoContextListener implements ServletContextListener {
 		ScadaVersion.getInstance().printScadaVersionProperties(log);
 
 		// Initialize the timer
-		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,
-				TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
+		Common.timer.init(createPool(WorkItemPriority.HIGH));
 
 		// Create all the stuff we need.
 		constantsInitialize(ctx);
@@ -142,8 +140,8 @@ public class MangoContextListener implements ServletContextListener {
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
-		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
+		utilitiesInitialize(ctx);
 
 		try {
 			ApplicationBeans.getPointEventDetectorDaoBean().init();
@@ -219,16 +217,17 @@ public class MangoContextListener implements ServletContextListener {
 		runtimeManagerTerminate(ctx);
 		eventManagerTerminate(ctx);
 		utilitiesTerminate(ctx);
+		highPriorityServiceTerminate();
 		databaseTerminate(ctx);
-
-		Common.timer.cancel();
-		Common.timer.getExecutorService().shutdown();
 
 		Common.ctx = null;
 
 		log.info("Scada-LTS context terminated");
 	}
-	
+
+	private void highPriorityServiceTerminate() {
+		Common.timer.cancel();
+	}
 	/**
 	 * Set global permission for the ScriptEngine 
 	 */
@@ -477,10 +476,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void utilitiesTerminate(ContextWrapper ctx) {
+		log.info("Stopping BackgroundProcessing");
 		BackgroundProcessing bp = ctx.getBackgroundProcessing();
 		if (bp != null) {
 			bp.terminate();
 			bp.joinTermination();
+			if(bp.isTerminated())
+				log.info("Stopped BackgroundProcessing");
+			else
+				log.info("Stopped BackgroundProcessing Fail");
+		} else {
+			log.info("BackgroundProcessing is null");
 		}
 	}
 
@@ -495,10 +501,14 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void eventManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping EventManager");
 		EventManager em = ctx.getEventManager();
 		if (em != null) {
 			em.terminate();
 			em.joinTermination();
+			log.info("Stopped EventManager");
+		} else {
+			log.info("EventManager is null");
 		}
 	}
 	
@@ -553,10 +563,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void runtimeManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping RuntimeManager");
 		RuntimeManager rtm = ctx.getRuntimeManager();
 		if (rtm != null) {
 			rtm.terminate();
 			rtm.joinTermination();
+			if(!rtm.isStarted())
+				log.info("Stopped RuntimeManager");
+			else
+				log.info("Stopped RuntimeManager Fail");
+		} else {
+			log.info("RuntimeManager is null");
 		}
 	}
 

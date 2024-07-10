@@ -649,7 +649,7 @@ public class WorkItemInfoApiService {
         }
 
         static Predicate<WorkItemExecute> isPriority(WorkItemPriority priority) {
-            return execute -> WorkItemPriority.priorityOf(execute.getWorkItem().getPriority()) == priority;
+            return execute -> execute.getPriority() == priority;
         }
     }
 }

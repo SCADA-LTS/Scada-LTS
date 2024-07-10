@@ -346,7 +346,7 @@
     if (search === -1) {
       // Image format invalid.
       document.getElementById("backgroundImageMP").value = null;
-      alert('<fmt:message key="validate.imageExtension"/>');
+      alert("<fmt:message key="validate.imageExtension"/>");
     }
   }
 

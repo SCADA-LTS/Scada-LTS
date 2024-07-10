@@ -89,7 +89,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
         if(workItem instanceof ProcessWorkItem || workItem instanceof ProcessWorkItem.InputReader
                 || workItem instanceof ProcessWorkItem.ProcessTimeout)
             HISTORY_PROCESS_WORK_ITEMS.add(workItem);
-        switch (WorkItemPriority.priorityOf(workItem.getPriority())) {
+        switch(workItem.getPriorityType()) {
             case HIGH:
                 HISTORY_HIGH_PRIORITY_WORK_ITEMS.add(workItem);
                 break;
@@ -115,7 +115,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     protected AbstractBeforeAfterWorkItem() {
         this.systemSettingsService = new SystemSettingsService();
         if(isEnabled(systemSettingsService)) {
-            switch (WorkItemPriority.priorityOf(getPriority())) {
+            switch(getPriorityType()) {
                 case HIGH:
                     HIGH_PRIORITY_WORK_ITEMS.add(this);
                     break;
@@ -327,7 +327,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     private String suffixThreadName() {
-        return ThreadUtils.reduceName(" - " + WorkItemPriority.priorityOf(getPriority()) + " - " + getDetails(), systemSettingsService);
+        return ThreadUtils.reduceName(" - " + getPriorityType() + " - " + getDetails(), systemSettingsService);
     }
 
     private static String exceptionsToString(Map<String, Throwable> exceptions) {

@@ -63,7 +63,7 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 		this.vo = vo;
 		eventType = new SystemEventType(
 				SystemEventType.TYPE_POINT_LINK_FAILURE, vo.getId(),
-				EventType.DuplicateHandling.IGNORE_SAME_MESSAGE);
+				EventType.DuplicateHandling.IGNORE);
 		ready = true;
 	}
 
@@ -178,11 +178,11 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 					"event.pointLink.convertError"));
 			return;
 		}
+		returnToNormal();
 
 		// Queue a work item to perform the update.
 		Common.ctx.getBackgroundProcessing().addWorkItem(
-				new PointLinkSetPointWorkItem(vo.getTargetPointId(), newValue, this));
-		returnToNormal();
+				new PointLinkSetPointWorkItem(vo.getTargetPointId(), newValue, this, eventType));
 	}
 
 	//

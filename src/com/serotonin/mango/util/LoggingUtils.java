@@ -6,7 +6,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
@@ -17,6 +17,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
+import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
@@ -178,15 +179,16 @@ public final class LoggingUtils {
         return MessageFormat.format(info, event.getDescription(), event.getTypeId(), event.getTypeRef1(), event.getTypeRef2(), event.getAlarmLevel(), event.getEventDetectorKey());
     }
 
-    public static String systemEventTypInfo(SystemEventType event) {
+    public static String systemEventTypInfo(EventType event) {
         if(event == null)
             return "";
         String info = "system event type (systemEventTypeId: {0}, dataSourceId: {1}, dataPointId: {2}, eventSourceId: {3}, " +
                 "duplicateHandling: {4}, referenceId1: {5}, referenceId2: {6}, compoundEventDetectorId: {7}, scheduleId: {8}, " +
-                "publisherId: {9}, systemMessage: {10})";
+                "publisherId: {9}, eventHandlerId: {10}, systemMessage: {11})";
         return MessageFormat.format(info, event.getSystemEventTypeId(), event.getDataSourceId(), event.getDataPointId(),
                 event.getEventSourceId(), event.getDuplicateHandling(), event.getReferenceId1(), event.getReferenceId2(),
-                event.getCompoundEventDetectorId(), event.getScheduleId(), event.getPublisherId(), event.isSystemMessage());
+                event.getCompoundEventDetectorId(), event.getScheduleId(), event.getPublisherId(), event.getEventHandlerId(),
+                event.isSystemMessage());
     }
 
     public static String eventTypeInfo(int type, int alarmLevel) {
@@ -207,6 +209,13 @@ public final class LoggingUtils {
         }
         String info = "batchWriteBehindEntry: pointId: {0}, dataType: {1}, time: {2}, dvalue: {3}";
         return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
+    }
+
+    public static String publisherInfo(PublisherVO<?> publisher) {
+        if(publisher == null)
+            return "";
+        String info =  "publisher: {0} (id: {1}, xid: {2}, type: {3})";
+        return MessageFormat.format(info, publisher.getName(), publisher.getId(), publisher.getXid(), publisher.getType());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

@@ -204,6 +204,14 @@ abstract public class EventType implements JsonSerializable {
         return -1;
     }
 
+    public int getEventHandlerId() {
+        return -1;
+    }
+
+    public int getSystemEventTypeId() {
+        return -1;
+    }
+
     /**
      * Determines whether an event type that, once raised, will always first be deactivated or whether overriding events
      * can be raised. Overrides can occur in data sources and point locators where a retry of a failed action causes the

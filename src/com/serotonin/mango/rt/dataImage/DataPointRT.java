@@ -27,7 +27,7 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
-import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
@@ -364,6 +364,10 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	}
 
 	public void scheduleTimeout(long fireTime) {
+		if(Common.isTerminating()) {
+			LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataPointInfo(getVO()));
+			return;
+		}
 		synchronized (intervalLoggingLock) {
 			MangoValue value;
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.INSTANT)
@@ -542,8 +546,8 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		}
 
 		@Override
-		public int getPriority() {
-			return WorkItem.PRIORITY_MEDIUM;
+		public WorkItemPriority getPriorityType() {
+			return WorkItemPriority.MEDIUM;
 		}
 
 		@Override

@@ -1,3 +1,4 @@
+//Deprecated since = v2.7.8
 export const browserUtilsMixin = {
     methods: {
         convertBrowserPath(page) {
