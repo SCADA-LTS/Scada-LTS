@@ -31,6 +31,13 @@ public final class NotifyEventUtils {
         }
     }
 
+    public static void notifyEventRtn(IHighestAlarmLevelService highestAlarmLevelService, EventInstance evt, User user, UserEventServiceWebSocket userEventService) {
+        if(evt.getAlarmLevel() > AlarmLevels.NONE) {
+            highestAlarmLevelService.doRemoveAlarmLevel(user, evt, userEventService::sendAlarmLevel);
+            notifyEventUpdate(user, WsEventMessage.update(evt), userEventService);
+        }
+    }
+
     public static void notifyEventAck(IHighestAlarmLevelService highestAlarmLevelService, EventInstance evt, User user, UserEventServiceWebSocket userEventService) {
         if(evt.getAlarmLevel() > AlarmLevels.NONE) {
             highestAlarmLevelService.doRemoveAlarmLevel(user, evt, userEventService::sendAlarmLevel);

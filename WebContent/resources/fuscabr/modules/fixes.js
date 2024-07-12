@@ -1,6 +1,6 @@
 /******************************************
  * FUScaBR - "Funções úteis para o ScadaBR"
- * License: MIT
+ * Version 2.0 - License: MIT
  ******************************************/
  "use strict";
 
@@ -10,7 +10,7 @@ fuscabr.fixes = {
 		var btnDelete = document.querySelector("input[name='delete']");
 		btnDelete.type = "button";
 		btnDelete.name = "delete-disabled";
-		btnDelete.addEventListener("click", fuscabr.fixes.deleteView);
+		btnDelete.addEventListener("click", fuscabr.advanced.deleteView);
 	},
 
 	// Delete the Graphical View after confirmation 
@@ -29,7 +29,7 @@ fuscabr.fixes = {
 	// Change ScadaBR's "positionEditor()" function 
 	changePositionEditor: function() {
 		var positionEditor_backup = positionEditor;
-		positionEditor = this.positionEditor;
+		var positionEditor = this.positionEditor;
 	},
 
 	// Alternative function for the standard "positionEditor()"

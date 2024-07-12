@@ -50,7 +50,8 @@
 	
 	shortcut.add("Ctrl+Shift+F",function() {
 	    var forceFullScreenMode = ${forceFullScreenMode};
-	    if(!forceFullScreenMode || ${isAdmin})
+	    var isAdmin = ${isAdmin};
+	    if(!forceFullScreenMode || isAdmin)
 	        closeFullScreen();
 	});
 	
@@ -296,4 +297,3 @@
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-charts.js.jsp"%>

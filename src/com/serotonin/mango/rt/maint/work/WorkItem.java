@@ -22,7 +22,7 @@ package com.serotonin.mango.rt.maint.work;
  * @author Matthew Lohbihler
  * 
  */
-public interface WorkItem extends WorkItemDetails, WorkItemMetrics {
+public interface WorkItem extends WorkItemDetails, WorkItemMetrics, GetWorkItemPriority {
     /**
      * Uses a thread pool to immediately execute a process.
      */
@@ -42,5 +42,7 @@ public interface WorkItem extends WorkItemDetails, WorkItemMetrics {
 
     void execute();
 
-    int getPriority();
+    default int getPriority() {
+        return getPriorityType().getPriority();
+    }
 }

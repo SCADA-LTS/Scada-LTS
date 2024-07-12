@@ -84,8 +84,8 @@ public class SingleExecutorSingleWaiter {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItemPriority.HIGH.getPriority();
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override

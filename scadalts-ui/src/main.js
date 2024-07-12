@@ -83,17 +83,21 @@ Vue.use(svgJS);
 
 Vue.config.devtools = true;
 
-new Vue({
-	router,
-	store,
-	i18n,
-	vuetify,
-	render: (h) => h(App),
-}).$mount('#app');
+if (window.location.href.indexOf('app.shtm') != -1) {
+    console.log('app.shtm');
+    new Vue({
+        router,
+        store,
+        i18n,
+        vuetify,
+        render: (h) => h(App),
+    }).$mount('#app');
+}
 
 Vue.use(uiv);
 
 if (window.document.getElementById('app-isalive') != undefined) {
+	console.log('app-isalive');
 	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
 		store,
@@ -111,8 +115,9 @@ if (window.document.getElementById('app-isalive') != undefined) {
 	}).$mount('#app-isalive');
 }
 
-const watchdogId = "app-isalive2";
-if (!!window.document.getElementById(watchdogId)) {
+const watchdogId = 'app-isalive2';
+if (window.document.getElementById(watchdogId) != undefined) {
+	console.log(watchdogId);
 	const watchdogEl = document.getElementById(watchdogId);
 	new Vue({
 		store,
@@ -137,6 +142,7 @@ if (!!window.document.getElementById(watchdogId)) {
 for (let i = 0; i < 20; i++) {
 	const cmpId = `app-cmp-${i}`;
 	if (window.document.getElementById(cmpId) != undefined) {
+        console.log('cmpId: ' + cmpId);
 		new Vue({
 			vuetify,
 			render: (h) =>
@@ -161,6 +167,7 @@ for (let i = 0; i < 10; i++) {
 	const cmpId = `app-cmp2-${i}`;
 	const el = window.document.getElementById(cmpId);
 	if (el != undefined) {
+		console.log('cmpId: ' + cmpId);
 		new Vue({
 			store,
 			i18n,
@@ -187,6 +194,7 @@ for (let i = 0; i < 10; i++) {
 	const cmpId = `app-cmp3-${i}`;
 	const el = window.document.getElementById(cmpId);
 	if (el != undefined) {
+		console.log('cmpId: ' + cmpId);
 		new Vue({
 			store,
 			i18n,
@@ -213,6 +221,7 @@ for (let i = 0; i < 10; i++) {
 
 
 if (window.document.getElementById('simple-component-svg') != undefined) {
+	console.log('simple-component-svg');
 	new Vue({
 		render: (h) =>
 			h(SimpleComponentSVG, {
@@ -235,12 +244,14 @@ if (window.document.getElementById('simple-component-svg') != undefined) {
 }
 
 if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
+	console.log('sleep-reactivation-ds');
 	new Vue({
 		render: (h) => h(SleepAndReactivationDS),
 	}).$mount('#sleep-reactivation-ds');
 }
 
 if (window.document.getElementById('sms-domain') != undefined) {
+	console.log('sms-domain');
 	new Vue({
 		vuetify,
 		render: (h) => h(SMSDomain),
@@ -248,6 +259,7 @@ if (window.document.getElementById('sms-domain') != undefined) {
 }
 
 if (window.document.getElementById('export-import-ph') != undefined) {
+	console.log('export-import-ph');
 	new Vue({
 		render: (h) => h(ExportImportPointHierarchy),
 	}).$mount('#export-import-ph');
@@ -257,6 +269,7 @@ for (let x = 0; x < 10; x++) {
 	const chartId = `chart-line-${x}`;
 	const el = window.document.getElementById(chartId);
 	if (el != undefined) {
+		console.log('chartId: ' + chartId);
 		new Vue({
 			render: (h) =>
 				h(LineChartComponent, {
@@ -292,6 +305,7 @@ for (let x = 0; x < 10; x++) {
 	const chartId = `chart-range-${x}`;
 	const el = window.document.getElementById(chartId);
 	if (el != undefined) {
+		console.log('chartId: ' + chartId);
 		new Vue({
 			store,
 			vuetify,
@@ -323,6 +337,7 @@ for (let x = 0; x < 10; x++) {
 	const baseId = `simple-table-${x}`;
 	const el = window.document.getElementById(baseId);
 	if (el != undefined) {
+	    console.log('baseId: ' + baseId);
 		new Vue({
 			store,
 			vuetify,
@@ -345,6 +360,7 @@ for (let x = 0; x < 10; x++) {
 }
 
 if (window.document.getElementById('refresh-view') != undefined) {
+	console.log('refresh-view');
 	new Vue({
 		store,
 		render: (h) =>
@@ -360,6 +376,7 @@ if (window.document.getElementById('refresh-view') != undefined) {
 }
 
 if (window.document.getElementById('live-alarms') != undefined) {
+    console.log('live-alarms');
 	console.log(
 		`test+ ${window.document
 			.getElementById('live-alarms')

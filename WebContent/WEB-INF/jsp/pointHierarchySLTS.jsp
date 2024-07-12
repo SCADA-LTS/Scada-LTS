@@ -24,8 +24,6 @@
 <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
 
-<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-
 <link
 	href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
     rel="stylesheet" type="text/css">
@@ -454,47 +452,26 @@ thead th {
 <script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
 <script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
 
-
-<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
-
+<script type="text/javascript" src="resources/dojo/dojo.js"></script>
+<script type="text/javascript" src="dwr/engine.js"></script>
+<script type="text/javascript" src="dwr/util.js"></script>
+<script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
+<script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
+<script type="text/javascript" src="resources/common.js"></script>
+<script type="text/javascript" src="resources/header.js"></script>
 
 
 <script>
 "use strict";
 
-var header = { init: "1" };
-header.onLoad = function() {
-        //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
-};
+<c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+<c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+<c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+<c:set var="isLoggedToScadaUser" value="${isRoles && !isRoleService && !isRolePublic}" />
 
-var stompClient = null;
-
-var connectCallback = function(frame) {
-    	console.log('Connected: ' + frame);
-
-    	stompClient.subscribe("/app/alarmLevel/register", function(message) {
-    		//console.log("message[/app/alarmLevel/register]:" + message.body);
-    		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
-    			var response = JSON.parse(message.body);
-    			var alarmLevel = parseInt(response.alarmlevel);
-    			//console.log("response.alarmLevel: "+response.alarmlevel);
-   		        if (alarmLevel > 0) {
-   		            document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
-   		            setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
-   		            setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
-   		            document.getElementById("__header__alarmLevelDiv").style.visibility = "visible";
-   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "visible";
-   		        }
-   		        else {
-   		            document.getElementById("__header__alarmLevelText").innerHTML = "";
-   		        	document.getElementById("__header__alarmLevelImg").style.visibility = "hidden";
-   		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
-   		        }
-    		})
-    		stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP");
-    	});
-    	stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
-};
+<c:if test="${isLoggedToScadaUser}">
+    dojo.addOnLoad(mango.header.onLoad);
+</c:if>
 
 
 function setAlarmLevelImg(alarmLevel, imgNode) {
@@ -541,49 +518,6 @@ function updateImg(imgNode, src, text, visible, styleType) {
     //}
     //else
     //    imgNode.style.display = 'none';
-}
-
-var errorCallback = function(error) {
-	alert("Connect error:" + error);
-}
-
-function connect(url, headers, errorCallback, connectCallback) {
-    var socket = new SockJS(url);
-    var stompClient = Stomp.over(socket);
-    stompClient.heartbeat.outgoing = 20000;
-    stompClient.heartbeat.incoming = 0;
-    stompClient.debug = null;
-    stompClient.connect(headers, connectCallback, errorCallback);
-    return stompClient;
-}
-
-function disconnect(stompClient) {
-    if(stompClient != null) {
-    	console.log("Disconnecting...");
-        stompClient.disconnect(function(){
-        	console.log("Disconnected");
-        	stompClient = null;
-        });
-    }
-}
-
-
-function OnListUserSessions() {
-	stompClient.subscribe("/app/listusers", function(message) {
-		console.log("message[/app/listusers]:\n" + message.body);
-	} );
-}
-
-function OnListSessionsAttributes() {
-	stompClient.subscribe("/app/session", function(message) {
-		console.log("message[/app/session]:\n" + message.body);
-	} );
-}
-
-function OnListWebsocketStats() {
-	stompClient.subscribe("/app/websocketStats", function(message) {
-		console.log("message[/app/websocketStats]:\n" + message.body);
-	} );
 }
 
 
@@ -647,24 +581,15 @@ var messages = {
 	var nodeDragAndDrop;
 	var newNode;
 
-	var pathArray = location.href.split( '/' );
-    var protocol = pathArray[0];
-    var host = pathArray[2];
-    var port = '<c:out value="${appPort}"/>';
-    var appScada = '<c:out value="${appName}"/>';
-    var url = protocol + '//' + host;
-    var myLocation;
-    if (!myLocation) {
- 	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
-    }
+    let url = location.origin;
+    let myLocation = getAppLocation();
 
     function onloadHandler() {
-    	// connecting to server websocket endpoint...
-       stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
+       onloadHandlerWebsocket();
     }
 
     function onunloadHandler() {
-   	   disconnect(stompClient);
+   	   disconnectWebsocket();
    	}
 
 

@@ -153,12 +153,13 @@
         <intercept-url pattern="/public_view.htm" access="permitAll" />
 
         <!-- Websocket -->
-        <intercept-url pattern="/ws-scada/alarmLevel/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
-        <intercept-url pattern="/ws-scada/event/update/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/ws-scada/queue/errors" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/ws-scada/session" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/ws-scada/listusers" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/ws-scada/websocketStats" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/ws-scada/alarmLevel/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/ws-scada/event/update/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/ws-scada/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
         <!-- New UI (vue) -->
         <intercept-url pattern="/app.shtm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
@@ -396,7 +397,8 @@
         <intercept-url pattern="/api/events/assign/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
 
         <!-- Alarm GET -->
-        <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasRole('ROLE_ADMIN')" method="GET" />
+        <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
+        <intercept-url pattern="/api/alarms/history/{day_date}/{data_point_name_filter_regex}/{offset}/{limit}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
 
         <!-- Chart GET -->
         <intercept-url pattern="/api/amcharts/by-id" access="@guard.hasDataPointReadPermission(request,false,'ids')" method="GET" />
