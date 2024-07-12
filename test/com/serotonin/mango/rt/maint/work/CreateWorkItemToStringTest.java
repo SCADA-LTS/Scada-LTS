@@ -53,7 +53,7 @@ public class CreateWorkItemToStringTest {
     @Test
     public void when_new_ProcessWorkItem() {
         //when:
-        WorkItem workItem = new ProcessWorkItem(null, null);
+        WorkItem workItem = new ProcessWorkItem(null, null, null);
         //then:
         System.out.println(workItem);
     }
@@ -61,7 +61,7 @@ public class CreateWorkItemToStringTest {
     @Test
     public void when_new_SetPointWorkItem() {
         //when:
-        WorkItem workItem = new SetPointWorkItem(-1, null, null);
+        WorkItem workItem = new SetPointWorkItem(-1, null, null, null);
         //then:
         System.out.println(workItem);
     }
@@ -69,7 +69,7 @@ public class CreateWorkItemToStringTest {
     @Test
     public void when_new_PointLinkSetPointWorkItem() {
         //when:
-        WorkItem workItem = new PointLinkSetPointWorkItem(-1, null, null);
+        WorkItem workItem = new PointLinkSetPointWorkItem(-1, null, null, null);
         //then:
         System.out.println(workItem);
     }

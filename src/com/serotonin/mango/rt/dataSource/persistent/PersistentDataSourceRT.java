@@ -655,8 +655,8 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
             }
 
             @Override
-            public int getPriority() {
-                return WorkItemPriority.HIGH.getPriority();
+            public WorkItemPriority getPriorityType() {
+                return WorkItemPriority.HIGH;
             }
 
             @Override
@@ -676,8 +676,8 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         }
 
         @Override
-        public int getPriority() {
-            return WorkItemPriority.HIGH.getPriority();
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override

@@ -314,7 +314,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 
 				try {
 					Charset.forName(charset);
-				} catch (IllegalCharsetNameException e) {
+				} catch (Exception e) {
 					response.addContextualMessage("charset",
 							"validate.invalidCharset");
 				}

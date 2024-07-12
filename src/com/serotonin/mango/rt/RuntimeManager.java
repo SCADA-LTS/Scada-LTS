@@ -304,7 +304,7 @@ public class RuntimeManager {
 			try {
 				dataSource.joinTermination();
 			} catch (ShouldNeverHappenException e) {
-				LOG.error("Error stopping data source " + dataSource.getId(), e);
+				LOG.error("Error stopping: " + LoggingUtils.dataSourceInfo(dataSource) + " : " + LoggingUtils.exceptionInfo(e), e);
 			}
 		}
 	}

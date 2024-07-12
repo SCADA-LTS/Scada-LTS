@@ -3,6 +3,7 @@ package com.serotonin.mango.rt.maint.work;
 import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.type.EventType;
 
 public class PointLinkSetPointWorkItem extends SetPointWorkItem {
 
@@ -14,8 +15,8 @@ public class PointLinkSetPointWorkItem extends SetPointWorkItem {
 	 * @param source
 	 */
 	public PointLinkSetPointWorkItem(int targetPointId, PointValueTime pvt,
-			PointLinkSetPointSource source) {
-		super(targetPointId, pvt, (SetPointSource) source);
+			PointLinkSetPointSource source, EventType eventType) {
+		super(targetPointId, pvt, (SetPointSource) source, eventType);
 		this.plSource = source;
 	}
 

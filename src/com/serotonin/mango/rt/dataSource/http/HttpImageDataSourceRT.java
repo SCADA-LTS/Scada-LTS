@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -39,7 +40,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.dataSource.http.HttpImageDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpImagePointLocatorVO;
 import com.serotonin.util.image.BoxScaledImage;
@@ -48,6 +48,8 @@ import com.serotonin.util.image.JpegImageFormat;
 import com.serotonin.util.image.PercentScaledImage;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.Common.createGetMethod;
 
 /**
  * @author Matthew Lohbihler
@@ -219,8 +221,9 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             return saveFailure;
         }
 
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        @Override
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override
@@ -247,7 +250,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             LocalizableMessage message;
 
             try {
-                method = new GetMethod(url);
+                method = createGetMethod(url);
                 int responseCode = client.executeMethod(method);
 
                 if (responseCode == HttpStatus.SC_OK) {

@@ -484,3 +484,14 @@ span.dojoTreeNodeLabel span {
 }
 
 /*# sourceMappingURL=common.css.map */
+
+a img:hover, img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51);
+}
+
+#pointProperties img.ptr {
+  margin: 0;
+  padding: 0.1rem;
+  height: 16px;
+  transition: all 0.3s ease-in-out;
+}

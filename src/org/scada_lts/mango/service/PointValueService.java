@@ -33,6 +33,7 @@ import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -46,6 +47,7 @@ import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -56,7 +58,6 @@ import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.ImageSaveException;
-import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.util.queue.ObjectQueue;
@@ -505,8 +506,8 @@ public class PointValueService implements MangoPointValues {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
         private static final CopyOnWriteArrayList<BatchWriteBehind> instances = new CopyOnWriteArrayList<BatchWriteBehind>();
         private static Log LOG = LogFactory.getLog(BatchWriteBehind.class);
-        private static final int SPAWN_THRESHOLD = 10000;
-        private static final int MAX_INSTANCES = 5;
+        private static int SPAWN_THRESHOLD = 10000;
+        private static int MAX_INSTANCES = 5;
         private static int MAX_ROWS = 1000;
         private static final IntegerMonitor ENTRIES_MONITOR = new IntegerMonitor(
                 "BatchWriteBehind.ENTRIES_MONITOR", null);
@@ -515,7 +516,10 @@ public class PointValueService implements MangoPointValues {
 
         static {
 
-            MAX_ROWS = 2000;
+            MAX_ROWS = SystemSettingsUtils.getWorkItemsConfigBatchWriteBehindMaxRows();
+            MAX_INSTANCES = SystemSettingsUtils.getWorkItemsConfigBatchWriteBehindMaxInstances();
+            SPAWN_THRESHOLD = SystemSettingsUtils.getWorkItemsConfigBatchWriteBehindSpawnThreshold();
+
 
             Common.MONITORED_VALUES.addIfMissingStatMonitor(ENTRIES_MONITOR);
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
@@ -607,8 +611,9 @@ public class PointValueService implements MangoPointValues {
             }
         }
 
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        @Override
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override

@@ -1,5 +1,6 @@
 package org.scada_lts.web.ws.auth;
 
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.ws.config.LoggingChannelInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,16 +22,8 @@ public class WebSocketConfig<S extends ExpiringSession> extends AbstractSessionW
     protected void configureStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-scada")
                 .setAllowedOrigins("http://localhost:3000")
-                .withSockJS();
-        registry.addEndpoint("/ws-scada/event")
-                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS()
-                .setStreamBytesLimit(512 * 1024)
-                .setHttpMessageCacheSize(1000)
-                .setDisconnectDelay(30 * 1000);
-        registry.addEndpoint("/ws-scada/alarmLevel")
-                .setAllowedOrigins("http://localhost:3000")
-                .withSockJS()
+                .setClientLibraryUrl(SystemSettingsUtils.getWebsocketClientSockjsUrl())
                 .setStreamBytesLimit(512 * 1024)
                 .setHttpMessageCacheSize(1000)
                 .setDisconnectDelay(30 * 1000);

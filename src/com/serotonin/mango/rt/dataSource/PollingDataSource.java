@@ -151,7 +151,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
   
     public boolean isMarkAsTerminating() {
         if(markAsTerminating) {
-            LOG.error(LoggingUtils.dataSourceInfo(this) + " is terminating.");
+            LOG.info(LoggingUtils.dataSourceInfo(this) + " is terminating.");
             return true;
         } else {
             return false;

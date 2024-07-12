@@ -20,6 +20,7 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

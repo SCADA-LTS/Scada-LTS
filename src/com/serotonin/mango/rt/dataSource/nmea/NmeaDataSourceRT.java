@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.dataSource.nmea;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,6 +40,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageListener, TimeoutClient {
+
+    private static final Log LOG = LogFactory.getLog(NmeaDataSourceRT.class);
+
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
 
@@ -172,6 +177,10 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
     // /
     //
     public void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataSourceInfo(this));
+            return;
+        }
         // We haven't heard from the device for too long. Restart the listener.
         termNmea();
         if (initNmea())

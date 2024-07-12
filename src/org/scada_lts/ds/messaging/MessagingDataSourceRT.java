@@ -141,6 +141,13 @@ public class MessagingDataSourceRT extends PollingDataSource {
             } catch (Throwable e) {
                 updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
                 LOG.error(info(e, this), e);
+            } catch (Exception e) {
+                LOG.warn(exceptionInfo(e), e);
+                int dataPointId = dataPoint.getId();
+                AtomicInteger counter = updateAttemptsCounters.get(dataPointId);
+                if(counter != null) {
+                    counter.incrementAndGet();
+                }
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e), dataPoint);
             }

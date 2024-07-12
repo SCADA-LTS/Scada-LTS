@@ -113,7 +113,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         initializeTimerTask();
 
         if(dataPoint.isInitialized() && (vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
-                || vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)) {
+                || vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE) && !vo.getContext().isEmpty()) {
             execute(System.currentTimeMillis(), new ArrayList<>(), true, dataPoint);
         }
     }

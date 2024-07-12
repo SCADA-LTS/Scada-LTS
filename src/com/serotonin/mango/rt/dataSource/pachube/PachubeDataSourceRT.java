@@ -60,6 +60,7 @@ import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import static com.serotonin.mango.Common.createGetMethod;
 
 public class PachubeDataSourceRT extends PollingDataSource {
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
@@ -222,7 +223,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
         GetMethod method = null;
 
         try {
-            method = new GetMethod("http://www.pachube.com/api/feeds/" + feedId + ".json");
+            method = createGetMethod("http://www.pachube.com/api/feeds/" + feedId + ".json");
             method.addRequestHeader(new Header(HEADER_API_KEY, apiKey));
             method.addRequestHeader("User-Agent", "Scada-LTS M2M Pachube data source");
 

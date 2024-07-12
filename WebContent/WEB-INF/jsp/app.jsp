@@ -5,7 +5,7 @@
         <meta charset=utf-8>
         <meta http-equiv=X-UA-Compatible content="IE=edge">
         <meta name=viewport content="width=device-width,initial-scale=1">
-        <link rel=icon href=/favicon.ico>
+        <link rel=icon href="images/favicon.ico">
         <title>SCADA-LTS</title>
         <link href=resources/js-ui/app/css/app.css rel=preload as=style>
         <link href=resources/js-ui/app/css/chunk-vendors.css rel=preload as=style>

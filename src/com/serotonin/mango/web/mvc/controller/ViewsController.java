@@ -110,6 +110,14 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("enableFullScreenMode", user.isEnableFullScreen());
 			model.put("hideShortcutDisableFullScreenFromUser", user.isHideShortcutDisableFullScreen());
 			model.put("isAdmin", user.isAdmin());
+		} else {
+			model.put("currentView", new View());
+			model.put("owner", false);
+			model.put("forceFullScreenMode", false);
+			model.put("hideShortcutDisableFullScreenFromSystemSettings", false);
+			model.put("enableFullScreenMode", false);
+			model.put("hideShortcutDisableFullScreenFromUser", false);
+			model.put("isAdmin", user.isAdmin());
 		}
 		return new ModelAndView(getViewName(), model);
 	}

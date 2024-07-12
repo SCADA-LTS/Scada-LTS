@@ -18,9 +18,10 @@
 
         <!-- Lifecycle Logging-->
         <Property name="startupLoggingLevel">INFO</Property>
-        <Property name="backgroundProcessingLoggingLevel">ERROR</Property>
+        <Property name="backgroundProcessingLoggingLevel">INFO</Property>
         <Property name="pollingDataSourceLoggingLevel">ERROR</Property>
         <Property name="runtimeManagerLoggingLevel">INFO</Property>
+        <Property name="realTimeTimerLoggingLevel">INFO</Property>
 
         <!-- Architecture Logging-->
         <Property name="dwrLoggingLevel">ERROR</Property>
@@ -34,8 +35,9 @@
         <Property name="scriptLoggingLevel">ERROR</Property>
         <Property name="eventManagerLoggingLevel">ERROR</Property>
         <Property name="modbusLoggingLevel">ERROR</Property>
-        <Property name="dataSourceRtLoggingLevel">ERROR</Property>
-        <Property name="dataPointRtLoggingLevel">ERROR</Property>
+        <Property name="dataPointRtLoggingLevel">INFO</Property>
+        <Property name="dataSourceRtLoggingLevel">INFO</Property>
+        <Property name="detectorRtLoggingLevel">INFO</Property>
 
         <!-- Parse log4j2.xml Logging-->
         <Property name="log4jLoggingLevel">ERROR</Property>
@@ -124,7 +126,6 @@
 
         <!-- Serotonin Logging-->
         <Logger name="com.serotonin.mango" level="${serotoninComLoggingLevel}"/>
-        <Logger name="com.serotonin.timer" level="${serotoninComLoggingLevel}"/>
 
         <!-- Legacy Logging-->
         <Logger name="br.org.scadabr" level="${legacyLoggingLevel}"/>
@@ -160,6 +161,8 @@
         <!-- PollingDataSource Logging-->
         <Logger name="com.serotonin.mango.rt.dataSource.PollingDataSource" level="${pollingDataSourceLoggingLevel}"/>
 
+        <!-- RealTimeTimer -->
+        <Logger name="com.serotonin.timer" level="${realTimeTimerLoggingLevel}"/>
 
         <!-- Architecture Logging-->
         <!-- Dwr Logging-->
@@ -243,6 +246,33 @@
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
         <Logger name="com.serotonin.mango.view.component.ScriptComponent" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <!-- DataPointRT -->
+        <Logger name="com.serotonin.mango.rt.dataImage.DataPointRT" level="${dataPointRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="com.serotonin.mango.rt.dataImage.DataPointNonSyncRT" level="${dataPointRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="com.serotonin.mango.rt.dataImage.DataPointSynchronizedRT" level="${dataPointRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <!-- DetectorRT -->
+        <Logger name="com.serotonin.mango.util.timeout.TimeoutTask" level="${detectorRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="com.serotonin.mango.rt.event.detectors.TimeoutDetectorRT" level="${detectorRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <!-- DataSourceRT -->
+        <Logger name="com.serotonin.mango.rt.dataSource.nmea.NmeaDataSourceRT" level="${dataSourceRtLoggingLevel}" >
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
 

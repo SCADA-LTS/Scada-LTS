@@ -68,8 +68,7 @@
 </template>
 
 <script>
-import NavigationBar from '../layout/NavigationBar.vue'
-import webSocketMixin from '@/utils/web-socket-utils';
+import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
@@ -136,7 +135,6 @@ export default {
     			this.$store.dispatch('getUserInfo');
     	}
 		this.$store.dispatch('getLocaleInfo');
-		this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		this.connectToWebSocket();
 	},
 
@@ -147,7 +145,14 @@ export default {
 	methods: {
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;
-			this.alarmSubscription = this.$store.state.webSocketModule.webSocket.subscribe(`/topic/alarm`, this.getHighestAlarmLevel);
+			let stompClient = this.$store.state.webSocketModule.webSocket;
+			let getHighestAlarmLevel = this.getHighestAlarmLevel;
+            this.alarmSubscription = stompClient.subscribe("/app/alarmLevel/register", function(register) {
+                let subscription = stompClient.subscribe("/topic/alarmLevel/"+register.body, getHighestAlarmLevel);
+                if(subscription) {
+                    setTimeout(function() {stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - /app/alarmLevel")}, 1500);
+                }
+            });
 		},
 
 		unSubscribeAlarms() {

@@ -50,6 +50,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import static com.serotonin.mango.Common.createGetMethod;
+import static com.serotonin.mango.Common.createPostMethod;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -130,7 +133,7 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
 
             HttpMethodBase method;
             if (vo.isUsePost()) {
-                PostMethod post = new PostMethod(vo.getUrl());
+                PostMethod post = createPostMethod(vo.getUrl());
                 post.addParameters(params);
                 if (vo.isUseJSON()) {
                     try {
@@ -143,7 +146,7 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                 method = post;
             }
             else {
-                GetMethod get = new GetMethod(vo.getUrl());
+                GetMethod get = createGetMethod(vo.getUrl());
                 get.setQueryString(params);
                 method = get;
             }

@@ -41,6 +41,8 @@ import org.scada_lts.ds.model.ReactivationDs;
 import java.util.Collections;
 import java.util.List;
 
+import static com.serotonin.mango.Common.createGetMethod;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -131,7 +133,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     }
 
     private static GetMethod createMethodForClient(String url, List<KeyValuePair> staticHeaders) {
-        GetMethod method = new GetMethod(url);
+        GetMethod method = createGetMethod(url);
         if (!staticHeaders.isEmpty()) {
             for (KeyValuePair kvp : staticHeaders) {
                 if (kvp.getKey().equals("Authorization")) {
