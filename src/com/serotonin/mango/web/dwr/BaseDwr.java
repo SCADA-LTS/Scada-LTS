@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
@@ -249,14 +245,7 @@ abstract public class BaseDwr {
 
         return c;
     }
-    protected String getOwnerNameOfChangePointValue(String pointvalue){
-        PointValueAdnnotationsDAO p = new PointValueAdnnotationsDAO();
-        //PointValueCache pvc = new PointValueCache();
-        //point
-        UserDao userDao = new UserDao();
-        User a =userDao.getUser(1);
-        return a.getUsername();
-    }
+
     protected List<DataPointBean> getReadablePoints() {
         User user = Common.getUser();
 
@@ -309,10 +298,7 @@ abstract public class BaseDwr {
     }
 
     protected ResourceBundle getResourceBundle() {
-        WebContext webContext = WebContextFactory.get();
-        LocalizationContext localizationContext = (LocalizationContext) Config.get(webContext.getHttpServletRequest(),
-                Config.FMT_LOCALIZATION_CONTEXT);
-        return localizationContext.getResourceBundle();
+        return Common.getBundle();
     }
 
     public static String generateContent(HttpServletRequest request, String snippet, Map<String, Object> model) {

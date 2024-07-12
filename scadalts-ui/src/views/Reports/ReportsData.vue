@@ -26,16 +26,16 @@
 								{{ item.runEndTime - item.runStartTime }}
 							</template>
 							<template v-slot:item.actions="{ item }">
-								<a :href="`/ScadaBR/export/export.csv?instanceId=${item.id}`">
+								<a :href="`export/export.csv?instanceId=${item.id}`">
 									<v-icon title="export data"> mdi-download-box </v-icon>
 								</a>
-								<a :href="`/ScadaBR/eventExport/events.csv?instanceId=${item.id}`">
+								<a :href="`eventExport/events.csv?instanceId=${item.id}`">
 									<v-icon title="events"> mdi-bell </v-icon>
 								</a>
-								<a :href="`/ScadaBR/userCommentExport/comments.csv?instanceId=${item.id}`">
+								<a :href="`userCommentExport/comments.csv?instanceId=${item.id}`">
 									<v-icon title="user comments"> mdi-comment </v-icon>
 								</a>
-								<a :href="`/ScadaBR/reportChart.shtm?instanceId=${item.id}`">
+								<a :href="`reportChart.shtm?instanceId=${item.id}`">
 									<v-icon title="charts"> mdi-chart-line </v-icon>
 								</a>
 								<v-icon @click.stop="deleteReport(item.id)" title="delete">
@@ -53,7 +53,7 @@
 					</v-card>
 				</v-col>
 				<v-col cols="12" lg="7">
-					<!-- <iframe id='reportChart' v-if="!!selectedItem"  :src="`/ScadaBR/reportChart.shtm?instanceId=${selectedItem.id}`"/> -->
+					<!-- <iframe id='reportChart' v-if="!!selectedItem"  :src="`reportChart.shtm?instanceId=${selectedItem.id}`"/> -->
 				</v-col>
 			</v-row>
 		</v-container>

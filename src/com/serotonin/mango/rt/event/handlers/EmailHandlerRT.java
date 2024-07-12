@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.event.handlers;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.MsgContentUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
@@ -28,6 +29,7 @@ import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.timer.TimerTask;
+import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,21 +89,20 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private Set<String> inactiveRecipients;
 
     public EmailHandlerRT(EventHandlerVO vo) {
-        this.vo = vo;
+        this(vo, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE, vo.getId()));
+    }
+
+    protected EmailHandlerRT(EventHandlerVO vo, SystemEventType systemEventType) {
+        super(vo, systemEventType);
         this.service = ScheduledExecuteInactiveEventService.getInstance();
         this.mailingListService = new MailingListService();
     }
 
-    public EmailHandlerRT(EventHandlerVO vo, MailingListService mailingListService) {
-        this.vo = vo;
-        this.service = ScheduledExecuteInactiveEventService.getInstance();
-        this.mailingListService = mailingListService;
-    }
-
-    public EmailHandlerRT(EventHandlerVO vo,
-                          ScheduledExecuteInactiveEventService service,
-                          MailingListService mailingListService) {
-        this.vo = vo;
+    protected EmailHandlerRT(EventHandlerVO vo,
+                             ScheduledExecuteInactiveEventService service,
+                             MailingListService mailingListService,
+                             SystemEventType systemEventType) {
+        super(vo, systemEventType);
         this.service = service;
         this.mailingListService = mailingListService;
     }
@@ -200,8 +201,17 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         sendMsg(evt, notificationType, addresses, vo.getAlias(), new AfterWork() {
             @Override
             public void workFail(Throwable exception) {
-                LOG.error("Failed sending email for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
-                        + ", error: " + exception.getMessage());
+                String msg = "Failed sending email for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
+                        + ", error: " + exception.getMessage();
+                LOG.error(msg);
+                LocalizableMessage message = new LocalizableMessage("event.email.failure",
+                        vo.getAlias(), addresses, msg);
+                SystemEventType.raiseEvent(getEventType(), System.currentTimeMillis(), true, message);
+            }
+
+            @Override
+            public void workSuccess() {
+                SystemEventType.returnToNormal(getEventType(), System.currentTimeMillis());
             }
         }, () -> eventHandlerInfo(getVo()) + ", " + eventInfo(evt));
     }

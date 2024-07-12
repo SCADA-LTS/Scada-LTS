@@ -1,5 +1,6 @@
 package org.scada_lts.web.ws.model;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -34,16 +35,16 @@ public class WsEventMessage {
         return new WsEventMessage(eventInstance, EventAction.CREATE);
     }
 
-    public LocalizableMessage getRtnMessage() {
-        return instance.getRtnMessage();
+    public String getRtnMessage() {
+        return getString(instance.getRtnMessage());
     }
 
-    public LocalizableMessage getAckMessage() {
-        return instance.getAckMessage();
+    public String getAckMessage() {
+        return getString(instance.getAckMessage());
     }
 
-    public LocalizableMessage getExportAckMessage() {
-        return instance.getExportAckMessage();
+    public String getExportAckMessage() {
+        return getString(instance.getExportAckMessage());
     }
 
     public String getPrettyActiveTimestamp() {
@@ -82,6 +83,10 @@ public class WsEventMessage {
         return instance.getActiveTimestamp();
     }
 
+    public long getActiveTs() {
+        return instance.getActiveTimestamp();
+    }
+
     public int getAlarmLevel() {
         return instance.getAlarmLevel();
     }
@@ -98,12 +103,16 @@ public class WsEventMessage {
         return instance.getRtnTimestamp();
     }
 
-    public LocalizableMessage getMessage() {
-        return instance.getMessage();
+    public long getRtnTs() {
+        return instance.getRtnTimestamp();
     }
 
-    public LocalizableMessage getShortMessage() {
-        return instance.getShortMessage();
+    public String getMessage() {
+        return getString(instance.getMessage());
+    }
+
+    public String getShortMessage() {
+        return getString(instance.getShortMessage());
     }
 
     public boolean isRtnApplicable() {
@@ -126,6 +135,10 @@ public class WsEventMessage {
         return instance.getAcknowledgedTimestamp();
     }
 
+    public long getAckTs() {
+        return instance.getAcknowledgedTimestamp();
+    }
+
     public int getAcknowledgedByUserId() {
         return instance.getAcknowledgedByUserId();
     }
@@ -144,5 +157,15 @@ public class WsEventMessage {
 
     public String getAction() {
         return action;
+    }
+
+    public int getTypeId() {
+        return instance.getEventType().getEventSourceId();
+    }
+
+    private static String getString(LocalizableMessage message) {
+        if (message == null)
+            return "";
+        return message.getLocalizedMessage(Common.getBundle());
     }
 }

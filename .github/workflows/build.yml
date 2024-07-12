@@ -8,7 +8,7 @@ jobs:
     name: Compile and Test Scada-LTS application
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,13 +26,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-tomcat-
       - name: Install Tomcat
-        run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.53/bin/apache-tomcat-9.0.53.tar.gz; tar xvzf apache-tomcat-9.0.53.tar.gz
+        run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz; tar xvzf apache-tomcat-9.0.86.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           check_name: Java JUnit Test Results
@@ -75,7 +75,7 @@ jobs:
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
       - name: Show Mocha Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           check_name: Java Script Mocha Unit Test Results
@@ -108,7 +108,7 @@ jobs:
     needs: [compile, buildui]
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
       - uses: actions/checkout@v3
         with:
@@ -177,6 +177,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Load WAR file to cache
         uses: actions/cache@v3
         with:
@@ -193,17 +197,19 @@ jobs:
         with:
           images: scadalts/scadalts
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Build and push nightly Docker image
         if: ${{ startsWith(github.base_ref, 'release') || startsWith(github.base_ref, 'preview') }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: scadalts/scadalts:nightly
           labels: ${{ steps.meta.outputs.labels }}

@@ -4,7 +4,7 @@ package org.scada_lts.web.ws.services;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.ws.model.AlarmLevelMessage;
+import org.scada_lts.web.ws.model.WsAlarmLevelMessage;
 import org.scada_lts.web.ws.model.WsEventMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class UserEventServiceWebSocket extends AbstractWebSocket {
         }
     }
 
-    public void sendAlarmLevel(User user, AlarmLevelMessage message) {
+    public void sendAlarmLevel(User user, WsAlarmLevelMessage message) {
         try {
             sendWebSocketMessage("/alarmLevel/" + user.getUsername(), message);
         } catch (Exception ex) {

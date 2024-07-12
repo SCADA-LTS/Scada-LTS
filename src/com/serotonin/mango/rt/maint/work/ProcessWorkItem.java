@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
@@ -41,30 +42,20 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     static final Log LOG = LogFactory.getLog(ProcessWorkItem.class);
     private static final int TIMEOUT = 15000; // 15 seconds
+    private final EventType eventType;
 
-    @Deprecated
-    public static void queueProcess(String command) {
-        ProcessWorkItem item = new ProcessWorkItem(command);
-        Common.ctx.getBackgroundProcessing().addWorkItem(item);
-    }
-
-    public static void queueProcess(String command, EventHandlerVO handler) {
-        ProcessWorkItem item = new ProcessWorkItem(command, LoggingUtils.eventHandlerInfo(handler));
+    public static void queueProcess(String command, EventHandlerVO handler, EventType eventType) {
+        ProcessWorkItem item = new ProcessWorkItem(command, LoggingUtils.eventHandlerInfo(handler), eventType);
         Common.ctx.getBackgroundProcessing().addWorkItem(item);
     }
 
     final String command;
     final String details;
 
-    @Deprecated
-    public ProcessWorkItem(String command) {
-        this.command = command;
-        this.details = null;
-    }
-
-    public ProcessWorkItem(String command, String details) {
+    public ProcessWorkItem(String command, String details, EventType eventType) {
         this.command = command;
         this.details = details;
+        this.eventType = eventType;
     }
 
     @Override
@@ -77,11 +68,16 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
+    public void workSuccess() {
+        SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
+    }
+
+    @Override
     public void workFail(Throwable e) {
         Throwable throwable = e.getCause() != null ? e.getCause() : e;
         LOG.error(this + " - " + throwable.getMessage(), throwable);
-        SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
-                System.currentTimeMillis(), false,
+        SystemEventType.raiseEvent(eventType,
+                System.currentTimeMillis(), true,
                 new LocalizableMessage("event.process.failure", command, throwable.getMessage()));
     }
 
@@ -122,8 +118,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
     static class ProcessTimeout extends AbstractBeforeAfterWorkItem {
@@ -146,8 +142,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         public void interrupt() {
@@ -229,8 +225,8 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override
@@ -273,43 +269,11 @@ public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
         return "ProcessWorkItem{" +
                 "command='" + command + '\'' +
                 ", details='" + details + '\'' +
-                "} " + super.toString();
+                "}";
     }
 
     @Override
     public String getDetails() {
         return this.toString();
     }
-
-    //
-    // public static void main(String[] args) throws Exception {
-    // // ServletContext ctx = new DummyServletContext();
-    // BackgroundProcessing bp = new BackgroundProcessing();
-    // bp.initialize();
-    // // ctx.setAttribute(Common.ContextKeys.BACKGROUND_PROCESSING, bp);
-    // // Common.ctx = new ContextWrapper(ctx);
-    // // ProcessWorkItem.queueProcess("");
-    // // bp.terminate();
-    //        
-    // // //ProcessBuilder pb = new ProcessBuilder("cmd /c dir");
-    // // ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "dir");
-    // // pb.redirectErrorStream(true);
-    // // Process process = pb.start();
-    // Process process = Runtime.getRuntime().exec("cmd /c java -version");
-    //        
-    // InputReader out = new InputReader(process.getInputStream());
-    // InputReader err = new InputReader(process.getErrorStream());
-    //        
-    // bp.addWorkItem(out);
-    // bp.addWorkItem(err);
-    //        
-    // process.waitFor();
-    // out.join();
-    // err.join();
-    // process.destroy();
-    // bp.terminate();
-    //        
-    // System.out.println("out: "+ out.getInput());
-    // System.out.println("err: "+ err.getInput());
-    // }
 }

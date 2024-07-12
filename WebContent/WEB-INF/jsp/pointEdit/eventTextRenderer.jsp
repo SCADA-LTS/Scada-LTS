@@ -312,6 +312,9 @@
         }
       ], null);
     };
+    this.getRangeEventValues = function(){
+        return rangeEventValues;
+    }
   }
   var eventTextRendererEditor = new EventTextRendererEditor();
   dojo.addOnLoad(eventTextRendererEditor, "init");

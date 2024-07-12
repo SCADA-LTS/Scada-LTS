@@ -429,6 +429,9 @@
           dojo.widget.byId("textRendererBinaryOneColour").selectedColour = colour;
           $("textRendererBinaryOne").style.color = colour;
       };
+      this.getRangeValues = function(){
+          return rangeValues;
+      }
   }
   var textRendererEditor = new TextRendererEditor();
   dojo.addOnLoad(textRendererEditor, "init");

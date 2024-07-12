@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -79,11 +80,12 @@ public class UsersProfilesDwr {
 		List<WatchList> watchlists = watchlistDao.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewService viewDao = new ViewService();
-		List<View> views = viewDao.getSimpleViews().stream()
+		ViewService viewService = new ViewService();
+		List<View> views = viewService.getSimpleViews().stream()
 				.map(toView())
 				.collect(Collectors.toList());
 		initData.put("views", views);
+		initData.put("keyTranslations", ScadaLocaleUtils.getTranslationsForKey("common.newName"));
 
 		return initData;
 	}

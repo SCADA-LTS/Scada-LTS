@@ -16,7 +16,7 @@ compileTestJava.options.encoding = 'UTF-8'
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
-def tomcatVersion = '9.0.53'
+def tomcatVersion = '9.0.86'
 def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
@@ -73,14 +73,13 @@ task warDev(type: War) {
 }
 
 task clearDockerDir(type: Delete) {
-    delete files("docker/volumes/webapps/ScadaBR.war")
+    delete files("docker/volumes/webapps/Scada-LTS.war")
 }
 
 task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
     from "build/libs/"
     into "docker/volumes/webapps/"
     include('Scada-LTS.war')
-    rename('Scada-LTS.war', "ScadaBR.war")
 }
 
 task installWebDependency(type: Exec) {
@@ -94,6 +93,8 @@ task installWebDependency(type: Exec) {
 
 task clearTomcat(type: Delete) {
     delete System.getenv("CATALINA_HOME") + "/work/Catalina/localhost"
+    delete System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS"
+    delete file(System.getenv("CATALINA_HOME") + "/webapps/Scada-LTS.war")
     delete System.getenv("CATALINA_HOME") + "/webapps/ScadaBR"
     delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
 }
@@ -108,7 +109,6 @@ task deployTomcat(type: Copy, dependsOn: existsScadaLTSWarFile) {
     from "build/libs/"
     into System.getenv("CATALINA_HOME")+ "/webapps"
     include('Scada-LTS.war')
-    rename('Scada-LTS.war', "ScadaBR.war")
 }
 
 task deploy(type: GradleBuild) {
@@ -135,6 +135,16 @@ task runDebug(type: Exec) {
     }
 }
 
+task stopDebug(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'stop'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'stop'
+    }
+}
+
 task buildRun(type: GradleBuild) {
     tasks = ['clearTomcat', 'clearProject', 'test', 'war', 'deployTomcat', 'run']
 }
@@ -154,6 +164,9 @@ task buildRunDebugProd(type: GradleBuild) {
 
 task clearProject (type: Delete) {
     delete "build"
+    delete "scadalts-ui/dist"
+    delete "WebContent/resources/js-ui"
+    delete "WebContent/img"
 }
 
 test {
@@ -190,7 +203,7 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
         includeTestsMatching "org.scada_lts.utils.UploadFileUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.utils.xml.XmlSecurityTestsSuite"
-        includeTestsMatching "org.scada_lts.utils.SystemSettingsUtilsTest"
+        includeTestsMatching "org.scada_lts.utils.SystemSettingsTestsSuite"
         includeTestsMatching "br.org.scadabr.view.component.GenerateAlarmListComponentTest"
         includeTestsMatching "org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
         includeTestsMatching "com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
@@ -204,5 +217,31 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.maint.work.CreateWorkItemToStringTest"
         includeTestsMatching "com.serotonin.util.SerializationHelperTest"
         includeTestsMatching "org.scada_lts.web.mvc.api.json.WorkItemInfoListTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRtTestsSuite"
+        includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
+        includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
+        includeTestsMatching "com.serotonin.mango.util.StartStopDataPointsUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.utils.BlockingQueuesUtilsTest"
+    }
+
+    testLogging {
+
+        //exceptionFormat = "full"
+        showStandardStreams = true
+
+        afterTest { desc, result ->
+            def runtime = result.endTime - result.startTime
+            if(runtime > 150)
+                println "Class: " + desc.className + " Test: " + desc.displayName + " Results: ${result.resultType} Runtime: " + runtime + " [ms]"
+        }
+
+        afterSuite { desc, result ->
+            def output = "Class: " + desc.displayName + " Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped) runtime: " + (result.endTime - result.startTime) + " [ms]"
+            def startItem = '|  ', endItem = '  |'
+            def repeatLength = startItem.length() + output.length() + endItem.length()
+            println '\n\r' + ('-' * repeatLength) + '\n\r' + startItem + output + endItem + '\n\r' + ('-' * repeatLength) + ('\n\r' * 2)
+        }
     }
 }

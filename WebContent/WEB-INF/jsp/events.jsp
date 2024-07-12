@@ -118,26 +118,41 @@
 //         var x = dojo.widget.byId("datePicker");
 //         console.log(x);
 //         x.setDate(x.today);
-		time = new Date($("datePicker"));
-		
-		
+        time = new Date($("datePicker"));
+        hideContextualMessages("eventSearchForm");
 //         doSearch(0,time.getTime());
         console.log("newSearch");
-        if(!isValid(eventId.value)) {
-            $set("searchMessage", $get("eventIdLabel") + " - Incorrect input data type");
-        } else if(!isValid(maxResults.value)) {
-            $set("searchMessage", $get("maxResultsLabel") + " - Incorrect input data type");
+
+        let searchConfigTemp = createSearchConfigTemp();
+
+        let messages = validateSearchParameters(searchConfigTemp);
+
+        if(messages.length > 0) {
+            showDwrMessages(messages);
         } else {
             doSearchOld();
         }
     }
 
-    function isValid(value) {
-      return value == "" || isPositiveInt(value);
+    function createSearchConfigTemp(){
+        let searchConfig = {}
+        searchConfig.eventId = $get("eventId");
+        searchConfig.maxResults = $get("maxResults");
+        return searchConfig;
     }
 
-    function isPositiveInt(value) {
-      return isInt32(value) && value >= 0;
+    function validateSearchParameters(parametersToCheck){
+        let messages = [];
+
+        if (!isValid(parametersToCheck.eventId)) {
+            let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
+            messages.push(message);
+        }
+        if(!isValid(parametersToCheck.maxResults)) {
+            let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
+            messages.push(message)
+        }
+        return messages;
     }
 
     function silenceAll() {
@@ -178,7 +193,7 @@
     <div id="hourglass" style="padding:6px;text-align:center;"><tag:img png="hourglass"/></div>
   </div>
   
-  <div class="borderDiv" style="clear:left;float:left;">
+  <div class="borderDiv" style="clear:left;float:left;" id="eventSearchForm">
     <div class="smallTitle titlePadding"><fmt:message key="events.search"/></div>
     <div>
       <table>

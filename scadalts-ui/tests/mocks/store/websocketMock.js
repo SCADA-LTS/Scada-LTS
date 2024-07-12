@@ -2,7 +2,7 @@ const webSocketModule = {
     state: {
         webSocket: null,
         webSocketConnection: false,
-        webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
+        webSocketUrl: 'ws-scada',
         debugMode: false,
     },
 

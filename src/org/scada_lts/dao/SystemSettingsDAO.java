@@ -20,6 +20,7 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -161,6 +162,9 @@ public class SystemSettingsDAO {
 	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED = "workItemsReportingItemsPerSecondEnabled";
 	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT = "workItemsReportingItemsPerSecondLimit";
 	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
+	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
+	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
+
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
 			+ "select "
@@ -239,7 +243,10 @@ public class SystemSettingsDAO {
 	}
 
 	public static boolean getBooleanValue(String key) {
-		return getBooleanValue(key, false);
+		Boolean defaultValue = (Boolean) DEFAULT_VALUES.get(key);
+		if(defaultValue == null)
+			return getBooleanValue(key, false);
+		return getBooleanValue(key, defaultValue);
 	}
 
 	public static boolean getBooleanValue(String key, boolean defaultValue) {
@@ -249,6 +256,7 @@ public class SystemSettingsDAO {
 		return DAO.charToBool(value);
 	}
 
+	@Deprecated(since = "2.7.7.1")
 	public static boolean getBooleanValueOrDefault(String key) {
 		String value = getValue(key, null);
 		if (value == null)
@@ -403,6 +411,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled());
 		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit());
 		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
+		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
+		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -431,7 +441,7 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_USERS_PROFILES);
 
 		ApplicationBeans.getBean("userCache", UserCacheable.class).resetCache();
-		ApplicationBeans.getBean("viewCache", ViewCachable.class).resetCache();
+		ApplicationBeans.getBean("viewCache", ViewCacheable.class).resetCache();
 		ApplicationBeans.getBean("pointEventDetectorCache", PointEventDetectorCacheable.class).resetCache();
 		ApplicationBeans.getBean("usersProfileCache", UsersProfileCacheable.class).resetCache();
 		ApplicationBeans.getBean("highestAlarmLevelCache", HighestAlarmLevelCacheable.class).resetCache();

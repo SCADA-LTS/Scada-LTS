@@ -21,10 +21,13 @@ package com.serotonin.mango.rt.event.detectors;
 import java.util.Date;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class is a base class for detectors that need to schedule timeouts for their operation. Subclasses may use
@@ -33,6 +36,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class TimeoutDetectorRT extends PointEventDetectorRT implements TimeoutClient {
+
+    private static final Log LOG = LogFactory.getLog(TimeoutDetectorRT.class);
     /**
      * Internal configuration field. The millisecond version of the duration fields.
      */
@@ -50,6 +55,10 @@ abstract public class TimeoutDetectorRT extends PointEventDetectorRT implements 
 
     @Override
     public void initialize() {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! : " + LoggingUtils.pointEventDetectorInfo(getVo()));
+            return;
+        }
         durationMS = Common.getMillis(vo.getDurationType(), vo.getDuration());
         durationDescription = vo.getDurationDescription();
 
@@ -75,8 +84,11 @@ abstract public class TimeoutDetectorRT extends PointEventDetectorRT implements 
     }
 
     protected void scheduleJob(long timeout) {
-        if (task != null)
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! timeout:" + timeout + " : " + LoggingUtils.pointEventDetectorInfo(getVo()));
             cancelTask();
+            return;
+        }
         task = new TimeoutTask(new Date(timeout), this);
     }
 
@@ -86,6 +98,10 @@ abstract public class TimeoutDetectorRT extends PointEventDetectorRT implements 
 
     @Override
     synchronized public final void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! timeout:" + fireTime + " : " + LoggingUtils.pointEventDetectorInfo(getVo()));
+            return;
+        }
         scheduleTimeoutImpl(fireTime);
         task = null;
     }

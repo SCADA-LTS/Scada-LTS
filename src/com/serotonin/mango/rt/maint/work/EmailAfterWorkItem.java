@@ -42,8 +42,8 @@ public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_MEDIUM;
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.MEDIUM;
     }
 
     @Override

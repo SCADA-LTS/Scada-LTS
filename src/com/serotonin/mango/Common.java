@@ -29,11 +29,14 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import org.scada_lts.monitor.IMonitoredValues;
 import gnu.io.CommPortIdentifier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.directwebremoting.WebContext;
@@ -52,13 +55,14 @@ import com.serotonin.mango.view.custom.CustomView;
 import com.serotonin.mango.vo.CommPortProxy;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
-import com.serotonin.monitor.MonitoredValues;
+import org.scada_lts.monitor.ConcurrentMonitoredValues;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.RealTimeTimer;
 import com.serotonin.util.PropertiesUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.serial.SerialPortUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Common {
@@ -76,7 +80,7 @@ public class Common {
 	// This is initialized
 	public static final RealTimeTimer timer = new RealTimeTimer();
 
-	public static final MonitoredValues MONITORED_VALUES = new MonitoredValues();
+	public static final IMonitoredValues MONITORED_VALUES = new ConcurrentMonitoredValues();
 
 	private static String environmentProfileName = "env";
 
@@ -464,7 +468,8 @@ public class Common {
 	//
 	// HttpClient
 	public static HttpClient getHttpClient() {
-		return getHttpClient(30000); // 30 seconds.
+		int timeout = SystemSettingsUtils.getHttpTimeoutMs();
+		return getHttpClient(timeout); // 15 seconds.
 	}
 
 	public static HttpClient getHttpClient(int timeout) {
@@ -472,8 +477,7 @@ public class Common {
 		managerParams.setConnectionTimeout(timeout);
 		managerParams.setSoTimeout(timeout);
 
-		HttpClientParams params = new HttpClientParams();
-		params.setSoTimeout(timeout);
+		HttpClientParams params = createHttpClientParams(timeout);
 
 		HttpClient client = new HttpClient();
 		client.getHttpConnectionManager().setParams(managerParams);
@@ -540,4 +544,28 @@ public class Common {
 		return prefix + StringUtils.generateRandomString(6, "0123456789");
 	}
 
+	public static boolean isTerminating() {
+		return ctx == null || ctx.getBackgroundProcessing() == null || ctx.getBackgroundProcessing().isTerminating();
+  	}
+
+	public static GetMethod createGetMethod(String url) {
+		GetMethod getMethod = new GetMethod(url);
+		getMethod.setFollowRedirects(SystemSettingsUtils.isHttpFollowRedirects());
+		return getMethod;
+	}
+
+	public static PostMethod createPostMethod(String url) {
+		PostMethod postMethod = new PostMethod(url);
+		postMethod.setFollowRedirects(SystemSettingsUtils.isHttpFollowRedirects());
+		return postMethod;
+	}
+
+	private static HttpClientParams createHttpClientParams(int timeout) {
+		HttpClientParams params = new HttpClientParams();
+		params.setSoTimeout(timeout);
+		params.setParameter(HttpClientParams.REJECT_RELATIVE_REDIRECT, SystemSettingsUtils.isHttpRejectRelativeRedirect());
+		params.setParameter(HttpClientParams.MAX_REDIRECTS, SystemSettingsUtils.getHttpMaxRedirects());
+		params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, SystemSettingsUtils.isHttpAllowCircularRedirects());
+		return params;
+	}
 }

@@ -20,7 +20,7 @@ package org.scada_lts.dao.model;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.web.ws.model.AlarmLevelMessage;
+import org.scada_lts.web.ws.model.WsAlarmLevelMessage;
 
 /**
  * Model for buffering UnsilencedAlarmLevel
@@ -49,8 +49,8 @@ public class UserAlarmLevel {
 		return new UserAlarmLevel(user, eventInstance.getAlarmLevel());
 	}
 
-	public AlarmLevelMessage toAlarmLevelMessage() {
-		return new AlarmLevelMessage(alarmLevel);
+	public WsAlarmLevelMessage toAlarmLevelMessage() {
+		return new WsAlarmLevelMessage(alarmLevel);
 	}
 
 	public int getUserId() {

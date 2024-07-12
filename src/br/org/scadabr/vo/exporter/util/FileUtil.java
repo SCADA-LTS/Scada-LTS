@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -65,18 +67,20 @@ public class FileUtil {
 		return file;
 	}
 
-	public static List<File> getFilesOnDirectory(String directoryName) {
-		List<File> files = new ArrayList<File>();
+	public static List<File> getFilesOnDirectory(Path directoryName) {
+		List<File> files = new ArrayList<>();
 		try {
-			File directory = new File(directoryName);
+			File directory = directoryName.toFile();
 			if (directory.exists()) {
 
 				if (directory.isDirectory()) {
 					String[] filesOnDirectory = directory.list();
 
-					for (String fileName : filesOnDirectory) {
-						files.addAll(getFilesOnDirectory(directory
-								.getAbsolutePath() + FILE_SEPARATOR + fileName));
+					if(filesOnDirectory != null) {
+						for (String fileName : filesOnDirectory) {
+							files.addAll(getFilesOnDirectory(Paths.get(directory
+									.getAbsolutePath() + FILE_SEPARATOR + fileName)));
+						}
 					}
 				} else if (directory.isFile()) {
 					files.add(directory);

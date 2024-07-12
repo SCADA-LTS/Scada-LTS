@@ -1,5 +1,6 @@
 import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
+import {getAppLocation} from '../utils/common';
 
 const HEADERS = {
     login: 'admin',
@@ -11,13 +12,13 @@ const webSocketModule = {
     state: {
         webSocket: null,
         webSocketConnection: false,
-        webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
+        webSocketUrl: 'ws-scada',
         debugMode: false,
     },
 
     mutations: {
         INIT_WEBSOCKET(state) {
-            let socket = new SockJS(state.webSocketUrl);
+            let socket = new SockJS(getAppLocation() + state.webSocketUrl);
             let client = Stomp.over(socket);
             if(!state.debugMode) {
                 client.debug = () => {};
@@ -32,14 +33,7 @@ const webSocketModule = {
             state.webSocket = client;
         },
         INIT_WEBSOCKET_URL(state) {
-            let locale = window.location.pathname.split('/')[1];
-			if(!!locale) {
-				locale += '/';
-			}
-    		let protocol = window.location.protocol;
-    		let host = window.location.host.split(":");
-
-			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
+			state.webSocketUrl = 'ws-scada';
         }
     },
 

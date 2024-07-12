@@ -423,8 +423,8 @@ class PersistentSendThread extends SendThread {
             }
 
             @Override
-            public int getPriority() {
-                return WorkItemPriority.HIGH.getPriority();
+            public WorkItemPriority getPriorityType() {
+                return WorkItemPriority.HIGH;
             }
 
             @Override

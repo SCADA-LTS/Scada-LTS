@@ -6,7 +6,7 @@ import org.scada_lts.dao.IHighestAlarmLevelDAO;
 import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
-import org.scada_lts.web.ws.model.AlarmLevelMessage;
+import org.scada_lts.web.ws.model.WsAlarmLevelMessage;
 
 import java.util.function.BiConsumer;
 
@@ -27,9 +27,9 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doUpdateAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
+    public boolean doUpdateAlarmLevel(User user, EventInstance event, BiConsumer<User, WsAlarmLevelMessage> send) {
         try {
-            send.accept(user, new AlarmLevelMessage(event.getAlarmLevel()));
+            send.accept(user, new WsAlarmLevelMessage(event.getAlarmLevel()));
             return true;
         } catch (Exception ex) {
             return false;
@@ -37,7 +37,7 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doSendAlarmLevel(User user, BiConsumer<User, AlarmLevelMessage> send) {
+    public boolean doSendAlarmLevel(User user, BiConsumer<User, WsAlarmLevelMessage> send) {
         try {
             return doSend(user, send);
         } catch (Exception ex) {
@@ -46,7 +46,7 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doRemoveAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
+    public boolean doRemoveAlarmLevel(User user, EventInstance event, BiConsumer<User, WsAlarmLevelMessage> send) {
         try {
             doSend(user, send);
             return true;
@@ -56,14 +56,14 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public void doResetAlarmLevels(BiConsumer<User, AlarmLevelMessage> send) {
+    public void doResetAlarmLevels(BiConsumer<User, WsAlarmLevelMessage> send) {
         for(User user: userService.getActiveUsers())
             doSend(user, send);
     }
 
-    private boolean doSend(User user, BiConsumer<User, AlarmLevelMessage> send) {
+    private boolean doSend(User user, BiConsumer<User, WsAlarmLevelMessage> send) {
         if(user != null) {
-            send.accept(user, new AlarmLevelMessage(getAlarmLevel(user)));
+            send.accept(user, new WsAlarmLevelMessage(getAlarmLevel(user)));
             return true;
         }
         return false;

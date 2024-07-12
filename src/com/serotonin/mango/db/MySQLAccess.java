@@ -32,10 +32,6 @@ import com.serotonin.mango.Common;
 public class MySQLAccess extends BasePooledAccess {
 	
 	private static final Log LOG = LogFactory.getLog(MySQLAccess.class);
-	
-    public MySQLAccess(ServletContext ctx) {
-        super(ctx);
-    }
 
     @Override
     protected void initializeImpl(String propertyPrefix) {
@@ -75,7 +71,7 @@ public class MySQLAccess extends BasePooledAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
     	
     	// To test old shema
     	/*try {

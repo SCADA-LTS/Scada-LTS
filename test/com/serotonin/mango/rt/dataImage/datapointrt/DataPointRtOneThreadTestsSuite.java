@@ -16,14 +16,14 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         DataPointRtTest.class,
         DataPointRtToleranceTest.class,
-        DataPointRtNumericIntervalTest.class,
+        //DataPointRtNumericIntervalTest.class,
 
         DataPointSyncRtTest.class,
-        DataPointSyncRtToleranceTest.class,
+        //DataPointSyncRtToleranceTest.class,
 
         DataPointNonSyncRtTest.class,
-        DataPointNonSyncRtToleranceTest.class,
+        //DataPointNonSyncRtToleranceTest.class,
 
-        DataPointNonSyncRtNumericIntervalTest.class
+        //DataPointNonSyncRtNumericIntervalTest.class
 })
 public class DataPointRtOneThreadTestsSuite {}

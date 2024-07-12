@@ -52,6 +52,8 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.Common.createPostMethod;
+
 /**
  * @author Matthew Lohbihler
  * 
@@ -147,7 +149,7 @@ public class VersionCheck extends TimerTask {
 			throws Exception {
 		HttpClient httpClient = Common.getHttpClient();
 
-		PostMethod postMethod = new PostMethod(
+		PostMethod postMethod = createPostMethod(
 				Common.getGroveUrl(Common.GroveServlets.VERSION_CHECK));
 
 		postMethod.addParameter("instanceId", getInstanceId());

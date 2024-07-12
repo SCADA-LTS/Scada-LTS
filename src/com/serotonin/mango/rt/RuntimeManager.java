@@ -24,11 +24,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.util.StartStopDataPointsUtils;
 import com.serotonin.mango.view.event.NoneEventRenderer;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
@@ -116,7 +118,7 @@ public class RuntimeManager {
 	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
 
 
-	private boolean started = false;
+	private volatile boolean started = false;
 
 	//
 	// Lifecycle
@@ -124,9 +126,6 @@ public class RuntimeManager {
 		if (started)
 			throw new ShouldNeverHappenException(
 					"RuntimeManager already started");
-
-		// Set the started indicator to true.
-		started = true;
 
 		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
 		MailingListService mailingListService = new MailingListService();
@@ -170,6 +169,8 @@ public class RuntimeManager {
 					pollingRound.add(config);
 			}
 		}
+
+		startPoints();
 
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
@@ -243,6 +244,9 @@ public class RuntimeManager {
 					startMaintenanceEvent(vo);
 			}
 		}
+
+		// Set the started indicator to true.
+		started = true;
 	}
 
 	synchronized public void terminate() {
@@ -262,6 +266,10 @@ public class RuntimeManager {
 
 		for (PointLinkRT pointLink : pointLinks)
 			stopPointLink(pointLink.getId());
+
+		stopPoints();
+
+		markAsTerminatingAll();
 
 		// First stop meta data sources.
 		for (DataSourceRT dataSource : runningDataSources) {
@@ -290,7 +298,7 @@ public class RuntimeManager {
 			try {
 				dataSource.joinTermination();
 			} catch (ShouldNeverHappenException e) {
-				LOG.error("Error stopping data source " + dataSource.getId(), e);
+				LOG.error("Error stopping: " + LoggingUtils.dataSourceInfo(dataSource) + " : " + LoggingUtils.exceptionInfo(e), e);
 			}
 		}
 	}
@@ -312,16 +320,16 @@ public class RuntimeManager {
 	}
 
 	public List<DataSourceVO<?>> getDataSources() {
-		return new DataSourceDao().getDataSources();
+		return new DataSourceService().getDataSources();
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
-		return new DataSourceDao().getDataSource(dataSourceId);
+		return new DataSourceService().getDataSource(dataSourceId);
 	}
 
 	public void deleteDataSource(int dataSourceId) {
 		stopDataSource(dataSourceId);
-		new DataSourceDao().deleteDataSource(dataSourceId);
+		new DataSourceService().deleteDataSource(dataSourceId);
 		Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 	}
 
@@ -334,7 +342,7 @@ public class RuntimeManager {
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
 		LOG.debug("Saving DS: " + vo.getName());
-		new DataSourceDao().saveDataSource(vo);
+		new DataSourceService().saveDataSource(vo);
 		LOG.debug("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
@@ -367,7 +375,7 @@ public class RuntimeManager {
 			List<DataPointVO> dataSourcePoints = new DataPointDao()
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
-				if (dataPoint.isEnabled())
+				if (dataPoint.isEnabled() && started)
 					startDataPointSafe(dataPoint);
 			}
 
@@ -388,7 +396,6 @@ public class RuntimeManager {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
 				return;
-
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -401,6 +408,10 @@ public class RuntimeManager {
 			dataSource.joinTermination();
 			LOG.info("Data source '" + dataSource.getName() + "' stopped");
 		}
+	}
+
+	public void markAsTerminatingAll() {
+		PollingDataSource.markAsTerminating();
 	}
 
 	//
@@ -478,6 +489,8 @@ public class RuntimeManager {
 
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
+
+				LOG.info("Data point '" + vo.getExtendedName() + "' initialized");
 			}
 		}
 	}
@@ -496,7 +509,7 @@ public class RuntimeManager {
 		try {
 			startDataPoint(vo);
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			LOG.error(ex.getMessage() + " - " + LoggingUtils.dataPointInfo(vo) + " : ", ex);
 			stopDataPointSafe(vo.getId());
 		}
 	}
@@ -514,8 +527,14 @@ public class RuntimeManager {
 				if (l != null)
 					l.pointTerminated();
 				p.terminate();
+				DataPointVO point = p.getVO();
+				LOG.info("Data point '" + point.getExtendedName() + "' stopped");
 			}
 		}
+	}
+
+	private void stopDataPointSafe(DataPointVO dataPoint) {
+		stopDataPointSafe(dataPoint.getId());
 	}
 
 	private void stopDataPointSafe(int dataPointId) {
@@ -558,11 +577,6 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		if(source instanceof User){
-			setDataPointValue(dataPointId,
-					new PointValueTime(value, System.currentTimeMillis(),((User)source).getUsername()), source);
-		}
-		else
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
 	}
@@ -1055,5 +1069,18 @@ public class RuntimeManager {
 
 		reset.terminate();
 		resetDailyLimitSentEmails.remove(mailingListId);
+	}
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	private void startPoints() {
+		DataPointService dataPointService = new DataPointService();
+		StartStopDataPointsUtils.startPoints(dataPointService, this::startDataPointSafe, this::getDataPoint, this::getRunningDataSource);
+	}
+
+	private void stopPoints() {
+		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
 	}
 }

@@ -122,11 +122,6 @@ public class PointLinksDwr extends BaseDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         PointLinkDao pointLinkDao = new PointLinkDao();
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!pointLinkDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-
         vo.validate(response);
 
         // Save it

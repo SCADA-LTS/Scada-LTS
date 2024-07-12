@@ -137,6 +137,7 @@ export default {
 				title: 'systemsettings.http.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

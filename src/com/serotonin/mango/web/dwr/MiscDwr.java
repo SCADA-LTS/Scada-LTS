@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -529,7 +530,7 @@ public class MiscDwr extends BaseDwr {
 				data = (List<LongPollData>) session
 						.getAttribute(LONG_POLL_DATA_KEY);
 				if (data == null) {
-					data = new ArrayList<LongPollData>();
+					data = new CopyOnWriteArrayList<>();
 					session.setAttribute(LONG_POLL_DATA_KEY, data);
 				}
 			}
@@ -544,12 +545,12 @@ public class MiscDwr extends BaseDwr {
 																	// minutes.
 		if (lastTimeoutCheck < cutoff) {
 			synchronized (data) {
-				Iterator<LongPollData> iter = data.iterator();
-				while (iter.hasNext()) {
-					LongPollData lpd = iter.next();
+				List<LongPollData> toDelete = new ArrayList<>();
+				for(LongPollData lpd: data) {
 					if (lpd.getTimestamp() < cutoff)
-						iter.remove();
+						toDelete.add(lpd);
 				}
+				data.removeAll(toDelete);
 			}
 
 			session.setAttribute(LONG_POLL_DATA_TIMEOUT_KEY,

@@ -1,10 +1,12 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.MsgContentUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,16 +59,15 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
     private final SystemSettingsService systemSettingsService;
     private final MailingListService mailingListService;
 
-    @Deprecated
     public EmailToSmsHandlerRT(EventHandlerVO vo) {
-        super(vo);
+        super(vo, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_SMS_SEND_FAILURE, vo.getId()));
         this.systemSettingsService = new SystemSettingsService();
         this.mailingListService = new MailingListService();
     }
 
     public EmailToSmsHandlerRT(EventHandlerVO vo, ScheduledExecuteInactiveEventService service,
                                MailingListService mailingListService, SystemSettingsService systemSettingsService) {
-        super(vo, service, mailingListService);
+        super(vo, service, mailingListService, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_SMS_SEND_FAILURE, vo.getId()));
         this.systemSettingsService = systemSettingsService;
         this.mailingListService = mailingListService;
     }
@@ -90,9 +91,19 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
         sendMsg(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias(), new AfterWork() {
             @Override
             public void workFail(Throwable exception) {
-                LOG.error("Failed sending sms for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
-                        + ", error: " + exception.getMessage());
+                String msg = "Failed sending sms for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
+                        + ", error: " + exception.getMessage();
+                LOG.error(msg);
+                LocalizableMessage message = new LocalizableMessage("event.sms.failure",
+                        vo.getAlias(), addresses, msg);
+                SystemEventType.raiseEvent(getEventType(), System.currentTimeMillis(), true, message);
             }
+
+            @Override
+            public void workSuccess() {
+                SystemEventType.returnToNormal(getEventType(), System.currentTimeMillis());
+            }
+
         }, () -> eventHandlerInfo(getVo()) + ", " + eventInfo(evt));
     }
 

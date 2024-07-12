@@ -48,8 +48,8 @@ public class WorkItemInfoListTest {
                 }
 
                 @Override
-                public int getPriority() {
-                    return 0;
+                public WorkItemPriority getPriorityType() {
+                    return WorkItemPriority.LOW;
                 }
 
                 @Override

@@ -26,6 +26,7 @@ import java.util.function.BiConsumer;
 public final class SendUtils {
 
     private static final Log LOG = LogFactory.getLog(SendUtils.class);
+    private static final String SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED = "Send email blocking, because application not started";
 
     private SendUtils() {}
 
@@ -142,13 +143,26 @@ public final class SendUtils {
                                 WorkItemDetails workItemDetails) {
         try {
 
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
+
             validateEmail(evt, notificationType, addresses, alias);
 
-            if (evt.getEventType().isSystemMessage()
-                    && ((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
-                // Don't send email notifications about email send failures.
-                notExecuted.workNotExecuted("Not sending email for event raised due to email failure");
-                return;
+            if (evt.getEventType().isSystemMessage()) {
+
+                int systemEventTypeId = evt.getEventType().getSystemEventTypeId();
+
+                if(systemEventTypeId == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
+                    notExecuted.workNotExecuted("Not sending email for event raised due to email failure");
+                    return;
+                }
+
+                if (systemEventTypeId == SystemEventType.TYPE_SMS_SEND_FAILURE) {
+                    notExecuted.workNotExecuted("Not sending sms for event raised due to sms failure");
+                    return;
+                }
             }
 
             SendEmailConfig.validateSystemSettings();
@@ -174,6 +188,11 @@ public final class SendUtils {
                                 AfterWork.WorkFinally workFinally, BeforeWork.NotExecuted notExecuted,
                                 WorkItemDetails workItemDetails) {
         try {
+
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
@@ -212,6 +231,11 @@ public final class SendUtils {
                                             BiConsumer<T, Exception> handleException, T object,
                                             BeforeWork.NotExecuted notExecuted, WorkItemDetails workItemDetails) {
         try {
+
+            if(!Common.ctx.getRuntimeManager().isStarted()) {
+                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                return;
+            }
 
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
@@ -256,17 +280,17 @@ public final class SendUtils {
         String messageExceptionWhenGetSubjectEmail = "";
         try {
             LocalizableMessage subjectMsg;
-            LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
+            LocalizableMessage notifyTypeMsg = new LocalizableMessage(notificationType.getKey());
             if (StringUtils.isEmpty(alias)) {
                 if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.default.log", notifTypeMsg);
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.log", notifyTypeMsg);
                 else
-                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifyTypeMsg, evt.getId());
             } else {
                 if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifyTypeMsg);
                 else
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
+                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifyTypeMsg, evt.getId());
             }
 
             ResourceBundle bundle = Common.getBundle();
@@ -281,35 +305,66 @@ public final class SendUtils {
                 messageExceptionWhenGetSubjectEmail;
     }
 
+    private static String getInfoEmail(NotificationType notificationType, String alias) {
+
+        String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
+        String messageInfoNotification = MessageFormat.format("Notification: {0} \n", notificationType.getKey());
+        String subject = "";
+        String messageExceptionWhenGetSubjectEmail = "";
+        try {
+            LocalizableMessage subjectMsg;
+            LocalizableMessage notifyTypeMsg = new LocalizableMessage(notificationType.getKey());
+            if (StringUtils.isEmpty(alias)) {
+                subjectMsg = new LocalizableMessage("ftl.subject.default.log", notifyTypeMsg);
+            } else {
+                subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifyTypeMsg);
+            }
+            ResourceBundle bundle = Common.getBundle();
+            subject = subjectMsg.getLocalizedMessage(bundle);
+        } catch (Exception e) {
+            messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",ExceptionUtils.getStackTrace(e));
+        }
+        return messageInfoNotification +
+                messageInfoAlias +
+                subject +
+                messageExceptionWhenGetSubjectEmail;
+    }
+
+    private static String getInfoEmail(EventInstance evt, String alias) {
+
+        String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
+        String messageInfoEmail = MessageFormat.format("Event: {0} \n", evt.getId());
+        return messageInfoEmail +
+                messageInfoAlias;
+    }
+
+    private static String getInfoEmail(String alias) {
+        return MessageFormat.format("Alias: {0} \n", alias);
+    }
+
     private static void validateEmail(EventInstance evt, NotificationType notificationType,
                                       Set<String> addresses, String alias) throws IllegalArgumentException {
 
         String messageErrorEventInstance = "Event Instance null \n";
         String messageErrorNotyficationType = "Notification type is null \n";
         String messageErrorEmails = " Don't have e-mail \n";
-        String messageErrorAlias = " Don't have alias\n";
         String messages = "";
         if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
         if (notificationType == null) messages += messageErrorNotyficationType;
         if (addresses == null || addresses.size() == 0) messages += messageErrorEmails;
-        if (alias == null) messages += messageErrorAlias;
 
         if (messages.length() > 0) {
-            throw new IllegalArgumentException(getInfoEmail(evt, notificationType, alias) + messages );
+            if(evt == null && notificationType == null) {
+                throw new IllegalArgumentException(getInfoEmail(alias) + messages);
+            } else if(evt == null) {
+                throw new IllegalArgumentException(getInfoEmail(notificationType, alias) + messages);
+            } else if(notificationType == null) {
+                throw new IllegalArgumentException(getInfoEmail(evt, alias) + messages);
+            } else {
+                throw new IllegalArgumentException(getInfoEmail(evt, notificationType, alias) + messages);
+            }
         }
 
-    }
-
-    private static void validateAddresses(EventInstance evt, NotificationType notificationType,
-                                          InternetAddress[] internetAddresses, String alias) throws IllegalArgumentException {
-
-        String messageErrorEmails = " Don't have e-mail \n";
-        String messages = "";
-        if (internetAddresses == null || internetAddresses.length == 0) messages += messageErrorEmails;
-
-        if (!messages.isEmpty()) {
-            throw new IllegalArgumentException(getInfoEmail(evt, notificationType, alias) + messages );
-        }
     }
 
     private static InternetAddress[] convertToInternetAddresses(String[] toAddresses) {

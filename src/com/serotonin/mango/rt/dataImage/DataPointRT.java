@@ -27,7 +27,7 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
-import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
@@ -50,9 +50,9 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.scada_lts.utils.PointValueStateUtils.isSetPointHandler;
+import static org.scada_lts.utils.PointValueStateUtils.isSetPoint;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
+public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 
@@ -82,6 +82,8 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	private final PointValueService pointValueService;
 	private final DataPointServiceWebSocket dataPointServiceWebSocket;
 
+	private volatile boolean initialized;
+
 	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator) {
 		this.vo = vo;
 		this.pointLocator = pointLocator;
@@ -89,22 +91,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		pointValueService = new PointValueService();
 		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
 	}
-	public DataPointRT(DataPointVO vo, PointLocatorRT pointLocator,int cacheSize,int maxSize) {
-		this.vo = vo;
-		this.pointLocator = pointLocator;
-		valueCache = new PointValueCache(cacheSize);
-		valueCache.setMaxSize(maxSize);
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 
-	public DataPointRT(DataPointVO vo) {
-		this.vo = vo;
-		this.pointLocator = null;
-		valueCache = new PointValueCache();
-		pointValueService = new PointValueService();
-		dataPointServiceWebSocket = ApplicationBeans.getDataPointServiceWebSocketBean();
-	}
 	public PointValueCache getPointValueCache(){
 		return this.valueCache;
 	}
@@ -210,7 +197,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	}
 
 	protected void savePointValue(PointValueTime newValue, SetPointSource source,
-			boolean async) {
+								  boolean async) {
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
 		if (newValue == null)
@@ -252,10 +239,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			return;
 		}
 
-		boolean isSetPointHandler = isSetPointHandler(source);
+		boolean isSetPoint = isSetPoint(source);
 		boolean backdated = pointValue != null
 				&& newValue.getTime() < pointValue.getTime()
-				&& !isSetPointHandler;
+				&& !isSetPoint;
 
 		// Determine whether the new value qualifies for logging.
 		boolean logValue;
@@ -318,7 +305,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 
 		// Ignore historical values.
-		if (pointValue == null || newValue.getTime() >= pointValue.getTime() || isSetPointHandler) {
+		if (pointValue == null || newValue.getTime() >= pointValue.getTime() || isSetPoint) {
 			PointValueTime oldValue = pointValue;
 			pointValue = newValue;
 			fireEvents(oldValue, newValue, source != null, false);
@@ -377,6 +364,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	}
 
 	public void scheduleTimeout(long fireTime) {
+		if(Common.isTerminating()) {
+			LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataPointInfo(getVO()));
+			return;
+		}
 		synchronized (intervalLoggingLock) {
 			MangoValue value;
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.INSTANT)
@@ -555,8 +546,8 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 
 		@Override
-		public int getPriority() {
-			return WorkItem.PRIORITY_MEDIUM;
+		public WorkItemPriority getPriorityType() {
+			return WorkItemPriority.MEDIUM;
 		}
 
 		@Override
@@ -603,6 +594,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 		initializeIntervalLogging();
 		notifyWebSocketStateSubscribers(true);
+		this.initialized = true;
 	}
 
 	public void terminate() {
@@ -616,6 +608,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 		Common.ctx.getEventManager().cancelEventsForDataPoint(vo.getId());
 		notifyWebSocketStateSubscribers(false);
+		this.initialized = false;
 	}
 
 	public void joinTermination() {
@@ -631,4 +624,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		terminateIntervalLogging();
 	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
 }

@@ -12,7 +12,7 @@
 								elevation="2"
 								color="primary"
 								@click="openModal = !openModal"
-								v-if="componentsEdited.length > 0"
+								v-if="componentsEdited.length > 0 && checkValidation(this.componentsEdited)"
 							>
 								<v-icon>mdi-content-save</v-icon>
 							</v-btn>
@@ -428,6 +428,10 @@ export default {
 			);
 			if (this.componentsEdited.length == 0) this.openModal = false;
 		},
+
+		checkValidation(componentList){
+			return !componentList.some(component => component.valid === false);
+		}
 	},
 	computed: {
 		systemInfoSettings() {

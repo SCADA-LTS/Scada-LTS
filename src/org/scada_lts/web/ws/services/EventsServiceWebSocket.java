@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
  * @author Radoslaw Jajko
  * @version 1.1.0
  */
+@Deprecated(since = "2.7.8")
 @Service
 public class EventsServiceWebSocket extends AbstractWebSocket {
 

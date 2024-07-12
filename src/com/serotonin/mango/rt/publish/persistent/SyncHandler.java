@@ -133,8 +133,8 @@ class SyncHandler extends AbstractBeforeAfterWorkItem implements Runnable {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItemPriority.HIGH.getPriority();
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
     @Override
@@ -345,9 +345,10 @@ class SyncHandler extends AbstractBeforeAfterWorkItem implements Runnable {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItemPriority.HIGH.getPriority();
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
+
 
         @Override
         public String toString() {

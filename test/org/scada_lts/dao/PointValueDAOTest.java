@@ -1,46 +1,91 @@
 package org.scada_lts.dao;
 
+import br.org.scadabr.db.utils.TestUtils;
+import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
+import com.serotonin.mango.vo.User;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
-import org.scada_lts.dao.pointvalues.ResultSetImpl;
+import org.scada_lts.login.ILoggedUsers;
+import org.scada_lts.utils.ResultSetMock;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PointValueDAOTest extends TestDAO {
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
-    private Map<String,String> rowExample;
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ApplicationBeans.class})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
+        "javax.activation.*", "javax.management.*"})
+public class PointValueDAOTest {
+
+    private Map<String,Object> rowExample;
     private ResultSet resultSet;
-    private final String USERNAME = "admin";
+    private final String username = "admin";
+    private final int sourceId = 111111;
 
     @Before
-    public void setUp(){
-        rowExample = new HashMap<String,String>();
-        rowExample.put("dataType","33333");
-        rowExample.put("dataPointId","333332");
-        rowExample.put("sourceId","11111");
-        rowExample.put("sourceType","1");
-        rowExample.put("username",USERNAME);
+    public void setup() {
 
-        resultSet = new ResultSetImpl(rowExample);
+        IUserDAO userDaoMock = mock(IUserDAO.class);
+        when(userDaoMock.getUser(sourceId)).thenReturn(TestUtils.newUser(sourceId, "admin"));
+
+        User user = TestUtils.newUser(sourceId, "admin");
+        ILoggedUsers loggedUsers = mock(ILoggedUsers.class);
+        when(loggedUsers.getUser(eq(sourceId))).thenReturn(user);
+
+        mockStatic(ApplicationBeans.class);
+        when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
+
+        rowExample = new HashMap<>();
+        rowExample.put("dataType",1);
+        rowExample.put("dataPointId",123);
+        rowExample.put("sourceId",sourceId);
+        rowExample.put("sourceType",1);
+        rowExample.put("username", username);
+
+        resultSet = new ResultSetMock(rowExample);
     }
 
     @Test
-    public void doPointValueContainsGivenUserNameFromResultSetTest(){
-        PointValue pointValue =  new PointValueDAO().getPointValueRow(resultSet,1);
-        Assert.assertEquals(USERNAME, pointValue.getPointValue().getWhoChangedValue());
+    public void when_mapRow_to_PointValue_then_sourceId() throws SQLException {
+
+        //given:
+        PointValueDAO.PointValueRowMapper mapper = new PointValueDAO.PointValueRowMapper();
+
+        //when:
+        PointValue pointValue = mapper.mapRow(resultSet,1);
+        AnnotatedPointValueTime annotatedPointValueTime = (AnnotatedPointValueTime) pointValue.getPointValue();
+
+        //then:
+        Assert.assertEquals(sourceId, annotatedPointValueTime.getSourceId());
     }
 
-    @After
-    public void tearDown() {
-        // drop database;
-        resultSet = null;
-        rowExample = null;
-        LOG.info("End test ");
+    @Test
+    public void when_mapRow_to_PointValue_then_sourceDescriptionArgument_same_username() throws SQLException {
+
+        //given:
+        PointValueDAO.PointValueRowMapper mapper = new PointValueDAO.PointValueRowMapper();
+
+        //when:
+        PointValue pointValue = mapper.mapRow(resultSet,1);
+        AnnotatedPointValueTime annotatedPointValueTime = (AnnotatedPointValueTime) pointValue.getPointValue();
+
+        //then:
+        Assert.assertEquals(username, annotatedPointValueTime.getSourceDescriptionArgument());
     }
 }

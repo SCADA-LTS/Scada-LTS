@@ -84,15 +84,13 @@ public class SingleExecutorSingleWaiter {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItemPriority.HIGH.getPriority();
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         @Override
         public String toString() {
-            return "TaskWrapper{" +
-                    "command=" + command +
-                    ", details='" + details + '\'' +
+            return "TaskWrapper{details='" + details + '\'' +
                     '}';
         }
 

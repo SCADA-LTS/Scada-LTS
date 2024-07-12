@@ -44,6 +44,31 @@
     <param-name>com.serotonin.web.taglib.ListSortTag.downImage.altKey</param-name>
     <param-value>pagination.descending</param-value>
   </context-param>
+
+  <!-- Log4j2 -->
+  <context-param>
+    <param-name>isLog4jAutoInitializationDisabled</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+  </listener>
+  <filter>
+    <filter-name>log4jServletFilter</filter-name>
+    <filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>log4jServletFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+    <dispatcher>ASYNC</dispatcher>
+  </filter-mapping>
+  <!-- END Log4j2 -->
+
   <!-- secure javamelody -->
   <login-config>
     <auth-method>DIGEST</auth-method>
@@ -181,6 +206,14 @@
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/uploads/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CacheHeaders</filter-name>
+    <url-pattern>/assets/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>monitoring</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
@@ -273,15 +306,15 @@
     <url-pattern>*.shtm</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.png</url-pattern>
   </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>default</servlet-name>
+        <servlet-name>springDispatcher</servlet-name>
         <url-pattern>*.jpg</url-pattern>
     </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.bmp</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -313,15 +346,15 @@
     <url-pattern>*.fla</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.jpeg</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>default</servlet-name>
+    <servlet-name>springDispatcher</servlet-name>
     <url-pattern>*.svg</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -332,7 +365,14 @@
     <servlet-name>default</servlet-name>
     <url-pattern>*.mp3</url-pattern>
   </servlet-mapping>
-
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.json</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>springDispatcher</servlet-name>
     <url-pattern>/</url-pattern>

@@ -559,3 +559,25 @@ mango.view.graphic.HorizontalLevel.setValue = function(viewComponentId, value) {
     
     g.paint();
 };
+
+async function loadDefaultSizeContainer(fileUrl, containerId) {
+    const response = await fetch(fileUrl);
+    const notFoundFile = await isNotFoundFile(response);
+    const container = document.getElementById(containerId);
+    const width = response.headers.get("img-width");
+    const height = response.headers.get("img-height");
+    if(notFoundFile || (width == "-1" || height == "-1")) {
+        container.width = 1920;
+        container.height = 1080;
+    }else if (width && height) {
+        container.width = width;
+        container.height = height;
+    } else {
+         container.removeAttribute("width");
+         container.removeAttribute("height");
+     }
+}
+
+async function isNotFoundFile(response) {
+    return response.status === 404;
+}

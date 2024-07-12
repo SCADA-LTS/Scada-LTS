@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import org.scada_lts.web.mvc.api.datasources.meta.MetaPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.modbusip.ModbusIpPointLocatorJson;
@@ -21,8 +22,10 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualPointLocatorJson;
 })
 public class DataPointLocatorJson {
 
+    @JsonRemoteProperty
     private int dataTypeId;
-    private boolean settable;
+    @JsonRemoteProperty
+    private Boolean settable;
 
     public DataPointLocatorJson() {}
 
@@ -32,7 +35,7 @@ public class DataPointLocatorJson {
     }
 
     public PointLocatorVO parsePointLocatorData() {
-        throw new UnsupportedOperationException("Method not overwritten");
+        throw new UnsupportedOperationException("Unsupported type");
     }
 
     public int getDataTypeId() {
@@ -43,11 +46,11 @@ public class DataPointLocatorJson {
         this.dataTypeId = dataTypeId;
     }
 
-    public boolean isSettable() {
+    public Boolean isSettable() {
         return settable;
     }
 
-    public void setSettable(boolean settable) {
+    public void setSettable(Boolean settable) {
         this.settable = settable;
     }
 

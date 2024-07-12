@@ -185,6 +185,7 @@ export default {
 				title: 'systemsettings.email.title',
 				changed: changed,
 				data: this.sumarizeDataChanges(),
+				valid: true,
 			});
 		},
 

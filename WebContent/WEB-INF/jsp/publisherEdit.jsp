@@ -34,6 +34,10 @@
             for (var i=0; i<response.messages.length; i++)
                 showMessage(response.messages[i].contextKey +"Msg", response.messages[i].contextualMessage);
         } else {
+            var errorMessages = document.getElementsByClassName("formError");
+            for (var j = 0; j < errorMessages.length; j++) {
+                errorMessages[j].innerHTML = '';
+            }
             showMessage("message", "<fmt:message key="publisherEdit.saved"/>");
             showHttpSenderTest();
         }

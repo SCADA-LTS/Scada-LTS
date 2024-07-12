@@ -50,7 +50,8 @@
 	
 	shortcut.add("Ctrl+Shift+F",function() {
 	    var forceFullScreenMode = ${forceFullScreenMode};
-	    if(!forceFullScreenMode || ${isAdmin})
+	    var isAdmin = ${isAdmin};
+	    if(!forceFullScreenMode || isAdmin)
 	        closeFullScreen();
 	});
 	
@@ -58,7 +59,7 @@
 	jQuery.ajax({
         type: "GET",
         dataType: "json",
-        url:'/ScadaBR/api/config/replacealert',
+        url:'api/config/replacealert',
             success: function(data){
               if (data==true) {
             	  window.alert =  function(message) {
@@ -296,4 +297,3 @@
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-charts.js.jsp"%>

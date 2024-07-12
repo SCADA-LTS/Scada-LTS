@@ -32,7 +32,6 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
@@ -105,8 +104,8 @@ public class EventService implements MangoEvent {
 		}
 
 		@Override
-		public int getPriority() {
-			return WorkItemPriority.HIGH.getPriority();
+		public WorkItemPriority getPriorityType() {
+			return WorkItemPriority.HIGH;
 		}
 
 		@Override
@@ -220,7 +219,9 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-		return eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		List<EventInstance> lst = eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
+		attachRelationInfo(lst);
+		return lst;
 	}
 
 	@Override
@@ -287,7 +288,7 @@ public class EventService implements MangoEvent {
 				}
 				attachRelationalInfo(results);
 			}
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 		return results;
@@ -412,12 +413,14 @@ public class EventService implements MangoEvent {
 		eventDAO.delete(handlerId);
 
 		AuditEventUtils.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
+		Common.ctx.getEventManager().cancelEventsForHandler(handlerId);
 	}
 
 	public void deleteEventHandler(final String handlerXid) {
 		EventHandlerVO handler = getEventHandler(handlerXid);
 		eventDAO.delete(handler.getId());
 		AuditEventUtils.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
+		Common.ctx.getEventManager().cancelEventsForHandler(handler.getId());
 	}
 	
 	@Override
@@ -572,11 +575,5 @@ public class EventService implements MangoEvent {
 
 		clearCache();
 		notifyEventAck(eventId);
-
-		//TODO check
-		/*if( signalAlarmLevelChange ) {
-			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
-			Common.ctx.getEventManager().notifyEventAck(eventId,  userId);
-		}*/
 	}
 }

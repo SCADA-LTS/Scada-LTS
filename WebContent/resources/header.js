@@ -31,10 +31,11 @@ window.onerror = function mangoHandler(desc, page, line)  {
 
 mango.header = {};
 mango.header.onLoad = function() {
+    let imgNode = document.getElementById("__header__alarmLevelDiv");
     if (dojo.render.html.ie)
-        mango.header.evtVisualizer = new IEBlinker($("__header__alarmLevelDiv"), 500, 200);
+        mango.header.evtVisualizer = new IEBlinker(imgNode, 500, 200);
     else
-        mango.header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
+        mango.header.evtVisualizer = new ImageFader(imgNode, 75, .2);
     mango.longPoll.start();
 };
 

@@ -76,9 +76,9 @@ public abstract class AbstractDataPointRtToleranceMultiTest extends ConfigDataPo
         List<PointValueTime> pointValuesExpected = getPointValuesWithUserExpected(exepected);
 
         //when:
-        TestConcurrentUtils.biConsumer(getNumberOfTests(), dataPointRT::setPointValue, oldValue, getUser());
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, oldValue, getUser());
         TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue, getUser());
-        TestConcurrentUtils.biConsumer(getNumberOfTests(), dataPointRT::setPointValue, newValue2, getUser());
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue2, getUser());
 
         //and when:
         List<PointValueTime> pointValues = dataPointRT.getLatestPointValues(getDefaultCacheSize());
