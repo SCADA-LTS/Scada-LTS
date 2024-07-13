@@ -68,6 +68,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         try {
+            updateAttemptsCounters.clear();
             messagingService.open();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Throwable e) {
@@ -91,7 +92,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
         } finally {
-            updateAttemptsCounters.clear();
+            updateAttemptsCounters.values().stream().peek(a -> a.set(0)).close();
         }
     }
 
@@ -119,7 +120,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         } finally {
-            updateAttemptsCounters.remove(dataPoint.getId());
+            updateAttemptsCounters.get(dataPoint.getId()).set(0);
         }
         super.removeDataPoint(dataPoint);
     }
@@ -139,15 +140,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
                 }
             } catch (Throwable e) {
-                updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
                 LOG.error(info(e, this), e);
-            } catch (Exception e) {
-                LOG.warn(exceptionInfo(e), e);
                 int dataPointId = dataPoint.getId();
-                AtomicInteger counter = updateAttemptsCounters.get(dataPointId);
-                if(counter != null) {
-                    counter.incrementAndGet();
-                }
+                updateAttemptsCounters.computeIfPresent(dataPointId, (a,b) -> {b.incrementAndGet(); return b;});
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e), dataPoint);
             }

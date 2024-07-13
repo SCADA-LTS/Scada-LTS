@@ -228,9 +228,11 @@ test {
         includeTestsMatching "org.scada_lts.utils.BlockingQueuesUtilsTest"
     }
 
+    failFast = true
+
     testLogging {
 
-        //exceptionFormat = "full"
+        exceptionFormat = "full"
         showStandardStreams = true
 
         afterTest { desc, result ->
