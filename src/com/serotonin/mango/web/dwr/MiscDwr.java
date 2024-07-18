@@ -276,6 +276,7 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
+        Common.getUser().setHomeUrl(url);
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
