@@ -508,7 +508,6 @@
 
             selectedHandlerNode.object = handler;
         }
-        $set("xid", handler.xid);
     }
 
     function deleteHandler() {
