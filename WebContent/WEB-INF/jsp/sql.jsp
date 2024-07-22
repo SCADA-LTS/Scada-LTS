@@ -31,7 +31,7 @@
         <form action="sql.shtm" method="post">
           <table>
             <tr>
-              <td colspan="2"><fmt:message key="sql.warning"/></td>
+              <td colspan="2"><span class="formError"><fmt:message key="sql.warning.prefix"/></span> <fmt:message key="sql.warning"/></td>
             </tr>
             <spring:bind path="form.sqlString">
               <tr>
