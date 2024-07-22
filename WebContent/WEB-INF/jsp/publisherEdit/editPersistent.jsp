@@ -125,7 +125,7 @@
           points[points.length] = {dataPointId: selectedPoints[i].id};
       
       PublisherEditDwr.savePersistentSender(name, xid, enabled, points, $get("host"), $get("port"),
-              $get("authorizationKey"), $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot, 
+              $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,
               snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
 </script>
