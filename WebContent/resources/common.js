@@ -1260,3 +1260,14 @@ function OnListWebsocketStats() {
 		console.log("message[/app/websocketStats]:\n" + message.body);
 	} );
 }
+
+function validateValue(htmlId, messageText, validate, value, messages) {
+    if(!validate(value)) {
+        let message = createValidationMessage(htmlId, messageText);
+        messages.push(message);
+    }
+}
+
+function isNotEmpty(value) {
+    return !(value == null || (typeof value === "string" && value.trim() === ""))
+}
