@@ -326,7 +326,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 		vo.setId(handlerId);
 		if (StringUtils.isEmpty(xid) && handlerId == Common.NEW_ID) {
-			vo.setXid(StringUtils.isEmpty(xid) ? eventService.generateUniqueXid() : xid);
+			vo.setXid(eventService.generateUniqueXid());
 		}
 		else {
 			vo.setXid(xid);

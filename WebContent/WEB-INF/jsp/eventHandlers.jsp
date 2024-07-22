@@ -456,14 +456,11 @@
         var xid = $get("xid");
         var alias = $get("alias");
         var disabled = $get("disabled");
-        var messages = [];
-        if (!(isNotEmpty(xid)) && handlerId !== ${NEW_ID}){
-          validateValue("xid", "<fmt:message key='validate.valueRestored'/>", isNotEmpty, xid, messages)
+        if (isEmpty(xid) && handlerId !== ${NEW_ID}){
+          let message = createValidationMessage("xid", "<fmt:message key='validate.valueRestored'/>");
           $set("xid", selectedHandlerNode.object.xid);
-        }
-        if(messages.length > 0){
           stopImageFader("saveImg");
-          showDwrMessages(messages);
+          showDwrMessages([message]);
         }
         else {
           if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {

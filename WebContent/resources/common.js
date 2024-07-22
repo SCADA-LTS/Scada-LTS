@@ -1268,6 +1268,6 @@ function validateValue(htmlId, messageText, validate, value, messages) {
     }
 }
 
-function isNotEmpty(value) {
-    return !(value == null || (typeof value === "string" && value.trim() === ""))
+function isEmpty(value) {
+    return (value == null || (typeof value === "string" && value.trim() === ""))
 }
