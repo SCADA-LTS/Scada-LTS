@@ -30,7 +30,7 @@
 <div id="viewContainer">
 <div id="viewContent" width="${view.width}" height="${view.height}">
   <c:choose>
-    <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/> <a href="view_edit.shtm"><fmt:message key="views.noViews.prefix"/></a></c:when>
+    <c:when test="${empty view || view.id == -1}"><fmt:message key="${emptyMessageKey}"/> <a href="view_edit.shtm"><fmt:message key="views.noViews.prefix"/></a></c:when>
     <c:when test="${empty view.backgroundFilename}">
       <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
     </c:when>
