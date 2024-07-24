@@ -81,12 +81,12 @@
   }
 
   function validateValue(htmlId, messageText, validate, value, messages) {
-    if(!validate(value)) {
-      let message = createValidationMessage(htmlId, messageText);
-      messages.push(message);
-    }
+      if(!validate(value)) {
+          let message = createValidationMessage(htmlId, messageText);
+          messages.push(message);
+      }
   }
-  
+
   function createLocatorConfigTemp(){
       let temp = {};
       temp.slaveId = $get("test_slaveId");
