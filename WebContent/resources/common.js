@@ -1282,3 +1282,7 @@ function unassignEvent(eventId) {
         }
     });
 }
+
+function isEmpty(value) {
+    return !value || (typeof value === "string" && value.trim() === "");
+}

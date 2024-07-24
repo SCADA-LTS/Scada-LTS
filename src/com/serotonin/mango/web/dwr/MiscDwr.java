@@ -282,6 +282,7 @@ public class MiscDwr extends BaseDwr {
 
 	
 	public void setHomeUrl(String url) {
+		Permissions.ensureValidUser();
 		// Remove the scheme, domain, and context if there.
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -305,6 +306,10 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
+		User user = Common.getUser();
+		user.setHomeUrl(url);
+		UserService userService = new UserService();
+		userService.saveHomeUrl(user.getId(), url);
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
