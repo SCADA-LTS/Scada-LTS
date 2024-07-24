@@ -1261,13 +1261,6 @@ function OnListWebsocketStats() {
 	} );
 }
 
-function validateValue(htmlId, messageText, validate, value, messages) {
-    if(!validate(value)) {
-        let message = createValidationMessage(htmlId, messageText);
-        messages.push(message);
-    }
-}
-
 function isEmpty(value) {
-    return (value == null || (typeof value === "string" && value.trim() === ""))
+    return !value || (typeof value === "string" && value.trim() === "");
 }
