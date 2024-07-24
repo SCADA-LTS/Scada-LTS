@@ -158,9 +158,9 @@ public class EventManager implements ILifecycle {
 				User admin = userService.getUser("admin");
 				if(admin != null) {
 					eventService.ackEvent(
-							evt.getId(),
+							evt,
 							time,
-							admin.getId(),
+							admin,
 							EventInstance.AlternateAcknowledgementSources.MAINTENANCE_MODE,
 							false); // no signaling of AlarmLevel change
 					for(User user: eventConfirmForUsers) {
@@ -451,13 +451,14 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void resetHighestAlarmLevels() {
-		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userService, userEventServiceWebSocket);
+		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userEventServiceWebSocket);
 	}
 
 	public int getHighestAlarmLevel(int userId) {
 		return highestAlarmLevelService.getAlarmLevel(User.onlyId(userId));
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventRaise(int eventId, int userId) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -466,6 +467,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventRaise(int eventId) {
 		if(eventId != Common.NEW_ID) {
 			for(int userId: ApplicationBeans.getLoggedUsersBean().getUserIds()) {
@@ -482,6 +484,7 @@ public class EventManager implements ILifecycle {
 		NotifyEventUtils.notifyEventAck(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventAck(int eventId, User user) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -489,6 +492,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventAck(int eventId) {
 		if(eventId != Common.NEW_ID) {
 			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
@@ -496,6 +500,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventAssignee(int eventId) {
 		if(eventId != Common.NEW_ID) {
 			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
@@ -509,8 +514,9 @@ public class EventManager implements ILifecycle {
 
 	public void notifyEventRtn(EventInstance event) {
 		if(event.getId() != Common.NEW_ID) {
-			for (User user : userService.getActiveUsers())
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
 				notifyEventRtn(event, user);
+			}
 		}
 	}
 
@@ -518,6 +524,7 @@ public class EventManager implements ILifecycle {
 		NotifyEventUtils.notifyEventToggle(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventToggle(int eventId, int userId) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -528,5 +535,29 @@ public class EventManager implements ILifecycle {
 
 	public void notifyEventUpdate(User user, WsEventMessage message) {
 		NotifyEventUtils.notifyEventUpdate(user, message, userEventServiceWebSocket);
+	}
+
+	public void notifyEventRaise(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventRaise(event, user);
+			}
+		}
+	}
+
+	public void notifyEventAck(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventAck(event, user);
+			}
+		}
+	}
+
+	public void notifyEventAssignee(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventToggle(event, user);
+			}
+		}
 	}
 }

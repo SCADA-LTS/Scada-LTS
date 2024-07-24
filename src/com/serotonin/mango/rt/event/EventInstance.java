@@ -98,7 +98,7 @@ public class EventInstance {
     private int alternateAckSource;
 
     private long assigneeTimestamp;
-    private String assigneeByUsername;
+    private String assigneeUsername;
 
     //
     //
@@ -190,8 +190,8 @@ public class EventInstance {
 
     public LocalizableMessage getAssigneeMessage() {
         if (isAssignee()) {
-            if (!StringUtils.isEmpty(assigneeByUsername))
-                return new LocalizableMessage("events.assigneeByUser", assigneeByUsername);
+            if (!StringUtils.isEmpty(assigneeUsername))
+                return new LocalizableMessage("events.assigneeByUser", assigneeUsername);
         }
         return new LocalizableMessage("common.noMessage");
     }
@@ -373,12 +373,12 @@ public class EventInstance {
         this.assigneeTimestamp = assigneeTimestamp;
     }
 
-    public String getAssigneeByUsername() {
-        return assigneeByUsername;
+    public String getAssigneeUsername() {
+        return assigneeUsername;
     }
 
-    public void setAssigneeByUsername(String assigneeByUsername) {
-        this.assigneeByUsername = assigneeByUsername;
+    public void setAssigneeUsername(String assigneeUsername) {
+        this.assigneeUsername = assigneeUsername;
     }
 
     public Map<String, Object> getContext() {
@@ -491,7 +491,7 @@ public class EventInstance {
         eventInstance.setSilenced(silenced);
         eventInstance.setUserNotified(userNotified);
         eventInstance.setAssigneeTimestamp(assigneeTimestamp);
-        eventInstance.setAssigneeByUsername(assigneeByUsername);
+        eventInstance.setAssigneeUsername(assigneeUsername);
         return eventInstance;
     }
 

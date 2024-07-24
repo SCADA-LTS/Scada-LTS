@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,31 +85,8 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
-                eventService.ackEvent(eventId, time.getTime(), user.getId(), 0);
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Accept specific Event Alarm from REST API
-     *
-     * @param eventId Event ID number
-     * @param request Request containing user data
-     * @return Response
-     */
-    @PutMapping(value = "/assignee/{id}")
-    public ResponseEntity<String> assigneeEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
-        LOG.info("PUT::/api/events/accept/" + eventId);
-        try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                Date time = new Date();
-                eventService.assigneeEvent(eventId, time.getTime(), user);
+                EventInstance event = eventService.getEvent(eventId);
+                eventService.ackEvent(event, time.getTime(), user, 0);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -131,7 +109,6 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
                 eventService.silenceEvent(eventId, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -155,7 +132,6 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
                 eventService.unsilenceEvent(eventId, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -356,6 +332,54 @@ public class EventsAPI {
             if (user != null) {
                 List<EventCommentDTO> result = eventService.findCommentsByEventId(eventId);
                 return new ResponseEntity<List<EventCommentDTO>>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Accept specific Event Alarm from REST API
+     *
+     * @param eventId Event ID number
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PutMapping(value = "/assign/{id}")
+    public ResponseEntity<String> assigneeEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/assignee/" + eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                EventInstance event = eventService.getEvent(eventId);
+                eventService.assignEvent(event, user);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Accept specific Event Alarm from REST API
+     *
+     * @param eventId Event ID number
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PutMapping(value = "/unassign/{id}")
+    public ResponseEntity<String> clearAssigneeEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/clear-assignee/" + eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                EventInstance event = eventService.getEvent(eventId);
+                eventService.unassignEvent(event, user);
+                return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

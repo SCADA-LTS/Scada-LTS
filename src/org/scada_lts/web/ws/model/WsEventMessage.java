@@ -167,8 +167,8 @@ public class WsEventMessage {
         return instance.getAssigneeTimestamp();
     }
 
-    public String getAssigneeByUsername() {
-        return instance.getAssigneeByUsername();
+    public String getAssigneeUsername() {
+        return instance.getAssigneeUsername();
     }
 
     public boolean isAssignee() {

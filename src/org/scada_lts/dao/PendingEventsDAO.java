@@ -171,7 +171,7 @@ public class PendingEventsDAO {
 		long assigneeTs = rs.getLong(COLUMN_NAME_EVENT_ASSIGNEE_TS);
 		if (!rs.wasNull()) {
 			event.setAssigneeTimestamp(assigneeTs);
-			event.setAssigneeByUsername(rs.getString(COLUMN_NAME_EVENT_ASSIGNEE_USERNAME));
+			event.setAssigneeUsername(rs.getString(COLUMN_NAME_EVENT_ASSIGNEE_USERNAME));
 		}
 		
 		return event;

@@ -24,12 +24,15 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PendingEventsCache;
@@ -135,13 +138,15 @@ public class EventService implements MangoEvent {
 			updateCache(event);
 		}
 	}
-	
+
+	@Deprecated(since = "2.8.0")
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
 		_ackEvent(eventId, time, userId, alternateAckSource, signalAlarmLevelChange);
 	}
 
+	@Deprecated(since = "2.8.0")
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
@@ -170,7 +175,13 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public void ackAllPending(long time, int userId, int alternateAckSource) {
-		eventDAO.ackAllPending(time, userId, alternateAckSource);
+		MangoEvent eventService = new EventService();
+		UserService userEvent = new UserService();
+		User user = userEvent.getUser(userId);
+		for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
+			if(!evt.isActive())
+				eventService.ackEvent(evt, time, user, alternateAckSource);
+		}
 	}
 
 	@Override
@@ -424,6 +435,7 @@ public class EventService implements MangoEvent {
 	}
 	
 	@Override
+	@Deprecated(since = "2.8.0")
 	public boolean toggleSilence(int eventId, int userId) {
 		boolean updated = eventDAO.toggleSilence(eventId, userId, false);
 		if (updated) {
@@ -431,19 +443,6 @@ public class EventService implements MangoEvent {
 			Common.ctx.getEventManager().notifyEventToggle(eventId, userId);
 		} else {
 			Common.ctx.getEventManager().notifyEventRaise(eventId, userId);
-		}
-		return updated;
-	}
-
-	@Override
-	public boolean assigneeEvent(int eventId, long time, User user) {
-		boolean updated = eventDAO.updateAssignee(time, user.getUsername(), eventId);
-		if (updated) {
-			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
-			Common.ctx.getEventManager().notifyEventAssignee(eventId);
-			removeUserIdFromCache(user.getId());
-		} else {
-			Common.ctx.getEventManager().notifyEventRaise(eventId);
 		}
 		return updated;
 	}
@@ -563,6 +562,7 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEvents(query, user);
 	}
 
+	@Deprecated(since = "2.8.0")
 	private void notifyEventAck(int eventId) {
 		Common.ctx.getEventManager().notifyEventAck(eventId);
   }
@@ -581,6 +581,7 @@ public class EventService implements MangoEvent {
 		return DAO.getInstance().isXidUnique(xid, excludeId, "eventHandlers");
 	}
 
+	@Deprecated(since = "2.8.0")
 	private void _ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
 		eventDAO.updateAck(time, userId, alternateAckSource, eventId);
 		// true silenced
@@ -588,5 +589,90 @@ public class EventService implements MangoEvent {
 
 		clearCache();
 		notifyEventAck(eventId);
+	}
+
+	@Override
+	public boolean toggleSilence(EventInstance event, User user) {
+		boolean updated = eventDAO.toggleSilence(event.getId(), user.getId(), true);
+		if (updated) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
+			Common.ctx.getEventManager().notifyEventToggle(event, user);
+		} else if(!event.isAssignee()) {
+			Common.ctx.getEventManager().notifyEventRaise(event, user);
+		}
+		return updated;
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Override
+	public void ackEvent(EventInstance event, long time, User user, int alternateAckSource, boolean signalAlarmLevelChange) {
+		_ackEvent(event, time, user, alternateAckSource, signalAlarmLevelChange);
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Override
+	public void ackEvent(EventInstance event, long time, User user, int alternateAckSource) {
+		_ackEvent(event, time, user, alternateAckSource, true);
+	}
+
+	@Override
+	public boolean assignEvent(EventInstance event, User user) {
+		if(!isAssignPermission(event, user)) {
+			return false;
+		}
+		long time = System.currentTimeMillis();
+		boolean updated = eventDAO.assign(event.getId(), time, user);
+		if (updated) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(time);
+			Common.ctx.getEventManager().notifyEventAssignee(event);
+			removeUserIdFromCache(user.getId());
+			SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_ASSIGNED_EVENT), time, false,
+					new LocalizableMessage("events.assignedBy", LoggingUtils.userInfo(user), LoggingUtils.eventInfo(event)));
+		} else {
+			Common.ctx.getEventManager().notifyEventRaise(event);
+		}
+		return updated;
+	}
+
+	@Override
+	public boolean unassignEvent(EventInstance event, User user) {
+		if(!isAssignPermission(event, user)) {
+			return false;
+		}
+		long time = System.currentTimeMillis();
+		boolean updated = eventDAO.unassign(event.getId());
+		if (updated) {
+			Common.ctx.getEventManager().setLastAlarmTimestamp(time);
+			removeUserIdFromCache(user.getId());
+			SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_UNASSIGNED_EVENT), time, false,
+					new LocalizableMessage("events.unassignedBy", event.getAssigneeUsername(), LoggingUtils.userInfo(user),
+							LoggingUtils.eventInfo(event)));
+		}
+		boolean silence = eventDAO.isSilence(event.getId(), user.getId());
+		if(!silence) {
+			Common.ctx.getEventManager().notifyEventRaise(event);
+		}
+		return updated;
+	}
+
+	private static boolean isAssignPermission(EventInstance event, User user) {
+		return !event.isAssignee() || (user.isAdmin() || Objects.equals(user.getUsername(), event.getAssigneeUsername()));
+	}
+
+	private void notifyEventAck(EventInstance event) {
+		Common.ctx.getEventManager().notifyEventAck(event);
+	}
+
+	private void _ackEvent(EventInstance event, long time, User user, int alternateAckSource, boolean signalAlarmLevelChange) {
+		if(event.isActive()) {
+			LOG.warn("Event is active! This event cannot be acknowledged.");
+			return;
+		}
+		eventDAO.updateAck(time, user.getId(), alternateAckSource, event.getId());
+		// true silenced
+		userEventDAO.updateAck(event.getId(), true);
+
+		clearCache();
+		notifyEventAck(event);
 	}
 }

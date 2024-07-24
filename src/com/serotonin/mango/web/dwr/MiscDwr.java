@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -89,8 +88,9 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventService()
-					.toggleSilence(eventId, user.getId());
+			EventService eventService = new EventService();
+			EventInstance event = eventService.getEvent(eventId);
+			boolean result = eventService.toggleSilence(event, user);
 			resetLastAlarmLevelChange();
 			response.addData("silenced", result);
 		} else
@@ -101,13 +101,15 @@ public class MiscDwr extends BaseDwr {
 
 	
 	public DwrResponseI18n silenceAll() {
-		List<Integer> silenced = new ArrayList<Integer>();
+		List<Integer> silenced = new ArrayList<>();
 		User user = Common.getUser();
-		MangoEvent eventService = new EventService();
-		for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
-			if (!evt.isSilenced()) {
-				eventService.toggleSilence(evt.getId(), user.getId());
-				silenced.add(evt.getId());
+		if (user != null) {
+			MangoEvent eventService = new EventService();
+			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
+				if (!evt.isSilenced()) {
+					eventService.toggleSilence(evt, user);
+					silenced.add(evt.getId());
+				}
 			}
 		}
 
@@ -124,26 +126,39 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			EventInstance evt = eventService.getEvent(eventId);
 			if(evt != null && !evt.isActive()) {
-				eventService.ackEvent(evt.getId(), System.currentTimeMillis(),
-						user.getId(), 0);
+				eventService.ackEvent(evt, System.currentTimeMillis(), user, 0);
 				resetLastAlarmLevelChange();
 			}
 		}
 		return eventId;
 	}
 
-	public int assigneeEvent(int eventId) {
+	public boolean assignEvent(int eventId) {
 		User user = Common.getUser();
 		MangoEvent eventService = new EventService();
+		boolean result = false;
 		if (user != null) {
 			EventInstance evt = eventService.getEvent(eventId);
 			if(evt != null) {
-				eventService.assigneeEvent(evt.getId(), System.currentTimeMillis(),
-						user);
+				result = eventService.assignEvent(evt, user);
 				resetLastAlarmLevelChange();
 			}
 		}
-		return eventId;
+		return result;
+	}
+
+	public boolean unassignEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		boolean result = false;
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				result = eventService.unassignEvent(evt, user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return result;
 	}
 
 	public void acknowledgeAllPendingEvents() {
@@ -153,7 +168,7 @@ public class MiscDwr extends BaseDwr {
 			long now = System.currentTimeMillis();
 			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
 				if(!evt.isActive())
-					eventService.ackEvent(evt.getId(), now, user.getId(), 0);
+					eventService.ackEvent(evt, now, user, 0);
 			}
 			resetLastAlarmLevelChange();
 		}

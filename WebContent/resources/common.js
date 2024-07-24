@@ -1103,15 +1103,6 @@ function isInt32(state) {
     return Number.parseInt(state) === view.getInt32(1);
 }
 
-function assigneeEvent(eventId) {
-    hide("assigneeImg"+ eventId);
-    var imgNode = $("assigneeImg"+ eventId);
-    updateImg(imgNode, "images/user_delete.png", mango.i18n["events.assign"], true, "inline");
-    imgNode.onclick = function() {};
-    dojo.html.removeClass(imgNode, "ptr");
-    MiscDwr.assigneeEvent(eventId);
-}
-
 function isValid(value) {
     let trimValue = trim(value);
     return trimValue === "" || isPositiveInt(trimValue)
@@ -1268,4 +1259,26 @@ function OnListWebsocketStats() {
 	stompClient.subscribe("/app/websocketStats", function(message) {
 		console.log("message[/app/websocketStats]:\n" + message.body);
 	} );
+}
+
+function assignEvent(eventId) {
+    MiscDwr.assignEvent(eventId, function(response) {
+        if(response) {
+            hide("assigneeImg"+ eventId);
+            var imgNode = $("assigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_delete.png", mango.i18n["events.unassign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
+function unassignEvent(eventId) {
+    MiscDwr.unassignEvent(eventId, function(response) {
+        if(response) {
+            hide("unassigneeImg"+ eventId);
+            var imgNode = $("unassigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_add.png", mango.i18n["events.assign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
 }

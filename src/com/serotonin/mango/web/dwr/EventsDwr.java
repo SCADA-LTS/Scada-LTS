@@ -49,6 +49,7 @@ public class EventsDwr extends BaseDwr {
 	public static final String STATUS_ACTIVE = "A";
 	public static final String STATUS_RTN = "R";
 	public static final String STATUS_NORTN = "N";
+	public static final String STATUS_ASSIGNEE = "U";
 
 	public static final int DATE_RANGE_TYPE_NONE = 1;
 	public static final int DATE_RANGE_TYPE_RELATIVE = 2;

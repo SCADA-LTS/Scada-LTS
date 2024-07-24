@@ -38,9 +38,11 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 public interface MangoEvent {
 	
 	void saveEvent(EventInstance event);
-	
+
+	@Deprecated(since = "2.8.0")
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange);
-	
+
+	@Deprecated(since = "2.8.0")
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
 
     void silenceEvent(int eventId, int userId);
@@ -117,10 +119,9 @@ public interface MangoEvent {
 	void updateEventHandler(EventHandlerVO handler);
 	
 	void deleteEventHandler(final int handlerId);
-	
-	boolean toggleSilence(int eventId, int userId);
 
-	boolean assigneeEvent(int eventId, long time, User user);
+	@Deprecated(since = "2.8.0")
+	boolean toggleSilence(int eventId, int userId);
 
 	int getHighestUnsilencedAlarmLevel(int userId);
 
@@ -131,4 +132,12 @@ public interface MangoEvent {
 	boolean isXidUnique(String xid, int excludeId);
 
 	List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit);
+
+	boolean toggleSilence(EventInstance event, User user);
+
+	boolean assignEvent(EventInstance event, User user);
+	boolean unassignEvent(EventInstance event, User user);
+
+	void ackEvent(EventInstance event, long time, User user, int alternateAckSource, boolean signalAlarmLevelChange);
+	void ackEvent(EventInstance event, long time, User user, int alternateAckSource);
 }

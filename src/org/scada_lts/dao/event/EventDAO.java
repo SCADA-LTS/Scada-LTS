@@ -238,7 +238,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_ID+"=? and "
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 
-	private static final String EVENT_ACCEPT ="" +
+	private static final String EVENT_ASSIGN_EVENT ="" +
 			"update "
 			+"events set "
 			+ COLUMN_NAME_ASSIGNEE_TS +"=?, "
@@ -246,6 +246,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "where "
 			+ COLUMN_NAME_ID+"=? and "
 			+ "("+ COLUMN_NAME_ASSIGNEE_TS +" is null or "+ COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
+
+	private static final String EVENT_UNASSIGN_EVENT ="" +
+			"update "
+			+"events set "
+			+ COLUMN_NAME_ASSIGNEE_TS +"=null, "
+			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
+			+ "where "
+			+ COLUMN_NAME_ID+"=? ";
 
 	private static final String EVENT_ACT_ALL ="" +
 			"update "
@@ -534,6 +542,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String STATUS_ACTIVE_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is null or e.rtnTs = 0)";
 	private static final String STATUS_RTN_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is not null and e.rtnTs <> 0)";
 	private static final String STATUS_NORTN_CONDITION_SQL = "e.rtnApplicable='N'";
+	private static final String STATUS_ASSIGNEE_CONDITION_SQL = "e."+ COLUMN_NAME_ASSIGNEE_TS+" is not null and e."+COLUMN_NAME_ASSIGNEE_TS+" <> 0";
 
 	// @formatter:on
 	
@@ -617,7 +626,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 			if (!rs.wasNull()) {
 				event.setAssigneeTimestamp(assigneeTs);
-				event.setAssigneeByUsername(rs.getString(COLUMN_NAME_ASSIGNEE_USERNAME));
+				event.setAssigneeUsername(rs.getString(COLUMN_NAME_ASSIGNEE_USERNAME));
 			}
 
 			return event;
@@ -833,6 +842,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			filterCondtions.add("e.rtnTs > 0");
 		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='N'");
+		} else if (EventsDwr.STATUS_ASSIGNEE.equals(query.getStatus())) {
+			filterCondtions.add(STATUS_ASSIGNEE_CONDITION_SQL);
 		}
 
 		List<String> userCommentKeywordConditions = new ArrayList<String>();
@@ -989,16 +1000,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 	}
 
-	public boolean updateAssignee(long acceptTs, String username, long eventId) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("actTS:"+acceptTs+" username:"+username+" eventId:"+eventId);
-		}
-
-		int updates = DAO.getInstance().getJdbcTemp().update(EVENT_ACCEPT, new Object[]  { acceptTs, username, eventId } );
-		return updates > 0;
-	}
-
 	public void ackAllPending(long actTS, long userId, int alternateAckSource) {
 
 		if (LOG.isTraceEnabled()) {
@@ -1124,6 +1125,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			where.add(STATUS_RTN_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
 			where.add(STATUS_NORTN_CONDITION_SQL);
+		} else if (EventsDwr.STATUS_ASSIGNEE.equals(status)) {
+			where.add(STATUS_ASSIGNEE_CONDITION_SQL);
 		}
 
 		if (alarmLevel != -1) {
@@ -1228,6 +1231,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			where.add(STATUS_RTN_CONDITION_SQL);
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
 			where.add(STATUS_NORTN_CONDITION_SQL);
+		} else if (EventsDwr.STATUS_ASSIGNEE.equals(status)) {
+			where.add(STATUS_ASSIGNEE_CONDITION_SQL);
 		}
 
 		if (alarmLevel != -1) {
@@ -1514,5 +1519,39 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			result.append(") ");
 		}
 		return result.toString();
+	}
+
+	public boolean isSilence(int eventId, int userId) {
+		String result = null;
+		try {
+			result = DAO.getInstance().getJdbcTemp().queryForObject(SILENCED_SELECT, new Object[]{eventId, userId}, String.class);
+		} catch (Exception ex) {
+			LOG.warn(ex);
+		}
+		if (result == null) {
+			return true;
+		} else {
+			return DAO.charToBool(result);
+		}
+	}
+
+	public boolean assign(long eventId, long acceptTs, User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("acceptTs:"+acceptTs+" username:"+user.getUsername()+" eventId:"+eventId);
+		}
+
+		int updates = DAO.getInstance().getJdbcTemp().update(EVENT_ASSIGN_EVENT, new Object[]  { acceptTs, user.getUsername(), eventId } );
+		return updates > 0;
+	}
+
+	public boolean unassign(long eventId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("eventId:"+eventId);
+		}
+
+		int updates = DAO.getInstance().getJdbcTemp().update(EVENT_UNASSIGN_EVENT, new Object[]  { eventId } );
+		return updates > 0;
 	}
 }
