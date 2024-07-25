@@ -115,9 +115,12 @@
         if (response.hasMessages)
             showDwrMessages(response.messages, "dataSourceGenericMessages");
         else {
-            showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
-            DataSourceEditDwr.getPoints(writePointList);
-            window.location = "data_source_edit.shtm?dsid=" + response.data.id;
+			if (window.location.href.includes("typeId")) {
+				window.location = "data_source_edit.shtm?dsid=" + response.data.id;
+			} else {
+				showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
+				DataSourceEditDwr.getPoints(writePointList);
+			}
         }
         getAlarms();
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - done");
