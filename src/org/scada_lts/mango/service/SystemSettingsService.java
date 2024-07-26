@@ -24,6 +24,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
  *
  * @author Radoslaw Jajko
  */
+@Service
 public class SystemSettingsService {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
@@ -142,6 +144,7 @@ public class SystemSettingsService {
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT));
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
+        json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
         return json;
     }
 
@@ -158,6 +161,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, json.isEventAssignEnabled());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -449,6 +453,16 @@ public class SystemSettingsService {
         int defaultValue = SystemSettingsUtils.getThreadsNameAdditionalLength();
         try {
             return SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public boolean isEventAssignEnabled() {
+        boolean defaultValue = SystemSettingsUtils.isEventAssignEnabled();
+        try {
+            return SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, defaultValue);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;

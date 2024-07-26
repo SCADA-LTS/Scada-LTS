@@ -51,6 +51,7 @@ import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -168,6 +169,8 @@ abstract public class BaseDwr {
 
     protected void setMessages(BasePointState state, HttpServletRequest request, String snippet,
             Map<String, Object> model) {
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         state.setMessages(generateContent(request, snippet + ".jsp", model).trim());
     }
 

@@ -33,6 +33,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
@@ -83,10 +84,12 @@ public class ViewEditController {
 
     private final ViewService viewService;
     private final ViewEditValidator validator;
+    private final SystemSettingsService systemSettingsService;
 
-    public ViewEditController(ViewService viewService, ViewEditValidator validator) {
+    public ViewEditController(ViewService viewService, ViewEditValidator validator, SystemSettingsService systemSettingsService) {
         this.viewService = viewService;
         this.validator = validator;
+        this.systemSettingsService = systemSettingsService;
     }
 
     public void setSuccessUrl(String successUrl) {
@@ -125,6 +128,7 @@ public class ViewEditController {
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
         model.put("currentView", view);
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         return new ModelAndView(FORM_VIEW, model);
     }
 
@@ -159,6 +163,7 @@ public class ViewEditController {
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
         model.put("currentView", view);
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         return new ModelAndView(FORM_VIEW, model);
     }
 
@@ -180,6 +185,7 @@ public class ViewEditController {
             model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
             model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
             model.put("currentView", view);
+            model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
             return new ModelAndView(FORM_VIEW, model);
         }
 

@@ -43,6 +43,7 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 
@@ -468,6 +469,9 @@ public class MiscDwr extends BaseDwr {
 				model.put("events", eventService.getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
+				SystemSettingsService service = new SystemSettingsService();
+				model.put("isEventAssignEnabled", service.isEventAssignEnabled());
+
 				String currentContent = generateContent(httpRequest,
 						"eventList.jsp", model);
 				currentContent = StringUtils.trimWhitespace(currentContent);

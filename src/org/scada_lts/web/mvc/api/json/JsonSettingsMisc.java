@@ -16,20 +16,9 @@ public class JsonSettingsMisc implements Serializable {
     public int threadsNameAdditionalLength;
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
+    public boolean eventAssignEnabled;
 
     public JsonSettingsMisc() {}
-
-    @Deprecated(since = "2.7.7.1")
-    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen, boolean hideShortcutDisableFullScreen, int eventPendingLimit, boolean eventPendingCacheEnabled, String webResourceGraphicsPath, String webResourceUploadsPath) {
-        this.uiPerformance = uiPerformance;
-        this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
-        this.enableFullScreen = enableFullScreen;
-        this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
-        this.eventPendingLimit = eventPendingLimit;
-        this.eventPendingCacheEnabled = eventPendingCacheEnabled;
-        this.webResourceGraphicsPath = webResourceGraphicsPath;
-        this.webResourceUploadsPath = webResourceUploadsPath;
-    }
 
     public int getUiPerformance() {
         return uiPerformance;
@@ -125,5 +114,13 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setWebResourceUploadsPath(String webResourceUploadsPath) {
         this.webResourceUploadsPath = webResourceUploadsPath;
+    }
+
+    public boolean isEventAssignEnabled() {
+        return eventAssignEnabled;
+    }
+
+    public void setEventAssignEnabled(boolean eventAssignEnabled) {
+        this.eventAssignEnabled = eventAssignEnabled;
     }
 }

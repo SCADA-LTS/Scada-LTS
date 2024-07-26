@@ -20,7 +20,6 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -164,6 +163,7 @@ public class SystemSettingsDAO {
 	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
 	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
 	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
+	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -413,6 +413,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
 		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
 		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
+		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

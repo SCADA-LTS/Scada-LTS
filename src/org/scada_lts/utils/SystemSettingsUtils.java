@@ -65,6 +65,8 @@ public final class SystemSettingsUtils {
     public static final String HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY = "http.protocol.allow-circular-redirects";
     public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
 
+    public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -524,6 +526,16 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 15001;
+        }
+    }
+
+    public static boolean isEventAssignEnabled() {
+        try {
+            String eventAssignEnabled = ScadaConfig.getInstance().getConf().getProperty(EVENT_ASSIGN_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(eventAssignEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 }
