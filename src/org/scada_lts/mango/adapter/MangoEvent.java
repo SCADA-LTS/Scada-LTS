@@ -53,8 +53,10 @@ public interface MangoEvent {
 
 	void unsilenceEvents(List<Integer> eventIds, int userId);
 
+	@Deprecated(since = "2.8.0")
 	void ackAllPending(long time, int userId, int alternateAckSource);
 
+	@Deprecated(since = "2.8.0")
     void silenceAll(int userId);
 
     void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids);
@@ -140,4 +142,7 @@ public interface MangoEvent {
 
 	void ackEvent(EventInstance event, long time, User user, int alternateAckSource, boolean signalAlarmLevelChange);
 	void ackEvent(EventInstance event, long time, User user, int alternateAckSource);
+	void unassignEvents();
+	void ackEvents(User user);
+	List<Integer> silenceEvents(User user);
 }

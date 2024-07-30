@@ -161,7 +161,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, json.isEventAssignEnabled());
+        saveEventAssignEnabled(json.isEventAssignEnabled());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -384,6 +384,14 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+    }
+
+    public void saveEventAssignEnabled(boolean eventAssignEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, eventAssignEnabled);
+        if(!eventAssignEnabled) {
+            EventService eventService = new EventService();
+            eventService.unassignEvents();
+        }
     }
 
     public DataPointSyncMode getDataPointRtValueSynchronized() {

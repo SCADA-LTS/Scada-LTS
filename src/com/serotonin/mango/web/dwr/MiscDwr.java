@@ -42,10 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
-import org.scada_lts.mango.service.EventService;
-import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.mango.service.UserService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
@@ -106,12 +103,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser();
 		if (user != null) {
 			MangoEvent eventService = new EventService();
-			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
-				if (!evt.isSilenced()) {
-					eventService.toggleSilence(evt, user);
-					silenced.add(evt.getId());
-				}
-			}
+			silenced = eventService.silenceEvents(user);
 		}
 
 		resetLastAlarmLevelChange();
@@ -166,11 +158,7 @@ public class MiscDwr extends BaseDwr {
 		User user = Common.getUser();
 		if (user != null) {
 			MangoEvent eventService = new EventService();
-			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
-				if(!evt.isActive())
-					eventService.ackEvent(evt, now, user, 0);
-			}
+			eventService.ackEvents(user);
 			resetLastAlarmLevelChange();
 		}
 	}

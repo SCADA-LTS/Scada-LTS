@@ -200,8 +200,7 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
-                eventService.ackAllPending(time.getTime(), user.getId(), 0);
+                eventService.ackEvents(user);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -223,8 +222,7 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
-                eventService.silenceAll(user.getId());
+                eventService.silenceEvents(user);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

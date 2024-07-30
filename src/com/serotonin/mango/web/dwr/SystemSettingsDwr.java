@@ -390,7 +390,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, eventAssignEnabled);
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
 		return response;
 	}
 

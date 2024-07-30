@@ -216,11 +216,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	private static final String EVENT_UPDATE = ""
 			+ "update "
-				+ "events set "
-				+ COLUMN_NAME_RTN_TS+"=?,"
-				+ COLUMN_NAME_RTN_CAUSE+"=? "
+				+ "events e set "
+				+ "e."+COLUMN_NAME_RTN_TS+"=?,"
+				+ "e."+COLUMN_NAME_RTN_CAUSE+"=? "
 			+ "where "
-				+ COLUMN_NAME_ID+"=?";
+				+ "e."+COLUMN_NAME_ID+"=?";
 	
 	
 	private static final String EVENT_SELECT_BASE_ON_ID = ""+
@@ -230,55 +230,55 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	private static final String EVENT_ACT ="" +
 			"update "
-				+"events set "
-				+ COLUMN_NAME_ACT_TS+"=?, "
-				+ COLUMN_NAME_ACT_USER_ID+"=?, "
-				+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+				+"events e set "
+				+ "e."+COLUMN_NAME_ACT_TS+"=?, "
+				+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
+				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
 		  + "where "
-				+ COLUMN_NAME_ID+"=? and "
-				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+				+ "e."+COLUMN_NAME_ID+"=? and "
+				+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
 
 	private static final String EVENT_ASSIGN_EVENT ="" +
 			"update "
-			+"events set "
-			+ COLUMN_NAME_ASSIGNEE_TS +"=?, "
-			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
+			+"events e set "
+			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=?, "
+			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
 			+ "where "
-			+ COLUMN_NAME_ID+"=? and "
-			+ "("+ COLUMN_NAME_ASSIGNEE_TS +" is null or "+ COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
+			+ "e."+COLUMN_NAME_ID+"=? and "
+			+ "("+ "e."+COLUMN_NAME_ASSIGNEE_TS +" is null or "+ "e."+COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
 
 	private static final String EVENT_UNASSIGN_EVENT ="" +
 			"update "
-			+"events set "
-			+ COLUMN_NAME_ASSIGNEE_TS +"=null, "
-			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
+			+"events e set "
+			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=null, "
+			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
 			+ "where "
-			+ COLUMN_NAME_ID+"=? ";
+			+ "e."+COLUMN_NAME_ID+"=? ";
 
 	private static final String EVENT_ACT_ALL ="" +
 			"update "
-			+" events set "
-			+ COLUMN_NAME_ACT_TS+"=?, "
-			+ COLUMN_NAME_ACT_USER_ID+"=?, "
-			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+" events e set "
+			+ "e."+COLUMN_NAME_ACT_TS+"=?, "
+			+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
 			+ "where "
-			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+			+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
 
 	private static final String EVENT_SILENCE_ALL ="" +
 			"UPDATE "
-			+ "userEvents SET "
-			+ COLUMN_NAME_ALARM_SILENCED+"='Y' "
-			+ "WHERE userId=? ";
+			+ "userEvents ue SET "
+			+ "ue."+COLUMN_NAME_ALARM_SILENCED+"='Y' "
+			+ "WHERE ue." + COLUMN_NAME_USER_ID + "=? ";
 
 	private static final String EVENT_ACT_IDS ="" +
 			"update "
-			+"events set "
-			+ COLUMN_NAME_ACT_TS+"=?, "
-			+ COLUMN_NAME_ACT_USER_ID+"=?, "
-			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+"events e set "
+			+ "e."+COLUMN_NAME_ACT_TS+"=?, "
+			+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
 			+ "where "
-			+ COLUMN_NAME_ID+" rlike ? and "
-			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+			+ "e."+COLUMN_NAME_ID+" rlike ? and "
+			+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
 	
 	public static final String EVENT_FILTER_ACTIVE=" "
 			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
@@ -352,10 +352,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		    +"order by uc."+COLUMN_NAME_TIME_STAMP;
 	
 	private static final String EVENT_DELETE_BEFORE= ""
-			+"delete from events "
-			+ "where "+COLUMN_NAME_ACTIVE_TS+"<? "
-			+ "  and "+COLUMN_NAME_ACT_TS+" is not null "
-			+ "  and ("+COLUMN_NAME_RTN_APPLICABLE+"=? or ("+COLUMN_NAME_RTN_APPLICABLE+"=? and "+COLUMN_NAME_ACT_TS+" is not null))";
+			+"delete from events e "
+			+ "where "+"e."+COLUMN_NAME_ACTIVE_TS+"<? "
+			+ "  and "+"e."+COLUMN_NAME_ACT_TS+" is not null "
+			+ "  and ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? or ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? and "+"e."+COLUMN_NAME_ACT_TS+" is not null))";
 	
 	private static final String COUNT_EVENT=""
 			+"select "
@@ -542,7 +542,17 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String STATUS_ACTIVE_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is null or e.rtnTs = 0)";
 	private static final String STATUS_RTN_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is not null and e.rtnTs <> 0)";
 	private static final String STATUS_NORTN_CONDITION_SQL = "e.rtnApplicable='N'";
-	private static final String STATUS_ASSIGNEE_CONDITION_SQL = "e."+ COLUMN_NAME_ASSIGNEE_TS+" is not null and e."+COLUMN_NAME_ASSIGNEE_TS+" <> 0";
+	private static final String STATUS_ASSIGNEE_CONDITION_SQL = "(e."+ COLUMN_NAME_ASSIGNEE_TS+" is not null and e."+COLUMN_NAME_ASSIGNEE_TS+" <> 0)";
+
+	private static final String STATUS_NO_ACTIVE_CONDITION_SQL = "(e.rtnApplicable='N' or (e.rtnTs is not null and e.rtnTs <> 0))";
+
+	private static final String UNASSIGN_EVENT_ALL ="" +
+			"update "
+			+"events e set "
+			+ "e." + COLUMN_NAME_ASSIGNEE_TS +"=null, "
+			+ "e." + COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
+			+ "where "
+			+ STATUS_ACTIVE_CONDITION_SQL;
 
 	// @formatter:on
 	
@@ -1000,22 +1010,27 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 	}
 
-	public void ackAllPending(long actTS, long userId, int alternateAckSource) {
+	public void ackEvents(long actTS, long userId, int alternateAckSource) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
 		}
-		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL, new Object[]  { actTS, userId, alternateAckSource } );
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL + "and " + STATUS_NO_ACTIVE_CONDITION_SQL, new Object[]  { actTS, userId, alternateAckSource } );
 	}
 
-	public void silenceAll(long userId) {
+	public void silenceEvents(long userId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(" userId:"+userId);
 		}
 		DAO.getInstance().getJdbcTemp().update( EVENT_SILENCE_ALL, new Object[]  { userId } );
 	}
 
-
+	public void unassignEvents() {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(" unassignEvents");
+		}
+		DAO.getInstance().getJdbcTemp().update(UNASSIGN_EVENT_ALL, new Object[]  {} );
+	}
 
 	public void ackAllPendingSelected(long actTS, long userId, int alternateAckSource, List<Integer> ids) {
 		if (LOG.isTraceEnabled()) {

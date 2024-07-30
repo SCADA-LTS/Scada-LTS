@@ -186,7 +186,7 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public void silenceAll(int userId) {
-		eventDAO.silenceAll(userId);
+		eventDAO.silenceEvents(userId);
 	}
 
 	@Override
@@ -321,7 +321,7 @@ public class EventService implements MangoEvent {
 	@Override
 	public int purgeEventsBefore(long time) {
 		int result = eventDAO.purgeEventsBefore(time);
-		Common.ctx.getEventManager().resetHighestAlarmLevels();
+		Common.ctx.getEventManager().notifyEventReset();
 		return result;
 	}
 
@@ -653,6 +653,45 @@ public class EventService implements MangoEvent {
 			Common.ctx.getEventManager().notifyEventRaise(event);
 		}
 		return updated;
+	}
+
+	@Override
+	public void unassignEvents() {
+		eventDAO.unassignEvents();
+		Common.ctx.getEventManager().notifyEventReset();
+	}
+
+	@Override
+	public void ackEvents(User user) {
+		long now = System.currentTimeMillis();
+		if(user.isAdmin()) {
+			eventDAO.ackEvents(now, user.getId(), 0);
+			clearCache();
+			Common.ctx.getEventManager().notifyEventReset();
+		} else {
+			for (EventInstance evt : getPendingEvents(user.getId())) {
+				if(!evt.isActive())
+					ackEvent(evt, now, user, 0);
+			}
+		}
+	}
+
+	@Override
+	public List<Integer> silenceEvents(User user) {
+		List<Integer> silenced = new ArrayList<>();
+		if(user.isAdmin()) {
+			eventDAO.silenceEvents(user.getId());
+			clearCache();
+			Common.ctx.getEventManager().notifyEventReset();
+		} else {
+			for (EventInstance evt : getPendingEvents(user.getId())) {
+				if (!evt.isSilenced()) {
+					toggleSilence(evt, user);
+					silenced.add(evt.getId());
+				}
+			}
+		}
+		return silenced;
 	}
 
 	private static boolean isAssignPermission(EventInstance event, User user) {

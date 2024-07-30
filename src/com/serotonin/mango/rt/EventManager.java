@@ -42,7 +42,6 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.web.ws.model.WsEventMessage;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
@@ -139,7 +138,7 @@ public class EventManager implements ILifecycle {
 
 				eventConfirmForUsers.add(user);
 				if(evt.getAlarmLevel() > AlarmLevels.NONE)
-					notifyEventUpdate(user, WsEventMessage.create(evt));
+					notifyEventCreate(user, evt);
 			}
 		}
 
@@ -450,8 +449,8 @@ public class EventManager implements ILifecycle {
 
 	}
 
-	public void resetHighestAlarmLevels() {
-		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userEventServiceWebSocket);
+	public void notifyEventReset() {
+		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket);
 	}
 
 	public int getHighestAlarmLevel(int userId) {
@@ -533,8 +532,8 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void notifyEventUpdate(User user, WsEventMessage message) {
-		NotifyEventUtils.notifyEventUpdate(user, message, userEventServiceWebSocket);
+	public void notifyEventCreate(User user, EventInstance event) {
+		NotifyEventUtils.notifyEventCreate(event, user, userEventServiceWebSocket);
 	}
 
 	public void notifyEventRaise(EventInstance event) {
