@@ -1063,5 +1063,6 @@
 	"systemsettings.webresource.uploads.path": "Uploaded images save path",
 	"systemsettings.webresource.graphics.path": "Custom Graphics images path",
 	"systemsettings.webresource.uploads.path.wrong":"Uploaded images save path must end with 'uploads' or 'uploads{0}' ",
-	"systemsettings.webresource.graphics.path.wrong": "Custom Graphics images path must end with 'graphics' or 'graphics{0}' "
+	"systemsettings.webresource.graphics.path.wrong": "Custom Graphics images path must end with 'graphics' or 'graphics{0}' ",
+	"event.assign.enabled": "Event Assign enabled"
 }

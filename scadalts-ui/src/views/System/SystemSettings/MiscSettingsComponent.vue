@@ -109,6 +109,13 @@
                           :rules="[validateUploadsPath]"
                       ></v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                      <v-switch
+                          v-model="miscSettings.eventAssignEnabled"
+                          :label="$t('event.assign.enabled')"
+                          @change="watchDataChange()"
+                      ></v-switch>
+                    </v-col>
                 </v-row>
 			</v-card-text>
 		</v-card>
