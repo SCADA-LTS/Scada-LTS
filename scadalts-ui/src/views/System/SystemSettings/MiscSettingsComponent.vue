@@ -112,7 +112,7 @@
                     <v-col cols="12">
                       <v-switch
                           v-model="miscSettings.eventAssignEnabled"
-                          :label="$t('event.assign.enabled')"
+                          :label="$t('systemsettings.misc.eventAssignEnabled')"
                           @change="watchDataChange()"
                       ></v-switch>
                     </v-col>
