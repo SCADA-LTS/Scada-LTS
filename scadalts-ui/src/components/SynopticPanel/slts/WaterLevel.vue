@@ -10,14 +10,17 @@
 					<v-text-field disabled v-model="componentData.data.pointXid" label="Point Xid" />
 				</v-col>
 
-				<v-col cols="12" md="4">
+				<v-col cols="12" md="3">
 					<v-text-field v-model="componentData.data.label" label="Label:" />
 				</v-col>
-				<v-col cols="12" md="4">
+				<v-col cols="12" md="3">
 					<v-text-field v-model="componentData.data.minval" label="Min value:" />
 				</v-col>
-				<v-col cols="12" md="4">
+				<v-col cols="12" md="3">
 					<v-text-field v-model="componentData.data.maxval" label="Max value:" />
+				</v-col>
+				<v-col cols="12" md="3">
+					<v-text-field v-model="componentData.data.decimals" label="Percent Decimal:" />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -70,6 +73,10 @@ export default {
 			let hightValue = maxVal - value;
 			if (minVal === undefined || minVal === null) minVal = 0;
 			let waterLevel = ((hightValue * maxHeight) / (maxVal - minVal));
+
+			const decimals = this.componentData.data.decimals ? this.componentData.data.decimals : 0
+			this.changeComponentText(`${this.componentId}_absolute`, value);
+			this.changeComponentText(`${this.componentId}_percentage`, ((value * 100) / (maxVal - minVal)).toFixed(decimals));
 			this.$svg.get(`${this.componentId}_background`).animate().height(waterLevel);
 		},
 	},
