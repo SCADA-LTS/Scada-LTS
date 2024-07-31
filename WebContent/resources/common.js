@@ -1260,3 +1260,7 @@ function OnListWebsocketStats() {
 		console.log("message[/app/websocketStats]:\n" + message.body);
 	} );
 }
+
+function isEmpty(value) {
+    return !value || (typeof value === "string" && value.trim() === "");
+}

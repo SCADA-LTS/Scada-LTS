@@ -150,14 +150,22 @@ task buildRun(type: GradleBuild) {
 }
 
 task buildRunDebug(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'clearProject', 'test', 'war', 'deployTomcat', 'runDebug']
 }
 
 task buildRunDebugDev(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'warDev', 'deployTomcat', 'runDebug']
 }
 
 task buildRunDebugProd(type: GradleBuild) {
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'war', 'deployTomcat', 'runDebug']
+}
+
+task buildRunDebugDevTestUi(type: GradleBuild) {
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
+}
+
+task buildRunDebugProdTestUi(type: GradleBuild) {
     tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'war', 'deployTomcat', 'runDebug']
 }
 
