@@ -133,13 +133,13 @@ export default {
 
 		onPointEnabledUpdate(enabled) {
             if(enabled) {
-				if(this.lastValue){
-					this.onPointValueUpdate(this.lastValue)
-				}else{
-					// Point does not have any data
-					this.changeComponentText(`${this.componentId}_value`, "N/A");
-                	this.changeComponentColor(`${this.componentId}`, this.enabledColor);
-				}
+                if(this.lastValue){
+                    this.onPointValueUpdate(this.lastValue)
+                }else{
+                    // Point does not have any data
+                    this.changeComponentText(`${this.componentId}_value`, "N/A");
+                    this.changeComponentColor(`${this.componentId}`, this.enabledColor);
+                }
             } else {
                 this.changeComponentText(`${this.componentId}_value`, "N/A");
                 this.changeComponentColor(`${this.componentId}`, "#d6d5d5");
