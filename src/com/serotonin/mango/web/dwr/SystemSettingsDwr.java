@@ -158,9 +158,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
 
 		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
-				systemSettingsService.getMiscSettings().isHideShortcutDisableFullScreen());
+				systemSettingsService.getMiscSettings().isViewHideShortcutDisableFullScreenEnabled());
 		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
-				systemSettingsService.getMiscSettings().isEnableFullScreen());
+				systemSettingsService.getMiscSettings().isViewForceFullScreenEnabled());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
 				systemSettingsService.getMiscSettings().getEventPendingLimit());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,

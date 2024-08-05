@@ -1048,8 +1048,8 @@
 	"systemsettings.misc.dataPointRuntimeValueSynchronized.partial": "Partial",
 	"systemsettings.misc.dataPointRuntimeValueSynchronized.none": "None",
 	"systemsettings.http.response.headers": "HTTP response headers",
-	"systemsettings.view.forceFullScreen": "Force full screen mode",
-	"systemsettings.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
+	"systemsettings.misc.viewForceFullScreenEnabled": "Force full screen mode",
+	"systemsettings.misc.viewHideShortcutDisableFullScreenEnabled": "Hide shortcut to disable full screen",
 	"userDetails.view.forceAdminTitle": "The function is enforced by the Admin",
 	"userDetails.view.enableFullScreen": "Enable full screen mode",
 	"userDetails.view.hideShortcutDisableFullScreen": "Hide shortcut to disable full screen",
@@ -1065,4 +1065,14 @@
 	"systemsettings.webresource.uploads.path.wrong":"Uploaded images save path must end with 'uploads' or 'uploads{0}' ",
 	"systemsettings.webresource.graphics.path.wrong": "Custom Graphics images path must end with 'graphics' or 'graphics{0}' ",
 	"systemsettings.misc.eventAssignEnabled": "Event Assign enabled"
+	"systemsettings.misc.eventPendingCacheEnabled": "Event Pending Limit",
+	"systemsettings.misc.eventPendingLimit": "Enabled Event Pending Cache",
+	"systemsettings.misc.workItemsReportingEnabled": "Work items reporting enabled",
+	"systemsettings.misc.workItemsReportingItemsPerSecondEnabled": "Items per second reporting enabled",
+	"systemsettings.misc.workItemsReportingItemsPerSecondLimit": "Items per second reporting limit",
+	"systemsettings.misc.threadsNameAdditionalLength": "Thread name length",
+	"systemsettings.misc.webResourceUploadsPath": "Uploaded images save path",
+	"systemsettings.misc.webResourceGraphicsPath": "Graphics images path",
+	"systemsettings.misc.webResourceUploadsPath.wrong":"Uploaded images save path must end with 'uploads' or 'uploads{0}' ",
+	"systemsettings.misc.webResourceGraphicsPath.wrong": "Graphics images path must end with 'graphics' or 'graphics{0}' "
 }

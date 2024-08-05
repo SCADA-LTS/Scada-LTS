@@ -33,29 +33,29 @@
                     </v-col>
                     <v-col cols="12">
                         <v-switch
-                            v-model="miscSettings.enableFullScreen"
-                            :label="$t('systemsettings.view.forceFullScreen')"
+                            v-model="miscSettings.viewForceFullScreenEnabled"
+                            :label="$t('systemsettings.misc.viewForceFullScreenEnabled')"
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
                         <v-switch
-                            v-model="miscSettings.hideShortcutDisableFullScreen"
-                            :label="$t('systemsettings.view.hideShortcutDisableFullScreen')"
+                            v-model="miscSettings.viewHideShortcutDisableFullScreenEnabled"
+                            :label="$t('systemsettings.misc.viewHideShortcutDisableFullScreenEnabled')"
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
                         <v-switch
                             v-model="miscSettings.eventPendingCacheEnabled"
-                            :label="$t('systemsettings.event.pendingCacheEnabled')"
+                            :label="$t('systemsettings.misc.eventPendingCacheEnabled')"
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field
                             v-model="miscSettings.eventPendingLimit"
-                            :label="$t('systemsettings.event.pendingLimit')"
+                            :label="$t('systemsettings.misc.eventPendingLimit')"
                             @change="watchDataChange()"
                             type="number"
                             dense
@@ -64,21 +64,21 @@
                     <v-col cols="12">
                         <v-switch
                             v-model="miscSettings.workItemsReportingEnabled"
-                            :label="$t('systemsettings.workitems.reporting.enabled')"
+                            :label="$t('systemsettings.misc.workItemsReportingEnabled')"
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
                         <v-switch
                             v-model="miscSettings.workItemsReportingItemsPerSecondEnabled"
-                            :label="$t('systemsettings.workitems.reporting.itemspersecond.enabled')"
+                            :label="$t('systemsettings.misc.workItemsReportingItemsPerSecondEnabled')"
                             @change="watchDataChange()"
                         ></v-switch>
                     </v-col>
                     <v-col cols="12">
                         <v-text-field
                             v-model="miscSettings.workItemsReportingItemsPerSecondLimit"
-                            :label="$t('systemsettings.workitems.reporting.itemspersecond.limit')"
+                            :label="$t('systemsettings.misc.workItemsReportingItemsPerSecondLimit')"
                             @change="watchDataChange()"
                             type="number"
                             dense
@@ -87,7 +87,7 @@
                     <v-col cols="12">
                         <v-text-field
                             v-model="miscSettings.threadsNameAdditionalLength"
-                            :label="$t('systemsettings.threads.name.additional.length')"
+                            :label="$t('systemsettings.misc.threadsNameAdditionalLength')"
                             @change="watchDataChange()"
                             type="number"
                             dense
@@ -96,7 +96,7 @@
                     <v-col cols="12">
                       <v-text-field
                           v-model="miscSettings.webResourceGraphicsPath"
-                          :label="$t('systemsettings.webresource.graphics.path')"
+                          :label="$t('systemsettings.misc.webResourceGraphicsPath')"
                           @change="watchDataChange()"
                           :rules="[validateGraphicsPath]"
                       ></v-text-field>
@@ -104,7 +104,7 @@
                     <v-col cols="12">
                       <v-text-field
                           v-model="miscSettings.webResourceUploadsPath"
-                          :label="$t('systemsettings.webresource.uploads.path')"
+                          :label="$t('systemsettings.misc.webResourceUploadsPath')"
                           @change="watchDataChange()"
                           :rules="[validateUploadsPath]"
                       ></v-text-field>
@@ -261,7 +261,7 @@ export default {
         return true;
       } else {
         this.validatedPaths.push({key: validGraphicsKey,value: false})
-        return this.$t("systemsettings.webresource.graphics.path.wrong", {0: path.sep});
+        return this.$t("systemsettings.misc.webResourceGraphicsPath.wrong", {0: path.sep});
       }
     },
     validateUploadsPath(v) {
@@ -274,7 +274,7 @@ export default {
         return true;
       } else {
         this.validatedPaths.push({key: validUploadsKey, value: false})
-        return this.$t("systemsettings.webresource.uploads.path.wrong", {0: path.sep});
+        return this.$t("systemsettings.misc.webResourceUploadsPath.wrong", {0: path.sep});
       }
     },
     validateForm(paths) {
