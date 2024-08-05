@@ -100,8 +100,8 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			initData.put("user", user);
 			JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-			initData.put("forceFullScreenMode", jsonSettingsMisc.isEnableFullScreen());
-			initData.put("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isHideShortcutDisableFullScreen());
+			initData.put("forceFullScreenMode", jsonSettingsMisc.isViewForceFullScreenEnabled());
+			initData.put("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
 		}
 
 		return initData;
@@ -120,8 +120,8 @@ public class UsersDwr extends BaseDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("user", user);
 		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-		response.addData("forceFullScreenMode", jsonSettingsMisc.isEnableFullScreen());
-		response.addData("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isHideShortcutDisableFullScreen());
+		response.addData("forceFullScreenMode", jsonSettingsMisc.isViewForceFullScreenEnabled());
+		response.addData("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
 		return response;
 
 	}
@@ -178,9 +178,9 @@ public class UsersDwr extends BaseDwr {
 			user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
 		}
 		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-		if(!jsonSettingsMisc.isEnableFullScreen())
+		if(!jsonSettingsMisc.isViewForceFullScreenEnabled())
 			user.setEnableFullScreen(enableFullScreen);
-		if(!jsonSettingsMisc.isHideShortcutDisableFullScreen())
+		if(!jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled())
 			user.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
 
 
@@ -251,9 +251,9 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setUserProfileId(usersProfileId);
 		updateUser.setTheme(theme);
 		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-		if(!jsonSettingsMisc.isEnableFullScreen())
+		if(!jsonSettingsMisc.isViewForceFullScreenEnabled())
 			updateUser.setEnableFullScreen(enableFullScreen);
-		if(!jsonSettingsMisc.isHideShortcutDisableFullScreen())
+		if(!jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled())
 			updateUser.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
 
 		DwrResponseI18n response = new DwrResponseI18n();

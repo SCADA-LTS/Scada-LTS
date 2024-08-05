@@ -6,8 +6,8 @@ public class JsonSettingsMisc implements Serializable {
 
     private int uiPerformance;
     private String dataPointRuntimeValueSynchronized;
-    public boolean enableFullScreen;
-    public boolean hideShortcutDisableFullScreen;
+    public boolean viewForceFullScreenEnabled;
+    public boolean viewHideShortcutDisableFullScreenEnabled;
     public int eventPendingLimit;
     public boolean eventPendingCacheEnabled;
     public boolean workItemsReportingEnabled;
@@ -18,18 +18,6 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceUploadsPath;
 
     public JsonSettingsMisc() {}
-
-    @Deprecated(since = "2.7.7.1")
-    public JsonSettingsMisc(int uiPerformance, String dataPointRuntimeValueSynchronized, boolean enableFullScreen, boolean hideShortcutDisableFullScreen, int eventPendingLimit, boolean eventPendingCacheEnabled, String webResourceGraphicsPath, String webResourceUploadsPath) {
-        this.uiPerformance = uiPerformance;
-        this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
-        this.enableFullScreen = enableFullScreen;
-        this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
-        this.eventPendingLimit = eventPendingLimit;
-        this.eventPendingCacheEnabled = eventPendingCacheEnabled;
-        this.webResourceGraphicsPath = webResourceGraphicsPath;
-        this.webResourceUploadsPath = webResourceUploadsPath;
-    }
 
     public int getUiPerformance() {
         return uiPerformance;
@@ -47,20 +35,20 @@ public class JsonSettingsMisc implements Serializable {
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
     }
 
-    public boolean isEnableFullScreen() {
-        return enableFullScreen;
+    public boolean isViewForceFullScreenEnabled() {
+        return viewForceFullScreenEnabled;
     }
 
-    public void setEnableFullScreen(boolean enableFullScreen) {
-        this.enableFullScreen = enableFullScreen;
+    public void setViewForceFullScreenEnabled(boolean viewForceFullScreenEnabled) {
+        this.viewForceFullScreenEnabled = viewForceFullScreenEnabled;
     }
 
-    public boolean isHideShortcutDisableFullScreen() {
-        return hideShortcutDisableFullScreen;
+    public boolean isViewHideShortcutDisableFullScreenEnabled() {
+        return viewHideShortcutDisableFullScreenEnabled;
     }
 
-    public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
-        this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+    public void setViewHideShortcutDisableFullScreenEnabled(boolean viewHideShortcutDisableFullScreenEnabled) {
+        this.viewHideShortcutDisableFullScreenEnabled = viewHideShortcutDisableFullScreenEnabled;
     }
 
     public int getEventPendingLimit() {
