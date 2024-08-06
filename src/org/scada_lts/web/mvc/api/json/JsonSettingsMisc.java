@@ -16,6 +16,7 @@ public class JsonSettingsMisc implements Serializable {
     public int threadsNameAdditionalLength;
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
+    public boolean eventAssignEnabled;
 
     public JsonSettingsMisc() {}
 
@@ -113,5 +114,13 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setWebResourceUploadsPath(String webResourceUploadsPath) {
         this.webResourceUploadsPath = webResourceUploadsPath;
+    }
+
+    public boolean isEventAssignEnabled() {
+        return eventAssignEnabled;
+    }
+
+    public void setEventAssignEnabled(boolean eventAssignEnabled) {
+        this.eventAssignEnabled = eventAssignEnabled;
     }
 }

@@ -897,7 +897,10 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	
-	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, int viewId) {
+	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width,
+												  boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn,
+												  boolean hideInactivityColumn, boolean hideAckColumn, int viewId,
+												  boolean hideAssigneeColumn) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -916,6 +919,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHideTimestampColumn(hideTimestampColumn);
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
+			c.setHideAssigneeColumn(hideAssigneeColumn);
 			// resetPointComponent(c);
 		}
 

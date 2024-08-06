@@ -1261,6 +1261,28 @@ function OnListWebsocketStats() {
 	} );
 }
 
+function assignEvent(eventId) {
+    MiscDwr.assignEvent(eventId, function(response) {
+        if(response) {
+            hide("assigneeImg"+ eventId);
+            var imgNode = $("assigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_delete.png", mango.i18n["events.unassign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
+function unassignEvent(eventId) {
+    MiscDwr.unassignEvent(eventId, function(response) {
+        if(response) {
+            hide("unassigneeImg"+ eventId);
+            var imgNode = $("unassigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_add.png", mango.i18n["events.assign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
 function isEmpty(value) {
     return !value || (typeof value === "string" && value.trim() === "");
 }
