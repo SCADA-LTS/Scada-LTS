@@ -365,6 +365,8 @@ public class MangoContextListener implements ServletContextListener {
 				EventType.EventSources.AUDIT);
 		ctx.setAttribute("constants.EventType.EventSources.MAINTENANCE",
 				EventType.EventSources.MAINTENANCE);
+		ctx.setAttribute("constants.EventType.EventSources.DATA_SOURCE_POINT",
+				EventType.EventSources.DATA_SOURCE_POINT);
 		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_STARTUP",
 				SystemEventType.TYPE_SYSTEM_STARTUP);
 		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_SHUTDOWN",

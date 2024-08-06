@@ -1,6 +1,7 @@
 package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -241,6 +242,13 @@ public final class LoggingUtils {
             return "";
         String info =  "publisher: {0} (id: {1}, xid: {2}, type: {3})";
         return MessageFormat.format(info, publisher.getName(), publisher.getId(), publisher.getXid(), publisher.getType());
+    }
+
+    public static String varInfo(IntValuePair pair) {
+        if(pair == null)
+            return "";
+        String info =  "{0} (key: {1})";
+        return MessageFormat.format(info, pair.getValue(), pair.getKey());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

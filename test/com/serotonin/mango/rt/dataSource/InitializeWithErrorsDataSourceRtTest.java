@@ -69,6 +69,8 @@ import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.service.MessagingService;
 import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
+import org.scada_lts.web.beans.ApplicationBeans;
+import utils.mock.MockUtils;
 
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -82,7 +84,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
-@PrepareForTest({Common.class, Runtime.class, VMStatDataSourceRT.class, PollingDataSource.class})
+@PrepareForTest({Common.class, Runtime.class, VMStatDataSourceRT.class, PollingDataSource.class, ApplicationBeans.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class InitializeWithErrorsDataSourceRtTest {
@@ -102,6 +104,9 @@ public class InitializeWithErrorsDataSourceRtTest {
         MqttDataSourceVO mqttDataSourceVO = new MqttDataSourceVO();
         mqttDataSourceVO.setServerHost("localhost");
         mqttDataSourceVO.setServerPortNumber(1234);
+
+        ModbusSerialDataSourceVO modbusSerialDataSourceVO = new ModbusSerialDataSourceVO();
+        modbusSerialDataSourceVO.setCommPortId("123");
 
         MessagingService messageServiceMock = mock(MessagingService.class);
         doAnswer(a -> {
@@ -151,7 +156,9 @@ public class InitializeWithErrorsDataSourceRtTest {
     private EventManager eventManager;
 
     @Before
-    public void config() {
+    public void config() throws Exception {
+
+        MockUtils.configDaoMock();
 
         eventManager = PowerMockito.mock(EventManager.class);
 

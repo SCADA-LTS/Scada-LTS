@@ -34,6 +34,7 @@ import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.SerializationData;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
+import org.scada_lts.utils.EventTypeUtil;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -76,6 +77,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_TYPE_ID = "typeId";
 	private static final String COLUMN_NAME_TYPE_REF_1 = "typeRef1";
 	private static final String COLUMN_NAME_TYPE_REF_2 = "typeRef2";
+	private static final String COLUMN_NAME_TYPE_REF_3 = "typeRef3";
 	private static final String COLUMN_NAME_ACTIVE_TS = "activeTs";
 	private static final String COLUMN_NAME_RTN_APPLICABLE = "rtnApplicable";
 	private static final String COLUMN_NAME_RTN_TS = "rtnTs";
@@ -126,6 +128,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_TYPE_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_3 + ", " +
 			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
 			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
 			"e." + COLUMN_NAME_RTN_TS + ", " +
@@ -144,6 +147,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_TYPE_ID+", "
 				+ "e."+COLUMN_NAME_TYPE_REF_1+", "
 				+ "e."+COLUMN_NAME_TYPE_REF_2+","
+				+ "e."+COLUMN_NAME_TYPE_REF_3+", "
 				+ "e."+COLUMN_NAME_ACTIVE_TS+","
 				+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
 				+ "e."+COLUMN_NAME_RTN_TS+","
@@ -165,6 +169,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "e."+COLUMN_NAME_TYPE_ID+", "
 			+ "e."+COLUMN_NAME_TYPE_REF_1+", "
 			+ "e."+COLUMN_NAME_TYPE_REF_2+","
+			+ "e."+COLUMN_NAME_TYPE_REF_3+","
 			+ "e."+COLUMN_NAME_ACTIVE_TS+","
 			+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
 			+ "e."+COLUMN_NAME_RTN_TS+","
@@ -195,7 +200,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "insert events ("
 				+ COLUMN_NAME_TYPE_ID + "," 
 				+ COLUMN_NAME_TYPE_REF_1 + "," 
-				+ COLUMN_NAME_TYPE_REF_2 + "," 
+				+ COLUMN_NAME_TYPE_REF_2 + ","
+				+ COLUMN_NAME_TYPE_REF_3 + ","
 				+ COLUMN_NAME_ACTIVE_TS + ","
 				+ COLUMN_NAME_RTN_APPLICABLE + ","
 				+ COLUMN_NAME_RTN_TS + ","
@@ -207,7 +213,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				// userId ?
 				// ack_source ?
 			+") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?)";
+			+ "values (?,?,?,?,?,?,?,?,?,?,?,?)";
 	
 	private static final String EVENT_UPDATE = ""
 			+ "update "
@@ -267,6 +273,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_TYPE_ID+", "
 				+ "e."+COLUMN_NAME_TYPE_REF_1+", "
 				+ "e."+COLUMN_NAME_TYPE_REF_2+","
+				+ "e."+COLUMN_NAME_TYPE_REF_3+","
 				+ "e."+COLUMN_NAME_ACTIVE_TS+","
 				+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
 				+ "e."+COLUMN_NAME_RTN_TS+","
@@ -466,6 +473,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_TYPE_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_3 + ", " +
 			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
 			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
 			"e." + COLUMN_NAME_RTN_TS + ", " +
@@ -487,6 +495,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_TYPE_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
 			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_3 + ", " +
 			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
 			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
 			"e." + COLUMN_NAME_RTN_TS + ", " +
@@ -518,7 +527,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String STATUS_NORTN_CONDITION_SQL = "e.rtnApplicable='N'";
 
 	// @formatter:on
-	
+	@Deprecated(since = "2.8.0")
 	//TODO rewrite
 	static EventType createEventType(ResultSet rs, int offset)
 			throws SQLException {
@@ -556,7 +565,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	public static class EventRowMapper implements RowMapper<EventInstance> {
 		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
-			EventType type = createEventType(rs, 2);
+			EventType type = createEventType(rs);
 			
 			LocalizableMessage message;
 			LocalizableMessage shortMessage;
@@ -575,9 +584,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			}
 
 			EventInstance event = new EventInstance(
-					type, 
-					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
-					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)), 
+					type,
+					rs.getLong(COLUMN_NAME_ACTIVE_TS),
+					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)),
 					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
 					message,
 					shortMessage,
@@ -629,7 +638,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	//TODO rewrite
 	private class EventTypeRowMapper implements RowMapper<EventType> {
 		public EventType mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return createEventType(rs, 1);
+            return createEventType(rs);
 		}
 	}
 	
@@ -736,10 +745,19 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
+	@Deprecated(since = "2.8.0")
 	private class TotalRowMapper implements RowMapper<Integer> {
 		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return rs.getInt("TOTAL");
 		}
+	}
+
+	private static EventType createEventType(ResultSet rs) throws SQLException {
+		int typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
+		int typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
+		int typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
+		int typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
+		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, typeRef3);
 	}
 
 	/**
@@ -919,6 +937,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						type.getEventSourceId(),
 				 						type.getReferenceId1(),
 				 						type.getReferenceId2(),
+										type.getReferenceId3(),
 				 						entity.getActiveTimestamp(),
 				 						DAO.boolToChar(entity.isRtnApplicable()),
 				 						(!entity.isActive() ? entity.getRtnTimestamp():0),

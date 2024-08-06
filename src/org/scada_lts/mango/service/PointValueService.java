@@ -681,7 +681,7 @@ public class PointValueService implements MangoPointValues {
 
                 ScriptExecutor scriptExecutor = new ScriptExecutor();
 
-                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext(), dataPoint.getId());
 
                 PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
                 Common.ctx.getRuntimeManager().setDataPointValue(dataPoint.getId(), pointValueTime, user);

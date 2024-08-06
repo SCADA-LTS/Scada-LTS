@@ -14,29 +14,30 @@ public final class DataPointUnreliableUtils {
 
     private static final Log LOG = LogFactory.getLog(DataPointUnreliableUtils.class);
 
-    public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+    private static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+    private static final int SAFE = 10;
 
     private DataPointUnreliableUtils() {}
 
     public static boolean isSetUnreliable(DataPointRT dataPoint, boolean unreliable) {
-        return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) != null
+        return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) instanceof Boolean
                 && ((boolean) dataPoint.getAttribute(ATTR_UNRELIABLE_KEY)) == unreliable;
     }
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        unreliable(dataPoints, true, 9);
+        unreliable(dataPoints, true, SAFE);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
-        unreliable(Collections.singletonList(dataPoint), true, 9);
+        unreliable(Collections.singletonList(dataPoint), true, SAFE);
     }
 
     public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        unreliable(dataPoints, false, 9);
+        unreliable(dataPoints, false, SAFE);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
-        unreliable(Collections.singletonList(dataPoint), false, 9);
+        unreliable(Collections.singletonList(dataPoint), false, SAFE);
     }
 
     private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable, int safe) {

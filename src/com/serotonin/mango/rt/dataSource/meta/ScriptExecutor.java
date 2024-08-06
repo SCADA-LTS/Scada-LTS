@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -64,21 +65,32 @@ public class ScriptExecutor {
 		SCRIPT_FUNCTION_PATH = path;
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context)
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context) throws DataPointStateException {
+		return convertContext(context, Common.NEW_ID);
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, int dataPointId)
 			throws DataPointStateException {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		Map<String, IDataPoint> converted = new HashMap<String, IDataPoint>();
 		for (IntValuePair contextEntry : context) {
-			DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
-			if (point == null) {
-				LOG.error("Error DataPointRT null "
-						+ new Exception("key:" + contextEntry.getKey()
-								+ " value:" + contextEntry.getValue()));
-				throw new DataPointStateException(contextEntry.getKey(),
-						new LocalizableMessage("event.meta.pointMissing"));
+			if(dataPointId == Common.NEW_ID || dataPointId != contextEntry.getKey()) {
+				DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
+				if (point == null) {
+					LOG.error("Error DataPointRT null "
+							+ new Exception("key:" + contextEntry.getKey()
+							+ " value:" + contextEntry.getValue()));
+					throw createPointUnavailableException(contextEntry);
+				}
+				if (point.isUnreliable()) {
+					LOG.warn("Error DataPointRT is unavailable "
+							+ new Exception("key:" + contextEntry.getKey()
+							+ " value:" + contextEntry.getValue()) + " - " + LoggingUtils.dataPointInfo(point));
+					throw createPointUnavailableException(contextEntry, point);
+				}
+				converted.put(contextEntry.getValue(), point);
 			}
-			converted.put(contextEntry.getValue(), point);
 		}
 
 		return converted;
@@ -335,5 +347,15 @@ public class ScriptExecutor {
 			}
 			FUNCTIONS = sw.toString();
 		}
+	}
+
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
+		return new DataPointStateException(contextEntry.getKey(),
+				new LocalizableMessage("event.meta.pointUnavailable", point.getVO().getExtendedName()));
+	}
+
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
+		return new DataPointStateException(contextEntry.getKey(),
+				new LocalizableMessage("validate.invalidVariable", LoggingUtils.varInfo(contextEntry)));
 	}
 }

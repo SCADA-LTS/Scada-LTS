@@ -31,6 +31,8 @@ import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -40,6 +42,7 @@ public class MetaDataSourceRT extends DataSourceRT {
     public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
 
     private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
+    @Deprecated(since = "2.8.0")
     private boolean contextPointDisabledEventActive;
 
     public MetaDataSourceRT(MetaDataSourceVO vo) {
@@ -59,7 +62,6 @@ public class MetaDataSourceRT extends DataSourceRT {
             MetaPointLocatorRT locator = dataPoint.getPointLocator();
             points.add(dataPoint);
             locator.initialize(Common.timer, this, dataPoint);
-            checkForDisabledPoints();
         }
     }
 
@@ -67,7 +69,6 @@ public class MetaDataSourceRT extends DataSourceRT {
     public void removeDataPoint(DataPointRT dataPoint) {
         synchronized (pointListChangeLock) {
             remove(dataPoint);
-            checkForDisabledPoints();
         }
     }
 
@@ -77,6 +78,7 @@ public class MetaDataSourceRT extends DataSourceRT {
         points.remove(dataPoint);
     }
 
+    @Deprecated(since = "2.8.0")
     synchronized void checkForDisabledPoints() {
         DataPointRT problemPoint = null;
 
@@ -101,24 +103,53 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        if(isNone(EVENT_TYPE_SCRIPT_ERROR))
+        if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
+            setUnreliableDataPoint(dataPoint);
             return;
+        }
         raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, true, new LocalizableMessage("event.meta.scriptError", dataPoint
                 .getVO().getName(), message), dataPoint);
     }
 
-    public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_SCRIPT_ERROR))
+    public void raiseContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
+            setUnreliableDataPoint(dataPoint);
             return;
+        }
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint);
+    }
+
+    public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
+            return;
+        }
         returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
     }
 
+    public void returnToNormalContext(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
+            resetUnreliableDataPoint(dataPoint);
+            return;
+        }
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
+    }
 
     public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR))
+        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
+            setUnreliableDataPoint(dataPoint);
             return;
+        }
         raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, true, new LocalizableMessage("event.meta.typeError",
                 dataPoint.getVO().getName(), message), dataPoint);
+    }
+
+    public void returnToNormalType(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
+            return;
+        }
+        returnToNormal(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, dataPoint);
     }
 
     private boolean isNone(int type) {

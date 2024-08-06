@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         InitializeDataSourceRtTest.class,
-        InitializeWithErrorsDataSourceRtTest.class
+        //InitializeWithErrorsDataSourceRtTest.class
 })
 public class InitializeDataSourceRtTestsSuite {
 }

@@ -343,7 +343,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "dsEdit.validate.required");
 
-        locator.validate(response);
+        locator.validate(response, dp.getId());
 
         if (!response.getHasMessages()) {
             Common.ctx.getRuntimeManager().saveDataPoint(dp);
@@ -2326,7 +2326,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             DataPointService dataPointService = new DataPointService();
             validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
-            locators[i].validate(response);
+            locators[i].validate(response, dp.getId());
 
             if (!response.getHasMessages()) {
                 Common.ctx.getRuntimeManager().saveDataPoint(dp);

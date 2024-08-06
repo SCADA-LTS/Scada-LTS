@@ -72,7 +72,6 @@ import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 import static org.scada_lts.utils.MetaDataPointUtils.isDataPointInContext;
 import static org.scada_lts.utils.MetaDataPointUtils.isMetaDataPointRT;
 
@@ -497,11 +496,6 @@ public class RuntimeManager {
 				ds.addDataPoint(dataPoint);
 
 				boolean unreliable = dataPoint.isUnreliable();
-
-				if(unreliable)
-					setUnreliableDataPoint(dataPoint);
-				else
-					resetUnreliableDataPoint(dataPoint);
 
 				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - unreliable: " + unreliable);
 			}
@@ -1099,7 +1093,7 @@ public class RuntimeManager {
 
 	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
 		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
-		return filterRunningDataPoints(new ArrayList<>(dataPoints.values()), dataPoint -> isMetaDataPointRT(dataPoint)
+		return filterRunningDataPoints(dataPoints.values(), dataPoint -> isMetaDataPointRT(dataPoint)
 				&& isDataPointInContext(dataPoint, dataPointInContextId));
 	}
 
@@ -1109,7 +1103,7 @@ public class RuntimeManager {
 				.collect(Collectors.toList());
 	}
 
-	private static List<DataPointVO> filterDataPoints(List<DataPointVO> dataPoints, Predicate<DataPointVO> filter) {
+	private static List<DataPointRT> filterRunningDataPoints(Collection<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
 		return dataPoints.stream()
 				.filter(filter)
 				.collect(Collectors.toList());

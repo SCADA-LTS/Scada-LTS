@@ -39,16 +39,19 @@ import static utils.Scripts.createScriptWithObjectContextEnableDataSource;
         "javax.activation.*", "javax.management.*"})
 public class ScriptWithObjectContextEnableDisableDataSourceTest {
 
-    private static String sourceToChangeXid = "DP_093765";
+    private static final String sourceToChangeXid = "DP_093765";
 
-    private final List<IntValuePair> objectContext = Arrays.asList(new IntValuePair(1, "ds"));
+    private List<IntValuePair> objectContext;
 
-    private RuntimeManager runtimeManager = mock(RuntimeManager.class);
-    private DSCommandsScriptContextObject scriptContextObject = mock(DSCommandsScriptContextObject.class);
+    private RuntimeManager runtimeManager;
+    private DSCommandsScriptContextObject scriptContextObject;
 
     @Before
     public void config() throws Exception {
-        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+        objectContext = Arrays.asList(new IntValuePair(2, "ds"));
+        runtimeManager = mock(RuntimeManager.class);
+        scriptContextObject = mock(DSCommandsScriptContextObject.class);
+        ScriptTestUtils.configScriptMock(runtimeManager, scriptContextObject);
     }
 
     @After

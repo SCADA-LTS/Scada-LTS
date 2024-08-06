@@ -249,6 +249,13 @@
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
 
+        <Logger name="com.serotonin.mango.rt.dataSource.meta.ScriptExecutor" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="br.org.scadabr.rt.scripting.ContextualizedScriptRT" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
         <!-- DataPointRT -->
         <Logger name="com.serotonin.mango.rt.dataImage.DataPointRT" level="${dataPointRtLoggingLevel}" >
             <AppenderRef ref="ASYNC_SCRIPT"/>

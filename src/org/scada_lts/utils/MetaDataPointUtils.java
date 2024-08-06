@@ -6,8 +6,6 @@ import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 public final class MetaDataPointUtils {
@@ -20,10 +18,9 @@ public final class MetaDataPointUtils {
             if(metaPointLocatorRT != null) {
                 MetaPointLocatorVO metaPointLocatorVO = metaPointLocatorRT.getPointLocatorVO();
                 if(metaPointLocatorVO != null && metaPointLocatorVO.getContext() != null) {
-                    Set<Integer> keys = metaPointLocatorVO.getContext().stream()
+                    return metaPointLocatorVO.getContext().stream()
                             .map(IntValuePair::getKey)
-                            .collect(Collectors.toSet());
-                    return keys.contains(dataPointInContextId);
+                            .anyMatch(a -> a == dataPointInContextId);
                 }
             }
         }
