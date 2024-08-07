@@ -142,6 +142,8 @@ public class SystemSettingsService {
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT));
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
+        json.setCustomInformation(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION));
+        json.setCustomInformationStylesheet(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET));
         return json;
     }
 
@@ -158,6 +160,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, json.getCustomInformation());
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET, json.getCustomInformationStylesheet());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {

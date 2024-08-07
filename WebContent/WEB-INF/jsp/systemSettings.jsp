@@ -108,6 +108,8 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET %>"/>", settings.<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET %>"/>);
 
             setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
             setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/> || !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
@@ -308,6 +310,8 @@
                 $get("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
@@ -315,6 +319,7 @@
                     else {
                         setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
                     }
+                    location.reload();
                 });
         setUserMessage("miscMessage");
         startImageFader("saveMiscSettingsImg");
@@ -960,6 +965,20 @@
             <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
           </td>
           <td colspan="2" id="graphicsPathMessage" class="formError"></td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemsettings.custom.information"/></td>
+          <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemsettings.custom.information.stylesheet"/></td>
+          <td class="formField">
+            <div>#custom-information {</div>
+            <input id="<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET %>"/>" type="text" class="formShort" style="width: 300px; height: 50px;"/>
+            <div>}</div>
+          </td>
         </tr>
         <tr>
           <td colspan="2" id="miscMessage" class="formError"></td>

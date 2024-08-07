@@ -177,6 +177,10 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWebResourceGraphicsPath());
 		settings.put(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH,
 				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
+		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION,
+				systemSettingsService.getMiscSettings().getCustomInformation());
+		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET,
+				systemSettingsService.getMiscSettings().getCustomInformationStylesheet());
 		return settings;
 	}
 
@@ -329,7 +333,7 @@ public class SystemSettingsDwr extends BaseDwr {
 											int eventPendingLimit, boolean eventPendingCacheEnabled,
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
-											String webResourceGraphicsPath, String webResourceUploadsPath) {
+											String webResourceGraphicsPath, String webResourceUploadsPath, String customInformation, String customInformationStylesheet) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -387,6 +391,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, customInformation);
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET, customInformationStylesheet);
 
 		return response;
 	}

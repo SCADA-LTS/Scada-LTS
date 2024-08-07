@@ -16,6 +16,8 @@ public class JsonSettingsMisc implements Serializable {
     public int threadsNameAdditionalLength;
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
+    public String customInformation;
+    public String customInformationStylesheet;
 
     public JsonSettingsMisc() {}
 
@@ -113,5 +115,21 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setWebResourceUploadsPath(String webResourceUploadsPath) {
         this.webResourceUploadsPath = webResourceUploadsPath;
+    }
+
+    public String getCustomInformation(){
+        return customInformation;
+    }
+
+    public void setCustomInformation(String customInformation){
+        this.customInformation = customInformation;
+    }
+
+    public String getCustomInformationStylesheet(){
+        return customInformationStylesheet;
+    }
+
+    public void setCustomInformationStylesheet(String customInformationStylesheet){
+        this.customInformationStylesheet = customInformationStylesheet;
     }
 }

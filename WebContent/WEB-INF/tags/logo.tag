@@ -1,8 +1,14 @@
 <%@include file="/WEB-INF/tags/decl.tagf" %>
 
 <div class="logo-section">
+    <style>
+        #custom-information {
+            ${scadaVersion.getCustomStyles()}
+        }
+    </style>
     <div class="logo-section--title">
       <img id="logo" src="assets/logo.png" alt="Logo">
+      <span id="custom-information">${scadaVersion.getCustomInformation()}</span>
       <c:if test="${(!empty scadaVersion) && scadaVersion.isShowVersionInfo()}">
         <c:if test="${!empty scadaVersion.getCompanyName()}">
         <div id="company-container">
