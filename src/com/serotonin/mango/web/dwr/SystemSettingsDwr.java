@@ -179,6 +179,10 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
 		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
 				systemSettingsService.getMiscSettings().isEventAssignEnabled());
+		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION,
+				systemSettingsService.getMiscSettings().getCustomInformation());
+		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET,
+				systemSettingsService.getMiscSettings().getCustomInformationStylesheet());
 		return settings;
 	}
 
@@ -332,7 +336,7 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled) {
+											boolean eventAssignEnabled, String customInformation, String customInformationStylesheet) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -392,6 +396,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, customInformation);
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET, customInformationStylesheet);
 		return response;
 	}
 

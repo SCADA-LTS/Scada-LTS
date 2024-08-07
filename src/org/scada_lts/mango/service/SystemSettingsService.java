@@ -145,6 +145,8 @@ public class SystemSettingsService {
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
+        json.setCustomInformation(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION));
+        json.setCustomInformationStylesheet(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET));
         return json;
     }
 
@@ -162,6 +164,9 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
         saveEventAssignEnabled(json.isEventAssignEnabled());
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, json.getCustomInformation());
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET, json.getCustomInformationStylesheet());
+
     }
 
     public SettingsDataRetention getDataRetentionSettings() {

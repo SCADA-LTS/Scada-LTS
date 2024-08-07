@@ -17,6 +17,8 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
+    public String customInformation;
+    public String customInformationStylesheet;
 
     public JsonSettingsMisc() {}
 
@@ -122,5 +124,21 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setEventAssignEnabled(boolean eventAssignEnabled) {
         this.eventAssignEnabled = eventAssignEnabled;
+    }
+
+    public String getCustomInformation(){
+        return customInformation;
+    }
+
+    public void setCustomInformation(String customInformation){
+        this.customInformation = customInformation;
+    }
+
+    public String getCustomInformationStylesheet(){
+        return customInformationStylesheet;
+    }
+
+    public void setCustomInformationStylesheet(String customInformationStylesheet){
+        this.customInformationStylesheet = customInformationStylesheet;
     }
 }

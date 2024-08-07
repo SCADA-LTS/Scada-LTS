@@ -164,6 +164,8 @@ public class SystemSettingsDAO {
 	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
 	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
 	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
+	public static final String CUSTOM_INFORMATION = "customInformation";
+	public static final String CUSTOM_INFORMATION_STYLESHEET = "customInformationStylesheet";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -414,6 +416,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
 		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
+		DEFAULT_VALUES.put(CUSTOM_INFORMATION, "&nbsp;");
+		DEFAULT_VALUES.put(CUSTOM_INFORMATION_STYLESHEET, "color: green; font-size: 2em;");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
