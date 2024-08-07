@@ -416,7 +416,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
 		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
-		DEFAULT_VALUES.put(CUSTOM_INFORMATION, "&nbsp;");
+		DEFAULT_VALUES.put(CUSTOM_INFORMATION, "");
 		DEFAULT_VALUES.put(CUSTOM_INFORMATION_STYLESHEET, "color: green; font-size: 2em;");
 	}
 
