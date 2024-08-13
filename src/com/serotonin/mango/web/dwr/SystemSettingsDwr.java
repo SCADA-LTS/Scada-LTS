@@ -181,8 +181,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().isEventAssignEnabled());
 		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION,
 				systemSettingsService.getMiscSettings().getCustomInformation());
-		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET,
-				systemSettingsService.getMiscSettings().getCustomInformationStylesheet());
+		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX,
+				systemSettingsService.getMiscSettings().getCustomInformationPrefix());
 		return settings;
 	}
 
@@ -336,7 +336,7 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled, String customInformation, String customInformationStylesheet) {
+											boolean eventAssignEnabled) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -396,8 +396,6 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
-		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, customInformation);
-		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET, customInformationStylesheet);
 		return response;
 	}
 
@@ -477,7 +475,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	
 	public void saveInfoSettings(String newVersionNotificationLevel,
-			String instanceDescription) {
+			String instanceDescription, String customInformation, String customInformationPrefix) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO.setValue(
@@ -485,6 +483,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				newVersionNotificationLevel);
 		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, customInformation);
+		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX, customInformationPrefix);
 	}
 
 	

@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import static org.scada_lts.dao.SystemSettingsDAO.CUSTOM_INFORMATION;
-import static org.scada_lts.dao.SystemSettingsDAO.CUSTOM_INFORMATION_STYLESHEET;
+import static org.scada_lts.dao.SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX;
 
 /**
  * Scada Version class
@@ -141,7 +141,7 @@ public class ScadaVersion {
     public String getCustomInformation() {
         return SystemSettingsDAO.getValue(CUSTOM_INFORMATION);
     }
-    public String getCustomStyles(){
-        return SystemSettingsDAO.getValue(CUSTOM_INFORMATION_STYLESHEET);
+    public String getCustomInformationPrefix(){
+        return SystemSettingsDAO.getValue(CUSTOM_INFORMATION_PREFIX);
     }
 }

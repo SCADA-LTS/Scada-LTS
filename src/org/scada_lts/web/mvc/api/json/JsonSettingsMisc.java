@@ -18,7 +18,7 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
     public String customInformation;
-    public String customInformationStylesheet;
+    public String customInformationPrefix;
 
     public JsonSettingsMisc() {}
 
@@ -134,11 +134,11 @@ public class JsonSettingsMisc implements Serializable {
         this.customInformation = customInformation;
     }
 
-    public String getCustomInformationStylesheet(){
-        return customInformationStylesheet;
+    public String getCustomInformationPrefix(){
+        return customInformationPrefix;
     }
 
-    public void setCustomInformationStylesheet(String customInformationStylesheet){
-        this.customInformationStylesheet = customInformationStylesheet;
+    public void setCustomInformationPrefix(String customInformationPrefix){
+        this.customInformationPrefix = customInformationPrefix;
     }
 }

@@ -1074,5 +1074,7 @@
 	"systemsettings.misc.webResourceUploadsPath": "Uploaded images save path",
 	"systemsettings.misc.webResourceGraphicsPath": "Graphics images path",
 	"systemsettings.misc.webResourceUploadsPath.wrong":"Uploaded images save path must end with 'uploads' or 'uploads{0}' ",
-	"systemsettings.misc.webResourceGraphicsPath.wrong": "Graphics images path must end with 'graphics' or 'graphics{0}' "
+	"systemsettings.misc.webResourceGraphicsPath.wrong": "Graphics images path must end with 'graphics' or 'graphics{0}' ",
+	"systemsettings.custom.information": "Custom information to display",
+	"systemsettings.custom.information.prefix": "Custom information prefix"
 }

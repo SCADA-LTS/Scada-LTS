@@ -14,3 +14,21 @@
  *  font-size: 1.5em;
  * }
  */
+
+/* ----- Custom information stylesheet ----- */
+.custom-container {
+    display: flex;
+    align-items: center;
+}
+
+.custom-text {
+    margin: 0;
+}
+
+#custom-information-prefix {
+    color: black; font-size: 1em;
+}
+
+#custom-information {
+    color: green; font-size: 2em;
+}
