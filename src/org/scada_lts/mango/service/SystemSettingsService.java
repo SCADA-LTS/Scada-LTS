@@ -24,6 +24,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
  *
  * @author Radoslaw Jajko
  */
+@Service
 public class SystemSettingsService {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
@@ -132,8 +134,8 @@ public class SystemSettingsService {
         JsonSettingsMisc json = new JsonSettingsMisc();
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
         json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
-        json.setHideShortcutDisableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
-        json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE));
+        json.setViewHideShortcutDisableFullScreenEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
+        json.setViewForceFullScreenEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE));
         json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT));
         json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED));
         json.setThreadsNameAdditionalLength(SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH));
@@ -142,14 +144,15 @@ public class SystemSettingsService {
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT));
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
+        json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
         systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isHideShortcutDisableFullScreen());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isEnableFullScreen());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isViewHideShortcutDisableFullScreenEnabled());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isViewForceFullScreenEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, json.getEventPendingLimit());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, json.isEventPendingCacheEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, json.getThreadsNameAdditionalLength());
@@ -158,6 +161,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        saveEventAssignEnabled(json.isEventAssignEnabled());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -382,6 +386,14 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
     }
 
+    public void saveEventAssignEnabled(boolean eventAssignEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, eventAssignEnabled);
+        if(!eventAssignEnabled) {
+            EventService eventService = new EventService();
+            eventService.unassignEvents();
+        }
+    }
+
     public DataPointSyncMode getDataPointRtValueSynchronized() {
         return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
     }
@@ -449,6 +461,16 @@ public class SystemSettingsService {
         int defaultValue = SystemSettingsUtils.getThreadsNameAdditionalLength();
         try {
             return SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public boolean isEventAssignEnabled() {
+        boolean defaultValue = SystemSettingsUtils.isEventAssignEnabled();
+        try {
+            return SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, defaultValue);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;

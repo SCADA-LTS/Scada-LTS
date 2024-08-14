@@ -225,6 +225,7 @@
               <option value="<c:out value="<%= EventsDwr.STATUS_ACTIVE %>"/>"><fmt:message key="common.active"/></option>
               <option value="<c:out value="<%= EventsDwr.STATUS_RTN %>"/>"><fmt:message key="event.rtn.rtn"/></option>
               <option value="<c:out value="<%= EventsDwr.STATUS_NORTN %>"/>"><fmt:message key="common.nortn"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_ASSIGNEE %>"/>"><fmt:message key="common.assignee"/></option>
             </select>
           </td>
         </tr>

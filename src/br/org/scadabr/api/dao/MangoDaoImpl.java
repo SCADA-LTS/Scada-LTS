@@ -567,7 +567,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 		if (eventInstance != null) {
 			// alternateAckSource? - REM
-			eventService.ackEvent(eventId, 1, 0, 0);
+			eventService.ackEvent(eventInstance, 1, this.user, 0);
 			// new EventDao().ackEvent(eventId, 1);
 			return APIUtils.toEventNotification(eventInstance);
 		} else {

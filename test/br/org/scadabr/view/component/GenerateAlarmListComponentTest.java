@@ -16,6 +16,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,6 +40,8 @@ public class GenerateAlarmListComponentTest {
     private WebContext webContext;
 
     private EventService eventService;
+    private SystemSettingsService systemSettingsService;
+
 
     @Mock
     private User user;
@@ -59,6 +62,10 @@ public class GenerateAlarmListComponentTest {
 
         eventService = PowerMockito.mock(EventService.class);
         whenNew(EventService.class).withNoArguments().thenReturn(eventService);
+
+        systemSettingsService = PowerMockito.mock(SystemSettingsService.class);
+        whenNew(SystemSettingsService.class).withNoArguments().thenReturn(systemSettingsService);
+
 
         subject = new AlarmListComponent();
     }

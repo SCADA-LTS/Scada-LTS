@@ -62,6 +62,8 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
 	private final static String  COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private final static String  COLUMN_NAME_EVENT_SILENCED = "silenced";
+	private final static String COLUMN_NAME_EVENT_ASSIGNEE_TS = "assigneeTs";
+	private final static String COLUMN_NAME_EVENT_ASSIGNEE_USERNAME = "assigneeUsername";
 
 	// @formatter:off
 	private static final String SQL_EVENTS = ""
@@ -82,7 +84,9 @@ public class PendingEventsDAO {
 				+ "e.ackUserId, "
 				+ "u.username, "
 				+ "e.alternateAckSource, "
-				+ "ue.silenced "
+				+ "ue.silenced, "
+				+ "e.assigneeTs, "
+				+ "e.assigneeUsername "
 			+ "from "
 				+ "events e   "
 				+ "left join users u on e.ackUserId=u.id   "
@@ -162,6 +166,12 @@ public class PendingEventsDAO {
 		}
 
 		event.setEventComments(comments.get(event.getId()));
+
+		long assigneeTs = rs.getLong(COLUMN_NAME_EVENT_ASSIGNEE_TS);
+		if (!rs.wasNull()) {
+			event.setAssigneeTimestamp(assigneeTs);
+			event.setAssigneeUsername(rs.getString(COLUMN_NAME_EVENT_ASSIGNEE_USERNAME));
+		}
 		
 		return event;
 	}

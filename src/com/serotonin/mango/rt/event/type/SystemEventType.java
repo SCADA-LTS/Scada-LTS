@@ -60,6 +60,8 @@ public class SystemEventType extends EventType {
 	public static final int TYPE_PROCESS_FAILURE = 10;
 	public static final int TYPE_SCRIPT_HANDLER_FAILURE = 11;
 	public static final int TYPE_SMS_SEND_FAILURE = 12;
+	public static final int TYPE_ASSIGNED_EVENT = 13;
+	public static final int TYPE_UNASSIGNED_EVENT = 14;
 
 	public static final ExportCodes TYPE_CODES = new ExportCodes();
 	static {
@@ -78,6 +80,8 @@ public class SystemEventType extends EventType {
 		TYPE_CODES.addElement(TYPE_PROCESS_FAILURE, "PROCESS_FAILURE");
 		TYPE_CODES.addElement(TYPE_SCRIPT_HANDLER_FAILURE, "SCRIPT_HANDLER_FAILURE");
 		TYPE_CODES.addElement(TYPE_SMS_SEND_FAILURE, "SMS_SEND_FAILURE");
+		TYPE_CODES.addElement(TYPE_ASSIGNED_EVENT, "ASSIGNED_EVENT");
+		TYPE_CODES.addElement(TYPE_UNASSIGNED_EVENT, "UNASSIGNED_EVENT");
 	}
 
 	private static List<EventTypeVO> systemEventTypes;
@@ -109,7 +113,11 @@ public class SystemEventType extends EventType {
 			addEventTypeVO(TYPE_SCRIPT_HANDLER_FAILURE, "event.system.script",
 					AlarmLevels.URGENT);
 			addEventTypeVO(TYPE_SMS_SEND_FAILURE, "event.system.sms",
-					AlarmLevels.URGENT);
+					AlarmLevels.INFORMATION);
+			addEventTypeVO(TYPE_ASSIGNED_EVENT, "event.system.assigned",
+					AlarmLevels.INFORMATION);
+			addEventTypeVO(TYPE_UNASSIGNED_EVENT, "event.system.unassigned",
+					AlarmLevels.INFORMATION);
 		}
 		return systemEventTypes;
 	}

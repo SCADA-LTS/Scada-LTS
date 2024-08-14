@@ -390,6 +390,14 @@ public class MangoContextListener implements ServletContextListener {
 				SystemEventType.TYPE_POINT_LINK_FAILURE);
 		ctx.setAttribute("constants.SystemEventType.TYPE_PROCESS_FAILURE",
 				SystemEventType.TYPE_PROCESS_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SMS_SEND_FAILURE",
+				SystemEventType.TYPE_SMS_SEND_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE",
+				SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_ASSIGNED_EVENT",
+				SystemEventType.TYPE_ASSIGNED_EVENT);
+		ctx.setAttribute("constants.SystemEventType.TYPE_UNASSIGNED_EVENT",
+				SystemEventType.TYPE_UNASSIGNED_EVENT);
 
 		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_SOURCE",
 				AuditEventType.TYPE_DATA_SOURCE);

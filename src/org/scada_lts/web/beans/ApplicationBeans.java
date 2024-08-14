@@ -156,6 +156,13 @@ public class ApplicationBeans {
         public static Optional<ILoggedUsers> getLoggedUsersBean() {
             return getBeanFromContext("loggedUsers", ILoggedUsers.class);
         }
+
+        public static Optional<IHighestAlarmLevelService> getHighestAlarmLevelServiceBean() {
+            boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCacheable.CACHE_ENABLED_KEY, true);
+            return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
+                    getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
+        }
+
         private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
             try {
                 return Optional.ofNullable(get(beanName, clazz));

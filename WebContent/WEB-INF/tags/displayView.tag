@@ -22,7 +22,7 @@
 <script type="text/javascript">
     dojo.addOnLoad(function() {
         const viewBackground = document.getElementById("viewBackground");
-        if(!viewBackground.src.includes("spacer.gif")) {
+        if(viewBackground && !viewBackground.src.includes("spacer.gif")) {
             loadDefaultSizeContainer('${view.backgroundFilename}','viewBackground');
         }
     })

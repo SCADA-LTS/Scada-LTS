@@ -21,11 +21,6 @@ package com.serotonin.mango.web.dwr;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
-
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
 
@@ -54,9 +49,9 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -99,6 +94,10 @@ abstract public class BaseDwr {
             if (pointValue != null)
                 model.put("pointValue", pointValue);
         }
+
+        User user = Common.getUser();
+        if(user != null)
+            model.put(Common.SESSION_USER, user);
 
         return pointValue;
     }
@@ -170,6 +169,8 @@ abstract public class BaseDwr {
 
     protected void setMessages(BasePointState state, HttpServletRequest request, String snippet,
             Map<String, Object> model) {
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         state.setMessages(generateContent(request, snippet + ".jsp", model).trim());
     }
 
