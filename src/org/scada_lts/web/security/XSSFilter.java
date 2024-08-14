@@ -1,11 +1,13 @@
 package org.scada_lts.web.security;
 
+import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class XSSFilter extends OncePerRequestFilter {
 
@@ -17,13 +19,7 @@ public class XSSFilter extends OncePerRequestFilter {
         request.getParameterMap().forEach((key, values) -> {
             for (String value : values) {
                 if(!XSSUtils.validate(value)) {
-                    try {
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                "Potential XSS detected in the request parameter: " + key);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return;
+                    throw new InternalServerErrorException(Arrays.asList("Potential XSS detected in the request parameter: " + key), request.getRequestURI());
                 }
             }
         });
