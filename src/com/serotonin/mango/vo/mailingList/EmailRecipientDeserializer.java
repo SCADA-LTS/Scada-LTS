@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class EmailRecipientDeserializer extends JsonDeserializer<List<EmailRecipient>>
 {
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
     @Override
     public List<EmailRecipient> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException

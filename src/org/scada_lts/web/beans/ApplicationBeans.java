@@ -3,6 +3,7 @@ package org.scada_lts.web.beans;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
@@ -147,6 +148,10 @@ public class ApplicationBeans {
 
     public static ILoggedUsers getLoggedUsersBean() {
         return getBeanFromContext("loggedUsers", ILoggedUsers.class);
+    }
+
+    public static ObjectMapper getObjectMapper() {
+        return getBeanFromContext("objectMapper", ObjectMapper.class);
     }
 
     public static class Lazy {

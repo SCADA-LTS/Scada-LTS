@@ -1,10 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for SystemSettings page
@@ -34,24 +31,20 @@ public class SystemSettingsAPI {
     private static final Log LOG = LogFactory.getLog(SystemSettingsAPI.class);
 
     private static final String SAVED_MSG = "saved";
+    private final SystemSettingsService systemSettingsService;
 
-    @Resource
-    private SystemSettingsService systemSettingsService;
+    public SystemSettingsAPI(SystemSettingsService systemSettingsService) {
+        this.systemSettingsService = systemSettingsService;
+    }
 
     @RequestMapping(value = "/getSettings", method = RequestMethod.GET)
-    public ResponseEntity<String> getSettings(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getSettings(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getSettings");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getSettings());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
+                Map<String, Object> response = systemSettingsService.getSettings();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -62,19 +55,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDefaultLoggingType", produces = "application/json")
-    public ResponseEntity<String> getLoggingType(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getLoggingType(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDefaultLoggingType");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getDefaultLoggingType());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
+                Map<String, Object> response = systemSettingsService.getDefaultLoggingType();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -476,19 +463,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDatabaseSize", produces = "application/json")
-    public ResponseEntity<String> getDatabaseSize(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getDatabaseSize(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDatabaseSize");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getDatabaseSize());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                Map<String, Object> response = systemSettingsService.getDatabaseSize();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

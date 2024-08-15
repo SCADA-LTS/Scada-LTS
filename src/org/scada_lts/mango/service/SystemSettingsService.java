@@ -22,6 +22,7 @@ import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
@@ -482,9 +484,9 @@ public class SystemSettingsService {
             String httpResponseHeaders = json.getHttpResponseHeaders();
             if(StringUtils.isEmpty(httpResponseHeaders))
                 return "";
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, objectMapper);
-            return serializeMap(headers, objectMapper);
+            Supplier<ObjectMapper> getObjectMapper = () -> ApplicationBeans.getObjectMapper();
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, getObjectMapper);
+            return serializeMap(headers, getObjectMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -492,7 +494,7 @@ public class SystemSettingsService {
 
     private static Map<String, String> deserializeMap(String json) {
         try {
-            return SystemSettingsUtils.deserializeMap(json, new ObjectMapper());
+            return SystemSettingsUtils.deserializeMap(json, () -> ApplicationBeans.getObjectMapper());
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
             return Collections.emptyMap();
