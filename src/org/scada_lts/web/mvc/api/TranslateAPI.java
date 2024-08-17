@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+@Deprecated(since = "2.8.0")
 public class TranslateAPI {
 	
 	private static final Log LOG = LogFactory.getLog(TranslateAPI.class);

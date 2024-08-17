@@ -18,6 +18,7 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -263,14 +264,16 @@ public class ViewAPI {
     }
 
     @PutMapping(value = "")
-    public ResponseEntity<String> updateView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                Map<String, String> response = new HashMap<>();
                 String error = validateGraphicalViewUpdate(viewDTO, user);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    response.put("errors", error);
+                    return ResponseEntity.badRequest().body(response);
                 }
                 return findAndUpdateView(viewDTO, user);
             } else {
@@ -415,26 +418,32 @@ public class ViewAPI {
         }
     }
 
-    private ResponseEntity<String> findAndUpdateView(GraphicalViewDTO body, User user) {
+    private ResponseEntity<Map<String, String>> findAndUpdateView(GraphicalViewDTO body, User user) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("errors", "View not found");
         return getGraphicalView(body.getId(), viewService)
                 .filter(a -> GetViewsWithAccess.hasViewOwnerPermission(user, a))
                 .map(toUpdate -> updateGraphicalView(toUpdate, body, user)).
-                orElse(new ResponseEntity<>(formatErrorsJson("View not found"), HttpStatus.NOT_FOUND));
+                orElse(new ResponseEntity<>(errors, HttpStatus.NOT_FOUND));
     }
 
-    private ResponseEntity<String> updateGraphicalView(View toUpdate, GraphicalViewDTO body, User user) {
+    private ResponseEntity<Map<String, String>> updateGraphicalView(View toUpdate, GraphicalViewDTO body, User user) {
+        Map<String, String> response = new HashMap<>();
         if (isXidChanged(toUpdate.getXid(), body.getXid()) &&
                 isViewPresent(body.getXid(), viewService)){
-            return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+            response.put("errors", "This XID is already in use");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         updateValueGraphicalView(toUpdate, body, user);
         try {
             viewService.saveViewAPI(toUpdate);
         } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Saving failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            LOG.error(LoggingUtils.exceptionInfo(e));
+            response.put("errors", "Saving failed");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+        response.put("status", "updated");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     static class ViewJSON implements Serializable {

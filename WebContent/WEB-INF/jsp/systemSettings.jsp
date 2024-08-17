@@ -503,8 +503,9 @@
 
     function initCustomCssData() {
       fetchCustomCssConfig().then((val) => {
-        document.getElementById('cssEditor').value = val;
-        updateCodeText(val, '#cssHighlightingContent');
+        let res = JSON.parse(val);
+        document.getElementById('cssEditor').innerHTML = res.content;
+        updateCodeTextEscaped(res.content, '#cssHighlightingContent');
       });
     }
 
@@ -514,7 +515,7 @@
         req.open('GET', customCssUrl, true);
         req.onload = () => {
           if (req.status === 200) {
-            resolve(req.responseText);
+            resolve(req.response);
           } else {
             reject(req.status);
           }
@@ -1102,7 +1103,7 @@
               id="cssEditor"
               class="hgl-editor"
               spellcheck="false"
-              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
+              oninput="updateCodeTextEscaped(this.value, '#cssHighlightingContent');"
               onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
             </textarea>
             <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">

@@ -13,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for Synoptic Panels
@@ -33,8 +31,11 @@ public class SynopticPanelAPI {
 
     private static final Log LOG = LogFactory.getLog(SynopticPanelAPI.class);
 
-    @Resource
-    private SynopticPanelService synopticPanelService;
+    private final SynopticPanelService synopticPanelService;
+
+    public SynopticPanelAPI(SynopticPanelService synopticPanelService) {
+        this.synopticPanelService = synopticPanelService;
+    }
 
     /**
      * Use universal ScadaObjectIdentifier Class

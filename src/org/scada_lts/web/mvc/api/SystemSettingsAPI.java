@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -179,13 +180,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/sendTestEmail", produces = "application/json")
-    public ResponseEntity<String> sendTestEmail(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> sendTestEmail(HttpServletRequest request) {
         LOG.info("/api/systemSettings/sendTestEmail");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 try {
-                    String response = systemSettingsService.sendTestEmail(user);
+                    Map<String, String> response = systemSettingsService.sendTestEmailMap(user);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } catch (Exception e) {
                     LOG.error(e);
@@ -301,14 +302,16 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/purgeNow", produces = "application/json")
-    public ResponseEntity<String> purgeNow(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> purgeNow(HttpServletRequest request) {
         LOG.info("/api/systemSettings/purgeData");
         LOG.warn("Purging data!");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
                 systemSettingsService.purgeNow();
-                return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
+                response.put("status", "done");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -429,13 +432,14 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDatabaseType", produces = "application/json")
-    public ResponseEntity<String> getDatabaseType(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> getDatabaseType(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDatabaseType");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String json = "{\"databaseType\":\"" + systemSettingsService.getDatabaseType() + "\"}";
-                return new ResponseEntity<>(json, HttpStatus.OK);
+                Map<String, String> response = new HashMap<>();
+                response.put("databaseType", systemSettingsService.getDatabaseType());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -480,14 +484,16 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/purgeData", produces = "application/json")
-    public ResponseEntity<String> purgeData(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> purgeData(HttpServletRequest request) {
         LOG.info("/api/systemSettings/purgeData");
         LOG.warn("Purging data!");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 systemSettingsService.purgeAllData();
-                return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "done");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -498,13 +504,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getStartupTime", produces = "application/json")
-    public ResponseEntity<String> getStartupTime(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getStartupTime(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(
-                        "{\"startupTime\": \"" + systemSettingsService.getStartupTime() + "\"}",
-                        HttpStatus.OK);
+                Map<String, Object> response = new HashMap<>();
+                response.put("startupTime", systemSettingsService.getStartupTime());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -515,13 +521,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getSchemaVersion", produces = "application/json")
-    public ResponseEntity<String> getSchemaVersion(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> getSchemaVersion(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(
-                        "{\"schemaVersion\": \"" + systemSettingsService.getSchemaVersion() + "\"}",
-                        HttpStatus.OK);
+                Map<String, String> response = new HashMap<>();
+                response.put("schemaVersion", systemSettingsService.getSchemaVersion());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

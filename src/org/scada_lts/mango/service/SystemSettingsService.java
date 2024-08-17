@@ -300,6 +300,7 @@ public class SystemSettingsService {
         return data;
     }
 
+    @Deprecated(since = "2.8.0")
     public String sendTestEmail(User user) throws Exception {
 
         ResourceBundle bundle = Common.getBundle();
@@ -311,6 +312,20 @@ public class SystemSettingsService {
                 + ", " + userInfo(user));
 
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
+    }
+
+    public Map<String, String> sendTestEmailMap(User user) throws Exception {
+
+        ResourceBundle bundle = Common.getBundle();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", new LocalizableMessage("systemSettings.testEmail"));
+        IMsgSubjectContent cnt = IMsgSubjectContent.newInstance(
+                "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
+        sendMsgTestSync(user.getEmail(), cnt, model, () -> "sendTestEmail from: " + this.getClass().getName()
+                + ", " + userInfo(user));
+        Map<String, String> response = new HashMap<>();
+        response.put("recipient", user.getEmail());
+        return response;
     }
 
     public void purgeAllData() {

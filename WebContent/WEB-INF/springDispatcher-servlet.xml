@@ -223,9 +223,8 @@
   <bean id="objectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean" scope="prototype">
     <property name="serializers">
       <array>
-        <bean class="org.scada_lts.web.beans.XssStringSerializer" >
-          <constructor-arg value="java.lang.String" type="java.lang.Class"/>
-        </bean>
+        <bean class="org.scada_lts.web.beans.XssStringSerializer" />
+        <bean class="org.scada_lts.web.beans.XssCssStyleSerializer" />
       </array>
     </property>
   </bean>

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -23,8 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 public class GetHistoryChangesAPI {
     private static final Log LOG = LogFactory.getLog(GetHistoryChangesAPI.class);
 
-    @Resource
     private MultiChangesHistoryService multiChangesHistoryService;
+
+    public GetHistoryChangesAPI(MultiChangesHistoryService multiChangesHistoryService) {
+        this.multiChangesHistoryService = multiChangesHistoryService;
+    }
 
     @RequestMapping(value = "/api/cmp/history/{xIdViewAndIdCmp}", method = RequestMethod.GET)
     public ResponseEntity<MultiChangeHistoryComponentDTO> getHistory(@PathVariable(name = "xIdViewAndIdCmp") String xidViewAndIdCmp, HttpServletRequest request) {
