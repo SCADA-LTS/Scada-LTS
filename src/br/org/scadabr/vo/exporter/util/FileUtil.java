@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -65,6 +66,13 @@ public class FileUtil {
 			LOG.error(LoggingUtils.exceptionInfo(e), e);
 		}
 		return file;
+	}
+
+	public static File createSvgTempFile(String xmlContent) throws IOException {
+		File temp = File.createTempFile("" + System.currentTimeMillis(), ".svg");
+		temp.deleteOnExit();
+		Files.writeString(temp.toPath(), xmlContent);
+		return temp;
 	}
 
 	public static List<File> getFilesOnDirectory(Path directoryName) {

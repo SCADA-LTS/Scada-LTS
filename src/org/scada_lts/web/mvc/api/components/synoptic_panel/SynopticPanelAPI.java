@@ -5,8 +5,10 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.service.SynopticPanelService;
 import org.scada_lts.service.model.SynopticPanel;
+import org.scada_lts.utils.ValidationUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +100,12 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                return new ResponseEntity<>(synopticPanelService.createSynopticPanel(requestBody), HttpStatus.CREATED);
+                String error = ValidationUtils.validSvg(requestBody.getVectorImage());
+                if(!StringUtils.isEmpty(error)) {
+                    return ResponseEntity.badRequest().build();
+                }
+                SynopticPanel result = synopticPanelService.createSynopticPanel(requestBody);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -113,7 +120,12 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
+                String error = ValidationUtils.validSvg(requestBody.getVectorImage());
+                if(!StringUtils.isEmpty(error)) {
+                    return ResponseEntity.badRequest().build();
+                }
+                SynopticPanel result = synopticPanelService.updateSynopticPanel(requestBody);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

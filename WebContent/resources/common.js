@@ -1215,8 +1215,11 @@ function disconnectWebsocket() {
 }
 
 function onloadHandlerWebsocket() {
-    let endpoint = scadalts.websocket.endpoints.main;
-    scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+    let location = window.location.href;
+    if(!location.includes('app.shtm')) {
+        let endpoint = scadalts.websocket.endpoints.main;
+        scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+    }
 }
 
 function getAppLocation() {

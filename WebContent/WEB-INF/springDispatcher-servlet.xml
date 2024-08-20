@@ -225,6 +225,7 @@
       <array>
         <bean class="org.scada_lts.web.beans.XssStringSerializer" />
         <bean class="org.scada_lts.web.beans.XssCssStyleSerializer" />
+        <bean class="org.scada_lts.web.beans.XssSynopticPanelSerializer" />
       </array>
     </property>
   </bean>
