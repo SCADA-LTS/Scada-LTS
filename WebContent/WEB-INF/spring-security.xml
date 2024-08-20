@@ -532,5 +532,5 @@
         <b:property name="allowUrlEncodedPeriod" value="false"/>
     </b:bean>
 
-    <b:bean id="xssFilter" class="org.scada_lts.web.security.XSSFilter"/>
+    <b:bean id="xssFilter" class="org.scada_lts.web.security.XssFilter"/>
 </b:beans>

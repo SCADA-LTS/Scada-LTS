@@ -286,6 +286,11 @@
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
+        <!-- XSS Utils Logging-->
+        <Logger name="org.scada_lts.web.security" level="WARN">
+            <AppenderRef ref="ASYNC"/>
+        </Logger>
+
         <Root level="${rootLoggingLevel}">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="ASYNC"/>
