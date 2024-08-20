@@ -55,6 +55,11 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Session;
+import org.apache.catalina.core.ApplicationContext;
+import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
@@ -76,6 +81,7 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -191,6 +197,8 @@ public class MangoContextListener implements ServletContextListener {
 		}
 
 		initSchedule();
+
+		sessionsInitialize(evt);
 
 		log.info("Scada-LTS context started");
 	}
@@ -681,5 +689,34 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	private void sessionsInitialize(ServletContextEvent evt) {
+		try {
+			Session[] sessions = getSessions(evt);
+			ApplicationBeans.getLoggedUsersBean().loadSessions(sessions);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+		}
+	}
+
+	private static Session[] getSessions(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		Manager manager = getManager(evt);
+		return manager.findSessions();
+	}
+
+	private static Manager getManager(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		ApplicationContextFacade applicationContextFacade =  (ApplicationContextFacade) evt.getServletContext();
+
+		Field applicationContextField = applicationContextFacade.getClass().getDeclaredField("context");
+		applicationContextField.setAccessible(true);
+		ApplicationContext applicationContext = (ApplicationContext) applicationContextField.get(applicationContextFacade);
+		applicationContextField.setAccessible(false);
+
+		Field standardContextField = applicationContext.getClass().getDeclaredField("context");
+		standardContextField.setAccessible(true);
+		StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
+		standardContextField.setAccessible(false);
+		return standardContext.getManager();
 	}
 }

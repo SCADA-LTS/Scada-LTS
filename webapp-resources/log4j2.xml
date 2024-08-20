@@ -155,6 +155,8 @@
             <AppenderRef ref="ASYNC_FLYWAY"/>
         </Logger>
 
+        <Logger name="org.scada_lts.login" level="${startupLoggingLevel}"/>
+
         <!-- BackgroundProcessing Logging-->
         <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundProcessingLoggingLevel}"/>
 
