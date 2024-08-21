@@ -111,6 +111,8 @@ public class MangoContextListener implements ServletContextListener {
 	private void initialized(ServletContextEvent evt) {
 		log.info("Scada-LTS context starting at: " + Common.getStartupTime());
 
+		sessionsInitialize(evt);
+
 		scriptContextInitialize();
 
 		// Get a handle on the context.
@@ -197,8 +199,6 @@ public class MangoContextListener implements ServletContextListener {
 		}
 
 		initSchedule();
-
-		sessionsInitialize(evt);
 
 		log.info("Scada-LTS context started");
 	}

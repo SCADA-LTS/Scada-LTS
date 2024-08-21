@@ -127,7 +127,7 @@ public class LoggedUsers implements ILoggedUsers {
                 if(authentication != null) {
                     String username = authentication.getName();
                     User sessionUser = userService.getUser(username);
-                    if (sessionUser != null) {
+                    if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
                         int userId = sessionUser.getId();
                         loggedSessions.putIfAbsent(userId, new ArrayList<>());
                         loggedSessions.get(userId).add(httpSession);
@@ -154,5 +154,14 @@ public class LoggedUsers implements ILoggedUsers {
             session.setAttribute(SESSION_USER, user);
         }
         loggedUsers.put(user.getId(), user);
+    }
+
+    private static boolean isAdmin(Authentication authentication) {
+        for(GrantedAuthority authority: authentication.getAuthorities()) {
+            if("ROLE_ADMIN".equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
