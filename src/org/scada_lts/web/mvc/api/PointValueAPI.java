@@ -322,10 +322,12 @@ public class PointValueAPI {
     private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
 
     private DataPointService dataPointService = new DataPointService();
-    private DataSourceService dataSourceService = new DataSourceService();
 
     @Resource
     private PointValueService pointValueService;
+
+    @Resource
+    private DataSourceService dataSourceService;
 
     private String getValue(MangoValue value, String type) {
 
@@ -365,6 +367,11 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(xid);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+                
+                // API should show datapoint is disabled if datasource is disabled
+                DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dpvo.getDataSourceId());
+                dpvo.setEnabled(dpvo.isEnabled() && dataSourceVO.isEnabled());
+
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -402,6 +409,11 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(id);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+
+                // API should show datapoint is disabled if datasource is disabled
+                DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dpvo.getDataSourceId());
+                dpvo.setEnabled(dpvo.isEnabled() && dataSourceVO.isEnabled());
+
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
