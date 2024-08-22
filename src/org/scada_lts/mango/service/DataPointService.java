@@ -24,7 +24,6 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -100,8 +99,6 @@ public class DataPointService implements MangoDataPoint {
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
 	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
-
-	private final DataSourceService dataSourceService = new DataSourceService();
 
 	public DataPointService() {
 		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
@@ -684,7 +681,7 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public boolean isDataPointRunning(DataPointVO dataPoint){
-		DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dataPoint.getDataSourceId());
+		DataSourceVO<?> dataSourceVO = dataSourceDAO.getDataSource(dataPoint.getDataSourceId());
         return dataPoint.isEnabled() && dataSourceVO.isEnabled();
 	}
 
