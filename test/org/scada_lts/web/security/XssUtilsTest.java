@@ -21,7 +21,7 @@ public class XssUtilsTest {
         this.expectedResult = expectedResult;
     }
 
-    @Parameters
+    @Parameters(name = "{index}: input: {0}, expectedResult: {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
 
@@ -45,11 +45,58 @@ public class XssUtilsTest {
                 {"onerror=alert(1)&onload=alert(1)", false},
                 {"!key=value", false},
 
+
+                {"abc", true},
+                {"ABC", true},
+                {"abc=abc", true},
+                {"ABC=ABC", true},
+                {"abc=abc&ABC=ABC", true},
+                {"ABC=ABC&abc=abc", true},
+                {"abc=1", true},
+                {"ABC=1", true},
+                {"param123", true},
+                {"param1&param2=23", true},
+                {"param1=12&param2", true},
+                {"param1", true},
+
+                {"", false},
+                {null, false},
+                {"&param1", false},
+                {"&param1&param2", false},
+                {"&param1=123&param2", false},
+                {"&param1&param=123", false},
+                {"param1&param2=23&onerror", false},
+                {"param1&param2=23onerror", false},
+                {"para!m1", false},
+                {"onerror=alert(1)", false},
+                {"onload=alert(1)", false},
+                {"onerror=abc", false},
+                {"onload=abc", false},
+                {"onload=", false},
+                {"onerror=", false},
+                {"onload", false},
+                {"onerror", false},
+                {"!param1=value", false},
+                {"<img src=x onerror=alert(document.location)>", false},
+                {"param1=<img src=x onerror=alert(document.location)>", false},
+                {"param1=<img src=x onerror=alert(document.location)>&param2=123", false},
+                {"param1=123&param2=<img src=x onerror=alert(document.location)>", false},
+                {"param1=123&param2=<img src=x onerror=document.location>", false},
+                {"param1=alert(document.location)", false},
+                {"startTs=123", true},
+                {"startTs=1724326168402&endTs=1724329768507", true},
+                {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
+                {"startTs=123.", true},
         });
     }
 
     @Test
     public void testValidate() {
-        assertEquals("Validation failed for input: " + input, expectedResult, XssUtils.validate(input));
+
+        //when:
+        boolean result = XssUtils.validateHttpQuery(input);
+
+        //then:
+        assertEquals("Validation failed for input: " + input, expectedResult, result);
     }
 }
