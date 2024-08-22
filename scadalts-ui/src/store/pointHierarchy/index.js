@@ -116,7 +116,7 @@ const gv = {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(
-						`.//pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`,
+						`./pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`,
 						requestConfiguration,
 					)
 					.then((resp) => {

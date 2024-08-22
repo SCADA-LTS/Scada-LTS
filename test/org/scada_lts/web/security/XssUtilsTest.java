@@ -57,7 +57,17 @@ public class XssUtilsTest {
                 {"param123", true},
                 {"param1&param2=23", true},
                 {"param1=12&param2", true},
+                {"param1=12&param2&param3", true},
                 {"param1", true},
+                {"startTs=123", true},
+                {"startTs=1724326168402&endTs=1724329768507", true},
+                {"startTs=123.", true},
+                {"startTs=12345678901234567890123456789012", true},
+                {"startTs=123456789012345678901234567890123", true},
+                {"12345678901234567890123456789012=abc", true},
+                {"123456789012345678901234567890123=abc", true},
+                {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
+
 
                 {"", false},
                 {null, false},
@@ -83,10 +93,8 @@ public class XssUtilsTest {
                 {"param1=123&param2=<img src=x onerror=alert(document.location)>", false},
                 {"param1=123&param2=<img src=x onerror=document.location>", false},
                 {"param1=alert(document.location)", false},
-                {"startTs=123", true},
-                {"startTs=1724326168402&endTs=1724329768507", true},
-                {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
-                {"startTs=123.", true},
+                {"abc=", false},
+                {"=abc", false},
         });
     }
 

@@ -67,6 +67,11 @@ public final class SystemSettingsUtils {
 
     public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
 
+    private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
+    private static final String SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.query.access.granted.regex";
+    private static final String SECURITY_HTTP_QUERY_LIMIT_KEY = "scadalts.security.http.query.limit";
+    private static final String SECURITY_HTTP_QUERY_XSS_ENABLED_KEY = "scadalts.security.http.query.xss.enabled";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -533,6 +538,44 @@ public final class SystemSettingsUtils {
         try {
             String eventAssignEnabled = ScadaConfig.getInstance().getConf().getProperty(EVENT_ASSIGN_ENABLED_KEY, "true");
             return Boolean.parseBoolean(eventAssignEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessDeniedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessGrantedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static int getSecurityHttpQueryLimit() {
+        try {
+            String securityHttpQueryXssLimit = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_LIMIT_KEY, "4001");
+            return Integer.parseInt(securityHttpQueryXssLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 4002;
+        }
+    }
+
+    public static boolean isSecurityHttpQueryXssEnabled() {
+        try {
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_XSS_ENABLED_KEY, "false");
+            return Boolean.parseBoolean(securityHttpQueryXssEnabled);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return false;

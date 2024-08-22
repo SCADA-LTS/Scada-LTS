@@ -1,26 +1,43 @@
 package org.scada_lts.web.security;
 
+import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
+
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.Arrays;
 
 final public class XssUtils {
 
-    private static final Pattern HTTP_QUERY_STRING = Pattern.compile("^(([a-zA-Z0-9_\\-]{1,32}=[\\p{L}\\p{N}.\\-/+=_ !$*?@%,]*&?)|([a-zA-Z0-9_\\-]{1,32}&?))*$");
-    private static final List<String> FORBIDDEN_XSS_PATTERNS = Arrays.asList("javascript:", "onerror", "onload", "onmouseover", "alert(");
+    private XssUtils() {}
+
+    private static final Pattern SECURITY_HTTP_ACCESS_DENIED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessDeniedRegex());
+    private static final Pattern SECURITY_HTTP_ACCESS_GRANTED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessGrantedRegex());
+    public static final int SECURITY_HTTP_ACCESS_GRANTED_QUERY_LIMIT = SystemSettingsUtils.getSecurityHttpQueryLimit();
+    public static final boolean SECURITY_HTTP_QUERY_XSS_ENABLED = SystemSettingsUtils.isSecurityHttpQueryXssEnabled();
 
     public static boolean validateHttpQuery(String query) {
+
+        if(!SECURITY_HTTP_QUERY_XSS_ENABLED)
+            return true;
+
         if (query == null || query.isEmpty()) {
             return false;
         }
 
-        for(String pattern: FORBIDDEN_XSS_PATTERNS) {
-            if(query.contains(pattern)) {
-                return false;
-            }
+        if(query.length() > SECURITY_HTTP_ACCESS_GRANTED_QUERY_LIMIT) {
+            return false;
         }
 
-        boolean matches = HTTP_QUERY_STRING.matcher(query).matches();
-        return matches;
+        if(SECURITY_HTTP_ACCESS_DENIED_QUERY_REGEX != null && SECURITY_HTTP_ACCESS_DENIED_QUERY_REGEX.matcher(query).matches()) {
+            return false;
+        }
+
+        return SECURITY_HTTP_ACCESS_GRANTED_QUERY_REGEX == null || SECURITY_HTTP_ACCESS_GRANTED_QUERY_REGEX.matcher(query).matches();
+    }
+
+    private static Pattern init(String regex) {
+        if(StringUtils.isEmpty(regex)) {
+            return null;
+        }
+        return Pattern.compile(regex);
     }
 }
