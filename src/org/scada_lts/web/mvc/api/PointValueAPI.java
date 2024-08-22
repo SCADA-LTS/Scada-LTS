@@ -326,9 +326,6 @@ public class PointValueAPI {
     @Resource
     private PointValueService pointValueService;
 
-    @Resource
-    private DataSourceService dataSourceService;
-
     private String getValue(MangoValue value, String type) {
 
         if (value instanceof AlphanumericValue) {
@@ -369,8 +366,7 @@ public class PointValueAPI {
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
                 
                 // API should show datapoint is disabled if datasource is disabled
-                DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dpvo.getDataSourceId());
-                dpvo.setEnabled(dpvo.isEnabled() && dataSourceVO.isEnabled());
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
 
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
@@ -411,8 +407,7 @@ public class PointValueAPI {
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
 
                 // API should show datapoint is disabled if datasource is disabled
-                DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dpvo.getDataSourceId());
-                dpvo.setEnabled(dpvo.isEnabled() && dataSourceVO.isEnabled());
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
 
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();

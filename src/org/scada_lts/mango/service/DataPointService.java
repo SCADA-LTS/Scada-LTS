@@ -24,6 +24,7 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -46,7 +47,6 @@ import org.jfree.util.Log;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
-import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
@@ -679,6 +679,11 @@ public class DataPointService implements MangoDataPoint {
 				LOG.warn("datapoint does not exist for xid: " + xid);
 		}
 		return pointIds;
+	}
+
+	public boolean isDataPointRunning(DataPointVO dataPoint){
+		DataPointRT dp = Common.ctx.getRuntimeManager().getDataPoint(dataPoint.getId());
+		return dp != null;
 	}
 
 	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,
