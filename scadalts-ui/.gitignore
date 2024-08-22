@@ -29,5 +29,7 @@ test-results.xml
 *.sw?
 
 node_modules/*
-!@min-gb/
-
+!@min-gb/dist
+!@min-gb/public
+!@min-gb/src
+!@min-gb/*.*
