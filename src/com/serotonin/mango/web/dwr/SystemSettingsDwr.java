@@ -179,10 +179,10 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
 		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
 				systemSettingsService.getMiscSettings().isEventAssignEnabled());
-		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION,
-				systemSettingsService.getMiscSettings().getCustomInformation());
-		settings.put(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX,
-				systemSettingsService.getMiscSettings().getCustomInformationPrefix());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION,
+				systemSettingsService.getMiscSettings().getTopDescription());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
+				systemSettingsService.getMiscSettings().getTopDescriptionPrefix());
 		return settings;
 	}
 
@@ -475,7 +475,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	
 	public void saveInfoSettings(String newVersionNotificationLevel,
-			String instanceDescription, String customInformation, String customInformationPrefix) {
+			String instanceDescription,String topDescriptionPrefix, String topDescription) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO.setValue(
@@ -483,8 +483,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				newVersionNotificationLevel);
 		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
-		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, customInformation);
-		systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX, customInformationPrefix);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, topDescriptionPrefix);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, topDescription);
 	}
 
 	

@@ -118,15 +118,15 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="miscSettings.customInformation"
-                          :label="$t('systemsettings.custom.information')"
+                          v-model="miscSettings.topDescriptionPrefix"
+                          :label="$t('systemsettings.top.description.prefix')"
                           @change="watchDataChange()"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="miscSettings.customInformationPrefix"
-                          :label="$t('systemsettings.custom.information.prefix')"
+                          v-model="miscSettings.topDescription"
+                          :label="$t('systemsettings.top.description')"
                           @change="watchDataChange()"
                       ></v-text-field>
                     </v-col>

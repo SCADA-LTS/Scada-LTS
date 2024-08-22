@@ -16,19 +16,26 @@
  */
 
 /* ----- Custom information stylesheet ----- */
-.custom-container {
+.top-description-container {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: center;
 }
 
-.custom-text {
-    margin: 0;
+#top-description-prefix {
+    color: black;
+    font-size: 2em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1;
 }
 
-#custom-information-prefix {
-    color: black; font-size: 1em;
-}
-
-#custom-information {
-    color: green; font-size: 2em;
+#top-description {
+    color: #39B54A;
+    font-size: 2em;
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1;
 }

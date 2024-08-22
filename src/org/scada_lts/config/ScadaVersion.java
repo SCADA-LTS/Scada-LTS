@@ -9,8 +9,8 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import static org.scada_lts.dao.SystemSettingsDAO.CUSTOM_INFORMATION;
-import static org.scada_lts.dao.SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX;
+import static org.scada_lts.dao.SystemSettingsDAO.TOP_DESCRIPTION;
+import static org.scada_lts.dao.SystemSettingsDAO.TOP_DESCRIPTION_PREFIX;
 
 /**
  * Scada Version class
@@ -138,10 +138,10 @@ public class ScadaVersion {
     public String getPoweredBy() {
         return poweredBy;
     }
-    public String getCustomInformation() {
-        return SystemSettingsDAO.getValue(CUSTOM_INFORMATION);
+    public String getTopDescription() {
+        return SystemSettingsDAO.getValue(TOP_DESCRIPTION);
     }
-    public String getCustomInformationPrefix(){
-        return SystemSettingsDAO.getValue(CUSTOM_INFORMATION_PREFIX);
+    public String getTopDescriptionPrefix(){
+        return SystemSettingsDAO.getValue(TOP_DESCRIPTION_PREFIX);
     }
 }

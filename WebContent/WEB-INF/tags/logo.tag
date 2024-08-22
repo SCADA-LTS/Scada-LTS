@@ -4,12 +4,12 @@
     <div class="logo-section--title">
       <img id="logo" src="assets/logo.png" alt="Logo">
 
-        <div class="custom-container">
-            <span id="custom-information-prefix" class="custom-text">
-                <c:out value="${scadaVersion.getCustomInformationPrefix()}"/> &nbsp;
+        <div class="top-description-container">
+            <span id="top-description-prefix" class="custom-text">
+                <c:out value="${scadaVersion.getTopDescriptionPrefix()}"/>
             </span>
-            <span id="custom-information" class="custom-text">
-                <c:out value="${scadaVersion.getCustomInformation()}"/>
+            <span id="top-description" class="custom-text">
+                <c:out value="${scadaVersion.getTopDescription()}"/>
             </span>
         </div>
 

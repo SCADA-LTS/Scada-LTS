@@ -119,8 +119,8 @@
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
-            $set("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>);
-            $set("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
         });
 
 <%--
@@ -353,8 +353,8 @@
         SystemSettingsDwr.saveInfoSettings("0",
                 //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>"),
                 function() {
                     stopImageFader("saveInfoSettingsImg");
                     setUserMessage("infoMessage", "<fmt:message key="systemSettings.infoSaved"/>");
@@ -639,16 +639,16 @@
         <td class="formField" id="eventCount"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemsettings.custom.information"/></td>
+        <td class="formLabelRequired"><fmt:message key="systemsettings.top.description.prefix"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 300px;"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemsettings.custom.information.prefix"/></td>
-            <td class="formField">
-              <input id="<c:out value="<%= SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX %>"/>" type="text" class="formShort" style="width: 300px;"/>
-            </td>
+        <td class="formLabelRequired"><fmt:message key="systemsettings.top.description"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 300px;"/>
+        </td>
       </tr>
       <tr>
         <td colspan="2" id="infoMessage" class="formError"></td>

@@ -145,8 +145,8 @@ public class SystemSettingsService {
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
-        json.setCustomInformation(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION));
-        json.setCustomInformationPrefix(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX));
+        json.setTopDescription(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
+        json.setTopDescriptionPrefix(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
         return json;
     }
 
@@ -164,8 +164,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
         saveEventAssignEnabled(json.isEventAssignEnabled());
-        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION, json.getCustomInformation());
-        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_INFORMATION_PREFIX, json.getCustomInformationPrefix());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, json.getTopDescription());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, json.getTopDescriptionPrefix());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
