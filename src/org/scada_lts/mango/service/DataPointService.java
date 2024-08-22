@@ -101,6 +101,8 @@ public class DataPointService implements MangoDataPoint {
 
 	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
 
+	private final DataSourceService dataSourceService = new DataSourceService();
+
 	public DataPointService() {
 		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
 		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
@@ -682,8 +684,8 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public boolean isDataPointRunning(DataPointVO dataPoint){
-		DataPointRT dp = Common.ctx.getRuntimeManager().getDataPoint(dataPoint.getId());
-		return dp != null;
+		DataSourceVO<?> dataSourceVO = dataSourceService.getDataSource(dataPoint.getDataSourceId());
+        return dataPoint.isEnabled() && dataSourceVO.isEnabled();
 	}
 
 	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,

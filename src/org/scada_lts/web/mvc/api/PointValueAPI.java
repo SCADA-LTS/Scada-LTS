@@ -322,6 +322,7 @@ public class PointValueAPI {
     private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
 
     private DataPointService dataPointService = new DataPointService();
+    private DataSourceService dataSourceService = new DataSourceService();
 
     @Resource
     private PointValueService pointValueService;
