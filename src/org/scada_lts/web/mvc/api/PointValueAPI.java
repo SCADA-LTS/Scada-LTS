@@ -365,6 +365,10 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(xid);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+                
+                // API should show datapoint is disabled if datasource is disabled
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
+
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -402,6 +406,10 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(id);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
+
+                // API should show datapoint is disabled if datasource is disabled
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
+
                 String json = null;
                 ObjectMapper mapper = new ObjectMapper();
 
