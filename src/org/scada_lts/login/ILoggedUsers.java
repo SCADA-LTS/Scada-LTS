@@ -2,6 +2,7 @@ package org.scada_lts.login;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
+import org.apache.catalina.Session;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
@@ -15,4 +16,5 @@ public interface ILoggedUsers {
     Set<Integer> getUserIds();
     Collection<User> getUsers();
     User getUser(int id);
+    void loadSessions(Session[] sessions);
 }
