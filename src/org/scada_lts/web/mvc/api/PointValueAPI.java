@@ -368,9 +368,6 @@ public class PointValueAPI {
                 // API should show datapoint is disabled if datasource is disabled
                 dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
 
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-
                 ValueToJSON v = new ValueToJSON();
                 if (pvt != null)
                     v.set(pvt, dpvo);
@@ -404,9 +401,6 @@ public class PointValueAPI {
 
                 // API should show datapoint is disabled if datasource is disabled
                 dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
 
                 ValueToJSON v = new ValueToJSON();
                 if (pvt != null)
