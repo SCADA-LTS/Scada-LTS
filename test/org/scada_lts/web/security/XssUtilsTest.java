@@ -67,7 +67,8 @@ public class XssUtilsTest {
                 {"12345678901234567890123456789012=abc", true},
                 {"123456789012345678901234567890123=abc", true},
                 {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
-
+                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100", true},
+                {"abc=", true},
 
                 {"", false},
                 {null, false},
@@ -93,8 +94,7 @@ public class XssUtilsTest {
                 {"param1=123&param2=<img src=x onerror=alert(document.location)>", false},
                 {"param1=123&param2=<img src=x onerror=document.location>", false},
                 {"param1=alert(document.location)", false},
-                {"abc=", false},
-                {"=abc", false},
+                {"=abc", false}
         });
     }
 
