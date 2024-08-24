@@ -97,6 +97,9 @@ public class EventInstance {
     private String acknowledgedByUsername;
     private int alternateAckSource;
 
+    private long assigneeTimestamp;
+    private String assigneeUsername;
+
     //
     //
     // These fields are used only in the context of access by a particular user, providing state filled in from
@@ -185,6 +188,14 @@ public class EventInstance {
         return new LocalizableMessage("event.auto.acknowledge");
     }
 
+    public LocalizableMessage getAssigneeMessage() {
+        if (isAssignee()) {
+            if (!StringUtils.isEmpty(assigneeUsername))
+                return new LocalizableMessage("events.assigneeByUser", assigneeUsername);
+        }
+        return new LocalizableMessage("common.noMessage");
+    }
+
     public LocalizableMessage getExportAckMessage() {
         if (isAcknowledged()) {
             if (acknowledgedByUserId != 0 || !StringUtils.isEmpty(acknowledgedByUsername))
@@ -244,6 +255,10 @@ public class EventInstance {
 
     public boolean isAcknowledged() {
         return acknowledgedTimestamp > 0;
+    }
+
+    public boolean isAssignee() {
+        return assigneeTimestamp > 0;
     }
 
     public long getActiveTimestamp() {
@@ -348,6 +363,22 @@ public class EventInstance {
 
     public void setAlternateAckSource(int alternateAckSource) {
         this.alternateAckSource = alternateAckSource;
+    }
+
+    public long getAssigneeTimestamp() {
+        return assigneeTimestamp;
+    }
+
+    public void setAssigneeTimestamp(long assigneeTimestamp) {
+        this.assigneeTimestamp = assigneeTimestamp;
+    }
+
+    public String getAssigneeUsername() {
+        return assigneeUsername;
+    }
+
+    public void setAssigneeUsername(String assigneeUsername) {
+        this.assigneeUsername = assigneeUsername;
     }
 
     public Map<String, Object> getContext() {
@@ -459,6 +490,8 @@ public class EventInstance {
         eventInstance.setHandlers(handlers);
         eventInstance.setSilenced(silenced);
         eventInstance.setUserNotified(userNotified);
+        eventInstance.setAssigneeTimestamp(assigneeTimestamp);
+        eventInstance.setAssigneeUsername(assigneeUsername);
         return eventInstance;
     }
 

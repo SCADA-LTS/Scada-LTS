@@ -158,9 +158,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
 
 		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
-				systemSettingsService.getMiscSettings().isHideShortcutDisableFullScreen());
+				systemSettingsService.getMiscSettings().isViewHideShortcutDisableFullScreenEnabled());
 		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
-				systemSettingsService.getMiscSettings().isEnableFullScreen());
+				systemSettingsService.getMiscSettings().isViewForceFullScreenEnabled());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
 				systemSettingsService.getMiscSettings().getEventPendingLimit());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
@@ -177,6 +177,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWebResourceGraphicsPath());
 		settings.put(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH,
 				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
+		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
+				systemSettingsService.getMiscSettings().isEventAssignEnabled());
 		return settings;
 	}
 
@@ -329,7 +331,8 @@ public class SystemSettingsDwr extends BaseDwr {
 											int eventPendingLimit, boolean eventPendingCacheEnabled,
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
-											String webResourceGraphicsPath, String webResourceUploadsPath) {
+											String webResourceGraphicsPath, String webResourceUploadsPath,
+											boolean eventAssignEnabled) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -387,7 +390,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
-
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
 		return response;
 	}
 

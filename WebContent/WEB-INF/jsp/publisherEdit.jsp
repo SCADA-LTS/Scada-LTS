@@ -39,7 +39,9 @@
                 errorMessages[j].innerHTML = '';
             }
             showMessage("message", "<fmt:message key="publisherEdit.saved"/>");
-            showHttpSenderTest();
+            if (${publisher.type.id == applicationScope['constants.PublisherVO.Types.HTTP_SENDER']}) {
+                showHttpSenderTest();
+            }
         }
     }
     

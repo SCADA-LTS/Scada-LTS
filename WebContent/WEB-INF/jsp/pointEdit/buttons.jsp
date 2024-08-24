@@ -43,6 +43,6 @@
   </tr>
   
   <tr>
-    <td colspan="2"><fmt:message key="pointEdit.buttons.note"/></td>
+    <td colspan="2"><span class="smallTitle"><fmt:message key="pointEdit.buttons.note.prefix"/></span> <fmt:message key="pointEdit.buttons.note"/></td>
   </tr>
 </table>

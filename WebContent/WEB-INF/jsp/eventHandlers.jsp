@@ -456,7 +456,13 @@
         var xid = $get("xid");
         var alias = $get("alias");
         var disabled = $get("disabled");
-        if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
+        if (isEmpty(xid) && handlerId !== ${NEW_ID}){
+          let message = createValidationMessage("xid", "<fmt:message key='validate.valueRestored'/>");
+          $set("xid", selectedHandlerNode.object.xid);
+          stopImageFader("saveImg");
+          showDwrMessages([message]);
+        } else {
+          if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
             var emailList = emailRecipients.createRecipientArray();
             var escalList = escalRecipients.createRecipientArray();
             var inactiveList = inactiveRecipients.createRecipientArray();
@@ -464,28 +470,25 @@
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
                     disabled, emailList, $get("sendEscalation"), $get("escalationDelayType"), $get("escalationDelay"),
                     escalList, $get("sendInactive"), $get("inactiveOverride"), inactiveList, saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
             var smsList = smsRecipients.createRecipientArray();
             EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
                     disabled, $get("targetPointSelect"), $get("activeAction"), $get("setPointValueActive"),
                     $get("activePointId"), $get("inactiveAction"), $get("setPointValueInactive"),
                     $get("inactivePointId"), saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
             EventHandlersDwr.saveProcessEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
                     alias, disabled, $get("activeProcessCommand"), $get("inactiveProcessCommand"), saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
             EventHandlersDwr.saveScriptEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
                     alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
+          }
         }
     }
 
@@ -496,7 +499,6 @@
             showDwrMessages(response.messages, $("genericMessages"));
         else {
             var handler = response.data.handler;
-            setUserMessage("<fmt:message key="eventHandlers.saved"/>");
             if (!selectedHandlerNode) {
                 selectedHandlerNode = createHandlerNode(handler);
                 selectedEventTypeNode.addChild(selectedHandlerNode);
@@ -506,6 +508,7 @@
             else
                 $set(handler.id +"Msg", handler.message);
 
+            setUserMessage("<fmt:message key="eventHandlers.saved"/>");
             selectedHandlerNode.object = handler;
         }
     }

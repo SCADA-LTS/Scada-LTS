@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.serotonin.mango.vo.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.scada_lts.config.ScadaConfig;
@@ -109,9 +110,12 @@ public class EventServiceTest extends TestDAO {
 		int alarmLevel = 3;
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
+
+		User user = new User();
+		user.setId(ADMIN_USER_ID);
 		
 		long currentTime = System.currentTimeMillis();
-		eventService.ackEvent(e.getId(), currentTime, ADMIN_USER_ID, -1, false);
+		eventService.ackEvent(e, currentTime, user, -1, false);
 		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
 		boolean checkAckEvent = lstAckEvents.get(0).getAcknowledgedTimestamp() == currentTime;
 		
@@ -128,9 +132,12 @@ public class EventServiceTest extends TestDAO {
 		int alarmLevel = 3;
 		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
+
+		User user = new User();
+		user.setId(ADMIN_USER_ID);
 		
 		long currentTime = System.currentTimeMillis();
-		eventService.ackEvent(e.getId(), currentTime, ADMIN_USER_ID, -1);
+		eventService.ackEvent(e, currentTime, user, -1);
 		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
 		boolean checkAckEventSingleAlarmLevelChange = lstAckEvents.size() == 1;
 		
@@ -540,8 +547,11 @@ public class EventServiceTest extends TestDAO {
 		
 		UserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
+
+		User user = new User();
+		user.setId(ADMIN_USER_ID);
 		
-		eventService.toggleSilence(e.getId(), ADMIN_USER_ID);
+		eventService.toggleSilence(e, user);
 		
 		List<EventInstance> events = eventService.searchOld(e.getId(),EventType.EventSources.DATA_SOURCE,"*",alarmLevel,null,0,ADMIN_USER_ID,null);		
 		
