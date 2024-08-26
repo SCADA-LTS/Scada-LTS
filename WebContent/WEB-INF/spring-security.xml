@@ -452,6 +452,7 @@
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
     <http-firewall ref="strictHttpFirewall"/>
+    <!--http-firewall ref="defaultHttpFirewall"/-->
 
     <!-- Websocket -->
     <!--websocket-message-broker same-origin-disabled="true">
