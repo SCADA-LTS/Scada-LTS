@@ -43,7 +43,7 @@
         <Property name="log4jLoggingLevel">ERROR</Property>
 
         <!-- Security Logging-->
-        <Property name="SecurityLoggingLevel">WARN</Property>
+        <Property name="securityLoggingLevel">WARN</Property>
 
     </Properties>
 
@@ -291,7 +291,7 @@
         </Logger>
 
         <!-- Security Logging-->
-        <Logger name="org.scada_lts.web.security" level="${SecurityLoggingLevel}">
+        <Logger name="org.scada_lts.web.security" level="${securityLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
