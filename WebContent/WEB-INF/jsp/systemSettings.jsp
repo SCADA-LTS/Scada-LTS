@@ -564,21 +564,6 @@
         $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const cssEditor = document.getElementById('cssEditor');
-        const cssHighlighting = document.getElementById('cssHighlighting');
-
-        if (cssEditor && cssHighlighting) {
-            cssEditor.addEventListener('input', () => {
-                updateCodeText(cssEditor.value, '#cssHighlightingContent');
-            });
-
-            cssEditor.addEventListener('scroll', () => {
-                syncCodeScroll(cssEditor, '#cssHighlighting');
-            });
-        }
-    });
-
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
