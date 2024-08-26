@@ -34,21 +34,12 @@ public class V2_8_0_2_AddTopDescriptionColumnsToSystemSettings extends BaseJavaM
                 boolean.class
         );
 
-        boolean existsTopDescriptionStylesheetColumn = jdbcTmp.queryForObject(
-                "SELECT (SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`= DATABASE() AND `TABLE_NAME`='systemSettings' AND `COLUMN_NAME`='topDescriptionStylesheet') IS NOT NULL;",
-                boolean.class
-        );
-
         if (!existsTopDescriptionColumn) {
             jdbcTmp.update("ALTER TABLE systemSettings ADD COLUMN topDescription VARCHAR(255) DEFAULT '';");
         }
 
         if (!existsTopDescriptionPrefixColumn) {
             jdbcTmp.update("ALTER TABLE systemSettings ADD COLUMN topDescriptionPrefix VARCHAR(255) DEFAULT '';");
-        }
-
-        if (!existsTopDescriptionStylesheetColumn) {
-            jdbcTmp.update("ALTER TABLE systemSettings ADD COLUMN topDescriptionStylesheet VARCHAR(255) DEFAULT 'color: green; font-size: 2em;';");
         }
     }
 }
