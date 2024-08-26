@@ -16,7 +16,7 @@
  */
 
 /* ----- Custom information stylesheet ----- */
-.top-description-container {
+#top-description-container {
     display: flex;
     align-items: flex-end;
     justify-content: center;

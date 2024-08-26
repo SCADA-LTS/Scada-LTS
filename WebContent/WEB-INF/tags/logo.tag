@@ -4,7 +4,7 @@
     <div class="logo-section--title">
       <img id="logo" src="assets/logo.png" alt="Logo">
 
-        <div class="top-description-container">
+        <div id="top-description-container">
             <span id="top-description-prefix" class="custom-text">
                 <c:out value="${scadaVersion.getTopDescriptionPrefix()}"/>
             </span>
