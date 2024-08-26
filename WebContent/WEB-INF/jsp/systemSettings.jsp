@@ -348,20 +348,25 @@
         else
             $set(type, "");
     }
-    
+
     function saveInfoSettings() {
+        var topDescriptionPrefix = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>");
+        var topDescription = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>");
+
         SystemSettingsDwr.saveInfoSettings("0",
-                //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>"),
-                function() {
-                    stopImageFader("saveInfoSettingsImg");
-                    setUserMessage("infoMessage", "<fmt:message key="systemSettings.infoSaved"/>");
-                });
+            $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
+            topDescriptionPrefix,
+            topDescription,
+            function() {
+                stopImageFader("saveInfoSettingsImg");
+                document.getElementById('top-description-prefix').innerText = topDescriptionPrefix;
+                document.getElementById('top-description').innerText = topDescription;
+                setUserMessage("infoMessage", "<fmt:message key='systemSettings.infoSaved'/>");
+            }
+        );
+
         setUserMessage("infoMessage");
         startImageFader("saveInfoSettingsImg");
-        location.reload();
     }
     
     function newVersionCheck() {
