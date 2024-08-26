@@ -75,7 +75,7 @@ export default new Vuex.Store({
 			// useCredentials: true,
 			// credentials: 'same-origin',
 		},
-		webSocketUrl: 'ws-scada',
+		webSocketUrl: 'ws-scada/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -98,10 +98,7 @@ export default new Vuex.Store({
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
-		    let base = getAppLocation();
-		    if(!state.webSocketUrl.includes(base)) {
-                state.webSocketUrl = base + state.webSocketUrl;
-            }
+            state.webSocketUrl = getAppLocation() + state.webSocketUrl;
 		},
 
 		updateRequestTimeout(state, timeout) {
