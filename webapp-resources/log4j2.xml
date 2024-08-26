@@ -43,7 +43,7 @@
         <Property name="log4jLoggingLevel">ERROR</Property>
 
         <!-- Security Logging-->
-        <Property name="securityLoggingLevel">INFO</Property>
+        <Property name="securityLoggingLevel">ERROR</Property>
 
     </Properties>
 
@@ -173,6 +173,7 @@
         <Logger name="log_jsp" level="${dwrLoggingLevel}"/>
         <Logger name="org.directwebremoting" level="${dwrLoggingLevel}"/>
         <Logger name="com.serotonin.mango.web.dwr.DataPointEditDwr" level="${dwrLoggingLevel}"/>
+        <Logger name="com.serotonin.mango.web.dwr" level="${dwrLoggingLevel}"/>
 
         <!-- Spring Logging-->
         <Logger name="org.springframework.web.servlet.FrameworkServlet" level="${springLoggingLevel}"/>
@@ -291,9 +292,8 @@
         </Logger>
 
         <!-- Security Logging-->
-        <Logger name="org.scada_lts.web.security" level="${securityLoggingLevel}">
-            <AppenderRef ref="ASYNC"/>
-        </Logger>
+        <Logger name="org.scada_lts.web.security" level="${securityLoggingLevel}" />
+        <Logger name="org.springframework.security" level="${securityLoggingLevel}" />
 
         <Root level="${rootLoggingLevel}">
             <AppenderRef ref="STDOUT"/>

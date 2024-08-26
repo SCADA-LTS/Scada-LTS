@@ -16,14 +16,14 @@ public class XssFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String query = request.getQueryString();
-        if (query != null && !XssUtils.validateHttpQuery(query)) {
-            LOG.error("Potential XSS detected in request. Request URI: {}, Query: {}",
-                    request.getRequestURI(), request.getQueryString());
+        String queryString = request.getQueryString();
+        if (queryString != null && !XssUtils.validateHttpQuery(queryString)) {
+            LOG.warn("Potential XSS detected in request. Request URI: {}, Query: {}",
+                    request.getRequestURI(), queryString);
 
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Potential XSS detected in the request Query: " + request.getQueryString());
+                        "Potential XSS detected in the request Query: " + queryString);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

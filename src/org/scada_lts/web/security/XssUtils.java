@@ -5,7 +5,7 @@ import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.regex.Pattern;
 
-final public class XssUtils {
+public final class XssUtils {
 
     private XssUtils() {}
 
