@@ -95,10 +95,10 @@
 							</v-list-item-icon>
 							<v-list-item-content>
 								<v-list-item-title>
-									{{ comment.comment }}
+								    <span v-html="comment.comment"></span>
 								</v-list-item-title>
 								<v-list-item-subtitle>
-									{{ comment.username }},
+								    <span v-html="comment.username"></span>,
 									{{ new Date(comment.ts).toLocaleString() }}
 								</v-list-item-subtitle>
 							</v-list-item-content>

@@ -1289,3 +1289,9 @@ function unassignEvent(eventId) {
 function isEmpty(value) {
     return !value || (typeof value === "string" && value.trim() === "");
 }
+
+function unescapeHtml(value) {
+   let div = document.createElement("div");
+   div.innerHTML = value;
+   return div.textContent || div.innerText;
+}

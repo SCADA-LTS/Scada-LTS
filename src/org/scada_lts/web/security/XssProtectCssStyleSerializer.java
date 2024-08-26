@@ -1,4 +1,4 @@
-package org.scada_lts.web.beans;
+package org.scada_lts.web.security;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -8,15 +8,15 @@ import org.scada_lts.web.mvc.api.css.CssStyle;
 import java.io.IOException;
 
 
-public class XssCssStyleSerializer extends StdSerializer<CssStyle> {
+public class XssProtectCssStyleSerializer extends StdSerializer<CssStyle> {
 
-    public XssCssStyleSerializer() {
+    public XssProtectCssStyleSerializer() {
         super(CssStyle.class);
     }
 
     @Override
     public void serialize(CssStyle value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        String content = XssUtils.escape(value.getContent());
+        String content = XssProtectHtmlEscapeUtils.escape(value.getContent());
         jgen.writeStartObject();
         jgen.writeStringField("content", content);
         jgen.writeEndObject();
