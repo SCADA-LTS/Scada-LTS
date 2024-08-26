@@ -164,6 +164,8 @@ public class SystemSettingsDAO {
 	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
 	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
 	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
+	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
+	public static final String TOP_DESCRIPTION = "topDescription";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -414,6 +416,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
 		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
+		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
+		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
