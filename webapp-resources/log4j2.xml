@@ -43,7 +43,7 @@
         <Property name="log4jLoggingLevel">ERROR</Property>
 
         <!-- Security Logging-->
-        <Property name="securityLoggingLevel">INFO</Property>
+        <Property name="securityLoggingLevel">WARN</Property>
 
     </Properties>
 
