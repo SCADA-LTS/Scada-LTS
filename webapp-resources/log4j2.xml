@@ -42,8 +42,8 @@
         <!-- Parse log4j2.xml Logging-->
         <Property name="log4jLoggingLevel">ERROR</Property>
 
-        <!-- XSS Utils Logging-->
-        <Property name="XssLoggingLevel">WARN</Property>
+        <!-- Security Logging-->
+        <Property name="SecurityLoggingLevel">WARN</Property>
 
     </Properties>
 
@@ -290,8 +290,8 @@
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
-        <!-- XSS Utils Logging-->
-        <Logger name="org.scada_lts.web.security" level="${XssLoggingLevel}">
+        <!-- Security Logging-->
+        <Logger name="org.scada_lts.web.security" level="${SecurityLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
