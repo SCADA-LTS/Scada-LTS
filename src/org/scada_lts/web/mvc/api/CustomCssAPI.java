@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 @Controller
 @RequestMapping("/api/customcss")
@@ -27,18 +30,18 @@ public class CustomCssAPI {
     public ResponseEntity<String> getCustomCssFile(HttpServletRequest request) {
         LOG.info("GET: /api/customcss");
         try {
-            StringBuilder customCssContent = new StringBuilder();
-            File cssFile = getCustomCssFileFromPath();
+            new SystemSettingsDAO();
+            String customCssContent = SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_STYLESHEET);
 
-            if(cssFile != null) {
-                BufferedReader reader = new BufferedReader(new FileReader(cssFile.getAbsolutePath()));
-                String currentLine;
-                while ((currentLine = reader.readLine()) != null) {
-                    customCssContent.append(currentLine).append("\n");
-                }
-                return new ResponseEntity<>(customCssContent.toString(), HttpStatus.OK);
+            if (customCssContent != null && !customCssContent.isEmpty()) {
+                return new ResponseEntity<>(customCssContent, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(REQ_RESP_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
+                String fileContent = readCustomCssFileAsString();
+                if (fileContent != null) {
+                    return new ResponseEntity<>(fileContent, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
             }
         } catch (Exception e) {
             LOG.error(e);
@@ -54,6 +57,7 @@ public class CustomCssAPI {
             if(cssFile != null) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()));
                 writer.write(fileContent);
+                new SystemSettingsDAO().setValue(SystemSettingsDAO.CUSTOM_STYLESHEET, fileContent);
                 writer.close();
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -78,6 +82,20 @@ public class CustomCssAPI {
             return cssFile;
         } catch (IOException e) {
             LOG.error("Could not create a custom CSS file: " + CSS_FILENAME);
+        }
+        return null;
+    }
+
+    private String readCustomCssFileAsString() {
+        try {
+            File cssFile = new File(Common.ctx.getCtx().getRealPath(CSS_FILENAME));
+            if (cssFile.exists()) {
+                return new String(Files.readAllBytes(cssFile.toPath()), StandardCharsets.UTF_8);
+            } else {
+                LOG.warn("CSS file does not exist: " + CSS_FILENAME);
+            }
+        } catch (IOException e) {
+            LOG.error("Could not read the custom CSS file: " + CSS_FILENAME, e);
         }
         return null;
     }

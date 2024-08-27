@@ -166,6 +166,8 @@ public class SystemSettingsDAO {
 	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
 	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
 	public static final String TOP_DESCRIPTION = "topDescription";
+	public static final String CUSTOM_STYLESHEET = "customStylesheet";
+
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
