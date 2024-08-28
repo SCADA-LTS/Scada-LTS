@@ -94,7 +94,19 @@ public class XssUtilsTest {
                 {"param1=123&param2=<img src=x onerror=alert(document.location)>", false},
                 {"param1=123&param2=<img src=x onerror=document.location>", false},
                 {"param1=alert(document.location)", false},
-                {"=abc", false}
+                {"=abc", false},
+                {"param1=<script>alert(document.location)", false},
+                {"param1=<scriptalert(document.location)", false},
+                {"param1=script>alert(document.location)", false},
+                {"param1=alert(document.location)</script>", false},
+                {"param1=alert(document.location)/script>", false},
+                {"param1=alert(document.location)</script", false},
+                {"param1=<script>document.location", false},
+                {"param1=<scriptdocument.location", false},
+                {"param1=script>document.location", false},
+                {"param1=document.location</script>", false},
+                {"param1=document.location/script>", false},
+                {"param1=document.location</script", false},
         });
     }
 

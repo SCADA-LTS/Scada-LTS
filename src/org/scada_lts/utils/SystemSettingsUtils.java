@@ -70,7 +70,7 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
     private static final String SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.query.access.granted.regex";
     private static final String SECURITY_HTTP_QUERY_LIMIT_KEY = "scadalts.security.http.query.limit";
-    private static final String SECURITY_HTTP_QUERY_XSS_ENABLED_KEY = "scadalts.security.http.query.xss.enabled";
+    private static final String SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY = "scadalts.security.http.query.protect.enabled";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -572,9 +572,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static boolean isSecurityHttpQueryXssEnabled() {
+    public static boolean isSecurityHttpQueryProtectEnabled() {
         try {
-            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_XSS_ENABLED_KEY, "false");
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY, "false");
             return Boolean.parseBoolean(securityHttpQueryXssEnabled);
         } catch (Exception e) {
             LOG.error(e.getMessage());

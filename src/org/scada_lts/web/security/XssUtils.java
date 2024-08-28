@@ -12,11 +12,11 @@ public final class XssUtils {
     private static final Pattern SECURITY_HTTP_ACCESS_DENIED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessDeniedRegex());
     private static final Pattern SECURITY_HTTP_ACCESS_GRANTED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessGrantedRegex());
     public static final int SECURITY_HTTP_ACCESS_GRANTED_QUERY_LIMIT = SystemSettingsUtils.getSecurityHttpQueryLimit();
-    public static final boolean SECURITY_HTTP_QUERY_XSS_ENABLED = SystemSettingsUtils.isSecurityHttpQueryXssEnabled();
+    public static final boolean SECURITY_HTTP_QUERY_PROTECT_ENABLED = SystemSettingsUtils.isSecurityHttpQueryProtectEnabled();
 
     public static boolean validateHttpQuery(String query) {
 
-        if(!SECURITY_HTTP_QUERY_XSS_ENABLED)
+        if(!SECURITY_HTTP_QUERY_PROTECT_ENABLED)
             return true;
 
         if (query == null || query.isEmpty()) {
