@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.scada_lts.config.ScadaVersion;
-import org.joda.time.DateTime;
+
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,7 +37,6 @@ import com.serotonin.mango.util.DateUtils;
 public class CommonDataInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        HttpSession session = request.getSession();
 
         request.setAttribute("availableLanguages", Common.getLanguages());
         request.setAttribute("lang", Common.getBundle(request).getLocale().getLanguage());
@@ -47,10 +46,6 @@ public class CommonDataInterceptor implements HandlerInterceptor {
         request.setAttribute("toYear", DateUtils.getCurrentYearInt());
         request.setAttribute("topDescriptionPrefix", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
         request.setAttribute("topDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
-
-        session.setAttribute("topDescriptionPrefix", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
-        session.setAttribute("topDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
-
         return true;
     }
 

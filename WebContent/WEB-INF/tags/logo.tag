@@ -6,10 +6,10 @@
 
         <div id="top-description-container">
             <span id="top-description-prefix" class="custom-text">
-                <c:out value="${sessionScope.topDescriqptionPrefix}"/>
+                <c:out value="${topDescriptionPrefix}"/>
             </span>
             <span id="top-description" class="custom-text">
-                <c:out value="${sessionScope.topDescription}"/>
+                <c:out value="${topDescription}"/>
             </span>
         </div>
 
