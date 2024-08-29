@@ -601,7 +601,7 @@ var messages = {
     	$.ajax({
             type: "GET",
         	dataType: "json",
-        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder,
+        	url:myLocation+"pointHierarchy/paths/"+key+"/"+folder,
         	success: function(msg){
         		var path="/";
         		if (msg.length>0) {
@@ -753,7 +753,7 @@ var messages = {
                            $.ajax({
     	 			            type: "POST",
     	 			        	dataType: "json",
-    	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
+    	 			        	url:myLocation+'pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
     	 			        	success: function(msg){
     	 			        	  $button.hide();
     	 			 		      $button.stopSpin();
@@ -786,7 +786,7 @@ var messages = {
     	      glyph: glyph_opts,
     	      selectMode: 2,
     	      source: {
-    	        url: myLocation+"/pointHierarchy/0",
+    	        url: myLocation+"pointHierarchy/0",
     	        debugDelay: 0,
     	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
@@ -802,7 +802,7 @@ var messages = {
     	      },
     	      lazyLoad: function(event, data) {
     	    	data.result = {
-    	    	 url: myLocation+"/pointHierarchy/"+data.node.key,
+    	    	 url: myLocation+"pointHierarchy/"+data.node.key,
     	         cache: false,
     	         debugDelay: 0
     	         };
@@ -832,7 +832,7 @@ var messages = {
  		          $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
+		        	url:myLocation+"pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
 		        	success: function(msg){
 		        	  var titleNewNode = dialog.getModalBody().find('input').val();
 		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
@@ -899,7 +899,7 @@ var messages = {
 				           $.ajax({
 				        	   type: "POST",
 				        	   dataType: "json",
-				        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
+				        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
 				        	   success: function(msg){
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderRemoved+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
 						           $button.hide();
@@ -949,7 +949,7 @@ var messages = {
     					           $.ajax({
     					        	   type: "POST",
     					        	   dataType: "json",
-    					        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
+    					        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
     					        	   success: function(msg){
     					        		   dialog.getModalBody().html('<div><h3>'+messages.movedElement+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
     							           $button.hide();
@@ -1032,7 +1032,7 @@ var messages = {
 		           $.ajax({
 			            type: "POST",
 			        	dataType: "json",
-			        	url:myLocation+"/pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
+			        	url:myLocation+"pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
 			        	success: function(msg){
 			        	  var titleNewNode = dialog.getModalBody().find('input').val();
 			        	  dialog.getModalBody().html('<div><h3>'+messages.folderChange+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.oldTitle+':<b>'+nodeActivate.title+'</b></li><li>'+messages.newTitle+':<b>'+newTitle+'</b></li></ul></div>');
@@ -1140,7 +1140,7 @@ var messages = {
     		 $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/viewutil/"+locale,
+		        	url:myLocation+"viewutil/"+locale,
 		        	success: function(msg){
 		        		location.reload();
 		        	},
@@ -1227,7 +1227,7 @@ var messages = {
         	$.ajax({
 	            type: "GET",
 	        	dataType: "json",
-	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page,
+	        	url:myLocation+"pointHierarchy/find/"+queryGlobal+"/"+page,
 	        	success: function(msg){
 
 	        	  	if(msg !== undefined ) {

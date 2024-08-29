@@ -38,7 +38,7 @@
   	if (!myLocation) {
    		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
   	}
-    var urlGetDataPoints = "/api/datapoint/getAll";
+    var urlGetDataPoints = "api/datapoint/getAll";
     function executeScript(){
     	var xid = jQuery("#xid");
     	// saveScript() nie zdarzy zapisac !!!
