@@ -6,10 +6,10 @@
 
         <div id="top-description-container">
             <span id="top-description-prefix" class="custom-text">
-                <c:out value="${scadaVersion.getTopDescriptionPrefix()}"/>
+                <c:out value="${sessionScope.topDescriqptionPrefix}"/>
             </span>
             <span id="top-description" class="custom-text">
-                <c:out value="${scadaVersion.getTopDescription()}"/>
+                <c:out value="${sessionScope.topDescription}"/>
             </span>
         </div>
 

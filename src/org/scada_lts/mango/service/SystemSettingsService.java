@@ -145,8 +145,6 @@ public class SystemSettingsService {
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
-        json.setTopDescription(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
-        json.setTopDescriptionPrefix(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
         return json;
     }
 
@@ -164,8 +162,6 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
         saveEventAssignEnabled(json.isEventAssignEnabled());
-        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, json.getTopDescription());
-        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, json.getTopDescriptionPrefix());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -235,6 +231,8 @@ public class SystemSettingsService {
         json.setNewVersionNotificationLevel(SystemSettingsDAO.getValue(SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL));
         json.setInstanceDescription(SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
         json.setLanguage(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE));
+        json.setTopDescription(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
+        json.setTopDescriptionPrefix(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
         return json;
     }
 
@@ -242,6 +240,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL, json.getNewVersionNotificationLevel());
         systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION, json.getInstanceDescription());
         systemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, json.getLanguage());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, json.getTopDescription());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, json.getTopDescriptionPrefix());
     }
 
     public String getDatabaseType() {

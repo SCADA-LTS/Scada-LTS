@@ -181,6 +181,20 @@
 							></v-select>
 						</v-col>
 					</v-row>
+          <v-col cols="12">
+            <v-text-field
+                v-model="systemInfoSettings.topDescriptionPrefix"
+                :label="$t('systemsettings.top.description.prefix')"
+                @focusout="saveSystemInfoSettings()"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+                v-model="systemInfoSettings.topDescription"
+                :label="$t('systemsettings.top.description')"
+                @focusout="saveSystemInfoSettings()"
+            ></v-text-field>
+          </v-col>
 
 					<data-base-info-component></data-base-info-component>
 
@@ -328,11 +342,16 @@ export default {
 		if (!this.isUserRoleAdmin) {
 			this.getUserRole();
 		}
-		store.dispatch('getSystemInfoSettings');
+		this.fetchSystemInfoSettings();
 		this.loadClock();
 		this.scrollToComponent();
 	},
+
 	methods: {
+    async fetchSystemInfoSettings() {
+      await this.$store.dispatch('getSystemInfoSettings');
+    },
+
 		scrollToComponent() {
 			let element = window.location.href.split('#')[2];
 			if (!!element) {

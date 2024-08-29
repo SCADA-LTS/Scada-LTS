@@ -3,15 +3,33 @@
 		<NavigationBar/>
 
 		<v-app-bar id="topbar" app dark color="primary">
-			<v-list-item>
-				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS
-						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
-					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}
-					</v-list-item-subtitle>
-				</v-list-item-content>
-			</v-list-item>
+		  <v-list-item>
+        <v-list-item-content>
+          <v-row>
+            <v-col cols="auto">
+              <v-list-item-title class="title">Scada-LTS
+              <v-icon v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+              version {{ $store.getters.appMilestone }}
+              </v-list-item-subtitle>
+            </v-col>
+
+            <v-row>
+              <v-col class="d-flex justify-start align-center">
+                <div id="top-description-container" class="text-align-left">
+                  <span id="top-description-prefix" class="custom-text">
+                    {{ this.systemInfoSettings.topDescriptionPrefix }}
+                  </span>
+                  <span id="top-description" class="custom-text">
+                    {{ this.systemInfoSettings.topDescription }}
+                  </span>
+                </div>
+              </v-col>
+            </v-row>
+          </v-row>
+        </v-list-item-content>
+		  </v-list-item>
 			<v-list-item max-width="50" v-if="!!highestUnsilencedAlarmLevel">
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
@@ -105,6 +123,7 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
+      systemInfoSettings: undefined,
 		};
 	},
 
@@ -136,6 +155,7 @@ export default {
     	}
 		this.$store.dispatch('getLocaleInfo');
 		this.connectToWebSocket();
+    	this.fetchSettingsData();
 	},
 
 	destroyed() {
@@ -143,6 +163,11 @@ export default {
 	},
 
 	methods: {
+
+		async fetchSettingsData(){
+			this.systemInfoSettings =  await this.$store.dispatch('getSystemInfoSettings');
+		},
+
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;
 			let stompClient = this.$store.state.webSocketModule.webSocket;
@@ -228,4 +253,27 @@ div[id*='Content'] textarea,
   }
 }
 
+#top-description-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#top-description-prefix {
+  color: black;
+  font-size: 2em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1;
+}
+
+#top-description {
+  color: #39B54A;
+  font-size: 2em;
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1;
+}
 </style>
