@@ -86,7 +86,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
@@ -125,8 +124,10 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
-			systemInfoSettings: undefined,
-		  	customCssContent: '',
+			systemInfoSettings: {
+                topDescriptionPrefix: "",
+                topDescription: "",
+            }
 		};
 	},
 
@@ -149,20 +150,21 @@ export default {
 		},
 		isLoginPage() {
 			return this.$route.name === 'login';
-		},
-		customCssApi() {
-			return this.$store.getters.customCssApi;
 		}
 	},
 
 	mounted() {
+		this.$root.$on('systemInfoUpdated', (updatedSettings) => {
+		  	this.systemInfoSettings = updatedSettings;
+		});
+
 	    if(!this.user) {
     			this.$store.dispatch('getUserInfo');
     	}
 		this.$store.dispatch('getLocaleInfo');
 		this.connectToWebSocket();
-		this.fetchSettingsData();
-		this.loadCustomCss();
+	    this.fetchSettingsData();
+		this.fetchCustomCss();
 	},
 
 	destroyed() {
@@ -171,33 +173,17 @@ export default {
 
 	methods: {
 
-		async fetchSettingsData(){
-			this.systemInfoSettings =  await this.$store.dispatch('getSystemInfoSettings');
+		async fetchSettingsData() {
+			this.systemInfoSettings = await this.$store.dispatch('getSystemInfo');
 		},
 
-		async loadCustomCss() {
-			return new Promise(async (resolve, reject) => {
-				await axios
-						.get(this.customCssApi)
-						.then(async (response) => {
-							if (response.status === 200) {
-								const customCss = response.data;
-								const cleanedCss = unescapeHtml(customCss.content);
-								await this.applyCustomCss(cleanedCss);
-								resolve(customCss);
-							} else {
-								console.error("Failed to load custom CSS, status: ", response.status);
-								reject(new Error('Failed to load custom CSS'));
-							}
-						})
-						.catch((error) => {
-							console.error("Error fetching custom CSS:", error);
-							reject(new Error('Failed to fetch custom CSS'));
-						});
-			});
+		async fetchCustomCss() {
+			let response = await this.$store.dispatch('getCustomCss');
+			let unescapedContent = unescapeHtml(response.content);
+            this.applyCustomCss(unescapedContent);
 		},
 
-		async applyCustomCss(cssContent) {
+		applyCustomCss(cssContent) {
 			let styleElement = document.getElementById('custom-css-style');
 
 			if (!styleElement) {

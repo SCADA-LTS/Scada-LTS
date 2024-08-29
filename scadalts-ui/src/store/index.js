@@ -94,8 +94,7 @@ export default new Vuex.Store({
 			{ id: 2, label: i18n.t('common.alarmlevels.urgent') },
 			{ id: 3, label: i18n.t('common.alarmlevels.critical') },
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
-		],
-		customCssApi: "./api/customcss/"
+		]
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
@@ -107,10 +106,6 @@ export default new Vuex.Store({
 
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
-		},
-
-		setCustomCssApi(state, url) {
-			state.customCssApi = url;
 		}
 	},
 	actions: {
@@ -165,6 +160,14 @@ export default new Vuex.Store({
 			commit('INIT_WEBSOCKET');
 			return state.loggedUser;
 		},
+
+        async getSystemInfo({ dispatch }) {
+			return await dispatch('requestGet', '/systemSettings/getSystemInfo');
+        },
+
+        async getCustomCss({ dispatch }) {
+            return await dispatch('requestGet', '/customcss/');
+        },
 
 		/**
 		 * HTTP Request GET method to fetch data from the REST API
@@ -399,10 +402,7 @@ export default new Vuex.Store({
                             : reject(error.response);
                     });
             });
-        },
-		updateCustomCssApi({ commit }, url) {
-			commit('setCustomCssApi', url);
-		}
+        }
 	},
 	getters: {
 		appVersion: (state) => {
@@ -439,10 +439,7 @@ export default new Vuex.Store({
 		},
 		appPullRequestBranch: (state) => {
 			return state.scadaLtsPullRequestBranch;
-		},
-		customCssApi: (state) => {
-			return state.customCssApi;
-		},
+		}
 	},
 	plugins: [myLoggerForVuexMutation],
 });

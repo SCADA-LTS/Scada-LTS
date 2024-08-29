@@ -374,6 +374,7 @@ export default {
 					this.generateNotification(
 						'success',
 						i18n.t('systemsettings.notification.save.systeminfo'),
+						this.$root.$emit('systemInfoUpdated', this.systemInfoSettings),
 					);
 				} else {
 					this.generateNotification('danger', i18n.t('systemsettings.notification.fail'));
