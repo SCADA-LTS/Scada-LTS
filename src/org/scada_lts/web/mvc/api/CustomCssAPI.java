@@ -1,10 +1,8 @@
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.css.CssStyle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +48,9 @@ public class CustomCssAPI {
         try {
             File cssFile = getCustomCssFileFromPath();
             if(cssFile != null) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()));
-                writer.write(fileContent);
-                writer.close();
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()))) {
+                    writer.write(fileContent);
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(REQ_RESP_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
