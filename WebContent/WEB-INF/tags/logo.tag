@@ -3,6 +3,16 @@
 <div class="logo-section">
     <div class="logo-section--title">
       <img id="logo" src="assets/logo.png" alt="Logo">
+
+        <div id="top-description-container">
+            <span id="top-description-prefix" class="custom-text">
+                <c:out value="${scadaVersion.getTopDescriptionPrefix()}"/>
+            </span>
+            <span id="top-description" class="custom-text">
+                <c:out value="${scadaVersion.getTopDescription()}"/>
+            </span>
+        </div>
+
       <c:if test="${(!empty scadaVersion) && scadaVersion.isShowVersionInfo()}">
         <c:if test="${!empty scadaVersion.getCompanyName()}">
         <div id="company-container">

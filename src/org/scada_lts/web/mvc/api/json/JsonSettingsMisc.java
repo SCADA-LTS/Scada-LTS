@@ -17,6 +17,8 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
+    public String topDescription;
+    public String topDescriptionPrefix;
 
     public JsonSettingsMisc() {}
 
@@ -122,5 +124,21 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setEventAssignEnabled(boolean eventAssignEnabled) {
         this.eventAssignEnabled = eventAssignEnabled;
+    }
+
+    public String getTopDescription(){
+        return topDescription;
+    }
+
+    public void setTopDescription(String topDescription){
+        this.topDescription = topDescription;
+    }
+
+    public String getTopDescriptionPrefix(){
+        return topDescriptionPrefix;
+    }
+
+    public void setTopDescriptionPrefix(String topDescriptionPrefix){
+        this.topDescriptionPrefix = topDescriptionPrefix;
     }
 }

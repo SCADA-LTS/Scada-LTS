@@ -116,7 +116,21 @@
                           @change="watchDataChange()"
                       ></v-switch>
                     </v-col>
-                </v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.topDescriptionPrefix"
+                          :label="$t('systemsettings.top.description.prefix')"
+                          @change="watchDataChange()"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                          v-model="miscSettings.topDescription"
+                          :label="$t('systemsettings.top.description')"
+                          @change="watchDataChange()"
+                      ></v-text-field>
+                    </v-col>
+        </v-row>
 			</v-card-text>
 		</v-card>
 	</v-col>
