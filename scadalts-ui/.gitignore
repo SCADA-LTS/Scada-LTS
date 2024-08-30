@@ -29,7 +29,9 @@ test-results.xml
 *.sw?
 
 node_modules/*
-!@min-gb/dist
-!@min-gb/public
-!@min-gb/src
-!@min-gb/*.*
+!node_modules/@min-gb
+node_modules/@min-gb/vuejs-components/*
+!node_modules/@min-gb/vuejs-components/dist
+!node_modules/@min-gb/vuejs-components/src
+!node_modules/@min-gb/vuejs-components/public
+!node_modules/@min-gb/vuejs-components/*.*
