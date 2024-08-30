@@ -4,6 +4,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.scada_lts.dao.IUserCommentDAO;
 
+import java.util.Optional;
+
 /**
  * Service for Comments
  *
@@ -26,6 +28,7 @@ public class UserCommentService {
      *
      * @return Result status.
      */
+    @Deprecated(since = "2.8.0")
     public int setUserComment(String comment, int typeComment, int referenceId, User user) {
         UserComment c = new UserComment();
         c.setComment(comment);
@@ -47,5 +50,27 @@ public class UserCommentService {
      */
     public int deleteUserComment(int userId, int typeComment, int referenceId, long timestamp) {
         return userCommentDAO.deleteUserComment(userId, typeComment, referenceId, timestamp);
+    }
+
+    /**
+     * Save user comment to database.
+     *
+     * @param comment String
+     * @param typeComment Type of the comment (Event or Point)
+     * @param referenceId Reference ID of the object (EventID or PointID)
+     *
+     * @return Result Optional<UserComment>.
+     */
+    public Optional<UserComment> addUserComment(String comment, int typeComment, int referenceId, User user) {
+        UserComment c = new UserComment();
+        c.setComment(comment);
+        c.setTs(System.currentTimeMillis());
+        c.setUserId(user.getId());
+        c.setUsername(user.getUsername());
+        c.setTypeKey(referenceId);
+        int result = userCommentDAO.insert(c, typeComment, referenceId);
+        if(result == 0)
+            return Optional.empty();
+        return Optional.of(c);
     }
 }

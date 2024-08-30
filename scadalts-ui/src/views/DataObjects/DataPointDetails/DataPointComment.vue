@@ -88,7 +88,7 @@ export default {
 			this.activeUserId = this.$store.state.loggedUser.id;
 		},
 
-		addComment() {
+		async addComment() {
 			let time = new Date();
 			let comment = {
 				userId: this.$store.state.loggedUser.id,
@@ -97,13 +97,13 @@ export default {
 				username: this.$store.state.loggedUser.username,
 				prettyTime: time.toLocaleTimeString(),
 			};
-			this.data.comments.push(Object.assign({}, comment));
-			this.$store.dispatch('addUserComment', {
+			let response = await this.$store.dispatch('addUserComment', {
 				comment: comment,
 				typeId: 2,
 				refId: this.data.id,
 			});
 			this.newComment = '';
+			this.data.comments.push(Object.assign({}, response));
 		},
 
 		deleteComment(e) {
