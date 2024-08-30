@@ -41,6 +41,10 @@
 
         <!-- Parse log4j2.xml Logging-->
         <Property name="log4jLoggingLevel">ERROR</Property>
+
+        <!-- Security Logging-->
+        <Property name="securityLoggingLevel">ERROR</Property>
+
     </Properties>
 
     <Appenders>
@@ -155,6 +159,8 @@
             <AppenderRef ref="ASYNC_FLYWAY"/>
         </Logger>
 
+        <Logger name="org.scada_lts.login" level="${startupLoggingLevel}"/>
+
         <!-- BackgroundProcessing Logging-->
         <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundProcessingLoggingLevel}"/>
 
@@ -169,6 +175,7 @@
         <Logger name="log_jsp" level="${dwrLoggingLevel}"/>
         <Logger name="org.directwebremoting" level="${dwrLoggingLevel}"/>
         <Logger name="com.serotonin.mango.web.dwr.DataPointEditDwr" level="${dwrLoggingLevel}"/>
+        <Logger name="com.serotonin.mango.web.dwr" level="${dwrLoggingLevel}"/>
 
         <!-- Spring Logging-->
         <Logger name="org.springframework.web.servlet.FrameworkServlet" level="${springLoggingLevel}"/>
@@ -315,6 +322,10 @@
         <Logger name="org.apache.log4j.xml" level="${log4jLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
         </Logger>
+
+        <!-- Security Logging-->
+        <Logger name="org.scada_lts.web.security" level="${securityLoggingLevel}" />
+        <Logger name="org.springframework.security" level="${securityLoggingLevel}" />
 
         <Root level="${rootLoggingLevel}">
             <AppenderRef ref="STDOUT"/>
