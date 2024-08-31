@@ -13,6 +13,13 @@
 	<context:component-scan base-package="org.scada_lts" />
     <mvc:annotation-driven />
 
+    <mvc:interceptors>
+      <mvc:interceptor>
+        <mvc:mapping path="/view_edit.shtm" />
+        <ref bean="commonData" />
+      </mvc:interceptor>
+    </mvc:interceptors>
+
 	<context:annotation-config />
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
      <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
