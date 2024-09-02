@@ -139,7 +139,8 @@ export default {
 		savePanel(childGraphicItems) {
 			this.graphicItems = childGraphicItems;
 			this.panel.componentData = JSON.stringify([...this.graphicItems]);
-			
+			this.panel.vectorImage = unescapeHtml(this.panel.vectorImage);
+
             this.$store.dispatch('updateSynopticPanel', this.panel).then(() => {
                 this.$emit('updated', true);
             }).catch(() => {
