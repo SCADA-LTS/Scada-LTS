@@ -96,6 +96,7 @@ catalina-jrebel.bat
 # Ignore Gradle project-specific cache directory
 .gradle
 gradle/
+!gradle/gradle-wrapper.properties
 # Ignore Gradle build output directory
 WebContent/resources/node_modules/
 build
