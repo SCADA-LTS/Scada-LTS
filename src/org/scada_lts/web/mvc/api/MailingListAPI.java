@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.scada_lts.utils.ApiUtils.*;
 import static org.scada_lts.utils.MailingListApiUtils.*;
-import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 
 /**
  * Controller for MailingList
@@ -126,23 +127,28 @@ public class MailingListAPI {
     }
 
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<String> createMailingList(@RequestBody CreateMailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> createMailingList(@RequestBody CreateMailingList mailingList, HttpServletRequest request) {
         LOG.info("POST:/api/mailingList");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
                 String error = validateMailingListCreate(mailingList);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    response.put("errors", error);
+                    return ResponseEntity.badRequest().body(response);
                 }
                 if (isMailingListPresent(mailingList.getXid(), mailingListService)) {
-                    return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+                    response.put("errors", "This XID is already in use");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
                 if (!usersExist(mailingList.getEntries(), userService)) {
-                    return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
+                    response.put("errors", "user or users not found");
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
                 }
                 mailingListService.saveMailingList(createMailingListFromBody(mailingList));
-                return new ResponseEntity<>("{\"status\":\"created\"}", HttpStatus.CREATED);
+                response.put("status", "created");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -152,14 +158,16 @@ public class MailingListAPI {
     }
 
     @PutMapping(value = "/", produces = "application/json")
-    public ResponseEntity<String> updateMailingList(@RequestBody UpdateMailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateMailingList(@RequestBody UpdateMailingList mailingList, HttpServletRequest request) {
         LOG.info("PUT:/api/mailingList");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
                 String error = validateMailingListUpdate(mailingList);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    response.put("errors", error);
+                    return ResponseEntity.badRequest().body(response);
                 }
                 return findAndUpdateMailingList(mailingList);
             } else {
@@ -171,17 +179,20 @@ public class MailingListAPI {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<String> deleteMailingListById(@PathVariable Integer id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> deleteMailingListById(@PathVariable Integer id, HttpServletRequest request) {
         LOG.info("DELETE: /api/mailingList/{id}");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
                 String error = validateMailingListDelete(id);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    response.put("errors", error);
+                    return ResponseEntity.badRequest().body(response);
                 }
                 mailingListService.deleteMailingList(id);
-                return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+                response.put("status", "deleted");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -190,22 +201,28 @@ public class MailingListAPI {
         }
     }
 
-    private ResponseEntity<String> findAndUpdateMailingList(UpdateMailingList mailingListBody) {
+    private ResponseEntity<Map<String, String>> findAndUpdateMailingList(UpdateMailingList mailingListBody) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("errors", "mailingList not found");
         return getMailingList(mailingListBody.getId(), mailingListService)
                 .map(toUpdate -> updateMailingList(toUpdate, mailingListBody)).
-                        orElse(new ResponseEntity<>(formatErrorsJson("mailingList not found"), HttpStatus.NOT_FOUND));
+                        orElse(new ResponseEntity<>(errors, HttpStatus.NOT_FOUND));
     }
 
-    private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
+    private ResponseEntity<Map<String, String>> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
+        Map<String, String> response = new HashMap<>();
         if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntries(), userService)) {
-            return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
+            response.put("errors", "user or users not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         if (isXidChanged(toUpdate.getXid(), mailingListBody.getXid()) &&
-                isMailingListPresent(mailingListBody.getXid(), mailingListService)){
-            return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+                isMailingListPresent(mailingListBody.getXid(), mailingListService)) {
+            response.put("errors", "This XID is already in use");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         updateValueMailingList(toUpdate, mailingListBody);
         mailingListService.saveMailingList(toUpdate);
-        return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+        response.put("status", "updated");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

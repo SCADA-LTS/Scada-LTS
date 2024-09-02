@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.web.mvc.api.css.CssStyle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.file.Files;
 
 @Controller
 @RequestMapping("/api/customcss")
@@ -24,19 +26,13 @@ public class CustomCssAPI {
     private static final String REQ_RESP_ERROR = "Couldn't create a *.css file.";
 
     @GetMapping("/")
-    public ResponseEntity<String> getCustomCssFile(HttpServletRequest request) {
+    public ResponseEntity<?> getCustomCssFile(HttpServletRequest request) {
         LOG.info("GET: /api/customcss");
         try {
-            StringBuilder customCssContent = new StringBuilder();
             File cssFile = getCustomCssFileFromPath();
-
             if(cssFile != null) {
-                BufferedReader reader = new BufferedReader(new FileReader(cssFile.getAbsolutePath()));
-                String currentLine;
-                while ((currentLine = reader.readLine()) != null) {
-                    customCssContent.append(currentLine).append("\n");
-                }
-                return new ResponseEntity<>(customCssContent.toString(), HttpStatus.OK);
+                String content = Files.readString(cssFile.toPath());
+                return new ResponseEntity<>(new CssStyle(content), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(REQ_RESP_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -52,9 +48,9 @@ public class CustomCssAPI {
         try {
             File cssFile = getCustomCssFileFromPath();
             if(cssFile != null) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()));
-                writer.write(fileContent);
-                writer.close();
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()))) {
+                    writer.write(fileContent);
+                }
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(REQ_RESP_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);

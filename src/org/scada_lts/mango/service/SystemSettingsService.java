@@ -22,6 +22,7 @@ import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
@@ -302,6 +304,7 @@ public class SystemSettingsService {
         return data;
     }
 
+    @Deprecated(since = "2.8.0")
     public String sendTestEmail(User user) throws Exception {
 
         ResourceBundle bundle = Common.getBundle();
@@ -313,6 +316,20 @@ public class SystemSettingsService {
                 + ", " + userInfo(user));
 
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
+    }
+
+    public Map<String, String> sendTestEmailMap(User user) throws Exception {
+
+        ResourceBundle bundle = Common.getBundle();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", new LocalizableMessage("systemSettings.testEmail"));
+        IMsgSubjectContent cnt = IMsgSubjectContent.newInstance(
+                "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
+        sendMsgTestSync(user.getEmail(), cnt, model, () -> "sendTestEmail from: " + this.getClass().getName()
+                + ", " + userInfo(user));
+        Map<String, String> response = new HashMap<>();
+        response.put("recipient", user.getEmail());
+        return response;
     }
 
     public void purgeAllData() {
@@ -486,9 +503,9 @@ public class SystemSettingsService {
             String httpResponseHeaders = json.getHttpResponseHeaders();
             if(StringUtils.isEmpty(httpResponseHeaders))
                 return "";
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, objectMapper);
-            return serializeMap(headers, objectMapper);
+            Supplier<ObjectMapper> getObjectMapper = () -> ApplicationBeans.getObjectMapper();
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, getObjectMapper);
+            return serializeMap(headers, getObjectMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -496,7 +513,7 @@ public class SystemSettingsService {
 
     private static Map<String, String> deserializeMap(String json) {
         try {
-            return SystemSettingsUtils.deserializeMap(json, new ObjectMapper());
+            return SystemSettingsUtils.deserializeMap(json, () -> ApplicationBeans.getObjectMapper());
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
             return Collections.emptyMap();

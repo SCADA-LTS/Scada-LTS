@@ -327,7 +327,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						<a :title="(item.message) | clearHtml">{{ (item.message) | clearHtml | truncate}}</a>
+						<a :title="(item.message) | clearHtml"><span v-html="item.message"></span></a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -621,7 +621,7 @@ export default {
 			return input;
 		},
 		clearHtml(str) {
-			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ')
+			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ').replaceAll('&#39;', ' ').replaceAll('&quot;', ' ')
 		}
 	},
 	

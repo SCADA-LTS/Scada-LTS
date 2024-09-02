@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.serotonin.mango.view.ImplDefinition;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import static org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewCompone
 
 public class ViewComponentDeserializer extends JsonDeserializer<List<GraphicalViewComponentDTO>> {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
     @Override
     public List<GraphicalViewComponentDTO> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

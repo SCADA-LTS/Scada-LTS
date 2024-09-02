@@ -104,6 +104,8 @@ public class EmportDwr extends BaseDwr {
 				scripts, pointValues, maxPointValues, systemSettings,
 				usersProfiles, reports);
 	}
+
+	@Deprecated(since = "2.8.0")
 	public static String exportJSON(String xid){
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
@@ -119,6 +121,16 @@ public class EmportDwr extends BaseDwr {
 			throw new ShouldNeverHappenException(e);
 		}
 	}
+
+	public static Map<String, Object> exportDataPointBy(String xid) {
+		Map<String, Object> data = new LinkedHashMap<>();
+		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
+		List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoints);
+		dataPoints.setEventDetectors(detectors);
+		data.put(DATA_POINTS, dataPoints == null?"In the database there is no data point with given xid "+xid:dataPoints);
+		return data;
+	}
+
 	public static String createExportJSON(int prettyIndent,
 			boolean graphicalViews, boolean eventHandlers, boolean dataSources,
 			boolean dataPoints, boolean scheduledEvents,

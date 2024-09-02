@@ -6,13 +6,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.web.mvc.api.json.JsonEventComment;
+import org.scada_lts.web.mvc.api.json.JsonUserComment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
@@ -35,27 +34,27 @@ public class UserCommentAPI {
      * Create User Comment
      *
      * @param request HTTP request
-     * @param body String comment
+     * @param createUserComment String comment
      * @param typeId UserComment type (1 - Event or 2 - Point)
      * @param refId Reference ID of the object
      *
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody JsonEventComment comment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<?> createUserComment(HttpServletRequest request, @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                String error = validUserComment(typeId, refId, comment.getCommentText());
+                String error = validUserComment(typeId, refId, createUserComment.getCommentText());
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                int result = userCommentService.setUserComment(comment.getCommentText(), typeId, refId, user);
-                if(result != 0) {
-                    return new ResponseEntity<>(String.valueOf(result), HttpStatus.CREATED);
-                } else {
-                    return new ResponseEntity<>(String.valueOf(result), HttpStatus.BAD_REQUEST);
-                }
+                return userCommentService.addUserComment(createUserComment.getCommentText(), typeId, refId, user).map(a -> {
+                            JsonUserComment comment = new JsonUserComment(a.getUserId(), typeId, a.getTypeKey(),
+                                    a.getTs(), a.getComment(), a.getUsername(), a.getPrettyTime());
+                            return new ResponseEntity<>(comment, HttpStatus.CREATED);
+                        })
+                        .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -95,6 +94,25 @@ public class UserCommentAPI {
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    static class CreateUserComment {
+        private String commentText;
+
+        public CreateUserComment() {
+        }
+
+        public CreateUserComment(String commentText) {
+            this.commentText = commentText;
+        }
+
+        public String getCommentText() {
+            return commentText;
+        }
+
+        public void setCommentText(String commentText) {
+            this.commentText = commentText;
         }
     }
 }

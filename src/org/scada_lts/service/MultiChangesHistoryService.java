@@ -7,6 +7,7 @@ import org.scada_lts.dao.MultiChangesHistory;
 import org.scada_lts.dao.model.multichangehistory.MultiChangeHistoryValues;
 import org.scada_lts.service.model.MultiChangeHistoryDTO;
 import org.scada_lts.service.model.ValuesMultiChangesHistoryDTO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class MultiChangesHistoryService {
 
     public void addToCmpHistory(Integer userId, String viewAndCmpId, String interpretedState, SetValuePointDTO[] values) {
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
         String json;
         try {

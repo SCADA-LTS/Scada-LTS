@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -35,11 +34,13 @@ public class ScriptsAPI {
 
     private static final Log LOG = LogFactory.getLog(ScriptsAPI.class);
 
-    @Resource
-    private ScriptService scriptService;
+    private final ScriptService scriptService;
+    private final DataPointService dataPointService;
 
-    @Resource
-    private DataPointService dataPointService;
+    public ScriptsAPI(ScriptService scriptService, DataPointService dataPointService) {
+        this.scriptService = scriptService;
+        this.dataPointService = dataPointService;
+    }
 
     /**
      * Get Scripts related to specific Data Point
@@ -155,14 +156,16 @@ public class ScriptsAPI {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<String> updateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("PUT::/api/scripts/update");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
                 String error = validateScriptUpdate(jsonBodyRequest);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    response.put("errors", error);
+                    return ResponseEntity.badRequest().body(response);
                 }
                 return findAndUpdateScript(jsonBodyRequest);
             } else {
@@ -187,22 +190,28 @@ public class ScriptsAPI {
         }
     }
 
-    private ResponseEntity<String> findAndUpdateScript(JsonScript body) {
+    private ResponseEntity<Map<String, String>> findAndUpdateScript(JsonScript body) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("errors", "Script not found");
         return getScript(body.getId(), scriptService).map(toUpdate -> updateScriptBody(toUpdate, body))
-                .orElse(new ResponseEntity<>(formatErrorsJson("Script not found"), HttpStatus.NOT_FOUND));
+                .orElse(new ResponseEntity<>(errors, HttpStatus.NOT_FOUND));
     }
 
-    private ResponseEntity<String> updateScriptBody(ContextualizedScriptVO toUpdate, JsonScript body) {
+    private ResponseEntity<Map<String, String>> updateScriptBody(ContextualizedScriptVO toUpdate, JsonScript body) {
+        Map<String, String> response = new HashMap<>();
         if (isXidChanged(toUpdate.getXid(), body.getXid()) &&
-                isScriptPresent(body.getXid(), scriptService)){
-            return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+                isScriptPresent(body.getXid(), scriptService)) {
+            response.put("errors", "This XID is already in use");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         String pointsError = validatePointsOnContext(body.getPointsOnContext(), dataPointService);
         if (!pointsError.isEmpty()) {
-            return new ResponseEntity<>(formatErrorsJson(pointsError), HttpStatus.NOT_FOUND);
+            response.put("errors", pointsError);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         updateValueScript(toUpdate, body, dataPointService);
         scriptService.saveScript(toUpdate);
-        return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+        response.put("status", "updated");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

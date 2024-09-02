@@ -299,7 +299,6 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
                 List <Integer> ids = new ArrayList<Integer>();
                 for (String id: query.getIds().split(",")) {
                     ids.add(Integer.parseInt(id.trim()));

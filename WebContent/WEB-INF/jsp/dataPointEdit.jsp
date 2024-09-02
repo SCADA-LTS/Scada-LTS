@@ -396,13 +396,9 @@
                       }
                   }
                   // const
-                  var pathArray = location.href.split( '/' );
-                  var protocol = pathArray[0];
-                  var host = pathArray[2];
-                  var appScada = pathArray[3];
                   var myLocation;
                   if (!myLocation) {
-                    myLocation = protocol + "//" + host + "/" + appScada + "/";
+                    myLocation = getAppLocation();
                    }
 
                    var arrDictLoggingType = ["", "When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
@@ -813,7 +809,7 @@
                     jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                                                            success: function(properties){
                                                                 setConfig(properties);
                                                            },
@@ -836,7 +832,7 @@
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
                                                                     let bCheckedType = checkType(properties.dataTypeId);
