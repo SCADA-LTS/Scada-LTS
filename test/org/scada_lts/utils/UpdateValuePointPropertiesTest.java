@@ -2,9 +2,6 @@ package org.scada_lts.utils;
 
 import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.event.AlarmLevels;
-import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.view.chart.TableChartRenderer;

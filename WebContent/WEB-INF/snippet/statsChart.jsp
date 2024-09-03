@@ -18,13 +18,13 @@
 --%>
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <c:if test="${!empty startsAndRuntimes}">
-  <b><fmt:message key="common.stats.start"/></b>: ${sst:fullTime(start)}<br/>
-  <b><fmt:message key="common.stats.end"/></b>: ${sst:fullTime(end)}<br/>
+  <b><spring:message code="common.stats.start"/></b>: ${sst:fullTime(start)}<br/>
+  <b><spring:message code="common.stats.end"/></b>: ${sst:fullTime(end)}<br/>
   <table>
     <tr>
-      <th><fmt:message key="common.value"/></th>
-      <th><fmt:message key="common.stats.starts"/></th>
-      <th><fmt:message key="common.stats.runtime"/></th>
+      <th><spring:message code="common.value"/></th>
+      <th><spring:message code="common.stats.starts"/></th>
+      <th><spring:message code="common.stats.runtime"/></th>
     </tr>
   <c:forEach items="${startsAndRuntimes}" var="sar">
     <tr>
@@ -38,18 +38,18 @@
 <c:if test="${!empty average}">
   <c:choose>
     <c:when test="${noData}">
-      <b><fmt:message key="common.noData"/></b><br/>
+      <b><spring:message code="common.noData"/></b><br/>
     </c:when>
     <c:otherwise>
-      <b><fmt:message key="common.stats.start"/></b>: ${sst:fullTime(start)}<br/>
-      <b><fmt:message key="common.stats.end"/></b>: ${sst:fullTime(end)}<br/>
-      <b><fmt:message key="common.stats.min"/></b>: ${mango:specificHtmlTextValue(point, minimum)} @ ${sst:fullTime(minTime)}<br/>
-      <b><fmt:message key="common.stats.max"/></b>: ${mango:specificHtmlTextValue(point, maximum)} @ ${sst:fullTime(maxTime)}<br/>
-      <b><fmt:message key="common.stats.avg"/></b>: ${mango:specificHtmlTextValue(point, average)}<br/>
+      <b><spring:message code="common.stats.start"/></b>: ${sst:fullTime(start)}<br/>
+      <b><spring:message code="common.stats.end"/></b>: ${sst:fullTime(end)}<br/>
+      <b><spring:message code="common.stats.min"/></b>: ${mango:specificHtmlTextValue(point, minimum)} @ ${sst:fullTime(minTime)}<br/>
+      <b><spring:message code="common.stats.max"/></b>: ${mango:specificHtmlTextValue(point, maximum)} @ ${sst:fullTime(maxTime)}<br/>
+      <b><spring:message code="common.stats.avg"/></b>: ${mango:specificHtmlTextValue(point, average)}<br/>
       <c:if test="${!empty sum}">
-        <b><fmt:message key="common.stats.sum"/></b>: ${mango:specificHtmlTextValue(point, sum)}<br/>
+        <b><spring:message code="common.stats.sum"/></b>: ${mango:specificHtmlTextValue(point, sum)}<br/>
       </c:if>
     </c:otherwise>
   </c:choose>
 </c:if>
-<b><fmt:message key="common.stats.logEntries"/></b>: ${logEntries}
+<b><spring:message code="common.stats.logEntries"/></b>: ${logEntries}

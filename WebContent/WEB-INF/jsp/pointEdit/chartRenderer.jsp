@@ -20,17 +20,17 @@
 <div class="borderDiv marB marR">
   <table>
     <tr><td colspan="3">
-      <span class="smallTitle"><fmt:message key="pointEdit.chart.props"/></span>
+      <span class="smallTitle"><spring:message code="pointEdit.chart.props"/></span>
       <tag:help id="chartRenderers"/>
     </td></tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.chart.type"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.chart.type"/></td>
       <td class="formField">
         <sst:select id="chartRendererSelect" onchange="chartRendererEditor.change()"
                 value="${form.chartRenderer.typeName}">
           <c:forEach items="${chartRenderers}" var="crdef">
-            <sst:option value="${crdef.name}"><fmt:message key="${crdef.nameKey}"/></sst:option>
+            <sst:option value="${crdef.name}"><spring:message code="${crdef.nameKey}"/></sst:option>
           </c:forEach>
         </sst:select>
       </td>
@@ -39,13 +39,13 @@
     <tbody id="chartRendererNone" style="display:none;"></tbody>
     <tbody id="chartRendererTable" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.chart.limit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.chart.limit"/></td>
         <td class="formField"><input id="chartRendererTableLimit" type="text" class="formShort"/></td>
       </tr>
     </tbody>
     <tbody id="chartRendererImage" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.chart.timePeriod"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.chart.timePeriod"/></td>
         <td class="formField">
           <input id="chartRendererImageNumberOfPeriods" type="text" class="formVeryShort"/>
           <select id="chartRendererImageTimePeriod">
@@ -56,7 +56,7 @@
     </tbody>
     <tbody id="chartRendererStats" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.chart.timePeriod"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.chart.timePeriod"/></td>
         <td class="formField">
           <input id="chartRendererStatsNumberOfPeriods" type="text" class="formVeryShort"/>
           <select id="chartRendererStatsTimePeriod">
@@ -65,19 +65,19 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.chart.includeSum"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.chart.includeSum"/></td>
         <td class="formField"><input id="chartRendererStatsIncludeSum" type="checkbox"/></td>
       </tr>
     </tbody>
     <tbody id="chartRendererImageFlipbook" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.chart.limit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.chart.limit"/></td>
         <td class="formField"><input id="chartRendererImageFlipbookLimit" type="text" class="formShort"/></td>
       </tr>
     </tbody>
     
     <tr>
-      <td colspan="2"><fmt:message key="pointEdit.chart.note"/></td>
+      <td colspan="2"><spring:message code="pointEdit.chart.note"/></td>
     </tr>
   </table>
 </div>
@@ -129,18 +129,18 @@
           else if (typeName == "chartRendererTable") {
               var limit = parseInt($get("chartRendererTableLimit"));
               if (isNaN(limit))
-                  alert("<fmt:message key="pointEdit.chart.missingLimit"/>");
+                  alert("<spring:message code="pointEdit.chart.missingLimit"/>");
               else if (limit < 2 || limit > 50)
-                  alert("<fmt:message key="pointEdit.chart.invalidLimit"/>");
+                  alert("<spring:message code="pointEdit.chart.invalidLimit"/>");
               else
                   DataPointEditDwr.setTableChartRenderer(limit, callback);
           }
           else if (typeName == "chartRendererImage") {
               var numberOfPeriods = parseInt($get("chartRendererImageNumberOfPeriods"));
               if (isNaN(numberOfPeriods))
-                  alert("<fmt:message key="pointEdit.chart.missingPeriods"/>");
+                  alert("<spring:message code="pointEdit.chart.missingPeriods"/>");
               else if (numberOfPeriods < 1)
-                  alert("<fmt:message key="pointEdit.chart.invalidPeriods"/>");
+                  alert("<spring:message code="pointEdit.chart.invalidPeriods"/>");
               else
                   DataPointEditDwr.setImageChartRenderer($get("chartRendererImageTimePeriod"),
                           numberOfPeriods, callback);
@@ -148,9 +148,9 @@
           else if (typeName == "chartRendererStats") {
               var numberOfPeriods = parseInt($get("chartRendererStatsNumberOfPeriods"));
               if (isNaN(numberOfPeriods))
-                  alert("<fmt:message key="pointEdit.chart.missingPeriods"/>");
+                  alert("<spring:message code="pointEdit.chart.missingPeriods"/>");
               else if (numberOfPeriods < 1)
-                  alert("<fmt:message key="pointEdit.chart.invalidPeriods"/>");
+                  alert("<spring:message code="pointEdit.chart.invalidPeriods"/>");
               else
                   DataPointEditDwr.setStatisticsChartRenderer($get("chartRendererStatsTimePeriod"), 
                           numberOfPeriods, $get("chartRendererStatsIncludeSum"), callback);
@@ -158,9 +158,9 @@
           else if (typeName == "chartRendererImageFlipbook") {
               var limit = parseInt($get("chartRendererImageFlipbookLimit"));
               if (isNaN(limit))
-                  alert("<fmt:message key="pointEdit.chart.missingLimit"/>");
+                  alert("<spring:message code="pointEdit.chart.missingLimit"/>");
               else if (limit < 2 || limit > 50)
-                  alert("<fmt:message key="pointEdit.chart.invalidLimit"/>");
+                  alert("<spring:message code="pointEdit.chart.invalidLimit"/>");
               else
                   DataPointEditDwr.setImageFlipbookRenderer(limit, callback);
           }

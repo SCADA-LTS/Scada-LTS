@@ -40,7 +40,7 @@
                 function(propertyLabel) { return propertyLabel; },
                 function(propertyLabel) {
                     return writeImage("scanDeviceImg_"+ $get(deviceHousecode) + "_" +  $get(deviceType) + "_" + propertyLabel, null, "icon_comp_add",
-                         "<fmt:message key="common.add"/>", "addPoint({'deviceHousecode': '" + $get(deviceHousecode) + "', 'deviceLocation': '" + $get(deviceLocation) + "', 'deviceType': '" + $get(deviceType) + "', 'propertyLabel': '"+ propertyLabel + "'})");
+                         "<spring:message code="common.add"/>", "addPoint({'deviceHousecode': '" + $get(deviceHousecode) + "', 'deviceLocation': '" + $get(deviceLocation) + "', 'deviceType': '" + $get(deviceType) + "', 'propertyLabel': '"+ propertyLabel + "'})");
            }
             ],
             {
@@ -59,16 +59,16 @@
     }
 
     function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.fhz4j.deviceHousecode'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.fhz4j.deviceHousecode'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.deviceHousecodeStr; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.fhz4j.deviceType'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.fhz4j.deviceType'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.fhzDeviceTypeLabel; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.fhz4j.deviceProperty'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.fhz4j.deviceProperty'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.fhzPropertyLabel; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.fhz4j.PropertySettable'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.fhz4j.PropertySettable'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.settable; };
     }
 
@@ -103,12 +103,12 @@
 
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.fhz4j.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.fhz4j.desc"/></c:set>
 <c:set var="dsHelpId" value="fhz4jDS"/>
 <%@include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
 <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serial.port"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serial.port"/></td>
     <td class="formField">
         <c:choose>
             <c:when test="${!empty commPortError}">
@@ -131,7 +131,7 @@
 </tr>
 
 <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.fhzHouseCode"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.fhzHouseCode"/></td>
     <td class="formField">
         <input type="text" id="fhzHousecode" value="${dataSource.fhzHousecodeStr}" class="formShort"/>
     </td>
@@ -139,7 +139,7 @@
 
 <tr>
     <td colspan="2" />
-<input type="checkbox" id="fhzMaster" <c:if test="${dataSource.fhzMaster}"> checked="checked"</c:if> class="formShort" ><fmt:message key="dsEdit.fhz4j.fhzMaster"/></input>
+<input type="checkbox" id="fhzMaster" <c:if test="${dataSource.fhzMaster}"> checked="checked"</c:if> class="formShort" ><spring:message code="dsEdit.fhz4j.fhzMaster"/></input>
 </td>
 </tr>
 
@@ -151,13 +151,13 @@
 <td valign="top">
     <div class="borderDiv marB">
         <table>
-            <tr><td colspan="3" class="smallTitle"><fmt:message key="dsEdit.fhz4j.init"/></td></tr>
+            <tr><td colspan="3" class="smallTitle"><spring:message code="dsEdit.fhz4j.init"/></td></tr>
             <tr>
-                <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.deviceHousecode"/></td>
+                <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.deviceHousecode"/></td>
                 <td class="formField">
                     <input type="text" id="deviceHousecode" class="formShort"/>
                 </td>
-                <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.deviceLocation"/></td>
+                <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.deviceLocation"/></td>
                 <td class="formField">
                     <input type="text" id="deviceLocation" class="formShort"/>
                 </td>
@@ -169,7 +169,7 @@
                     </sst:select>
                 </td>
                 <td>
-                    <input id="showDevicePropsBtn" type="button" value="<fmt:message key="dsEdit.fhz4j.showDevicePropsBtn"/>" onclick="assembleDevice()"/>
+                    <input id="showDevicePropsBtn" type="button" value="<spring:message code="dsEdit.fhz4j.showDevicePropsBtn"/>" onclick="assembleDevice()"/>
                 </td>
             </tr>
 
@@ -179,11 +179,11 @@
                 <td colspan="2">
                     <table cellspacing="1">
                         <tr class="rowHeader">
-                            <td><fmt:message key="dsEdit.fhz4j.deviceHousecode"/></td>
-                            <td><fmt:message key="dsEdit.fhz4j.deviceLocation"/></td>
-                            <td><fmt:message key="dsEdit.fhz4j.deviceType"/></td>
-                            <td><fmt:message key="dsEdit.fhz4j.property"/></td>
-                            <td><fmt:message key="dsEdit.fhz4j.add"/></td>
+                            <td><spring:message code="dsEdit.fhz4j.deviceHousecode"/></td>
+                            <td><spring:message code="dsEdit.fhz4j.deviceLocation"/></td>
+                            <td><spring:message code="dsEdit.fhz4j.deviceType"/></td>
+                            <td><spring:message code="dsEdit.fhz4j.property"/></td>
+                            <td><spring:message code="dsEdit.fhz4j.add"/></td>
                         </tr>
                         <tbody id="fhz4jValues"></tbody>
                     </table>
@@ -198,19 +198,19 @@
 
                 <tbody id="readonlyAttributes">
                     <tr>
-                        <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.deviceHousecode"/></td>
+                        <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.deviceHousecode"/></td>
                         <td class="formField"><input id="editDeviceHousecode" disabled="disabled"/></td>
                     </tr>
                     <tr>
-                        <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.deviceType"/></td>
+                        <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.deviceType"/></td>
                         <td class="formField"><input id="editDeviceTypeLabel" disabled="disabled"/></td>
                     </tr>
                     <tr>
-                        <td class="formLabelRequired"><fmt:message key="dsEdit.fhz4j.property"/></td>
+                        <td class="formLabelRequired"><spring:message code="dsEdit.fhz4j.property"/></td>
                         <td class="formField"><input id="editFhzPropertyLabel" disabled="disabled"/></td>
                     </tr>
                     <tr>
-                        <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.dataPointSettable"/></td>
+                        <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.dataPointSettable"/></td>
                         <td class="formField"><input type="checkbox" id="editDataPointSettable" disabled="disabled"/></td>
                     </tr>
                 </tbody>

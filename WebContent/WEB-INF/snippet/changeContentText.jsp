@@ -17,11 +17,11 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
-<fmt:message key="common.enterSetPoint"/>:<br/>
+<spring:message code="common.enterSetPoint"/>:<br/>
 <input id="txtChange${componentId}" type="text" value="${mango:rawText(point, pointValue)}" 
         onkeypress="if (event.keyCode==13) $('txtSet${componentId}').onclick();"/>
 <a id="txtSet${componentId}" class="ptr"
-        onclick="mango.view.setPoint(${point.id}, '${componentId}', $('txtChange${componentId}').value);"><fmt:message key="common.set"/></a>
+        onclick="mango.view.setPoint(${point.id}, '${componentId}', $('txtChange${componentId}').value);"><spring:message code="common.set"/></a>
 <c:if test="${!hideClosingHint}" >
     </br>Double click to close
 </c:if>
