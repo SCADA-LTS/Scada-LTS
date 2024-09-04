@@ -65,33 +65,52 @@ public class ScriptExecutor {
 		SCRIPT_FUNCTION_PATH = path;
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context) throws DataPointStateException {
-		return convertContext(context, Common.NEW_ID);
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context) throws Exception {
+		return convertContext(context, null, null);
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, int dataPointId)
-			throws DataPointStateException {
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
-		Map<String, IDataPoint> converted = new HashMap<String, IDataPoint>();
+		Map<String, IDataPoint> converted = new HashMap<>();
+		List<DataPointStateException> exceptions = new ArrayList<>();
 		for (IntValuePair contextEntry : context) {
-			if(dataPointId == Common.NEW_ID || dataPointId != contextEntry.getKey()) {
+			if(dataPoint == null || dataPoint.getId() == Common.NEW_ID || dataPoint.getId() != contextEntry.getKey()) {
 				DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
 				if (point == null) {
 					LOG.error("Error DataPointRT null "
 							+ new Exception("key:" + contextEntry.getKey()
 							+ " value:" + contextEntry.getValue()));
-					throw createPointUnavailableException(contextEntry);
-				}
-				if (point.isUnreliable()) {
+					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry);
+					if(dataPoint != null && metaDataSource != null) {
+						metaDataSource.raiseContextError(System.currentTimeMillis(), dataPoint, dataPointStateException.getLocalizableMessage());
+					}
+					exceptions.add(dataPointStateException);
+				} else if (point.isUnreliable()) {
 					LOG.warn("Error DataPointRT is unavailable "
 							+ new Exception("key:" + contextEntry.getKey()
 							+ " value:" + contextEntry.getValue()) + " - " + LoggingUtils.dataPointInfo(point));
-					throw createPointUnavailableException(contextEntry, point);
+					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry, point);
+					if(dataPoint != null && metaDataSource != null) {
+						metaDataSource.raiseContextError(System.currentTimeMillis(), dataPoint, dataPointStateException.getLocalizableMessage());
+					}
+					exceptions.add(dataPointStateException);
+				} else {
+					converted.put(contextEntry.getValue(), point);
 				}
-				converted.put(contextEntry.getValue(), point);
 			}
 		}
+		if(!exceptions.isEmpty()) {
+			StringBuilder messages = new StringBuilder();
+			for(DataPointStateException exception: exceptions) {
+				LocalizableMessage localizableMessage = exception.getLocalizableMessage();
+				String message = localizableMessage.getLocalizedMessage(Common.getBundle());
+				messages.append(message).append(";");
+			}
+			throw new Exception(messages.toString());
+		}
+		if(dataPoint != null && metaDataSource != null)
+			metaDataSource.returnToNormalContext(System.currentTimeMillis(), dataPoint);
 
 		return converted;
 	}

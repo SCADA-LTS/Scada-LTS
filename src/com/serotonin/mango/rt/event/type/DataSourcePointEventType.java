@@ -35,6 +35,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     private DataSourceEventType dataSourceEventType;
     private int dataPointId;
+    private final int duplicateHandling = DuplicateHandling.IGNORE_SAME_MESSAGE;
 
     private final Log LOG = LogFactory.getLog(DataSourcePointEventType.class);
 
@@ -52,10 +53,12 @@ public class DataSourcePointEventType extends DataSourceEventType {
         return EventSources.DATA_SOURCE_POINT;
     }
 
+    @Override
     public int getDataSourceEventTypeId() {
         return dataSourceEventType.getDataSourceEventTypeId();
     }
 
+    @Override
     public int getAlarmLevel() {
         return dataSourceEventType.getAlarmLevel();
     }
@@ -77,7 +80,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     @Override
     public int getDuplicateHandling() {
-        return dataSourceEventType.getDuplicateHandling();
+        return duplicateHandling;
     }
 
     @Override

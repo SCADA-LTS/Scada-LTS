@@ -813,7 +813,7 @@
                     jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                                                            success: function(properties){
                                                                 setConfig(properties);
                                                            },
@@ -836,7 +836,7 @@
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
                                                                     let bCheckedType = checkType(properties.dataTypeId);

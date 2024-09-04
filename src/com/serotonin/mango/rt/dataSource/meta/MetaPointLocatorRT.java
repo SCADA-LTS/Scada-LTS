@@ -330,15 +330,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         Map<String, IDataPoint> context;
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
-            context = scriptExecutor.convertContext(vo.getContext(), dataPoint.getId());
+            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
             returnToNormalContext(System.currentTimeMillis(), dataPoint);
             return context;
-        } catch (DataPointStateException e) {
-            handleContextError(System.currentTimeMillis(), dataPoint, e.getLocalizableMessage());
-            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
-            return null;
         } catch (Exception e) {
-            handleContextError(System.currentTimeMillis(), dataPoint, new LocalizableMessage("event.meta.pointUnavailable", dataPoint.getVO().getName()));
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
             return null;
         }

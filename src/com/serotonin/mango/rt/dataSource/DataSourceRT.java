@@ -185,9 +185,12 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     private DataSourceEventType getDataSourceEventType(int eventId, int dataPointId) {
+        DataSourceEventType eventType = getEventType(eventId);
+        if(eventType == null)
+            return null;
         if(dataPointId == Common.NEW_ID)
-            return getEventType(eventId);
-        return new DataSourcePointEventType(getEventType(eventId), dataPointId);
+            return eventType;
+        return new DataSourcePointEventType(eventType, dataPointId);
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {

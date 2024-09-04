@@ -43,7 +43,7 @@
     	var xid = jQuery("#xid");
     	// saveScript() nie zdarzy zapisac !!!
     	jQuery.ajax({
-    		url: myLocation+"/script/execute/"+xid[0].value,
+    		url: myLocation+"script/execute/"+xid[0].value,
     		type:"POST",
     		success: function(){
               setUserMessage("<fmt:message key="script.execute.success"/> ")

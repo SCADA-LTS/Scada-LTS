@@ -44,6 +44,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import net.sf.mbus4j.Connection;
@@ -1187,8 +1188,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             response.addMessage("script", e.getLocalizableMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
+            response.addMessage("script", new LocalizableMessage("common.default", e.getMessage()));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
-            throw e;
         }
 
         return response;
