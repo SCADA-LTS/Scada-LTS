@@ -90,6 +90,7 @@ import axios from 'axios';
 import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
+import {unescapeHtml} from "@/utils/common";
 const CUSTOM_CSS_API = './api/customcss/';
 
 export default {
@@ -179,12 +180,8 @@ export default {
 						.then(async (response) => {
 							if (response.status === 200) {
 								const customCss = response.data;
-								console.log("customCss: " + customCss);
-
-								const cleanedCss = this.cleanCssContent(customCss.content);
-
+								const cleanedCss = unescapeHtml(customCss.content);
 								await this.applyCustomCss(cleanedCss);
-
 								resolve(customCss);
 							} else {
 								console.error("Failed to load custom CSS, status: ", response.status);
@@ -207,23 +204,10 @@ export default {
 				styleElement.type = 'text/css';
 				document.head.appendChild(styleElement);
 			}
-
 			styleElement.innerHTML = '';
-
 			styleElement.appendChild(document.createTextNode(cssContent));
-
-			console.log("document.head: " + document.head.innerHTML);
-			console.log("styleElement.innerHTML: " + styleElement.innerHTML);
 		},
 
-		cleanCssContent(cssContent) {
-			let cleanedCssContent = cssContent
-					.replace(/&#10;/g, '\n')
-					.replace(/&gt;/g, '>')
-					.replace(/&lt;/g, '<');
-
-			return cleanedCssContent.trim();
-		},
 
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;

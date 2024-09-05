@@ -645,13 +645,13 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemsettings.top.description.prefix"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 150px"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemsettings.top.description"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
         </td>
       </tr>
       <tr>
