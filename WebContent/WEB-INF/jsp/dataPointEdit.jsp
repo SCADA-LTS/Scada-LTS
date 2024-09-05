@@ -897,11 +897,11 @@
                 <div class="borderDiv marB marR" style="margin:20px; padding:10px; border-color:blue; max-width: 800px;">
                     <table width="100%" cellpadding="0" cellspacing="0">
                         <tr><td colspan="4">
-                            <span class="smallTitle"> <fmt:message key="pointEdit.basing_on.title"/></span>
+                            <span class="smallTitle"> <spring:message code="pointEdit.basing_on.title"/></span>
                         </td></tr>
 
                         <tr>
-                            <td class="formLabelRequired"><fmt:message key="pointEdit.basing_on.select"/></td>
+                            <td class="formLabelRequired"><spring:message code="pointEdit.basing_on.select"/></td>
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
                                     <c:forEach items="${userPoints}" var="point">
@@ -912,11 +912,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <input id="baseOnExistingPointBtn" type="button" value="<fmt:message key="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
+                                <input id="baseOnExistingPointBtn" type="button" value="<spring:message code="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
                             </td>
                             <td colspan="3">
                                 <input type="checkbox" id="checkGetAlertError" value="true" checked>
-                                <label for="checkGetAlertError"><fmt:message key="pointEdit.basing_on.warning_on"/></label>
+                                <label for="checkGetAlertError"><spring:message code="pointEdit.basing_on.warning_on"/></label>
                             </td>
                         </tr>
                     </table>

@@ -49,7 +49,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.galil.type"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.galil.type"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
               function(p) { return p.pointLocator.configurationDescription; };
   }
@@ -139,31 +139,31 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.galil.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.galil.desc"/></c:set>
 <c:set var="dsHelpId" value="galilDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.galil.host"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.galil.host"/></td>
           <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.galil.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.galil.port"/></td>
           <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.galil.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.galil.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.galil.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.galil.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -179,16 +179,16 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.galil.commandTesting"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.galil.commandTesting"/></td></tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.galil.command"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.galil.command"/></td>
           <td class="formField"><input type="text" id="galilTestCommand"/></td>
         </tr>
         
         <tr>
           <td colspan="2" align="center">
-            <input id="galilTestBtn" type="button" value="<fmt:message key="dsEdit.galil.execute"/>" onclick="galilTest();"/>
+            <input id="galilTestBtn" type="button" value="<spring:message code="dsEdit.galil.execute"/>" onclick="galilTest();"/>
           </td>
         </tr>
         
@@ -197,14 +197,14 @@
 
 <tag:pointList pointHelpId="galilPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.galil.pointType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.galil.pointType"/></td>
     <td class="formField">
       <select id="pointTypeId" onchange="changePointType();">
-        <option value="<c:out value="<%= PointTypeVO.Types.COMMAND %>"/>"><fmt:message key="dsEdit.galil.pointType.command"/></option>
-        <option value="<c:out value="<%= PointTypeVO.Types.INPUT %>"/>"><fmt:message key="dsEdit.galil.pointType.input"/></option>
-        <option value="<c:out value="<%= PointTypeVO.Types.OUTPUT %>"/>"><fmt:message key="dsEdit.galil.pointType.output"/></option>
-        <option value="<c:out value="<%= PointTypeVO.Types.TELL_POSITION %>"/>"><fmt:message key="dsEdit.galil.pointType.tellPosition"/></option>
-        <option value="<c:out value="<%= PointTypeVO.Types.VARIABLE %>"/>"><fmt:message key="dsEdit.galil.pointType.variable"/></option>
+        <option value="<c:out value="<%= PointTypeVO.Types.COMMAND %>"/>"><spring:message code="dsEdit.galil.pointType.command"/></option>
+        <option value="<c:out value="<%= PointTypeVO.Types.INPUT %>"/>"><spring:message code="dsEdit.galil.pointType.input"/></option>
+        <option value="<c:out value="<%= PointTypeVO.Types.OUTPUT %>"/>"><spring:message code="dsEdit.galil.pointType.output"/></option>
+        <option value="<c:out value="<%= PointTypeVO.Types.TELL_POSITION %>"/>"><spring:message code="dsEdit.galil.pointType.tellPosition"/></option>
+        <option value="<c:out value="<%= PointTypeVO.Types.VARIABLE %>"/>"><spring:message code="dsEdit.galil.pointType.variable"/></option>
       </select>
     </td>
   </tr>
@@ -220,7 +220,7 @@
   --%>
   <tbody id="divPH2" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
       <td class="formField">
         <select id="inputPointType.dataTypeId" onchange="changeInputDataType();">
           <tag:dataTypeOptions excludeAlphanumeric="true" excludeImage="true" excludeMultistate="true"/>
@@ -229,27 +229,27 @@
     </tr>
   
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.inputNumber"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.inputNumber"/></td>
       <td class="formField"><input type="text" id="inputPointType.inputId" /></td>
     </tr>
 
     <tr id="inputScaleRawLow">
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.scaleLow"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.scaleLow"/></td>
       <td class="formField"><input type="text" id="inputPointType.scaleRawLow" /></td>
     </tr>
 
     <tr id="inputScaleRawHigh">
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.scaleHigh"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.scaleHigh"/></td>
       <td class="formField"><input type="text" id="inputPointType.scaleRawHigh" /></td>
     </tr>
 
     <tr id="inputScaleEngLow">
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.engLow"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.engLow"/></td>
       <td class="formField"><input type="text" id="inputPointType.scaleEngLow" /></td>
     </tr>
 
     <tr id="inputScaleEngHigh">
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.engHigh"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.engHigh"/></td>
       <td class="formField"><input type="text" id="inputPointType.scaleEngHigh" /></td>
     </tr>
   </tbody>
@@ -259,7 +259,7 @@
   --%>
   <tbody id="divPH3" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.outputNumber"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.outputNumber"/></td>
       <td class="formField"><input type="text" id="outputPointType.outputId" /></td>
     </tr>
   </tbody>
@@ -269,7 +269,7 @@
   --%>
   <tbody id="divPH4" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.axis"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.axis"/></td>
       <td class="formField">
         <select id="tellPositionPointType.axis">
           <option>A</option>
@@ -285,27 +285,27 @@
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.scaleLow"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.scaleLow"/></td>
       <td class="formField"><input type="text" id="tellPositionPointType.scaleRawLow" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.scaleHigh"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.scaleHigh"/></td>
       <td class="formField"><input type="text" id="tellPositionPointType.scaleRawHigh" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.engLow"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.engLow"/></td>
       <td class="formField"><input type="text" id="tellPositionPointType.scaleEngLow" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.engHigh"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.engHigh"/></td>
       <td class="formField"><input type="text" id="tellPositionPointType.scaleEngHigh" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.round"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.round"/></td>
       <td class="formField"><input type="checkbox" id="tellPositionPointType.roundToInteger"></td>
     </tr>
   </tbody>
@@ -315,12 +315,12 @@
   --%>
   <tbody id="divPH5" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.galil.varName"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.galil.varName"/></td>
       <td class="formField"><input type="text" id="variablePointType.variableName" /></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
       <td class="formField">
         <select id="variablePointType.dataTypeId">
           <tag:dataTypeOptions excludeImage="true"/>

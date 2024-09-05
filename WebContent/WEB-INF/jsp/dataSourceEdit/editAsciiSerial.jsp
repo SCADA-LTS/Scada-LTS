@@ -144,13 +144,13 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.asciiSerial.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.asciiSerial.desc"/></c:set>
 <c:set var="dsHelpId" value="asciiSerialDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.commPortId" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.commPortId" /></td>
 	<td class="formField"><c:choose>
 		<c:when test="${!empty commPortError}">
 			<input id="commPortId" type="hidden" value="" />
@@ -167,8 +167,8 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.baud" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.baud" /></td>
 	<td class="formField"><sst:select id="baudRate"
 		value="${dataSource.baudRate}">
 		<sst:option>110</sst:option>
@@ -188,7 +188,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -200,7 +200,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -211,20 +211,20 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -234,67 +234,67 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.retries"/></td>
     <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.timeout"/></td>
     <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
     <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
   </tr>
   
   <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.stopMode"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.stopMode"/></td>
   <td class="formField">
     <sst:select id="stopMode" onchange="changeStopMode()" value="${dataSource.stopMode}">
-      <sst:option value="0"><fmt:message key="dsEdit.asciiSerial.stopMode.nChar"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.asciiSerial.stopMode.charX"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.asciiSerial.stopMode.stopTimeout"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.asciiSerial.stopMode.nChar"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.asciiSerial.stopMode.charX"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.asciiSerial.stopMode.stopTimeout"/></sst:option>
     </sst:select>
   </td>
 </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.nChar"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.nChar"/></td>
     <td class="formField">
     	<input id="nChar" type="text" value="${dataSource.nChar}"/>
     </td>
   </tr>
   <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.charStopMode"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.charStopMode"/></td>
   <td class="formField">
     <sst:select id="charStopMode" onchange="changeCharStopMode()" value="${dataSource.charStopMode}">
-      <sst:option value="0"><fmt:message key="dsEdit.asciiSerial.charStopMode.charASCII"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.asciiSerial.charStopMode.hexValue"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.asciiSerial.charStopMode.charASCII"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.asciiSerial.charStopMode.hexValue"/></sst:option>
     </sst:select>
   </td>
 </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.charStopMode.charASCII"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.charStopMode.charASCII"/></td>
     <td class="formField">
     	<input id="charX" type="text" value="${dataSource.charX}" disabled="disabled"/>
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.charStopMode.hexValue"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.charStopMode.hexValue"/></td>
     <td class="formField">
     	<input id="hexValue" type="text" value="${dataSource.hexValue}" disabled="disabled"/>
     </td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.stopTimeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.stopTimeout"/></td>
     <td class="formField">
     	<input id="stopTimeout" type="text" value="${dataSource.stopTimeout}" disabled="disabled"/>
     </td>
   </tr>
    
   <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.bufferSize"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.bufferSize"/></td>
   <td class="formField">
     <sst:select id="bufferSize" value="${dataSource.bufferSize}">
       <sst:option value="2">2</sst:option>
@@ -310,7 +310,7 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.initString"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.initString"/></td>
     <td class="formField">
     	<input id="initString" type="text" value=""/>
     </td>
@@ -320,7 +320,7 @@
 
 <tag:pointList pointHelpId="asciiSerialPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -328,27 +328,27 @@
     </td>
   </tr>
   <tr>
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.command"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.command"/></td>
 	    <td class="formField">
 	    	<input id="command" type="text" value=""/>
 	    </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.valueRegex"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.valueRegex"/></td>
     <td class="formField">
     	<input id="valueRegex" type="text" value=""/>
     	<select id="valueSuggestions" onchange="valueSuggestChanged();">
     		<option value=""> &nbsp; </option>
-        	<option value="((\b[0-9]+)?\.)?[0-9]+\b"> <fmt:message key="dsEdit.asciiFile.regex.number"/>  </option>
+        	<option value="((\b[0-9]+)?\.)?[0-9]+\b"> <spring:message code="dsEdit.asciiFile.regex.number"/>  </option>
       	</select>
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampCheck"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampCheck"/></td>
     <td class="formField"><input id="customTimestamp" type="checkbox" onchange="checkTimestampChanged();"/></td>
   </tr>
 	  <tr id="tsDiv1">
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampFormat"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampFormat"/></td>
 	    <td class="formField">
 	    	<input id="timestampFormat" type="text" value=""/>
 	    	<select id="timestampSuggestions" onchange="timestampSuggestChanged();">
@@ -361,7 +361,7 @@
 	    </td>
 	  </tr>
 	  <tr id="tsDiv2">
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampRegex"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampRegex"/></td>
 	    <td class="formField">
 	    	<input id="timestampRegex" type="text" value=""/>
 	    </td>

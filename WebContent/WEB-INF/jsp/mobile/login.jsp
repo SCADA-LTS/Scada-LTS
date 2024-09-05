@@ -22,7 +22,7 @@
     <table>
       <spring:bind path="login.username">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="login.userId"/></td>
+          <td class="formLabelRequired"><spring:message code="login.userId"/></td>
           <td class="formField">
             <input id="username" type="text" name="username" value="${status.value}" maxlength="40"/>
           </td>
@@ -32,7 +32,7 @@
       
       <spring:bind path="login.password">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="login.password"/></td>
+          <td class="formLabelRequired"><spring:message code="login.password"/></td>
           <td class="formField">
             <input id="password" type="password" name="password" value="${status.value}" maxlength="20"/>
           </td>
@@ -53,7 +53,7 @@
       
       <tr>
         <td colspan="2" align="center">
-          <input type="submit" value="<fmt:message key="login.loginButton"/>"/>
+          <input type="submit" value="<spring:message code="login.loginButton"/>"/>
         </td>
         <td></td>
       </tr>

@@ -30,11 +30,11 @@ function saveDataSourceImpl() {
 </script>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3Ip.host"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.dnp3Ip.host"/></td>
   <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3Ip.port"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.dnp3Ip.port"/></td>
   <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
 </tr>

@@ -19,7 +19,7 @@
 --%><%@tag body-content="empty"%>
 <table>
   <tr>
-    <td><fmt:message key="common.dateRangeFrom"/></td>
+    <td><spring:message code="common.dateRangeFrom"/></td>
     <td><input type="text" id="fromYear" class="formVeryShort" value="${fromYear}"/></td>
     <td><sst:select id="fromMonth" value="${fromMonth}"><tag:monthOptions sst="true"/></sst:select></td>
     <td><sst:select id="fromDay" value="${fromDay}"><tag:dayOptions sst="true"/></sst:select></td>
@@ -30,10 +30,10 @@
     <td>:</td>
     <td><sst:select id="fromSecond" value="${fromSecond}"><tag:secondOptions sst="true"/></sst:select></td>
     <td><input type="checkbox" name="fromNone" id="fromNone" onclick="updateDateRange()"/><label
-            for="fromNone"><fmt:message key="common.inception"/></label></td>
+            for="fromNone"><spring:message code="common.inception"/></label></td>
   </tr>
   <tr>
-    <td><fmt:message key="common.dateRangeTo"/></td>
+    <td><spring:message code="common.dateRangeTo"/></td>
     <td><input type="text" id="toYear" class="formVeryShort" value="${toYear}"/></td>
     <td><sst:select id="toMonth" value="${toMonth}"><tag:monthOptions sst="true"/></sst:select></td>
     <td><sst:select id="toDay" value="${toDay}"><tag:dayOptions sst="true"/></sst:select></td>
@@ -44,6 +44,6 @@
     <td>:</td>
     <td><sst:select id="toSecond" value="${toSecond}"><tag:secondOptions sst="true"/></sst:select></td>
     <td><input type="checkbox" name="toNone" id="toNone" checked="checked" onclick="updateDateRange()"/><label
-            for="toNone"><fmt:message key="common.latest"/></label></td>
+            for="toNone"><spring:message code="common.latest"/></label></td>
   </tr>
 </table>

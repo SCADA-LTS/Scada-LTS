@@ -24,7 +24,7 @@
   <tr>
     <td>
       <tag:img png="user" title="share.sharing"/>
-      <span class="smallTitle"><fmt:message key="share.sharing"/></span>
+      <span class="smallTitle"><spring:message code="share.sharing"/></span>
       <tag:help id="${doxId}"/>
     </td>
     <td align="right">
@@ -45,12 +45,12 @@
     <td colspan="2">
       <table cellspacing="1">
         <tbody id="sharedUsersTableEmpty" style="display:none;">
-          <tr><th colspan="3"><fmt:message key="${noUsersKey}"/></th></tr>
+          <tr><th colspan="3"><spring:message code="${noUsersKey}"/></th></tr>
         </tbody>
         <tbody id="sharedUsersTableHeaders" style="display:none;">
           <tr class="smRowHeader">
-            <td><fmt:message key="share.userName"/></td>
-            <td><fmt:message key="share.accessType"/></td>
+            <td><spring:message code="share.userName"/></td>
+            <td><spring:message code="share.accessType"/></td>
             <td></td>
           </tr>
         </tbody>

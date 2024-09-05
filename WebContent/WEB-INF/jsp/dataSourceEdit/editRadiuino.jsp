@@ -81,13 +81,13 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.radiuino.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.radiuino.desc"/></c:set>
 <c:set var="dsHelpId" value="radiuinoDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.radiuino.commPortId" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.radiuino.commPortId" /></td>
 	<td class="formField"><c:choose>
 		<c:when test="${!empty commPortError}">
 			<input id="commPortId" type="hidden" value="" />
@@ -104,8 +104,8 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.radiuino.baud" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.radiuino.baud" /></td>
 	<td class="formField"><sst:select id="baudRate"
 		value="${dataSource.baudRate}">
 		<sst:option>110</sst:option>
@@ -125,7 +125,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -137,7 +137,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -148,30 +148,30 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.pollingMode"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.pollingMode"/></td>
   <td class="formField">
     <sst:select id="pollingMode" value="${dataSource.pollingMode}">
-      <sst:option value="true"><fmt:message key="dsEdit.radiuino.pollingMode.true"/></sst:option>
-      <sst:option value="false"><fmt:message key="dsEdit.radiuino.pollingMode.false"/></sst:option>
+      <sst:option value="true"><spring:message code="dsEdit.radiuino.pollingMode.true"/></sst:option>
+      <sst:option value="false"><spring:message code="dsEdit.radiuino.pollingMode.false"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -181,11 +181,11 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.retries"/></td>
     <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.timeout"/></td>
     <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
   </tr>  
   
@@ -193,27 +193,27 @@
 
 <tag:pointList pointHelpId="radiuinoPP">
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-				key="dsEdit.radiuino.endereco" /></td>
+		<td class="formLabelRequired"><spring:message
+				code="dsEdit.radiuino.endereco" /></td>
 		<td class="formField"><input id="enderecoSensor" type="text"
 			value="" /></td>
 	</tr>
 	<tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.radiuino.radiuinoDataType"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.radiuino.radiuinoDataType"/></td>
           <td class="formField">
             <select id="test_radiuinoDataType">
-              <option value="<c:out value="<%= RadiuinoDataType.BINARY %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.binary"/></option>
-              <option value="<c:out value="<%= RadiuinoDataType.ONE_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.1bUnsigned"/></option>
-              <option value="<c:out value="<%= RadiuinoDataType.TWO_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.2bUnsigned"/></option>
-              <option value="<c:out value="<%= RadiuinoDataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.4bUnsigned"/></option>
-              <option value="<c:out value="<%= RadiuinoDataType.FOUR_BYTE_FLOAT %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.4bFloat"/></option>
-              <option value="<c:out value="<%= RadiuinoDataType.RSSI %>"/>"><fmt:message key="dsEdit.radiuino.radiuinoDataType.RSSI"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.BINARY %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.binary"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.ONE_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.1bUnsigned"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.TWO_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.2bUnsigned"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.4bUnsigned"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.FOUR_BYTE_FLOAT %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.4bFloat"/></option>
+              <option value="<c:out value="<%= RadiuinoDataType.RSSI %>"/>"><spring:message code="dsEdit.radiuino.radiuinoDataType.RSSI"/></option>
             </select>
           </td>
         </tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-				key="dsEdit.radiuino.indiceByte" /></td>
+		<td class="formLabelRequired"><spring:message
+				code="dsEdit.radiuino.indiceByte" /></td>
 		<td class="formField">
 		    <select id="indiceByte">
 		      <option value="0">0</option>
@@ -272,23 +272,23 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-				key="dsEdit.radiuino.multiplicador" /></td>
+		<td class="formLabelRequired"><spring:message
+				code="dsEdit.radiuino.multiplicador" /></td>
 		<td class="formField"><input id="multiplicador" type="text" /></td>
 	</tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-				key="dsEdit.radiuino.offset" /></td>
+		<td class="formLabelRequired"><spring:message
+				code="dsEdit.radiuino.offset" /></td>
 		<td class="formField"><input id="offset" type="text" /></td>
 	</tr>
 	<tr>
 		<td colspan=2>
 		<fieldset style="border-top: 1px solid green;border-left: none;border-bottom: 1px solid green;border-right: none;">
-		<legend><span id="spanAvancado" onclick="changeAvancado();" style="cursor:hand;">+ </span><fmt:message key="dsEdit.radiuino.avancado"/></legend>
+		<legend><span id="spanAvancado" onclick="changeAvancado();" style="cursor:hand;">+ </span><spring:message code="dsEdit.radiuino.avancado"/></legend>
 			<table id="tableAvancado" style="display:none;">
 			<tr>
-				<td class="formLabelRequired" style="text-align: center;"><fmt:message
-						key="dsEdit.radiuino.mapaBytesRequisicao" /></td>
+				<td class="formLabelRequired" style="text-align: center;"><spring:message
+						code="dsEdit.radiuino.mapaBytesRequisicao" /></td>
 				<td class="formField"><input id="mapaBytesRequisicao" type="hidden" /></td>
 			</tr>
 			<tr>
@@ -305,8 +305,8 @@
 				</td>
 			</tr>
 			<tr>
-				<td class="formLabelRequired" style="text-align: center;"><fmt:message
-						key="dsEdit.radiuino.mapaBytesEnvio" /></td>
+				<td class="formLabelRequired" style="text-align: center;"><spring:message
+						code="dsEdit.radiuino.mapaBytesEnvio" /></td>
 				<td class="formField"><input id="mapaBytesEnvio" type="hidden"/></td>
 			</tr>
 			<tr>
@@ -327,8 +327,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-				key="dsEdit.radiuino.settableOverride" /></td>
+		<td class="formLabelRequired"><spring:message
+				code="dsEdit.radiuino.settableOverride" /></td>
 		<td class="formField"><input id="settableOverride"
 			type="checkbox" /></td>
 	</tr>

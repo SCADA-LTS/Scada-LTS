@@ -17,7 +17,6 @@ import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
-import com.serotonin.web.content.ContentGenerator;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.junit.Before;
@@ -31,6 +30,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.contnet.SnippetContentGenerator;
 import org.springframework.mock.web.MockHttpSession;
 import utils.*;
 import utils.mock.ChangePointValueDataPointRtMock;
@@ -54,7 +54,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({WebContextFactory.class, Common.class, MiscDwr.class, SystemSettingsDAO.class,
-        ContentGenerator.class, DataPointRT.class, DataPointDetailsDwr.class})
+        SnippetContentGenerator.class, DataPointRT.class, DataPointDetailsDwr.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class MiscDwrDoLongPollMultiThreadTest {
@@ -181,8 +181,8 @@ public class MiscDwrDoLongPollMultiThreadTest {
                 .withAnyArguments()
                 .thenReturn(viewDwr);
 
-        mockStatic(ContentGenerator.class);
-        when(ContentGenerator.generateContent(any(HttpServletRequest.class), anyString(), anyMap())).thenAnswer(a -> {
+        mockStatic(SnippetContentGenerator.class);
+        when(SnippetContentGenerator.generateContent(any(HttpServletRequest.class), anyString(), anyMap())).thenAnswer(a -> {
             Map<String, Object> params = (Map<String, Object>) a.getArguments()[2];
             PointValueTime pointValueTime = (PointValueTime) params.get("pointValue");
             return pointValueTime.toString();

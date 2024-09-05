@@ -35,40 +35,40 @@
     <table>
       <tbody id="customEditor_alarmlist" style="display:none;">
       	<tr>
-          <td class="formLabel"><fmt:message key="common.alarmLevel"/></td>
+          <td class="formLabel"><spring:message code="common.alarmLevel"/></td>
           <td class="formField"><select id="customEditorAlarmListMinAlarmLevel"><tag:alarmLevelOptions allOption="true"/></select></td>
         </tr>
       	<tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.maxListSize"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.maxListSize"/></td>
           <td class="formField"><input id="customEditorAlarmListMaxListSize" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.width"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.width"/></td>
           <td class="formField"><input id="customEditorAlarmListWidth" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="viewEdit.graphic.hideIdColumn"/></td>
+          <td class="formLabel"><spring:message code="viewEdit.graphic.hideIdColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListIdColumn" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAlarmLevelColumn"/></td>
+          <td class="formLabel"><spring:message code="viewEdit.graphic.hideAlarmLevelColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListAlarmLevelColumn" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="viewEdit.graphic.hideTimestampColumn"/></td>
+          <td class="formLabel"><spring:message code="viewEdit.graphic.hideTimestampColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListTimestampColumn" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="viewEdit.graphic.hideInactivityColumn"/></td>
+          <td class="formLabel"><spring:message code="viewEdit.graphic.hideInactivityColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListInactivityColumn" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAckColumn"/></td>
+          <td class="formLabel"><spring:message code="viewEdit.graphic.hideAckColumn"/></td>
           <td class="formField"><input id="customEditorAlarmListAckColumn" type="checkbox"/></td>
         </tr>
         <c:if test="${isEventAssignEnabled}">
             <tr>
-              <td class="formLabel"><fmt:message key="viewEdit.graphic.hideAssigneeColumn"/></td>
+              <td class="formLabel"><spring:message code="viewEdit.graphic.hideAssigneeColumn"/></td>
               <td class="formField"><input id="customEditorAlarmListAssigneeColumn" type="checkbox"/></td>
             </tr>
         </c:if>

@@ -22,13 +22,13 @@
       <c:when test="${!empty invalid}">
         <tr>
           <td valign="top"><tag:img png="warn" title="common.warning"/></td>
-          <td colspan="3"><fmt:message key="common.pointInvalid"/></td>
+          <td colspan="3"><spring:message code="common.pointInvalid"/></td>
         </tr>
       </c:when>
       <c:when test="${!empty disabled}">
         <tr>
           <td valign="top"><tag:img png="warn" title="common.warning"/></td>
-          <td colspan="3"><fmt:message key="common.pointWarning"/></td>
+          <td colspan="3"><spring:message code="common.pointWarning"/></td>
         </tr>
       </c:when>
     </c:choose>
@@ -36,7 +36,7 @@
       <tr>
         <td><tag:img png="exclamation" title="common.valueUnreliable"/></td>
         <td style="white-space:nowrap;" colspan="3">
-          <fmt:message key="common.valueUnreliable"/>
+          <spring:message code="common.valueUnreliable"/>
           <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})" style="display:inline"/>
         </td>
       </tr>
