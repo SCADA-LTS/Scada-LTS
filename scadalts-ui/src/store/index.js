@@ -95,6 +95,7 @@ export default new Vuex.Store({
 			{ id: 3, label: i18n.t('common.alarmlevels.critical') },
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
 		],
+		customCssApi: "./api/customcss/"
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
@@ -107,6 +108,10 @@ export default new Vuex.Store({
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		},
+
+		setCustomCssApi(state, url) {
+			state.customCssApi = url;
+		}
 	},
 	actions: {
 		getUserRole() {
@@ -395,6 +400,9 @@ export default new Vuex.Store({
                     });
             });
         },
+		updateCustomCssApi({ commit }, url) {
+			commit('setCustomCssApi', url);
+		}
 	},
 	getters: {
 		appVersion: (state) => {
@@ -431,6 +439,9 @@ export default new Vuex.Store({
 		},
 		appPullRequestBranch: (state) => {
 			return state.scadaLtsPullRequestBranch;
+		},
+		customCssApi: (state) => {
+			return state.customCssApi;
 		},
 	},
 	plugins: [myLoggerForVuexMutation],

@@ -91,7 +91,6 @@ import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 import {unescapeHtml} from "@/utils/common";
-const CUSTOM_CSS_API = './api/customcss/';
 
 export default {
 	name: 'app',
@@ -151,6 +150,9 @@ export default {
 		isLoginPage() {
 			return this.$route.name === 'login';
 		},
+		customCssApi() {
+			return this.$store.getters.customCssApi;
+		}
 	},
 
 	mounted() {
@@ -176,7 +178,7 @@ export default {
 		async loadCustomCss() {
 			return new Promise(async (resolve, reject) => {
 				await axios
-						.get(CUSTOM_CSS_API)
+						.get(this.customCssApi)
 						.then(async (response) => {
 							if (response.status === 200) {
 								const customCss = response.data;
