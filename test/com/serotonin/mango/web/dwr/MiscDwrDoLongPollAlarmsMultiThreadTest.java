@@ -5,7 +5,6 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
-import com.serotonin.web.content.ContentGenerator;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.junit.Before;
@@ -16,6 +15,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.web.contnet.SnippetContentGenerator;
 import org.springframework.mock.web.MockHttpSession;
 import utils.TestConcurrentUtils;
 import utils.mock.EventServiceMock;
@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({WebContextFactory.class, Common.class, MiscDwr.class, SystemSettingsDAO.class,
-        ContentGenerator.class})
+        SnippetContentGenerator.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class MiscDwrDoLongPollAlarmsMultiThreadTest {
@@ -56,8 +56,8 @@ public class MiscDwrDoLongPollAlarmsMultiThreadTest {
         user.setId(534);
         user.setUsername(userName);
 
-        mockStatic(ContentGenerator.class);
-        when(ContentGenerator.generateContent(any(HttpServletRequest.class), anyString(), anyMap())).thenAnswer(a -> {
+        mockStatic(SnippetContentGenerator.class);
+        when(SnippetContentGenerator.generateContent(any(HttpServletRequest.class), anyString(), anyMap())).thenAnswer(a -> {
             Map<String, Object> params = (Map<String, Object>) a.getArguments()[2];
             List<EventInstance> eventInstance = (List<EventInstance>)params.get("events");
             return eventInstance.stream()

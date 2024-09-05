@@ -23,22 +23,22 @@
 --%><c:choose>
   <c:when test="${sst}">
     <c:if test="${allOption}">
-      <sst:option value="-1"><fmt:message key="common.all"/></sst:option>
+      <sst:option value="-1"><spring:message code="common.all"/></sst:option>
     </c:if>
-    <sst:option value="<%= Integer.toString(AlarmLevels.NONE) %>"><fmt:message key="<%= AlarmLevels.NONE_DESCRIPTION %>"/></sst:option>
-    <sst:option value="<%= Integer.toString(AlarmLevels.INFORMATION) %>"><fmt:message key="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></sst:option>
-    <sst:option value="<%= Integer.toString(AlarmLevels.URGENT) %>"><fmt:message key="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></sst:option>
-    <sst:option value="<%= Integer.toString(AlarmLevels.CRITICAL) %>"><fmt:message key="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></sst:option>
-    <sst:option value="<%= Integer.toString(AlarmLevels.LIFE_SAFETY) %>"><fmt:message key="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></sst:option>
+    <sst:option value="<%= Integer.toString(AlarmLevels.NONE) %>"><spring:message code="<%= AlarmLevels.NONE_DESCRIPTION %>"/></sst:option>
+    <sst:option value="<%= Integer.toString(AlarmLevels.INFORMATION) %>"><spring:message code="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></sst:option>
+    <sst:option value="<%= Integer.toString(AlarmLevels.URGENT) %>"><spring:message code="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></sst:option>
+    <sst:option value="<%= Integer.toString(AlarmLevels.CRITICAL) %>"><spring:message code="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></sst:option>
+    <sst:option value="<%= Integer.toString(AlarmLevels.LIFE_SAFETY) %>"><spring:message code="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></sst:option>
   </c:when>
   <c:otherwise>
     <c:if test="${allOption}">
-      <option value="-1"><fmt:message key="common.all"/></option>
+      <option value="-1"><spring:message code="common.all"/></option>
     </c:if>
-    <option value="<%= AlarmLevels.NONE %>"><fmt:message key="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>
-    <option value="<%= AlarmLevels.INFORMATION %>"><fmt:message key="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>
-    <option value="<%= AlarmLevels.URGENT %>"><fmt:message key="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>
-    <option value="<%= AlarmLevels.CRITICAL %>"><fmt:message key="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>
-    <option value="<%= AlarmLevels.LIFE_SAFETY %>"><fmt:message key="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>
+    <option value="<%= AlarmLevels.NONE %>"><spring:message code="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>
+    <option value="<%= AlarmLevels.INFORMATION %>"><spring:message code="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>
+    <option value="<%= AlarmLevels.URGENT %>"><spring:message code="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>
+    <option value="<%= AlarmLevels.CRITICAL %>"><spring:message code="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>
+    <option value="<%= AlarmLevels.LIFE_SAFETY %>"><spring:message code="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>
   </c:otherwise>
 </c:choose>

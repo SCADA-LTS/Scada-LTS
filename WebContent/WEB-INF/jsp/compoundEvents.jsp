@@ -129,11 +129,11 @@
                     editingCompoundEvent.id = response.data.cedId;
                     appendCompoundEvent(editingCompoundEvent.id);
                     startImageFader($("ced"+ editingCompoundEvent.id +"Img"));
-                    setUserMessage("<fmt:message key="compoundDetectors.cedAdded"/>");
+                    setUserMessage("<spring:message code="compoundDetectors.cedAdded"/>");
                     show($("deleteCompoundEventImg"));
                 }
                 else
-                    setUserMessage("<fmt:message key="compoundDetectors.cedSaved"/>");
+                    setUserMessage("<spring:message code="compoundDetectors.cedSaved"/>");
                 
                 if (response.data.warning)
                     setUserMessage(response.data.warning);
@@ -184,7 +184,7 @@
                     setSelectionRange($("condition"), response.data.from, response.data.to);
             }
             else
-                setUserMessage("<fmt:message key="compoundDetectors.cedValidated"/>");
+                setUserMessage("<spring:message code="compoundDetectors.cedValidated"/>");
         });
     }
     
@@ -200,7 +200,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="compoundDetectors.compoundEventDetectors"/></span>
+                <span class="smallTitle"><spring:message code="compoundDetectors.compoundEventDetectors"/></span>
                 <tag:help id="compoundEventDetectors"/>
               </td>
               <td align="right"><tag:img png="multi_bell_add" title="common.add" id="ced${NEW_ID}Img"
@@ -222,7 +222,7 @@
         <div class="borderDiv">
           <table width="100%">
             <tr>
-              <td><span class="smallTitle"><fmt:message key="compoundDetectors.details"/></span></td>
+              <td><span class="smallTitle"><spring:message code="compoundDetectors.details"/></span></td>
               <td align="right">
                 <tag:img png="save" onclick="saveCompoundEvent();" title="common.save"/>
                 <tag:img id="deleteCompoundEventImg" png="delete" onclick="deleteCompoundEvent();" title="common.delete"/>
@@ -232,17 +232,17 @@
   
           <table>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="compoundDetectors.name"/></td>
+              <td class="formLabelRequired"><spring:message code="compoundDetectors.name"/></td>
               <td class="formField"><input type="text" id="name"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+              <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
               <td class="formField">
                 <select id="alarmLevel" onchange="updateAlarmLevelImage(this.value)">
                   <tag:alarmLevelOptions/>
@@ -252,24 +252,24 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.rtn"/></td>
+              <td class="formLabelRequired"><spring:message code="common.rtn"/></td>
               <td class="formField"><input type="checkbox" id="rtn"/></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired">
-                <fmt:message key="compoundDetectors.condition"/>
+                <spring:message code="compoundDetectors.condition"/>
                 <tag:img png="accept" onclick="validate();" title="compoundDetectors.validate"/><br/>
                 <br/>
-                <a href="#" onclick="insertText(' && '); return false;"><fmt:message key="compoundDetectors.and"/></a><br/>
-                <a href="#" onclick="insertText(' || '); return false;"><fmt:message key="compoundDetectors.or"/></a><br/>
-                <a href="#" onclick="insertText('!'); return false;"><fmt:message key="compoundDetectors.not"/></a><br/>
+                <a href="#" onclick="insertText(' && '); return false;"><spring:message code="compoundDetectors.and"/></a><br/>
+                <a href="#" onclick="insertText(' || '); return false;"><spring:message code="compoundDetectors.or"/></a><br/>
+                <a href="#" onclick="insertText('!'); return false;"><spring:message code="compoundDetectors.not"/></a><br/>
               </td>
               <td class="formField"><textarea rows="10" cols="60" id="condition"></textarea></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
+              <td class="formLabelRequired"><spring:message code="common.disabled"/></td>
               <td class="formField"><input type="checkbox" id="disabled"/></td>
             </tr>
           </table>
@@ -286,12 +286,12 @@
     <tr>
       <td valign="top" style="display:none;" id="eventTypes">
         <div class="borderDivPadded">
-          <span class="smallTitle"><fmt:message key="compoundDetectors.eventTypes"/></span>
+          <span class="smallTitle"><spring:message code="compoundDetectors.eventTypes"/></span>
           <div dojoType="TreeBasicController" widgetId="controller"></div>
           <div id="tree">
             <div dojoType="Tree" widgetId="eventTypeTree" listeners="controller" toggle="wipe">
-              <div dojoType="TreeNode" title="<fmt:message key="compoundDetectors.pointEventDetector"/>" widgetId="rootPoint"></div>
-              <div dojoType="TreeNode" title="<fmt:message key="scheduledEvents.ses"/>" widgetId="rootScheduled"></div>
+              <div dojoType="TreeNode" title="<spring:message code="compoundDetectors.pointEventDetector"/>" widgetId="rootPoint"></div>
+              <div dojoType="TreeNode" title="<spring:message code="scheduledEvents.ses"/>" widgetId="rootScheduled"></div>
             </div>
           </div>
         </div>

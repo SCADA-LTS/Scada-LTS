@@ -61,7 +61,7 @@
 	  if(exists) {
 		  alert('Arquivo OK!');
 	  } else {
-		  alert('Arquivo não encontrado!');
+		  alert('Arquivo nï¿½o encontrado!');
 	  }
   }	
   
@@ -111,11 +111,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.asciiFile.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.asciiFile.desc"/></c:set>
 <c:set var="dsHelpId" value="asciiFileReaderDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -124,21 +124,21 @@
     </td>
   </tr>
   <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
           <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
   </tr>
   <tr>
-	<td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.filePath"/></td>
+	<td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.filePath"/></td>
   	<td class="formField"><input id="filePath" type="text" value="${dataSource.filePath}"/></td>
   	<td>
-		<input id="checkBtn" type="button" value="<fmt:message key="dsEdit.asciiFile.checkFile"/>" onclick="checkFile();" />
+		<input id="checkBtn" type="button" value="<spring:message code="dsEdit.asciiFile.checkFile"/>" onclick="checkFile();" />
 	</td>
   </tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="asciiFileReaderPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -146,21 +146,21 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.valueRegex"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.valueRegex"/></td>
     <td class="formField">
     	<input id="valueRegex" type="text" value=""/>
     	<select id="valueSuggestions" onchange="valueSuggestChanged();">
     		<option value=""> &nbsp; </option>
-        	<option value="((\b[0-9]+)?\.)?[0-9]+\b"> <fmt:message key="dsEdit.asciiFile.regex.number"/>  </option>
+        	<option value="((\b[0-9]+)?\.)?[0-9]+\b"> <spring:message code="dsEdit.asciiFile.regex.number"/>  </option>
       	</select>
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampCheck"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampCheck"/></td>
     <td class="formField"><input id="customTimestamp" type="checkbox" onchange="checkTimestampChanged();"/></td>
   </tr>
 	  <tr id="tsDiv1">
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampFormat"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampFormat"/></td>
 	    <td class="formField">
 	    	<input id="timestampFormat" type="text" value=""/>
 	    	<select id="timestampSuggestions" onchange="timestampSuggestChanged();">
@@ -173,7 +173,7 @@
 	    </td>
 	  </tr>
 	  <tr id="tsDiv2">
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiFile.timestampRegex"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.asciiFile.timestampRegex"/></td>
 	    <td class="formField">
 	    	<input id="timestampRegex" type="text" value=""/>
 	    </td>

@@ -64,13 +64,13 @@
     var value = $get("sheaderValue");
 
     if (!key || key.trim().length == 0) {
-      alert("<fmt:message key="publisherEdit.httpSender.keyRequired"/>");
+      alert("<spring:message code="publisherEdit.httpSender.keyRequired"/>");
       return;
     }
 
     for (var i=0; i<staticHeaderList.length; i++) {
       if (staticHeaderList[i].key == key) {
-        alert("<fmt:message key="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
+        alert("<spring:message code="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
         return;
       }
     }
@@ -98,7 +98,7 @@
       dwr.util.addRows("staticHeaderList", staticHeaderList, [
         function(data) { return data.key +"="+ data.value; },
         function(data, options) {
-          return "<img src='images/bullet_delete.png' class='ptr' title='<fmt:message key="dsEdit.httpRetriever.removeHeader"/>' "+
+          return "<img src='images/bullet_delete.png' class='ptr' title='<spring:message code="dsEdit.httpRetriever.removeHeader"/>' "+
                   "onclick='removeStaticHeader("+ options.rowIndex + ");'/>";
         }
       ], null);
@@ -182,7 +182,7 @@
   }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.httpRetriever.regex"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.httpRetriever.regex"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
           function(p) { return encodeHtml(p.pointLocator.valueRegex); };
   }
@@ -217,12 +217,12 @@
       if (dataTypeId == <%= DataTypes.BINARY %>) {
           show("valueFormatRow");
           hide("numberFormatHelp");
-          $set("valueFormatLabel", "<fmt:message key="dsEdit.httpRetriever.binaryZeroValue"/>");
+          $set("valueFormatLabel", "<spring:message code="dsEdit.httpRetriever.binaryZeroValue"/>");
       }
       else if (dataTypeId == <%= DataTypes.NUMERIC %>) {
           show("valueFormatRow");
           show("numberFormatHelp");
-          $set("valueFormatLabel", "<fmt:message key="dsEdit.httpRetriever.numberFormat"/>");
+          $set("valueFormatLabel", "<spring:message code="dsEdit.httpRetriever.numberFormat"/>");
       }
       else {
           hide("numberFormatHelp");
@@ -247,11 +247,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.httpRetriever.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.httpRetriever.desc"/></c:set>
 <c:set var="dsHelpId" value="httpRetrieverDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -261,7 +261,7 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.url"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.url"/></td>
           <td class="formField">
             <input id="url" type="text" value="${dataSource.url}" class="formLong"/>
             <tag:img png="bullet_go" onclick="openURL()" title="dsEdit.httpRetriever.openUrl"/>
@@ -269,33 +269,33 @@
         </tr>
 
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.credentials"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.credentials"/></td>
           <td class="formField">
-            <fmt:message key="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
-            <fmt:message key="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
+            <spring:message code="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
+            <spring:message code="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
           </td>
         </tr>
 
         <tr>
-          <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>
+          <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.staticHeaders"/></td>
           <td class="formField">
-            <fmt:message key="publisherEdit.httpSender.headerKey"/> <input type="text" id="sheaderKey" class="formShort"/>
-            <fmt:message key="publisherEdit.httpSender.headerValue"/> <input type="text" id="sheaderValue" class="formShort"/>
+            <spring:message code="publisherEdit.httpSender.headerKey"/> <input type="text" id="sheaderKey" class="formShort"/>
+            <spring:message code="publisherEdit.httpSender.headerValue"/> <input type="text" id="sheaderValue" class="formShort"/>
             <tag:img png="add" title="publisherEdit.httpSender.addStaticHeader" onclick="addStaticHeader()"/>
             <table>
-              <tr id="noStaticHeadersMsg" style="display:none"><td><fmt:message key="publisherEdit.httpSender.noStaticHeaders"/></td></tr>
+              <tr id="noStaticHeadersMsg" style="display:none"><td><spring:message code="publisherEdit.httpSender.noStaticHeaders"/></td></tr>
               <tbody id="staticHeaderList"></tbody>
             </table>
           </td>
         </tr>
 
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.timeout"/></td>
           <td class="formField"><input id="timeoutSeconds" type="text" value="${dataSource.timeoutSeconds}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
         <tr>
@@ -310,7 +310,7 @@
 
 <tag:pointList pointHelpId="httpRetrieverPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId" onchange="dataTypeChanged()">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -320,7 +320,7 @@
   
   <tr>
     <td class="formLabelRequired">
-      <fmt:message key="dsEdit.httpRetriever.valueRegex"/>
+      <spring:message code="dsEdit.httpRetriever.valueRegex"/>
       <tag:img id="valueTestImg" png="accept" title="dsEdit.httpRetriever.testValue" onclick="testValueParams()"/>
     </td>
     <td class="formField">
@@ -337,7 +337,7 @@
   </tbody>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.ignoreIfMissing"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.ignoreIfMissing"/></td>
     <td class="formField"><input type="checkbox" id="ignoreIfMissing"/></td>
   </tr>
   
@@ -353,7 +353,7 @@
   
   <tr>
     <td class="formLabel">
-      <fmt:message key="dsEdit.httpRetriever.timeRegex"/>
+      <spring:message code="dsEdit.httpRetriever.timeRegex"/>
       <tag:img id="timeTestImg" png="accept" title="dsEdit.httpRetriever.testTime" onclick="testTimeParams()"/>
     </td>
     <td class="formField">
@@ -371,7 +371,7 @@
   
   <tbody id="timeFormatRow">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.timeFormat"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.httpRetriever.timeFormat"/></td>
       <td class="formField">
         <input type="text" id="timeFormat"/>
         <tag:help id="datetimeFormats"/>

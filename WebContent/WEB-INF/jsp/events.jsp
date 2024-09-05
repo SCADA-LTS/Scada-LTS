@@ -61,7 +61,7 @@
     
     function doSearchOld() {
     	setDisabled("searchBtn", true);
-    	$set("searchMessage", "<fmt:message key="events.search.searching"/>");
+    	$set("searchMessage", "<spring:message code="events.search.searching"/>");
     	var eventId = parseInt($get("eventId"));
     	var maxResults = parseInt($get("maxResults"));
         EventsDwr.searchOld(eventId, $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
@@ -74,7 +74,7 @@
 
     function doSearch(page, date) {
         setDisabled("searchBtn", true);
-        $set("searchMessage", "<fmt:message key="events.search.searching"/>");
+        $set("searchMessage", "<spring:message code="events.search.searching"/>");
     	var eventId = parseInt($get("eventId"));
         EventsDwr.search(eventId, $get("eventSourceType"), $get("eventStatus"), $get("alarmLevel"),
                 $get("keywords"), page.value, date.value, function(results) {
@@ -145,11 +145,11 @@
         let messages = [];
 
         if (!isValid(parametersToCheck.eventId)) {
-            let message = createValidationMessage("eventId", "<fmt:message key='badIntegerFormat'/>");
+            let message = createValidationMessage("eventId", "<spring:message code='badIntegerFormat'/>");
             messages.push(message);
         }
         if(!isValid(parametersToCheck.maxResults)) {
-            let message = createValidationMessage("maxResults", "<fmt:message key='badIntegerFormat'/>");
+            let message = createValidationMessage("maxResults", "<spring:message code='badIntegerFormat'/>");
             messages.push(message)
         }
         return messages;
@@ -178,63 +178,63 @@
   <div class="borderDiv marB" style="float:left;">
     <div class="smallTitle titlePadding" style="float:left;">
       <tag:img png="flag_white" title="events.alarms"/>
-      <fmt:message key="events.pending"/>
+      <spring:message code="events.pending"/>
     </div>
     <div id="ackAllDiv" class="titlePadding" style="display:none;float:right;">
-      <fmt:message key="events.acknowledgeAll"/>
+      <spring:message code="events.acknowledgeAll"/>
       <tag:img png="tick" onclick="MiscDwr.acknowledgeAllPendingEvents()" title="events.acknowledgeAll"/>&nbsp;
-      <fmt:message key="events.silenceAll"/>
+      <spring:message code="events.silenceAll"/>
       <tag:img png="sound_mute" onclick="silenceAll()" title="events.silenceAll"/><br/>
     </div>
     <div id="pendingAlarms" style="clear:both;"></div>
     <div id="noAlarms" style="display:none;padding:6px;text-align:center;">
-      <b><fmt:message key="events.emptyList"/></b>
+      <b><spring:message code="events.emptyList"/></b>
     </div>
     <div id="hourglass" style="padding:6px;text-align:center;"><tag:img png="hourglass"/></div>
   </div>
   
   <div class="borderDiv" style="clear:left;float:left;" id="eventSearchForm">
-    <div class="smallTitle titlePadding"><fmt:message key="events.search"/></div>
+    <div class="smallTitle titlePadding"><spring:message code="events.search"/></div>
     <div>
       <table>
         <tr>
-          <td id="eventIdLabel" class="formLabel"><fmt:message key="events.id"/></td>
+          <td id="eventIdLabel" class="formLabel"><spring:message code="events.id"/></td>
           <td class="formField"><input id="eventId" type="text"></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="events.search.type"/></td>
+          <td class="formLabel"><spring:message code="events.search.type"/></td>
           <td class="formField">
             <select id="eventSourceType">
-              <option value="-1"><fmt:message key="common.all"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.DATA_POINT %>"/>"><fmt:message key="eventHandlers.pointEventDetector"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.SCHEDULED %>"/>"><fmt:message key="scheduledEvents.ses"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.COMPOUND %>"/>"><fmt:message key="compoundDetectors.compoundEventDetectors"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.DATA_SOURCE %>"/>"><fmt:message key="eventHandlers.dataSourceEvents"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.PUBLISHER %>"/>"><fmt:message key="eventHandlers.publisherEvents"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.MAINTENANCE %>"/>"><fmt:message key="eventHandlers.maintenanceEvents"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.SYSTEM %>"/>"><fmt:message key="eventHandlers.systemEvents"/></option>
-              <option value="<c:out value="<%= EventType.EventSources.AUDIT %>"/>"><fmt:message key="eventHandlers.auditEvents"/></option>
+              <option value="-1"><spring:message code="common.all"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.DATA_POINT %>"/>"><spring:message code="eventHandlers.pointEventDetector"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.SCHEDULED %>"/>"><spring:message code="scheduledEvents.ses"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.COMPOUND %>"/>"><spring:message code="compoundDetectors.compoundEventDetectors"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.DATA_SOURCE %>"/>"><spring:message code="eventHandlers.dataSourceEvents"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.PUBLISHER %>"/>"><spring:message code="eventHandlers.publisherEvents"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.MAINTENANCE %>"/>"><spring:message code="eventHandlers.maintenanceEvents"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.SYSTEM %>"/>"><spring:message code="eventHandlers.systemEvents"/></option>
+              <option value="<c:out value="<%= EventType.EventSources.AUDIT %>"/>"><spring:message code="eventHandlers.auditEvents"/></option>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="common.status"/></td>
+          <td class="formLabel"><spring:message code="common.status"/></td>
           <td class="formField">
             <select id="eventStatus">
-              <option value="<c:out value="<%= EventsDwr.STATUS_ALL %>"/>"><fmt:message key="common.all"/></option>
-              <option value="<c:out value="<%= EventsDwr.STATUS_ACTIVE %>"/>"><fmt:message key="common.active"/></option>
-              <option value="<c:out value="<%= EventsDwr.STATUS_RTN %>"/>"><fmt:message key="event.rtn.rtn"/></option>
-              <option value="<c:out value="<%= EventsDwr.STATUS_NORTN %>"/>"><fmt:message key="common.nortn"/></option>
-              <option value="<c:out value="<%= EventsDwr.STATUS_ASSIGNEE %>"/>"><fmt:message key="common.assignee"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_ALL %>"/>"><spring:message code="common.all"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_ACTIVE %>"/>"><spring:message code="common.active"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_RTN %>"/>"><spring:message code="event.rtn.rtn"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_NORTN %>"/>"><spring:message code="common.nortn"/></option>
+              <option value="<c:out value="<%= EventsDwr.STATUS_ASSIGNEE %>"/>"><spring:message code="common.assignee"/></option>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="common.alarmLevel"/></td>
+          <td class="formLabel"><spring:message code="common.alarmLevel"/></td>
           <td class="formField"><select id="alarmLevel"><tag:alarmLevelOptions allOption="true"/></select></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="events.search.keywords"/></td>
+          <td class="formLabel"><spring:message code="events.search.keywords"/></td>
           <td class="formField"><input id="keywords" type="text"/></td>
         </tr>
         
@@ -247,14 +247,14 @@
 <!--         </tr> -->
 
 		<tr>
-          <td id="maxResultsLabel" class="formLabel"><fmt:message key="events.search.maxResults"/></td>
+          <td id="maxResultsLabel" class="formLabel"><spring:message code="events.search.maxResults"/></td>
           <td class="formField"><input id="maxResults" type="text" value="100"/></td>
         </tr>
 		
         
         <tr>
           <td colspan="2" align="center">
-            <input id="searchBtn" type="button" value="<fmt:message key="events.search.search"/>" onclick="newSearch()"/>
+            <input id="searchBtn" type="button" value="<spring:message code="events.search.search"/>" onclick="newSearch()"/>
             <span id="searchMessage" class="formError"></span>
           </td>
         </tr>

@@ -46,12 +46,12 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.contnet.SnippetContentGenerator;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -307,7 +307,7 @@ abstract public class BaseDwr {
 //            System.out.println("request >>> " + request);
 //            System.out.println("snippet >>> " + snippet);
 //            System.out.println("model >>> " + model);
-            String str = ContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
+            String str = SnippetContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
             
 //            System.out.println("Content:\n"+str);
             

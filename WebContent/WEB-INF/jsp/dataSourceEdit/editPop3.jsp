@@ -51,7 +51,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.pop3.regex"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.pop3.regex"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
           function(p) { return encodeHtml(p.pointLocator.valueRegex); };
   }
@@ -91,12 +91,12 @@
       if (dataTypeId == <%= DataTypes.BINARY %>) {
           show("valueFormatRow");
           hide("numberFormatHelp");
-          $set("valueFormatLabel", "<fmt:message key="dsEdit.pop3.binary0Value"/>");
+          $set("valueFormatLabel", "<spring:message code="dsEdit.pop3.binary0Value"/>");
       }
       else if (dataTypeId == <%= DataTypes.NUMERIC %>) {
           show("valueFormatRow");
           show("numberFormatHelp");
-          $set("valueFormatLabel", "<fmt:message key="dsEdit.pop3.numberFormat"/>");
+          $set("valueFormatLabel", "<spring:message code="dsEdit.pop3.numberFormat"/>");
       }
       else {
           hide("numberFormatHelp");
@@ -116,11 +116,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.pop3.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.pop3.desc"/></c:set>
 <c:set var="dsHelpId" value="pop3DS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.checkPeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pop3.checkPeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -130,18 +130,18 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.server"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pop3.server"/></td>
           <td class="formField"><input id="pop3Server" type="text" value="${dataSource.pop3Server}"
                   class="formLong"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.username"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pop3.username"/></td>
           <td class="formField"><input id="username" type="text" value="${dataSource.username}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.password"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pop3.password"/></td>
           <td class="formField"><input id="password" type="text" value="${dataSource.password}"/></td>
         </tr>
       </table>
@@ -152,13 +152,13 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td class="smallTitle"><fmt:message key="dsEdit.pop3.testContent"/></td></tr>
+        <tr><td class="smallTitle"><spring:message code="dsEdit.pop3.testContent"/></td></tr>
         <tr><td><textarea id="testData" cols="60" rows="10"></textarea></td></tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>
 
 <tag:pointList pointHelpId="pop3PP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId" onchange="dataTypeChanged()">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -167,13 +167,13 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.findInSubject"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pop3.findInSubject"/></td>
     <td class="formField"><input type="checkbox" id="findInSubject"/></td>
   </tr>
   
   <tr>
     <td class="formLabelRequired">
-      <fmt:message key="dsEdit.pop3.valueRegex"/>
+      <spring:message code="dsEdit.pop3.valueRegex"/>
       <tag:img id="valueTestImg" png="accept" title="dsEdit.pop3.testValue" onclick="testValueParams()"/>
     </td>
     <td class="formField">
@@ -190,7 +190,7 @@
   </tbody>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.ignoreIfMissing"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pop3.ignoreIfMissing"/></td>
     <td class="formField"><input type="checkbox" id="ignoreIfMissing"/></td>
   </tr>
   
@@ -205,13 +205,13 @@
   </tbody>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.useMessageTime"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pop3.useMessageTime"/></td>
     <td class="formField"><input type="checkbox" id="useReceivedTime" onclick="useReceivedTimeChanged()"/></td>
   </tr>
   
   <tr>
     <td class="formLabel">
-      <fmt:message key="dsEdit.pop3.timeRegex"/>
+      <spring:message code="dsEdit.pop3.timeRegex"/>
       <tag:img id="timeTestImg" png="accept" title="dsEdit.pop3.testTime" onclick="testTimeParams()"/>
     </td>
     <td class="formField">
@@ -229,7 +229,7 @@
   
   <tbody id="timeFormatRow">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.pop3.timeFormat"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.pop3.timeFormat"/></td>
       <td class="formField">
         <input type="text" id="timeFormat"/>
         <tag:help id="datetimeFormats"/>

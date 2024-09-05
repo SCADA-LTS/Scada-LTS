@@ -23,8 +23,8 @@
 --%><%@attribute name="excludeAlphanumeric" type="java.lang.Boolean" %><%--
 --%><%@attribute name="excludeImage" type="java.lang.Boolean" %><%--
 --%><%@tag import="com.serotonin.mango.DataTypes"%><%--
---%><c:if test="${!excludeBinary}"><option value="<%= DataTypes.BINARY %>"><fmt:message key="common.dataTypes.binary"/></option></c:if>
-<c:if test="${!excludeMultistate}"><option value="<%= DataTypes.MULTISTATE %>"><fmt:message key="common.dataTypes.multistate"/></option></c:if>
-<c:if test="${!excludeNumeric}"><option value="<%= DataTypes.NUMERIC %>"><fmt:message key="common.dataTypes.numeric"/></option></c:if>
-<c:if test="${!excludeAlphanumeric}"><option value="<%= DataTypes.ALPHANUMERIC %>"><fmt:message key="common.dataTypes.alphanumeric"/></option></c:if>
-<c:if test="${!excludeImage}"><option value="<%= DataTypes.IMAGE %>"><fmt:message key="common.dataTypes.image"/></option></c:if>
+--%><c:if test="${!excludeBinary}"><option value="<%= DataTypes.BINARY %>"><spring:message code="common.dataTypes.binary"/></option></c:if>
+<c:if test="${!excludeMultistate}"><option value="<%= DataTypes.MULTISTATE %>"><spring:message code="common.dataTypes.multistate"/></option></c:if>
+<c:if test="${!excludeNumeric}"><option value="<%= DataTypes.NUMERIC %>"><spring:message code="common.dataTypes.numeric"/></option></c:if>
+<c:if test="${!excludeAlphanumeric}"><option value="<%= DataTypes.ALPHANUMERIC %>"><spring:message code="common.dataTypes.alphanumeric"/></option></c:if>
+<c:if test="${!excludeImage}"><option value="<%= DataTypes.IMAGE %>"><spring:message code="common.dataTypes.image"/></option></c:if>

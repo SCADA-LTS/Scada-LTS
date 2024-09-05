@@ -38,7 +38,7 @@
         if(isValid(dataSourceToSave.updateAttempts)) {
             DataSourceEditDwr.saveMqttDataSource(dataSourceToSave, saveDataSourceCB);
         } else {
-            let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
+            let message = createValidationMessage("updateAttempts","<spring:message code="badIntegerFormat"/>");
             showDwrMessages([message]);
             stopImageFader("dsSaveImg");
         }
@@ -69,11 +69,11 @@
 </script>
 
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.mqtt.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.mqtt.desc"/></c:set>
 <c:set var="dsHelpId" value="mqttDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -82,27 +82,27 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.updateAttempts"/></td>
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverHost"/></td>
     <td class="formField"><input type="text" id="serverHost" value="${dataSource.serverHost}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPortNumber"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverPortNumber"/></td>
     <td class="formField"><input type="number" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverUsername"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverUsername"/></td>
     <td class="formField"><input type="text" id="serverUsername" value="${dataSource.serverUsername}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPassword"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverPassword"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.protocolVersion"/></td>
     <td class="formField">
         <select id="protocolVersion">
             <option value="<c:out value="<%= MqttVersion.V3_1_1_MQTT %>"/>" ${dataSource.protocolVersion.name == 'V3_1_1_MQTT' ? 'selected' : ''} ><c:out value='<%= MqttVersion.V3_1_1_MQTT.getVersion() %>'/></option>
@@ -111,7 +111,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.brokerMode"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.brokerMode"/></td>
     <td class="formField">
         <select id="brokerMode">
             <option value="<c:out value="<%= BrokerMode.NATIVE %>"/>" ${dataSource.brokerMode == 'NATIVE' ? 'selected' : ''} >Native</option>
@@ -119,27 +119,27 @@
     </td>
   </tr>
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.cleanSession"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.cleanSession"/></td>
       <td class="formField"><input type="checkbox" id="cleanSession" ${dataSource.cleanSession ? 'checked' : 'unchecked'} /></td>
     </tr>
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.keepAliveInterval"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.keepAliveInterval"/></td>
       <td class="formField"><input type="number" id="keepAliveInterval" value="${dataSource.keepAliveInterval}"/></td>
     </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.connectionTimeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.connectionTimeout"/></td>
     <td class="formField"><input type="number" id="connectionTimeout" value="${dataSource.connectionTimeout}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.executorServiceTimeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.executorServiceTimeout"/></td>
     <td class="formField"><input type="number" id="executorServiceTimeout" value="${dataSource.executorServiceTimeout}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.automaticReconnect"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.automaticReconnect"/></td>
     <td class="formField"><input type="checkbox" id="automaticReconnect" ${dataSource.automaticReconnect ? 'checked' : 'unchecked'} /></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.maxReconnectDelay"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.maxReconnectDelay"/></td>
     <td class="formField"><input type="number" id="maxReconnectDelay" value="${dataSource.maxReconnectDelay}"/></td>
   </tr>
 
@@ -148,16 +148,16 @@
 <tag:pointList pointHelpId="mqttPP">
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.writable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.writable"/></td>
     <td class="formField"><input type="checkbox" id="writable"/></td>
    </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeMultistate="true" excludeImage="true" />
@@ -165,19 +165,19 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.clientId"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.clientId"/></td>
     <td class="formField"><input type="text" id="clientId"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.topicFilter"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.topicFilter"/></td>
       <td class="formField"><input type="text" id="topicFilter"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.qos"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.messaging.qos"/></td>
       <td class="formField"><input type="number" id="qos"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.mqtt.retained"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.mqtt.retained"/></td>
       <td class="formField"><input type="checkbox" id="retained"/></td>
   </tr>
 </tag:pointList>

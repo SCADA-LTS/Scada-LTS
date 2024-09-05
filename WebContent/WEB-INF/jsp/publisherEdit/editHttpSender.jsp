@@ -80,13 +80,13 @@
       var value = $get("sheaderValue");
       
       if (!key || key.trim().length == 0) {
-          alert("<fmt:message key="publisherEdit.httpSender.keyRequired"/>");
+          alert("<spring:message code="publisherEdit.httpSender.keyRequired"/>");
           return;
       }
       
       for (var i=0; i<staticHeaderList.length; i++) {
           if (staticHeaderList[i].key == key) {
-              alert("<fmt:message key="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
+              alert("<spring:message code="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
               return;
           }
       }
@@ -116,7 +116,7 @@
           dwr.util.addRows("staticHeaderList", staticHeaderList, [
                   function(data) { return data.key +"="+ data.value; },
                   function(data, options) {
-                      return "<img src='images/bullet_delete.png' class='ptr' title='<fmt:message key="publisherEdit.httpSender.removeHeader"/>' "+
+                      return "<img src='images/bullet_delete.png' class='ptr' title='<spring:message code="publisherEdit.httpSender.removeHeader"/>' "+
                               "onclick='removeStaticHeader("+ options.rowIndex + ");'/>";
                   }
                   ], null);
@@ -128,13 +128,13 @@
       var value = $get("sparamValue");
       
       if (!key || key.trim().length == 0) {
-          alert("<fmt:message key="publisherEdit.httpSender.keyRequired"/>");
+          alert("<spring:message code="publisherEdit.httpSender.keyRequired"/>");
           return;
       }
       
       for (var i=0; i<staticParameterList.length; i++) {
           if (staticParameterList[i].key == key) {
-              alert("<fmt:message key="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
+              alert("<spring:message code="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
               return;
           }
       }
@@ -160,7 +160,7 @@
           dwr.util.addRows("staticParameterList", staticParameterList, [
                   function(data) { return data.key +"="+ data.value; },
                   function(data, options) {
-                      return "<img src='images/bullet_delete.png' class='ptr' title='<fmt:message key="publisherEdit.httpSender.removeParam"/>' "+
+                      return "<img src='images/bullet_delete.png' class='ptr' title='<spring:message code="publisherEdit.httpSender.removeParam"/>' "+
                               "onclick='removeStaticParameter("+ options.rowIndex + ");'/>";
                   }
                   ], null);
@@ -289,7 +289,7 @@
   }
   
   function httpSendTest() {
-      showMessage("httpSendTestMessage", "<fmt:message key="publisherEdit.httpSender.sending"/>");
+      showMessage("httpSendTestMessage", "<spring:message code="publisherEdit.httpSender.sending"/>");
       showMessage("httpSendTestData");
       httpSendTestButtons(true);
       PublisherEditDwr.httpSenderTest(httpSendTestCB);
@@ -314,7 +314,7 @@
           if (result)
               showMessage("httpSendTestData", result);
           else
-              showMessage("httpSendTestData", "<fmt:message key="publisherEdit.httpSender.noResponseData"/>");
+              showMessage("httpSendTestData", "<spring:message code="publisherEdit.httpSender.noResponseData"/>");
           httpSendTestButtons(false);
       }
       else
@@ -327,7 +327,7 @@
   
   function httpSendTestCancelCB() {
       httpSendTestButtons(false);
-      showMessage("httpSendTestMessage", "<fmt:message key="common.cancelled"/>");
+      showMessage("httpSendTestMessage", "<spring:message code="common.cancelled"/>");
   }
 
   function removeAuthFromStaticHeaders() {
@@ -384,11 +384,11 @@
       <div class="borderDiv marR marB">
         <table>
           <tr>
-            <td colspan="2" class="smallTitle"><fmt:message key="publisherEdit.httpSender.props"/> <tag:help id="httpSenderPublishing"/></td>
+            <td colspan="2" class="smallTitle"><spring:message code="publisherEdit.httpSender.props"/> <tag:help id="httpSenderPublishing"/></td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.method"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.method"/></td>
             <td class="formField">
               <sst:select id="usePost" value="${publisher.usePost}">
                 <sst:option value="false">GET</sst:option>
@@ -398,12 +398,12 @@
           </tr>
 
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.useJSON"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.useJSON"/></td>
             <td class="formField"><sst:checkbox id="useJSON" /></td>
           </tr>
 
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.url"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.url"/></td>
             <td class="formField">
               <input type="text" id="url" value="${publisher.url}" class="formLong"/>
               <div id="urlMsg" class="formError" style="display:none;"></div>
@@ -411,52 +411,52 @@
           </tr>
 
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.credentials"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.credentials"/></td>
             <td class="formField">
-              <fmt:message key="publisherEdit.httpSender.username"/> <input type="text" id="username" class="formShort"/>
-              <fmt:message key="publisherEdit.httpSender.password"/> <input type="password" id="password" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.username"/> <input type="text" id="username" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.password"/> <input type="password" id="password" class="formShort"/>
             </td>
           </tr>
 
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.staticHeaders"/></td>
             <td class="formField">
-              <fmt:message key="publisherEdit.httpSender.headerKey"/> <input type="text" id="sheaderKey" class="formShort"/>
-              <fmt:message key="publisherEdit.httpSender.headerValue"/> <input type="text" id="sheaderValue" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.headerKey"/> <input type="text" id="sheaderKey" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.headerValue"/> <input type="text" id="sheaderValue" class="formShort"/>
               <tag:img png="add" title="publisherEdit.httpSender.addStaticHeader" onclick="addStaticHeader()"/>
               <table>
-                <tr id="noStaticHeadersMsg" style="display:none"><td><fmt:message key="publisherEdit.httpSender.noStaticHeaders"/></td></tr>
+                <tr id="noStaticHeadersMsg" style="display:none"><td><spring:message code="publisherEdit.httpSender.noStaticHeaders"/></td></tr>
                 <tbody id="staticHeaderList"></tbody>
               </table>
             </td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticParams"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.staticParams"/></td>
             <td class="formField">
-              <fmt:message key="publisherEdit.httpSender.paramKey"/> <input type="text" id="sparamKey" class="formShort"/>
-              <fmt:message key="publisherEdit.httpSender.paramValue"/> <input type="text" id="sparamValue" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.paramKey"/> <input type="text" id="sparamKey" class="formShort"/>
+              <spring:message code="publisherEdit.httpSender.paramValue"/> <input type="text" id="sparamValue" class="formShort"/>
               <tag:img png="add" title="publisherEdit.httpSender.addStaticParam" onclick="addStaticParameter()"/>
               <table>
-                <tr id="noStaticParametersMsg" style="display:none"><td><fmt:message key="publisherEdit.httpSender.noStaticParams"/></td></tr>
+                <tr id="noStaticParametersMsg" style="display:none"><td><spring:message code="publisherEdit.httpSender.noStaticParams"/></td></tr>
                 <tbody id="staticParameterList"></tbody>
               </table>
             </td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.raiseResultWarning"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.raiseResultWarning"/></td>
             <td class="formField"><sst:checkbox id="raiseResultWarning"
                     selectedValue="${publisher.raiseResultWarning}"/></td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.dateFormat"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.httpSender.dateFormat"/></td>
             <td class="formField">
               <sst:select id="dateFormat" value="${publisher.dateFormat}">
-                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_BASIC) %>"><fmt:message key="publisherEdit.httpSender.dateFormat.basic"/></sst:option>
-                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_TZ) %>"><fmt:message key="publisherEdit.httpSender.dateFormat.tz"/></sst:option>
-                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_UTC) %>"><fmt:message key="publisherEdit.httpSender.dateFormat.utc"/></sst:option>
+                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_BASIC) %>"><spring:message code="publisherEdit.httpSender.dateFormat.basic"/></sst:option>
+                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_TZ) %>"><spring:message code="publisherEdit.httpSender.dateFormat.tz"/></sst:option>
+                <sst:option value="<%= Integer.toString(HttpSenderVO.DATE_FORMAT_UTC) %>"><spring:message code="publisherEdit.httpSender.dateFormat.utc"/></sst:option>
               </sst:select>
             </td>
           </tr>
@@ -467,11 +467,11 @@
     <td valign="top">
       <div id="httpSenderTest" class="borderDiv marB">
         <table>
-          <tr><td class="smallTitle"><fmt:message key="publisherEdit.httpSender.sendTest"/></td></tr>
+          <tr><td class="smallTitle"><spring:message code="publisherEdit.httpSender.sendTest"/></td></tr>
           <tr>
             <td align="center">
-              <input id="httpSendTestBtn" type="button" value="<fmt:message key="publisherEdit.httpSender.sendStaticParams"/>" onclick="httpSendTest();"/>
-              <input id="httpSendTestCancelBtn" type="button" value="<fmt:message key="publisherEdit.httpSender.cancel"/>" onclick="httpSendTestCancel();"/>
+              <input id="httpSendTestBtn" type="button" value="<spring:message code="publisherEdit.httpSender.sendStaticParams"/>" onclick="httpSendTest();"/>
+              <input id="httpSendTestCancelBtn" type="button" value="<spring:message code="publisherEdit.httpSender.cancel"/>" onclick="httpSendTestCancel();"/>
             </td>
           </tr>
           <tr><td id="httpSendTestMessage" class="formError"></td></tr>
@@ -486,7 +486,7 @@
   <div class="borderDiv">
     <table width="100%">
       <tr>
-        <td class="smallTitle"><fmt:message key="publisherEdit.points"/></td>
+        <td class="smallTitle"><spring:message code="publisherEdit.points"/></td>
         <td align="right">
           <select id="availablePoints"></select>
           <tag:img png="icon_comp_add" onclick="selectPoint()"/>
@@ -496,14 +496,14 @@
     
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
-        <td><fmt:message key="publisherEdit.point.name"/></td>
-        <td><fmt:message key="publisherEdit.point.status"/></td>
-        <td><fmt:message key="publisherEdit.point.type"/></td>
-        <td><fmt:message key="publisherEdit.httpSender.point.param"/></td>
-        <td><fmt:message key="publisherEdit.httpSender.point.timestamp"/></td>
+        <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.status"/></td>
+        <td><spring:message code="publisherEdit.point.type"/></td>
+        <td><spring:message code="publisherEdit.httpSender.point.param"/></td>
+        <td><spring:message code="publisherEdit.httpSender.point.timestamp"/></td>
         <td></td>
       </tr>
-      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><fmt:message key="publisherEdit.noPoints"/></td></tr></tbody>
+      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
       <tbody id="selectedPoints"></tbody>
     </table>
     <div id="pointsMsg" class="formError" style="display:none;"></div>

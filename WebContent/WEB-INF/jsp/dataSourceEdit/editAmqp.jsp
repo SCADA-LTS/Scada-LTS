@@ -41,7 +41,7 @@
         if(isValid(dataSourceToSave.updateAttempts)) {
             DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
         } else {
-            let message = createValidationMessage("updateAttempts","<fmt:message key="badIntegerFormat"/>");
+            let message = createValidationMessage("updateAttempts","<spring:message code="badIntegerFormat"/>");
             showDwrMessages([message]);
             stopImageFader("dsSaveImg");
         }
@@ -79,17 +79,17 @@
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
     }
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions)  {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.amqp.exchangeType"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.amqp.exchangeType"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.exchangeType; };
   }
 </script>
 
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.amqp.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.amqp.desc"/></c:set>
 <c:set var="dsHelpId" value="amqpDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -98,27 +98,27 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.updateAttempts"/></td>
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverHost"/></td>
     <td class="formField"><input type="text" id="serverHost" value="${dataSource.serverHost}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPortNumber"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverPortNumber"/></td>
     <td class="formField"><input type="number" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverUsername"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverUsername"/></td>
     <td class="formField"><input type="text" id="serverUsername" value="${dataSource.serverUsername}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPassword"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.serverPassword"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.protocolVersion"/></td>
     <td class="formField">
         <select id="protocolVersion">
             <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT_AMQP %>"/>" ${dataSource.protocolVersion.name == 'V0_9_1_EXT_AMQP' ? 'selected' : ''} ><c:out value='<%= AmqpVersion.V0_9_1_EXT_AMQP.getVersion() %>'/></option>
@@ -126,7 +126,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.brokerMode"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.messaging.brokerMode"/></td>
     <td class="formField">
         <select id="brokerMode">
             <option value="<c:out value="<%= BrokerMode.NATIVE %>"/>" ${dataSource.brokerMode == 'NATIVE' ? 'selected' : ''} >Native</option>
@@ -134,23 +134,23 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.serverVirtualhost"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.serverVirtualhost"/></td>
     <td class="formField"><input type="text" id="serverVirtualHost" value="${dataSource.serverVirtualHost}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.connectionTimeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.connectionTimeout"/></td>
     <td class="formField"><input type="number" id="connectionTimeout" value="${dataSource.connectionTimeout}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.channelRpcTimeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.channelRpcTimeout"/></td>
     <td class="formField"><input type="number" id="channelRpcTimeout" value="${dataSource.channelRpcTimeout}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.automaticRecoveryEnabled"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.automaticRecoveryEnabled"/></td>
     <td class="formField"><input type="checkbox" id="automaticRecoveryEnabled" ${dataSource.automaticRecoveryEnabled ? 'checked' : 'unchecked'} /></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.networkRecoveryInterval"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.networkRecoveryInterval"/></td>
     <td class="formField"><input type="number" id="networkRecoveryInterval" value="${dataSource.networkRecoveryInterval}"/></td>
   </tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
@@ -158,16 +158,16 @@
 <tag:pointList pointHelpId="amqpPP">
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.writable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.writable"/></td>
     <td class="formField"><input type="checkbox" id="writable"/></td>
    </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeMultistate="true" excludeImage="true" />
@@ -176,7 +176,7 @@
   </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.exchangeType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.exchangeType"/></td>
     <td class="formField">
         <select id="exchangeType" onchange="exchangeTypeChange()">
             <option value="<c:out value="<%= ExchangeType.NONE %>"/>">Empty</option>
@@ -187,31 +187,31 @@
     </td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.queueName"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.messaging.queueName"/></td>
       <td class="formField"><input type="text" id="queueName"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.exchangeName"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.amqp.exchangeName"/></td>
       <td class="formField"><input type="text" id="exchangeName"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.routingKey"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.amqp.routingKey"/></td>
       <td class="formField"><input type="text" id="routingKey"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.qos"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.messaging.qos"/></td>
       <td class="formField"><input type="number" id="qos"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.autoDelete"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.amqp.autoDelete"/></td>
       <td class="formField"><input type="checkbox" id="autoDelete"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.internal"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.amqp.internal"/></td>
       <td class="formField"><input type="checkbox" id="internal"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.durability"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.durability"/></td>
     <td class="formField">
         <select id="durability">
             <option value="<c:out value="<%= DurabilityType.DURABLE %>"/>">Durable</option>
@@ -220,7 +220,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.messageAck"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.amqp.messageAck"/></td>
     <td class="formField">
         <select id="messageAck">
             <option value="<c:out value="<%= MessageAckType.NO_ACK %>"/>">No ACK</option>

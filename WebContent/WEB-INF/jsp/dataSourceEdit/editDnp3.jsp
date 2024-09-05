@@ -21,7 +21,7 @@
 
 <script type="text/javascript">
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.dnp3.index"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.dnp3.index"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.index; };
   }
   
@@ -99,15 +99,15 @@
 			  index[i] = parseInt($get("minIndex")) + i;
 			  locators[i] = locator;
 			  if ($get("datatype") == 00) {
-					names[i] = ("<fmt:message key="dsEdit.dnp3.binaryInput"/>" + " " + (parseInt($get("minIndex")) + i));
+					names[i] = ("<spring:message code="dsEdit.dnp3.binaryInput"/>" + " " + (parseInt($get("minIndex")) + i));
 			 }  else if ($get("datatype") == 0x10) {
-					names[i] = ("<fmt:message key="dsEdit.dnp3.binaryOutput"/>" + " " + (parseInt($get("minIndex")) + i));
+					names[i] = ("<spring:message code="dsEdit.dnp3.binaryOutput"/>" + " " + (parseInt($get("minIndex")) + i));
 			 }  else if ($get("datatype") == 0x30) {
-					names[i] = ("<fmt:message key="dsEdit.dnp3.analogInput"/>" + " " + (parseInt($get("minIndex")) + i));
+					names[i] = ("<spring:message code="dsEdit.dnp3.analogInput"/>" + " " + (parseInt($get("minIndex")) + i));
 			 }  else if ($get("datatype") == 0x50) {
-					names[i] = ("<fmt:message key="dsEdit.dnp3.analogOutput"/>" + " " + (parseInt($get("minIndex")) + i));
+					names[i] = ("<spring:message code="dsEdit.dnp3.analogOutput"/>" + " " + (parseInt($get("minIndex")) + i));
 			 }  else if ($get("datatype") == 0x20) {
-					names[i] = ("<fmt:message key="dsEdit.dnp3.runningCounter"/>" + " " + (parseInt($get("minIndex")) + i));
+					names[i] = ("<spring:message code="dsEdit.dnp3.runningCounter"/>" + " " + (parseInt($get("minIndex")) + i));
 			 }
 		  }
 		  DataSourceEditDwr.saveMultipleDnp3PointLocator(names, index, locators, savePointCB);
@@ -137,13 +137,13 @@
       var theValue = $get(prefix);
       var theNumber = parseInt(theValue);
       if (isNaN(theNumber)) {
-          alert("<fmt:message key="dsEdit.virtual.errorParsingValue"/>");
+          alert("<spring:message code="dsEdit.virtual.errorParsingValue"/>");
           return false;
       }
       var arr = currentPoint.pointLocator[prefix +"Change"].values;
       for (var i=arr.length-1; i>=0; i--) {
           if (arr[i] == theNumber) {
-              alert("<fmt:message key="dsEdit.virtual.invalidValue"/> "+ theNumber);
+              alert("<spring:message code="dsEdit.virtual.invalidValue"/> "+ theNumber);
               return false;
           }
       }
@@ -169,7 +169,7 @@
       dwr.util.addRows(prefix +"Values", arr, [
               function(data) { return data; },
               function(data) {
-                  return writeImage(null, null, "bullet_delete", "<fmt:message key="common.delete"/>",
+                  return writeImage(null, null, "bullet_delete", "<spring:message code="common.delete"/>",
                           "removeListValue("+ data +", '"+ prefix +"');");
               }
               ]);
@@ -183,22 +183,22 @@
 
 <c:choose>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.DNP3_SERIAL']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.dnp3.descSerial"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.dnp3.descSerial"/></c:set>
     <c:set var="dsHelpId" value="dnp3DS"/>
   </c:when>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.DNP3_IP']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.dnp3.descIp"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.dnp3.descIp"/></c:set>
     <c:set var="dsHelpId" value="dnp3DS"/>
   </c:when>
 </c:choose>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.sourceAddress"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.sourceAddress"/></td>
     <td class="formField"><input id="sourceAddress" type="text" value="${dataSource.sourceAddress}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.slaveAddress"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.slaveAddress"/></td>
     <td class="formField"><input id="slaveAddress" type="text" value="${dataSource.slaveAddress}"/></td>
   </tr>
   <c:choose>
@@ -210,20 +210,20 @@
     </c:when>
   </c:choose>
   <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
           <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.retries"/></td>
     <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.timeout"/></td>
     <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.rbePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.rbePeriod"/></td>
     <td class="formField">
       <input type="text" id="rbePollPeriods" value="${dataSource.rbePollPeriods}" class="formShort" />
       <sst:select id="rbePeriodType" value="${dataSource.rbePeriodType}">
@@ -232,7 +232,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.staticPeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.staticPeriod"/></td>
     <td class="formField">
       <input type="text" id="staticPollPeriods" value="${dataSource.staticPollPeriods}" class="formShort" />
     </td>
@@ -242,23 +242,23 @@
 
 <tag:pointList pointHelpId="dnp3PP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.addMany"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.addMany"/></td>
     <td class="formField"><input type="checkbox" id="addMany" onchange="changeAddMany();"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.minIndex"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.minIndex"/></td>
     <td class="formField"><input id="minIndex" disabled="disabled" type="text" value=""/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.maxIndex"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.maxIndex"/></td>
     <td class="formField"><input id="maxIndex" disabled="disabled" type="text" value=""/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.index"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.index"/></td>
     <td class="formField"><input id="index" type="text" value="0"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.dataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.dataType"/></td>
     <td class="formField">
       <select id="datatype" onchange="changeDataType();">
         <option value="<c:out value="<%= Dnp3PointLocatorVO.BINARY_INPUT %>"/>">BINARY INPUT</option>
@@ -271,7 +271,7 @@
   </tr>
   <tbody id="divWrittable" style="display: none;">
    <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.operateMode"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.operateMode"/></td>
     <td class="formField">
       <select id="operateMode">
         <!--<option value="<c:out value="<%= Dnp3PointLocatorVO.SBO %>"/>">Select Before Operate</option>-->
@@ -283,7 +283,7 @@
   </tbody>
   <tbody id="divBinWrittable" style="display: none;">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.controlCommand"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.controlCommand"/></td>
     <td class="formField">
       <select id="controlCommand">
         <option value="<c:out value="<%= Dnp3PointLocatorVO.CLOSE_TRIP %>"/>">Close/Trip</option>
@@ -293,11 +293,11 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.timeOn"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.timeOn"/></td>
     <td class="formField"><input id="timeOn" type="text" value="0"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3.timeOff"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.dnp3.timeOff"/></td>
     <td class="formField"><input id="timeOff" type="text" value="0"/></td>
   </tr>
   </tbody>

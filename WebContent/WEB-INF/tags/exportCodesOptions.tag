@@ -21,7 +21,7 @@
 --%><%@attribute name="sst" type="java.lang.Boolean"%><%--
 --%><c:forEach items="${optionList}" var="option">
   <c:choose>
-    <c:when test="${sst}"><sst:option value="${option.key}"><fmt:message key="${option.value}"/></sst:option></c:when>
-    <c:otherwise><option value="${option.key}"><fmt:message key="${option.value}"/></option></c:otherwise>
+    <c:when test="${sst}"><sst:option value="${option.key}"><spring:message code="${option.value}"/></sst:option></c:when>
+    <c:otherwise><option value="${option.key}"><spring:message code="${option.value}"/></option></c:otherwise>
   </c:choose>
 </c:forEach>

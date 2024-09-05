@@ -20,7 +20,7 @@
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <%@page import="com.serotonin.mango.web.servlet.ImageValueServlet"%>
 <c:choose>
-  <c:when test="${empty chartData}"><fmt:message key="common.noData"/></c:when>
+  <c:when test="${empty chartData}"><spring:message code="common.noData"/></c:when>
   <c:otherwise>
     <table cellpadding="0" cellspacing="0">
       <tr><td>
