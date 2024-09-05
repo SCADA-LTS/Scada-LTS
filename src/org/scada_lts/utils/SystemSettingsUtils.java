@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
 import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
@@ -102,14 +103,26 @@ public final class SystemSettingsUtils {
         }
     }
 
+    @Deprecated(since = "2.8.0")
     public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
+    public static String serializeMap(Map<String, String> map, Supplier<ObjectMapper> getObjectMapper) throws JsonProcessingException {
+        return getObjectMapper.get().writerWithDefaultPrettyPrinter().writeValueAsString(map);
+    }
+
+    @Deprecated(since = "2.8.0")
     public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) throws IOException {
         if(value == null || "null".equals(value))
             return Collections.emptyMap();
         return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
+    }
+
+    public static Map<String, String> deserializeMap(String value, Supplier<ObjectMapper> getObjectMapper) throws IOException {
+        if(value == null || "null".equals(value))
+            return Collections.emptyMap();
+        return getObjectMapper.get().readValue(value, new TypeReference<HashMap<String, String>>() {});
     }
 
     public static int getEmailTimeout() {

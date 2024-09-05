@@ -11,7 +11,11 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
 	<context:component-scan base-package="org.scada_lts" />
-    <mvc:annotation-driven />
+    <mvc:annotation-driven>
+      <mvc:message-converters>
+        <ref bean="messageConverter"/>
+      </mvc:message-converters>
+    </mvc:annotation-driven>
 
 	<context:annotation-config />
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -214,5 +218,18 @@
 
   <bean id="dataSourceListController" class="org.scada_lts.web.mvc.controller.DataSourceListController" >
     <property name="viewName"><value>dataSourceList</value></property>
+  </bean>
+
+  <bean id="objectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean" scope="prototype">
+    <property name="serializers">
+      <array>
+        <bean class="org.scada_lts.web.security.XssProtectStringSerializer" />
+        <bean class="org.scada_lts.web.security.XssProtectCssStyleSerializer" />
+      </array>
+    </property>
+  </bean>
+
+  <bean id="messageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" scope="prototype">
+    <constructor-arg ref="objectMapper"/>
   </bean>
 </beans>

@@ -15,6 +15,7 @@ import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -67,7 +68,7 @@ public class ModbusIpController {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = ApplicationBeans.getObjectMapper();
                 ModbusIpDataSourceJson ds = mapper.convertValue(data.get("datasource"), ModbusIpDataSourceJson.class);
                 ModbusIpPointLocatorJson pl = mapper.convertValue(data.get("pointLocator"), ModbusIpPointLocatorJson.class);
                 ModbusPointLocatorVO pointLocator = pl.parsePointLocatorData();

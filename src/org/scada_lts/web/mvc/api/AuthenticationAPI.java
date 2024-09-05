@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 
@@ -37,11 +35,12 @@ public class AuthenticationAPI {
 	
 	private static final Log LOG = LogFactory.getLog(AuthenticationAPI.class);
 	
-	private final UserService userService = new UserService();
+	private final UserService userService;
 
 	private final AuthenticationManager authenticationManager;
 
-	public AuthenticationAPI(AuthenticationManager authenticationManager) {
+	public AuthenticationAPI(UserService userService, AuthenticationManager authenticationManager) {
+		this.userService = userService;
 		this.authenticationManager = authenticationManager;
 	}
 	
@@ -72,16 +71,7 @@ public class AuthenticationAPI {
 		} else {
 			ok = false;
 		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(ok);
-		} catch (JsonProcessingException e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<String>(json,HttpStatus.OK);
+		return new ResponseEntity<>(String.valueOf(ok),HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/api/auth/logout/{username}", method = RequestMethod.GET)
@@ -93,15 +83,7 @@ public class AuthenticationAPI {
 			logout(request);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(true);
-		} catch (JsonProcessingException e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<String>(json, HttpStatus.OK);
+		return new ResponseEntity<>(String.valueOf(true),HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/api/auth/isRoleAdmin", method = RequestMethod.GET)
@@ -111,15 +93,7 @@ public class AuthenticationAPI {
 		User user = Common.getUser(request);
 		
 		if (user != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			String json = null;
-			try {
-				json = mapper.writeValueAsString(user.isAdmin());
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-			}
-			return new ResponseEntity<String>(json,HttpStatus.OK);
+			return new ResponseEntity<>(String.valueOf(user.isAdmin()),HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -133,15 +107,7 @@ public class AuthenticationAPI {
 		User user = Common.getUser(request);
 		
 		if (user != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			String json = null;
-			try {
-				json = mapper.writeValueAsString(!user.isAdmin());
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-			}
-			return new ResponseEntity<String>(json,HttpStatus.OK);
+			return new ResponseEntity<>(String.valueOf(!user.isAdmin()),HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);

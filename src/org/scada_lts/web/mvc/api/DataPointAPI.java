@@ -138,11 +138,11 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint/getConfigurationByXid/{xid}")
-    public ResponseEntity<String> getConfigurationByXid(@PathVariable(required = false) String xid,
+    public ResponseEntity<Map<String, Object>> getConfigurationByXid(@PathVariable(required = false) String xid,
                                                         HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 
-        String response = dataPointApiService.getConfigurationByXid(request, xid);
+        Map<String, Object>  response = dataPointApiService.getDataPointByXid(request, xid);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

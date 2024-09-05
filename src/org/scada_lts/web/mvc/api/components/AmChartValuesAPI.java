@@ -29,8 +29,13 @@ import java.util.stream.Collectors;
 public class AmChartValuesAPI {
     private static final Log LOG = LogFactory.getLog(AmChartValuesAPI.class);
 
-    private static final DataPointService dpService = new DataPointService();
-    private static final SystemSettingsService systemSettingsService = new SystemSettingsService();
+    private final DataPointService dpService;
+    private final SystemSettingsService systemSettingsService;
+
+    public AmChartValuesAPI(DataPointService dpService, SystemSettingsService systemSettingsService) {
+        this.dpService = dpService;
+        this.systemSettingsService = systemSettingsService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Map<String, Double>>> getValuesFromTimeRange(

@@ -341,4 +341,18 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     private static boolean isEnabled(SystemSettingsService systemSettingsService) {
         return systemSettingsService.isWorkItemsReportingEnabled();
     }
+
+    @Override
+    public String toString() {
+        return "AbstractBeforeAfterWorkItem{" +
+                "createdDate=" + createdDate +
+                ", success=" + success +
+                ", workFailed=" + workFailed +
+                ", running=" + running +
+                ", threadName=\"" + threadName + '\"' +
+                ", failedMessage=\"" + failedMessage + '\"' +
+                ", startedDate=" + startedDate +
+                ", executedDate=" + executedDate +
+                '}';
+    }
 }

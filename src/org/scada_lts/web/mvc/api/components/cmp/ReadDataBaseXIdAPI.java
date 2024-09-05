@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,13 @@ public class ReadDataBaseXIdAPI {
 
     private static final Log LOG = LogFactory.getLog(ReadDataBaseXIdAPI.class);
 
-    private DataPointService dataPointService = new DataPointService();
-    @Resource
-    private PointValueService pointValueService;
+    private final DataPointService dataPointService;
+    private final PointValueService pointValueService;
+
+    public ReadDataBaseXIdAPI(DataPointService dataPointService, PointValueService pointValueService) {
+        this.dataPointService = dataPointService;
+        this.pointValueService = pointValueService;
+    }
 
     @RequestMapping(value = "/api/cmp/get/{xIDs}", method = RequestMethod.GET)
     public ResponseEntity<List<ReadValuePointDTO>> get(@PathVariable(name = "xIDs") String[] xIDs, HttpServletRequest request) {

@@ -146,11 +146,11 @@ task stopDebug(type: Exec) {
 }
 
 task buildRun(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'test', 'war', 'deployTomcat', 'run']
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'war', 'deployTomcat', 'run']
 }
 
 task buildRunDebug(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'test', 'war', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'war', 'deployTomcat', 'runDebug']
 }
 
 task buildRunDebugDev(type: GradleBuild) {
@@ -234,6 +234,7 @@ test {
         includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
         includeTestsMatching "com.serotonin.mango.util.StartStopDataPointsUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.utils.BlockingQueuesUtilsTest"
+        includeTestsMatching "org.scada_lts.web.security.XssProtectHtmlEscapeUtilsTest"
         includeTestsMatching "org.scada_lts.web.security.XssUtilsTest"
     }
 
