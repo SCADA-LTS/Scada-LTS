@@ -138,10 +138,4 @@ public class ScadaVersion {
     public String getPoweredBy() {
         return poweredBy;
     }
-    public String getTopDescription() {
-        return SystemSettingsDAO.getValue(TOP_DESCRIPTION);
-    }
-    public String getTopDescriptionPrefix(){
-        return SystemSettingsDAO.getValue(TOP_DESCRIPTION_PREFIX);
-    }
 }

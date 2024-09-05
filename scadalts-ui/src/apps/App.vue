@@ -5,11 +5,29 @@
 		<v-app-bar id="topbar" app dark color="primary">
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS
-						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
-					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}
-					</v-list-item-subtitle>
+					<v-row class="no-wrap">
+						<v-col cols="auto">
+							<v-list-item-title class="title">Scada-LTS
+								<v-icon v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon>
+							</v-list-item-title>
+							<v-list-item-subtitle>
+								version {{ $store.getters.appMilestone }}
+							</v-list-item-subtitle>
+						</v-col>
+
+						<v-row>
+							<v-col class="d-flex justify-start align-center">
+								<div id="top-description-container" class="text-align-left">
+									<span id="top-description-prefix" class="custom-text">
+										{{ this.systemInfoSettings.topDescriptionPrefix }}
+									</span>
+									<span id="top-description" class="custom-text">
+										{{ this.systemInfoSettings.topDescription }}
+									</span>
+								</div>
+							</v-col>
+						</v-row>
+					</v-row>
 				</v-list-item-content>
 			</v-list-item>
 			<v-list-item max-width="50" v-if="!!highestUnsilencedAlarmLevel">
@@ -68,9 +86,11 @@
 </template>
 
 <script>
+import axios from 'axios';
 import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
+const CUSTOM_CSS_API = './api/customcss/';
 
 export default {
 	name: 'app',
@@ -105,6 +125,8 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
+			systemInfoSettings: undefined,
+		  	customCssContent: '',
 		};
 	},
 
@@ -136,6 +158,8 @@ export default {
     	}
 		this.$store.dispatch('getLocaleInfo');
 		this.connectToWebSocket();
+		this.fetchSettingsData();
+		this.loadCustomCss();
 	},
 
 	destroyed() {
@@ -143,6 +167,64 @@ export default {
 	},
 
 	methods: {
+
+		async fetchSettingsData(){
+			this.systemInfoSettings =  await this.$store.dispatch('getSystemInfoSettings');
+		},
+
+		async loadCustomCss() {
+			return new Promise(async (resolve, reject) => {
+				await axios
+						.get(CUSTOM_CSS_API)
+						.then(async (response) => {
+							if (response.status === 200) {
+								const customCss = response.data;
+								console.log("customCss: " + customCss);
+
+								const cleanedCss = this.cleanCssContent(customCss.content);
+
+								await this.applyCustomCss(cleanedCss);
+
+								resolve(customCss);
+							} else {
+								console.error("Failed to load custom CSS, status: ", response.status);
+								reject(new Error('Failed to load custom CSS'));
+							}
+						})
+						.catch((error) => {
+							console.error("Error fetching custom CSS:", error);
+							reject(new Error('Failed to fetch custom CSS'));
+						});
+			});
+		},
+
+		async applyCustomCss(cssContent) {
+			let styleElement = document.getElementById('custom-css-style');
+
+			if (!styleElement) {
+				styleElement = document.createElement('style');
+				styleElement.id = 'custom-css-style';
+				styleElement.type = 'text/css';
+				document.head.appendChild(styleElement);
+			}
+
+			styleElement.innerHTML = '';
+
+			styleElement.appendChild(document.createTextNode(cssContent));
+
+			console.log("document.head: " + document.head.innerHTML);
+			console.log("styleElement.innerHTML: " + styleElement.innerHTML);
+		},
+
+		cleanCssContent(cssContent) {
+			let cleanedCssContent = cssContent
+					.replace(/&#10;/g, '\n')
+					.replace(/&gt;/g, '>')
+					.replace(/&lt;/g, '<');
+
+			return cleanedCssContent.trim();
+		},
+
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;
 			let stompClient = this.$store.state.webSocketModule.webSocket;
