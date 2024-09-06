@@ -36,7 +36,7 @@
         <Property name="eventManagerLoggingLevel">ERROR</Property>
         <Property name="modbusLoggingLevel">ERROR</Property>
         <Property name="dataPointRtLoggingLevel">INFO</Property>
-        <Property name="dataSourceRtLoggingLevel">INFO</Property>
+        <Property name="dataSourceRtLoggingLevel">ERROR</Property>
         <Property name="detectorRtLoggingLevel">INFO</Property>
 
         <!-- Parse log4j2.xml Logging-->
