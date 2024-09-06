@@ -44,6 +44,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 					new LocalizableMessage("event.exception2", vo.getName(),
 							"Arquivo não encontrado!"));
 		} else {
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			String arquivo = readFile(file);
 
 			for (DataPointRT dataPoint : dataPoints) {
@@ -61,6 +62,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 									new LocalizableMessage("event.exception2",
 											vo.getName(), e.getMessage()), dataPoint);
 							timestamp = time;
+							return;
 						}
 
 					}

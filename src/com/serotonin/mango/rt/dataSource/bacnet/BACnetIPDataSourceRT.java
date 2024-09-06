@@ -407,7 +407,6 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                 BACnetIPPointLocatorRT locator = dp.getPointLocator();
                 Encodable encodable = values.getNoErrorCheck(locator.getOid(), locator.getPid());
                 dereferencePoint(dp, encodable, time);
-                returnToNormal(dp);
             }
         }
         catch (BACnetException e) {
@@ -425,7 +424,6 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             ReadPropertyRequest req = new ReadPropertyRequest(locator.getOid(), locator.getPid());
             ReadPropertyAck ack = (ReadPropertyAck) localDevice.send(d, req);
             dereferencePoint(dataPoint, ack.getValue(), System.currentTimeMillis());
-            returnToNormal(dataPoint);
         }
         catch (BACnetException e) {
             fireMessageExceptionEvent(dataPoint, "event.bacnet.readDevice", d.getAddress().toIpString(), e.getMessage());
