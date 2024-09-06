@@ -19,34 +19,44 @@
 
 <table cellspacing="1" cellpadding="0" border="0" style="width: ${width}px;">
     <tr class="rowHeader">
-	    <c:if test="${!hideIdColumn}"><td><fmt:message key="events.id"/></td></c:if>
-	    <c:if test="${!hideAlarmLevelColumn}"><td><fmt:message key="common.alarmLevel"/></td></c:if>
-	    <c:if test="${!hideTimestampColumn}"><td><fmt:message key="common.time"/></td></c:if>
-	    <td><fmt:message key="events.msg"/></td>
-	    <c:if test="${!hideInactivityColumn}"><td><fmt:message key="common.inactiveTime"/></td></c:if>
+	    <c:if test="${!hideIdColumn}"><td><spring:message code="events.id"/></td></c:if>
+	    <c:if test="${!hideAlarmLevelColumn}"><td><spring:message code="common.alarmLevel"/></td></c:if>
+	    <c:if test="${!hideTimestampColumn}"><td><spring:message code="common.time"/></td></c:if>
+	    <td><spring:message code="events.msg"/></td>
+	    <c:if test="${!hideInactivityColumn}"><td><spring:message code="common.inactiveTime"/></td></c:if>
+	    <c:if test="${isEventAssignEnabled and !hideAssigneeColumn}"><td><sst:i18n key="common.assignee"/></td></c:if>
 	    <c:if test="${!hideAckColumn}"> <td>&nbsp;</td></c:if>
     </tr>
-    <c:if test="${empty events}"><tr><td colspan="6"><b><fmt:message key="events.emptyList"/></b></td></tr></c:if>
+    <c:if test="${empty events}"><tr><td colspan="6"><b><spring:message code="events.emptyList"/></b></td></tr></c:if>
     <c:forEach items="${events}" var="event" varStatus="status">
       <tr class="rowTable<c:if test="${status.index % 2 == 1}">Alt</c:if>">
       	<c:if test="${!hideIdColumn}"><td align="center">${event.id}</td></c:if>
       	<c:if test="${!hideAlarmLevelColumn}"><td align="center"><tag:eventIcon event="${event}"/></td></c:if>
         <c:if test="${!hideTimestampColumn}"><td align="center">${sst:time(event.activeTimestamp)}</td></c:if>
         <td onmouseover="this.style.whiteSpace='normal'" onmouseout="this.style.whiteSpace='nowrap'" style=" white-space: nowrap; max-width:100vh;">
-        <p style="margin:auto; overflow: hidden; text-overflow: ellipsis; font-weight: bold;"><sst:i18n message="${event.message}"/></p></td>
+        <p style="margin:auto; overflow: hidden; text-overflow: ellipsis; font-weight: bold;"><sst:i18n message="${event.message}"/></p>
+        </td>
         <c:if test="${!hideInactivityColumn}">
 	        <td>
 	          <c:choose>
 	            <c:when test="${event.active}">
-	              <fmt:message key="common.active"/>
+	              <spring:message code="common.active"/>
 	              <a href="events.shtm"><tag:img png="flag_white" title="common.active"/></a>
 	            </c:when>
-	            <c:when test="${!event.rtnApplicable}"><fmt:message key="common.nortn"/></c:when>
+	            <c:when test="${!event.rtnApplicable}"><spring:message code="common.nortn"/></c:when>
 	            <c:otherwise>
 	              ${sst:time(event.rtnTimestamp)} - <sst:i18n message="${event.rtnMessage}"/>
 	            </c:otherwise>
 	          </c:choose>
 	        </td>
+        </c:if>
+        <c:if test="${isEventAssignEnabled and !hideAssigneeColumn}">
+          <td>
+            <c:if test="${event.assignee}">
+              ${sst:time(event.assigneeTimestamp)}
+              <sst:i18n message="${event.assigneeMessage}"/>
+            </c:if>
+          </td>
         </c:if>
         <c:if test="${!hideAckColumn}"> <td> <tag:alarmAck event="${event}"/></td></c:if>  
       </tr>

@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -168,110 +169,110 @@ thead th {
 
 							<li role="presentation"><a href="watch_list.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.watchlists.tooltip"/>'><img
+								title='<spring:message code="menu.watchlists.tooltip"/>'><img
 									src="images/eye.png"></a></li>
 							<li role="presentation"><a href="views.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img
+								title='<spring:message code="menu.graphicalviews.tooltip"/>'><img
 									src="images/icon_view.png"></a></li>
 							<li role="presentation"><a href="events.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.alarms.tooltip"/>'><img
+								title='<spring:message code="menu.alarms.tooltip"/>'><img
 									src="images/flag_white.png"></a></li>
 							<li role="presentation"><a href="reports.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.reports.tooltip"/>'><img
+								title='<spring:message code="menu.reports.tooltip"/>'><img
 									src="images/report.png"></a></li>
 
 							<c:if test="${sessionUser.dataSourcePermission}">
 								<span class="btn-separator"></span>
 								<li role="presentation"><a href="event_handlers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.event_handlers.tooltip"/>'><img
+									title='<spring:message code="menu.event_handlers.tooltip"/>'><img
 										src="images/cog.png" /></a></li>
 								<li role="presentation"><a href="data_sources.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.data_source.tooltip"/>'><img
+									title='<spring:message code="menu.data_source.tooltip"/>'><img
 										src="images/icon_ds.png" /></a></li>
 								<li role="presentation"><a href="scheduled_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img
+									title='<spring:message code="menu.scheduled_events.tooltip"/>'><img
 										src="images/clock.png" /></a></li>
 								<li role="presentation"><a href="compound_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img
+									title='<spring:message code="menu.compound_event_detectors.tooltip"/>'><img
 										src="images/multi_bell.png" /></a></li>
 								<li role="presentation"><a href="point_links.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_links.tooltip"/>'><img
+									title='<spring:message code="menu.point_links.tooltip"/>'><img
 										src="images/link.png" /></a></li>
 								<li role="presentation"><a href="scripting.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.scripting.tooltip"/>'><img
+									title='<spring:message code="menu.scripting.tooltip"/>'><img
 										src="images/script_gear.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="users.shtm"
 								data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.users.tooltip"/>'><img
+								title='<spring:message code="menu.users.tooltip"/>'><img
 									src="images/user.png" /></a></li>
 							<c:if test="${sessionUser.admin}">
 								<li role="presentation"><a href="usersProfiles.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.users_profiles.tooltip"/>'><img
+									title='<spring:message code="menu.users_profiles.tooltip"/>'><img
 										src="images/user_ds.png" /></a></li>
 								<li role="presentation" class="active"><a
 									href="pointHierarchySLTS" class='btn btn-xs'
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img
+									title='<spring:message code="menu.point_hierarchy.tooltip"/>'><img
 										src="images/folder_brick.png" /></a></li>
 								<li role="presentation"><a href="mailing_lists.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img
+									title='<spring:message code="menu.mailing_lists.tooltip"/>'><img
 										src="images/book.png" /></a></li>
 								<li role="presentation"><a href="publishers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.publishers.tooltip"/>'><img
+									title='<spring:message code="menu.publishers.tooltip"/>'><img
 										src="images/transmit.png" /></a></li>
 								<li role="presentation"><a href="maintenance_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img
+									title='<spring:message code="menu.maintenance_events.tooltip"/>'><img
 										src="images/hammer.png" /></a></li>
 								<li role="presentation"><a href="system_settings.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.system_setings.tooltip"/>'><img
+									title='<spring:message code="menu.system_setings.tooltip"/>'><img
 										src="images/application_form.png" /></a></li>
 								<li role="presentation"><a href="emport.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.import_export.tooltip"/>'><img
+									title='<spring:message code="menu.import_export.tooltip"/>'><img
 										src="images/script_code.png" /></a></li>
 								<li role="presentation"><a href="sql.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.sql.tooltip"/>'><img
+									title='<spring:message code="menu.sql.tooltip"/>'><img
 										src="images/script.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="logout.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.logout.tooltip"/>'><img
+								title='<spring:message code="menu.logout.tooltip"/>'><img
 									src="images/control_stop_blue.png"></a></li>
 							<li role="presentation"><a href="help.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.help.tooltip"/>'><img
+								title='<spring:message code="menu.help.tooltip"/>'><img
 									src="images/help.png"></a></li>
 						</c:if>
 						<c:if test="${empty sessionUser}">
 							<li role="presentation"><a href="login.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.login.tooltip"/>'><img
+								title='<spring:message code="menu.login.tooltip"/>'><img
 									src="images/control_play_blue.png"></a></li>
 						</c:if>
 						<div class="btn-group pull-right menu">
 							<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown"
 								data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.change_language.tooltip"/>'>
+								title='<spring:message code="menu.change_language.tooltip"/>'>
 								<img src="images/world.png" alt=""> <span
 									class="caret" />
 							</button>
@@ -291,8 +292,8 @@ thead th {
 						</div>
 						<div class="btn-group pull-right menu">
 							<c:if test="${!empty sessionUser}">
-								<a href="" class="btn btn-xs"><span><fmt:message
-											key="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
+								<a href="" class="btn btn-xs"><span><spring:message
+											code="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
 									</mark></span></a>
 
 								<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
@@ -362,33 +363,33 @@ thead th {
 
 					<div class="panel panel-default">
 						<div class="panel-heading help">
-							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b>
+							<b><spring:message code="pointHierarchySLTS.pointHierarchy" /></b>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
 								<button id="addNode" class="btn btn-success"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.add.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.add.tooltip"/>'>
 									<span class="glyphicon glyphicon-plus"></span>
 								</button>
 								<button id="editNode" class="btn btn-warning"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.edit.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.edit.tooltip"/>'>
 									<span class="glyphicon glyphicon-pencil"></span>
 								</button>
 								<button id="deleteNode" class="btn btn-danger"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.delete.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.delete.tooltip"/>'>
 									<span class="glyphicon glyphicon-minus"></span>
 								</button>
 								<button id="reloadNode" class="btn btn-primary"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.refresh.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.refresh.tooltip"/>'>
 									<span class="glyphicon glyphicon-refresh"></span>
 								</button>
 								<button id="infoNode" class="btn btn-primary"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.info.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.info.tooltip"/>'>
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
@@ -426,8 +427,8 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <fmt:message
-						key="footer.rightsReserved" /></td>
+				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <spring:message
+						code="footer.rightsReserved" /></td>
 			</tr>
 		</table>
 	</div>
@@ -494,13 +495,13 @@ function setAlarmLevelText(alarmLevel, textNode) {
     if (alarmLevel == 0)
         textNode.innerHTML = "";
     else if (alarmLevel == 1)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.info"/>';
     else if (alarmLevel == 2)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.urgent"/>';
     else if (alarmLevel == 3)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.critical"/>';
     else if (alarmLevel == 4)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.lifeSafety"/>';
     else
         textNode.innerHTML = "Unknown: "+ alarmLevel;
 }
@@ -523,41 +524,41 @@ function updateImg(imgNode, src, text, visible, styleType) {
 
 
 var messages = {
-  move: "<fmt:message key="pointHierarchySLTS.move"/>",
-  folderNotMove: "<fmt:message key="pointHierarchySLTS.folderNotMove"/>",
-  close: "<fmt:message key="pointHierarchySLTS.close"/>",
-  yes: "<fmt:message key="pointHierarchySLTS.yes"/>",
-  folder: "<fmt:message key="pointHierarchySLTS.folder"/>",
-  folderChange: "<fmt:message key="pointHierarchySLTS.folderChange"/>",
-  confirmDelete: "<fmt:message key="pointHierarchySLTS.confirmDelete"/>",
-  folderRemoved: "<fmt:message key="pointHierarchySLTS.folderRemoved"/>",
-  key: "<fmt:message key="pointHierarchySLTS.key"/>",
-  title: "<fmt:message key="pointHierarchySLTS.title"/>",
-  msg: "<fmt:message key="pointHierarchySLTS.msg"/>",
-  pleaseSelectElement: "<fmt:message key="pointHierarchySLTS.pleaseSelectElement"/>",
-  pleaseSelectElementFolder: "<fmt:message key="pointHierarchySLTS.pleaseSelectElementFolder"/>",
-  weOnlyEditFolder: "<fmt:message key="pointHierarchySLTS.weOnlyEditFolder"/>",
-  editFolder: "<fmt:message key="pointHierarchySLTS.editFolder"/>",
-  titleEdit: "<fmt:message key="pointHierarchySLTS.titleEdit"/>",
-  oldTitle: "<fmt:message key="pointHierarchySLTS.oldTitle"/>",
-  newTitle: "<fmt:message key="pointHierarchySLTS.newTitle"/>",
-  folderNotEdit: "<fmt:message key="pointHierarchySLTS.folderNotEdit"/>",
-  errorThrown: "<fmt:message key="pointHierarchySLTS.errorThrown"/>",
-  keyParent: "<fmt:message key="pointHierarchySLTS.keyParent"/>",
-  parent: "<fmt:message key="pointHierarchySLTS.parent"/>",
-  folderNotRemove: "<fmt:message key="pointHierarchySLTS.folderNotRemove"/>",
-  removeFolder: "<fmt:message key="pointHierarchySLTS.removeFolder"/>",
-  warning: "<fmt:message key="pointHierarchySLTS.warning"/>",
-  info: "<fmt:message key="pointHierarchySLTS.info"/>",
-  isFolder: "<fmt:message key="pointHierarchySLTS.isFolder"/>",
-  dataSource: "<fmt:message key="pointHierarchySLTS.dataSource"/>",
-  xid: "<fmt:message key="pointHierarchySLTS.xid"/>",
-  type: "<fmt:message key="pointHierarchySLTS.type"/>",
-  changeOfLanguageFailed: "<fmt:message key="pointHierarchySLTS.changeOfLanguageFailed"/>",
-  warningDontRemoveDataPointInRoot: "<fmt:message key="pointHierarchySLTS.warningDontRemoveDataPointInRoot"/>",
-  moveDataPointToRoot: "<fmt:message key="pointHierarchySLTS.moveDataPointToRoot"/>",
-  areYouSureToMoveElement: "<fmt:message key="pointHierarchySLTS.areYouSureToMoveElement"/>",
-  movedElement: "<fmt:message key="pointHierarchySLTS.movedElement"/>"
+  move: "<spring:message code="pointHierarchySLTS.move"/>",
+  folderNotMove: "<spring:message code="pointHierarchySLTS.folderNotMove"/>",
+  close: "<spring:message code="pointHierarchySLTS.close"/>",
+  yes: "<spring:message code="pointHierarchySLTS.yes"/>",
+  folder: "<spring:message code="pointHierarchySLTS.folder"/>",
+  folderChange: "<spring:message code="pointHierarchySLTS.folderChange"/>",
+  confirmDelete: "<spring:message code="pointHierarchySLTS.confirmDelete"/>",
+  folderRemoved: "<spring:message code="pointHierarchySLTS.folderRemoved"/>",
+  key: "<spring:message code="pointHierarchySLTS.key"/>",
+  title: "<spring:message code="pointHierarchySLTS.title"/>",
+  msg: "<spring:message code="pointHierarchySLTS.msg"/>",
+  pleaseSelectElement: "<spring:message code="pointHierarchySLTS.pleaseSelectElement"/>",
+  pleaseSelectElementFolder: "<spring:message code="pointHierarchySLTS.pleaseSelectElementFolder"/>",
+  weOnlyEditFolder: "<spring:message code="pointHierarchySLTS.weOnlyEditFolder"/>",
+  editFolder: "<spring:message code="pointHierarchySLTS.editFolder"/>",
+  titleEdit: "<spring:message code="pointHierarchySLTS.titleEdit"/>",
+  oldTitle: "<spring:message code="pointHierarchySLTS.oldTitle"/>",
+  newTitle: "<spring:message code="pointHierarchySLTS.newTitle"/>",
+  folderNotEdit: "<spring:message code="pointHierarchySLTS.folderNotEdit"/>",
+  errorThrown: "<spring:message code="pointHierarchySLTS.errorThrown"/>",
+  keyParent: "<spring:message code="pointHierarchySLTS.keyParent"/>",
+  parent: "<spring:message code="pointHierarchySLTS.parent"/>",
+  folderNotRemove: "<spring:message code="pointHierarchySLTS.folderNotRemove"/>",
+  removeFolder: "<spring:message code="pointHierarchySLTS.removeFolder"/>",
+  warning: "<spring:message code="pointHierarchySLTS.warning"/>",
+  info: "<spring:message code="pointHierarchySLTS.info"/>",
+  isFolder: "<spring:message code="pointHierarchySLTS.isFolder"/>",
+  dataSource: "<spring:message code="pointHierarchySLTS.dataSource"/>",
+  xid: "<spring:message code="pointHierarchySLTS.xid"/>",
+  type: "<spring:message code="pointHierarchySLTS.type"/>",
+  changeOfLanguageFailed: "<spring:message code="pointHierarchySLTS.changeOfLanguageFailed"/>",
+  warningDontRemoveDataPointInRoot: "<spring:message code="pointHierarchySLTS.warningDontRemoveDataPointInRoot"/>",
+  moveDataPointToRoot: "<spring:message code="pointHierarchySLTS.moveDataPointToRoot"/>",
+  areYouSureToMoveElement: "<spring:message code="pointHierarchySLTS.areYouSureToMoveElement"/>",
+  movedElement: "<spring:message code="pointHierarchySLTS.movedElement"/>"
 };
 	var glyph_opts = {
     	    map: {
@@ -601,7 +602,7 @@ var messages = {
     	$.ajax({
             type: "GET",
         	dataType: "json",
-        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder,
+        	url:myLocation+"pointHierarchy/paths/"+key+"/"+folder,
         	success: function(msg){
         		var path="/";
         		if (msg.length>0) {
@@ -753,7 +754,7 @@ var messages = {
                            $.ajax({
     	 			            type: "POST",
     	 			        	dataType: "json",
-    	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
+    	 			        	url:myLocation+'pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
     	 			        	success: function(msg){
     	 			        	  $button.hide();
     	 			 		      $button.stopSpin();
@@ -786,7 +787,7 @@ var messages = {
     	      glyph: glyph_opts,
     	      selectMode: 2,
     	      source: {
-    	        url: myLocation+"/pointHierarchy/0",
+    	        url: myLocation+"pointHierarchy/0",
     	        debugDelay: 0,
     	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
@@ -802,7 +803,7 @@ var messages = {
     	      },
     	      lazyLoad: function(event, data) {
     	    	data.result = {
-    	    	 url: myLocation+"/pointHierarchy/"+data.node.key,
+    	    	 url: myLocation+"pointHierarchy/"+data.node.key,
     	         cache: false,
     	         debugDelay: 0
     	         };
@@ -832,7 +833,7 @@ var messages = {
  		          $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
+		        	url:myLocation+"pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
 		        	success: function(msg){
 		        	  var titleNewNode = dialog.getModalBody().find('input').val();
 		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
@@ -899,7 +900,7 @@ var messages = {
 				           $.ajax({
 				        	   type: "POST",
 				        	   dataType: "json",
-				        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
+				        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
 				        	   success: function(msg){
 				        		   dialog.getModalBody().html('<div><h3>'+messages.folderRemoved+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
 						           $button.hide();
@@ -949,7 +950,7 @@ var messages = {
     					           $.ajax({
     					        	   type: "POST",
     					        	   dataType: "json",
-    					        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
+    					        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
     					        	   success: function(msg){
     					        		   dialog.getModalBody().html('<div><h3>'+messages.movedElement+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
     							           $button.hide();
@@ -1032,7 +1033,7 @@ var messages = {
 		           $.ajax({
 			            type: "POST",
 			        	dataType: "json",
-			        	url:myLocation+"/pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
+			        	url:myLocation+"pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
 			        	success: function(msg){
 			        	  var titleNewNode = dialog.getModalBody().find('input').val();
 			        	  dialog.getModalBody().html('<div><h3>'+messages.folderChange+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.oldTitle+':<b>'+nodeActivate.title+'</b></li><li>'+messages.newTitle+':<b>'+newTitle+'</b></li></ul></div>');
@@ -1140,7 +1141,7 @@ var messages = {
     		 $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/viewutil/"+locale,
+		        	url:myLocation+"viewutil/"+locale,
 		        	success: function(msg){
 		        		location.reload();
 		        	},
@@ -1227,7 +1228,7 @@ var messages = {
         	$.ajax({
 	            type: "GET",
 	        	dataType: "json",
-	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page,
+	        	url:myLocation+"pointHierarchy/find/"+queryGlobal+"/"+page,
 	        	success: function(msg){
 
 	        	  	if(msg !== undefined ) {

@@ -18,6 +18,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 @JsonRemoteEntity
 public class AlarmListComponent extends CustomComponent {
@@ -37,6 +38,7 @@ public class AlarmListComponent extends CustomComponent {
 	private boolean hideTimestampColumn = false;
 	private boolean hideInactivityColumn = true;
 	private boolean hideAckColumn = false;
+	private boolean hideAssigneeColumn = false;
 
 	public AlarmListComponent() {}
 
@@ -50,15 +52,18 @@ public class AlarmListComponent extends CustomComponent {
 		this.hideTimestampColumn = alarmListComponent.isHideTimestampColumn();
 		this.hideInactivityColumn = alarmListComponent.isHideInactivityColumn();
 		this.hideAckColumn = alarmListComponent.isHideAckColumn();
+		this.hideAssigneeColumn = alarmListComponent.isHideAssigneeColumn();
 	}
 
 	@Override
 	public String generateContent() {
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
 		List<EventInstance> toViewEvents = new EventService().getPendingEventsAlarmLevelMin(Common
 				.getUser().getId(), minAlarmLevel, maxListSize);
+		boolean eventAssignEnabled = systemSettingsService.isEventAssignEnabled();
 
 		model.put("nome", "marlon");
 		model.put("events",toViewEvents);
@@ -68,6 +73,8 @@ public class AlarmListComponent extends CustomComponent {
 		model.put("hideTimestampColumn", hideTimestampColumn);
 		model.put("hideInactivityColumn", hideInactivityColumn);
 		model.put("hideAckColumn", hideAckColumn);
+		model.put("hideAssigneeColumn", hideAssigneeColumn);
+		model.put("isEventAssignEnabled", eventAssignEnabled);
 
 		String content = BaseDwr.generateContent(request, "alarmList.jsp",
 				model);
@@ -137,13 +144,21 @@ public class AlarmListComponent extends CustomComponent {
 		this.hideInactivityColumn = hideInactivityColumn;
 	}
 
+	public boolean isHideAssigneeColumn() {
+		return hideAssigneeColumn;
+	}
+
+	public void setHideAssigneeColumn(boolean hideAssigneeColumn) {
+		this.hideAssigneeColumn = hideAssigneeColumn;
+	}
+
 	@Override
 	public ViewComponent copy() {
 		return new AlarmListComponent(this);
 	}
 
 	private static final long serialVersionUID = -1;
-	private static final int version = 1;
+	private static final int version = 2;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -155,6 +170,7 @@ public class AlarmListComponent extends CustomComponent {
 		out.writeBoolean(hideTimestampColumn);
 		out.writeBoolean(hideInactivityColumn);
 		out.writeBoolean(hideAckColumn);
+		out.writeBoolean(hideAssigneeColumn);
 
 	}
 
@@ -171,6 +187,16 @@ public class AlarmListComponent extends CustomComponent {
 			hideTimestampColumn = in.readBoolean();
 			hideInactivityColumn = in.readBoolean();
 			hideAckColumn = in.readBoolean();
+		} else if (ver == 2) {
+			minAlarmLevel = in.readInt();
+			maxListSize = in.readInt();
+			width = in.readInt();
+			hideIdColumn = in.readBoolean();
+			hideAlarmLevelColumn = in.readBoolean();
+			hideTimestampColumn = in.readBoolean();
+			hideInactivityColumn = in.readBoolean();
+			hideAckColumn = in.readBoolean();
+			hideAssigneeColumn = in.readBoolean();
 		}
 
 	}
@@ -197,12 +223,12 @@ public class AlarmListComponent extends CustomComponent {
 		if (!(o instanceof AlarmListComponent)) return false;
 		if (!super.equals(o)) return false;
 		AlarmListComponent that = (AlarmListComponent) o;
-		return getMinAlarmLevel() == that.getMinAlarmLevel() && getMaxListSize() == that.getMaxListSize() && getWidth() == that.getWidth() && isHideIdColumn() == that.isHideIdColumn() && isHideAlarmLevelColumn() == that.isHideAlarmLevelColumn() && isHideTimestampColumn() == that.isHideTimestampColumn() && isHideInactivityColumn() == that.isHideInactivityColumn() && isHideAckColumn() == that.isHideAckColumn();
+		return getMinAlarmLevel() == that.getMinAlarmLevel() && getMaxListSize() == that.getMaxListSize() && getWidth() == that.getWidth() && isHideIdColumn() == that.isHideIdColumn() && isHideAlarmLevelColumn() == that.isHideAlarmLevelColumn() && isHideTimestampColumn() == that.isHideTimestampColumn() && isHideInactivityColumn() == that.isHideInactivityColumn() && isHideAckColumn() == that.isHideAckColumn() && isHideAssigneeColumn() == that.isHideAssigneeColumn();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), getMinAlarmLevel(), getMaxListSize(), getWidth(), isHideIdColumn(), isHideAlarmLevelColumn(), isHideTimestampColumn(), isHideInactivityColumn(), isHideAckColumn());
+		return Objects.hash(super.hashCode(), getMinAlarmLevel(), getMaxListSize(), getWidth(), isHideIdColumn(), isHideAlarmLevelColumn(), isHideTimestampColumn(), isHideInactivityColumn(), isHideAckColumn(), isHideAssigneeColumn());
 	}
 
 
@@ -217,6 +243,7 @@ public class AlarmListComponent extends CustomComponent {
 				", hideTimestampColumn=" + hideTimestampColumn +
 				", hideInactivityColumn=" + hideInactivityColumn +
 				", hideAckColumn=" + hideAckColumn +
-				"} " + super.toString();
+				", hideAssigneeColumn=" + hideAssigneeColumn +
+				'}';
 	}
 }

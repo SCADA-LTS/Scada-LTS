@@ -61,14 +61,14 @@
 
       let messages = [];
 
-      validateValue("updatePeriods", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
-      validateValue("updatePeriodType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
-      validateValue("timeout", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
-      validateValue("retries", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
-      validateValue("maxReadBitCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
-      validateValue("maxReadRegisterCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
-      validateValue("maxWriteRegisterCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
-      validateValue("port", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, temp.port, messages);
+      validateValue("updatePeriods", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
+      validateValue("updatePeriodType", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
+      validateValue("timeout", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
+      validateValue("retries", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
+      validateValue("maxReadBitCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
+      validateValue("maxReadRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
+      validateValue("maxWriteRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
+      validateValue("port", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.port, messages);
 
       return messages;
   }
@@ -131,33 +131,33 @@
 </script>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.transportType"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.transportType"/></td>
   <td class="formField">
     <sst:select id="transportType" value="${dataSource.transportType}" onchange="checkTransportType(this.value)">
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcp"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcpKA"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.UDP.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.udp"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_LISTENER.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcpListener"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcp"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcpKA"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.UDP.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.udp"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_LISTENER.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcpListener"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.host"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.host"/></td>
   <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.port"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.port"/></td>
   <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.encapsulated"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.encapsulated"/></td>
   <td class="formField"><sst:checkbox id="encapsulated" selectedValue="${dataSource.encapsulated}"/></td>
 </tr>
 
 <tr id="socketMonitorRow">
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.createSocketMonitorPoint"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.createSocketMonitorPoint"/></td>
   <td class="formField"><sst:checkbox id="createSocketMonitorPoint" selectedValue="${dataSource.createSocketMonitorPoint}"/></td>
 </tr>

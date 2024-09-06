@@ -42,7 +42,7 @@
   }
   
   function refreshInfo() {
-      $set("infoMessage", "<fmt:message key="dsEdit.viconics.refreshing"/>");
+      $set("infoMessage", "<spring:message code="dsEdit.viconics.refreshing"/>");
       setDisabled("updateBtn", true);
       
       DataSourceEditDwr.getRfModuleInfo(function(result) {
@@ -89,11 +89,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.viconics.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.viconics.desc"/></c:set>
 <c:set var="dsHelpId" value="viconicsDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.port"/></td>
           <td class="formField">
             <c:choose>
               <c:when test="${!empty commPortError}">
@@ -112,47 +112,47 @@
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.panId"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.panId"/></td>
           <td class="formField"><input id="panId" type="text" value="${dataSource.panId}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.channel"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.channel"/></td>
           <td class="formField"><input id="channel" type="text" value="${dataSource.channel}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.networkTimeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.networkTimeout"/></td>
           <td class="formField"><input id="networkTimeoutSeconds" type="text" value="${dataSource.networkTimeoutSeconds}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.deviceWarning"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.deviceWarning"/></td>
           <td class="formField"><input id="deviceWarningTimeoutSeconds" type="text" value="${dataSource.deviceWarningTimeoutSeconds}"/></td>
         </tr>
       
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.deviceRemove"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.deviceRemove"/></td>
           <td class="formField"><input id="deviceRemoveTimeoutSeconds" type="text" value="${dataSource.deviceRemoveTimeoutSeconds}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.pointFreshness"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.pointFreshness"/></td>
           <td class="formField"><input id="pointValueMinimumFreshnessSeconds" type="text" value="${dataSource.pointValueMinimumFreshnessSeconds}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.viconics.convertCelsius"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.viconics.convertCelsius"/></td>
           <td class="formField"><sst:checkbox id="convertToCelsius" selectedValue="${dataSource.convertToCelsius}"/></td>
         </tr>
       </table>
@@ -164,19 +164,19 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="8" class="smallTitle"><fmt:message key="dsEdit.viconics.networkInfo"/></td></tr>
+        <tr><td colspan="8" class="smallTitle"><spring:message code="dsEdit.viconics.networkInfo"/></td></tr>
         
         <tr><td colspan="8" id="infoMessage" class="formError"></td></tr>
         
         <tbody id="infoData" style="display:none;">
           <tr>
             <td colspan="8">
-              <b><fmt:message key="dsEdit.viconics.rfModule"/></b><br/>
+              <b><spring:message code="dsEdit.viconics.rfModule"/></b><br/>
               <div style="padding-left:20px;float:left;">
-                <fmt:message key="dsEdit.viconics.zigbeeFirmwareRevision"/>:<br/>
-                <fmt:message key="dsEdit.viconics.zigbeeNetworkAddress"/>:<br/>
-                <fmt:message key="dsEdit.viconics.ieee"/>:<br/>
-                <fmt:message key="dsEdit.viconics.chipRevision"/>:<br/>
+                <spring:message code="dsEdit.viconics.zigbeeFirmwareRevision"/>:<br/>
+                <spring:message code="dsEdit.viconics.zigbeeNetworkAddress"/>:<br/>
+                <spring:message code="dsEdit.viconics.ieee"/>:<br/>
+                <spring:message code="dsEdit.viconics.chipRevision"/>:<br/>
               </div>
               <div style="padding-left:10px;float:left;">
                 <span id="rfmFirmware"></span><br/>
@@ -187,17 +187,17 @@
             </td>
           </tr>
           
-          <tr><td colspan="8"><b><fmt:message key="dsEdit.viconics.devices"/></b></td></tr>
+          <tr><td colspan="8"><b><spring:message code="dsEdit.viconics.devices"/></b></td></tr>
           <tr class="rowHeader">
-            <td><fmt:message key="dsEdit.viconics.commAddress"/></td>
-            <td><fmt:message key="dsEdit.viconics.modelNumber"/></td>
-            <td><fmt:message key="dsEdit.viconics.firmwareRevision"/></td>
-            <td><fmt:message key="dsEdit.viconics.zigbeeFirmwareRevisionBr"/></td>
-            <td><fmt:message key="dsEdit.viconics.zigbeeNetworkAddressBr"/></td>
-            <td><fmt:message key="dsEdit.viconics.ieee"/></td>
-            <td><fmt:message key="dsEdit.viconics.chipRevisionBr"/></td>
-            <td><fmt:message key="dsEdit.viconics.trss"/></td>
-            <td><fmt:message key="dsEdit.viconics.crss"/></td>
+            <td><spring:message code="dsEdit.viconics.commAddress"/></td>
+            <td><spring:message code="dsEdit.viconics.modelNumber"/></td>
+            <td><spring:message code="dsEdit.viconics.firmwareRevision"/></td>
+            <td><spring:message code="dsEdit.viconics.zigbeeFirmwareRevisionBr"/></td>
+            <td><spring:message code="dsEdit.viconics.zigbeeNetworkAddressBr"/></td>
+            <td><spring:message code="dsEdit.viconics.ieee"/></td>
+            <td><spring:message code="dsEdit.viconics.chipRevisionBr"/></td>
+            <td><spring:message code="dsEdit.viconics.trss"/></td>
+            <td><spring:message code="dsEdit.viconics.crss"/></td>
           </tr>
         </tbody>
           
@@ -205,7 +205,7 @@
           
         <tr>
           <td colspan="8" align="center">
-            <input id="updateBtn" type="button" value="<fmt:message key="common.refresh"/>" onclick="refreshInfo();"/>
+            <input id="updateBtn" type="button" value="<spring:message code="common.refresh"/>" onclick="refreshInfo();"/>
           </td>
         </tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>

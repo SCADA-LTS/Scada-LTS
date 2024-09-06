@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -115,7 +116,7 @@ public class PermissionEvaluatorAclImp implements PermissionEvaluatorAcl {
             request.setHeader("Content-type", "application/json");
             HttpResponse response = client.execute(request);
 
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = ApplicationBeans.getObjectMapper();
             result = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<EntryDto>>() {});
 
             HttpEntity entity = response.getEntity();

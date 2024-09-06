@@ -33,7 +33,7 @@ public class UtilsService {
 	
 	private static final Log LOG = LogFactory.getLog(UtilsService.class);
 	
-	public Long getTS() {
+	public long getTS() {
 		long ts = System.currentTimeMillis();
 		LOG.info("Get timestamp used REST API ts:"+ts);
 		return ts;

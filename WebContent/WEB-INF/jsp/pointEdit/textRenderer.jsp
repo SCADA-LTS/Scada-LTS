@@ -20,17 +20,17 @@
 <div class="borderDiv marB marR">
   <table>
     <tr><td colspan="3">
-      <span class="smallTitle"><fmt:message key="pointEdit.text.props"/></span>
+      <span class="smallTitle"><spring:message code="pointEdit.text.props"/></span>
       <tag:help id="textRenderers"/>
     </td></tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.text.type"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.text.type"/></td>
       <td class="formField">
         <sst:select id="textRendererSelect" onchange="textRendererEditor.change();"
                 value="${form.textRenderer.typeName}">
           <c:forEach items="${textRenderers}" var="trdef">
-            <sst:option value="${trdef.name}"><fmt:message key="${trdef.nameKey}"/></sst:option>
+            <sst:option value="${trdef.name}"><spring:message code="${trdef.nameKey}"/></sst:option>
           </c:forEach>
         </sst:select>
       </td>
@@ -38,20 +38,20 @@
     
     <tbody id="textRendererAnalog" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.text.format"/></td>
         <td class="formField">
           <input id="textRendererAnalogFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>"/>
           <tag:help id="numberFormats"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.text.suffix"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.text.suffix"/></td>
         <td class="formField"><input id="textRendererAnalogSuffix" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.suffix}" /></c:catch>"/></td>
       </tr>
     </tbody>
     <tbody id="textRendererBinary" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.text.zero"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.text.zero"/></td>
         <td class="formField">
           <table cellspacing="0" cellpadding="0">
             <tr>
@@ -59,14 +59,14 @@
               <td width="10"></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryZeroColour"></div>
-                <a href="#" onclick="textRendererEditor.handlerBinaryZeroColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
+                <a href="#" onclick="textRendererEditor.handlerBinaryZeroColour(null); return false;">(<spring:message code="pointEdit.text.default"/>)</a>
               </td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.text.one"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.text.one"/></td>
         <td class="formField">
           <table cellspacing="0" cellpadding="0">
             <tr>
@@ -74,7 +74,7 @@
               <td width="10"></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryOneColour"></div>
-                <a href="#" onclick="textRendererEditor.handlerBinaryOneColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
+                <a href="#" onclick="textRendererEditor.handlerBinaryOneColour(null); return false;">(<spring:message code="pointEdit.text.default"/>)</a>
               </td>
             </tr>
           </table>
@@ -86,9 +86,9 @@
         <td colspan="2">
           <table>
             <tr>
-              <th><fmt:message key="pointEdit.text.key"/></th>
-              <th><fmt:message key="pointEdit.text.text"/></th>
-              <th><fmt:message key="pointEdit.text.colour"/></th>
+              <th><spring:message code="pointEdit.text.key"/></th>
+              <th><spring:message code="pointEdit.text.text"/></th>
+              <th><spring:message code="pointEdit.text.colour"/></th>
               <td></td>
             </tr>
             <tr>
@@ -96,7 +96,7 @@
               <td valign="top"><input type="text" id="textRendererMultistateText" value="" class="formShort"/></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererMultistateColour"></div>
-                <a href="#" onclick="textRendererEditor.handlerMultistateColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
+                <a href="#" onclick="textRendererEditor.handlerMultistateColour(null); return false;">(<spring:message code="pointEdit.text.default"/>)</a>
               </td>
               <td valign="top">
                 <tag:img png="add" title="common.add" onclick="return textRendererEditor.addMultistateValue();"/>
@@ -111,23 +111,23 @@
     </tbody>
     <tbody id="textRendererPlain" style="display:none;">
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.text.suffix"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.text.suffix"/></td>
         <td class="formField"><input id="textRendererPlainSuffix" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.suffix}" /></c:catch>" /></td>
       </tr>
     </tbody>
     <tbody id="textRendererRange" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.text.format"/></td>
         <td class="formField"><input id="textRendererRangeFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>" /></td>
       </tr>
       <tr>
         <td colspan="2">
           <table>
             <tr>
-              <th><fmt:message key="pointEdit.text.from"/></th>
-              <th><fmt:message key="pointEdit.text.to"/></th>
-              <th><fmt:message key="pointEdit.text.text"/></th>
-              <th><fmt:message key="pointEdit.text.colour"/></th>
+              <th><spring:message code="pointEdit.text.from"/></th>
+              <th><spring:message code="pointEdit.text.to"/></th>
+              <th><spring:message code="pointEdit.text.text"/></th>
+              <th><spring:message code="pointEdit.text.colour"/></th>
               <td></td>
             </tr>
             <tr>
@@ -136,7 +136,7 @@
               <td valign="top"><input type="text" id="textRendererRangeText" value=""/></td>
               <td valign="top" align="center">
                 <div dojoType="ColorPalette" palette="3x4" id="textRendererRangeColour"></div>
-                <a href="#" onclick="textRendererEditor.handlerRangeColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
+                <a href="#" onclick="textRendererEditor.handlerRangeColour(null); return false;">(<spring:message code="pointEdit.text.default"/>)</a>
               </td>
               <td valign="top">
                 <tag:img png="add" title="common.add" onclick="return textRendererEditor.addRangeValue();"/>
@@ -149,14 +149,14 @@
     </tbody>
     <tbody id="textRendererTime" style="display:none;">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.text.format"/></td>
         <td class="formField">
           <input id="textRendererTimeFormat" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.format}" /></c:catch>"/>
           <tag:help id="datetimeFormats"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.text.conversionExponent"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.text.conversionExponent"/></td>
         <td class="formField"><input id="textRendererTimeConversionExponent" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.conversionExponent}" /></c:catch>"/></td>
       </tr>
     </tbody>
@@ -268,12 +268,12 @@
               theKey = $get("textRendererMultistateKey");
           var theNumericKey = parseInt(theKey);
           if (isNaN(theNumericKey)) {
-              alert("<fmt:message key="pointEdit.text.errorParsingKey"/>");
+              alert("<spring:message code="pointEdit.text.errorParsingKey"/>");
               return false;
           }
           for (var i=multistateValues.length-1; i>=0; i--) {
               if (multistateValues[i].key == theNumericKey) {
-                  alert("<fmt:message key="pointEdit.text.listContainsKey"/> "+ theNumericKey);
+                  alert("<spring:message code="pointEdit.text.listContainsKey"/> "+ theNumericKey);
                   return false;
               }
           }
@@ -322,7 +322,7 @@
                   function(data) {
                       return "<a href='#' onclick='return textRendererEditor.removeMultistateValue("+ data.key +
                              ");'><img src='images/bullet_delete.png' width='16' height='16' border='0' "+
-                             "title='<fmt:message key="common.delete"/>'/><\/a>";
+                             "title='<spring:message code="common.delete"/>'/><\/a>";
                   }
                   ], null);
       };
@@ -333,25 +333,25 @@
           if (!theFrom)
               theFrom = parseFloat($get("textRendererRangeFrom"));
           if (isNaN(theFrom)) {
-              alert("<fmt:message key="pointEdit.text.errorParsingFrom"/>");
+              alert("<spring:message code="pointEdit.text.errorParsingFrom"/>");
               return false;
           }
           
           if (!theTo)
               theTo = parseFloat($get("textRendererRangeTo"));
           if (isNaN(theTo)) {
-              alert("<fmt:message key="pointEdit.text.errorParsingTo"/>");
+              alert("<spring:message code="pointEdit.text.errorParsingTo"/>");
               return false;
           }
           
           if (isNaN(theTo >= theFrom)) {
-              alert("<fmt:message key="pointEdit.text.toGreaterThanFrom"/>");
+              alert("<spring:message code="pointEdit.text.toGreaterThanFrom"/>");
               return false;
           }
           
           for (var i=0; i<rangeValues.length; i++) {
               if (rangeValues[i].from == theFrom && rangeValues[i].to == theTo) {
-                  alert("<fmt:message key="pointEdit.text.listContainsRange"/> "+ theFrom +" - "+ theTo);
+                  alert("<spring:message code="pointEdit.text.listContainsRange"/> "+ theFrom +" - "+ theTo);
                   return false;
               }
           }
@@ -406,7 +406,7 @@
                   function(data) {
                       return "<a href='#' onclick='return textRendererEditor.removeRangeValue("+
                              data.from +","+ data.to +");'><img src='images/bullet_delete.png' width='16' "+
-                             "height='16' border='0' title='<fmt:message key="common.delete"/>'/><\/a>";
+                             "height='16' border='0' title='<spring:message code="common.delete"/>'/><\/a>";
                   }
                   ], null);
       };

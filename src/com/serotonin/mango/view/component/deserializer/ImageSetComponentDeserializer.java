@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.AnalogGraphicComponent;
 import com.serotonin.mango.view.component.BinaryGraphicComponent;
 import com.serotonin.mango.view.component.MultistateGraphicComponent;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.AnalogGraphicComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.BinaryGraphicComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.ImageSetComponentDTO;
@@ -16,7 +17,7 @@ import java.io.IOException;
 
 public class ImageSetComponentDeserializer extends JsonDeserializer<ImageSetComponentDTO> {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
     @Override
     public ImageSetComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

@@ -49,14 +49,14 @@
     function getHistoryTableData() {
         var limit = parseInt($get("historyLimit"));
         if (isNaN(limit))
-            alert("<fmt:message key="pointDetails.recordCountError"/>");
+            alert("<spring:message code="pointDetails.recordCountError"/>");
         else {
             startImageFader($("historyLimitImg"));
             DataPointDetailsDwr.getHistoryTableData(limit, function(response) {
             	var data = response.data.history;
                 dwr.util.removeAllRows("historyTableData");
                 if (!data || data.length == 0)
-                    dwr.util.addRows("historyTableData", ["<fmt:message key="common.noData"/>"], [function(data) { return data; }]);
+                    dwr.util.addRows("historyTableData", ["<spring:message code="common.noData"/>"], [function(data) { return data; }]);
                 else {
                     dwr.util.addRows("historyTableData", data,
                         [
@@ -101,7 +101,7 @@
         var periodType = parseInt($get("statsChartDurationType"));
         
         if (isNaN(period))
-            alert("<fmt:message key="pointDetails.timePeriodError"/>");
+            alert("<spring:message code="pointDetails.timePeriodError"/>");
         else {
             startImageFader($("statsChartImg"));
             DataPointDetailsDwr.getStatsChartData(periodType, period, true, function(response) {
@@ -115,13 +115,13 @@
     function togglePanel(img, panelId) {
         if (!img.minimized) {
             img.src = "images/arrow_out.png";
-            img.title = "<fmt:message key="common.maximize"/>";
+            img.title = "<spring:message code="common.maximize"/>";
             hide(panelId);
             img.minimized = true;
         }
         else {
             img.src = "images/arrow_in.png";
-            img.title = "<fmt:message key="common.minimize"/>";
+            img.title = "<spring:message code="common.minimize"/>";
             show(panelId);
             img.minimized = false;
         }
@@ -131,7 +131,7 @@
     function getFlipbookChart() {
         var limit = parseInt($get("flipbookLimit"));
         if (isNaN(limit))
-            alert("<fmt:message key="pointDetails.imageCountError"/>");
+            alert("<spring:message code="pointDetails.imageCountError"/>");
         else {
             startImageFader($("flipbookChartImg"));
             DataPointDetailsDwr.getFlipbookData(limit, function(response) {
@@ -164,7 +164,7 @@
   <table width="100%">
     <tr>
       <td valign="top" align="right">
-        <fmt:message key="pointDetails.goto"/>:&nbsp;
+        <spring:message code="pointDetails.goto"/>:&nbsp;
         <sst:select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
           <c:forEach items="${userPoints}" var="point">
             <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
@@ -201,22 +201,22 @@
               </td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.value"/></td>
+              <td class="formLabelRequired"><spring:message code="common.value"/></td>
               <td id="pointValue" class="formField"></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.time"/></td>
+              <td class="formLabelRequired"><spring:message code="common.time"/></td>
               <td id="pointValueTime" class="formField"></td>
             </tr>
             <tr id="pointChangeNode" style="display:none">
               <td class="formLabelRequired">
                 <tag:img id="pointChanging" png="icon_edit" title="common.set"/>
-                <fmt:message key="common.set"/>
+                <spring:message code="common.set"/>
               </td>
               <td id="pointChange" class="formField"></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField">${point.xid}</td>
             </tr>
             <tr><td colspan="2" id="pointMessages"></td></tr>
@@ -226,10 +226,10 @@
         <div class="borderDiv marB marR">
           <table width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="pointDetails.statistics"/></td>
+              <td class="smallTitle"><spring:message code="pointDetails.statistics"/></td>
               <td id="statsAsof"></td>
               <td align="right">
-                <fmt:message key="pointDetails.timePeriod"/>:
+                <spring:message code="pointDetails.timePeriod"/>:
                 <input id="statsChartDuration" style="text-align:right;" type="text" class="formVeryShort"
                         value='${empty periodCount ? "1" : periodCount}'/>
                 <sst:select id="statsChartDurationType" value="${periodType}">
@@ -247,22 +247,22 @@
         <div class="borderDiv marB marR">
           <table width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="pointDetails.history"/></td>
+              <td class="smallTitle"><spring:message code="pointDetails.history"/></td>
               <td id="historyTableAsof"></td>
               <td align="right">
-                <fmt:message key="pointDetails.show"/>
+                <spring:message code="pointDetails.show"/>
                 <input id="historyLimit" type="text" style="text-align:right;" value="${historyLimit}"
                         class="formVeryShort"/>
-                <fmt:message key="pointDetails.mostRecentRecords"/>
+                <spring:message code="pointDetails.mostRecentRecords"/>
                 <tag:img id="historyLimitImg" png="control_play_blue" title="pointDetails.getData" onclick="getHistoryTableData()"/>
               </td>
             </tr>
           </table>
           <table cellspacing="1">
             <tr class="rowHeader">
-              <td><fmt:message key="common.value"/></td>
-              <td><fmt:message key="common.time"/></td>
-              <td><fmt:message key="common.annotation"/></td>
+              <td><spring:message code="common.value"/></td>
+              <td><spring:message code="common.time"/></td>
+              <td><spring:message code="common.annotation"/></td>
             </tr>
             <tbody id="historyTableData"></tbody>
           </table>
@@ -273,7 +273,7 @@
         <div class="borderDiv marB">
           <table width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="notes.userNotes"/></td>
+              <td class="smallTitle"><spring:message code="notes.userNotes"/></td>
               <td align="right">
                 <tag:img png="comment_add" title="notes.addNote"
                         onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_POINT']}, ${point.id})"/>
@@ -292,7 +292,7 @@
           <div class="borderDiv marB">
             <table width="100%">
               <tr>
-                <td class="smallTitle"><fmt:message key="pointDetails.chart"/></td>
+                <td class="smallTitle"><spring:message code="pointDetails.chart"/></td>
                 <td id="imageChartAsof"></td>
                 <td align="right"><tag:dateRange/></td>
                 <td><tag:img id="imageChartImg" png="control_play_blue" title="pointDetails.imageChartButton"
@@ -311,10 +311,10 @@
           <div class="borderDiv marB">
             <table width="100%">
               <tr>
-                <td class="smallTitle"><fmt:message key="pointDetails.flipbook"/></td>
+                <td class="smallTitle"><spring:message code="pointDetails.flipbook"/></td>
                 <td id="flipbookAsof"></td>
                 <td align="right">
-                  <fmt:message key="pointDetails.images"/>:
+                  <spring:message code="pointDetails.images"/>:
                   <input id="flipbookLimit" style="text-align:right;" type="text" value="${flipbookLimit}"
                           class="formVeryShort"/>
                   <tag:img id="flipbookChartImg" png="control_play_blue" title="pointDetails.getImages" 
@@ -334,7 +334,7 @@
         <div class="borderDiv marB">
           <table width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="pointDetails.events"/></td>
+              <td class="smallTitle"><spring:message code="pointDetails.events"/></td>
               <td align="right">
                 <tag:img png="arrow_in" title="common.maximize" onclick="togglePanel(this, 'eventsTable');"/>
                 <a href=""><tag:img png="control_repeat_blue" title="common.refresh"/></a>
@@ -343,12 +343,12 @@
           </table>
           <table id="eventsTable" cellspacing="1" cellpadding="0" width="100%">
             <tr class="rowHeader">
-              <td><fmt:message key="pointDetails.id"/></td>
-              <td><fmt:message key="common.alarmLevel"/></td>
-              <td><fmt:message key="common.activeTime"/></td>
-              <td><fmt:message key="pointDetails.message"/></td>
-              <td><fmt:message key="common.status"/></td>
-              <td><fmt:message key="events.acknowledged"/></td>
+              <td><spring:message code="pointDetails.id"/></td>
+              <td><spring:message code="common.alarmLevel"/></td>
+              <td><spring:message code="common.activeTime"/></td>
+              <td><spring:message code="pointDetails.message"/></td>
+              <td><spring:message code="common.status"/></td>
+              <td><spring:message code="events.acknowledged"/></td>
             </tr>
             
             <c:forEach items="${events}" var="event" varStatus="status" end="19">
@@ -370,9 +370,9 @@
                         <td valign="top" width="16"><tag:img png="comment" title="notes.note"/></td>
                         <td valign="top">
                           <span class="copyTitle">
-                            ${comment.prettyTime} <fmt:message key="notes.by"/>
+                            ${comment.prettyTime} <spring:message code="notes.by"/>
                             <c:choose>
-                              <c:when test="${empty comment.username}"><fmt:message key="common.deleted"/></c:when>
+                              <c:when test="${empty comment.username}"><spring:message code="common.deleted"/></c:when>
                               <c:otherwise><c:out value="${comment.username}"/></c:otherwise>
                             </c:choose>
                           </span><br/>
@@ -385,10 +385,10 @@
                 <td>
                   <c:choose>
                     <c:when test="${event.active}">
-                      <fmt:message key="common.active"/>
+                      <spring:message code="common.active"/>
                       <a href="events.shtm"><tag:img png="flag_white" title="common.active"/></a>
                     </c:when>
-                    <c:when test="${!event.rtnApplicable}"><fmt:message key="common.nortn"/></c:when>
+                    <c:when test="${!event.rtnApplicable}"><spring:message code="common.nortn"/></c:when>
                     <c:otherwise>
                       ${sst:time(event.rtnTimestamp)} - <sst:i18n message="${event.rtnMessage}"/>
                     </c:otherwise>
@@ -403,10 +403,10 @@
               </tr>
             </c:forEach>
             <c:if test="${sst:size(events) > 20}">
-              <tr class="row"><td align="center" colspan="6"><fmt:message key="pointDetails.maxEvents"/> ${sst:size(events)}</td></tr>
+              <tr class="row"><td align="center" colspan="6"><spring:message code="pointDetails.maxEvents"/> ${sst:size(events)}</td></tr>
             </c:if>
             <c:if test="${empty events}">
-              <tr class="row"><td colspan="6"><fmt:message key="events.emptyList"/></td></tr>
+              <tr class="row"><td colspan="6"><spring:message code="events.emptyList"/></td></tr>
             </c:if>
           </table>
         </div>
@@ -420,10 +420,10 @@
     <tr>
       <td valign="top">
         <div class="borderDiv marR">
-          <span class="smallTitle" style="margin:3px;"><fmt:message key="pointDetails.views"/></span>
+          <span class="smallTitle" style="margin:3px;"><spring:message code="pointDetails.views"/></span>
           <table width="100%" cellspacing="1">
             <tr class="rowHeader">
-              <td><fmt:message key="pointDetails.name"/></td>
+              <td><spring:message code="pointDetails.name"/></td>
               <td></td>
             </tr>
             <c:forEach items="${views}" var="view" varStatus="status">
@@ -434,7 +434,7 @@
               </tr>
             </c:forEach>
             <c:if test="${empty views}">
-              <tr class="row"><td colspan="2"><fmt:message key="pointDetails.notInView"/></td></tr>
+              <tr class="row"><td colspan="2"><spring:message code="pointDetails.notInView"/></td></tr>
             </c:if>
           </table>
         </div>
@@ -443,12 +443,12 @@
       <c:if test="${isRoleAdmin}">
       <td colspan="2" valign="top">
         <div class="borderDiv">
-          <span class="smallTitle" style="margin:3px;"><fmt:message key="pointDetails.userAccess"/></span>
+          <span class="smallTitle" style="margin:3px;"><spring:message code="pointDetails.userAccess"/></span>
           <table width="100%" cellspacing="1">
             <tr class="rowHeader">
               <td width="16"></td>
-              <td><fmt:message key="pointDetails.username"/></td>
-              <td><fmt:message key="pointDetails.accessType"/></td>
+              <td><spring:message code="pointDetails.username"/></td>
+              <td><spring:message code="pointDetails.accessType"/></td>
             </tr>
             <c:forEach items="${users}" var="userData" varStatus="status">
               <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
@@ -457,11 +457,11 @@
                 <td><c:out value="${user.username}"/></td>
                 <td>
                   <c:choose>
-                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.READ']}"><fmt:message key="common.access.read"/></c:when>
-                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.SET']}"><fmt:message key="common.access.set"/></c:when>
-                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.DATA_SOURCE']}"><fmt:message key="common.access.dataSource"/></c:when>
-                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.ADMIN']}"><fmt:message key="common.access.admin"/></c:when>
-                    <c:otherwise><fmt:message key="common.unknown"/> (${userData.accessType})</c:otherwise>
+                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.READ']}"><spring:message code="common.access.read"/></c:when>
+                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.SET']}"><spring:message code="common.access.set"/></c:when>
+                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.DATA_SOURCE']}"><spring:message code="common.access.dataSource"/></c:when>
+                    <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.ADMIN']}"><spring:message code="common.access.admin"/></c:when>
+                    <c:otherwise><spring:message code="common.unknown"/> (${userData.accessType})</c:otherwise>
                   </c:choose>
                 </td>
               </tr>

@@ -27,7 +27,7 @@
   }
   
   function sendWhoIs() {
-      $set("whoIsMessage", "<fmt:message key="dsEdit.bacnetIp.sendingWhoIs"/>");
+      $set("whoIsMessage", "<spring:message code="dsEdit.bacnetIp.sendingWhoIs"/>");
       dwr.util.removeAllRows("iamsReceived");
       whoIsButtons(true);
       DataSourceEditDwr.sendBACnetWhoIs($get("deviceId"), $get("broadcastAddress"), $get("port"), $get("timeout"), 
@@ -51,7 +51,7 @@
                       function(device) { return device.value; },
                       function(device) {
                           return writeImage("deviceDetailsImg"+ device.key, null, "control_play_blue",
-                                  "<fmt:message key="dsEdit.bacnetIp.getDetails"/>", "getDeviceDetails("+ device.key +")");
+                                  "<spring:message code="dsEdit.bacnetIp.getDetails"/>", "getDeviceDetails("+ device.key +")");
                       }
                   ],
                   {
@@ -97,12 +97,12 @@
           obj = result.deviceDetails[i];
           objectNode = dojo.widget.createWidget("TreeNode", {
                   title: obj.objectName +" ("+ obj.objectTypeDescription +") "+ writeImageSQuote(null, null,
-                          "icon_comp_add", "<fmt:message key="dsEdit.bacnetIp.addPoint"/>", "addPoint("+ i +")"),
+                          "icon_comp_add", "<spring:message code="dsEdit.bacnetIp.addPoint"/>", "addPoint("+ i +")"),
                   isFolder: "true"});
           parentNode.addChild(objectNode);
           
           objectNode.addChild(dojo.widget.createWidget("TreeNode",
-                  { title: "<fmt:message key="dsEdit.bacnetIp.presentValue"/>: "+ obj.prettyPresentValue}));
+                  { title: "<spring:message code="dsEdit.bacnetIp.presentValue"/>: "+ obj.prettyPresentValue}));
       }
       
       parentNode.expand();
@@ -125,7 +125,7 @@
   }
   
   function cancelWhoIsCB() {
-      $set("whoIsMessage", "<fmt:message key="dsEdit.bacnetIp.listenerStopped"/>");
+      $set("whoIsMessage", "<spring:message code="dsEdit.bacnetIp.listenerStopped"/>");
       whoIsButtons(false);
   }
   
@@ -176,7 +176,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.bacnetIp.device"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.device"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.remoteDeviceIp; };
   }
 
@@ -235,11 +235,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.bacnetIp.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.bacnetIp.desc"/></c:set>
 <c:set var="dsHelpId" value="bacnetIpDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -249,45 +249,45 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.deviceId"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.deviceId"/></td>
           <td class="formField"><input id="deviceId" type="text" value="${dataSource.deviceId}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.broadcastAddress"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.broadcastAddress"/></td>
           <td class="formField"><input id="broadcastAddress" type="text" value="${dataSource.broadcastAddress}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.port"/></td>
           <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.timeout"/></td>
           <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.segmentTimeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.segmentTimeout"/></td>
           <td class="formField"><input id="segTimeout" type="text" value="${dataSource.segTimeout}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.segmentWindow"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.segmentWindow"/></td>
           <td class="formField"><input id="segWindow" type="text" value="${dataSource.segWindow}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.covLease"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.covLease"/></td>
           <td class="formField"><input id="covSubscriptionTimeoutMinutes" type="text" 
                   value="${dataSource.covSubscriptionTimeoutMinutes}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.maxReadMultSeg"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.maxReadMultSeg"/></td>
           <td class="formField"><input id="maxReadMultipleReferencesSegmented" type="text" 
                   value="${dataSource.maxReadMultipleReferencesSegmented}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.maxReadMultNonseg"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.maxReadMultNonseg"/></td>
           <td class="formField"><input id="maxReadMultipleReferencesNonsegmented" type="text" 
                   value="${dataSource.maxReadMultipleReferencesNonsegmented}"/></td>
         </tr>
@@ -300,15 +300,15 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.bacnetIp.discovery"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.bacnetIp.discovery"/></td></tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.port"/></td>
           <td class="formField"><input id="whoIsPort" type="text" class="formShort"/></td>
         </tr>
         <tr>
           <td colspan="2" align="center">
-            <input id="sendWhoIsBtn" type="button" value="<fmt:message key="dsEdit.bacnetIp.sendWhoIs"/>" onclick="sendWhoIs();"/>
-            <input id="cancelWhoIsBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="cancelWhoIs();"/>
+            <input id="sendWhoIsBtn" type="button" value="<spring:message code="dsEdit.bacnetIp.sendWhoIs"/>" onclick="sendWhoIs();"/>
+            <input id="cancelWhoIsBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="cancelWhoIs();"/>
           </td>
         </tr>
         
@@ -318,7 +318,7 @@
           <td colspan="2">
             <table cellspacing="1">
               <tr class="rowHeader">
-                <td><fmt:message key="dsEdit.bacnetIp.deviceAddress"/></td>
+                <td><spring:message code="dsEdit.bacnetIp.deviceAddress"/></td>
                 <td></td>
               </tr>
               <tbody id="iamsReceived"></tbody>
@@ -327,7 +327,7 @@
         </tr>
         
         <tbody id="deviceDetailsMessage" style="display:none;" class="formError">
-          <tr><td colspan="2"><fmt:message key="dsEdit.bacnetIp.gettingDeviceDetails"/></td></tr>
+          <tr><td colspan="2"><spring:message code="dsEdit.bacnetIp.gettingDeviceDetails"/></td></tr>
         </tbody>
         <tbody id="deviceDetails">
           <tr><td colspan="2"><div dojoType="Tree" toggle="wipe" widgetId="deviceDetailsTree"></div></td></tr>
@@ -337,30 +337,30 @@
     
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.bacnetIp.objectList"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.bacnetIp.objectList"/></td></tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceIp"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceIp"/></td>
           <td class="formField"><input id="objListIp" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDevicePort"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDevicePort"/></td>
           <td class="formField"><input id="objListPort" type="text" class="formShort"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.bacnetIp.remoteDeviceNetworkNumber"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.bacnetIp.remoteDeviceNetworkNumber"/></td>
           <td class="formField"><input id="objListNetNumber" type="text" class="formShort"/></td>
         </tr>
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.bacnetIp.remoteDeviceNetworkAddress"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.bacnetIp.remoteDeviceNetworkAddress"/></td>
           <td class="formField"><input id="objListNetAddr" type="text" class="formShort"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceInstanceNumber"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceInstanceNumber"/></td>
           <td class="formField"><input id="objListDevId" type="text" class="formShort"/></td>
         </tr>
         <tr>
           <td colspan="2" align="center">
-            <input id="sendObjListBtn" type="button" value="<fmt:message key="dsEdit.bacnetIp.sendObjList"/>" onclick="sendObjListRequest();"/>
+            <input id="sendObjListBtn" type="button" value="<spring:message code="dsEdit.bacnetIp.sendObjList"/>" onclick="sendObjListRequest();"/>
           </td>
         </tr>
         
@@ -372,76 +372,76 @@
 
 <tag:pointList pointHelpId="bacnetIpPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceIp"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceIp"/></td>
     <td class="formField"><input type="text" id="remoteDeviceIp"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDevicePort"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDevicePort"/></td>
     <td class="formField"><input type="text" id="remoteDevicePort"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceNetworkNumber"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceNetworkNumber"/></td>
     <td class="formField"><input type="text" id="networkNumber"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceNetworkAddress"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceNetworkAddress"/></td>
     <td class="formField"><input type="text" id="networkAddress"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.remoteDeviceInstanceNumber"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.remoteDeviceInstanceNumber"/></td>
     <td class="formField"><input type="text" id="remoteDeviceInstanceNumber"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.objectType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.objectType"/></td>
     <td class="formField">
       <select name="objectTypeId" onchange="objectTypeChanged()">
-        <option value="<c:out value="<%= ObjectType.accessDoor.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.accessDoor"/></option>
-        <option value="<c:out value="<%= ObjectType.accumulator.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.accumulator"/></option>
-        <option value="<c:out value="<%= ObjectType.analogInput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.analogInput"/></option>
-        <option value="<c:out value="<%= ObjectType.analogOutput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.analogOutput"/></option>
-        <option value="<c:out value="<%= ObjectType.analogValue.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.analogValue"/></option>
-        <option value="<c:out value="<%= ObjectType.averaging.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.averaging"/></option>
-        <option value="<c:out value="<%= ObjectType.binaryInput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.binaryInput"/></option>
-        <option value="<c:out value="<%= ObjectType.binaryOutput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.binaryOutput"/></option>
-        <option value="<c:out value="<%= ObjectType.binaryValue.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.binaryValue"/></option>
-        <option value="<c:out value="<%= ObjectType.lifeSafetyPoint.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.lifeSafetyPoint"/></option>
-        <option value="<c:out value="<%= ObjectType.lifeSafetyZone.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.lifeSafetyZone"/></option>
-        <option value="<c:out value="<%= ObjectType.loop.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.loop"/></option>
-        <option value="<c:out value="<%= ObjectType.multiStateInput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.multiStateInput"/></option>
-        <option value="<c:out value="<%= ObjectType.multiStateOutput.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.multiStateOutput"/></option>
-        <option value="<c:out value="<%= ObjectType.multiStateValue.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.multiStateValue"/></option>
-        <option value="<c:out value="<%= ObjectType.pulseConverter.intValue() %>"/>"><fmt:message key="dsEdit.bacnetIp.objectType.pulseConverter"/></option>
+        <option value="<c:out value="<%= ObjectType.accessDoor.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.accessDoor"/></option>
+        <option value="<c:out value="<%= ObjectType.accumulator.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.accumulator"/></option>
+        <option value="<c:out value="<%= ObjectType.analogInput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.analogInput"/></option>
+        <option value="<c:out value="<%= ObjectType.analogOutput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.analogOutput"/></option>
+        <option value="<c:out value="<%= ObjectType.analogValue.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.analogValue"/></option>
+        <option value="<c:out value="<%= ObjectType.averaging.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.averaging"/></option>
+        <option value="<c:out value="<%= ObjectType.binaryInput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.binaryInput"/></option>
+        <option value="<c:out value="<%= ObjectType.binaryOutput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.binaryOutput"/></option>
+        <option value="<c:out value="<%= ObjectType.binaryValue.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.binaryValue"/></option>
+        <option value="<c:out value="<%= ObjectType.lifeSafetyPoint.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.lifeSafetyPoint"/></option>
+        <option value="<c:out value="<%= ObjectType.lifeSafetyZone.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.lifeSafetyZone"/></option>
+        <option value="<c:out value="<%= ObjectType.loop.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.loop"/></option>
+        <option value="<c:out value="<%= ObjectType.multiStateInput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.multiStateInput"/></option>
+        <option value="<c:out value="<%= ObjectType.multiStateOutput.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.multiStateOutput"/></option>
+        <option value="<c:out value="<%= ObjectType.multiStateValue.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.multiStateValue"/></option>
+        <option value="<c:out value="<%= ObjectType.pulseConverter.intValue() %>"/>"><spring:message code="dsEdit.bacnetIp.objectType.pulseConverter"/></option>
       </select>
     </td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.objectInstanceNumber"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.objectInstanceNumber"/></td>
     <td class="formField"><input type="text" id="objectInstanceNumber"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.useCov"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.useCov"/></td>
     <td class="formField"><input type="checkbox" id="useCovSubscription"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable" onclick="settableChanged()"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.bacnetIp.writePriority"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.bacnetIp.writePriority"/></td>
     <td class="formField"><input type="text" id="writePriority"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>

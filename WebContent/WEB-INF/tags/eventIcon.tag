@@ -33,5 +33,5 @@
   <c:when test="${event.alarmLevel == 3}"><tag:img png="flag_orange_off" title="common.alarmLevel.critical.rtn"/></c:when>
   <c:when test="${event.active && event.alarmLevel == 4}"><tag:img png="flag_red" title="common.alarmLevel.lifeSafety"/></c:when>
   <c:when test="${event.alarmLevel == 4}"><tag:img png="flag_red_off" title="common.alarmLevel.lifeSafety.rtn"/></c:when>
-  <c:otherwise>(<fmt:message key="common.alarmLevel.unknown"/> ${event.alarmLevel})</c:otherwise>
+  <c:otherwise>(<spring:message code="common.alarmLevel.unknown"/> ${event.alarmLevel})</c:otherwise>
 </c:choose>

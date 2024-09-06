@@ -21,7 +21,7 @@
 
 <html>
 <head>
-  <title><fmt:message key="header.title"/></title>
+  <title><spring:message code="header.title"/></title>
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <link href="resources/mobile.css" type="text/css" rel="stylesheet"/>
 </head>
@@ -32,7 +32,7 @@
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
-    <td class="footer" align="center">&copy;2016<fmt:message key="footer.rightsReserved"/></td>
+    <td class="footer" align="center">&copy;2016<spring:message code="footer.rightsReserved"/></td>
   </tr>
 </table>
 

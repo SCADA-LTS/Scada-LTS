@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.view.components.compound.*;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComponentDTO> {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
     @Override
     public CompoundComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

@@ -25,7 +25,7 @@
         $("username").focus();
         BrowserDetect.init();
         
-        $set("browser", BrowserDetect.browser +" "+ BrowserDetect.version +" <fmt:message key="login.browserOnPlatform"/> "+ BrowserDetect.OS);
+        $set("browser", BrowserDetect.browser +" "+ BrowserDetect.version +" <spring:message code="login.browserOnPlatform"/> "+ BrowserDetect.OS);
         
         if (checkCombo(BrowserDetect.browser, BrowserDetect.version, BrowserDetect.OS)) {
             $("browserImg").src = "images/accept.png";
@@ -40,31 +40,31 @@
     
     function nag() {
         if (!compatible)
-            alert('<fmt:message key="login.nag"/>');
+            alert('<spring:message code="login.nag"/>');
     }
   </script>
 
   <div class="login-container">
 
     <div class="login-browser">
-      <span id="browser"><fmt:message key="login.unknownBrowser"/></span>
+      <span id="browser"><spring:message code="login.unknownBrowser"/></span>
       <img id="browserImg" src="images/magnifier.png" style="height: 10px;width: auto;"/>
-      <span id="okMsg" style="display:none"><fmt:message key="login.supportedBrowser"/></span>
-      <span id="warnMsg" style="display:none"><fmt:message key="login.unsupportedBrowser"/></span>
+      <span id="okMsg" style="display:none"><spring:message code="login.supportedBrowser"/></span>
+      <span id="warnMsg" style="display:none"><spring:message code="login.unsupportedBrowser"/></span>
     </div>
 
     <div class="login-box">
       <form name="f" action="login.htm" method="post" onclick="nag()">
 
         <div class="form-box">
-          <div class="formLabelRequired"><fmt:message key="login.userId"/></div>
+          <div class="formLabelRequired"><spring:message code="login.userId"/></div>
           <div class="formField">
             <input id="username" type="text" name="username" value="${login.username}" maxlength="40"/>
           </div>
         </div>
 
         <div class="form-box">
-          <div class="formLabelRequired"><fmt:message key="login.password"/></div>
+          <div class="formLabelRequired"><spring:message code="login.password"/></div>
           <div class="formField">
             <input id="password" type="password" name="password" value="${login.password}" maxlength="20"/>
           </div>
@@ -80,7 +80,7 @@
 
 
         <div class="login-button" align="center">
-          <input type="submit" value="<fmt:message key="login.loginButton"/>"/>
+          <input type="submit" value="<spring:message code="login.loginButton"/>"/>
           <tag:help id="welcomeToMango"/>
         </div>
 

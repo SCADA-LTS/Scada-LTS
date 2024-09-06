@@ -21,28 +21,28 @@
 <table>
   <tr>
     <td colspan="2" align="center">
-      <input type="submit" value="<fmt:message key="common.save"/>"
+      <input type="submit" value="<spring:message code="common.save"/>"
               onclick="return doSave('<%= DataPointEditController.SUBMIT_SAVE %>');"/>
       <c:choose>
         <c:when test="${form.enabled}">
-          <input type="submit" value="<fmt:message key="pointEdit.buttons.disable"/>"
+          <input type="submit" value="<spring:message code="pointEdit.buttons.disable"/>"
                   onclick="return doSave('<%= DataPointEditController.SUBMIT_DISABLE %>');"/>
-          <input type="submit" value="<fmt:message key="pointEdit.buttons.restart"/>" 
+          <input type="submit" value="<spring:message code="pointEdit.buttons.restart"/>"
                   onclick="return doSave('<%= DataPointEditController.SUBMIT_RESTART %>');"/>
         </c:when>
         <c:otherwise>
-          <input type="submit" value="<fmt:message key="pointEdit.buttons.enable"/>"
+          <input type="submit" value="<spring:message code="pointEdit.buttons.enable"/>"
                   onclick="return doSave('<%= DataPointEditController.SUBMIT_ENABLE %>');"/>
         </c:otherwise>
       </c:choose>
       
-      <input type="button" value="<fmt:message key="common.cancel"/>"
+      <input type="button" value="<spring:message code="common.cancel"/>"
               onclick="window.location='data_source_edit.shtm?dsid=${dataSource.id}&pid=${form.id}';"/>
     </td>
     <td></td>
   </tr>
   
   <tr>
-    <td colspan="2"><fmt:message key="pointEdit.buttons.note"/></td>
+    <td colspan="2"><span class="smallTitle"><spring:message code="pointEdit.buttons.note.prefix"/></span> <spring:message code="pointEdit.buttons.note"/></td>
   </tr>
 </table>

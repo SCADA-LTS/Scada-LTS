@@ -1,12 +1,21 @@
 package org.scada_lts.utils.security;
 
+import com.serotonin.mango.util.LoggingUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static org.scada_lts.utils.PathSecureUtils.*;
 
 public class SafeFile {
+
+    private static final Logger LOG = LogManager.getLogger(SafeFile.class);
 
     private final File file;
 
@@ -33,6 +42,15 @@ public class SafeFile {
         if(validate())
             return file.toPath();
         return Path.of("");
+    }
+
+    public void delete() {
+        try {
+            Files.delete(file.toPath());
+        } catch (IOException e) {
+            LOG.error(LoggingUtils.exceptionInfo(e));
+        }
+        file.delete();
     }
 
     private boolean validate() {

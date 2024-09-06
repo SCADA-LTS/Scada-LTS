@@ -38,8 +38,10 @@
             for (var j = 0; j < errorMessages.length; j++) {
                 errorMessages[j].innerHTML = '';
             }
-            showMessage("message", "<fmt:message key="publisherEdit.saved"/>");
-            showHttpSenderTest();
+            showMessage("message", "<spring:message code="publisherEdit.saved"/>");
+            if (${publisher.type.id == applicationScope['constants.PublisherVO.Types.HTTP_SENDER']}) {
+                showHttpSenderTest();
+            }
         }
     }
     
@@ -68,7 +70,7 @@
       <td>
         <c:if test="${!empty publisherEvents}">
           <table class="borderDiv marB">
-            <tr><td class="smallTitle"><fmt:message key="publisherEdit.currentAlarms"/></td></tr>
+            <tr><td class="smallTitle"><spring:message code="publisherEdit.currentAlarms"/></td></tr>
             <c:forEach items="${publisherEvents}" var="event">
               <tr><td class="formError">
                 <tag:eventIcon eventBean="${event}"/>
@@ -86,12 +88,12 @@
             <tr>
               <td colspan="2" class="smallTitle">
                 <tag:img png="transmit" title="common.edit"/>
-                <fmt:message key="publisherEdit.generalProperties"/> <tag:help id="generalPublisherProperties"/>
+                <spring:message code="publisherEdit.generalProperties"/> <tag:help id="generalPublisherProperties"/>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="publisherEdit.name"/></td>
+              <td class="formLabelRequired"><spring:message code="publisherEdit.name"/></td>
               <td class="formField">
                 <input type="text" id="name" value="${publisher.name}"/>
                 <div id="nameMsg" class="formError" style="display:none;"></div>
@@ -99,7 +101,7 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField">
                 <input type="text" id="xid" value="${publisher.xid}"/>
                 <div id="xidMsg" class="formError" style="display:none;"></div>
@@ -107,12 +109,12 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.enabled"/></td>
+              <td class="formLabelRequired"><spring:message code="common.enabled"/></td>
               <td class="formField"><sst:checkbox id="enabled" selectedValue="${publisher.enabled}"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="publisherEdit.cacheWarning"/></td>
+              <td class="formLabelRequired"><spring:message code="publisherEdit.cacheWarning"/></td>
               <td class="formField">
                 <input type="text" id="cacheWarningSize" value="${publisher.cacheWarningSize}" class="formShort"/>
                 <div id="cacheWarningSizeMsg" class="formError" style="display:none;"></div>
@@ -120,23 +122,23 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="publisherEdit.updateEvent"/></td>
+              <td class="formLabelRequired"><spring:message code="publisherEdit.updateEvent"/></td>
               <td class="formField">
                 <sst:select id="changesOnly" value="${publisher.changesOnly}">
-                  <sst:option value="false"><fmt:message key="publisherEdit.updateEvent.all"/></sst:option>
-                  <sst:option value="true"><fmt:message key="publisherEdit.updateEvent.changes"/></sst:option>
+                  <sst:option value="false"><spring:message code="publisherEdit.updateEvent.all"/></sst:option>
+                  <sst:option value="true"><spring:message code="publisherEdit.updateEvent.changes"/></sst:option>
                 </sst:select>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="publisherEdit.snapshot"/></td>
+              <td class="formLabelRequired"><spring:message code="publisherEdit.snapshot"/></td>
               <td class="formField"><sst:checkbox id="sendSnapshot" onclick="sendSnapshotChanged()"
                       selectedValue="${publisher.sendSnapshot}"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="publisherEdit.snapshotPeriod"/></td>
+              <td class="formLabelRequired"><spring:message code="publisherEdit.snapshotPeriod"/></td>
               <td class="formField">
                 <input type="text" id="snapshotSendPeriods" value="${publisher.snapshotSendPeriods}" class="formShort"/>
                 <sst:select id="snapshotSendPeriodType" value="${publisher.snapshotSendPeriodType}">
@@ -168,8 +170,8 @@
     
     <tr>
       <td align="center">
-        <input type="button" value="<fmt:message key="common.save"/>" onclick="savePublisher()"/>
-        <input type="button" value="<fmt:message key="common.cancel"/>" onclick="window.location='publishers.shtm'"/>
+        <input type="button" value="<spring:message code="common.save"/>" onclick="savePublisher()"/>
+        <input type="button" value="<spring:message code="common.cancel"/>" onclick="window.location='publishers.shtm'"/>
       </td>
     </tr>
   </table>

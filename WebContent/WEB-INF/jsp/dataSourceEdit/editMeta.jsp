@@ -50,7 +50,7 @@
      // pointListColumnFunctions.push(function(p) {
      //     var id = "generateImg"+ p.id;
      //     var onclick = "generateHistory("+ p.id +")";
-     //     return writeImage(id, null, "clock-history", "<fmt:message key="dsEdit.meta.generate"/>", onclick);
+     //     return writeImage(id, null, "clock-history", "<spring:message code="dsEdit.meta.generate"/>", onclick);
      // });
      return null;
   }
@@ -217,14 +217,14 @@
   });
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.meta.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.meta.desc"/></c:set>
 <c:set var="dsHelpId" value="metaDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="metaPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -233,26 +233,26 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.scriptContext"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
       <select id="allPointsList"></select>
       <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">
-          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
+          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
         </tbody>
         <tbody id="contextTableHeaders" style="display:none;">
           <tr class="smRowHeader">
-            <td><fmt:message key="dsEdit.meta.pointName"/></td>
-            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
-            <td><fmt:message key="dsEdit.pointDataType"/></td>
-            <td><fmt:message key="dsEdit.meta.var"/></td>
+            <td><spring:message code="dsEdit.meta.pointName"/></td>
+            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+            <td><spring:message code="dsEdit.pointDataType"/></td>
+            <td><spring:message code="dsEdit.meta.var"/></td>
             <td></td>
           </tr>
         </tbody>
@@ -263,35 +263,35 @@
   
   <tr>
     <td class="formLabelRequired">
-      <fmt:message key="dsEdit.meta.script"/> <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/>
+      <spring:message code="dsEdit.meta.script"/> <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/>
     </td>
     <td class="formField"><textarea id="script" rows="10" cols="50"/></textarea></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.event"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.event"/></td>
     <td class="formField">
       <select id="updateEvent" onchange="updateEventChanged()">
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE %>"/>"><fmt:message key="dsEdit.meta.event.context"/></option>
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE %>"/>"><fmt:message key="dsEdit.meta.event.context.change"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.MINUTES %>"/>"><fmt:message key="dsEdit.meta.event.minute"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.HOURS %>"/>"><fmt:message key="dsEdit.meta.event.hour"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.DAYS %>"/>"><fmt:message key="dsEdit.meta.event.day"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.WEEKS %>"/>"><fmt:message key="dsEdit.meta.event.week"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.MONTHS %>"/>"><fmt:message key="dsEdit.meta.event.month"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.YEARS %>"/>"><fmt:message key="dsEdit.meta.event.year"/></option>
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>"/>"><fmt:message key="dsEdit.meta.event.cron"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE %>"/>"><spring:message code="dsEdit.meta.event.context"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE %>"/>"><spring:message code="dsEdit.meta.event.context.change"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.MINUTES %>"/>"><spring:message code="dsEdit.meta.event.minute"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.HOURS %>"/>"><spring:message code="dsEdit.meta.event.hour"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.DAYS %>"/>"><spring:message code="dsEdit.meta.event.day"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.WEEKS %>"/>"><spring:message code="dsEdit.meta.event.week"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.MONTHS %>"/>"><spring:message code="dsEdit.meta.event.month"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.YEARS %>"/>"><spring:message code="dsEdit.meta.event.year"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>"/>"><spring:message code="dsEdit.meta.event.cron"/></option>
       </select>
     </td>
   </tr>
   
   <tr id="updateCronPatternRow">
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.event.cron"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.event.cron"/></td>
     <td class="formField"><input id="updateCronPattern" type="text"/> <tag:help id="cronPatterns"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.delay"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.delay"/></td>
     <td class="formField">
         <input id="executionDelaySeconds" type="text" class="formShort"/>
         <sst:select id="executionDelayPeriodTypeCode">

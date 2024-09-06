@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
 import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
@@ -65,6 +66,13 @@ public final class SystemSettingsUtils {
     public static final String HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY = "http.protocol.allow-circular-redirects";
     public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
 
+    public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
+
+    private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
+    private static final String SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.query.access.granted.regex";
+    private static final String SECURITY_HTTP_QUERY_LIMIT_KEY = "scadalts.security.http.query.limit";
+    private static final String SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY = "scadalts.security.http.query.protect.enabled";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -95,14 +103,26 @@ public final class SystemSettingsUtils {
         }
     }
 
+    @Deprecated(since = "2.8.0")
     public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
+    public static String serializeMap(Map<String, String> map, Supplier<ObjectMapper> getObjectMapper) throws JsonProcessingException {
+        return getObjectMapper.get().writerWithDefaultPrettyPrinter().writeValueAsString(map);
+    }
+
+    @Deprecated(since = "2.8.0")
     public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) throws IOException {
         if(value == null || "null".equals(value))
             return Collections.emptyMap();
         return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
+    }
+
+    public static Map<String, String> deserializeMap(String value, Supplier<ObjectMapper> getObjectMapper) throws IOException {
+        if(value == null || "null".equals(value))
+            return Collections.emptyMap();
+        return getObjectMapper.get().readValue(value, new TypeReference<HashMap<String, String>>() {});
     }
 
     public static int getEmailTimeout() {
@@ -524,6 +544,54 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 15001;
+        }
+    }
+
+    public static boolean isEventAssignEnabled() {
+        try {
+            String eventAssignEnabled = ScadaConfig.getInstance().getConf().getProperty(EVENT_ASSIGN_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(eventAssignEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessDeniedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessGrantedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static int getSecurityHttpQueryLimit() {
+        try {
+            String securityHttpQueryXssLimit = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_LIMIT_KEY, "4001");
+            return Integer.parseInt(securityHttpQueryXssLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 4002;
+        }
+    }
+
+    public static boolean isSecurityHttpQueryProtectEnabled() {
+        try {
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY, "false");
+            return Boolean.parseBoolean(securityHttpQueryXssEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 }

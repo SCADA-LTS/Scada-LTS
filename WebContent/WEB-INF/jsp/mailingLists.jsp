@@ -117,11 +117,11 @@
                     editingMailingList.id = response.data.mlId;
                     appendMailingList(editingMailingList.id);
                     startImageFader("ml"+ editingMailingList.id +"Img");
-                    setUserMessage("<fmt:message key="mailingLists.added"/>");
+                    setUserMessage("<spring:message code="mailingLists.added"/>");
                     show("deleteMailingListImg");
                 }
                 else
-                    setUserMessage("<fmt:message key="mailingLists.saved"/>");
+                    setUserMessage("<spring:message code="mailingLists.saved"/>");
                 MailingListsDwr.getMailingList(editingMailingList.id, updateMailingList)
             }
         });
@@ -133,7 +133,7 @@
             if (response.hasMessages)
                 setUserMessage(response.messages[0].genericMessage);
             else
-                setUserMessage("<fmt:message key="mailingLists.testEmailMessage"/>");
+                setUserMessage("<spring:message code="mailingLists.testEmailMessage"/>");
         });
         startImageFader("sendTestEmailImg");
     }
@@ -178,7 +178,7 @@
         }
 
         if (user == null)
-            alert("<fmt:message key="mailingLists.noUser"/>");
+            alert("<spring:message code="mailingLists.noUser"/>");
         else {
             var userEntry = {
                 recipientType : <c:out value="<%= EmailRecipient.TYPE_USER %>"/>,
@@ -217,7 +217,7 @@
     function createAddressEntry() {
         var addr = $get("address");
         if (addr == "") {
-            alert("<fmt:message key="mailingLists.noAddress"/>");
+            alert("<spring:message code="mailingLists.noAddress"/>");
             return;
         }
         var addressEntry = {
@@ -448,7 +448,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="mailingLists.mailingLists"/></span>
+                <span class="smallTitle"><spring:message code="mailingLists.mailingLists"/></span>
                 <tag:help id="mailingLists"/>
               </td>
               <td align="right"><tag:img png="book_add" title="common.add" onclick="showMailingList(${NEW_ID})"
@@ -468,7 +468,7 @@
         <div class="borderDiv">
           <table width="100%">
             <tr>
-              <td><span class="smallTitle"><fmt:message key="mailingLists.details"/></span></td>
+              <td><span class="smallTitle"><spring:message code="mailingLists.details"/></span></td>
               <td align="right">
                 <tag:img png="save" onclick="saveMailingList();" title="common.save"/>
                 <tag:img id="deleteMailingListImg" png="delete" onclick="deleteMailingList();" title="common.delete"/>
@@ -481,45 +481,45 @@
 
           <table width="100%">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="mailingLists.name"/></td>
+              <td class="formLabelRequired"><spring:message code="mailingLists.name"/></td>
               <td class="formField"><input id="name" type="text" onmousedown="this.focus()"/></td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="mailingLists.collectInactiveEmails"/><tag:help id="collectInactiveMsg"/></td>
+              <td class="formLabelRequired"><spring:message code="mailingLists.collectInactiveEmails"/><tag:help id="collectInactiveMsg"/></td>
               <td class="formField"><input id="collectInactiveEmails" type="checkbox" onmousedown="this.focus()" onclick="collectInactiveEmails(false)"/></td>
             </tr>
 
             <tr id="cronPatternTr" style="display: none;">
-              <td class="formLabelRequired"><fmt:message key="mailingLists.cronPattern"/><tag:help id="cronPatterns"/></td>
+              <td class="formLabelRequired"><spring:message code="mailingLists.cronPattern"/><tag:help id="cronPatterns"/></td>
               <td class="formField"><input id="cronPattern" type="text" onmousedown="this.focus()"/></td>
             </tr>
 
             <tr id="dailyLimitSentEmailsTr" style="display: none;">
-              <td class="formLabelRequired"><fmt:message key="mailingLists.dailyLimitSentEmails"/></td>
+              <td class="formLabelRequired"><spring:message code="mailingLists.dailyLimitSentEmails"/></td>
               <td class="formField"><input id="dailyLimitSentEmails" type="checkbox" onmousedown="this.focus()" onclick="dailyLimitSentEmails(true)"/></td>
             </tr>
 
             <tr id="dailyLimitSentEmailsNumberTr" style="display: none;">
-              <td class="formLabelRequired"><fmt:message key="mailingLists.dailyLimitSentEmailsNumber"/></td>
+              <td class="formLabelRequired"><spring:message code="mailingLists.dailyLimitSentEmailsNumber"/></td>
               <td class="formField"><input id="dailyLimitSentEmailsNumber" type="text" onmousedown="this.focus()"/></td>
             </tr>
 
             <tr><td class="horzSeparator" colspan="2"></td></tr>
             <tr>
-              <td class="formLabel"><fmt:message key="mailingLists.addUser"/></td>
+              <td class="formLabel"><spring:message code="mailingLists.addUser"/></td>
               <td class="formField">
                 <select id="userList"></select>
                 <tag:img png="add" title="common.add" onclick="createUserEntry()"/>
               </td>
             </tr>
             <tr>
-              <td class="formLabel"><fmt:message key="mailingLists.addAddress"/></td>
+              <td class="formLabel"><spring:message code="mailingLists.addAddress"/></td>
               <td class="formField">
                 <input id="address" type="text" class="formLong" onmousedown="this.focus()"/>
                 <tag:img png="add" title="common.add" onclick="createAddressEntry()"/>
@@ -528,9 +528,9 @@
           </table>
           
           <table width="100%">
-            <tr><td colspan="3" class="smallTitle"><fmt:message key="mailingLists.entries"/></td></tr>
+            <tr><td colspan="3" class="smallTitle"><spring:message code="mailingLists.entries"/></td></tr>
             <tr id="emptyEntryListMessage">
-              <td colspan="3"><fmt:message key="mailingLists.noEntries"/></td>
+              <td colspan="3"><spring:message code="mailingLists.noEntries"/></td>
             </tr>
             <tr id="mleUser_TEMPLATE_" style="display:none;">
               <td width="16"><img id="mle_TEMPLATE_Img" src="images/hourglass.png"/></td>
@@ -553,24 +553,24 @@
           <table>
             <tr><td colspan="5" class="horzSeparator" colspan="2"></td></tr>
             <tr>
-              <td class="smallTitle"><fmt:message key="common.activeTime"/></td>
+              <td class="smallTitle"><spring:message code="common.activeTime"/></td>
               <td class="qreg qon"></td>
-              <td><fmt:message key="common.active"/></td>
+              <td><spring:message code="common.active"/></td>
               <td class="qreg qoff"></td>
-              <td><fmt:message key="common.inactive"/></td>
+              <td><spring:message code="common.inactive"/></td>
             </tr>
             <tr>
               <td style="padding:5px;" colspan="5" >
                 <table cellspacing="0" cellpadding="0">
                   <tr>
                     <td></td>
-                    <th><fmt:message key="common.day.short.mon"/></th>
-                    <th><fmt:message key="common.day.short.tue"/></th>
-                    <th><fmt:message key="common.day.short.wed"/></th>
-                    <th><fmt:message key="common.day.short.thu"/></th>
-                    <th><fmt:message key="common.day.short.fri"/></th>
-                    <th><fmt:message key="common.day.short.sat"/></th>
-                    <th><fmt:message key="common.day.short.sun"/></th>
+                    <th><spring:message code="common.day.short.mon"/></th>
+                    <th><spring:message code="common.day.short.tue"/></th>
+                    <th><spring:message code="common.day.short.wed"/></th>
+                    <th><spring:message code="common.day.short.thu"/></th>
+                    <th><spring:message code="common.day.short.fri"/></th>
+                    <th><spring:message code="common.day.short.sat"/></th>
+                    <th><spring:message code="common.day.short.sun"/></th>
                   </tr>
                   <tbody id="scheduleRows"></tbody>
                 </table>

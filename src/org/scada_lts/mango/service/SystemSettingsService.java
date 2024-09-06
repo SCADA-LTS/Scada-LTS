@@ -22,12 +22,15 @@ import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
@@ -38,6 +41,7 @@ import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
  *
  * @author Radoslaw Jajko
  */
+@Service
 public class SystemSettingsService {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
@@ -132,8 +136,8 @@ public class SystemSettingsService {
         JsonSettingsMisc json = new JsonSettingsMisc();
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
         json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
-        json.setHideShortcutDisableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
-        json.setEnableFullScreen(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE));
+        json.setViewHideShortcutDisableFullScreenEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN));
+        json.setViewForceFullScreenEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE));
         json.setEventPendingLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT));
         json.setEventPendingCacheEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED));
         json.setThreadsNameAdditionalLength(SystemSettingsDAO.getIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH));
@@ -142,14 +146,17 @@ public class SystemSettingsService {
         json.setWorkItemsReportingItemsPerSecondLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT));
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
+        json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
+        json.setTopDescription(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
+        json.setTopDescriptionPrefix(SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
         systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isHideShortcutDisableFullScreen());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isEnableFullScreen());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isViewHideShortcutDisableFullScreenEnabled());
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isViewForceFullScreenEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, json.getEventPendingLimit());
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, json.isEventPendingCacheEnabled());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, json.getThreadsNameAdditionalLength());
@@ -158,6 +165,9 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        saveEventAssignEnabled(json.isEventAssignEnabled());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, json.getTopDescription());
+        systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, json.getTopDescriptionPrefix());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -294,6 +304,7 @@ public class SystemSettingsService {
         return data;
     }
 
+    @Deprecated(since = "2.8.0")
     public String sendTestEmail(User user) throws Exception {
 
         ResourceBundle bundle = Common.getBundle();
@@ -305,6 +316,20 @@ public class SystemSettingsService {
                 + ", " + userInfo(user));
 
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
+    }
+
+    public Map<String, String> sendTestEmailMap(User user) throws Exception {
+
+        ResourceBundle bundle = Common.getBundle();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("message", new LocalizableMessage("systemSettings.testEmail"));
+        IMsgSubjectContent cnt = IMsgSubjectContent.newInstance(
+                "testEmail", model, bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
+        sendMsgTestSync(user.getEmail(), cnt, model, () -> "sendTestEmail from: " + this.getClass().getName()
+                + ", " + userInfo(user));
+        Map<String, String> response = new HashMap<>();
+        response.put("recipient", user.getEmail());
+        return response;
     }
 
     public void purgeAllData() {
@@ -382,6 +407,14 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
     }
 
+    public void saveEventAssignEnabled(boolean eventAssignEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, eventAssignEnabled);
+        if(!eventAssignEnabled) {
+            EventService eventService = new EventService();
+            eventService.unassignEvents();
+        }
+    }
+
     public DataPointSyncMode getDataPointRtValueSynchronized() {
         return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
     }
@@ -455,14 +488,24 @@ public class SystemSettingsService {
         }
     }
 
+    public boolean isEventAssignEnabled() {
+        boolean defaultValue = SystemSettingsUtils.isEventAssignEnabled();
+        try {
+            return SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
     private static String getHttpResponseHeaders(JsonSettingsHttp json) {
         try {
             String httpResponseHeaders = json.getHttpResponseHeaders();
             if(StringUtils.isEmpty(httpResponseHeaders))
                 return "";
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, objectMapper);
-            return serializeMap(headers, objectMapper);
+            Supplier<ObjectMapper> getObjectMapper = () -> ApplicationBeans.getObjectMapper();
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, getObjectMapper);
+            return serializeMap(headers, getObjectMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -470,7 +513,7 @@ public class SystemSettingsService {
 
     private static Map<String, String> deserializeMap(String json) {
         try {
-            return SystemSettingsUtils.deserializeMap(json, new ObjectMapper());
+            return SystemSettingsUtils.deserializeMap(json, () -> ApplicationBeans.getObjectMapper());
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
             return Collections.emptyMap();

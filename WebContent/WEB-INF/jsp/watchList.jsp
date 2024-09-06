@@ -157,7 +157,7 @@
           spanNode.textContent = point.value;
           var pointNode = dojo.widget.createWidget("TreeNode", {
                   title: "<img src='images/icon_comp.png'/> " + spanNode.innerHTML +
-                          "<img src='images/bullet_go.png' id='ph"+ point.key +"Image' title='<fmt:message key="watchlist.addToWatchlist"/>'/>",
+                          "<img src='images/bullet_go.png' id='ph"+ point.key +"Image' title='<spring:message code="watchlist.addToWatchlist"/>'/>",
                   object: point
           });
           parent.addChild(pointNode);
@@ -507,7 +507,7 @@
       function getChartData() {
     	  var pointIds = getChartPointList();
     	  if (pointIds.length == 0)
-    		  alert("<fmt:message key="watchlist.noExportables"/>");
+    		  alert("<spring:message code="watchlist.noExportables"/>");
     	  else {
               startImageFader($("chartDataImg"));
               WatchListDwr.getChartData(getChartPointList(), $get("fromYear"), $get("fromMonth"), $get("fromDay"),
@@ -642,7 +642,7 @@
       <div id="splitContainer" dojoType="SplitContainer" orientation="horizontal" sizerWidth="3" activeSizing="true" class="borderDiv"
               widgetId="splitContainer" style="width: 100%; height: 500px; resize:vertical;">
         <div dojoType="ContentPane" sizeMin="20" sizeShare="20" style="overflow:auto;padding:2px;">
-          <span class="smallTitle"><fmt:message key="watchlist.points"/></span> <tag:help id="watchListPoints"/><br/>
+          <span class="smallTitle"><spring:message code="watchlist.points"/></span> <tag:help id="watchListPoints"/><br/>
         <!-- <div style="margin:5px 0 10px 5px;">
           <select id="dpSelector" data-placeholder="Choose data point ..." class="chosen-select" style="width:80%;margin-bottom:10px;">
           	<option></option>
@@ -656,7 +656,7 @@
         <div dojoType="ContentPane" sizeMin="50" sizeShare="50" style="overflow:auto; padding:2px 10px 2px 2px;">
           <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="watchlist.watchlist"/> <tag:help id="watchList"/></td>
+              <td class="smallTitle"><spring:message code="watchlist.watchlist"/> <tag:help id="watchList"/></td>
               <td align="right">
                 <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()"
                         onmouseover="closeLayers();">
@@ -669,10 +669,10 @@
                   <tag:img id="wlEditImg" png="pencil" title="watchlist.editListName"/>
                   <div id="wlEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv"
                           onmouseout="hideLayer(this)">
-                    <fmt:message key="watchlist.newListName"/><br/>
+                    <spring:message code="watchlist.newListName"/><br/>
                     <input type="text" id="newWatchListName"
                             onkeypress="if (event.keyCode==13) $('saveWatchListNameLink').onclick();"/>
-                    <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><fmt:message key="common.save"/></a>
+                    <a class="ptr" id="saveWatchListNameLink" onclick="saveWatchListName()"><spring:message code="common.save"/></a>
                   </div>
                 </div>
 
@@ -721,7 +721,7 @@
                   <td id="p_TEMPLATE_Time" align="center"></td>
                   <td style="width:1px; white-space:nowrap;">
                     <input type="checkbox" name="chartCB" id="p_TEMPLATE_ChartCB" value="_TEMPLATE_" checked="checked"
-                            title="<fmt:message key="watchlist.consolidatedChart"/>"/>
+                            title="<spring:message code="watchlist.consolidatedChart"/>"/>
                     <tag:img png="icon_comp" title="watchlist.pointDetails"
                             onclick="window.location='data_point_details.shtm?dpid='+ getMangoId(this)"/>
                     <tag:img png="arrow_up_thin" id="p_TEMPLATE_MoveUp" title="watchlist.moveUp" style="display:none;"
@@ -737,7 +737,7 @@
             </table>
             <table id="watchListTable" width="100%"></table>
             <div id="emptyListMessage" style="color:#888888;padding:10px;text-align:center;">
-              <fmt:message key="watchlist.emptyList"/>
+              <spring:message code="watchlist.emptyList"/>
             </div>
           </div>
         </div>
@@ -748,7 +748,7 @@
       <div id="chartContainer" class="borderDiv" style="width: 100%; resize: vertical; overflow: hidden; height: 500px;">
         <table width="100%">
           <tr>
-            <td class="smallTitle"><fmt:message key="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
+            <td class="smallTitle"><spring:message code="watchlist.chart"/> <tag:help id="watchListCharts"/></td>
             <td align="right"><input type="text" id="prevPeriodCount" class="formVeryShort"/>
             	<select id="prevPeriodType">
                 	<tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>

@@ -20,17 +20,17 @@
 <div class="borderDiv marB marR">
   <table>
     <tr><td colspan="3">
-      <span class="smallTitle"><fmt:message key="pointEdit.event.text.props"/></span>
+      <span class="smallTitle"><spring:message code="pointEdit.event.text.props"/></span>
       <tag:help id="eventTextRenderers"/>
     </td></tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.text.type"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.text.type"/></td>
       <td class="formField">
         <sst:select id="eventTextRendererSelect" onchange="eventTextRendererEditor.change();"
                     value="${form.eventTextRenderer.typeName}">
           <c:forEach items="${eventTextRenderers}" var="etrdef">
-            <sst:option value="${etrdef.name}"><fmt:message key="${etrdef.nameKey}"/></sst:option>
+            <sst:option value="${etrdef.name}"><spring:message code="${etrdef.nameKey}"/></sst:option>
           </c:forEach>
         </sst:select>
       </td>
@@ -38,7 +38,7 @@
 
     <tbody id="eventTextRendererBinary" style="display:none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.text.zero"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.text.zero"/></td>
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
@@ -48,7 +48,7 @@
       </td>
     </tr>
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.text.one"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.text.one"/></td>
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
@@ -63,8 +63,8 @@
       <td colspan="2">
         <table>
           <tr>
-            <th><fmt:message key="pointEdit.text.key"/></th>
-            <th><fmt:message key="pointEdit.text.text"/></th>
+            <th><spring:message code="pointEdit.text.key"/></th>
+            <th><spring:message code="pointEdit.text.text"/></th>
             <td></td>
           </tr>
           <tr>
@@ -86,9 +86,9 @@
       <td colspan="2">
         <table>
           <tr>
-            <th><fmt:message key="pointEdit.text.from"/></th>
-            <th><fmt:message key="pointEdit.text.to"/></th>
-            <th><fmt:message key="pointEdit.text.text"/></th>
+            <th><spring:message code="pointEdit.text.from"/></th>
+            <th><spring:message code="pointEdit.text.to"/></th>
+            <th><spring:message code="pointEdit.text.text"/></th>
             <td></td>
           </tr>
           <tr>
@@ -182,12 +182,12 @@
         theKey = $get("eventTextRendererMultistateKey");
       var theNumericKey = parseInt(theKey);
       if (isNaN(theNumericKey)) {
-        alert("<fmt:message key="pointEdit.text.errorParsingKey"/>");
+        alert("<spring:message code="pointEdit.text.errorParsingKey"/>");
         return false;
       }
       for (var i=multistateEventValues.length-1; i>=0; i--) {
         if (multistateEventValues[i].key == theNumericKey) {
-          alert("<fmt:message key="pointEdit.text.listContainsKey"/> "+ theNumericKey);
+          alert("<spring:message code="pointEdit.text.listContainsKey"/> "+ theNumericKey);
           return false;
         }
       }
@@ -230,7 +230,7 @@
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeMultistateEventValue("+ data.key +
                   ");'><img src='images/bullet_delete.png' width='16' height='16' border='0' "+
-                  "title='<fmt:message key="common.delete"/>'/><\/a>";
+                  "title='<spring:message code="common.delete"/>'/><\/a>";
         }
       ], null);
     };
@@ -241,25 +241,25 @@
       if (!theFrom)
         theFrom = parseFloat($get("eventTextRendererRangeFrom"));
       if (isNaN(theFrom)) {
-        alert("<fmt:message key="pointEdit.text.errorParsingFrom"/>");
+        alert("<spring:message code="pointEdit.text.errorParsingFrom"/>");
         return false;
       }
 
       if (!theTo)
         theTo = parseFloat($get("eventTextRendererRangeTo"));
       if (isNaN(theTo)) {
-        alert("<fmt:message key="pointEdit.text.errorParsingTo"/>");
+        alert("<spring:message code="pointEdit.text.errorParsingTo"/>");
         return false;
       }
 
       if (isNaN(theTo >= theFrom)) {
-        alert("<fmt:message key="pointEdit.text.toGreaterThanFrom"/>");
+        alert("<spring:message code="pointEdit.text.toGreaterThanFrom"/>");
         return false;
       }
 
       for (var i=0; i<rangeEventValues.length; i++) {
         if (rangeEventValues[i].from == theFrom && rangeEventValues[i].to == theTo) {
-          alert("<fmt:message key="pointEdit.text.listContainsRange"/> "+ theFrom +" - "+ theTo);
+          alert("<spring:message code="pointEdit.text.listContainsRange"/> "+ theFrom +" - "+ theTo);
           return false;
         }
       }
@@ -308,7 +308,7 @@
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeRangeEventValue("+
                   data.from +","+ data.to +");'><img src='images/bullet_delete.png' width='16' "+
-                  "height='16' border='0' title='<fmt:message key="common.delete"/>'/><\/a>";
+                  "height='16' border='0' title='<spring:message code="common.delete"/>'/><\/a>";
         }
       ], null);
     };

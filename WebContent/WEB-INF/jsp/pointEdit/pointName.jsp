@@ -61,13 +61,13 @@
       <table width="100%" cellspacing="0" cellpadding="0" border="0">
         <spring:bind path="form">
         <c:if test="${error.status != null}">
-            <tr><td colspan="2" class="formError"><fmt:message key="${error.status}"/></td></tr>
+            <tr><td colspan="2" class="formError"><spring:message code="${error.status}"/></td></tr>
         </c:if>
         </spring:bind>
       </table>
     </td>
     <td valign="top" align="right">
-      <fmt:message key="pointEdit.name.goto"/>:&nbsp;
+      <spring:message code="pointEdit.name.goto"/>:&nbsp;
       <sst:select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
         <c:forEach items="${userPoints}" var="point">
           <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>

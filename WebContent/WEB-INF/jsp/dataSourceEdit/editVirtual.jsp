@@ -145,13 +145,13 @@
       var theValue = $get(prefix);
       var theNumber = parseInt(theValue);
       if (isNaN(theNumber)) {
-          alert("<fmt:message key="dsEdit.virtual.errorParsingValue"/>");
+          alert("<spring:message code="dsEdit.virtual.errorParsingValue"/>");
           return false;
       }
       var arr = currentPoint.pointLocator[prefix +"Change"].values;
       for (var i=arr.length-1; i>=0; i--) {
           if (arr[i] == theNumber) {
-              alert("<fmt:message key="dsEdit.virtual.invalidValue"/> "+ theNumber);
+              alert("<spring:message code="dsEdit.virtual.invalidValue"/> "+ theNumber);
               return false;
           }
       }
@@ -177,7 +177,7 @@
       dwr.util.addRows(prefix +"Values", arr, [
               function(data) { return data; },
               function(data) {
-                  return writeImage(null, null, "bullet_delete", "<fmt:message key="common.delete"/>",
+                  return writeImage(null, null, "bullet_delete", "<spring:message code="common.delete"/>",
                           "removeListValue("+ data +", '"+ prefix +"');");
               }
               ]);
@@ -189,11 +189,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.virtual.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.virtual.desc"/></c:set>
 <c:set var="dsHelpId" value="virtualDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -205,12 +205,12 @@
 
 <tag:pointList pointHelpId="virtualPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId" onchange="changeDataType();">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -219,7 +219,7 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.changeType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.virtual.changeType"/></td>
     <td class="formField"><select id="changeTypeId" onchange="changeChangeType(this.value);"></select></td>
   </tr>
   
@@ -228,11 +228,11 @@
   --%>
   <tbody id="divCH1" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField">
         <select id="alternateBooleanChange.startValue">
-          <option value="true"><fmt:message key="common.true"/></option>
-          <option value="false"><fmt:message key="common.false"/></option>
+          <option value="true"><spring:message code="common.true"/></option>
+          <option value="false"><spring:message code="common.false"/></option>
         </select>
       </td>
     </tr>
@@ -243,22 +243,22 @@
   --%>
   <tbody id="divCH2" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.min"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.min"/></td>
       <td class="formField"><input type="text" id="brownianChange.min" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.max"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.max"/></td>
       <td class="formField"><input type="text" id="brownianChange.max" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.maxChange"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.maxChange"/></td>
       <td class="formField"><input type="text" id="brownianChange.maxChange" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><input type="text" id="brownianChange.startValue" /></td>
     </tr>
   </tbody>
@@ -268,27 +268,27 @@
   --%>
   <tbody id="divCH3" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.min"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.min"/></td>
       <td class="formField"><input type="text" id="incrementAnalogChange.min" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.max"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.max"/></td>
       <td class="formField"><input type="text" id="incrementAnalogChange.max" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.change"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.change"/></td>
       <td class="formField"><input type="text" id="incrementAnalogChange.change" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.roll"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.roll"/></td>
       <td class="formField"><input type="checkbox" id="incrementAnalogChange.roll" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><input type="text" id="incrementAnalogChange.startValue" /></td>
     </tr>
   </tbody>
@@ -298,7 +298,7 @@
   --%>
   <tbody id="divCH4" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.values"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.values"/></td>
       <td class="formField">
         <input id="incrementMultistate" type="text" />
         <tag:img png="add" onclick="addListValue('incrementMultistate');" title="common.add" />
@@ -307,12 +307,12 @@
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.roll"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.roll"/></td>
       <td class="formField"><input type="checkbox" id="incrementMultistateChange.roll"></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><select id="incrementMultistateChange.startValue"></select></td>
     </tr>
   </tbody>
@@ -322,7 +322,7 @@
   --%>
   <tbody id="divCH5" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><input type="text" id="noChange.startValue" /></td>
     </tr>
   </tbody>
@@ -332,17 +332,17 @@
   --%>
   <tbody id="divCH6" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.min"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.min"/></td>
       <td class="formField"><input type="text" id="randomAnalogChange.min" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.max"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.max"/></td>
       <td class="formField"><input type="text" id="randomAnalogChange.max" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><input type="text" id="randomAnalogChange.startValue" /></td>
     </tr>
   </tbody>
@@ -352,11 +352,11 @@
   --%>
   <tbody id="divCH7" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField">
         <select id="randomBooleanChange.startValue">
-          <option value="true"><fmt:message key="common.true"/></option>
-          <option value="false"><fmt:message key="common.false"/></option>
+          <option value="true"><spring:message code="common.true"/></option>
+          <option value="false"><spring:message code="common.false"/></option>
         </select>
     </tr>
   </tbody>
@@ -366,7 +366,7 @@
   --%>
   <tbody id="divCH8" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.values"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.values"/></td>
       <td class="formField">
         <input id="randomMultistate" type="text" />
         <tag:img png="add" title="common.add" onclick="addListValue('randomMultistate');" />
@@ -375,7 +375,7 @@
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><select id="randomMultistateChange.startValue"></select></td>
     </tr>
   </tbody>
@@ -385,17 +385,17 @@
   --%>
   <tbody id="divCH9" style="display: none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.maxChange"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.maxChange"/></td>
       <td class="formField"><input type="text" id="analogAttractorChange.maxChange" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.volatility"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.volatility"/></td>
       <td class="formField"><input type="text" id="analogAttractorChange.volatility" /></td>
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.attractionPoint"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.attractionPoint"/></td>
       <td class="formField"><select id="analogAttractorChange.attractionPointId">
         <c:forEach items="${analogPoints}" var="dataPoint">
           <option value="${dataPoint.id}"><c:out value="${dataPoint.extendedName}"/></option>
@@ -404,7 +404,7 @@
     </tr>
 
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.virtual.startValue"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.virtual.startValue"/></td>
       <td class="formField"><input type="text" id="analogAttractorChange.startValue" /></td>
     </tr>
   </tbody>

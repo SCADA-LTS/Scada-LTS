@@ -9,12 +9,12 @@
 	<div>
 		<form>
 			<div>
-				<label for="c${componentId}_showPoints"><b><fmt:message key="graphic.enhancedImageChart.pointConfig.showPoints"/></b></label><input id="c${componentId}_showPoints" type="checkbox"/>
+				<label for="c${componentId}_showPoints"><b><spring:message code="graphic.enhancedImageChart.pointConfig.showPoints"/></b></label><input id="c${componentId}_showPoints" type="checkbox"/>
 			</div>
 			<div class="margin1">
-				<b><fmt:message key="graphic.enhancedImageChart.pointConfig.renderMode"/></b>
-				<input id="c${componentId}_renderModeLine" name="c${componentId}_renderMode" type="radio"/><label for="c${componentId}_renderModeLine"><fmt:message key="graphic.enhancedImageChart.pointConfig.renderMode.line"/></label>
-				<input id="c${componentId}_renderModeSpline" name="c${componentId}_renderMode" type="radio"/><label for="c${componentId}_renderModeSpline"><fmt:message key="graphic.enhancedImageChart.pointConfig.renderMode.spline"/></label>
+				<b><spring:message code="graphic.enhancedImageChart.pointConfig.renderMode"/></b>
+				<input id="c${componentId}_renderModeLine" name="c${componentId}_renderMode" type="radio"/><label for="c${componentId}_renderModeLine"><spring:message code="graphic.enhancedImageChart.pointConfig.renderMode.line"/></label>
+				<input id="c${componentId}_renderModeSpline" name="c${componentId}_renderMode" type="radio"/><label for="c${componentId}_renderModeSpline"><spring:message code="graphic.enhancedImageChart.pointConfig.renderMode.spline"/></label>
 			</div>
 		</form>
 	</div>

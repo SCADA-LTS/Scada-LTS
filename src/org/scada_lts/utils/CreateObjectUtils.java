@@ -5,6 +5,7 @@ import jdk.dynalink.linker.support.TypeUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public final class CreateObjectUtils {
             return new Object[0];
         }
         List<Object> objects = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
         for(int i=0; i < valueTypes.length; i++) {
             if(StringUtils.isEmpty(values[i]) || StringUtils.isEmpty(valueTypes[i]))
                 continue;

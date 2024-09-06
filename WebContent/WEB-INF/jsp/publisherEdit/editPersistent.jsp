@@ -125,7 +125,7 @@
           points[points.length] = {dataPointId: selectedPoints[i].id};
       
       PublisherEditDwr.savePersistentSender(name, xid, enabled, points, $get("host"), $get("port"),
-              $get("authorizationKey"), $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot, 
+              $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,
               snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
 </script>
@@ -136,11 +136,11 @@
       <div class="borderDiv marR marB">
         <table>
           <tr>
-            <td colspan="2" class="smallTitle"><fmt:message key="publisherEdit.persistent.props"/> <tag:help id="persistentPublishing"/></td>
+            <td colspan="2" class="smallTitle"><spring:message code="publisherEdit.persistent.props"/> <tag:help id="persistentPublishing"/></td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.persistent.host"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.persistent.host"/></td>
             <td class="formField">
               <input type="text" id="host" value="${publisher.host}" class="formLong"/>
               <div id="hostMsg" class="formError" style="display:none;"></div>
@@ -149,7 +149,7 @@
           
           <tr>
           
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.persistent.port"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.persistent.port"/></td>
             <td class="formField">
               <input type="text" id="port" value="${publisher.port}"/>
               <div id="portMsg" class="formError" style="display:none;"></div>
@@ -157,18 +157,18 @@
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.persistent.authorizationKey"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.persistent.authorizationKey"/></td>
             <td class="formField"><input type="text" id="authorizationKey" value="${publisher.authorizationKey}"/></td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.persistent.sync"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.persistent.sync"/></td>
             <td class="formField">
               <sst:select id="syncType" value="${publisher.syncType}">
-                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_NONE) %>"><fmt:message key="publisherEdit.persistent.sync.none"/></sst:option>
-                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_DAILY) %>"><fmt:message key="publisherEdit.persistent.sync.daily"/></sst:option>
-                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_WEEKLY) %>"><fmt:message key="publisherEdit.persistent.sync.weekly"/></sst:option>
-                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_MONTHLY) %>"><fmt:message key="publisherEdit.persistent.sync.monthly"/></sst:option>
+                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_NONE) %>"><spring:message code="publisherEdit.persistent.sync.none"/></sst:option>
+                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_DAILY) %>"><spring:message code="publisherEdit.persistent.sync.daily"/></sst:option>
+                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_WEEKLY) %>"><spring:message code="publisherEdit.persistent.sync.weekly"/></sst:option>
+                <sst:option value="<%= Integer.toString(PersistentSenderVO.SYNC_TYPE_MONTHLY) %>"><spring:message code="publisherEdit.persistent.sync.monthly"/></sst:option>
               </sst:select>
             </td>
           </tr>
@@ -182,7 +182,7 @@
   <div class="borderDiv">
     <table width="100%">
       <tr>
-        <td class="smallTitle"><fmt:message key="publisherEdit.points"/></td>
+        <td class="smallTitle"><spring:message code="publisherEdit.points"/></td>
         <td align="right">
           <select id="availablePoints"></select>
           <tag:img png="icon_comp_add" onclick="selectPoint()"/>
@@ -192,12 +192,12 @@
     
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
-        <td><fmt:message key="publisherEdit.point.name"/></td>
-        <td><fmt:message key="publisherEdit.point.status"/></td>
-        <td><fmt:message key="publisherEdit.point.type"/></td>
+        <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.status"/></td>
+        <td><spring:message code="publisherEdit.point.type"/></td>
         <td></td>
       </tr>
-      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><fmt:message key="publisherEdit.noPoints"/></td></tr></tbody>
+      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
       <tbody id="selectedPoints"></tbody>
     </table>
     <div id="pointsMsg" class="formError" style="display:none;"></div>
