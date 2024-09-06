@@ -19,10 +19,10 @@
 							<v-col class="d-flex justify-start align-center">
 								<div id="top-description-container" class="text-align-left">
 									<span id="top-description-prefix" class="custom-text">
-										{{ this.systemInfoSettings.topDescriptionPrefix }}
+										{{ topDescriptionPrefix }}
 									</span>
 									<span id="top-description" class="custom-text">
-										{{ this.systemInfoSettings.topDescription }}
+										{{ topDescription }}
 									</span>
 								</div>
 							</v-col>
@@ -133,11 +133,11 @@ export default {
 
 	computed: {
 		user() {
-			return this.$store.state.loggedUser;
+			return this.$store.getters.loggedUser;
 		},
 		isUserRoleAdmin() {
-			if (!!this.$store.state.loggedUser) {
-				return this.$store.state.loggedUser.admin;
+			if (!!this.$store.getters.loggedUser) {
+				return this.$store.getters.loggedUser.admin;
 			} else {
 				return false;
 			}
@@ -150,20 +150,31 @@ export default {
 		},
 		isLoginPage() {
 			return this.$route.name === 'login';
-		}
+		},
+		topDescriptionPrefix() {
+		    let systemInfoSettings = this.$store.state.systemSettings.systemInfoSettings;
+		    if(systemInfoSettings && systemInfoSettings.topDescriptionPrefix) {
+		        return systemInfoSettings.topDescriptionPrefix;
+		    }
+		    return '';
+		},
+        topDescription() {
+            let systemInfoSettings = this.$store.state.systemSettings.systemInfoSettings;
+            if(systemInfoSettings && systemInfoSettings.topDescription) {
+		        return systemInfoSettings.topDescription;
+		    }
+            return '';
+        }
 	},
 
-	mounted() {
-		this.$root.$on('systemInfoUpdated', (updatedSettings) => {
-		  	this.systemInfoSettings = updatedSettings;
-		});
-
+	async mounted() {
 	    if(!this.user) {
-    			this.$store.dispatch('getUserInfo');
-    	}
-		this.$store.dispatch('getLocaleInfo');
+            await this.$store.dispatch('getUserInfo');
+        }
+        await this.$store.dispatch('getLocaleInfo');
+        await this.$store.dispatch('getCustomCss');
+        await this.$store.dispatch('getSystemInfoSettings');
 		this.connectToWebSocket();
-	    this.fetchSettingsData();
 		this.fetchCustomCss();
 	},
 
@@ -173,13 +184,9 @@ export default {
 
 	methods: {
 
-		async fetchSettingsData() {
-			this.systemInfoSettings = await this.$store.dispatch('getSystemInfo');
-		},
-
-		async fetchCustomCss() {
-			let response = await this.$store.dispatch('getCustomCss');
-			let unescapedContent = unescapeHtml(response.content);
+		fetchCustomCss() {
+			let customCss = this.$store.getters.customCss;
+			let unescapedContent = unescapeHtml(customCss.content);
             this.applyCustomCss(unescapedContent);
 		},
 

@@ -373,8 +373,7 @@ export default {
 					i18n.locale = this.systemInfoSettings.language;
 					this.generateNotification(
 						'success',
-						i18n.t('systemsettings.notification.save.systeminfo'),
-						this.$root.$emit('systemInfoUpdated', this.systemInfoSettings),
+						i18n.t('systemsettings.notification.save.systeminfo')
 					);
 				} else {
 					this.generateNotification('danger', i18n.t('systemsettings.notification.fail'));
