@@ -52,21 +52,21 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.persistent.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.persistent.desc"/></c:set>
 <c:set var="dsHelpId" value="persistentDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.persistent.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.persistent.port"/></td>
           <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.persistent.authorizationKey"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.persistent.authorizationKey"/></td>
           <td class="formField"><input id="authorizationKey" type="text" value="${dataSource.authorizationKey}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.persistent.acceptPointUpdates"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.persistent.acceptPointUpdates"/></td>
           <td class="formField"><sst:checkbox id="acceptPointUpdates" selectedValue="${dataSource.acceptPointUpdates}"/></td>
         </tr>
         
@@ -79,10 +79,10 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td class="smallTitle"><fmt:message key="dsEdit.persistent.status"/></td></tr>
+        <tr><td class="smallTitle"><spring:message code="dsEdit.persistent.status"/></td></tr>
         <tr>
           <td align="center">
-            <input id="getStatusBtn" type="button" value="<fmt:message key="dsEdit.persistent.getStatus"/>" onclick="getRtStatus();"/>
+            <input id="getStatusBtn" type="button" value="<spring:message code="dsEdit.persistent.getStatus"/>" onclick="getRtStatus();"/>
           </td>
         </tr>
         

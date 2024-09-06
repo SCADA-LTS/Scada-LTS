@@ -21,10 +21,10 @@
 --%>
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <c:if test="${!empty disabled}">
-  <tag:img png="warn" title="common.pointWarning"/> <fmt:message key="common.pointWarning"/><br/>
+  <tag:img png="warn" title="common.pointWarning"/> <spring:message code="common.pointWarning"/><br/>
 </c:if>
 <c:if test="${pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
-  <tag:img png="exclamation" title="common.valueUnreliable"/> <fmt:message key="common.valueUnreliable"/>
+  <tag:img png="exclamation" title="common.valueUnreliable"/> <spring:message code="common.valueUnreliable"/>
   <tag:img png="arrow_refresh" title="common.refresh" onclick="MiscDwr.forcePointRead(${point.id})"/><br/>
 </c:if>
 <c:forEach items="${events}" var="event">

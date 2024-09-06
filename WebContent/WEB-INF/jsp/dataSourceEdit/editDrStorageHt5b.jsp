@@ -72,13 +72,13 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.drStorageHt5b.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.drStorageHt5b.desc"/></c:set>
 <c:set var="dsHelpId" value="drStorageHt5bDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.commPortId" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.commPortId" /></td>
 	<td class="formField"><c:choose>
 		<c:when test="${!empty commPortError}">
 			<input id="commPortId" type="hidden" value="" />
@@ -95,8 +95,8 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.baud" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.baud" /></td>
 	<td class="formField"><sst:select id="baudRate"
 		value="${dataSource.baudRate}">
 		<sst:option>110</sst:option>
@@ -116,7 +116,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -128,7 +128,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -139,20 +139,20 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -162,21 +162,21 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.retries"/></td>
     <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.timeout"/></td>
     <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
     <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.initString"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.initString"/></td>
     <td class="formField">
     	<input id="initString" type="text" value=""/>
     </td>
@@ -187,12 +187,12 @@
 <tag:pointList pointHelpId="drStorageHt5bPP">
 
 	 <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.drStorageHt5b.pointType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.drStorageHt5b.pointType"/></td>
     <td class="formField">
     	<sst:select id="pointType"
 			value="${dataPoint.pointType}">
-			<sst:option value="Temperature" ><fmt:message key="dsEdit.drStorageHt5b.type.Temperature"/></sst:option>
-			<sst:option value="Humidity" ><fmt:message key="dsEdit.drStorageHt5b.type.Humidity"/></sst:option>
+			<sst:option value="Temperature" ><spring:message code="dsEdit.drStorageHt5b.type.Temperature"/></sst:option>
+			<sst:option value="Humidity" ><spring:message code="dsEdit.drStorageHt5b.type.Humidity"/></sst:option>
 		</sst:select>
     </td>
   </tr>

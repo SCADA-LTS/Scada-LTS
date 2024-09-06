@@ -17,7 +17,7 @@
         <c:if test="${!empty scadaVersion.getCompanyName()}">
         <div id="company-container">
             <span>
-                <fmt:message key="logo.for"/>
+                <spring:message code="logo.for"/>
             </span>
             <span id="company-name">
                 ${scadaVersion.getCompanyName()}
@@ -31,7 +31,7 @@
       <div class="logo-section--details">
       <c:if test="${!empty scadaVersion.getPoweredBy()}">
         <span id="powered-by">
-            <fmt:message key="logo.powered"/>
+            <spring:message code="logo.powered"/>
             ${scadaVersion.getPoweredBy()}
         </span>
       </c:if>

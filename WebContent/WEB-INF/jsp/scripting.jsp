@@ -46,12 +46,12 @@
     		url: myLocation+"script/execute/"+xid[0].value,
     		type:"POST",
     		success: function(){
-              setUserMessage("<fmt:message key="script.execute.success"/> ")
+              setUserMessage("<spring:message code="script.execute.success"/> ")
         	},
         	error: function(XMLHttpRequest, textStatus, errorThrown) {
         		console.log(textStatus);
         		console.log(XMLHttpRequest);
-        		setUserMessage("<fmt:message key="script.execute.error"/> "+XMLHttpRequest.responseText);
+        		setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
         	}
     	});
     };
@@ -176,7 +176,7 @@
 		                    	executeScript();
 		                	});
 		                }
-		                setUserMessage("<fmt:message key="scripts.saved"/>");
+		                setUserMessage("<spring:message code="scripts.saved"/>");
 		                ScriptsDwr.getScript(editingScript.id, updateScript);
 		            }
         		}
@@ -317,7 +317,7 @@
         if(checked) {
 			varName = ""+objectNameField.value;
 			if(varName == null || varName.trim().length == 0){
-				alert('<fmt:message key="scripts.objectsContext.invalidVar"/>');
+				alert('<spring:message code="scripts.objectsContext.invalidVar"/>');
 				$(objectId+"ObjectAdd").checked = false;
 				return;
 			}
@@ -375,7 +375,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="scripts.title"/></span>
+                <span class="smallTitle"><spring:message code="scripts.title"/></span>
                 <tag:help id="scripts"/>
               </td>
               <td align="right"><tag:img png="report_add" title="scripts.addSe"
@@ -397,7 +397,7 @@
         <div class="borderDiv">
           <table width="100%">
             <tr>
-              <td><span class="smallTitle"><fmt:message key="scripts.seDetails"/></span></td>
+              <td><span class="smallTitle"><spring:message code="scripts.seDetails"/></span></td>
               <td align="right">
                 <%-- <tag:img id="executeScriptImg" png="exclamation" title="common.run"/> --%>
                 <tag:img png="save" onclick="saveScript();" title="common.save"/>
@@ -408,31 +408,31 @@
 
           <table>
           	<tr>
-	            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
+	            <td class="formLabelRequired"><spring:message code="dsEdit.points.name"/></td>
 	            <td class="formField"><input type="text" id="name"/></td>
           	</tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
 
             <tr>
-			    <td class="formLabelRequired"><fmt:message key="scripts.pointsContext"/></td>
+			    <td class="formLabelRequired"><spring:message code="scripts.pointsContext"/></td>
 			    <td class="formField">
 			      <select id="allPointsList"></select>
 			      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
 
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
-			          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
+			          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
 			        </tbody>
 			        <tbody id="contextTableHeaders" style="display:none;">
 			          <tr class="smRowHeader">
-			            <td><fmt:message key="dsEdit.meta.pointName"/></td>
-			            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
-			            <td><fmt:message key="dsEdit.pointDataType"/></td>
-			            <td><fmt:message key="dsEdit.meta.var"/></td>
+			            <td><spring:message code="dsEdit.meta.pointName"/></td>
+			            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+			            <td><spring:message code="dsEdit.pointDataType"/></td>
+			            <td><spring:message code="dsEdit.meta.var"/></td>
 			            <td></td>
 			          </tr>
 			        </tbody>
@@ -442,21 +442,21 @@
 			</tr>
 
 			<tr>
-			    <td class="formLabelRequired"><fmt:message key="scripts.objectsContext"/></td>
+			    <td class="formLabelRequired"><spring:message code="scripts.objectsContext"/></td>
 			    <td class="formField">
 
 			      <table cellspacing="1" id="objectsContextTable">
 				      <tbody id="objectsContextTable">
 				        		<tr class="smRowHeader">
-									<td> <fmt:message key="scripts.objectsContext.name"/> </td>
-									<td> <fmt:message key="scripts.objectsContext.var"/> </td>
-									<td> <fmt:message key="scripts.objectsContext.add"/> </td>
+									<td> <spring:message code="scripts.objectsContext.name"/> </td>
+									<td> <spring:message code="scripts.objectsContext.var"/> </td>
+									<td> <spring:message code="scripts.objectsContext.add"/> </td>
 									<td> &nbsp; </td>
 								</tr>
 				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>">
 								<tr style="width: 100%;" class="smRow">
 									<td title="${object.id}" style="display: none;"> </td>
-									<td> <fmt:message key="${object.key}"/>  </td>
+									<td> <spring:message code="${object.key}"/>  </td>
 									<td> <input id="${object.id}ObjectVarName" type="text" value="var_${object.id}"/> </td>
 									<td> <input id="${object.id}ObjectAdd" type="checkbox" onchange="addObjectToContext(${object.id}, this.checked)"/> </td>
 									<td> <tag:help id="${object.help}"/> </td>
@@ -470,7 +470,7 @@
             <tr>
 
     			<td class="formLabelRequired">
-      				<fmt:message key="dsEdit.meta.script"/>
+      				<spring:message code="dsEdit.meta.script"/>
 
       				<tag:img id="executeScriptImg" png="cog_go" title="common.run"/>
       				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%>

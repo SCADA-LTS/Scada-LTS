@@ -28,19 +28,19 @@
     function init() {
         var pointListColumnHeaders = new Array();
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.name"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.name"/>");
         pointListColumnFunctions.push(function(p) { return "<b>"+ p.name +"</b>"; });
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.pointDataType"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.pointDataType"/>");
         pointListColumnFunctions.push(function(p) { return p.dataTypeMessage; });
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.status"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.status"/>");
         pointListColumnFunctions.push(function(p) {
                 var id = "toggleImg"+ p.id;
                 var onclick = "togglePoint("+ p.id +")";
                 if (p.enabled)
-                    return writeImage(id, null, "brick_go", "<fmt:message key="common.enabledToggle"/>", onclick);
-                return writeImage(id, null, "brick_stop", "<fmt:message key="common.disabledToggle"/>", onclick);
+                    return writeImage(id, null, "brick_go", "<spring:message code="common.enabledToggle"/>", onclick);
+                return writeImage(id, null, "brick_stop", "<spring:message code="common.disabledToggle"/>", onclick);
         });
         
         if (typeof appendPointListColumnFunctions == 'function')
@@ -51,9 +51,9 @@
 		});
         
         pointListColumnFunctions.push(function(p) {
-			return	writeImage("editImg" + p.id, null, "icon_ds_edit", "<fmt:message key='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
-					writeImage("editImg" + p.id, null, "icon_comp_edit", "<fmt:message key='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
-					writeImage("editImg" + p.id, null, "icon_ds_add", "<fmt:message key='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");");
+			return	writeImage("editImg" + p.id, null, "icon_ds_edit", "<spring:message code='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
+					writeImage("editImg" + p.id, null, "icon_comp_edit", "<spring:message code='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
+					writeImage("editImg" + p.id, null, "icon_ds_add", "<spring:message code='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");");
         });
 
         var headers = $("pointListHeaders");
@@ -118,7 +118,7 @@
 			if (window.location.href.includes("typeId")) {
 				window.location = "data_source_edit.shtm?dsid=" + response.data.id;
 			} else {
-				showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
+				showMessage("dataSourceMessage", "<spring:message code="dsEdit.saved"/>");
 				DataSourceEditDwr.getPoints(writePointList);
 			}
         }
@@ -156,7 +156,7 @@
     }
 
     function deletePoint() {
-        if (confirm("<fmt:message key="dsEdit.deleteConfirm"/>")) {
+        if (confirm("<spring:message code="dsEdit.deleteConfirm"/>")) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
@@ -185,7 +185,7 @@
 
     function addPoint(ref) {
         if (!dojo.html.isShowing("pointProperties")) {
-            alert("<fmt:message key="dsEdit.saveWarning"/>");
+            alert("<spring:message code="dsEdit.saveWarning"/>");
             return;
         }
 
@@ -267,7 +267,7 @@
         else {
             writePointList(response.data.points);
             editPoint(response.data.id);
-            showMessage("pointMessage", "<fmt:message key="dsEdit.pointSaved"/>");
+            showMessage("pointMessage", "<spring:message code="dsEdit.pointSaved"/>");
         }
     }
 
@@ -344,8 +344,8 @@
 			<td>
 				<table width="100%">
 					<tr>
-						<td class="smallTitle"><fmt:message
-								key="dsEdit.currentAlarms" />
+						<td class="smallTitle"><spring:message
+								code="dsEdit.currentAlarms" />
 						</td>
 						<td align="right"><tag:img png="control_repeat_blue"
 								title="common.refresh" onclick="getAlarms()" />
@@ -354,7 +354,7 @@
 				</table>
 				<table>
 					<tr id="noAlarmsMsg">
-						<td><b><fmt:message key="dsEdit.noAlarms" />
+						<td><b><spring:message code="dsEdit.noAlarms" />
 						</b>
 						</td>
 					</tr>

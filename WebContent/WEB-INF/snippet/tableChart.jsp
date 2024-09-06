@@ -19,19 +19,21 @@
 <%-- The snippet used for table charts in rollovers --%>
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <c:choose>
-  <c:when test="${empty chartData}"><fmt:message key="common.noData"/></c:when>
+  <c:when test="${empty chartData}"><spring:message code="common.noData"/></c:when>
   <c:otherwise>
     <c:forEach items="${chartData}" var="historyPointValue">
       ${mango:pointValueTime(historyPointValue)} - ${mango:htmlText(point, historyPointValue)}
       <c:if test="${historyPointValue.annotated}">
-        (<fmt:message key="${historyPointValue.sourceDescriptionKey}">
-          <fmt:param>
-            <c:choose>
-              <c:when test="${empty historyPointValue.sourceDescriptionArgument}"><fmt:message key="common.deleted"/></c:when>
-              <c:otherwise>${historyPointValue.sourceDescriptionArgument}</c:otherwise>
-            </c:choose>
-          </fmt:param>
-        </fmt:message>)
+        <c:set value="" var="sourceDescriptionArgument"/>
+        <c:choose>
+            <c:when test="${empty historyPointValue.sourceDescriptionArgument}">
+                <c:set value='<spring:message code="common.deleted"/>' var="sourceDescriptionArgument"/>
+            </c:when>
+            <c:otherwise>
+                <c:set value="<c:out value='${historyPointValue.sourceDescriptionArgument}'/>" var="sourceDescriptionArgument"/>
+            </c:otherwise>
+        </c:choose>
+        (<spring:message code="${historyPointValue.sourceDescriptionKey}" arguments="${sourceDescriptionArgument}"/>)
       </c:if>
       <br/>
     </c:forEach>

@@ -39,7 +39,7 @@
 
     function refresh() {
         checkButtons(true);
-        $set("refreshMessage", "<fmt:message key='dsEdit.openv4j.refreshing' />");
+        $set("refreshMessage", "<spring:message code='dsEdit.openv4j.refreshing' />");
         dwr.util.removeAllRows("openv4jValues");
         DataSourceEditDwr.searchOpenV4J($get("commPortId"), refreshCB);
     }
@@ -64,7 +64,7 @@
                 function(value) { return value.value; },
                 function(value) {
                     return writeImage("scanDeviceImg" + value.name, null, "icon_comp_add",
-                    "<fmt:message key="common.add"/>", "addPoint('"+ value.name + "')");
+                    "<spring:message code="common.add"/>", "addPoint('"+ value.name + "')");
                 }
             ],
             {
@@ -89,7 +89,7 @@
     }
 
     function cancelRefreshCB() {
-        $set("refreshMessage", "<fmt:message key='dsEdit.openv4j.refreshStopped'/>");
+        $set("refreshMessage", "<spring:message code='dsEdit.openv4j.refreshStopped'/>");
         checkButtons(false);
     }
 
@@ -101,10 +101,10 @@
     }
 
     function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.openv4j.group'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.openv4j.group'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.groupLabel; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.openv4j.label'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.openv4j.label'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.label; };
 
     }
@@ -187,12 +187,12 @@
     }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.openv4j.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.openv4j.desc"/></c:set>
 <c:set var="dsHelpId" value="openv4jDS"/>
 <%@include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
       <tr>
-        <td class="formLabelRequired"><fmt:message key="dsEdit.serial.port"/></td>
+        <td class="formLabelRequired"><spring:message code="dsEdit.serial.port"/></td>
         <td class="formField">
           <c:choose>
             <c:when test="${!empty commPortError}">
@@ -211,19 +211,19 @@
       </tr>
       
       <tr>
-        <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.device"/></td>
+        <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.device"/></td>
         <td class="formField">
           <sst:select id="device" value="${dataSource.device}" onchange="deviceChanged();">
             <c:forEach items="${dataSource.devices}" var="device">
               <sst:option value="${device}">${device.label}</sst:option>
             </c:forEach>
           </sst:select>
-          <input id="detectDeviceBtn" type="button" value="<fmt:message key="dsEdit.openv4j.detectDevice"/>" onclick="detectDevice();"/>
+          <input id="detectDeviceBtn" type="button" value="<spring:message code="dsEdit.openv4j.detectDevice"/>" onclick="detectDevice();"/>
         </td>
       </tr>
       
       <tr>
-        <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.protocol"/></td>
+        <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.protocol"/></td>
         <td class="formField">
           <sst:select id="protocol" value="${dataSource.protocol}">
             <c:forEach items="${dataSource.protocols}" var="protocol">
@@ -234,7 +234,7 @@
       </tr>
       
       <tr>
-        <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+        <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
         <td class="formField">
           <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
           <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -250,11 +250,11 @@
 <td valign="top">
   <div class="borderDiv marB">
     <table>
-      <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.openv4j.refresh"/></td></tr>
+      <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.openv4j.refresh"/></td></tr>
         <tr>
           <td colspan="2" align="center">
-            <input id="refreshBtn" type="button" value="<fmt:message key="dsEdit.openv4j.refresh"/>" onclick="refresh();"/>
-            <input id="cancelRefreshBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="cancelRefresh();"/>
+            <input id="refreshBtn" type="button" value="<spring:message code="dsEdit.openv4j.refresh"/>" onclick="refresh();"/>
+            <input id="cancelRefreshBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="cancelRefresh();"/>
           </td>
         </tr>
 
@@ -264,10 +264,10 @@
           <td colspan="2">
             <table cellspacing="1">
               <tr class="rowHeader">
-                <td><fmt:message key="dsEdit.openv4j.group"/></td>
-                <td><fmt:message key="dsEdit.openv4j.label"/></td>
-                <td><fmt:message key="dsEdit.openv4j.value"/></td>
-                <td><fmt:message key="dsEdit.openv4j.add"/></td>
+                <td><spring:message code="dsEdit.openv4j.group"/></td>
+                <td><spring:message code="dsEdit.openv4j.label"/></td>
+                <td><spring:message code="dsEdit.openv4j.value"/></td>
+                <td><spring:message code="dsEdit.openv4j.add"/></td>
               </tr>
               <tbody id="openv4jValues"></tbody>
             </table>
@@ -279,7 +279,7 @@
         <tag:pointList pointHelpId="openv4jPP">
           <tbody id="editableAttributes">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.group"/></td>
+              <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.group"/></td>
               <td class="formField">
                 <sst:select id="editGroup" onchange="editGroupChanged()">
                   <c:forEach items="${dataSource.groups}" var="group">
@@ -290,14 +290,14 @@
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.label"/></td>
+              <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.label"/></td>
               <td class="formField"><select id="editDataPoint" onchange="editDataPointChanged()"/></td>
             </tr>
           </tbody>
 
           <tbody id="readonlyAttributes">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="dsEdit.openv4j.dataPointSettable"/></td>
+              <td class="formLabelRequired"><spring:message code="dsEdit.openv4j.dataPointSettable"/></td>
               <td class="formField"><input type="checkbox" id="dataPointSettable" disabled="disabled"/></td>
             </tr>
           </tbody>

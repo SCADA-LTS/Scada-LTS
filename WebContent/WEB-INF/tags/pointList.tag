@@ -27,7 +27,7 @@
       <div class="borderDiv marR marB">
         <table width="100%">
           <tr>
-            <td class="smallTitle"><fmt:message key="dsEdit.points.points"/></td>
+            <td class="smallTitle"><spring:message code="dsEdit.points.points"/></td>
             <td align="right">
             <tag:img id="enableAllImg" png="icon_ds_go"
                       onclick="enableAllPoints()" title="common.enableAll" style="margin-right:10px;"/>
@@ -48,7 +48,7 @@
         <table width="100%">
           <tr>
             <td>
-              <span class="smallTitle"><fmt:message key="dsEdit.points.details"/></span>
+              <span class="smallTitle"><spring:message code="dsEdit.points.details"/></span>
               <tag:help id="${pointHelpId}"/>
             </td>
             <td align="right">
@@ -61,11 +61,11 @@
 
         <table>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
+            <td class="formLabelRequired"><spring:message code="dsEdit.points.name"/></td>
             <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="name"/></td>
           </tr>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+            <td class="formLabelRequired"><spring:message code="common.xid"/></td>
             <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="xid"/></td>
           </tr>
           

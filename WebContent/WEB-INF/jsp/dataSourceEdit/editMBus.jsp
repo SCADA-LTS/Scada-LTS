@@ -130,7 +130,7 @@
                 function(device) { return device.versionHex; },
                 function(device) {
                     return writeImage("responseFramesImg"+ device.index, null, "control_play_blue",
-                    "<fmt:message key='dsEditMbus.getDetails'/>", "getResponseFrames(" + device.index + ")");
+                    "<spring:message code='dsEditMbus.getDetails'/>", "getResponseFrames(" + device.index + ")");
                 }
 
             ],
@@ -185,12 +185,12 @@
                     var dataBlock = responseFrame.dataBlocks[dbIndex];
                     var dataBlockNode = dojo.widget.createWidget("TreeNode", {
                         title: dataBlock.name + "(" + dataBlock.params  + ")" + writeImageSQuote(null, null,
-                        "icon_comp_add", "<fmt:message key='dsEdit.mbus.addPoint'/>", "addPoint( { 'addressing': '" + result.addressing + "', 'deviceIndex': "+ result.deviceIndex + ", 'rsIndex': " + rsIndex + ", 'dbIndex': " + dbIndex + "})"),
+                        "icon_comp_add", "<spring:message code='dsEdit.mbus.addPoint'/>", "addPoint( { 'addressing': '" + result.addressing + "', 'deviceIndex': "+ result.deviceIndex + ", 'rsIndex': " + rsIndex + ", 'dbIndex': " + dbIndex + "})"),
                         isFolder: "true"});
                     responseFrameNode.addChild(dataBlockNode);
 
                     dataBlockNode.addChild(dojo.widget.createWidget("TreeNode",
-                    { title: "<fmt:message key='dsEdit.mbus.presentValue'/>: "+ dataBlock.value}));
+                    { title: "<spring:message code='dsEdit.mbus.presentValue'/>: "+ dataBlock.value}));
                 }
 
             }
@@ -205,7 +205,7 @@
     }
 
     function cancelSearchCB() {
-        $set("searchMessage", "<fmt:message key='dsEdit.mbus.seachStopped'/>");
+        $set("searchMessage", "<spring:message code='dsEdit.mbus.seachStopped'/>");
         searchButtons(false);
     }
 
@@ -217,64 +217,64 @@
 
 
     function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.correctionFactor'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.correctionFactor'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.correctionFactor; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.addressing'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.addressing'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.addressing; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.addressHex'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.addressHex'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.addressHex; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.identNumber'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.identNumber'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.identNumber; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.medium'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.medium'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.medium; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.manufacturer'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.manufacturer'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.manufacturer; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.versionHex'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.versionHex'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.versionHex; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.responseFrame'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.responseFrame'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.responseFrame; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.difCode'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.difCode'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.difCode; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.functionField'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.functionField'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.functionField; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.deviceUnit'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.deviceUnit'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.deviceUnit; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.tariff'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.tariff'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.tariff; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.storageNumber'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.storageNumber'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.storageNumber; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.vifType'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.vifType'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.vifType; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.vifLabel'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.vifLabel'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.vifLabel; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.unitOfMeasurement'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.unitOfMeasurement'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.unitOfMeasurement; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.siPrefix'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.siPrefix'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.siPrefix; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.exponent'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.exponent'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.exponent; };
 
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.vifeTypes'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.vifeTypes'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.vifeTypes; };
         
-        pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key='dsEdit.mbus.vifeLabels'/>";
+        pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code='dsEdit.mbus.vifeLabels'/>";
         pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.vifeLabels; };
 
     }
@@ -371,14 +371,14 @@
 
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.mbus.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.mbus.desc"/></c:set>
 <c:set var="dsHelpId" value="mbusDS"/>
 <%@include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 <!-- Disable modem for now-->
 <tr>
     <td colspan="2">
         <input type="radio" name="connectionType" id="useTcpIpConnection" value="TCP_IP" <c:if test="${dataSource.tcpIp}">checked="checked"</c:if> onclick="updateConnetionType()" disabled="disabled">
-        <label class="formLabelRequired" for="useDirectConnection"><fmt:message key="dsEdit.mbus.useTcpIpConnection"/></label>
+        <label class="formLabelRequired" for="useDirectConnection"><spring:message code="dsEdit.mbus.useTcpIpConnection"/></label>
     </td>
 </tr>
 <tr>
@@ -386,17 +386,17 @@
         <table>
             <tr>
                 <td width="30" />
-                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.tcpAddr"/></td>
+                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.tcpAddr"/></td>
                 <td class="formField"><input type="text" id="ipAddressOrHostname" value="${dataSource.tcpIp ? dataSource.connection.host : ""}" /></td>
             </tr>
             <tr>
                 <td width="30" />
-                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.tcpPort"/>
+                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.tcpPort"/>
                 <td class="formField"><input type="text" id="tcpPort" value="${dataSource.tcpIp ? dataSource.connection.port: ""}" /></td>
             </tr>
             <tr>
                 <td width="30" />
-                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.tcpIpBitPerSecond"/></td>
+                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.tcpIpBitPerSecond"/></td>
                 <td class="formField"><input type="text" id="tcpIpBitPerSecond" value="${dataSource.tcpIp ? dataSource.connection.bitPerSecond: ""}" /></td>
             </tr>
         </table>
@@ -405,7 +405,7 @@
 <tr>
     <td colspan="2">
         <input type="radio" name="connectionType" id="useDirectConnection" value="SERIAL_DIRECT" <c:if test="${dataSource.serialDirect}">checked="checked"</c:if> onclick="updateConnectionType()" disabled="disabled">
-        <label class="formLabelRequired" for="useDirectConnection"><fmt:message key="dsEdit.mbus.useDirectConnection"/></label>
+        <label class="formLabelRequired" for="useDirectConnection"><spring:message code="dsEdit.mbus.useDirectConnection"/></label>
     </td>
     <td/>
 </tr>
@@ -416,7 +416,7 @@
                 <td width="30" />
                 <td colspan=""2">
                     <input type="checkbox" name="phoneNumber" id="phoneNumber" <c:if test="${dataSource.serialAtModem}"> checked="checked"</c:if> onclick="updatePhoneNumber()" />
-                    <label class="formLabelRequired" for="phoneNumber"><fmt:message key="dsEdit.mbus.phoneNumber"/></label>
+                    <label class="formLabelRequired" for="phoneNumber"><spring:message code="dsEdit.mbus.phoneNumber"/></label>
                     <input type="text" id="phoneNumberText" value="${dataSource.serialAtModem ? dataSource.connection.phoneNumber : ""}" />
                 </td>
             </tr>
@@ -439,14 +439,14 @@
 
 <tr>
     <td colspan="3">
-        <label class="formLabelRequired" for="responseTimeOutOffset" ><fmt:message key="dsEdit.mbus.responseTimeOutOffset"/></label>
+        <label class="formLabelRequired" for="responseTimeOutOffset" ><spring:message code="dsEdit.mbus.responseTimeOutOffset"/></label>
         <input class="formShort" type="text" id="responseTimeOutOffset" value="${dataSource.connection.responseTimeOutOffset}" />
         <label class="formLabelRequired">ms</label>
     </td>
 </tr>
 <tr>
     <td colspan="3">
-        <label class="formLabelRequired" for="updatePeriods" ><fmt:message key="dsEdit.updatePeriod"/></label>
+        <label class="formLabelRequired" for="updatePeriods" ><spring:message code="dsEdit.updatePeriod"/></label>
         <input class="formShort" type="text" id="updatePeriods" value="${dataSource.updatePeriods}" />
         <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
             <tag:timePeriodOptions sst="true" s="true" min="true" h="true" d="true" w="true" mon="true"/>
@@ -463,11 +463,11 @@
     <div class="borderDiv marB">
         <table>
             <tbody>
-                <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.mbus.search"/></td></tr>
+                <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.mbus.search"/></td></tr>
                 <tr>
                     <td>
                         <input type="radio" name="addressingType" id="usePrimnaryAddressing" value="PRIMARY" onclick="updateAddressing()">
-                        <label class="formLabelRequired" for="usePrimnaryAddressing"><fmt:message key="dsEdit.mbus.usePrimaryAddressing"/></label>
+                        <label class="formLabelRequired" for="usePrimnaryAddressing"><spring:message code="dsEdit.mbus.usePrimaryAddressing"/></label>
                     </td>
                 </tr>
                 <tr>
@@ -475,12 +475,12 @@
                         <table>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.firstHexAddress"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.firstHexAddress"/></td>
                                 <td class="formField"><input type="text" id="firstPrimaryAddress" value="00"/></td>
                             </tr>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.lastHexAddress"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.lastHexAddress"/></td>
                                 <td class="formField"><input type="text" id="lastPrimaryAddress" value="FA"/></td>
                             </tr>
                         </table>
@@ -488,7 +488,7 @@
                 <tr>
                     <td colspan="2">
                         <input type="radio" name="addressingType" id="useSecondaryAddressing" checked="checked" value="SECONDARY" onclick="updateAddressing()">
-                        <label class="formLabelRequired" for="useSecondaryAddressing"><fmt:message key="dsEdit.mbus.useSecondaryAddressing"/></label>
+                        <label class="formLabelRequired" for="useSecondaryAddressing"><spring:message code="dsEdit.mbus.useSecondaryAddressing"/></label>
                     </td>
                 </tr>
                 <tr>
@@ -496,17 +496,17 @@
                         <table>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.id"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.id"/></td>
                                 <td class="formField"><input type="text" id="secAddrId" value=""/></td>
                             </tr>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.man"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.man"/></td>
                                 <td class="formField"><input type="text" id="secAddrMan" value=""/></td>
                             </tr>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.secAddrMedium"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.secAddrMedium"/></td>
                                 <td class="formField">
                                     <sst:select id="secAddrMedium" value="">
                                         <sst:option></sst:option>
@@ -518,7 +518,7 @@
                             </tr>
                             <tr>
                                 <td width="30" />
-                                <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.version"/></td>
+                                <td class="formLabelRequired"><spring:message code="dsEdit.mbus.version"/></td>
                                 <td class="formField"><input type="text" id="secAddrVersion" value=""/></td>
                             </tr>
                         </table>
@@ -529,8 +529,8 @@
         <table>
             <tr>
                 <td colspan="2" align="center">
-                        <input id="searchBtn" type="button" value="<fmt:message key="dsEdit.mbus.search"/>" onclick="search();"/>
-                        <input id="cancelSearchBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="cancelSearch();"/>
+                        <input id="searchBtn" type="button" value="<spring:message code="dsEdit.mbus.search"/>" onclick="search();"/>
+                        <input id="cancelSearchBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="cancelSearch();"/>
                 </td>
             </tr>
 
@@ -540,11 +540,11 @@
                 <td colspan="2">
                     <table cellspacing="1">
                         <tr class="rowHeader">
-                            <td><fmt:message key="dsEdit.mbus.addressHex"/></td>
-                            <td><fmt:message key="dsEdit.mbus.identNumber"/></td>
-                            <td><fmt:message key="dsEdit.mbus.medium"/></td>
-                            <td><fmt:message key="dsEdit.mbus.manufacturer"/></td>
-                            <td><fmt:message key="dsEdit.mbus.versionHex"/></td>
+                            <td><spring:message code="dsEdit.mbus.addressHex"/></td>
+                            <td><spring:message code="dsEdit.mbus.identNumber"/></td>
+                            <td><spring:message code="dsEdit.mbus.medium"/></td>
+                            <td><spring:message code="dsEdit.mbus.manufacturer"/></td>
+                            <td><spring:message code="dsEdit.mbus.versionHex"/></td>
                         </tr>
                         <tbody id="mbusDevices"></tbody>
                     </table>
@@ -561,99 +561,99 @@
             <tag:pointList pointHelpId="mbusPP">
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.correctionFactor"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.correctionFactor"/></td>
                     <td class="formField"><input type="text" id="correctionFactor"/></td>
                 </tr>
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.addressing"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.addressing"/></td>
                     <td class="formField"><input type="text" id="addressing" disabled="disabled"/></td>
                 </tr>
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.addressHex"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.addressHex"/></td>
                     <td class="formField"><input type="text" id="addressHex" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.identNumber"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.identNumber"/></td>
                     <td class="formField"><input type="text" id="identNumber" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.medium"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.medium"/></td>
                     <td class="formField"><input type="text" id="medium" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.manufacturer"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.manufacturer"/></td>
                     <td class="formField"><input type="text" id="manufacturer" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.versionHex"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.versionHex"/></td>
                     <td class="formField"><input type="text" id="versionHex" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.responseFrame"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.responseFrame"/></td>
                     <td class="formField"><input type="text" id="responseFrame" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.difCode"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.difCode"/></td>
                     <td class="formField"><input type="text" id="difCode" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.functionField"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.functionField"/></td>
                     <td class="formField"><input type="text" id="functionField" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.deviceUnit"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.deviceUnit"/></td>
                     <td class="formField"><input type="text" id="deviceUnit" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.tariff"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.tariff"/></td>
                     <td class="formField"><input type="text" id="tariff" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.storageNumber"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.storageNumber"/></td>
                     <td class="formField"><input type="text" id="storageNumber" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.vifType"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.vifType"/></td>
                     <td class="formField"><input type="text" id="vifType" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.vifLabel"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.vifLabel"/></td>
                     <td class="formField"><input type="text" id="vifLabel" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.unitOfMeasurement"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.unitOfMeasurement"/></td>
                     <td class="formField"><input type="text" id="unitOfMeasurement" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.siPrefix"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.siPrefix"/></td>
                     <td class="formField"><input type="text" id="siPrefix" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.exponent"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.exponent"/></td>
                     <td class="formField"><input type="text" id="exponent" disabled="disabled"/></td>
                 </tr>
 
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.vifeTypes"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.vifeTypes"/></td>
                     <td class="formField"><input type="text" id="vifeTypes" disabled="disabled"/></td>
                 </tr>
                 <tr>
-                    <td class="formLabelRequired"><fmt:message key="dsEdit.mbus.vifeLabels"/></td>
+                    <td class="formLabelRequired"><spring:message code="dsEdit.mbus.vifeLabels"/></td>
                     <td class="formField"><input type="text" id="vifeLabels" disabled="disabled"/></td>
                 </tr>
 
