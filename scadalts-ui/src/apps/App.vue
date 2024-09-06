@@ -123,11 +123,7 @@ export default {
 				4: {
 					image: "images/flag_red.png"
 				}
-			},
-			systemInfoSettings: {
-                topDescriptionPrefix: "",
-                topDescription: "",
-            }
+			}
 		};
 	},
 
@@ -185,7 +181,7 @@ export default {
 	methods: {
 
 		fetchCustomCss() {
-			let customCss = this.$store.getters.customCss;
+			let customCss = this.$store.state.systemSettings.customCss;
 			let unescapedContent = unescapeHtml(customCss.content);
             this.applyCustomCss(unescapedContent);
 		},
@@ -202,7 +198,6 @@ export default {
 			styleElement.innerHTML = '';
 			styleElement.appendChild(document.createTextNode(cssContent));
 		},
-
 
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;

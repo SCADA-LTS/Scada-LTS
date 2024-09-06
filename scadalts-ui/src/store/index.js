@@ -94,8 +94,7 @@ export default new Vuex.Store({
 			{ id: 2, label: i18n.t('common.alarmlevels.urgent') },
 			{ id: 3, label: i18n.t('common.alarmlevels.critical') },
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
-		],
-		customCss: null
+		]
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
@@ -108,9 +107,7 @@ export default new Vuex.Store({
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		},
-        setCustomCss(state, customCss) {
-            state.customCss = customCss;
-        },
+
         setLoggedUser(state, loggedUser) {
             state.loggedUser = loggedUser;
         }
@@ -169,13 +166,6 @@ export default new Vuex.Store({
                  return r;
             });
 		},
-
-        getCustomCss({ dispatch, commit }) {
-            return dispatch('requestGet', '/customcss/').then((r) => {
-                commit('setCustomCss', r);
-                return r;
-            });
-        },
 
 		/**
 		 * HTTP Request GET method to fetch data from the REST API
@@ -448,9 +438,6 @@ export default new Vuex.Store({
 		appPullRequestBranch: (state) => {
 			return state.scadaLtsPullRequestBranch;
 		},
-        customCss: (state) => {
-            return state.customCss;
-        },
         loggedUser: (state) => {
              return state.loggedUser;
         }

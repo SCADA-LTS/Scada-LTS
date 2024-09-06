@@ -23,6 +23,7 @@ const storeSystemSettings = {
 		schemaVersion: undefined,
 		scadaConfig: undefined,
 		defaultLoggingType: undefined,
+		customCss: undefined
 	},
 	mutations: {
 		setDatabaseType(state, databaseType) {
@@ -71,6 +72,9 @@ const storeSystemSettings = {
 		setDefaultLoggingType(state, defaultLoggingType) {
 			state.defaultLoggingType = defaultLoggingType;
 		},
+        setCustomCss(state, customCss) {
+            state.customCss = customCss;
+        }
 	},
 	actions: {
 		getDatabaseType({ commit, dispatch }) {
@@ -271,6 +275,13 @@ const storeSystemSettings = {
 				data: null,
 			});
 		},
+
+        getCustomCss({ dispatch, commit }) {
+            return dispatch('requestGet', '/customcss/').then((r) => {
+                commit('setCustomCss', r);
+                return r;
+            });
+        },
 
 		purgeData(context) {
 			return new Promise((resolve, reject) => {
