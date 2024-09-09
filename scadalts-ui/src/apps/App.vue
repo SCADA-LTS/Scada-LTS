@@ -5,11 +5,29 @@
 		<v-app-bar id="topbar" app dark color="primary">
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS
-						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
-					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}
-					</v-list-item-subtitle>
+					<v-row class="no-wrap">
+						<v-col cols="auto">
+							<v-list-item-title class="title">Scada-LTS
+								<v-icon v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon>
+							</v-list-item-title>
+							<v-list-item-subtitle>
+								version {{ $store.getters.appMilestone }}
+							</v-list-item-subtitle>
+						</v-col>
+
+						<v-row>
+							<v-col class="d-flex justify-start align-center">
+								<div id="top-description-container" class="text-align-left">
+									<span id="top-description-prefix" class="custom-text">
+										{{ topDescriptionPrefix }}
+									</span>
+									<span id="top-description" class="custom-text">
+										{{ topDescription }}
+									</span>
+								</div>
+							</v-col>
+						</v-row>
+					</v-row>
 				</v-list-item-content>
 			</v-list-item>
 			<v-list-item max-width="50" v-if="!!highestUnsilencedAlarmLevel">
@@ -71,6 +89,7 @@
 import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
+import {unescapeHtml} from "@/utils/common";
 
 export default {
 	name: 'app',
@@ -104,17 +123,17 @@ export default {
 				4: {
 					image: "images/flag_red.png"
 				}
-			},
+			}
 		};
 	},
 
 	computed: {
 		user() {
-			return this.$store.state.loggedUser;
+			return this.$store.getters.loggedUser;
 		},
 		isUserRoleAdmin() {
-			if (!!this.$store.state.loggedUser) {
-				return this.$store.state.loggedUser.admin;
+			if (!!this.$store.getters.loggedUser) {
+				return this.$store.getters.loggedUser.admin;
 			} else {
 				return false;
 			}
@@ -128,14 +147,31 @@ export default {
 		isLoginPage() {
 			return this.$route.name === 'login';
 		},
+		topDescriptionPrefix() {
+		    let systemInfoSettings = this.$store.state.systemSettings.systemInfoSettings;
+		    if(systemInfoSettings && systemInfoSettings.topDescriptionPrefix) {
+		        return systemInfoSettings.topDescriptionPrefix;
+		    }
+		    return '';
+		},
+        topDescription() {
+            let systemInfoSettings = this.$store.state.systemSettings.systemInfoSettings;
+            if(systemInfoSettings && systemInfoSettings.topDescription) {
+		        return systemInfoSettings.topDescription;
+		    }
+            return '';
+        }
 	},
 
-	mounted() {
+	async mounted() {
 	    if(!this.user) {
-    			this.$store.dispatch('getUserInfo');
-    	}
-		this.$store.dispatch('getLocaleInfo');
+            await this.$store.dispatch('getUserInfo');
+        }
+        await this.$store.dispatch('getLocaleInfo');
+        await this.$store.dispatch('getCustomCss');
+        await this.$store.dispatch('getSystemInfoSettings');
 		this.connectToWebSocket();
+		this.fetchCustomCss();
 	},
 
 	destroyed() {
@@ -143,6 +179,26 @@ export default {
 	},
 
 	methods: {
+
+		fetchCustomCss() {
+			let customCss = this.$store.state.systemSettings.customCss;
+			let unescapedContent = unescapeHtml(customCss.content);
+            this.applyCustomCss(unescapedContent);
+		},
+
+		applyCustomCss(cssContent) {
+			let styleElement = document.getElementById('custom-css-style');
+
+			if (!styleElement) {
+				styleElement = document.createElement('style');
+				styleElement.id = 'custom-css-style';
+				styleElement.type = 'text/css';
+				document.head.appendChild(styleElement);
+			}
+			styleElement.innerHTML = '';
+			styleElement.appendChild(document.createTextNode(cssContent));
+		},
+
 		subscribeForAlarms() {
 			this.wsConnectionRetires = 5;
 			let stompClient = this.$store.state.webSocketModule.webSocket;
