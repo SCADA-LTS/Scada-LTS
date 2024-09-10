@@ -17,7 +17,7 @@
                 <v-col>
                     <v-text-field 
                         :label="$t('common.name')"
-						v-model="report.name"
+						v-model="name"
                     ></v-text-field>
                 </v-col>
                 <v-col>
@@ -242,7 +242,7 @@
 
 						<v-col cols="6" v-if="report.schedulePeriod === 0">
 							<v-text-field
-								v-model="report.scheduleCron"
+								v-model="scheduleCron"
 								validate-on-blur
 								:rules="cronRules"
 								label="Cron pattern"
@@ -368,6 +368,8 @@
 import { RECIPIENT } from '../../store/mailingList/constants';
 import { ALARM_OPTIONS, DATE_RANGE_TYPE_OPTIONS } from '../../store/reports/constants';
 import DataPointsSettingsDialog from './DataPointsDialog.vue'
+import {escapeHtml, unescapeHtml} from '@/utils/common';
+
 export default {
     components: {
 		DataPointsSettingsDialog
@@ -395,7 +397,7 @@ export default {
 
 			userList: [],
 			recipientList: [],	
-			email: '',
+			emailText: '',
 			activeRecipients: [],
         }
     },
@@ -411,7 +413,31 @@ export default {
 			});
 			periods.push({id: 0, label: 'Cron pattern'})
 			return  periods;
-		}
+		},
+        name: {
+          get() {
+            return unescapeHtml(this.report.name);
+          },
+          set(newValue) {
+            this.report.name = escapeHtml(newValue);
+          }
+        },
+        email: {
+          get() {
+            return unescapeHtml(this.emailText);
+          },
+          set(newValue) {
+            this.emailText = escapeHtml(newValue);
+          }
+        },
+        scheduleCron: {
+          get() {
+            return unescapeHtml(this.report.scheduleCron);
+          },
+          set(newValue) {
+            this.report.scheduleCron = escapeHtml(newValue);
+          }
+        }
     },
 
 	mounted() {
@@ -428,8 +454,15 @@ export default {
 		},
 
 		saveReport() {
+		    this.name = unescapeHtml(this.name);
+            this.scheduleCron = unescapeHtml(this.scheduleCron);
+
+            let report = JSON.parse(JSON.stringify(this.report));
 			this.setDateTime();
-			this.$emit('saved', this.report);
+			this.$emit('saved', report);
+
+            this.name = escapeHtml(this.name);
+            this.scheduleCron = escapeHtml(this.scheduleCron);
 		},
 
 		async fetchUserList() {
@@ -527,6 +560,7 @@ export default {
 		initRecipients() {
 			this.activeRecipients = [];
 			this.report.recipients.forEach(r => {
+			    r.referenceAddress = unescapeHtml(r.referenceAddress);
 				let entry = { 
 					type: r.recipientType, 
 					name: '', 
@@ -559,6 +593,8 @@ export default {
 		},
 
 		addMail() {
+		    this.email = unescapeHtml(this.email);
+		    console.log('this.email: ' + this.email);
 			if(!!this.email) {
 				this.addRecipient(RECIPIENT.TYPE_MAIL, this.email);
 				this.email = '';

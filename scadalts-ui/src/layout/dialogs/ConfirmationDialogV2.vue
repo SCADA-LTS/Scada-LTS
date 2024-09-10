@@ -5,10 +5,10 @@
 		</template>
 		<v-card class="dialog-confirmation">
 			<v-card-title class="headline">
-				{{ title }}
+				<span v-html="title"></span>
 			</v-card-title>
 			<v-card-text>
-				{{ message }}
+				<span v-html="message"></span>
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer></v-spacer>

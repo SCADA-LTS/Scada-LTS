@@ -23,7 +23,7 @@
 					<v-col cols="12" :sm="6">
 						<v-text-field
 							autofocus
-							v-model="datapoint.name"
+							v-model="name"
 							label="Data Point Name"
 							:rules="[ruleNotNull]"
 							required
@@ -31,7 +31,7 @@
 					</v-col>
 					<v-col cols="6" :sm="4">
 						<v-text-field
-							v-model="datapoint.xid"
+							v-model="xid"
 							label="Data Point Export ID"
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
@@ -47,7 +47,7 @@
 					</v-col>
 					<v-col cols="12">
 						<v-text-field
-							v-model="datapoint.description"
+							v-model="description"
 							label="Description"
 						></v-text-field>
 					</v-col>
@@ -72,6 +72,7 @@
 </template>
 <script>
 import Vue from "vue";
+import {escapeHtml, unescapeHtml} from '@/utils/common';
 
 export default {
 	props: {
@@ -111,6 +112,33 @@ export default {
 		};
 	},
 
+    computed: {
+        name: {
+          get() {
+            return unescapeHtml(this.datapoint.name);
+          },
+          set(newValue) {
+            this.datapoint.name = escapeHtml(newValue);
+          }
+        },
+        description: {
+          get() {
+            return unescapeHtml(this.datapoint.description);
+          },
+          set(newValue) {
+            this.datapoint.description = escapeHtml(newValue);
+          }
+        },
+        xid: {
+          get() {
+            return unescapeHtml(this.datapoint.xid);
+          },
+          set(newValue) {
+            this.datapoint.xid = escapeHtml(newValue);
+          }
+        }
+    },
+
 	methods: {
 		cancel() {
 			console.debug('datasources.DataPointCreation.vue::cancel()');
@@ -123,10 +151,18 @@ export default {
 		},
 
 		accept() {
+		    this.xid =  unescapeHtml(this.xid);
+		    this.name = unescapeHtml(this.name);
+		    this.description = unescapeHtml(this.description);
+
 			console.debug('datasources.DataPointCreation.vue::accept()');
 			if (this.formValid) {
 				this.$emit('accept');
 			}
+
+            this.xid =  escapeHtml(this.xid);
+            this.name = escapeHtml(this.name);
+            this.description = escapeHtml(this.description);
 		},
 
 		async checkXidUnique() {

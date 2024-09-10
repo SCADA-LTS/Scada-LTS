@@ -103,7 +103,7 @@ public class ReportsApiService implements CrudService<ReportVO> {
         if(!reportService.hasReportOwnerPermission(user, report))
             throw new UnauthorizedException(request.getRequestURI());
         try {
-            reportService.deleteReport(report.getId());
+            reportService.deleteReport(report);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
