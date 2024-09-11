@@ -180,9 +180,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
 				systemSettingsService.getMiscSettings().isEventAssignEnabled());
 		settings.put(SystemSettingsDAO.TOP_DESCRIPTION,
-				systemSettingsService.getMiscSettings().getTopDescription());
+				systemSettingsService.getSystemInfoSettings().getTopDescription());
 		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
-				systemSettingsService.getMiscSettings().getTopDescriptionPrefix());
+				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
 		return settings;
 	}
 

@@ -632,13 +632,13 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.top.description.prefix"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 150px"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.top.description"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 300px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
         </td>
       </tr>
       <tr>

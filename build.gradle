@@ -105,7 +105,13 @@ task existsScadaLTSWarFile {
     }
 }
 
-task deployTomcat(type: Copy, dependsOn: existsScadaLTSWarFile) {
+task deployTomcat(type: Copy, dependsOn: [war, existsScadaLTSWarFile]) {
+    from "build/libs/"
+    into System.getenv("CATALINA_HOME")+ "/webapps"
+    include('Scada-LTS.war')
+}
+
+task deployTomcatDev(type: Copy, dependsOn: [warDev, existsScadaLTSWarFile]) {
     from "build/libs/"
     into System.getenv("CATALINA_HOME")+ "/webapps"
     include('Scada-LTS.war')
@@ -154,7 +160,7 @@ task buildRunDebug(type: GradleBuild) {
 }
 
 task buildRunDebugDev(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'warDev', 'deployTomcatDev', 'runDebug']
 }
 
 task buildRunDebugProd(type: GradleBuild) {
@@ -162,7 +168,7 @@ task buildRunDebugProd(type: GradleBuild) {
 }
 
 task buildRunDebugDevTestUi(type: GradleBuild) {
-    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'clearProject', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcatDev', 'runDebug']
 }
 
 task buildRunDebugProdTestUi(type: GradleBuild) {
