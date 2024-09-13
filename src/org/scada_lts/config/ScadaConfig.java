@@ -20,6 +20,8 @@ package org.scada_lts.config;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.mvc.api.css.CssStyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -148,6 +150,7 @@ public class ScadaConfig {
 	private static final String FILE_NAME_PROPERTIES="env.properties";
 	private static final String FILE_NAME_CUSTOM_CSS="common.css";
 	private static final String DIR_NAME_CUSTOM_CONFIG="assets";
+    private static final String FILE_NAME_USER_STYLESHEET="user_styles.css";
 	
 	private static ScadaConfig instance = null;
 	
@@ -322,6 +325,11 @@ public class ScadaConfig {
 		File f = new File(getPathCustomConfig()+FILE_NAME_PROPERTIES);
 		return (f.exists()) && (!f.isDirectory());
 	}
+
+    public static boolean isExistUserCSS() {
+        File f = new File(getPathCustomConfig()+FILE_NAME_USER_STYLESHEET);
+        return (f.exists()) && (!f.isDirectory());
+    }
 	
 	public static void copyLogo() {
 		try {
@@ -346,6 +354,16 @@ public class ScadaConfig {
 			LOG.error(e);
 		}
 	}
+
+    public static void copyUserCSS() {
+        try {
+            SystemSettingsService systemSettingsService = new SystemSettingsService();
+            CssStyle cssContent = systemSettingsService.getCustomCss();
+            Files.write(Paths.get(getPathCustomConfig() + FILE_NAME_USER_STYLESHEET), cssContent.getContent().getBytes());
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+    }
 	
 	private ScadaConfig() {
 		try {
@@ -425,5 +443,17 @@ public class ScadaConfig {
 		
 	}
 
+    private static String getPathExistingUserCSS() {
+        String fileSeparator = System.getProperty("file.separator");
+        String path = Common.ctx.getServletContext().getRealPath("");
+
+        if (fileSeparator.equals("\\")) {
+            path = path + "\\assets\\user_styles.css";
+        }
+        if (fileSeparator.equals("/")) {
+            path = path + "/assets/user_styles.css";
+        }
+        return path;
+    }
 	
 }

@@ -166,6 +166,7 @@ public class SystemSettingsDAO {
 	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
 	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
 	public static final String TOP_DESCRIPTION = "topDescription";
+	public static final String CUSTOM_CSS = "customCss";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -418,6 +419,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
 		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
 		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
+		DEFAULT_VALUES.put(CUSTOM_CSS, "");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

@@ -55,6 +55,11 @@ public class MangoScadaConfig implements MangoScadaConfigurable {
 			 LOG.info("copy env.properties");
 			 ScadaConfig.copyConfig();
 		 }
+
+         if(ScadaConfig.isExistUserCSS()){
+             LOG.info("copy user_styles");
+             ScadaConfig.copyUserCSS();
+         }
 				
 	}
 

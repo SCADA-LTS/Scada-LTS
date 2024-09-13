@@ -33,7 +33,7 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
-    
+
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
@@ -542,7 +542,7 @@
       return new Promise((resolve, reject) => {
         let req = new XMLHttpRequest();
         req.open('POST', customCssUrl, true);
-        req.setRequestHeader('Content-type', 'application/text');
+        req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
@@ -553,7 +553,12 @@
         req.onerror = () => {
           reject(req.status);
         }
-        req.send(document.getElementById('cssEditor').value);
+        let cssContent = document.getElementById('cssEditor').value;
+        let cssStyle = {
+            content: cssContent
+        };
+        let body = JSON.stringify(cssStyle);
+        req.send(body);
       });
     }
 
@@ -564,6 +569,19 @@
         }
         $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cssEditor = document.getElementById('cssEditor');
+      const cssHighlighting = document.getElementById('cssHighlighting');
+      if (cssEditor && cssHighlighting) {
+        cssEditor.addEventListener('input', () => {
+          updateCodeText(cssEditor.value, '#cssHighlightingContent');
+        });
+        cssEditor.addEventListener('scroll', () => {
+          syncCodeScroll(cssEditor, '#cssHighlighting');
+        });
+      }
+    });
 
   </script>
   

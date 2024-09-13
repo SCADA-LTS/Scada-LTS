@@ -24,6 +24,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
+import org.scada_lts.web.mvc.api.css.CssStyle;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
@@ -518,5 +519,13 @@ public class SystemSettingsService {
             LOG.warn(e.getMessage(), e);
             return Collections.emptyMap();
         }
+    }
+
+    public CssStyle getCustomCss() {
+        return new CssStyle(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_CSS));
+    }
+
+    public void saveCustomCss(CssStyle cssStyle){
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS, cssStyle.getContent());
     }
 }
