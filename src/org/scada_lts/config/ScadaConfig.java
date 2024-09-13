@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.web.mvc.api.css.CssStyle;
+import org.scada_lts.web.mvc.api.css.CssUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -356,13 +357,9 @@ public class ScadaConfig {
 	}
 
     public static void copyUserCSS() {
-        try {
-            SystemSettingsService systemSettingsService = new SystemSettingsService();
-            CssStyle cssContent = systemSettingsService.getCustomCss();
-            Files.write(Paths.get(getPathCustomConfig() + FILE_NAME_USER_STYLESHEET), cssContent.getContent().getBytes());
-        } catch (IOException e) {
-            LOG.error(e);
-        }
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        CssStyle cssContent = systemSettingsService.getCustomCss();
+        CssUtils.saveToFile(cssContent);
     }
 	
 	private ScadaConfig() {

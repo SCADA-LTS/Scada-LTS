@@ -7,6 +7,12 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import static org.scada_lts.web.mvc.api.css.CssUtils.getCustomCssFileFromPath;
+
 public class V2_8_0_3_AddCustomCssColumnToSystemSettings extends BaseJavaMigration {
 
     private static final Log LOG = LogFactory.getLog(V2_8_0_3_AddCustomCssColumnToSystemSettings.class);
@@ -16,21 +22,22 @@ public class V2_8_0_3_AddCustomCssColumnToSystemSettings extends BaseJavaMigrati
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
         try {
-            addCustomCssColumn(jdbcTmp);
+            updateCustomCssContent(jdbcTmp);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             throw ex;
         }
     }
 
-    private void addCustomCssColumn(JdbcTemplate jdbcTmp) {
-        boolean existsCustomCssColumn = jdbcTmp.queryForObject(
-                "SELECT (SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`= DATABASE() AND `TABLE_NAME`='systemSettings' AND `COLUMN_NAME`='customCss') IS NOT NULL;",
-                boolean.class
-        );
-
-        if (!existsCustomCssColumn) {
-            jdbcTmp.update("ALTER TABLE systemSettings ADD COLUMN customCss TEXT DEFAULT NULL;");
+    private void updateCustomCssContent(JdbcTemplate jdbcTmp) {
+        try {
+            File customCssFile = getCustomCssFileFromPath();
+            if (customCssFile != null && customCssFile.exists()) {
+                String customCssContent = new String(Files.readAllBytes(customCssFile.toPath()));
+                jdbcTmp.update("UPDATE systemSettings SET customCss = ?", customCssContent);
+            }
+        } catch (IOException e) {
+            LOG.error("Error reading custom CSS file: " + e.getMessage(), e);
         }
     }
 }

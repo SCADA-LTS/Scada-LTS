@@ -4,12 +4,17 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.mvc.api.CustomCssAPI;
+import org.scada_lts.utils.PathSecureUtils;
+import org.scada_lts.utils.UploadFileUtils;
 
+import javax.servlet.ServletContext;
+import javax.swing.text.html.CSS;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class CssUtils {
 
@@ -33,7 +38,8 @@ public class CssUtils {
 
     public static File getCustomCssFileFromPath() {
         try {
-            File cssFile = new File(Common.ctx.getCtx().getRealPath(CSS_FILENAME));
+            Path fileName = PathSecureUtils.getAppContextSystemFilePath(CSS_FILENAME);
+            File cssFile = new File(fileName.toUri());
             if(!cssFile.exists()) {
                 boolean created = cssFile.createNewFile();
                 if(created) {

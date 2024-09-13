@@ -28,6 +28,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
+import org.scada_lts.web.mvc.api.css.CssUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -419,8 +420,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
 		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
 		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
-		DEFAULT_VALUES.put(CUSTOM_CSS, "");
-	}
+        DEFAULT_VALUES.put(CUSTOM_CSS, "" );
+    }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void resetDataBase() {

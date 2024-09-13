@@ -11,13 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 
-import static org.scada_lts.web.mvc.api.css.CssUtils.getCustomCssFileFromPath;
 import static org.scada_lts.web.mvc.api.css.CssUtils.saveToFile;
 
 @RestController
