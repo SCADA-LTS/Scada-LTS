@@ -546,6 +546,10 @@
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
+          } else if (req.status === 400) {
+            let errors = JSON.parse(req.responseText);
+            displayCssErrors(errors);
+            reject(errors);
           } else {
             reject(req.status);
           }
@@ -559,6 +563,17 @@
         };
         let body = JSON.stringify(cssStyle);
         req.send(body);
+      });
+    }
+
+    function displayCssErrors(errors) {
+      let errorDiv = document.getElementById('cssErrors');
+      errorDiv.innerHTML = ""; // Clear previous errors
+
+      errors.forEach(error => {
+        let errorElement = document.createElement('p');
+        errorElement.textContent = error;
+        errorDiv.appendChild(errorElement);
       });
     }
 
@@ -1119,6 +1134,7 @@
             <tr>
               <td>
                 <span class="smallTitle"><spring:message code="systemSettings.customCss.title"/></span>
+                <div id="cssErrors" class="error-messages"></div>
               </td>
             </tr>
         </table>
@@ -1205,6 +1221,10 @@
       .css-dialog-editor {
         position: relative;
         height: 520px;
+      }
+      .error-messages p {
+        color: red;
+        font-weight: bold;
       }
 
       </style>
