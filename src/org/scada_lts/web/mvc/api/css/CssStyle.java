@@ -1,17 +1,24 @@
 package org.scada_lts.web.mvc.api.css;
 
-@CssValid
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CssStyle {
-    private String content;
 
-    public CssStyle() {
-    }
+    @CssValid
+    private final String content;
 
-    public CssStyle(String content) {
-        this.content = content;
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public CssStyle(@JsonProperty("content") String content) {
+        this.content = CustomCssUtils.replaceToTab(content);
     }
 
     public String getContent() {
         return content;
+    }
+
+    public CssStyle clearedOfTabs() {
+        return new CssStyle(getContent().replace("\t", " "));
     }
 }

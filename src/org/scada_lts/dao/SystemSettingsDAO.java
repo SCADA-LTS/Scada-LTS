@@ -28,7 +28,6 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
-import org.scada_lts.web.mvc.api.css.CssUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -167,7 +166,7 @@ public class SystemSettingsDAO {
 	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
 	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
 	public static final String TOP_DESCRIPTION = "topDescription";
-	public static final String CUSTOM_CSS = "customCss";
+	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -420,7 +419,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
 		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
 		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
-        DEFAULT_VALUES.put(CUSTOM_CSS, "" );
+        DEFAULT_VALUES.put(CUSTOM_CSS_CONTENT, SystemSettingsUtils.getCustomCssContent());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

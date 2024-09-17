@@ -522,10 +522,11 @@ public class SystemSettingsService {
     }
 
     public CssStyle getCustomCss() {
-        return new CssStyle(SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_CSS));
+        String content = SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT);
+        return new CssStyle(content);
     }
 
-    public void saveCustomCss(CssStyle cssStyle){
-        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS, cssStyle.getContent());
+    public void saveCustomCss(CssStyle cssStyle) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT, cssStyle.getContent());
     }
 }

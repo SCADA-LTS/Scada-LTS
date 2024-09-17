@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static org.scada_lts.web.mvc.api.css.CssUtils.saveToFile;
+import static org.scada_lts.web.mvc.api.css.CustomCssUtils.saveToFile;
 
 @RestController
 @RequestMapping("/api/customcss")
 public class CustomCssAPI {
 
     private static final Log LOG = LogFactory.getLog(CustomCssAPI.class);
-    private static final String REQ_RESP_ERROR = "Couldn't create a *.css file.";
 
     private final SystemSettingsService systemSettingsService;
 
@@ -27,22 +26,22 @@ public class CustomCssAPI {
         this.systemSettingsService = systemSettingsService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getCustomCss(HttpServletRequest request) {
+    @GetMapping(value = "", produces = {"application/json;charset=UTF-8"})
+    public ResponseEntity<CssStyle> getCustomCss(HttpServletRequest request) {
         LOG.info("GET: /api/customcss");
         try {
             CssStyle customCss = systemSettingsService.getCustomCss();
             if (!StringUtils.isEmpty(customCss.getContent())) {
-                return new ResponseEntity<>(customCss, HttpStatus.OK);
+                return new ResponseEntity<>(customCss.clearedOfTabs(), HttpStatus.OK);
             }
-            return new ResponseEntity<>(REQ_RESP_ERROR,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("")
+    @PostMapping(value = "", consumes = {"application/json;charset=UTF-8"})
     public ResponseEntity<?> saveCustomCss(HttpServletRequest request, @Valid @RequestBody(required = true) CssStyle cssStyle) {
         LOG.info("POST: /api/customcss");
         try {

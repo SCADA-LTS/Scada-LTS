@@ -21,6 +21,9 @@ package org.scada_lts.mango.adapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.mvc.api.css.CssStyle;
+import org.scada_lts.web.mvc.api.css.CustomCssUtils;
 
 
 /** 
@@ -56,10 +59,10 @@ public class MangoScadaConfig implements MangoScadaConfigurable {
 			 ScadaConfig.copyConfig();
 		 }
 
-         if(ScadaConfig.isExistUserCSS()){
-             LOG.info("copy user_styles");
-             ScadaConfig.copyUserCSS();
-         }
+		LOG.info("loading user_styles.css form database");
+		SystemSettingsService service = new SystemSettingsService();
+		CssStyle cssStyle = service.getCustomCss();
+		CustomCssUtils.saveToFile(cssStyle);
 				
 	}
 

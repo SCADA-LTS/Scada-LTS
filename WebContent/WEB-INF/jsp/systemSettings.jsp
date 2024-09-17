@@ -575,7 +575,7 @@
       const cssHighlighting = document.getElementById('cssHighlighting');
       if (cssEditor && cssHighlighting) {
         cssEditor.addEventListener('input', () => {
-          updateCodeText(cssEditor.value, '#cssHighlightingContent');
+          updateCodeTextEscaped(cssEditor.value, '#cssHighlightingContent');
         });
         cssEditor.addEventListener('scroll', () => {
           syncCodeScroll(cssEditor, '#cssHighlighting');
