@@ -118,7 +118,7 @@ context('Scenario - Data Point List validation', () => {
 });
 
 context('Scenario - Data Point Details validation', () => {
-	beforeEach(() => {
+	before(() => {
 		cy.restLogin();
 		cy.visit('/app.shtm#/datapoint-list');
 		cy.get('tbody > tr:nth-of-type(1) > td:nth-of-type(1)').click();
