@@ -31,7 +31,7 @@ public class CssValidatorExceptionTest {
 
     @Test
     public void when_isInvalidCss() {
-        CssValidator validator = new W3cCssValidator();
+        CssValidator validator = new SacCssValidator();
         try {
             validator.validate(css);
             Assert.fail("Invalid CSS did not throw an exception");

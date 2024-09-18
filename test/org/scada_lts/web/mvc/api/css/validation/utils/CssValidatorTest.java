@@ -34,7 +34,7 @@ public class CssValidatorTest {
         CssValidator validator = new SacCssValidator();
         try {
             validator.validate(css);
-            Assert.assertTrue(true); // Walidacja przeszła pomyślnie
+            Assert.assertTrue(true);
         } catch (CssException e) {
             Assert.fail("Valid CSS threw an exception");
         }
