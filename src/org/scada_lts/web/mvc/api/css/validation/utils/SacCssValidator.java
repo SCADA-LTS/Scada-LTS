@@ -6,11 +6,11 @@ import org.w3c.css.sac.*;
 import java.io.IOException;
 import java.io.StringReader;
 
-public final class W3cCssValidator implements CssValidator {
+public final class SacCssValidator implements CssValidator {
 
     private final Parser parser;
 
-    public W3cCssValidator() {
+    public SacCssValidator() {
         this.parser = createParser();
     }
 

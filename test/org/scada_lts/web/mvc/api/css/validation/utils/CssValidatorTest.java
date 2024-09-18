@@ -41,7 +41,7 @@ public class CssValidatorTest {
 
     @Test
     public void when_isValidCss() {
-        CssValidator validator = new W3cCssValidator();
+        CssValidator validator = new SacCssValidator();
         try {
             validator.validate(css);
             Assert.assertTrue(isValid);
