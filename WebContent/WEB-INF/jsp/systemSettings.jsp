@@ -507,11 +507,6 @@
       dialog.style.display = 'none';
     }
 
-    function saveCssSettings() {
-      hideCssDialog();
-      saveCustomCssConfig();
-    }
-
     function initCustomCssData() {
       fetchCustomCssConfig().then((val) => {
         let res = JSON.parse(val);
@@ -543,12 +538,16 @@
         let req = new XMLHttpRequest();
         req.open('POST', customCssUrl, true);
         req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        setUserMessage("cssMessage");
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
+            setUserMessage("cssMessage", "<spring:message code="confirmation.customCss"/>");
           } else if (req.status === 400) {
             let errors = JSON.parse(req.responseText);
-            displayCssErrors(errors);
+            if(errors.length > 0) {
+              setUserMessage("cssMessage", "<spring:message code="systemSettings.invalidCss"/>");
+            }
             reject(errors);
           } else {
             reject(req.status);
@@ -563,17 +562,6 @@
         };
         let body = JSON.stringify(cssStyle);
         req.send(body);
-      });
-    }
-
-    function displayCssErrors(errors) {
-      let errorDiv = document.getElementById('cssErrors');
-      errorDiv.innerHTML = ""; // Clear previous errors
-
-      errors.forEach(error => {
-        let errorElement = document.createElement('p');
-        errorElement.textContent = error;
-        errorDiv.appendChild(errorElement);
       });
     }
 
@@ -1134,7 +1122,6 @@
             <tr>
               <td>
                 <span class="smallTitle"><spring:message code="systemSettings.customCss.title"/></span>
-                <div id="cssErrors" class="error-messages"></div>
               </td>
             </tr>
         </table>
@@ -1176,11 +1163,16 @@
           <table>
             <tr>
               <td>
-                <button onclick="hideCssDialog()"><spring:message code="common.cancel"/></button>
+                <button onclick="hideCssDialog()"><spring:message code="common.close"/></button>
               </td>
               <td>
-                <button onclick="saveCssSettings()"><spring:message code="common.save"/></button>
+                <button onclick="saveCustomCssConfig()"><spring:message code="common.save"/></button>
               </td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td colspan="2" id="cssMessage" class="formError"></td>
             </tr>
           </table>
           </div>
@@ -1221,10 +1213,6 @@
       .css-dialog-editor {
         position: relative;
         height: 520px;
-      }
-      .error-messages p {
-        color: red;
-        font-weight: bold;
       }
 
       </style>
