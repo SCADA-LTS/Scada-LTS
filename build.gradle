@@ -241,6 +241,7 @@ test {
         includeTestsMatching "org.scada_lts.web.security.XssProtectHtmlEscapeUtilsTest"
         includeTestsMatching "org.scada_lts.web.security.XssUtilsTest"
         includeTestsMatching "org.scada_lts.web.mvc.api.css.validation.utils.CssValidatorTest"
+        includeTestsMatching "org.scada_lts.web.mvc.api.css.validation.utils.CssValidatorExceptionTest"
     }
 
     testLogging {

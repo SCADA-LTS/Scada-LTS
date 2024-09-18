@@ -9,34 +9,34 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class CssValidatorTest {
+public class CssValidatorExceptionTest {
 
     @Parameterized.Parameters(name = "{index}: CSS: {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"body { color: red; }"},
-                {"h1 { font-size: 20px; }"},
-                {"#id { background-color: #fff; }"},
-                {"div { margin: 0 auto; padding: 10px; }"},
-                {".class { border: 1px solid black; }"},
-                {"p { line-height: 1.5; }"},
+                {"body { color: ; }"},
+                {"#id { background-color: #ggg; }"},
+                {"div { margin; }"},
+                {"@media screen and (max-width: 600px) { h1 { font-size: 30px }"},
+                {"body { color red; }"},
+                {"\"><img src=x onerror=alert(document.location)>"},
         });
     }
 
     private final String css;
 
-    public CssValidatorTest(String css) {
+    public CssValidatorExceptionTest(String css) {
         this.css = css;
     }
 
     @Test
-    public void when_isValidCss() {
+    public void when_isInvalidCss() {
         CssValidator validator = new W3cCssValidator();
         try {
             validator.validate(css);
-            Assert.assertTrue(true); // Walidacja przeszła pomyślnie
+            Assert.fail("Invalid CSS did not throw an exception");
         } catch (CssException e) {
-            Assert.fail("Valid CSS threw an exception");
+            Assert.assertTrue(true);
         }
     }
 }

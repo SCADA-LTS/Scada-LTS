@@ -542,11 +542,11 @@
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
-            setUserMessage("cssMessage", "<spring:message code="confirmation.customCss"/>");
+            setUserMessage("cssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
           } else if (req.status === 400) {
             let errors = JSON.parse(req.responseText);
             if(errors.length > 0) {
-              setUserMessage("cssMessage", "<spring:message code="systemSettings.invalidCss"/>");
+              setUserMessage("cssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
             }
             reject(errors);
           } else {
