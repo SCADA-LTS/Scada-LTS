@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.css;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.scada_lts.web.mvc.api.css.validation.CssValid;
 
 public class CssStyle {
 
