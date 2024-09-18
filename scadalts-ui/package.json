@@ -85,6 +85,7 @@
 		"vue-cli-plugin-i18n": "1.0.1",
 		"vue-cli-plugin-vuetify": "2.0.8",
 		"vue-template-compiler": "2.6.10",
-		"vuetify-loader": "1.7.2"
+		"vuetify-loader": "1.7.2",
+		"ag-grid-community": "32.2.0"
 	}
 }
