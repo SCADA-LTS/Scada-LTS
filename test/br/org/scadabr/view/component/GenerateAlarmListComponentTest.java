@@ -77,10 +77,7 @@ public class GenerateAlarmListComponentTest {
         CopyOnWriteArrayList<EventInstance> events = new CopyOnWriteArrayList<>();
         when(eventService.getPendingEvents(anyInt())).thenReturn(events);
 
-        HashMap<String, Object> model = new HashMap<>();
-        whenNew(HashMap.class).withNoArguments().thenReturn(model);
-
-        when(BaseDwr.generateContent(any(), any(), eq(model)))
+        when(BaseDwr.generateContent(any(), anyString(), anyMap()))
                 .thenAnswer(invocation -> {
                     Map<String, Object> modelArgs = (Map<String, Object>)invocation.getArguments()[2];
                     List<String> eventsSubList = (List<String>)modelArgs.get("events");

@@ -482,7 +482,7 @@
         jQuery.ajax({
             type: 'GET',
             dataType: 'text',
-            url:myLocation+"/api/resources/imagesRefresh",
+            url:myLocation+"api/resources/imagesRefresh",
             success: function(msg){
                 alert("Success: the resource images has been refreshed");
             },

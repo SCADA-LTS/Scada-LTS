@@ -44,6 +44,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import net.sf.mbus4j.Connection;
@@ -343,7 +344,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "dsEdit.validate.required");
 
-        locator.validate(response);
+        locator.validate(response, dp.getId());
 
         if (!response.getHasMessages()) {
             Common.ctx.getRuntimeManager().saveDataPoint(dp);
@@ -1187,8 +1188,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             response.addMessage("script", e.getLocalizableMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
+            response.addMessage("script", new LocalizableMessage("common.default", e.getMessage()));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
-            throw e;
         }
 
         return response;
@@ -2326,7 +2327,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             DataPointService dataPointService = new DataPointService();
             validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
-            locators[i].validate(response);
+            locators[i].validate(response, dp.getId());
 
             if (!response.getHasMessages()) {
                 Common.ctx.getRuntimeManager().saveDataPoint(dp);

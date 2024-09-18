@@ -36,12 +36,12 @@ public class MqttMessagingChannel implements MessagingChannel {
             client.disconnect(timeout);
         } catch (IOException e) {
             throw new MessagingChannelException("Error Disconnect Channel: " + dataPointInfo(dataPointRT.getVO()) + ", " + causeInfo(e), e.getCause());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Disconnect Channel: " + dataPointInfo(dataPointRT.getVO()) + ", " + exceptionInfo(e), e);
         } finally {
             try {
                 client.close();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LOG.warn("Error Close Channel: " + dataPointInfo(dataPointRT.getVO()) + ", " + exceptionInfo(e), e);
             }
         }
@@ -54,7 +54,7 @@ public class MqttMessagingChannel implements MessagingChannel {
         try {
             client.publish(locator.getTopicFilter(), message.getBytes(StandardCharsets.UTF_8),
                     locator.getQos(), locator.isRetained());
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw new RuntimeException("Error Publish: " + dataPointInfo(dataPointRT.getVO())+ ", Value: " + message + ", " + exceptionInfo(ex), ex);
         }
     }
