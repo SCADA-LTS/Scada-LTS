@@ -7,12 +7,14 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.mockito.Mockito;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import utils.mock.MockUtils;
@@ -72,4 +74,10 @@ public class ScriptTestUtils {
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
     }
 
+    public static void configScriptMock(RuntimeManager runtimeManager, ScriptContextObject scriptContextObject) throws Exception {
+        DataSourceRT dataSourceRT = mock(DataSourceRT.class);
+        Mockito.when(dataSourceRT.isInitialized()).thenReturn(true);
+        Mockito.when(runtimeManager.getRunningDataSource(anyInt())).thenReturn(dataSourceRT);
+        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+    }
 }

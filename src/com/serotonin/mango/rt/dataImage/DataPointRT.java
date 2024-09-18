@@ -24,6 +24,8 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
+import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
@@ -624,6 +626,17 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		terminateIntervalLogging();
 	}
 
+	public boolean isUnreliable() {
+		DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(getDataSourceId());
+		if(dataSourceRT == null)
+			return true;
+		return !dataSourceRT.isInitialized() || isSetUnreliable();
+	}
+
+	public boolean isSetUnreliable() {
+		return DataPointUnreliableUtils.isSetUnreliable(this, true);
+  }
+  
 	public boolean isInitialized() {
 		return initialized;
 	}

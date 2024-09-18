@@ -26,7 +26,7 @@ class MessagingChannelsImpl implements MessagingChannels {
                 channel.close(timeout);
             } catch (MessagingChannelException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Remove Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         }
@@ -46,7 +46,7 @@ class MessagingChannelsImpl implements MessagingChannels {
             getChannelIfOpen(dataPoint).orElseGet(() -> operationChannels.createChannelIfNotExists(dataPoint.getId(), a -> create.get()));
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -58,7 +58,7 @@ class MessagingChannelsImpl implements MessagingChannels {
                 channel.publish(message);
             } catch (MessagingChannelException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", Value: " + message + ", " + exceptionInfo(e), e);
             }
         });

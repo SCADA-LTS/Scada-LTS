@@ -235,6 +235,8 @@ test {
         includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.DataPointUnreliableUtilsTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.InitializeDataSourceRtTestsSuite"
         includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
         includeTestsMatching "com.serotonin.mango.util.StartStopDataPointsUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.utils.BlockingQueuesUtilsTest"
@@ -242,9 +244,11 @@ test {
         includeTestsMatching "org.scada_lts.web.security.XssUtilsTest"
     }
 
+    failFast = true
+
     testLogging {
 
-        //exceptionFormat = "full"
+        exceptionFormat = "full"
         showStandardStreams = true
 
         afterTest { desc, result ->

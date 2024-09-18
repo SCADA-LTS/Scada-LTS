@@ -25,7 +25,7 @@
 </c:if>
 <c:if test="${pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
   <tag:img png="exclamation" title="common.valueUnreliable"/> <spring:message code="common.valueUnreliable"/>
-  <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})"/><br/>
+  <tag:img png="arrow_refresh" title="common.refresh" onclick="MiscDwr.forcePointRead(${point.id})"/><br/>
 </c:if>
 <c:forEach items="${events}" var="event">
 	<c:if test="${event.alarmLevel>0}">

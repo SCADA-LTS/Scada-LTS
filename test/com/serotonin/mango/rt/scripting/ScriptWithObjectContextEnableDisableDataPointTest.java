@@ -42,14 +42,17 @@ import static org.mockito.Mockito.mock;
         "javax.activation.*", "javax.management.*"})
 public class ScriptWithObjectContextEnableDisableDataPointTest {
 
-    private static String pointToChangeXid = "DP_093765";
-    private final List<IntValuePair> objectContext = Arrays.asList(new IntValuePair(2, "dp"));
-    private RuntimeManager runtimeManager = mock(RuntimeManager.class);
-    private DPCommandsScriptContextObject scriptContextObject = mock(DPCommandsScriptContextObject.class);
+    private static final String pointToChangeXid = "DP_093765";
+    private List<IntValuePair> objectContext;
+    private RuntimeManager runtimeManager;
+    private DPCommandsScriptContextObject scriptContextObject;
 
     @Before
     public void config() throws Exception {
-        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+        objectContext = Arrays.asList(new IntValuePair(2, "dp"));
+        runtimeManager = mock(RuntimeManager.class);
+        scriptContextObject = mock(DPCommandsScriptContextObject.class);
+        ScriptTestUtils.configScriptMock(runtimeManager, scriptContextObject);
     }
 
     @After

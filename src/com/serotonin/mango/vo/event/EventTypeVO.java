@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.event.type.MaintenanceEventType;
 import com.serotonin.mango.rt.event.type.PublisherEventType;
 import com.serotonin.mango.rt.event.type.ScheduledEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 public class EventTypeVO {
@@ -45,6 +46,11 @@ public class EventTypeVO {
      * event, undefined
      */
     private int typeRef2;
+
+    /**
+     * For data source and data point event, undefined
+     */
+    private int typeRef3;
     private LocalizableMessage description;
     private List<EventHandlerVO> handlers;
     private int alarmLevel;
@@ -52,20 +58,25 @@ public class EventTypeVO {
     private int duplicateHandling;
 
     public EventTypeVO(int typeId, int typeRef1, int typeRef2) {
+        this(typeId, typeRef1, typeRef2, -1);
+    }
+
+    public EventTypeVO(int typeId, int typeRef1, int typeRef2, int typeRef3) {
         this.typeId = typeId;
         this.typeRef1 = typeRef1;
         this.typeRef2 = typeRef2;
+        this.typeRef3 = typeRef3;
     }
 
     public EventTypeVO(int typeId, int typeRef1, int typeRef2, LocalizableMessage description, int alarmLevel) {
-        this(typeId, typeRef1, typeRef2);
+        this(typeId, typeRef1, typeRef2, -1);
         this.description = description;
         this.alarmLevel = alarmLevel;
     }
 
     public EventTypeVO(int typeId, int typeRef1, int typeRef2, LocalizableMessage description, int alarmLevel,
             int duplicateHandling) {
-        this(typeId, typeRef1, typeRef2);
+        this(typeId, typeRef1, typeRef2, -1);
         this.description = description;
         this.alarmLevel = alarmLevel;
         this.duplicateHandling = duplicateHandling;
@@ -94,6 +105,8 @@ public class EventTypeVO {
             return new AuditEventType(typeRef1, typeRef2);
         if (typeId == EventType.EventSources.MAINTENANCE)
             return new MaintenanceEventType(typeRef1);
+        if(typeId == EventType.EventSources.DATA_SOURCE_POINT)
+            return new DataSourcePointEventType(new DataSourceEventType(typeRef1, typeRef2, alarmLevel, duplicateHandling), typeRef3);
         return null;
     }
 
@@ -119,6 +132,14 @@ public class EventTypeVO {
 
     public void setTypeRef2(int typeRef2) {
         this.typeRef2 = typeRef2;
+    }
+
+    public int getTypeRef3() {
+        return typeRef3;
+    }
+
+    public void setTypeRef3(int typeRef3) {
+        this.typeRef3 = typeRef3;
     }
 
     public LocalizableMessage getDescription() {

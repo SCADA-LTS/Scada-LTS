@@ -168,11 +168,11 @@ public class OpenV4JDataSourceRT extends PollingDataSource {
                     }
                     catch (InterruptedException ex) {
                         raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                                new LocalizableMessage("openv4j.interrupted"));
+                                new LocalizableMessage("openv4j.interrupted"), dataPoint);
                     }
                 }
-                returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis());
-                returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+                returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+                returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
             }
             finally {
                 closePort();

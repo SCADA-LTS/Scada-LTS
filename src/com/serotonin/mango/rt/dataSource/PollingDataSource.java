@@ -144,6 +144,11 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         }
     }
 
+    @Override
+    protected List<DataPointRT> getDataPoints() {
+        return dataPoints;
+    }
+  
     public boolean isMarkAsTerminating() {
         if(markAsTerminating) {
             LOG.info(LoggingUtils.dataSourceInfo(this) + " is terminating.");
