@@ -4,7 +4,7 @@ package org.scada_lts.web.mvc.api.css.validation;
 import com.serotonin.mango.util.LoggingUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.css.validation.utils.CssValidator;
-import org.scada_lts.web.mvc.api.css.validation.utils.W3cCssValidator;
+import org.scada_lts.web.mvc.api.css.validation.utils.SacCssValidator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -23,7 +23,7 @@ public class CssConstraintValidator implements ConstraintValidator<CssValid, Str
             return false;
         }
         try {
-            CssValidator validator = new W3cCssValidator();
+            CssValidator validator = new SacCssValidator();
             validator.validate(value);
             return true;
         }catch (Exception e) {
