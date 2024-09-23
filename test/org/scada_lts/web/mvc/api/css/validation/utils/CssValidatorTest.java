@@ -1,6 +1,5 @@
 package org.scada_lts.web.mvc.api.css.validation.utils;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,19 +23,15 @@ public class CssValidatorTest {
     }
 
     private final String css;
+    public final CssValidator validator;
 
     public CssValidatorTest(String css) {
         this.css = css;
+        this.validator = new SacCssValidator();
     }
 
     @Test
-    public void when_isValidCss() {
-        CssValidator validator = new SacCssValidator();
-        try {
-            validator.validate(css);
-            Assert.assertTrue(true);
-        } catch (CssException e) {
-            Assert.fail("Valid CSS threw an exception");
-        }
+    public void when_isValidCss() throws CssException {
+        validator.validate(css);
     }
 }
