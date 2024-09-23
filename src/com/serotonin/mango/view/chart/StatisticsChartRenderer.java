@@ -85,11 +85,9 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
 
         // The start value is the value of the point at the start of the period for this renderer.
         PointValueTime startValue = null;
-        if (values.size() == 0 || values.get(0).getTime() > startTime) {
+        if (!values.isEmpty()) {
             // Get the value of the point at the start time
-            PointValueTime valueTime = pointValueFacade.getPointValueBefore(startTime);
-            if (valueTime != null)
-                startValue = new PointValueTime(valueTime.getValue(), startTime);
+            startValue = values.get(0);
         }
 
         if (startValue != null || values.size() > 0) {
@@ -97,13 +95,13 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
                 // Runtime stats
                 StartsAndRuntimeList stats = new StartsAndRuntimeList(startValue, values, startTime, startTime
                         + getDuration());
-                model.put("start", stats.getRealStart());
+                model.put("start", stats.getStart());
                 model.put("end", stats.getEnd());
                 model.put("startsAndRuntimes", stats.getData());
             }
             else if (dataTypeId == DataTypes.NUMERIC) {
                 AnalogStatistics stats = new AnalogStatistics(startValue, values, startTime, startTime + getDuration());
-                model.put("start", stats.getRealStart());
+                model.put("start", stats.getStart());
                 model.put("end", stats.getEnd());
                 model.put("minimum", stats.getMinimum());
                 model.put("minTime", stats.getMinTime());

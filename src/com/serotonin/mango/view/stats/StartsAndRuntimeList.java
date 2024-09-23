@@ -53,8 +53,10 @@ public class StartsAndRuntimeList implements StatisticsGenerator {
     private long realStart = -1;
     private MangoValue lastValue;
     private StartsAndRuntime sar;
+    private final long start;
 
     public StartsAndRuntimeList(MangoValue startValue, long start, long end) {
+        this.start = start;
         this.end = end;
         if (startValue != null) {
             lastTime = start;
@@ -70,7 +72,7 @@ public class StartsAndRuntimeList implements StatisticsGenerator {
         if (realStart == -1)
             realStart = lastTime;
 
-        if (!ObjectUtils.isEqual(vt.getValue(), lastValue)) {
+        if (!ObjectUtils.isEqual(vt.getValue().getObjectValue(), lastValue.getObjectValue())) {
             // Update the last value stats, if any.
             if (sar != null)
                 sar.runtime += vt.getTime() - lastTime;
@@ -140,6 +142,10 @@ public class StartsAndRuntimeList implements StatisticsGenerator {
 
     public String getHelp() {
         return toString();
+    }
+
+    public long getStart() {
+        return start;
     }
 
     @Override

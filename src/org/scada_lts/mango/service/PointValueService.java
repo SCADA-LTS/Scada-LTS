@@ -312,7 +312,6 @@ public class PointValueService implements MangoPointValues {
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
-        lstIn.sort(Comparator.comparing(PointValue::getId).reversed());
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
         }
