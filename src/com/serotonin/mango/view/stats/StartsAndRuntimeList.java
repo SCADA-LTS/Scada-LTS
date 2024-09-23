@@ -72,7 +72,7 @@ public class StartsAndRuntimeList implements StatisticsGenerator {
         if (realStart == -1)
             realStart = lastTime;
 
-        if (!ObjectUtils.isEqual(vt.getValue().getObjectValue(), lastValue.getObjectValue())) {
+        if (!ObjectUtils.isEqual(vt.getValue(), lastValue)) {
             // Update the last value stats, if any.
             if (sar != null)
                 sar.runtime += vt.getTime() - lastTime;
