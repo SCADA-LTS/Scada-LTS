@@ -30,8 +30,8 @@ public class CssValidatorExceptionTest {
         this.validator = new SacCssValidator();
     }
 
-    @Test(expected = CssException.class)
-    public void when_isInvalidCss() throws CssException {
+    @Test(expected = CustomCssException.class)
+    public void when_isInvalidCss() throws CustomCssException {
         validator.validate(css);
     }
 }

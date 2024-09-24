@@ -15,16 +15,16 @@ public final class SacCssValidator implements CssValidator {
     }
 
     @Override
-    public void validate(String style) throws CssException {
+    public void validate(String style) throws CustomCssException {
         try {
             validateStyle(parser, style);
         } catch (Exception e) {
-            throw new CssException(e.getMessage(), e);
+            throw new CustomCssException(e.getMessage(), e);
         }
     }
 
     private static void validateStyle(Parser parser, String value) throws CSSParseException, IOException {
-        try(StringReader stringReader = new StringReader(value)) {
+        try (StringReader stringReader = new StringReader(value)) {
             InputSource inputSource = new InputSource(stringReader);
             parser.parseStyleSheet(inputSource);
         }
