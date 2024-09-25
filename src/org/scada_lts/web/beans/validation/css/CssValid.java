@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.css.validation;
+package org.scada_lts.web.beans.validation.css;
 
 
 import javax.validation.Constraint;
