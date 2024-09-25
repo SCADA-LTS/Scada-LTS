@@ -46,7 +46,7 @@
         <Property name="securityLoggingLevel">ERROR</Property>
 
         <!-- Java Bean Validation Logging-->
-        <Property name="validationLoggingLevel">WARN</Property>
+        <Property name="validationLoggingLevel">ERROR</Property>
 
     </Properties>
 
