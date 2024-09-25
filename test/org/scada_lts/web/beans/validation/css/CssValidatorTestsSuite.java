@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.css.validation.utils;
+package org.scada_lts.web.beans.validation.css;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -1,8 +1,10 @@
-package org.scada_lts.web.mvc.api.css.validation.utils;
+package org.scada_lts.web.beans.validation.css;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.web.beans.validation.ScadaValidator;
+import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,15 +25,15 @@ public class CssValidatorExceptionTest {
     }
 
     private final String css;
-    public final CssValidator validator;
+    public final ScadaValidator<String> validator;
 
     public CssValidatorExceptionTest(String css) {
         this.css = css;
         this.validator = new SacCssValidator();
     }
 
-    @Test(expected = CustomCssException.class)
-    public void when_isInvalidCss() throws CustomCssException {
+    @Test(expected = CssValidatorException.class)
+    public void when_isInvalidCss() throws ScadaValidatorException {
         validator.validate(css);
     }
 }

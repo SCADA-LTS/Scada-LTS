@@ -1,12 +1,13 @@
-package org.scada_lts.web.mvc.api.css.validation.utils;
+package org.scada_lts.web.beans.validation.css;
 
 import com.steadystate.css.parser.SACParserCSS3;
+import org.scada_lts.web.beans.validation.ScadaValidator;
 import org.w3c.css.sac.*;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-public final class SacCssValidator implements CssValidator {
+public final class SacCssValidator implements ScadaValidator<String> {
 
     private final Parser parser;
 
@@ -15,11 +16,11 @@ public final class SacCssValidator implements CssValidator {
     }
 
     @Override
-    public void validate(String style) throws CustomCssException {
+    public void validate(String style) throws CssValidatorException {
         try {
             validateStyle(parser, style);
         } catch (Exception e) {
-            throw new CustomCssException(e.getMessage(), e);
+            throw new CssValidatorException(e.getMessage(), e);
         }
     }
 
