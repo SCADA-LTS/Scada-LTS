@@ -242,6 +242,7 @@ test {
         includeTestsMatching "org.scada_lts.utils.BlockingQueuesUtilsTest"
         includeTestsMatching "org.scada_lts.web.security.XssProtectHtmlEscapeUtilsTest"
         includeTestsMatching "org.scada_lts.web.security.XssUtilsTest"
+        includeTestsMatching "org.scada_lts.web.mvc.api.css.validation.utils.CssValidatorTestsSuite"
     }
 
     failFast = true
