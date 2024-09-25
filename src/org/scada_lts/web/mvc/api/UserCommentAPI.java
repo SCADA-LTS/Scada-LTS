@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonUserComment;
+import org.scada_lts.web.security.XssValid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -98,6 +99,8 @@ public class UserCommentAPI {
     }
 
     static class CreateUserComment {
+
+        @XssValid
         private String commentText;
 
         public CreateUserComment() {
