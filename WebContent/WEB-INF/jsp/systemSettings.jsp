@@ -538,15 +538,15 @@
         let req = new XMLHttpRequest();
         req.open('POST', customCssUrl, true);
         req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-        setUserMessage("CustomCssMessage");
+        setUserMessage("customCssMessage");
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
-            setUserMessage("CustomCssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
+            setUserMessage("customCssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
           } else if (req.status === 400) {
             let errors = JSON.parse(req.responseText);
             if(errors.length > 0) {
-              setUserMessage("CustomCssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
+              setUserMessage("customCssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
             }
             reject(errors);
           } else {
@@ -1172,7 +1172,7 @@
           </table>
           <table>
             <tr>
-              <td colspan="2" id="CustomCssMessage" class="formError"></td>
+              <td colspan="2" id="customCssMessage" class="formError"></td>
             </tr>
           </table>
           </div>
