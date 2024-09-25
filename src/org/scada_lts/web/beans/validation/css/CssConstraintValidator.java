@@ -8,10 +8,6 @@ import org.scada_lts.web.beans.validation.ScadaValidator;
 public class CssConstraintValidator extends AbstractConstraintValidator<CssValid, String> {
 
     @Override
-    public void initialize(CssValid constraintAnnotation) {
-    }
-
-    @Override
     public void beforeValidate(String value) throws Exception {
         if(StringUtils.isEmpty(value)) {
             throw new CssValidatorException("Empty");
