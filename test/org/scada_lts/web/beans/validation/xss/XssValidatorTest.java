@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class OwaspXssValidatorTest {
+public class XssValidatorTest {
 
     @Parameterized.Parameters
-    public static Collection<Object[]> testData() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {"<b>Bold</b>"},
                 {"Hello, World!"},
@@ -31,14 +31,15 @@ public class OwaspXssValidatorTest {
     }
 
     private final String input;
-    private final OwaspXssValidator owaspXssValidator = new OwaspXssValidator();
+    private final OwaspXssValidator validator;
 
-    public OwaspXssValidatorTest(String input) {
+    public XssValidatorTest(String input) {
         this.input = input;
+        this.validator = new OwaspXssValidator();
     }
 
     @Test
-    public void testValidateHttpBody() throws XssValidatorException {
-        owaspXssValidator.validate(input);
+    public void when_isInvalidXss() throws XssValidatorException {
+        validator.validate(input);
     }
 }

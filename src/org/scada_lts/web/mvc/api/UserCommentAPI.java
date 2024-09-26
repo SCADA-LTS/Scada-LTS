@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
 import static org.scada_lts.utils.UserCommentApiUtils.validUserCommentWithTs;
@@ -42,7 +43,7 @@ public class UserCommentAPI {
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<?> createUserComment(HttpServletRequest request, @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<?> createUserComment(HttpServletRequest request, @Valid @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {

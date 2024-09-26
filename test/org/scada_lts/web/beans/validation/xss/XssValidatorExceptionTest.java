@@ -3,15 +3,16 @@ package org.scada_lts.web.beans.validation.xss;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.web.beans.validation.css.SacCssValidator;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class OwaspXssValidatorExceptionTest {
+public class XssValidatorExceptionTest {
 
     @Parameterized.Parameters
-    public static Collection<Object[]> testData() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {null},
                 {"<script>alert(1)</script>"},
@@ -55,14 +56,15 @@ public class OwaspXssValidatorExceptionTest {
     }
 
     private final String input;
-    private final OwaspXssValidator owaspXssValidator = new OwaspXssValidator();
+    private final OwaspXssValidator validator;
 
-    public OwaspXssValidatorExceptionTest(String input) {
+    public XssValidatorExceptionTest(String input) {
         this.input = input;
+        this.validator = new OwaspXssValidator();
     }
 
     @Test(expected = XssValidatorException.class)
-    public void testValidateHttpBodyException() throws XssValidatorException {
-        owaspXssValidator.validate(input);
+    public void when_isInvalidXss() throws XssValidatorException {
+        validator.validate(input);
     }
 }
