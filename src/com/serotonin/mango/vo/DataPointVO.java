@@ -709,7 +709,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         if (purgeValuesLimit <= 1)
             response.addContextualMessage("purgeValuesLimit", "validate.greaterThanOne");
 
-        pointLocator.validate(response);
+        pointLocator.validate(response, this.getId());
 
         // Check text renderer type
         if (textRenderer != null && !textRenderer.getDef().supports(pointLocator.getDataTypeId()))

@@ -15,9 +15,6 @@ function updateCodeText(text, destination) {
 
 function updateCodeTextEscaped(text, destination) {
     let result_element = document.querySelector(destination);
-    if(text[text.length-1] == "\n") {
-      text += " ";
-    }
     result_element.innerHTML = text;
     hljs.highlightElement(result_element);
 }

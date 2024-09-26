@@ -108,7 +108,6 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 	@JsonRemoteProperty
 	private boolean quantize;
 
-	@JsonRemoteProperty
 	@Override
 	public void validate(DwrResponseI18n response) {
 		super.validate(response);

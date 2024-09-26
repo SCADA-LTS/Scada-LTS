@@ -98,19 +98,19 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
     //
     @Override
     public void initialize() {
-        super.initialize();
-
         try {
             serverSocket = new ServerSocket(vo.getPort());
             serverSocket.setSoTimeout(2000);
 
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (IOException e) {
+        catch (Throwable e) {
             serverSocket = null;
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
                     "event.initializationError", e.getMessage()));
+            return;
         }
+        super.initialize();
     }
 
     @Override
