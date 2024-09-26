@@ -11,12 +11,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class XssUtilsValidateHttpQueryTest {
+public class XssUtilsTest {
 
     private final String input;
     private final boolean expectedResult;
 
-    public XssUtilsValidateHttpQueryTest(String input, boolean expectedResult) {
+    public XssUtilsTest(String input, boolean expectedResult) {
         this.input = input;
         this.expectedResult = expectedResult;
     }

@@ -5,9 +5,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        XssUtilsValidateHttpQueryTest.class,
-        XssUtilsValidateHttpBodyTest.class,
-        XssUtilsValidateHttpBodyExceptionTest.class
+        XssUtilsTest.class,
+        OwaspXssValidatorTest.class,
+        OwaspXssValidatorExceptionTest.class
 })
 public class XssUtilsTestsSuite {
 }

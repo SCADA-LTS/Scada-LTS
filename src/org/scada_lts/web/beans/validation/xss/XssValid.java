@@ -1,4 +1,4 @@
-package org.scada_lts.web.security;
+package org.scada_lts.web.beans.validation.xss;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
