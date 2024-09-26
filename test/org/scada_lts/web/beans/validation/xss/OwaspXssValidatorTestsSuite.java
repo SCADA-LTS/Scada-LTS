@@ -1,4 +1,4 @@
-package org.scada_lts.web.security;
+package org.scada_lts.web.beans.validation.xss;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
