@@ -8,5 +8,5 @@ import org.junit.runners.Suite;
         XssValidatorTest.class,
         XssValidatorExceptionTest.class
 })
-public class OwaspXssValidatorTestsSuite {
+public class XssValidatorTestsSuite {
 }
