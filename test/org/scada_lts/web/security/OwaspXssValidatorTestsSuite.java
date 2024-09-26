@@ -5,9 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        XssUtilsTest.class,
         OwaspXssValidatorTest.class,
         OwaspXssValidatorExceptionTest.class
 })
-public class XssUtilsTestsSuite {
+public class OwaspXssValidatorTestsSuite {
 }

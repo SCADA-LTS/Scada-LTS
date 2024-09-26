@@ -26,9 +26,7 @@ public class OwaspXssValidator implements ScadaValidator<String> {
 
     @Override
     public void validate(String input) throws XssValidatorException {
-        System.out.println("input: " + input);
         String sanitized = policyFactory.sanitize(input);
-        System.out.println("Sanitized: " + sanitized);
         if (!sanitized.equals(input)) {
             throw new XssValidatorException("Potential XSS attack detected");
         }

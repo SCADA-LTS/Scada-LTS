@@ -4,7 +4,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.beans.validation.AbstractConstraintValidator;
 import org.scada_lts.web.beans.validation.ScadaValidator;
 
-public class XssConstraintValidator extends AbstractConstraintValidator<XssValid, String> {
+public class XssConstraintValidator extends AbstractConstraintValidator<XssProtect, String> {
 
     @Override
     public void beforeValidate(String value) throws Exception {

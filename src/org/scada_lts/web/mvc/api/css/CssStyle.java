@@ -4,11 +4,11 @@ package org.scada_lts.web.mvc.api.css;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.scada_lts.web.beans.validation.css.CssValid;
-import org.scada_lts.web.beans.validation.xss.XssValid;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class CssStyle {
 
-    @CssValid @XssValid
+    @CssValid @XssProtect
     private final String content;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

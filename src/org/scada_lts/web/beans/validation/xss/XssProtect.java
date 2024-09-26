@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = XssConstraintValidator.class)
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface XssValid {
+public @interface XssProtect {
     String message() default "Potential XSS detected in the request body.";
 
     Class<?>[] groups() default {};
