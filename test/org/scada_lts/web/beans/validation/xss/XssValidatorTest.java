@@ -3,6 +3,7 @@ package org.scada_lts.web.beans.validation.xss;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class XssValidatorTest {
                 {"body { font-size: 14px; }"},
                 {"h1 { font-weight: bold; }"},
                 {"p { margin: 0; padding: 0; }"},
-                {"<img src=\"http://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"}
+                {"<img src=\"https://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"}
         });
     }
 
@@ -39,7 +40,7 @@ public class XssValidatorTest {
     }
 
     @Test
-    public void when_isInvalidXss() throws XssValidatorException {
+    public void when_isInvalidXss() throws ScadaValidatorException {
         validator.validate(input);
     }
 }

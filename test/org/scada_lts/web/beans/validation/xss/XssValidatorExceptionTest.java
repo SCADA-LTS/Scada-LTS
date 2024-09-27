@@ -3,7 +3,7 @@ package org.scada_lts.web.beans.validation.xss;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scada_lts.web.beans.validation.css.SacCssValidator;
+import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,7 +64,7 @@ public class XssValidatorExceptionTest {
     }
 
     @Test(expected = XssValidatorException.class)
-    public void when_isInvalidXss() throws XssValidatorException {
+    public void when_isInvalidXss() throws ScadaValidatorException {
         validator.validate(input);
     }
 }
