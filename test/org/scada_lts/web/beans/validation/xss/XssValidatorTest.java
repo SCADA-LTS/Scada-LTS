@@ -3,6 +3,7 @@ package org.scada_lts.web.beans.validation.xss;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.web.beans.validation.ScadaValidator;
 import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 import java.util.Arrays;
@@ -11,12 +12,11 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class XssValidatorTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{index}: input: {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {"<b>Bold</b>"},
                 {"Hello, World!"},
-                {""},
                 {"<i>Italic text</i>"},
                 {"<u>Underlined</u>"},
                 {"<strong>Strong text</strong>"},
@@ -27,17 +27,25 @@ public class XssValidatorTest {
                 {"body { font-size: 14px; }"},
                 {"h1 { font-weight: bold; }"},
                 {"p { margin: 0; padding: 0; }"},
-                {"<img src=\"https://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"},
-                {"<img src=\"http://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"}
+                {"a > 12"},
+                {"a>12"},
+                {"a> 12"},
+                {"a >12"},
+                {"a<12"},
+                {"a < 12"},
+                {"a< 12"},
+                {"a <12"},
+                {"'a'"},
+                {"\"a\""},
         });
     }
 
     private final String input;
-    private final OwaspXssValidator validator;
+    private final ScadaValidator<String> validator;
 
     public XssValidatorTest(String input) {
         this.input = input;
-        this.validator = new OwaspXssValidator();
+        this.validator = new RegexXssValidator();
     }
 
     @Test

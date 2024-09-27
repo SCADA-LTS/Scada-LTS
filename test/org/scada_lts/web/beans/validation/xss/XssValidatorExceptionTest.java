@@ -3,6 +3,7 @@ package org.scada_lts.web.beans.validation.xss;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.web.beans.validation.ScadaValidator;
 import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 import java.util.Arrays;
@@ -11,10 +12,11 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class XssValidatorExceptionTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{index}: input: {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {null},
+                {""},
                 {"<script>alert(1)</script>"},
                 {"<a href=\"javascript:alert(1)\">Link</a>"},
                 {"<div onclick=\"alert(1)\">Click me</div>"},
@@ -51,16 +53,19 @@ public class XssValidatorExceptionTest {
                 {"<audio src=\"javascript:alert(1)\"></audio>"},
                 {"<marquee onstart=\"alert(1)\">XSS</marquee>"},
                 {"<keygen autofocus onfocus=\"alert(1)\">"},
-                {"<command onclick=\"alert(1)\">Click me</command>"}
+                {"<command onclick=\"alert(1)\">Click me</command>"},
+                {"<img src=\"https://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"},
+                {"<img src=\"http://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"},
+                {"><img src=x onerror=alert(document.location)>"},
         });
     }
 
     private final String input;
-    private final OwaspXssValidator validator;
+    private final ScadaValidator<String> validator;
 
     public XssValidatorExceptionTest(String input) {
         this.input = input;
-        this.validator = new OwaspXssValidator();
+        this.validator = new RegexXssValidator();
     }
 
     @Test(expected = XssValidatorException.class)

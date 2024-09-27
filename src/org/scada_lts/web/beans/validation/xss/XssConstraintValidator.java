@@ -15,7 +15,7 @@ public class XssConstraintValidator extends AbstractConstraintValidator<XssProte
 
     @Override
     public void validate(String value) throws Exception {
-        ScadaValidator<String> validator = new OwaspXssValidator();
+        ScadaValidator<String> validator = new RegexXssValidator();
         validator.validate(value);
     }
 }
