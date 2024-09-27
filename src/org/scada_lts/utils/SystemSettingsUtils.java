@@ -75,6 +75,10 @@ public final class SystemSettingsUtils {
 
     private static final String CUSTOM_CSS_CONTENT_KEY = "systemsettings.custom.css.content";
 
+    private static final String SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.body.access.denied.regex";
+    private static final String SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.body.access.granted.regex";
+    private static final String SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY = "scadalts.security.http.body.protect.enabled";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -603,6 +607,34 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return "";
+        }
+    }
+
+    public static String getSecurityHttpBodyAccessDeniedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpBodyAccessGrantedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static boolean isSecurityHttpBodyProtectEnabled() {
+        try {
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY, "false");
+            return Boolean.parseBoolean(securityHttpQueryXssEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 }

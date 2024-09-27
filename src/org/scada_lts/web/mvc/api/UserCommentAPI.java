@@ -7,12 +7,14 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonUserComment;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
 import static org.scada_lts.utils.UserCommentApiUtils.validUserCommentWithTs;
@@ -41,7 +43,7 @@ public class UserCommentAPI {
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<?> createUserComment(HttpServletRequest request, @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<?> createUserComment(HttpServletRequest request, @Valid @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
@@ -98,6 +100,8 @@ public class UserCommentAPI {
     }
 
     static class CreateUserComment {
+
+        @XssProtect
         private String commentText;
 
         public CreateUserComment() {
