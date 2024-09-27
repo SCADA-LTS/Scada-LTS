@@ -136,6 +136,14 @@ public class BodyXssUtilsTest {
                         "    font-size: 2em !important;\n" +
                         "    display: inline-block !important;\n" +
                         "    line-height: 1 !important; \n" +
+                        "}", true},
+                {"#top-description-container {\n" +
+                        "    display: flex;\n" +
+                        "    align-items: flex-end;\n" +
+                        "    justify-content: center;\n" +
+                        "}", true},
+                {"#top-description-container {\n" +
+                        "    display: flex;\n" +
                         "}", true}
         });
     }
