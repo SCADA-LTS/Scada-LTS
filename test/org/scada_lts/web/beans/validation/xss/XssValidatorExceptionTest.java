@@ -65,7 +65,7 @@ public class XssValidatorExceptionTest {
 
     public XssValidatorExceptionTest(String input) {
         this.input = input;
-        this.validator = new RegexXssValidator();
+        this.validator = new XssValidator();
     }
 
     @Test(expected = XssValidatorException.class)

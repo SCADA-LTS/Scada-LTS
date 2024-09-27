@@ -45,7 +45,7 @@ public class XssValidatorTest {
 
     public XssValidatorTest(String input) {
         this.input = input;
-        this.validator = new RegexXssValidator();
+        this.validator = new XssValidator();
     }
 
     @Test

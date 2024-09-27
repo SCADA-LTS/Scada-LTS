@@ -4,7 +4,7 @@ import org.scada_lts.web.beans.validation.ScadaValidator;
 
 import static org.scada_lts.web.security.XssUtils.validateHttpBody;
 
-public class RegexXssValidator implements ScadaValidator<String> {
+public class XssValidator implements ScadaValidator<String> {
 
     @Override
     public void validate(String input) throws XssValidatorException {
