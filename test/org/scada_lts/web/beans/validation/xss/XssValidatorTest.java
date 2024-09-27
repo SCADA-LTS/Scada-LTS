@@ -27,7 +27,8 @@ public class XssValidatorTest {
                 {"body { font-size: 14px; }"},
                 {"h1 { font-weight: bold; }"},
                 {"p { margin: 0; padding: 0; }"},
-                {"<img src=\"https://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"}
+                {"<img src=\"https://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"},
+                {"<img src=\"http://example.com/image.jpg\" alt=\"Example Image\" width=\"600\" height=\"400\" border=\"0\" />"}
         });
     }
 
