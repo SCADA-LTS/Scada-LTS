@@ -115,6 +115,28 @@ public class BodyXssUtilsTest {
                 {"param1=document.location</script>", false},
                 {"param1=document.location/script>", false},
                 {"param1=document.location</script", false},
+                {"#top-description-container {\n" +
+                        "    display: flex;\n" +
+                        "    align-items: flex-end;\n" +
+                        "    justify-content: center;\n" +
+                        "} \n" +
+                        "\n" +
+                        "#top-description-prefix { \n" +
+                        "    color: red !important;\n" +
+                        "    font-size: 2em !important;\n" +
+                        "    margin-left: 0.5em !important;\n" +
+                        "    margin-right: 0.5em !important;\n" +
+                        "    display: inline-block !important;\n" +
+                        "    vertical-align: bottom !important;\n" +
+                        "    line-height: 1 !important;\n" +
+                        "} \n" +
+                        "\n" +
+                        "#top-description {\n" +
+                        "    color: #39B54A !important;\n" +
+                        "    font-size: 2em !important;\n" +
+                        "    display: inline-block !important;\n" +
+                        "    line-height: 1 !important; \n" +
+                        "}", true}
         });
     }
 
