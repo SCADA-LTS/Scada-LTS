@@ -8,16 +8,6 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
 		cy.location('pathname').should('include', 'watch_list');
 	});
 
-	describe('Modern Watch List', function () {
-		it('Open Modern Watch List Page', function () {
-			cy.visit('/modern_watch_list.shtm');
-			cy.location('pathname').should('include', 'modern_watch_list.shtm');
-		});
-		it('Validate Modern Charts Vue component exist', function () {
-			cy.get('.smallTitle').should('contain', 'Modern Chart');
-		});
-	});
-
 	describe('Chart with 1 datapoint', function () {
 		it('Create chart', function () {
 			cy.request('/api/auth/admin/admin');

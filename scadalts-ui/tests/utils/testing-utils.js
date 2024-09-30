@@ -82,6 +82,7 @@ export function prepareShallowMountWrapper(
 		vuetify,
 		store,
 		i18n,
+		router,
 		propsData,
 		...options,
 	});
