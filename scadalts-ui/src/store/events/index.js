@@ -38,7 +38,11 @@ const storeEvents = {
     },
 
 		getCommentsByEventId({ dispatch }, id) {
-			return dispatch('requestGet', `/events/${id}/comments`);
+			return dispatch('requestGet', `/events/${id}/comments`)
+			.catch(error => {
+				console.error("API error:", error);
+				throw error;
+			});
 		},
 
 		fetchDataPointEvents({ dispatch }, payload) {
@@ -65,6 +69,10 @@ const storeEvents = {
 			return dispatch('requestPut', {
 				url: `/events/ack/${payload.eventId}`,
 				data: payload,
+			})
+			.catch(error => {
+				console.error("API error during event acknowledgement:", error);
+				throw error;
 			});
 		},
 		silenceEvent({ dispatch }, payload) {
