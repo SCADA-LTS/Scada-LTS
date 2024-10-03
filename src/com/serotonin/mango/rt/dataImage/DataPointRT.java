@@ -129,32 +129,12 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	public List<PointValueTime> getPointValues(long since) {
 		List<PointValueTime> result = pointValueService.getPointValues(
 				vo.getId(), since);
-
-		for (PointValueTime pvt : valueCache.getCacheContents()) {
-			if (pvt.getTime() >= since) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
-				if (index < 0)
-					result.add(-index - 1, pvt);
-			}
-		}
-
 		return result;
 	}
 
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
 		List<PointValueTime> result = pointValueService
 				.getPointValuesBetween(vo.getId(), from, to);
-
-		for (PointValueTime pvt : valueCache.getCacheContents()) {
-			if (pvt.getTime() >= from && pvt.getTime() < to) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
-				if (index < 0)
-					result.add(-index - 1, pvt);
-			}
-		}
-
 		return result;
 	}
 

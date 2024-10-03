@@ -1151,7 +1151,7 @@
               id="cssEditor"
               class="hgl-editor"
               spellcheck="false"
-              oninput="updateCodeTextEscaped(this.value, '#cssHighlightingContent');"
+              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
               onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
             </textarea>
             <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">

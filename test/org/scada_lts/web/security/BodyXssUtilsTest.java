@@ -5,18 +5,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.junit.Assert.*;
-
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(Parameterized.class)
-public class XssUtilsTest {
+public class BodyXssUtilsTest {
 
     private final String input;
     private final boolean expectedResult;
 
-    public XssUtilsTest(String input, boolean expectedResult) {
+    public BodyXssUtilsTest(String input, boolean expectedResult) {
         this.input = input;
         this.expectedResult = expectedResult;
     }
@@ -35,15 +35,15 @@ public class XssUtilsTest {
                 {"<script>alert(1)</script>", false},
                 {"onload=alert(1)", false},
                 {"onmouseover=alert(1)", false},
-                {"%6A%61%76%61%73%63%72%69%70%74", false},
+                {"%6A%61%76%61%73%63%72%69%70%74", true},
 
                 // Borderline cases
-                {"=&", false},
-                {"a”.repeat(33)", false},
-                {"invalid!key", false},
+                {"=&", true},
+                {"a”.repeat(33)", true},
+                {"invalid!key", true},
                 {"validKey", true},
                 {"onerror=alert(1)&onload=alert(1)", false},
-                {"!key=value", false},
+                {"!key=value", true},
 
 
                 {"abc", true},
@@ -68,21 +68,21 @@ public class XssUtilsTest {
                 {"123456789012345678901234567890123=abc", true},
                 {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
                 {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100", true},
-                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=1005", false},
-                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100&abc=12", false},
+                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=1005", true},
+                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100&abc=12", true},
                 {"abc=", true},
 
                 {"", false},
                 {null, false},
-                {"&param1", false},
-                {"&param1&param2", false},
-                {"&param1=123&param2", false},
-                {"&param1&param=123", false},
-                {"param1&param2=23&onerror", false},
-                {"param1&param2=23onerror", false},
+                {"&param1", true},
+                {"&param1&param2", true},
+                {"&param1=123&param2", true},
+                {"&param1&param=123", true},
+                {"param1&param2=23&onerror", true},
+                {"param1&param2=23onerror", true},
                 {"param1&param2=23&onerror=", false},
                 {"param1&param2=23onerror=", false},
-                {"para!m1", false},
+                {"para!m1", true},
                 {"onerror=alert(1)", false},
                 {"onload=alert(1)", false},
                 {"onerror=abc", false},
@@ -93,16 +93,16 @@ public class XssUtilsTest {
                 {"onerror =", false},
                 {"onload    =", false},
                 {"onerror   =", false},
-                {"onload", false},
-                {"onerror", false},
-                {"!param1=value", false},
+                {"onload", true},
+                {"onerror", true},
+                {"!param1=value", true},
                 {"<img src=x onerror=alert(document.location)>", false},
                 {"param1=<img src=x onerror=alert(document.location)>", false},
                 {"param1=<img src=x onerror=alert(document.location)>&param2=123", false},
                 {"param1=123&param2=<img src=x onerror=alert(document.location)>", false},
                 {"param1=123&param2=<img src=x onerror=document.location>", false},
                 {"param1=alert(document.location)", false},
-                {"=abc", false},
+                {"=abc", true},
                 {"param1=<script>alert(document.location)", false},
                 {"param1=<scriptalert(document.location)", false},
                 {"param1=script>alert(document.location)", false},
@@ -116,35 +116,35 @@ public class XssUtilsTest {
                 {"param1=document.location/script>", false},
                 {"param1=document.location</script", false},
                 {"#top-description-container {\n" +
-                "    display: flex;\n" +
-                "    align-items: flex-end;\n" +
-                "    justify-content: center;\n" +
-                "} \n" +
-                "\n" +
-                "#top-description-prefix { \n" +
-                "    color: red !important;\n" +
-                "    font-size: 2em !important;\n" +
-                "    margin-left: 0.5em !important;\n" +
-                "    margin-right: 0.5em !important;\n" +
-                "    display: inline-block !important;\n" +
-                "    vertical-align: bottom !important;\n" +
-                "    line-height: 1 !important;\n" +
-                "} \n" +
-                "\n" +
-                "#top-description {\n" +
-                "    color: #39B54A !important;\n" +
-                "    font-size: 2em !important;\n" +
-                "    display: inline-block !important;\n" +
-                "    line-height: 1 !important; \n" +
-                "}", false},
+                        "    display: flex;\n" +
+                        "    align-items: flex-end;\n" +
+                        "    justify-content: center;\n" +
+                        "} \n" +
+                        "\n" +
+                        "#top-description-prefix { \n" +
+                        "    color: red !important;\n" +
+                        "    font-size: 2em !important;\n" +
+                        "    margin-left: 0.5em !important;\n" +
+                        "    margin-right: 0.5em !important;\n" +
+                        "    display: inline-block !important;\n" +
+                        "    vertical-align: bottom !important;\n" +
+                        "    line-height: 1 !important;\n" +
+                        "} \n" +
+                        "\n" +
+                        "#top-description {\n" +
+                        "    color: #39B54A !important;\n" +
+                        "    font-size: 2em !important;\n" +
+                        "    display: inline-block !important;\n" +
+                        "    line-height: 1 !important; \n" +
+                        "}", true},
                 {"#top-description-container {\n" +
                         "    display: flex;\n" +
                         "    align-items: flex-end;\n" +
                         "    justify-content: center;\n" +
-                        "}", false},
+                        "}", true},
                 {"#top-description-container {\n" +
                         "    display: flex;\n" +
-                        "}", false}
+                        "}", true}
         });
     }
 
@@ -152,9 +152,9 @@ public class XssUtilsTest {
     public void testValidate() {
 
         //when:
-        boolean result = XssUtils.validateHttpQuery(input);
+        boolean result = XssUtils.validateHttpBody(input);
 
         //then:
-        assertEquals("Validation failed for input: " + input, expectedResult, result);
+        assertEquals("Validation Body failed for input: " + input, expectedResult, result);
     }
 }
