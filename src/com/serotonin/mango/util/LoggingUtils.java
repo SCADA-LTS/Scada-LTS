@@ -1,7 +1,9 @@
 package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
@@ -68,7 +70,7 @@ public final class LoggingUtils {
         return MessageFormat.format(info, script.getName(), String.valueOf(script.getId()), script.getXid());
     }
 
-    public static String exceptionInfo(Exception ex) {
+    public static String exceptionInfo(Throwable ex) {
         if(ex == null)
             return "";
         String info = "exception: {0} (msg: {1})";
@@ -135,12 +137,12 @@ public final class LoggingUtils {
         return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
     }
 
-    public static String causeInfo(Exception e) {
+    public static String causeInfo(Throwable e) {
         return exceptionInfo(getCause(e));
     }
 
-    public static Exception getCause(Exception e) {
-        return e.getCause() != null ? (Exception) e.getCause() : e;
+    public static Throwable getCause(Throwable e) {
+        return e.getCause() != null ? e.getCause() : e;
     }
 
     public static String userInfo(User user) {
@@ -211,11 +213,42 @@ public final class LoggingUtils {
         return MessageFormat.format(info, entry.getPointId(), entry.getDataType(), entry.getTime(), entry.getDvalue());
     }
 
+    public static String info(Throwable e, DataSourceRT dataSourceRT) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT);
+    }
+
+    public static String info(Throwable e, DataSourceRT dataSourceRT, DataPointRT dataPointRT) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT) + " - " + dataPointInfo(dataPointRT);
+    }
+
+    public static String dataPointInfo(DataPointRT dataPointRT) {
+        if(dataPointRT == null)
+            return "";
+        DataPointVO dataPointVO = dataPointRT.getVO();
+        if(dataPointVO == null)
+            return dataPointRtInfo(dataPointRT);
+        return dataPointInfo(dataPointVO);
+    }
+
+    public static String dataPointRtInfo(DataPointRT dataPoint) {
+        if(dataPoint == null)
+            return "";
+        String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
+        return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
+    }
+  
     public static String publisherInfo(PublisherVO<?> publisher) {
         if(publisher == null)
             return "";
         String info =  "publisher: {0} (id: {1}, xid: {2}, type: {3})";
         return MessageFormat.format(info, publisher.getName(), publisher.getId(), publisher.getXid(), publisher.getType());
+    }
+
+    public static String varInfo(IntValuePair pair) {
+        if(pair == null)
+            return "";
+        String info =  "{0} (key: {1})";
+        return MessageFormat.format(info, pair.getValue(), pair.getKey());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

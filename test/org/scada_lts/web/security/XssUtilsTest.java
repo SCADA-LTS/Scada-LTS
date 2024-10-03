@@ -68,6 +68,8 @@ public class XssUtilsTest {
                 {"123456789012345678901234567890123=abc", true},
                 {"startTs=1724326168402&endTs=1724329768507&ids=101,70,97,84&configFromSystem=false&enabled=false&valuesLimit=10000&limitFactor=1", true},
                 {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100", true},
+                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=1005", false},
+                {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100&abc=12", false},
                 {"abc=", true},
 
                 {"", false},
@@ -78,6 +80,8 @@ public class XssUtilsTest {
                 {"&param1&param=123", false},
                 {"param1&param2=23&onerror", false},
                 {"param1&param2=23onerror", false},
+                {"param1&param2=23&onerror=", false},
+                {"param1&param2=23onerror=", false},
                 {"para!m1", false},
                 {"onerror=alert(1)", false},
                 {"onload=alert(1)", false},
@@ -85,6 +89,10 @@ public class XssUtilsTest {
                 {"onload=abc", false},
                 {"onload=", false},
                 {"onerror=", false},
+                {"onload =", false},
+                {"onerror =", false},
+                {"onload    =", false},
+                {"onerror   =", false},
                 {"onload", false},
                 {"onerror", false},
                 {"!param1=value", false},
@@ -107,6 +115,36 @@ public class XssUtilsTest {
                 {"param1=document.location</script>", false},
                 {"param1=document.location/script>", false},
                 {"param1=document.location</script", false},
+                {"#top-description-container {\n" +
+                "    display: flex;\n" +
+                "    align-items: flex-end;\n" +
+                "    justify-content: center;\n" +
+                "} \n" +
+                "\n" +
+                "#top-description-prefix { \n" +
+                "    color: red !important;\n" +
+                "    font-size: 2em !important;\n" +
+                "    margin-left: 0.5em !important;\n" +
+                "    margin-right: 0.5em !important;\n" +
+                "    display: inline-block !important;\n" +
+                "    vertical-align: bottom !important;\n" +
+                "    line-height: 1 !important;\n" +
+                "} \n" +
+                "\n" +
+                "#top-description {\n" +
+                "    color: #39B54A !important;\n" +
+                "    font-size: 2em !important;\n" +
+                "    display: inline-block !important;\n" +
+                "    line-height: 1 !important; \n" +
+                "}", false},
+                {"#top-description-container {\n" +
+                        "    display: flex;\n" +
+                        "    align-items: flex-end;\n" +
+                        "    justify-content: center;\n" +
+                        "}", false},
+                {"#top-description-container {\n" +
+                        "    display: flex;\n" +
+                        "}", false}
         });
     }
 

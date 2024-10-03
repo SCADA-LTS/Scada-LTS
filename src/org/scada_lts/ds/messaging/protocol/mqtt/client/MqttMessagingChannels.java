@@ -35,7 +35,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
             channels.removeChannel(dataPoint);
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Remove Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -46,18 +46,18 @@ public class MqttMessagingChannels implements InitMessagingChannels {
     }
 
     @Override
-    public void initChannel(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingChannelException {
+    public void initChannel(DataPointRT dataPoint, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         try {
             channels.initChannel(dataPoint, () -> {
                 try {
-                    return new MqttMessagingChannel(createClient(dataPoint, exceptionHandler, updateErrorKey), dataPoint);
-                } catch (Exception e) {
+                    return new MqttMessagingChannel(createClient(dataPoint, exceptionHandler, returnToNormal), dataPoint);
+                } catch (Throwable e) {
                     throw new MessagingChannelException("Error Create Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
                 }
             });
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -68,7 +68,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
             channels.initChannel(dataPoint, create);
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -79,7 +79,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
             channels.publish(dataPoint, message);
         } catch (MessagingChannelException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -93,8 +93,8 @@ public class MqttMessagingChannels implements InitMessagingChannels {
     public void closeChannels() throws MessagingChannelException {
         try {
             channels.closeChannels();
-        } catch (Exception ex) {
-            LOG.warn("Error Close Channels: " + exceptionInfo(ex), ex);
+        } catch (Throwable ex) {
+            LOG.warn("Error Close Channels: " + dataSourceInfo(vo) + ", " +  exceptionInfo(ex), ex);
         }
     }
 
@@ -103,7 +103,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
         return channels.size();
     }
 
-    private MqttVClient createClient(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws MessagingChannelException {
+    private MqttVClient createClient(DataPointRT dataPoint, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws MessagingChannelException {
         MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
         MqttPointLocatorVO locator = pointLocator.getVO();
 
@@ -111,21 +111,21 @@ public class MqttMessagingChannels implements InitMessagingChannels {
         try {
             MqttVersion mqttVersion = (MqttVersion) vo.getProtocolVersion();
             client = mqttVersion.newClient(vo, locator);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Create Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
         try {
             client.connect();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Connect Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
         try {
             client.subscribe(locator.getTopicFilter(), locator.getQos(), (topic, mqttMessage) ->
-                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, updateErrorKey, exceptionHandler).accept(mqttMessage.getPayload()));
-        } catch (Exception e) {
+                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, exceptionHandler, returnToNormal).accept(mqttMessage.getPayload()));
+        } catch (Throwable e) {
             try {
                 close(client);
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 LOG.warn("Error Close Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(ex), ex);
             }
             throw new MessagingChannelException("Error Subscribe Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);

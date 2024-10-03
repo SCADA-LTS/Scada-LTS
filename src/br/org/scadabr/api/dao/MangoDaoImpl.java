@@ -1237,7 +1237,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		mangoPoint.setPointLocator(mangoLocator);
 		DwrResponseI18n validate = new DwrResponseI18n();
 		validate(mangoPoint, validate);
-		mangoLocator.validate(validate);
+		mangoLocator.validate(validate, point.getId());
 		if (validate.getHasMessages()) {
 			throw new ScadaBRAPIException(new APIError(
 					ErrorCode.INVALID_PARAMETER,

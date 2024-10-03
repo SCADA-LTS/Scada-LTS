@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,6 +44,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 					new LocalizableMessage("event.exception2", vo.getName(),
 							"Arquivo não encontrado!"));
 		} else {
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			String arquivo = readFile(file);
 
 			for (DataPointRT dataPoint : dataPoints) {
@@ -58,19 +60,21 @@ public class ASCIIFileDataSource extends PollingDataSource {
 						} catch (Exception e) {
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							timestamp = time;
+							return;
 						}
 
 					}
 
 					dataPoint.updatePointValue(new PointValueTime(value,
 							timestamp));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 				} catch (Exception e) {
+					LOG.error(LoggingUtils.info(e, this), e);
 					raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 							new LocalizableMessage("event.exception2", vo
-									.getName(), e.getMessage()));
-					e.printStackTrace();
+									.getName(), e.getMessage()), dataPoint);
 				}
 
 			}
@@ -143,7 +147,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 			} while (c != -1);
 			reader.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this), e);
 		}
 		return sb.toString();
 	}

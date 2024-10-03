@@ -1,80 +1,71 @@
 package org.scada_lts.web.mvc.api;
 
-import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.css.CssStyle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.nio.file.Files;
+import javax.validation.Valid;
 
-@Controller
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.scada_lts.web.mvc.api.css.CustomCssUtils.saveToFile;
+
+@RestController
 @RequestMapping("/api/customcss")
 public class CustomCssAPI {
 
     private static final Log LOG = LogFactory.getLog(CustomCssAPI.class);
-    private static final String CSS_FILENAME = "/assets/user_styles.css";
 
-    private static final String REQ_RESP_ERROR = "Couldn't create a *.css file.";
+    private final SystemSettingsService systemSettingsService;
 
-    @GetMapping("/")
-    public ResponseEntity<?> getCustomCssFile(HttpServletRequest request) {
+    public CustomCssAPI(SystemSettingsService systemSettingsService) {
+        this.systemSettingsService = systemSettingsService;
+    }
+
+    @GetMapping(value = "", produces = {"application/json;charset=UTF-8"})
+    public ResponseEntity<CssStyle> getCustomCss(HttpServletRequest request) {
         LOG.info("GET: /api/customcss");
         try {
-            File cssFile = getCustomCssFileFromPath();
-            if(cssFile != null) {
-                String content = Files.readString(cssFile.toPath());
-                return new ResponseEntity<>(new CssStyle(content), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(REQ_RESP_ERROR,HttpStatus.INTERNAL_SERVER_ERROR);
+            CssStyle customCss = systemSettingsService.getCustomCss();
+            if (!StringUtils.isEmpty(customCss.getContent())) {
+                return new ResponseEntity<>(customCss.clearedOfTabs(), HttpStatus.OK);
             }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<String> saveCustomCssFile(HttpServletRequest request, @RequestBody String fileContent) {
+    @PostMapping(value = "", consumes = {"application/json;charset=UTF-8"})
+    public ResponseEntity<?> saveCustomCss(HttpServletRequest request, @Valid @RequestBody(required = true) CssStyle cssStyle, BindingResult bindingResult) {
         LOG.info("POST: /api/customcss");
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getFieldErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
         try {
-            File cssFile = getCustomCssFileFromPath();
-            if(cssFile != null) {
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(cssFile.getAbsolutePath()))) {
-                    writer.write(fileContent);
-                }
+            if (!StringUtils.isEmpty(cssStyle.getContent())) {
+                systemSettingsService.saveCustomCss(cssStyle);
+                saveToFile(cssStyle);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(REQ_RESP_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-    }
-
-    private File getCustomCssFileFromPath() {
-        try {
-            File cssFile = new File(Common.ctx.getCtx().getRealPath(CSS_FILENAME));
-            if(!cssFile.exists()) {
-                boolean created = cssFile.createNewFile();
-                if(created) {
-                    LOG.info("Created custom CSS stylesheet file: " + CSS_FILENAME);
-                }
-            }
-            return cssFile;
-        } catch (IOException e) {
-            LOG.error("Could not create a custom CSS file: " + CSS_FILENAME);
-        }
-        return null;
     }
 }

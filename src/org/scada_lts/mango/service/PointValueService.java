@@ -312,7 +312,6 @@ public class PointValueService implements MangoPointValues {
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
-        lstIn.sort(Comparator.comparing(PointValue::getId).reversed());
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
         }
@@ -681,7 +680,7 @@ public class PointValueService implements MangoPointValues {
 
                 ScriptExecutor scriptExecutor = new ScriptExecutor();
 
-                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext(), dataPointRT, metaDataSourceRT);
 
                 PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
                 Common.ctx.getRuntimeManager().setDataPointValue(dataPoint.getId(), pointValueTime, user);

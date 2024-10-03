@@ -36,7 +36,7 @@
         <Property name="eventManagerLoggingLevel">ERROR</Property>
         <Property name="modbusLoggingLevel">ERROR</Property>
         <Property name="dataPointRtLoggingLevel">INFO</Property>
-        <Property name="dataSourceRtLoggingLevel">INFO</Property>
+        <Property name="dataSourceRtLoggingLevel">ERROR</Property>
         <Property name="detectorRtLoggingLevel">INFO</Property>
 
         <!-- Parse log4j2.xml Logging-->
@@ -44,6 +44,9 @@
 
         <!-- Security Logging-->
         <Property name="securityLoggingLevel">ERROR</Property>
+
+        <!-- Java Bean Validation Logging-->
+        <Property name="validationLoggingLevel">ERROR</Property>
 
     </Properties>
 
@@ -256,6 +259,13 @@
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
 
+        <Logger name="com.serotonin.mango.rt.dataSource.meta.ScriptExecutor" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="br.org.scadabr.rt.scripting.ContextualizedScriptRT" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
         <!-- DataPointRT -->
         <Logger name="com.serotonin.mango.rt.dataImage.DataPointRT" level="${dataPointRtLoggingLevel}" >
             <AppenderRef ref="ASYNC_SCRIPT"/>
@@ -288,6 +298,29 @@
             <AppenderRef ref="ASYNC_MODBUS"/>
         </Logger>
 
+        <!-- Data Source RT -->
+        <Logger name="com.serotonin.mango.rt.dataSource" level="${dataSourceRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="org.scada_lts.ds" level="${dataSourceRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="br.org.scadabr.rt.dataSource" level="${dataSourceRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="cc.radiuino.scadabr.rt.datasource" level="${dataSourceRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <!-- Data Point RT -->
+
+        <Logger name="com.serotonin.mango.rt.dataImage" level="${dataPointRtLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
         <!-- Parse log4j2.xml Logging-->
         <Logger name="org.apache.log4j.xml" level="${log4jLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
@@ -296,6 +329,10 @@
         <!-- Security Logging-->
         <Logger name="org.scada_lts.web.security" level="${securityLoggingLevel}" />
         <Logger name="org.springframework.security" level="${securityLoggingLevel}" />
+
+        <!-- Java Bean Validation Logging -->
+        <Logger name="javax.validation" level="${validationLoggingLevel}" />
+        <Logger name="org.scada_lts.web.beans.validation" level="${validationLoggingLevel}" />
 
         <Root level="${rootLoggingLevel}">
             <AppenderRef ref="STDOUT"/>

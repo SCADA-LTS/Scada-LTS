@@ -47,9 +47,11 @@ public class IEC101Master {
 					reconnecting = false;
 				} else {
 					terminate();
+					throw new Exception("Trying to reconnect failed.");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Thread.sleep(100);
+				throw e;
 			}
 
 		} else {

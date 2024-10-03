@@ -81,8 +81,8 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			try {
 				context = new ScriptExecutor().convertContext(((ContextualizedScriptVO) vo).getPointsOnContext());
-			} catch (DataPointStateException e1) {
-				LOG.error("Data Point State Exception" + e1.getMessage());
+			} catch (Exception e1) {
+				LOG.error("Data Point State Exception " + e1.getMessage());
 				if (vo != null) {
 					throw new ScriptException("xid:"+vo.getXid() +" script:"+vo.getScript()+" error:" + e1.getMessage());
 				} else {

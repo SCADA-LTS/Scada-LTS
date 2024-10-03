@@ -71,7 +71,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis());
+        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         super.removeDataPoint(dataPoint);
     }
 
@@ -127,7 +127,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         }
 
         if (parseErrorMessage != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseErrorMessage);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseErrorMessage);
         else
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }

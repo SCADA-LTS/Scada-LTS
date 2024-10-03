@@ -33,7 +33,7 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
-    
+
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
@@ -482,7 +482,7 @@
         jQuery.ajax({
             type: 'GET',
             dataType: 'text',
-            url:myLocation+"/api/resources/imagesRefresh",
+            url:myLocation+"api/resources/imagesRefresh",
             success: function(msg){
                 alert("Success: the resource images has been refreshed");
             },
@@ -505,11 +505,6 @@
     function hideCssDialog() {
       let dialog = document.getElementById('css-editor-dialog');
       dialog.style.display = 'none';
-    }
-
-    function saveCssSettings() {
-      hideCssDialog();
-      saveCustomCssConfig();
     }
 
     function initCustomCssData() {
@@ -542,10 +537,18 @@
       return new Promise((resolve, reject) => {
         let req = new XMLHttpRequest();
         req.open('POST', customCssUrl, true);
-        req.setRequestHeader('Content-type', 'application/text');
+        req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        setUserMessage("customCssMessage");
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
+            setUserMessage("customCssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
+          } else if (req.status === 400) {
+            let errors = JSON.parse(req.responseText);
+            if(errors.length > 0) {
+              setUserMessage("customCssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
+            }
+            reject(errors);
           } else {
             reject(req.status);
           }
@@ -553,7 +556,12 @@
         req.onerror = () => {
           reject(req.status);
         }
-        req.send(document.getElementById('cssEditor').value);
+        let cssContent = document.getElementById('cssEditor').value;
+        let cssStyle = {
+            content: cssContent
+        };
+        let body = JSON.stringify(cssStyle);
+        req.send(body);
       });
     }
 
@@ -564,6 +572,19 @@
         }
         $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cssEditor = document.getElementById('cssEditor');
+      const cssHighlighting = document.getElementById('cssHighlighting');
+      if (cssEditor && cssHighlighting) {
+        cssEditor.addEventListener('input', () => {
+          updateCodeText(cssEditor.value, '#cssHighlightingContent');
+        });
+        cssEditor.addEventListener('scroll', () => {
+          syncCodeScroll(cssEditor, '#cssHighlighting');
+        });
+      }
+    });
 
   </script>
   
@@ -1130,7 +1151,7 @@
               id="cssEditor"
               class="hgl-editor"
               spellcheck="false"
-              oninput="updateCodeTextEscaped(this.value, '#cssHighlightingContent');"
+              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
               onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
             </textarea>
             <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">
@@ -1142,11 +1163,16 @@
           <table>
             <tr>
               <td>
-                <button onclick="hideCssDialog()"><spring:message code="common.cancel"/></button>
+                <button onclick="hideCssDialog()"><spring:message code="common.close"/></button>
               </td>
               <td>
-                <button onclick="saveCssSettings()"><spring:message code="common.save"/></button>
+                <button onclick="saveCustomCssConfig()"><spring:message code="common.save"/></button>
               </td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td colspan="2" id="customCssMessage" class="formError"></td>
             </tr>
           </table>
           </div>
