@@ -88,12 +88,16 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			EventService eventService = new EventService();
 			EventInstance event = eventService.getEvent(eventId);
-			boolean result = eventService.toggleSilence(event, user);
-			resetLastAlarmLevelChange();
-			response.addData("silenced", result);
-		} else
+			if(event != null) {
+				boolean result = eventService.toggleSilence(event, user);
+				resetLastAlarmLevelChange();
+				response.addData("silenced", result);
+			} else {
+				response.addData("silenced", false);
+			}
+		} else {
 			response.addData("silenced", false);
-
+		}
 		return response;
 	}
 
