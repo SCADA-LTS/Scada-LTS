@@ -33,15 +33,15 @@
 								$t('datapointDetails.pointProperties.toggle.datasourceDisabled')
 							}}</span>
 						</v-tooltip>
-						{{ dataPointDetails.name }}
+						<span v-html="dataPointDetails.name" ></span>
 						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
 					<p class="thin-top-margin small-description">
-						<span>{{ dataPointDetails.xid }}</span>
+						<span v-html="dataPointDetails.xid" ></span>
 						<span v-if="dataPointDetails.description">
 							<span v-if="dataPointDetails.description.length > 0">
-								- {{ dataPointDetails.description }}</span
-							>
+								- <span v-html="dataPointDetails.description" ></span>
+							</span>
 						</span>
 					</p>
 				</v-col>

@@ -68,9 +68,15 @@
 						</v-btn>
 					</v-badge>
 				</template>
+                <template v-slot:item.name="{ item }">
+                    <span v-html="item.name" ></span>
+                </template>
 				<template v-slot:item.type="{ item }">
 					{{ $t(`datasource.type.${$store.getters.dataSourceTypeName(item.type)}`) }}
 				</template>
+                <template v-slot:item.xid="{ item }">
+                    <span v-html="item.xid" ></span>
+                </template>
 				<template v-slot:expanded-item="{ headers, item }">
 					<!-- Single Data Source Item Details Row -->
 					<td
