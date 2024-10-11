@@ -167,6 +167,7 @@ public class SystemSettingsDAO {
 	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
 	public static final String TOP_DESCRIPTION = "topDescription";
 	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
+	public static final String POINT_NAMES_LENGTH_IN_REPORT = "pointNamesLengthInReport";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -420,6 +421,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
 		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
         DEFAULT_VALUES.put(CUSTOM_CSS_CONTENT, SystemSettingsUtils.getCustomCssContent());
+		DEFAULT_VALUES.put(POINT_NAMES_LENGTH_IN_REPORT, SystemSettingsUtils.getPointNamesLengthInReport());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

@@ -36,6 +36,7 @@ import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
 
@@ -147,8 +148,9 @@ public class ReportChartCreator {
                 // The path comes from the servlet path definition in web.xml.
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
+            SystemSettingsService systemSettingsService = new SystemSettingsService();
             int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
-                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT);
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getPointNamesLengthInReport());
             imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
@@ -260,7 +262,8 @@ public class ReportChartCreator {
     }
 
     public static int getDataPointExtendedNameLengthLimit(){
-        return DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT;
+        SystemSettingsService settings = new SystemSettingsService();
+        return settings.getPointNamesLengthInReport();
     }
 
     public static int getLineLengthInLegendLimit() {

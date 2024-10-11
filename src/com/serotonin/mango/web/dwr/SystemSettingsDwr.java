@@ -183,6 +183,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getSystemInfoSettings().getTopDescription());
 		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
 				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
+		settings.put(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT,
+				systemSettingsService.getMiscSettings().getPointNamesLengthInReport());
 		return settings;
 	}
 
@@ -336,7 +338,7 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled) {
+											boolean eventAssignEnabled, int pointNamesLengthInReport) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -393,6 +395,12 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
+		}
+		if(pointNamesLengthInReport < 0) {
+			response.addContextualMessage(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, "validate.invalidValue");
+		}
+		else{
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, pointNamesLengthInReport);
 		}
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);

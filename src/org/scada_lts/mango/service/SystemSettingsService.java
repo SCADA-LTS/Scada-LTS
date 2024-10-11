@@ -148,6 +148,7 @@ public class SystemSettingsService {
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
+        json.setPointNamesLengthInReport(SystemSettingsDAO.getIntValue(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT));
         return json;
     }
 
@@ -164,6 +165,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, json.getPointNamesLengthInReport());
         saveEventAssignEnabled(json.isEventAssignEnabled());
     }
 
@@ -528,5 +530,15 @@ public class SystemSettingsService {
 
     public void saveCustomCss(CssStyle cssStyle) {
         systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT, cssStyle.getContent());
+    }
+
+    public int getPointNamesLengthInReport(){
+        int defaultValue = SystemSettingsUtils.getPointNamesLengthInReport();
+        try {
+            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
     }
 }

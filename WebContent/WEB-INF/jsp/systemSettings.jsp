@@ -121,6 +121,7 @@
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT %>"/>);
         });
 
 <%--
@@ -313,6 +314,7 @@
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
@@ -1016,6 +1018,12 @@
          <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
           <td class="formField">
            <input id="<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>" type="checkbox" />
+          </td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><spring:message code="systemSettings.pointNamesLengthInGeneratedReports"/></td>
+          <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT %>"/>" type="number" class="formShort"/>
           </td>
         </tr>
         <tr>

@@ -17,6 +17,7 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
+    public int pointNamesLengthInReport;
 
     public JsonSettingsMisc() {}
 
@@ -122,6 +123,14 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setEventAssignEnabled(boolean eventAssignEnabled) {
         this.eventAssignEnabled = eventAssignEnabled;
+    }
+
+    public int getPointNamesLengthInReport() {
+        return pointNamesLengthInReport;
+    }
+
+    public void setPointNamesLengthInReport(int pointNamesLengthInReport) {
+        this.pointNamesLengthInReport = pointNamesLengthInReport;
     }
 
 }
