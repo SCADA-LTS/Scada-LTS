@@ -335,8 +335,8 @@
     function escapePoints(points) {
         for(var i=0; i < points.length; i++) {
             var point = points[i];
-            point.name = convertToText(point.name);
-            point.xid = convertToText(point.xid);
+            point.name = escapeHtml(point.name);
+            point.xid = escapeHtml(point.xid);
         }
     }
     

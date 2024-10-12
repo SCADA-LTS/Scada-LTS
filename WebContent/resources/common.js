@@ -1093,12 +1093,6 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
-function convertToText(content) {
-    var node = document.createElement("span");
-    node.textContent = content;
-    return node.innerHTML;
-}
-
 function isInt32(state) {
     if(!(/^([+-]?[1-9]\d*|0).[0]$/.test(state))
         && !(/^([+-]?[1-9]\d*|0)$/.test(state))) {
@@ -1300,4 +1294,11 @@ function unescapeHtml(value) {
    let div = document.createElement("div");
    div.innerHTML = value;
    return div.textContent || div.innerText;
+}
+
+function escapeHtml(value) {
+   let div = document.createElement("div");
+   div.textContent = value;
+   div.innerText = value;
+   return div.innerHTML;
 }

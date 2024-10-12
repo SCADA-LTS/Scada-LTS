@@ -192,7 +192,7 @@
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererMultistate"}'>
               <c:forEach items="${form.textRenderer.multistateValues}" var="msValue">
-                textRendererEditor.addMultistateValue("${msValue.key}", "${msValue.text}", "${msValue.colour}");
+                textRendererEditor.addMultistateValue("${msValue.key}", "<c:out value="${msValue.text}"/>", "${msValue.colour}");
               </c:forEach>
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererNone"}'>
@@ -201,7 +201,7 @@
             </c:when>
             <c:when test='${form.textRenderer.typeName == "textRendererRange"}'>
               <c:forEach items="${form.textRenderer.rangeValues}" var="rgValue">
-                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}",
+                textRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "<c:out value="${rgValue.text}"/>",
                         "${rgValue.colour}");
               </c:forEach>
             </c:when>
@@ -231,15 +231,21 @@
               DataPointEditDwr.setBinaryTextRenderer($get("textRendererBinaryZero"), 
                       dojo.widget.byId("textRendererBinaryZeroColour").selectedColour, $get("textRendererBinaryOne"),
                       dojo.widget.byId("textRendererBinaryOneColour").selectedColour, callback);
-          else if (typeName == "textRendererMultistate")
+          else if (typeName == "textRendererMultistate") {
+              for(let i = 0; i < multistateValues.length; i++) {
+                  multistateValues[i].text = unescapeHtml(multistateValues[i].text);
+              }
               DataPointEditDwr.setMultistateRenderer(multistateValues, callback);
-          else if (typeName == "textRendererNone")
+          } else if (typeName == "textRendererNone")
               DataPointEditDwr.setNoneRenderer(callback);
           else if (typeName == "textRendererPlain")
               DataPointEditDwr.setPlainRenderer($get("textRendererPlainSuffix"), callback);
-          else if (typeName == "textRendererRange")
+          else if (typeName == "textRendererRange") {
+              for(let i = 0; i < rangeValues.length; i++) {
+                  rangeValues[i].text = unescapeHtml(rangeValues[i].text);
+              }
               DataPointEditDwr.setRangeRenderer($get("textRendererRangeFormat"), rangeValues, callback);
-          else if (typeName == "textRendererTime")
+          } else if (typeName == "textRendererTime")
               DataPointEditDwr.setTimeTextRenderer($get("textRendererTimeFormat"),
                       $get("textRendererTimeConversionExponent"), callback);
           else
@@ -283,7 +289,7 @@
           if (text)
               theValue.text = text;
           else {
-              theValue.text = convertToText($get("textRendererMultistateText"));
+              theValue.text = escapeHtml($get("textRendererMultistateText"));
           }
           if (colour)
               theValue.colour = colour;
@@ -314,10 +320,11 @@
           dwr.util.removeAllRows("textRendererMultistateTable");
           dwr.util.addRows("textRendererMultistateTable", multistateValues, [
                   function(data) { return data.key; },
-                  function(data) { 
+                  function(data) {
+                      let dataText = data.text;
                       if (data.colour)
-                          return "<span style='color:"+ data.colour +"'>"+ data.text +"</span>";
-                      return data.text;
+                          return "<span style='color:"+ data.colour +"'>"+ dataText +"</span>";
+                      return "<span>"+ dataText +"</span>";
                   },
                   function(data) {
                       return "<a href='#' onclick='return textRendererEditor.removeMultistateValue("+ data.key +
@@ -362,7 +369,7 @@
           if (text)
               theValue.text = text;
           else {
-              theValue.text = convertToText($get("textRendererRangeText"));
+              theValue.text = escapeHtml($get("textRendererRangeText"));
           }
           if (colour)
               theValue.colour = colour;
@@ -398,10 +405,11 @@
           dwr.util.addRows("textRendererRangeTable", rangeValues, [
                   function(data) { return data.from; },
                   function(data) { return data.to; },
-                  function(data) { 
+                  function(data) {
+                      let dataText = data.text;
                       if (data.colour)
-                          return "<span style='color:"+ data.colour +"'>"+ data.text +"</span>";
-                      return data.text;
+                          return "<span style='color:"+ data.colour +"'>"+ dataText +"</span>";
+                      return "<span>"+ dataText +"</span>";
                   },
                   function(data) {
                       return "<a href='#' onclick='return textRendererEditor.removeRangeValue("+
