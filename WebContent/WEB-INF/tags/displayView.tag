@@ -96,8 +96,8 @@
 			<c:forEach var="childComponent" items="${vc.childComponents}">
 				<c:if test="${not empty childComponent.viewComponent.extendedName}">
 					pointProps.push({
-						pointName: "${childComponent.viewComponent.extendedName}",
-	        			alias: "${childComponent.viewComponent.alias}",
+						pointName: "<c:out value="${childComponent.viewComponent.extendedName}"/>",
+	        			alias: "<c:out value="${childComponent.viewComponent.alias}"/>",
 	        			color: "${childComponent.viewComponent.color}",
 	        			strokeWidth: ${childComponent.viewComponent.strokeWidth},
 	        			lineType: "${childComponent.viewComponent.lineType}",
