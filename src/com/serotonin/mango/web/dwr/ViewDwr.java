@@ -98,6 +98,7 @@ import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.security.XssProtectHtmlEscapeUtils;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
@@ -211,9 +212,9 @@ public class ViewDwr extends BaseDwr {
 						if (point != null) {
 							Map<String, Object> map = new HashMap<String, Object>();
 							if (imageChart)
-								map.put("name", point.getName());
+								map.put("name", XssProtectHtmlEscapeUtils.escape(point.getName()));
 							else
-								map.put("name", getMessage(child.getDescription()));
+								map.put("name", XssProtectHtmlEscapeUtils.escape(getMessage(child.getDescription())));
 							map.put("point", point);
 							map.put("pointValue", point.lastValue());
 							childData.add(map);
