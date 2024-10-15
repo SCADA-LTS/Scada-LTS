@@ -84,8 +84,11 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                Date time = new Date();
                 EventInstance event = eventService.getEvent(eventId);
+                if (event == null) {
+                    return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+                }
+                Date time = new Date();
                 eventService.ackEvent(event, time.getTime(), user, 0);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -327,6 +330,10 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                EventInstance event = eventService.getEvent(eventId);
+                if (event == null) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
                 List<EventCommentDTO> result = eventService.findCommentsByEventId(eventId);
                 return new ResponseEntity<List<EventCommentDTO>>(result, HttpStatus.OK);
             } else {
@@ -351,6 +358,9 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 EventInstance event = eventService.getEvent(eventId);
+                if (event == null) {
+                    return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+                }
                 eventService.assignEvent(event, user);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -375,6 +385,9 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 EventInstance event = eventService.getEvent(eventId);
+                if (event == null) {
+                    return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+                }
                 eventService.unassignEvent(event, user);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
