@@ -74,7 +74,7 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY = "scadalts.security.http.query.protect.enabled";
 
     private static final String CUSTOM_CSS_CONTENT_KEY = "systemsettings.custom.css.content";
-    private static final String POINT_NAMES_LENGTH_IN_REPORT_KEY = "systemsettings.point.names.length.in.reports";
+    private static final String DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS = "systemsettings.reports.data-point-extended-name-length.limit";
 
     private static final String SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.body.access.denied.regex";
     private static final String SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.body.access.granted.regex";
@@ -381,9 +381,9 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static int getPointNamesLengthInReport() {
+    public static int getDataPointExtendedNameLengthInReportLimit() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(POINT_NAMES_LENGTH_IN_REPORT_KEY, "64");
+            String config = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS, "64");
             return Integer.parseInt(config);
         } catch (Exception e) {
             LOG.error(e.getMessage());

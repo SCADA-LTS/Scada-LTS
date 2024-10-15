@@ -60,7 +60,6 @@ public class ReportChartCreator {
     private static final int IMAGE_HEIGHT_PIXELS = 400;
     private static final int POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
     private static final int LINE_LENGTH_IN_LEGEND_LIMIT = 161;
-    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT = 64;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH_PIXELS = 440;
@@ -150,7 +149,7 @@ public class ReportChartCreator {
             }
             SystemSettingsService systemSettingsService = new SystemSettingsService();
             int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
-                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getPointNamesLengthInReport());
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getDataPointExtendendNameLengthInReportLimit());
             imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
@@ -263,7 +262,7 @@ public class ReportChartCreator {
 
     public static int getDataPointExtendedNameLengthLimit(){
         SystemSettingsService settings = new SystemSettingsService();
-        return settings.getPointNamesLengthInReport();
+        return settings.getDataPointExtendendNameLengthInReportLimit();
     }
 
     public static int getLineLengthInLegendLimit() {

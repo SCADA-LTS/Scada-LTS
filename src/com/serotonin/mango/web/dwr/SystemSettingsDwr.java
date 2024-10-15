@@ -183,8 +183,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getSystemInfoSettings().getTopDescription());
 		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
 				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
-		settings.put(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT,
-				systemSettingsService.getMiscSettings().getPointNamesLengthInReport());
+		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS,
+				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportLimit());
 		return settings;
 	}
 
@@ -338,7 +338,7 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled, int pointNamesLengthInReport) {
+											boolean eventAssignEnabled, int pointExtendedNamesLengthLimitInReport) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -396,11 +396,11 @@ public class SystemSettingsDwr extends BaseDwr {
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
-		if(pointNamesLengthInReport < 0) {
-			response.addContextualMessage(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, "validate.invalidValue");
+		if(pointExtendedNamesLengthLimitInReport < 0) {
+			response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS, "validate.invalidValue");
 		}
 		else{
-			systemSettingsDAO.setIntValue(SystemSettingsDAO.POINT_NAMES_LENGTH_IN_REPORT, pointNamesLengthInReport);
+			SystemSettingsService.setDataPointExtendedNameLengthInReportLimit(pointExtendedNamesLengthLimitInReport);
 		}
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
