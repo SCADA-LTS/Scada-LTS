@@ -183,8 +183,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getSystemInfoSettings().getTopDescription());
 		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
 				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
-		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS,
-				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportLimit());
+		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT,
+				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportsLimit());
 		return settings;
 	}
 
@@ -338,9 +338,10 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled, int pointExtendedNamesLengthLimitInReport) {
+											boolean eventAssignEnabled, int pointExtendedNameLengthInReportsLimit) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
         DwrResponseI18n response = new DwrResponseI18n();
         if(uiPerformance < 0) {
             response.addContextualMessage(SystemSettingsDAO.UI_PERFORMANCE, "validate.invalidValue");
@@ -396,13 +397,12 @@ public class SystemSettingsDwr extends BaseDwr {
 		else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
-		if(pointExtendedNamesLengthLimitInReport < 0) {
-			response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT_IN_REPORTS, "validate.invalidValue");
+		if(pointExtendedNameLengthInReportsLimit < 0) {
+			response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "validate.invalidValue");
 		}
 		else{
-			SystemSettingsService.setDataPointExtendedNameLengthInReportLimit(pointExtendedNamesLengthLimitInReport);
+			systemSettingsService.setDataPointExtendedNameLengthInReportsLimit(pointExtendedNameLengthInReportsLimit);
 		}
-		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);
 		return response;
 	}

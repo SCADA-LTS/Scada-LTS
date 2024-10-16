@@ -149,7 +149,7 @@ public class ReportChartCreator {
             }
             SystemSettingsService systemSettingsService = new SystemSettingsService();
             int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
-                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getDataPointExtendendNameLengthInReportLimit());
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getDataPointExtendedNameLengthInReportsLimit());
             imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
@@ -262,7 +262,7 @@ public class ReportChartCreator {
 
     public static int getDataPointExtendedNameLengthLimit(){
         SystemSettingsService settings = new SystemSettingsService();
-        return settings.getDataPointExtendendNameLengthInReportLimit();
+        return settings.getDataPointExtendedNameLengthInReportsLimit();
     }
 
     public static int getLineLengthInLegendLimit() {

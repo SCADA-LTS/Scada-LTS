@@ -17,7 +17,7 @@ public class JsonSettingsMisc implements Serializable {
     public String webResourceGraphicsPath;
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
-    public int pointExtendedNamesLengthLimitInReport;
+    public int pointExtendedNameLengthInReportsLimit;
 
     public JsonSettingsMisc() {}
 
@@ -125,12 +125,12 @@ public class JsonSettingsMisc implements Serializable {
         this.eventAssignEnabled = eventAssignEnabled;
     }
 
-    public int getDataPointExtendedNameLengthInReportLimit() {
-        return pointExtendedNamesLengthLimitInReport;
+    public int getDataPointExtendedNameLengthInReportsLimit() {
+        return pointExtendedNameLengthInReportsLimit;
     }
 
-    public void setDataPointExtendedNameLengthInReportLimit(int pointNamesLengthInReport) {
-        this.pointExtendedNamesLengthLimitInReport = pointNamesLengthInReport;
+    public void setDataPointExtendedNameLengthInReportsLimit(int pointExtendedNameLengthInReportsLimit) {
+        this.pointExtendedNameLengthInReportsLimit = pointExtendedNameLengthInReportsLimit;
     }
 
 }
