@@ -148,6 +148,7 @@ public class SystemSettingsService {
         json.setWebResourceGraphicsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH));
         json.setWebResourceUploadsPath(SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH));
         json.setEventAssignEnabled(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED));
+        json.setDataPointExtendedNameLengthInReportsLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT));
         return json;
     }
 
@@ -164,6 +165,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, json.getDataPointExtendedNameLengthInReportsLimit());
         saveEventAssignEnabled(json.isEventAssignEnabled());
     }
 
@@ -528,5 +530,18 @@ public class SystemSettingsService {
 
     public void saveCustomCss(CssStyle cssStyle) {
         systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT, cssStyle.getContent());
+    }
+
+    public int getDataPointExtendedNameLengthInReportsLimit(){
+        int defaultValue = SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit();
+        try {
+            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+    public void setDataPointExtendedNameLengthInReportsLimit(int dataPointExtendedNameLengthInReportsLimit) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, dataPointExtendedNameLengthInReportsLimit);
     }
 }
