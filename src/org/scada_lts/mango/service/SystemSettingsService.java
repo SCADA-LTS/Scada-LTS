@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.LogFactory;
@@ -153,20 +154,20 @@ public class SystemSettingsService {
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
-        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, json.isViewHideShortcutDisableFullScreenEnabled());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, json.isViewForceFullScreenEnabled());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, json.getEventPendingLimit());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, json.isEventPendingCacheEnabled());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, json.getThreadsNameAdditionalLength());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, json.isWorkItemsReportingEnabled());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, json.isWorkItemsReportingItemsPerSecondEnabled());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, json.getWorkItemsReportingItemsPerSecondLimit());
-        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, json.getWebResourceGraphicsPath());
-        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, json.getWebResourceUploadsPath());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, json.getDataPointExtendedNameLengthInReportsLimit());
-        saveEventAssignEnabled(json.isEventAssignEnabled());
+        saveUiPerformanceMisc(json.getUiPerformance());
+        saveDataPointRuntimeValueSynchronizedMisc(json.getDataPointRuntimeValueSynchronized());
+        saveViewHideShortcutDisableFullScreenMisc(json.isViewHideShortcutDisableFullScreenEnabled());
+        saveViewForceFullScreenModeMisc(json.isViewForceFullScreenEnabled());
+        saveEventPendingLimitMisc(json.getEventPendingLimit());
+        saveEventPendingCacheEnabledMisc(json.isEventPendingCacheEnabled());
+        saveThreadsNameAdditionalLengthMisc(json.getThreadsNameAdditionalLength());
+        saveWorkItemsReportingEnabledMisc(json.isWorkItemsReportingEnabled());
+        saveWorkItemsReportingItemsPerSecondEnabledMisc(json.isWorkItemsReportingItemsPerSecondEnabled());
+        saveWorkItemsReportingPerSecondLimitMisc(json.getWorkItemsReportingItemsPerSecondLimit());
+        saveResourceGraphicsPathMisc(json.getWebResourceGraphicsPath());
+        saveResourceUploadsPathMisc(json.getWebResourceUploadsPath());
+        saveDataPointExtendedNameLengthInReportsLimitMisc(json.getDataPointExtendedNameLengthInReportsLimit());
+        saveEventAssignEnabledMisc(json.isEventAssignEnabled());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -301,7 +302,7 @@ public class SystemSettingsService {
         data.put("historyCount", sum);
         data.put("topPoints", counts);
 
-        MangoEvent eventService = new EventService();
+        MangoEvent eventService = ApplicationBeans.getBean("eventService", MangoEvent.class);
         data.put("eventCount", eventService.getEventCount());
 
         return data;
@@ -410,10 +411,10 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
     }
 
-    public void saveEventAssignEnabled(boolean eventAssignEnabled) {
+    public void saveEventAssignEnabledMisc(boolean eventAssignEnabled) {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_ASSIGN_ENABLED, eventAssignEnabled);
         if(!eventAssignEnabled) {
-            EventService eventService = new EventService();
+            MangoEvent eventService = ApplicationBeans.getBean("eventService", MangoEvent.class);
             eventService.unassignEvents();
         }
     }
@@ -532,7 +533,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT, cssStyle.getContent());
     }
 
-    public int getDataPointExtendedNameLengthInReportsLimit(){
+    public int getDataPointExtendedNameLengthInReportsLimit() {
         int defaultValue = SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit();
         try {
             return SystemSettingsDAO.getIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, defaultValue);
@@ -541,7 +542,127 @@ public class SystemSettingsService {
             return defaultValue;
         }
     }
-    public void setDataPointExtendedNameLengthInReportsLimit(int dataPointExtendedNameLengthInReportsLimit) {
+    public void saveDataPointExtendedNameLengthInReportsLimitMisc(int dataPointExtendedNameLengthInReportsLimit, DwrResponseI18n response) {
+        if(dataPointExtendedNameLengthInReportsLimit < 0) {
+            response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "validate.invalidValue");
+        } else {
+            saveDataPointExtendedNameLengthInReportsLimitMisc(dataPointExtendedNameLengthInReportsLimit);
+        }
+    }
+
+    public void saveViewHideShortcutDisableFullScreenMisc(boolean viewHideShortcutDisableFullScreen) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, viewHideShortcutDisableFullScreen);
+    }
+
+    public void saveViewForceFullScreenModeMisc(boolean viewEnableFullScreen) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, viewEnableFullScreen);
+    }
+
+    public void saveDataPointRuntimeValueSynchronizedMisc(String dataPointRtValueSynchronized) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(dataPointRtValueSynchronized));
+    }
+
+    public void saveEventPendingCacheEnabledMisc(boolean eventPendingCacheEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, eventPendingCacheEnabled);
+    }
+
+    public void saveUiPerformanceMisc(int uiPerformance, DwrResponseI18n response) {
+        if(uiPerformance < 0) {
+            response.addContextualMessage(SystemSettingsDAO.UI_PERFORMANCE, "validate.invalidValue");
+        } else {
+            saveUiPerformanceMisc(uiPerformance);
+        }
+    }
+
+    public void saveEventPendingLimitMisc(int eventPendingLimit, DwrResponseI18n response) {
+        if(eventPendingLimit < 0) {
+            response.addContextualMessage(SystemSettingsDAO.EVENT_PENDING_LIMIT, "validate.invalidValue");
+        } else {
+            saveEventPendingLimitMisc(eventPendingLimit);
+        }
+    }
+
+    public void saveThreadsNameAdditionalLengthMisc(int threadsNameAdditionalLength, DwrResponseI18n response) {
+        if(threadsNameAdditionalLength < 0) {
+            response.addContextualMessage(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, "validate.invalidValue");
+        } else {
+            saveThreadsNameAdditionalLengthMisc(threadsNameAdditionalLength);
+        }
+    }
+
+    public void saveWorkItemsReportingMisc(boolean workItemsReportingItemsPerSecondEnabled, int workItemsReportingItemsPerSecondLimit,
+                                           boolean workItemsReportingEnabled, DwrResponseI18n response) {
+        saveWorkItemsReportingEnabledMisc(workItemsReportingEnabled);
+        if(workItemsReportingEnabled) {
+            saveWorkItemsReportingItemsPerSecondEnabledMisc(workItemsReportingItemsPerSecondEnabled);
+            if(workItemsReportingItemsPerSecondEnabled) {
+                if (workItemsReportingItemsPerSecondLimit < 0) {
+                    response.addContextualMessage(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, "validate.invalidValue");
+                } else {
+                    saveWorkItemsReportingPerSecondLimitMisc(workItemsReportingItemsPerSecondLimit);
+                }
+            } else {
+                saveWorkItemsReportingPerSecondLimitMisc(0);
+            }
+        } else {
+            saveWorkItemsReportingItemsPerSecondEnabledMisc(false);
+            saveWorkItemsReportingPerSecondLimitMisc(0);
+        }
+    }
+
+    public void saveResourceGraphicsPathMisc(String webResourceGraphicsPath, DwrResponseI18n response) {
+        if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)
+                || (webResourceGraphicsPath.endsWith("graphics")
+                || webResourceGraphicsPath.endsWith("graphics" + File.separator)))) {
+            saveResourceGraphicsPathMisc(webResourceGraphicsPath);
+        } else {
+            response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.webresource.graphics.path.wrong", File.separator);
+        }
+    }
+
+    public void saveResourceUploadsPathMisc(String webResourceUploadsPath, DwrResponseI18n response) {
+        if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
+                || (webResourceUploadsPath.endsWith("uploads")
+                || webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
+            saveResourceUploadsPathMisc(webResourceUploadsPath);
+        } else {
+            response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
+        }
+    }
+
+    private void saveDataPointExtendedNameLengthInReportsLimitMisc(int dataPointExtendedNameLengthInReportsLimit) {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, dataPointExtendedNameLengthInReportsLimit);
+    }
+
+    private void saveUiPerformanceMisc(int uiPerformance) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, uiPerformance);
+    }
+
+    private void saveEventPendingLimitMisc(int eventPendingLimit) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
+    }
+
+    private void saveThreadsNameAdditionalLengthMisc(int threadsNameAdditionalLength) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, threadsNameAdditionalLength);
+    }
+
+    private void saveWorkItemsReportingPerSecondLimitMisc(int workItemsReportingItemsPerSecondLimit) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, workItemsReportingItemsPerSecondLimit);
+    }
+
+    private void saveWorkItemsReportingItemsPerSecondEnabledMisc(boolean workItemsReportingItemsPerSecondEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, workItemsReportingItemsPerSecondEnabled);
+    }
+
+    private void saveWorkItemsReportingEnabledMisc(boolean workItemsReportingEnabled) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, workItemsReportingEnabled);
+    }
+
+    private void saveResourceGraphicsPathMisc(String webResourceGraphicsPath) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, webResourceGraphicsPath);
+    }
+
+    private void saveResourceUploadsPathMisc(String webResourceUploadsPath) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
     }
 }

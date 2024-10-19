@@ -225,9 +225,14 @@ public final class ImageChartUtils {
         return linesNumber;
     }
 
+    @Deprecated(since = "2.8.0")
     public static String calculatePointNameForReport(String extendedName) {
         SystemSettingsService settings = new SystemSettingsService();
-        int dataPointExtendedNameLengthInReportsLimit = settings.getDataPointExtendedNameLengthInReportsLimit();
+        return truncatePointNameForReport(extendedName, settings);
+    }
+
+    public static String truncatePointNameForReport(String extendedName, SystemSettingsService systemSettingsService) {
+        int dataPointExtendedNameLengthInReportsLimit = systemSettingsService.getDataPointExtendedNameLengthInReportsLimit();
         if(extendedName.length() > dataPointExtendedNameLengthInReportsLimit) {
             return truncate(extendedName, "...", dataPointExtendedNameLengthInReportsLimit);
         }
