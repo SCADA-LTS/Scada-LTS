@@ -385,22 +385,19 @@ public class SystemSettingsDwr extends BaseDwr {
 				|| (webResourceGraphicsPath.endsWith("graphics")
 				|| webResourceGraphicsPath.endsWith("graphics" + File.separator)))) {
 			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, webResourceGraphicsPath);
-		}
-		else {
+		} else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.webresource.graphics.path.wrong", File.separator);
 		}
 		if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
 				|| (webResourceUploadsPath.endsWith("uploads")
 				|| webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
 			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
-		}
-		else {
+		} else {
 			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
 		}
 		if(pointExtendedNameLengthInReportsLimit < 0) {
 			response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "validate.invalidValue");
-		}
-		else{
+		} else {
 			systemSettingsService.setDataPointExtendedNameLengthInReportsLimit(pointExtendedNameLengthInReportsLimit);
 		}
 		systemSettingsService.saveEventAssignEnabled(eventAssignEnabled);

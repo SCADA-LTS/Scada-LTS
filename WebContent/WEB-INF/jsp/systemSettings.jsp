@@ -1021,7 +1021,7 @@
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><spring:message code="systemSettings.pointNamesLengthInGeneratedReports"/></td>
+          <td class="formLabelRequired"><spring:message code="systemsettings.reports.dataPointExtendedNameLengthLimit"/></td>
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>" type="number" class="formShort"/>
           </td>

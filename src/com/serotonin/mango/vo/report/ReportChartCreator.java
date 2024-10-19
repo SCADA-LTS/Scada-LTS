@@ -77,8 +77,17 @@ public class ReportChartCreator {
 
     final ResourceBundle bundle;
 
+    private final SystemSettingsService systemSettingsService;
+
+    @Deprecated(since = "2.8.0")
     public ReportChartCreator(ResourceBundle bundle) {
         this.bundle = bundle;
+        this.systemSettingsService = new SystemSettingsService();
+    }
+
+    public ReportChartCreator(ResourceBundle bundle, SystemSettingsService systemSettingsService) {
+        this.bundle = bundle;
+        this.systemSettingsService = systemSettingsService;
     }
 
 	/**
@@ -147,7 +156,6 @@ public class ReportChartCreator {
                 // The path comes from the servlet path definition in web.xml.
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
-            SystemSettingsService systemSettingsService = new SystemSettingsService();
             int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
                     POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getDataPointExtendedNameLengthInReportsLimit());
             imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
@@ -260,6 +268,7 @@ public class ReportChartCreator {
         return pointStatistics;
     }
 
+    @Deprecated(since = "2.8.0")
     public static int getDataPointExtendedNameLengthLimit(){
         SystemSettingsService settings = new SystemSettingsService();
         return settings.getDataPointExtendedNameLengthInReportsLimit();

@@ -3,6 +3,7 @@ package com.serotonin.mango.vo.report;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class CalculateLinesImageChartUtilsAppCaseTest {
         withNulls.add(null);
 
         int lineLengthInLegendLimit = ReportChartCreator.getLineLengthInLegendLimit();
-        int dataPointExtendedNameLengthLimit = ReportChartCreator.getDataPointExtendedNameLengthLimit();
+        int dataPointExtendedNameLengthLimit = SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit();
 
         return new Object[][] {
 
