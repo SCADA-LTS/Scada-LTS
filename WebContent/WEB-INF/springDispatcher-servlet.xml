@@ -232,6 +232,8 @@
       <array>
         <bean class="org.scada_lts.web.security.XssProtectStringSerializer" />
         <bean class="org.scada_lts.web.security.XssProtectCssStyleSerializer" />
+        <bean class="org.scada_lts.web.beans.serializer.ChronologySerializer" />
+        <bean class="org.scada_lts.web.beans.serializer.LocalDateTimeSerializer" />
       </array>
     </property>
   </bean>

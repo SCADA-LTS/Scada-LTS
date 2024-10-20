@@ -15,7 +15,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.EventService;
-import org.scada_lts.web.contnet.SnippetContentGenerator;
+import org.scada_lts.web.content.SnippetContentGenerator;
 import org.springframework.mock.web.MockHttpSession;
 import utils.TestConcurrentUtils;
 import utils.mock.EventServiceMock;
