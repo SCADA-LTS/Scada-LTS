@@ -3,6 +3,8 @@ package com.serotonin.mango.vo.report;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.stream.Collectors;
 
 import static br.org.scadabr.db.utils.TestUtils.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class CalculateLinesImageChartUtilsAppCaseTest {
@@ -22,7 +26,7 @@ public class CalculateLinesImageChartUtilsAppCaseTest {
         withNulls.add(null);
 
         int lineLengthInLegendLimit = ReportChartCreator.getLineLengthInLegendLimit();
-        int dataPointExtendedNameLengthLimit = ReportChartCreator.getDataPointExtendedNameLengthLimit();
+        int dataPointExtendedNameLengthLimit = SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit();
 
         return new Object[][] {
 
@@ -84,10 +88,12 @@ public class CalculateLinesImageChartUtilsAppCaseTest {
     private final int dataPointExtendedNameLengthLimit;
 
     public CalculateLinesImageChartUtilsAppCaseTest(List<String> pointStatisticsNames, int lineLengthInLegendLimit, int dataPointExtendedNameLengthLimit, int expectedLinesNumber) {
+        SystemSettingsService systemSettingsServiceMock = mock(SystemSettingsService.class);
+        when(systemSettingsServiceMock.getDataPointExtendedNameLengthInReportsLimit()).thenReturn(64);
         this.pointStatisticsNames = pointStatisticsNames.stream().map(a -> {
             if(a == null)
                 return null;
-            return ImageChartUtils.calculatePointNameForReport(a);
+            return ImageChartUtils.truncatePointNameForReport(a, systemSettingsServiceMock);
         }).collect(Collectors.toList());
         this.expectedLinesNumber = expectedLinesNumber;
         this.lineLengthInLegendLimit = lineLengthInLegendLimit;

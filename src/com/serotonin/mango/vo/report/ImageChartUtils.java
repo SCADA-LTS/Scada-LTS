@@ -48,6 +48,7 @@ import com.serotonin.io.StreamUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.util.mindprod.StripEntities;
 import com.serotonin.util.StringUtils;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import static org.scada_lts.serorepl.utils.StringUtils.truncate;
 
@@ -224,9 +225,16 @@ public final class ImageChartUtils {
         return linesNumber;
     }
 
+    @Deprecated(since = "2.8.0")
     public static String calculatePointNameForReport(String extendedName) {
-        if(extendedName.length() > ReportChartCreator.getDataPointExtendedNameLengthLimit()) {
-            return truncate(extendedName, "...", ReportChartCreator.getDataPointExtendedNameLengthLimit());
+        SystemSettingsService settings = new SystemSettingsService();
+        return truncatePointNameForReport(extendedName, settings);
+    }
+
+    public static String truncatePointNameForReport(String extendedName, SystemSettingsService systemSettingsService) {
+        int dataPointExtendedNameLengthInReportsLimit = systemSettingsService.getDataPointExtendedNameLengthInReportsLimit();
+        if(extendedName.length() > dataPointExtendedNameLengthInReportsLimit) {
+            return truncate(extendedName, "...", dataPointExtendedNameLengthInReportsLimit);
         }
         return extendedName;
     }
