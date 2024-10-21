@@ -8,6 +8,7 @@ import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -522,8 +523,14 @@ public class SystemSettingsService {
     }
 
     public CssStyle getCustomCss() {
-        String content = SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT);
-        return new CssStyle(content);
+        String defaultContent = SystemSettingsUtils.getCustomCssContent();
+        try {
+            String content = SystemSettingsDAO.getValue(SystemSettingsDAO.CUSTOM_CSS_CONTENT);
+            return new CssStyle(content);
+        } catch (Exception ex) {
+            LOG.error(LoggingUtils.exceptionInfo(ex));
+            return new CssStyle(defaultContent);
+        }
     }
 
     public void saveCustomCss(CssStyle cssStyle) {
