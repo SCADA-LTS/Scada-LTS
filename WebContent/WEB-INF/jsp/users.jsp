@@ -55,7 +55,7 @@
                 
                 for (k=0; k<data.usersProfiles.length; k++) {
                 	userProfileId = data.usersProfiles[k].id;
-                	userProfileName = data.usersProfiles[k].name;
+                	userProfileName = <c:out value="data.usersProfiles[k].name"/>;
                 	usersProfileHtml += "<option value=" + userProfileId + ">"+ userProfileName + "</option>";
                 }
                 $("usersProfilesList").innerHTML = usersProfileHtml;
@@ -66,14 +66,14 @@
                 for (i=0; i<dataSources.length; i++) {
                     id = "ds"+ dataSources[i].id;
                     dshtml += '<input type="checkbox" id="'+ id +'" onclick="dataSourceChange(this)">';
-                    dshtml += '<label for="'+ id +'"> '+ dataSources[i].name +'</label><br/>';
+                    dshtml += '<label for="'+ id +'"> '+ <c:out value="dataSources[i].name"/> +'</label><br/>';
                     dshtml += '<div style="margin-left:25px;" id="dsps'+ dataSources[i].id +'">';
                     if (dataSources[i].points.length > 0) {
                         dshtml +=   '<table cellspacing="0" cellpadding="1">';
                         for (j=0; j<dataSources[i].points.length; j++) {
                             dp = dataSources[i].points[j];
                             dshtml += '<tr>';
-                            dshtml +=   '<td class="formLabelRequired">'+ dp.name +'</td>';
+                            dshtml +=   '<td class="formLabelRequired">'+ <c:out value="dp.name" /> +'</td>';
                             dshtml +=   '<td>';
                             dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/0" value="0">';
                             dshtml +=             '<label for="dp'+ dp.id +'/0"><spring:message code="common.access.none"/></label> ';
@@ -323,7 +323,7 @@
     
     function updateUser(response) {
         var user = response.data ? response.data.user : response.user;
-        $("u"+ user.id +"Username").innerHTML = user.username;
+        $("u"+ user.id +"Username").textContent = user.username;
         setUserImg(user.admin, user.disabled, $("u"+ user.id +"Img"));
     }
     
