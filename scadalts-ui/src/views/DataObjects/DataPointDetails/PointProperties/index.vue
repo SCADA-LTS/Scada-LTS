@@ -66,7 +66,7 @@
 
 							<v-col md="6" cols="12">
 								<v-text-field
-									v-model="data.name"
+									v-model="name"
 									:label="$t('datapointDetails.pointProperties.point.name')"
 									dense
 								></v-text-field>
@@ -75,12 +75,12 @@
 							<v-col md="6" cols="12" @click="navToDataSource">
 								<v-btn text block>
 									<v-icon>mdi-database </v-icon>
-									<span> {{ data.dataSourceName }}</span>
+									<span v-html="data.dataSourceName" ></span>
 								</v-btn>
 							</v-col>
 							<v-col cols="12">
 								<v-text-field
-									v-model="data.description"
+									v-model="description"
 									:label="$t('datapointDetails.pointProperties.point.description')"
 									dense
 								></v-text-field>
@@ -119,6 +119,8 @@ import PointPropEventDetectors from './PointPropEventDetectors';
 import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
+import {escapeHtml, unescapeHtml} from '@/utils/common'
+
 /**
  * Point Properties
  *
@@ -154,10 +156,35 @@ export default {
 		};
 	},
 
+    computed: {
+        name: {
+          get() {
+            return unescapeHtml(this.data.name);
+          },
+          set(newValue) {
+            this.data.name = escapeHtml(newValue);
+          }
+        },
+        description: {
+          get() {
+            return unescapeHtml(this.data.description);
+          },
+          set(newValue) {
+            this.data.description = escapeHtml(newValue);
+          }
+        },
+    },
+
 	methods: {
 		save() {
+		    this.name = unescapeHtml(this.name);
+		    this.description = unescapeHtml(this.description);
+
 			this.$emit('saved');
 			this.dialog = false;
+
+            this.name = escapeHtml(this.name);
+            this.description = escapeHtml(this.description);
 		},
 
 		toggleDataPoint() {

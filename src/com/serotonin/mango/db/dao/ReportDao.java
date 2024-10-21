@@ -59,6 +59,7 @@ public class ReportDao {
 		reportService.saveReport(report);
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void deleteReport(int reportId) {
 		reportService.deleteReport(reportId);
 	}
