@@ -40,7 +40,7 @@
     <tr>
       <td class="formLabelRequired"><spring:message code="pointEdit.props.ds"/></td>
       <td colspan="2" class="formField">
-        ${dataSource.name}
+        <c:out value="${dataSource.name}"/>
         <a href="data_source_edit.shtm?dsid=${dataSource.id}&pid=${form.id}"><tag:img png="icon_ds_edit"
                 title="pointEdit.props.editDs"/></a>
       </td>

@@ -42,7 +42,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.zeroLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -52,7 +52,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text"/></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text" value="<c:catch var="exception"><c:out value="${form.eventTextRenderer.oneLabel}" /></c:catch>"/></td>
           </tr>
         </table>
       </td>
@@ -119,25 +119,23 @@
 
       // Figure out which fields to populate with data.
       <c:choose>
-      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZero", "${form.eventTextRenderer.zeroLabel}");
-      $set("eventTextRendererBinaryOne", "${form.eventTextRenderer.oneLabel}");
-      </c:when>
-      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
-      <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
-      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.text}");
-      </c:forEach>
-      </c:when>
-      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
-      </c:when>
-      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
-      <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
-      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}");
-      </c:forEach>
-      </c:when>
-      <c:otherwise>
-      dojo.debug("Unknown text renderer: ${form.eventTextRenderer.typeName}");
-      </c:otherwise>
+          <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
+          </c:when>
+          <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
+              <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
+                eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "<c:out value="${msValue.text}"/>");
+              </c:forEach>
+          </c:when>
+          <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
+          </c:when>
+          <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
+              <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
+                eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "<c:out value="${rgValue.text}"/>");
+              </c:forEach>
+          </c:when>
+          <c:otherwise>
+            dojo.debug("Unknown text renderer: ${form.eventTextRenderer.typeName}");
+          </c:otherwise>
       </c:choose>
 
       eventTextRendererEditor.change();
@@ -154,13 +152,19 @@
       var typeName = $get("eventTextRendererSelect");
       if (typeName == "eventTextRendererBinary")
         DataPointEditDwr.setBinaryEventTextRenderer($get("eventTextRendererBinaryZero"), $get("eventTextRendererBinaryOne"), callback);
-      else if (typeName == "eventTextRendererMultistate")
+      else if (typeName == "eventTextRendererMultistate") {
+        for(let i = 0; i < multistateEventValues.length; i++) {
+            multistateEventValues[i].text = unescapeHtml(multistateEventValues[i].text);
+        }
         DataPointEditDwr.setMultistateEventRenderer(multistateEventValues, callback);
-      else if (typeName == "eventTextRendererNone")
+      } else if (typeName == "eventTextRendererNone")
         DataPointEditDwr.setNoneEventRenderer(callback);
-      else if (typeName == "eventTextRendererRange")
+      else if (typeName == "eventTextRendererRange") {
+        for(let i = 0; i < rangeEventValues.length; i++) {
+            rangeEventValues[i].text = unescapeHtml(rangeEventValues[i].text);
+        }
         DataPointEditDwr.setRangeEventRenderer(rangeEventValues, callback);
-      else
+      } else
         callback();
     };
 
@@ -198,8 +202,9 @@
       theValue.key = theNumericKey;
       if (text)
         theValue.text = text;
-      else
-        theValue.text = $get("eventTextRendererMultistateText");
+      else {
+        theValue.text = escapeHtml($get("eventTextRendererMultistateText"));
+      }
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
       this.refreshMultistateEventList();
@@ -226,7 +231,7 @@
       dwr.util.addRows("eventTextRendererMultistateTable", multistateEventValues, [
         function(data) { return data.key; },
         function(data) {
-          return data.text;
+          return "<span>"+ data.text +"</span>";
         },
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeMultistateEventValue("+ data.key +
@@ -270,8 +275,9 @@
       theValue.to = theTo;
       if (text)
         theValue.text = text;
-      else
-        theValue.text = $get("eventTextRendererRangeText");
+      else {
+        theValue.text = escapeHtml($get("eventTextRendererRangeText"));
+      }
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();
       this.refreshRangeList();
@@ -303,7 +309,7 @@
         function(data) { return data.from; },
         function(data) { return data.to; },
         function(data) {
-          return data.text;
+          return "<span>"+ data.text +"</span>";
         },
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeRangeEventValue("+

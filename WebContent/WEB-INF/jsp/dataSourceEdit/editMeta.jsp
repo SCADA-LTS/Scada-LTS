@@ -28,7 +28,7 @@
       <c:forEach items="${userPoints}" var="dp">
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
-            name : '${sst:quotEncode(dp.extendedName)}',
+            name : '<c:out value="${dp.extendedName}"/>',
             xid : '${dp.xid}',
             type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
         };
@@ -137,11 +137,11 @@
           show($("contextTableHeaders"));
           dwr.util.addRows("contextTable", contextArray,
               [
-                  function(data) { return data.pointName; },
-                  function(data) { return data.xid; },
+                  function(data) { return "<span>" + data.pointName + "</span>" },
+                  function(data) { return "<span>" + data.xid + "</span>"; },
                   function(data) { return data.pointType; },
                   function(data) {
-                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                          return "<input type='text' value='"+ escapeHtml(data.scriptVarName) +"' class='formShort' "+
                                   "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                   },
                   function(data) { 
@@ -171,8 +171,10 @@
                   break;
               }
           }
-          if (!found)
+          if (!found) {
+              pointsArray[i].name = unescapeHtml(pointsArray[i].name);
               availPoints[availPoints.length] = pointsArray[i];
+          }
       }
       dwr.util.addOptions("allPointsList", availPoints, "id", "name");
       jQuery("#allPointsList").trigger('chosen:updated');

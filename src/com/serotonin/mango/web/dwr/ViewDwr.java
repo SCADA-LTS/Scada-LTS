@@ -98,12 +98,14 @@ import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.security.XssProtectHtmlEscapeUtils;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getResponse;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
+import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -211,9 +213,9 @@ public class ViewDwr extends BaseDwr {
 						if (point != null) {
 							Map<String, Object> map = new HashMap<String, Object>();
 							if (imageChart)
-								map.put("name", point.getName());
+								map.put("name", escape(point.getName()));
 							else
-								map.put("name", getMessage(child.getDescription()));
+								map.put("name", escape(getMessage(child.getDescription())));
 							map.put("point", point);
 							map.put("pointValue", point.lastValue());
 							childData.add(map);

@@ -12,6 +12,8 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
+import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+
 @JsonRemoteEntity
 public class LinkComponent extends HtmlComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("link",
@@ -48,8 +50,8 @@ public class LinkComponent extends HtmlComponent {
 
 	public String createLinkContent() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<a href='" + link + "'>");
-		sb.append(text);
+		sb.append("<a href='" + escape(link) + "'>");
+		sb.append(escape(text));
 		sb.append("</a>");
 		return sb.toString();
 	}

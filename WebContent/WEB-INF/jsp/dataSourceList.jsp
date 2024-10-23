@@ -130,7 +130,7 @@
                 <c:set var="showText"><spring:message code="dsList.show"/></c:set>
                 <c:forEach items="${data}" var="listParent"> 
                     <tr class="row" id="dataSourceRow${listParent.parent.id}">
-                    <td><b>${listParent.parent.name}</b></td>
+                    <td><b><c:out value="${listParent.parent.name}"/></b></td>
                     <td><spring:message code="${listParent.parent.type.key}"/></td>
                     <td><sst:i18n message="${listParent.parent.connectionDescription}"/></td>
                     <td align="center">
@@ -146,7 +146,7 @@
                       </c:choose>
                     </td>
                     <td id="stateDes${listParent.parent.id}">
-                      ${listParent.parent.state.describe}
+                      <c:out value="${listParent.parent.state.describe}"/>
                     </td>
                     <td>
                       <a href="data_source_edit.shtm?dsid=${listParent.parent.id}"><tag:img png="icon_ds_edit"
@@ -170,7 +170,7 @@
                         </tr>
                         <c:forEach items="${listParent.list}" var="point">
                           <tr id="pointRow${point.id}">
-                            <td>${point.name}</td>
+                            <td><c:out value="${point.name}"/></td>
                             <td><sst:i18n message="${point.dataTypeMessage}"/> / <sst:i18n message="${point.configurationDescription}"/></td>
                             <td align="center">
                               <c:choose>
