@@ -53,6 +53,9 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
+import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -190,7 +193,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             int pointId = point.getKey();
 
             if(pointId != Common.NEW_ID && pointId == dataPointId) {
-                response.addContextualMessage("context", "validate.invalidVariable", varName);
+                response.addContextualMessage("context", "validate.invalidVariable", escape(varName));
                 break;
             }
 
@@ -199,17 +202,17 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 break;
             }
 
-            if (!validateVarName(varName)) {
-                response.addContextualMessage("context", "validate.invalidVarName", varName);
+            if (!validateVarNameScript(varName)) {
+                response.addContextualMessage("context", "validate.invalidVarName", escape(varName));
                 break;
             }
 
             if (varNameSpace.contains(varName)) {
-                response.addContextualMessage("context", "validate.duplicateVarName", varName);
+                response.addContextualMessage("context", "validate.duplicateVarName", escape(varName));
                 break;
             }
 
-            varNameSpace.add(varName);
+            varNameSpace.add(escape(varName));
         }
 
         if (!DataTypes.CODES.isValidId(dataTypeId))
@@ -232,18 +235,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         if (executionDelayPeriodType == TimePeriodType.MILLISECONDS && executionDelaySeconds != 0 && executionDelaySeconds < 100)
             response.addContextualMessage("executionDelaySeconds", "validate.invalidValue");
-    }
-
-    private boolean validateVarName(String varName) {
-        char ch = varName.charAt(0);
-        if (!Character.isLetter(ch) && ch != '_')
-            return false;
-        for (int i = 1; i < varName.length(); i++) {
-            ch = varName.charAt(i);
-            if (!Character.isLetterOrDigit(ch) && ch != '_')
-                return false;
-        }
-        return true;
     }
 
     @Override

@@ -141,7 +141,7 @@
                   function(data) { return "<span>" + data.xid + "</span>"; },
                   function(data) { return data.pointType; },
                   function(data) {
-                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                          return "<input type='text' value='"+ escapeHtml(data.scriptVarName) +"' class='formShort' "+
                                   "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                   },
                   function(data) { 
