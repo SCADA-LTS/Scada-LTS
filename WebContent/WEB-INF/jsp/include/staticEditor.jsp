@@ -222,7 +222,7 @@
                 posX, posY, viewId,
                 function() {
 	                staticEditor.close();
-	                updateHtmlComponentContent("c"+ staticEditor.componentId, $get("staticPointContent"));
+	                updateHtmlComponentContent("c"+ staticEditor.componentId, escapeHtml($get("staticPointContent")));
 	              }
               );
               break;
@@ -235,7 +235,7 @@
 			        	    showDwrMessages(response.messages);
 					        else {
 						        staticEditor.close();
-		                tempContent = "<a> " +$get("linkText") +"</a>";
+		                tempContent = "<a> " + escapeHtml($get("linkText")) +"</a>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					        }
 	              }
@@ -250,7 +250,7 @@
 			        	    showDwrMessages(response.messages);
 					        else {
 						        staticEditor.close();
-		                tempContent = "<button> " +$get("scriptButtonText") +"</button>";
+		                tempContent = "<button> " +escapeHtml($get("scriptButtonText")) +"</button>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					        }
 	            });

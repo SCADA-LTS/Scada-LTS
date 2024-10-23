@@ -1302,3 +1302,10 @@ function escapeHtml(value) {
    div.innerText = value;
    return div.innerHTML;
 }
+
+function setValueInNode(id, text) {
+   let node = document.getElementById(id);
+   if(node) {
+       node.value = text;
+   }
+}

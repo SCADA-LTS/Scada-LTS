@@ -28,16 +28,7 @@
 
   <script type="text/javascript">
 
-  	var pathArray = location.href.split( '/' );
-  	var protocol = pathArray[0];
-  	var host = pathArray[2];
-  	var port = location.port;
-   	var appScada = pathArray[3];
-  	var url = protocol + '//' + host;
-  	var myLocation;
-  	if (!myLocation) {
-   		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
-  	}
+  	var myLocation = getAppLocation();
     var urlGetDataPoints = "api/datapoint/getAll";
     function executeScript(){
     	var xid = jQuery("#xid");
@@ -110,7 +101,7 @@
     }
 
     function updateScript(se) {
-        $("se"+ se.id +"Name").innerHTML = se.name;
+        $("se"+ se.id +"Name").innerHTML = escapeHtml(se.name);
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
 
@@ -125,9 +116,9 @@
                  show($("scriptDetails"));
 
             editingScript = s;
-            $set("xid", s.xid);
-            $set("name", s.name);
-            $set("script", s.script);
+            setValueInNode('xid', s.xid);
+            setValueInNode('name', s.name);
+            setValueInNode('script', s.script);
 
             contextArray.length = 0;
             for (var i=0; i<s.pointsOnContext.length; i++)
@@ -231,8 +222,8 @@
             show($("contextTableHeaders"));
             dwr.util.addRows("contextTable", contextArray,
                 [
-                    function(data) { return data.pointName; },
-                    function(data) { return data.xid; },
+                    function(data) { return "<span>" + data.pointName + "</span>";},
+                    function(data) { return "<span>" + data.xid + "</span>"; },
                     function(data) { return data.pointType; },
                     function(data) {
                             return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
@@ -265,8 +256,9 @@
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
                 availPoints[availPoints.length] = pointsArray[i];
+            }
         }
         dwr.util.addOptions("allPointsList", availPoints, "id", "name");
         jQuery("#allPointsList").trigger('chosen:updated');

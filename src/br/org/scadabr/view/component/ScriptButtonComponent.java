@@ -12,6 +12,8 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
+import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+
 @JsonRemoteEntity
 public class ScriptButtonComponent extends HtmlComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition(
@@ -48,9 +50,9 @@ public class ScriptButtonComponent extends HtmlComponent {
 
 	public String createScriptButtonContent() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + scriptXid
+		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + escape(scriptXid)
 				+ "\");'>");
-		sb.append(text);
+		sb.append(escape(text));
 		sb.append("</button>");
 		return sb.toString();
 	}

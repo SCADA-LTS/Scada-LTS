@@ -137,8 +137,8 @@
           show($("contextTableHeaders"));
           dwr.util.addRows("contextTable", contextArray,
               [
-                  function(data) { return data.pointName; },
-                  function(data) { return data.xid; },
+                  function(data) { return "<span>" + data.pointName + "</span>" },
+                  function(data) { return "<span>" + data.xid + "</span>"; },
                   function(data) { return data.pointType; },
                   function(data) {
                           return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
@@ -171,8 +171,10 @@
                   break;
               }
           }
-          if (!found)
+          if (!found) {
+              pointsArray[i].name = unescapeHtml(pointsArray[i].name);
               availPoints[availPoints.length] = pointsArray[i];
+          }
       }
       dwr.util.addOptions("allPointsList", availPoints, "id", "name");
       jQuery("#allPointsList").trigger('chosen:updated');
