@@ -352,7 +352,13 @@ public class SystemSettingsDwr extends BaseDwr {
 				workItemsReportingEnabled, response);
 		systemSettingsService.saveResourceGraphicsPathMisc(webResourceGraphicsPath, response);
 		systemSettingsService.saveResourceUploadsPathMisc(webResourceUploadsPath, response);
-		systemSettingsService.saveDataPointExtendedNameLengthInReportsLimitMisc(pointExtendedNameLengthInReportsLimit, response);
+
+		if(pointExtendedNameLengthInReportsLimit < 4) {
+			response.addContextualMessage("miscMessage", "validate.invalidVariable", LocalizableMessage.getMessage(Common.getBundle(), "systemsettings.reports.dataPointExtendedNameLengthLimit"));
+		} else {
+			systemSettingsService.saveDataPointExtendedNameLengthInReportsLimitMisc(pointExtendedNameLengthInReportsLimit, response);
+		}
+
 		systemSettingsService.saveEventAssignEnabledMisc(eventAssignEnabled);
 		return response;
 	}
