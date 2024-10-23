@@ -32,6 +32,18 @@
 				<template v-slot:item.typeId="{ item }">
 					{{ $t(`datapoint.type.${item.typeId}`) }}
 				</template>
+                <template v-slot:item.name="{ item }">
+                    <span v-html="item.name"></span>
+                </template>
+                <template v-slot:item.datasourceName="{ item }">
+                    <span v-html="item.datasourceName"></span>
+                </template>
+                <template v-slot:item.description="{ item }">
+                    <span v-html="item.description"></span>
+                </template>
+                <template v-slot:item.xid="{ item }">
+                    <span v-html="item.xid"></span>
+                </template>
 			</v-data-table>
 		</v-container>
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>

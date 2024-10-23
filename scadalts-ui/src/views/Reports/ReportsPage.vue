@@ -27,7 +27,7 @@
 							@click:row="clickRow"
 						>
 							<template v-slot:item.name="{ item }">
-								{{ item.name }}
+								<span v-html="item.name"></span>
 							</template>
 							<template v-slot:item.actions="{ item }">
 								<v-btn icon @click.stop="runReport(item.id)">

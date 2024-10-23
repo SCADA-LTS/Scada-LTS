@@ -49,6 +49,9 @@
 									:checked="item.preventPurge"
 								/>
 							</template>
+                            <template v-slot:item.name="{ item }">
+                                <span v-html="item.name"></span>
+                            </template>
 						</v-data-table>
 					</v-card>
 				</v-col>

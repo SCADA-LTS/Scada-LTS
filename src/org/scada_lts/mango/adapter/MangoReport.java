@@ -46,6 +46,7 @@ public interface MangoReport {
 
 	void saveReport(ReportVO report);
 
+	@Deprecated(since = "2.8.0")
 	void deleteReport(int reportId);
 
 	List<ReportInstance> getReportInstances(int userId);
@@ -91,4 +92,6 @@ public interface MangoReport {
 	boolean hasReportInstanceSetPermission(User user, int reportInstanceId);
 
 	boolean hasReportInstanceOwnerPermission(User user, int reportInstanceId);
+
+	void deleteReport(ReportVO report);
 }
