@@ -318,12 +318,13 @@
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
-                        setUserMessage("miscMessage", response.messages[0].contextualMessage);
+                        showDwrMessages(response.messages);
                     else {
                         setUserMessage("miscMessage", "<spring:message code="systemSettings.miscSaved"/>");
                     }
                 });
         setUserMessage("miscMessage");
+        hideContextualMessages("settingsMisc");
         startImageFader("saveMiscSettingsImg");
     }
 
@@ -928,7 +929,7 @@
           </td>
         </tr>
       </table>
-      <table>
+      <table id="settingsMisc">
         <tr>
           <td class="formLabelRequired"><spring:message code="systemSettings.uiPerformance"/></td>
           <td class="formField">
@@ -1005,14 +1006,12 @@
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
           </td>
-          <td colspan="2" id="uploadsPathMessage" class="formError"></td>
         </tr>
         <tr>
           <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
           </td>
-          <td colspan="2" id="graphicsPathMessage" class="formError"></td>
         </tr>
         <tr>
          <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
