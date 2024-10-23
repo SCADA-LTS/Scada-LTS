@@ -545,11 +545,16 @@ public class PointValueService implements MangoPointValues {
                 }
             }
         }
+
+        private int instancesSize;
+        private int entriesSize;
+
         public BatchWriteBehind() {}
 
         @Override
         public void work() {
             try {
+                this.instancesSize = instances.size();
                 BatchWriteBehindEntry[] inserts;
                 while (true) {
                     synchronized (ENTRIES) {
@@ -558,6 +563,7 @@ public class PointValueService implements MangoPointValues {
 
                         inserts = new BatchWriteBehindEntry[ENTRIES.size() < MAX_ROWS ? ENTRIES
                                 .size() : MAX_ROWS];
+                        this.entriesSize = inserts.length;
                         ENTRIES.pop(inserts);
                         ENTRIES_MONITOR.setValue(ENTRIES.size());
                     }
@@ -617,7 +623,7 @@ public class PointValueService implements MangoPointValues {
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{instances size: " + instances.size() + '}';
+            return "BatchWriteBehind{current instances size: " + INSTANCES_MONITOR.getValue() + ", current entries size: " + ENTRIES_MONITOR.getValue() + ", instances size: " + this.instancesSize + ", entries size: " + this.entriesSize + '}';
         }
 
         @Override

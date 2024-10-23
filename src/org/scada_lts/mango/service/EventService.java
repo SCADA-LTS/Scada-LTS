@@ -75,7 +75,7 @@ public class EventService implements MangoEvent {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
-		systemSettingsService = new SystemSettingsService();
+		systemSettingsService = ApplicationBeans.getBean("systemSettingsService", SystemSettingsService.class);
 	}
 
 	class UserPendingEventRetriever extends AbstractBeforeAfterWorkItem implements Runnable {

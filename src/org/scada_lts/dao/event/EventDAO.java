@@ -946,7 +946,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 	@Override
 	public EventInstance findById(Object[] pk) {
-		return (EventInstance) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_SELECT_BASE_ON_ID, pk, new EventRowMapper());
+		try {
+			return (EventInstance) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_SELECT_BASE_ON_ID, pk, new EventRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
