@@ -25,14 +25,11 @@ public class V2_8_0_1__AddTypeRef3ColumnToEvents extends BaseJavaMigration {
     }
 
     private void migrate(JdbcTemplate jdbcTmp) {
-        String sql = "ALTER TABLE events ADD COLUMN typeRef3 int not null";
-        try {
-            jdbcTmp.update(sql);
-        } catch (Exception ex) {
-            if(ex.getMessage() != null && !ex.getMessage().contains("Duplicate"))
-                throw ex;
-            LOG.warn(ex.getMessage(), ex);
-        }
+
+        boolean existsTypeRef3Column = jdbcTmp.queryForObject("SELECT (SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`= DATABASE() AND `TABLE_NAME`='events' AND `COLUMN_NAME`='typeRef3') IS NOT NULL;", boolean.class);
+
+        if(!existsTypeRef3Column)
+            jdbcTmp.update( "ALTER TABLE events ADD COLUMN typeRef3 int not null");
     }
 }
 
