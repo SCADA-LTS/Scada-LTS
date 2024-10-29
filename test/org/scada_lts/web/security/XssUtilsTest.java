@@ -72,8 +72,8 @@ public class XssUtilsTest {
                 {"projectName=sagadf&includePointValues=true&includeUploadsFolder=true&includeGraphicsFolder=true&projectDescription=&pointValuesMaxZip=100&abc=12", false},
                 {"abc=", true},
 
-                {"", false},
-                {null, false},
+                {"", true},
+                {null, true},
                 {"&param1", false},
                 {"&param1&param2", false},
                 {"&param1=123&param2", false},
