@@ -78,6 +78,7 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.body.access.denied.regex";
     private static final String SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.body.access.granted.regex";
     private static final String SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY = "scadalts.security.http.body.protect.enabled";
+    private static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "systemsettings.reports.data-point-extended-name-length.limit";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -110,7 +111,7 @@ public final class SystemSettingsUtils {
     }
 
     @Deprecated(since = "2.8.0")
-    public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
+    public static String serializeMap1(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
@@ -119,7 +120,7 @@ public final class SystemSettingsUtils {
     }
 
     @Deprecated(since = "2.8.0")
-    public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) throws IOException {
+    public static Map<String, String> deserializeMap1(String value, ObjectMapper objectMapper) throws IOException {
         if(value == null || "null".equals(value))
             return Collections.emptyMap();
         return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
@@ -635,6 +636,16 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return false;
+        }
+    }
+
+    public static int getDataPointExtendedNameLengthInReportsLimit() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "65");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 66;
         }
     }
 }

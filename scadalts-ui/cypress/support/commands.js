@@ -13,8 +13,8 @@ Cypress.Commands.add('login', (username = 'admin', password = 'admin') => {
 		autoEnd: false,
 	});
 
-	cy.server();
-	cy.route('POST', '**/MiscDwr.initializeLongPoll.dwr').as('loginUser');
+	cy.intercept('POST', '**/MiscDwr.initializeLongPoll.dwr').as('loginUser');
+
 
 	cy.location('pathname', { log: false }).then((currentPath) => {
 		if (currentPath !== loginPath) {
@@ -72,12 +72,6 @@ Cypress.Commands.add('loadConfiguration', (configuration) => {
 		displayName: 'LOADING_DATA',
 		message: [`⏳️ Loading configuration`],
 		autoEnd: false,
-	});
-
-	cy.server({
-		whitelist: () => {
-			return true;
-		},
 	});
 
 	cy.visit('/emport.shtm', { log: false });

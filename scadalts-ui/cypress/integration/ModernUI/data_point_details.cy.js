@@ -24,6 +24,7 @@ context('Scenario - Data Point List validation', () => {
 	}
 
 	before(() => {
+	    cy.restLogin();
 		cy.visit('/app.shtm#/datapoint-list');
 	});
 

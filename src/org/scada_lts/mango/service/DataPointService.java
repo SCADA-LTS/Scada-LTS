@@ -535,7 +535,7 @@ public class DataPointService implements MangoDataPoint {
 		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
 			try {
 				pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
-			} catch (DuplicateKeyException e) {
+			} catch (Exception e) {
 				pointEventDetectorDAO.update(dataPoint.getId(), pointEventDetector);
 			}
 		}

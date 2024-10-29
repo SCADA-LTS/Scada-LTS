@@ -51,7 +51,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.web.contnet.SnippetContentGenerator;
+import org.scada_lts.web.content.SnippetContentGenerator;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";

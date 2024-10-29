@@ -1,4 +1,4 @@
-package org.scada_lts.web.contnet;
+package org.scada_lts.web.content;
 
 import java.io.IOException;
 import java.io.PrintWriter;
