@@ -19,7 +19,7 @@
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <c:set var="content"><%--
   --%><c:choose><%--
-    --%><c:when test="${displayPointName}">${pointComponent.name}:&nbsp;<b>${mango:htmlText(point, pointValue)}</b></c:when><%--
+    --%><c:when test="${displayPointName}"><c:out value="${pointComponent.name}"/>:&nbsp;<b>${mango:htmlText(point, pointValue)}</b></c:when><%--
     --%><c:otherwise>${mango:htmlText(point, pointValue)}</c:otherwise><%--
   --%></c:choose><%--
 --%></c:set>
@@ -28,26 +28,26 @@
   <c:when test='${!empty viewComponent}'>
     <c:choose>
       <c:when test='${empty viewComponent.bkgdColorOverride}'>
-        <span class="simpleRenderer"/>${content}</span>
+        <span class="simpleRenderer"/><c:out value="${content}" /></span>
       </c:when>
       <c:when test='${viewComponent.bkgdColorOverride == "transparent"}'>
-        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}</span>
+        <span class="simpleRenderer" style="background:transparent;border:0;"/><c:out value="${content}"/></span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${viewComponent.bkgdColorOverride};"/>${content}</span>
+        <span class="simpleRenderer" style="background-color:${viewComponent.bkgdColorOverride};"/><c:out value="${content}" /></span>
       </c:otherwise>
     </c:choose>
   </c:when>
   <c:otherwise>
     <c:choose>
       <c:when test='${empty pointComponent.bkgdColorOverride}'>
-        <span class="simpleRenderer"/>${content}</span>
+        <span class="simpleRenderer"/><c:out value="${content}" /></span>
       </c:when>
       <c:when test='${pointComponent.bkgdColorOverride == "transparent"}'>
-        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}</span>
+        <span class="simpleRenderer" style="background:transparent;border:0;"/><c:out value="${content}" /></span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${pointComponent.bkgdColorOverride};"/>${content}</span>
+        <span class="simpleRenderer" style="background-color:${pointComponent.bkgdColorOverride};"/><c:out value="${content}" /></span>
       </c:otherwise>
     </c:choose>
   </c:otherwise>

@@ -53,7 +53,7 @@
             <c:otherwise><c:set var="bkgd">background:${vc.backgroundColour};</c:set></c:otherwise>
           </c:choose>
           <div id="c${vc.id}Controls" class="controlContent" style="left:5px;top:5px;${bkgd}">
-            <b>${vc.name}</b><br/>
+            <b><c:out value="${vc.name}"/></b><br/>
             <c:forEach items="${vc.childComponents}" var="child">
               <c:if test="${child.viewComponent.visible && child.viewComponent.id != vc.leadComponent.id}">
                 <tag:pointComponent vc="${child.viewComponent}"/>

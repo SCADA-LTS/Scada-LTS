@@ -24,7 +24,7 @@
 	    <c:if test="${!hideTimestampColumn}"><td><spring:message code="common.time"/></td></c:if>
 	    <td><spring:message code="events.msg"/></td>
 	    <c:if test="${!hideInactivityColumn}"><td><spring:message code="common.inactiveTime"/></td></c:if>
-	    <c:if test="${isEventAssignEnabled and !hideAssigneeColumn}"><td><sst:i18n key="common.assignee"/></td></c:if>
+	    <c:if test="${isEventAssignEnabled and !hideAssigneeColumn}"><td><spring:message code="common.assignee"/></td></c:if>
 	    <c:if test="${!hideAckColumn}"> <td>&nbsp;</td></c:if>
     </tr>
     <c:if test="${empty events}"><tr><td colspan="6"><b><spring:message code="events.emptyList"/></b></td></tr></c:if>

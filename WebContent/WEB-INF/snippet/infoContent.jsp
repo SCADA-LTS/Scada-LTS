@@ -24,7 +24,7 @@
   <tag:img png="icon_comp" title="watchlist.pointDetails" style="display:inline"
           onclick="window.location='data_point_details.shtm?dpid=${point.id}'"/>
 </c:if>
-<b>${pointComponent.name}</b><br/>
+<b><c:out value="${pointComponent.name}"/></b><br/>
 
 <c:if test="${!empty point}">
   &nbsp;&nbsp;&nbsp;<spring:message code="common.value"/>:
