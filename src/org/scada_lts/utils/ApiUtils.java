@@ -115,7 +115,7 @@ public final class ApiUtils {
 
     public static UserInfo toUserInfo(User user) {
         JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-        return new UserInfo(user, jsonSettingsMisc.isEnableFullScreen(), jsonSettingsMisc.isHideShortcutDisableFullScreen());
+        return new UserInfo(user, jsonSettingsMisc.isViewForceFullScreenEnabled(), jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
     }
 
     public static <T, R, S> Map<S, R> convertMap(Map<S, List<T>> map, Function<List<T>, R> converter) {

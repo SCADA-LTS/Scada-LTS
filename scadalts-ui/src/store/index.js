@@ -75,7 +75,7 @@ export default new Vuex.Store({
 			// useCredentials: true,
 			// credentials: 'same-origin',
 		},
-		webSocketUrl: 'ws-scada/alarmLevel',
+		webSocketUrl: 'ws-scada',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -94,16 +94,23 @@ export default new Vuex.Store({
 			{ id: 2, label: i18n.t('common.alarmlevels.urgent') },
 			{ id: 3, label: i18n.t('common.alarmlevels.critical') },
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
-		],
+		]
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
-            state.webSocketUrl = getAppLocation() + state.webSocketUrl;
+            let base = getAppLocation();
+            if(!state.webSocketUrl.includes(base)) {
+                state.webSocketUrl = base + state.webSocketUrl;
+            }
 		},
 
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		},
+
+        setLoggedUser(state, loggedUser) {
+            state.loggedUser = loggedUser;
+        }
 	},
 	actions: {
 		getUserRole() {
@@ -128,7 +135,7 @@ export default new Vuex.Store({
 			axios.defaults.withCredentials = true;
 			let logged = false;
 			let res = await dispatch('requestPostNonApi', {
-			    url: `/login.htm` + `?username=` + userdata.username + `&password=` + userdata.password + `&submit=Login`,
+			    url: `login.htm` + `?username=` + userdata.username + `&password=` + userdata.password + `&submit=Login`,
 			    data: null
 			});
 			if(res != null && res != '') {
@@ -139,7 +146,7 @@ export default new Vuex.Store({
 		},
 
 		logoutUser({ state, dispatch }) {
-			dispatch('requestGetNonApi', `/logout.htm`)
+			dispatch('requestGetNonApi', `logout.htm`)
 			.then((resp) => {
                 state.loggedUser = null;
             });
@@ -151,11 +158,13 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 */
 		async getUserInfo({ state, dispatch, commit }) {
-			state.loggedUser = await dispatch('requestGet', '/auth/user');
-			commit('updateWebSocketUrl');
-			commit('INIT_WEBSOCKET_URL');
-			commit('INIT_WEBSOCKET');
-			return state.loggedUser;
+			return dispatch('requestGet', '/auth/user').then((r) => {
+			     commit('setLoggedUser', r);
+                 commit('updateWebSocketUrl');
+                 commit('INIT_WEBSOCKET_URL');
+                 commit('INIT_WEBSOCKET');
+                 return r;
+            });
 		},
 
 		/**
@@ -391,7 +400,7 @@ export default new Vuex.Store({
                             : reject(error.response);
                     });
             });
-        },
+        }
 	},
 	getters: {
 		appVersion: (state) => {
@@ -429,6 +438,9 @@ export default new Vuex.Store({
 		appPullRequestBranch: (state) => {
 			return state.scadaLtsPullRequestBranch;
 		},
+        loggedUser: (state) => {
+             return state.loggedUser;
+        }
 	},
 	plugins: [myLoggerForVuexMutation],
 });

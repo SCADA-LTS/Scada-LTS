@@ -34,19 +34,19 @@
     }
     
     function init() {
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.mon"/>", <c:out value="<%= DateTimeConstants.MONDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.tue"/>", <c:out value="<%= DateTimeConstants.TUESDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.wed"/>", <c:out value="<%= DateTimeConstants.WEDNESDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.thu"/>", <c:out value="<%= DateTimeConstants.THURSDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.fri"/>", <c:out value="<%= DateTimeConstants.FRIDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.sat"/>", <c:out value="<%= DateTimeConstants.SATURDAY %>"/>);
-        weekdays[weekdays.length] = new OptionData("<fmt:message key="common.day.sun"/>", <c:out value="<%= DateTimeConstants.SUNDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.mon"/>", <c:out value="<%= DateTimeConstants.MONDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.tue"/>", <c:out value="<%= DateTimeConstants.TUESDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.wed"/>", <c:out value="<%= DateTimeConstants.WEDNESDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.thu"/>", <c:out value="<%= DateTimeConstants.THURSDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.fri"/>", <c:out value="<%= DateTimeConstants.FRIDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.sat"/>", <c:out value="<%= DateTimeConstants.SATURDAY %>"/>);
+        weekdays[weekdays.length] = new OptionData("<spring:message code="common.day.sun"/>", <c:out value="<%= DateTimeConstants.SUNDAY %>"/>);
         
         for (var i=1; i<29; i++)
             monthdays[monthdays.length] = new OptionData(i, i);
-        monthdays[monthdays.length] = new OptionData("<fmt:message key="common.day.thirdLast"/>", -3);
-        monthdays[monthdays.length] = new OptionData("<fmt:message key="common.day.secondLast"/>", -2);
-        monthdays[monthdays.length] = new OptionData("<fmt:message key="common.day.last"/>", -1);
+        monthdays[monthdays.length] = new OptionData("<spring:message code="common.day.thirdLast"/>", -3);
+        monthdays[monthdays.length] = new OptionData("<spring:message code="common.day.secondLast"/>", -2);
+        monthdays[monthdays.length] = new OptionData("<spring:message code="common.day.last"/>", -1);
         
         for (var i=1; i<32; i++)
             oncedays[oncedays.length] = new OptionData(i, i);
@@ -126,11 +126,11 @@
                     editingScheduledEvent.id = response.data.seId;
                     appendScheduledEvent(editingScheduledEvent.id);
                     startImageFader($("se"+ editingScheduledEvent.id +"Img"));
-                    setUserMessage("<fmt:message key="scheduledEvents.seAdded"/>");
+                    setUserMessage("<spring:message code="scheduledEvents.seAdded"/>");
                     show($("deleteScheduledEventImg"));
                 }
                 else
-                    setUserMessage("<fmt:message key="scheduledEvents.seSaved"/>");
+                    setUserMessage("<spring:message code="scheduledEvents.seSaved"/>");
                 ScheduledEventsDwr.getScheduledEvent(editingScheduledEvent.id, updateScheduledEvent)
             }
         });
@@ -310,7 +310,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="scheduledEvents.ses"/></span>
+                <span class="smallTitle"><spring:message code="scheduledEvents.ses"/></span>
                 <tag:help id="scheduledEvents"/>
               </td>
               <td align="right"><tag:img png="clock_add" title="scheduledEvents.addSe"
@@ -332,7 +332,7 @@
         <div class="borderDiv">
           <table width="100%">
             <tr>
-              <td><span class="smallTitle"><fmt:message key="scheduledEvents.seDetails"/></span></td>
+              <td><span class="smallTitle"><spring:message code="scheduledEvents.seDetails"/></span></td>
               <td align="right">
                 <tag:img png="save" onclick="saveScheduledEvent();" title="common.save"/>
                 <tag:img id="deleteScheduledEventImg" png="delete" onclick="deleteScheduledEvent();" title="common.delete"/>
@@ -342,17 +342,17 @@
           
           <table>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
             
             <tr>
-              <td class="formLabel"><fmt:message key="scheduledEvents.alias"/></td>
+              <td class="formLabel"><spring:message code="scheduledEvents.alias"/></td>
               <td class="formField"><input type="text" id="alias"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+              <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
               <td class="formField">
                 <select id="alarmLevel" onchange="updateAlarmLevelImage()">
                   <tag:alarmLevelOptions/>
@@ -362,35 +362,35 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="scheduledEvents.type"/></td>
+              <td class="formLabelRequired"><spring:message code="scheduledEvents.type"/></td>
               <td class="formField">
                 <select id="scheduleType" onchange="refreshDateTimeFields()">
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_HOURLY %>"/>"><fmt:message key="scheduledEvents.type.hour"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_DAILY %>"/>"><fmt:message key="scheduledEvents.type.day"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_WEEKLY %>"/>"><fmt:message key="scheduledEvents.type.week"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_MONTHLY %>"/>"><fmt:message key="scheduledEvents.type.month"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_YEARLY %>"/>"><fmt:message key="scheduledEvents.type.year"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_ONCE %>"/>"><fmt:message key="scheduledEvents.type.once"/></option>
-                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_CRON %>"/>"><fmt:message key="scheduledEvents.type.cron"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_HOURLY %>"/>"><spring:message code="scheduledEvents.type.hour"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_DAILY %>"/>"><spring:message code="scheduledEvents.type.day"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_WEEKLY %>"/>"><spring:message code="scheduledEvents.type.week"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_MONTHLY %>"/>"><spring:message code="scheduledEvents.type.month"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_YEARLY %>"/>"><spring:message code="scheduledEvents.type.year"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_ONCE %>"/>"><spring:message code="scheduledEvents.type.once"/></option>
+                  <option value="<c:out value="<%= ScheduledEventVO.TYPE_CRON %>"/>"><spring:message code="scheduledEvents.type.cron"/></option>
                 </select>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.rtn"/></td>
+              <td class="formLabelRequired"><spring:message code="common.rtn"/></td>
               <td class="formField"><input type="checkbox" id="rtn" onclick="refreshDateTimeFields()"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.activeTime"/></td>
+              <td class="formLabelRequired"><spring:message code="common.activeTime"/></td>
               <td>
                 <table id="activeDateTable">
                   <tr>
-                    <td align="center" id="activeYearLabel"><fmt:message key="common.tp.year"/></td>
+                    <td align="center" id="activeYearLabel"><spring:message code="common.tp.year"/></td>
                     <td id="activeYearSpacer"></td>
-                    <td align="center" id="activeMonthLabel"><fmt:message key="common.tp.month"/></td>
+                    <td align="center" id="activeMonthLabel"><spring:message code="common.tp.month"/></td>
                     <td id="activeMonthSpacer"></td>
-                    <td align="center"><fmt:message key="common.tp.day"/></td>
+                    <td align="center"><spring:message code="common.tp.day"/></td>
                   </tr>
                   
                   <tr>
@@ -407,11 +407,11 @@
                 </table>
                 <table id="activeTimeTable">
                   <tr>
-                    <td align="center" id="activeHourLabel"><fmt:message key="common.tp.hour"/></td>
+                    <td align="center" id="activeHourLabel"><spring:message code="common.tp.hour"/></td>
                     <td id="activeHourSpacer"></td>
-                    <td align="center"><fmt:message key="common.tp.minute"/></td>
+                    <td align="center"><spring:message code="common.tp.minute"/></td>
                     <td></td>
-                    <td align="center"><fmt:message key="common.tp.second"/></td>
+                    <td align="center"><spring:message code="common.tp.second"/></td>
                   </tr>
                   <tr>
                     <td id="activeHourData">
@@ -440,22 +440,22 @@
                   </tr>
                 </table>
                 <table id="activeCronTable">
-                  <tr><td align="center"><fmt:message key="common.cronPattern"/></td></tr>
+                  <tr><td align="center"><spring:message code="common.cronPattern"/></td></tr>
                   <tr><td><input type="text" id="activeCron"/> <tag:help id="cronPatterns"/></td></tr>
                 </table>
               </td>
             </tr>
             
             <tr id="inactiveDateTimeRow">
-              <td class="formLabelRequired"><fmt:message key="common.inactiveTime"/></td>
+              <td class="formLabelRequired"><spring:message code="common.inactiveTime"/></td>
               <td>
                 <table id="inactiveDateTable">
                   <tr>
-                    <td align="center" id="inactiveYearLabel"><fmt:message key="common.tp.year"/></td>
+                    <td align="center" id="inactiveYearLabel"><spring:message code="common.tp.year"/></td>
                     <td id="inactiveYearSpacer"></td>
-                    <td align="center" id="inactiveMonthLabel"><fmt:message key="common.tp.month"/></td>
+                    <td align="center" id="inactiveMonthLabel"><spring:message code="common.tp.month"/></td>
                     <td id="inactiveMonthSpacer"></td>
-                    <td align="center"><fmt:message key="common.tp.day"/></td>
+                    <td align="center"><spring:message code="common.tp.day"/></td>
                   </tr>
                   <tr>
                     <td id="inactiveYearData"><input id="inactiveYear" type="text" class="formVeryShort"/></td>
@@ -471,11 +471,11 @@
                 </table>
                 <table id="inactiveTimeTable">
                   <tr>
-                    <td align="center" id="inactiveHourLabel"><fmt:message key="common.tp.hour"/></td>
+                    <td align="center" id="inactiveHourLabel"><spring:message code="common.tp.hour"/></td>
                     <td id="inactiveHourSpacer"></td>
-                    <td align="center"><fmt:message key="common.tp.minute"/></td>
+                    <td align="center"><spring:message code="common.tp.minute"/></td>
                     <td></td>
-                    <td align="center"><fmt:message key="common.tp.second"/></td>
+                    <td align="center"><spring:message code="common.tp.second"/></td>
                   </tr>
                   <tr>
                     <td id="inactiveHourData">
@@ -504,14 +504,14 @@
                   </tr>
                 </table>
                 <table id="inactiveCronTable">
-                  <tr><td align="center"><fmt:message key="common.cronPattern"/></td></tr>
+                  <tr><td align="center"><spring:message code="common.cronPattern"/></td></tr>
                   <tr><td><input type="text" id="inactiveCron"/> <tag:help id="cronPatterns"/></td></tr>
                 </table>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
+              <td class="formLabelRequired"><spring:message code="common.disabled"/></td>
               <td class="formField"><input type="checkbox" id="disabled"/></td>
             </tr>
           </table>

@@ -32,7 +32,7 @@ public class AmqpMessagingChannel implements MessagingChannel {
             channel.close();
         } catch (IOException e) {
             throw new MessagingChannelException("Error Close Channel: " + dataPointInfo(dataPointRT.getVO()) + ", " + causeInfo(e), e.getCause());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Close Channel: " + dataPointInfo(dataPointRT.getVO()) + ", " + exceptionInfo(e), e);
         }
     }
@@ -43,7 +43,7 @@ public class AmqpMessagingChannel implements MessagingChannel {
             basicPublish(dataPointRT, channel, message);
         } catch (IOException e) {
             throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPointRT.getVO()) + ", " + causeInfo(e), e.getCause());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPointRT.getVO()) + ", " + exceptionInfo(e), e);
         }
     }

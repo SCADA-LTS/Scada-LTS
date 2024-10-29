@@ -49,6 +49,7 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_TYPE_ID = "typeId";
 	private final static String  COLUMN_NAME_EVENT_TYPE_REF1 = "typeRef1";
 	private final static String  COLUMN_NAME_EVENT_TYPE_REF2 = "typeRef2";
+	private final static String  COLUMN_NAME_EVENT_TYPE_REF3 = "typeRef3";
 	private final static String  COLUMN_NAME_EVENT_ACTIVE_TS = "activeTs";
 	private final static String  COLUMN_NAME_EVENT_RTN_APPLICABLE = "rtnApplicable";
 	private final static String  COLUMN_NAME_EVENT_RTN_TS = "rtnTs";
@@ -61,6 +62,8 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
 	private final static String  COLUMN_NAME_EVENT_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private final static String  COLUMN_NAME_EVENT_SILENCED = "silenced";
+	private final static String COLUMN_NAME_EVENT_ASSIGNEE_TS = "assigneeTs";
+	private final static String COLUMN_NAME_EVENT_ASSIGNEE_USERNAME = "assigneeUsername";
 
 	// @formatter:off
 	private static final String SQL_EVENTS = ""
@@ -69,6 +72,7 @@ public class PendingEventsDAO {
 				+ "e.typeId, "
 				+ "e.typeRef1, "
 				+ "e.typeRef2, "
+			    + "e.typeRef3, "
 				+ "e.activeTs, "
 				+ "e.rtnApplicable, "
 				+ "e.rtnTs, "
@@ -80,7 +84,9 @@ public class PendingEventsDAO {
 				+ "e.ackUserId, "
 				+ "u.username, "
 				+ "e.alternateAckSource, "
-				+ "ue.silenced "
+				+ "ue.silenced, "
+				+ "e.assigneeTs, "
+				+ "e.assigneeUsername "
 			+ "from "
 				+ "events e   "
 				+ "left join users u on e.ackUserId=u.id   "
@@ -116,10 +122,7 @@ public class PendingEventsDAO {
 	}
 
 	private EventInstance mapToEvent(Map<Integer, List<UserComment>> comments, ResultSet rs) throws SQLException {
-		int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
-		int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
-		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
-		EventType type = EventTypeUtil.createEventType(typeId,typeRef1,typeRef2);
+		EventType type = createEventType(rs);
 		long activeTS = rs.getLong(COLUMN_NAME_EVENT_ACTIVE_TS);
 		Boolean rtnApplicable = DAO.charToBool(rs.getString(COLUMN_NAME_EVENT_RTN_APPLICABLE));
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
@@ -163,7 +166,21 @@ public class PendingEventsDAO {
 		}
 
 		event.setEventComments(comments.get(event.getId()));
+
+		long assigneeTs = rs.getLong(COLUMN_NAME_EVENT_ASSIGNEE_TS);
+		if (!rs.wasNull()) {
+			event.setAssigneeTimestamp(assigneeTs);
+			event.setAssigneeUsername(rs.getString(COLUMN_NAME_EVENT_ASSIGNEE_USERNAME));
+		}
 		
 		return event;
+	}
+
+	private static EventType createEventType(ResultSet rs) throws SQLException {
+		int typeId = rs.getInt(COLUMN_NAME_EVENT_TYPE_ID);
+		int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF1);
+		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF2);
+		int typeRef3 = rs.getInt(COLUMN_NAME_EVENT_TYPE_REF3);
+		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, typeRef3);
 	}
 }

@@ -3,8 +3,8 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.model.WsEventMessage;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
@@ -12,9 +12,12 @@ public final class NotifyEventUtils {
 
     private NotifyEventUtils() {}
 
-    public static void resetHighestAlarmLevels(IHighestAlarmLevelService highestAlarmLevelService, MangoUser userService, UserEventServiceWebSocket userEventService) {
+    public static void notifyEventReset(IHighestAlarmLevelService highestAlarmLevelService, UserEventServiceWebSocket userEventService) {
         highestAlarmLevelService.doResetAlarmLevels(userEventService::sendAlarmLevel);
-        notifyEventReset(userService, userEventService);
+        ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> {
+            for(User user: loggedUsers.getUsers())
+                notifyEventUpdate(user, WsEventMessage.reset(), userEventService);
+        });
     }
 
     public static void notifyEventRaise(IHighestAlarmLevelService highestAlarmLevelService, EventInstance evt, User user, UserEventServiceWebSocket userEventService) {
@@ -44,12 +47,13 @@ public final class NotifyEventUtils {
         }
     }
 
-    public static void notifyEventReset(MangoUser userService, UserEventServiceWebSocket userEventService) {
-        for(User user: userService.getActiveUsers())
-            userEventService.sendEventUpdate(user, WsEventMessage.reset());
+    public static void notifyEventCreate(EventInstance evt, User user, UserEventServiceWebSocket userEventService) {
+        if(evt.getAlarmLevel() > AlarmLevels.NONE) {
+            notifyEventUpdate(user, WsEventMessage.create(evt), userEventService);
+        }
     }
 
-    public static void notifyEventUpdate(User user, WsEventMessage message, UserEventServiceWebSocket userEventService) {
+    private static void notifyEventUpdate(User user, WsEventMessage message, UserEventServiceWebSocket userEventService) {
         userEventService.sendEventUpdate(user, message);
     }
 }

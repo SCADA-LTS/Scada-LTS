@@ -57,6 +57,12 @@ export function getEventList(event, sortByParam, sortDescParam, eventList) {
     }
 }
 
+export function unescapeHtml(value) {
+   let div = document.createElement("div");
+   div.innerHTML = value;
+   return div.textContent || div.innerText;
+}
+
 function comparatorBy(a, b, sortBy, sortDesc) {
    for(let i = 0; i < sortBy.length; i++) {
        let by = sortBy[i];

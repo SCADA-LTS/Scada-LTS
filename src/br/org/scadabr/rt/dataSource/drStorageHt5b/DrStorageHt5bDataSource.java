@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.dataSource.drStorageHt5b;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
@@ -19,10 +20,11 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class DrStorageHt5bDataSource extends PollingDataSource {
 
-	private final Log LOG = LogFactory.getLog(DrStorageHt5bDataSource.class);
+	private final static Log LOG = LogFactory.getLog(DrStorageHt5bDataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
 	private final DrStorageHt5bDataSourceVO<?> vo;
@@ -39,11 +41,6 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 		this.vo = vo;
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), vo
 				.isQuantize());
-
-		portList = CommPortIdentifier.getPortIdentifiers();
-		getPort(vo.getCommPortId());
-		configurePort(getsPort());
-		setValuesHt5b(new ArrayList<Integer>());
 	}
 
 	@Override
@@ -51,7 +48,7 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 
 		try {
 
-			if (getInSerialStream().available() == 0) {
+			if (getInSerialStream() == null || getInSerialStream().available() == 0) {
 
 				raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2",
@@ -89,12 +86,13 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 								dataPoint.updatePointValue(new PointValueTime(
 										hum, System.currentTimeMillis()));
 							}
-
+							returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 						} catch (Exception e) {
+							LOG.error(LoggingUtils.info(e, this));
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
-							e.printStackTrace();
+											vo.getName(), e.getMessage()), dataPoint);
+
 						}
 
 					}
@@ -102,12 +100,12 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 					getValuesHt5b().clear();
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOG.error(LoggingUtils.info(e, this));
 				}
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.info(e, this));
 		}
 
 	}
@@ -122,7 +120,16 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
-		getsPort().close();
+		try {
+			SerialPort serialPort = getsPort();
+			if(serialPort != null)
+				serialPort.close();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+		}
 	}
 
 	private String getTemperature(ArrayList<Integer> ht5bValues) {
@@ -232,19 +239,22 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 	}
 
 	public static String getHexString(byte[] b) throws Exception {
-		String result = "";
 
-		System.out.println("INICIO");
+		LOG.info("INICIO");
+
+		StringBuilder result = new StringBuilder("");
 
 		for (int i = 0; i < b.length; i++) {
-			System.out.println(Integer.toString((b[i] & 0xff) + 0x100, 16)
-					.substring(1));
-			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+			String value = Integer.toString((b[i] & 0xff) + 0x100, 16)
+					.substring(1);
+			LOG.info(value);
+
+			result.append(value);
 		}
 
-		System.out.println("FIM");
+		LOG.info("FIN");
 
-		return result;
+		return result.toString();
 	}
 
 	public static String getHex(byte[] raw) {
@@ -292,9 +302,9 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 						serialPort = (SerialPort) portId.open(this.getName(),
 								10000);
 						setsPort(serialPort);
-					} catch (Exception e) {
-						System.out.println("Error opening port "
-								+ serialPort.getName() + "!");
+					} catch (Throwable e) {
+						LOG.error("Error opening port " + serialPort.getName() + "! : "
+								+ LoggingUtils.info(e, this));
 					}
 				}
 			}
@@ -343,4 +353,20 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 		this.sPort = sPort;
 	}
 
+	@Override
+	public void initialize() {
+		try {
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
+			getPort(vo.getCommPortId());
+			configurePort(getsPort());
+			setValuesHt5b(new ArrayList<>());
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+			return;
+		}
+		super.initialize();
+	}
 }

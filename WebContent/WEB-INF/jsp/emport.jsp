@@ -44,7 +44,7 @@
       projectName = $get("projectName");
 
       if(projectName == null || projectName.trim().length == 0) {
-    	  messages = [createValidationMessage("projectName","<fmt:message key="emport.invalidProjectName"/>")];
+    	  messages = [createValidationMessage("projectName","<spring:message code="emport.invalidProjectName"/>")];
   		  showDwrMessages(messages);
     	  return;
       }
@@ -68,7 +68,7 @@
     function doImport() {
         setDisabled("importJsonBtn", true);
         hideGenericMessages("importMessages");
-        $set("alternateMessage", "<fmt:message key="emport.importProgress"/>");
+        $set("alternateMessage", "<spring:message code="emport.importProgress"/>");
         EmportDwr.importData($get("emportData"), function(response) {
             if (response.data.importStarted)
                 importUpdate();
@@ -78,32 +78,32 @@
                 setDisabled("importJsonBtn", false);
             }
             else {
-                $set("alternateMessage", "<fmt:message key="emport.noMessages"/>");
+                $set("alternateMessage", "<spring:message code="emport.noMessages"/>");
                 setDisabled("importJsonBtn", false);
             }
         });
     }
-    
+
     function importUpdate() {
         EmportDwr.importUpdate(function(response) {
             if (response.data.noImport)
                 // no op
                 return;
-            
-            $set("alternateMessage", "<fmt:message key="emport.importProgress"/>");
+
+            $set("alternateMessage", "<spring:message code="emport.importProgress"/>");
             setDisabled("importJsonBtn", true);
             setDisabled("cancelBtn", false);
-            
+
             showDwrMessages(response.messages, $("importMessages"));
-            
+
             if (response.data.cancelled || response.data.complete) {
                 setDisabled("importJsonBtn", false);
                 setDisabled("cancelBtn", true);
-                
+
                 if (response.data.cancelled)
-                    $set("alternateMessage", "<fmt:message key="emport.importCancelled"/>");
+                    $set("alternateMessage", "<spring:message code="emport.importCancelled"/>");
                 else
-                    $set("alternateMessage", "<fmt:message key="emport.importComplete"/>");
+                    $set("alternateMessage", "<spring:message code="emport.importComplete"/>");
             }
             else
                 setTimeout(importUpdate, 1000);
@@ -115,31 +115,31 @@
             if (response.data.noImport)
                 // no op
                 return;
-            
-            $set("alternateMessage", "<fmt:message key="emport.importProgress"/>");
+
+            $set("alternateMessage", "<spring:message code="emport.importProgress"/>");
             setDisabled("importJsonBtn", true);
             setDisabled("cancelBtn", false);
-            
+
             showDwrMessages(response.messages, $("changingProjectMessages"));
-            
+
             if (response.data.cancelled || response.data.complete) {
                 setDisabled("importJsonBtn", false);
                 setDisabled("cancelBtn", true);
-                
+
                 if (response.data.cancelled)
-                    $set("alternateMessage", "<fmt:message key="emport.importCancelled"/>");
+                    $set("alternateMessage", "<spring:message code="emport.importCancelled"/>");
                 else
-                    $set("alternateMessage", "<fmt:message key="emport.importComplete"/>");
+                    $set("alternateMessage", "<spring:message code="emport.importComplete"/>");
             }
             else
                 setTimeout(changingProject, 1000);
         });
     }
-    
+
     function importCancel() {
         EmportDwr.importCancel();
     }
-    
+
     function selectAll(checked) {
         $set("graphicalViews", checked);
         $set("eventHandlers", checked);
@@ -174,14 +174,14 @@
 
 
     function checkFileToImport() {
-    	var ext = $get("importFile");
-    	ext = ext.substring(ext.length-3,ext.length);
+    	let fileName = $get("importFile");
+    	let ext = fileName.substring(fileName.length-3,fileName.length);
     	ext = ext.toLowerCase();
-    	
+
     	if(ext != 'zip') {
-			messages = [createValidationMessage("importFile","Arquivo de importa��o inv�lido! Arquivo deve ter extens�o .zip!")];
+			messages = [createValidationMessage("importFile","<spring:message code="emport.invalidFile" arguments="!"/>")];
     		showDwrMessages(messages);
-        	return false;	
+        	return false;
     	}
 
     	changingProject();
@@ -198,11 +198,11 @@
 				</span> <tag:help id="emport" /></td>
 			</tr>
 			<tr>
-				<td class="formLabel"><b><fmt:message key="emport.select" />
-				</b><br /> <a href="#" onclick="selectAll(true); return false"><fmt:message
-							key="emport.selectAll" />
-				</a> | <a href="#" onclick="selectAll(false); return false"><fmt:message
-							key="emport.unselectAll" />
+				<td class="formLabel"><b><spring:message code="emport.select" />
+				</b><br /> <a href="#" onclick="selectAll(true); return false"><spring:message
+							code="emport.selectAll" />
+				</a> | <a href="#" onclick="selectAll(false); return false"><spring:message
+							code="emport.unselectAll" />
 				</a></td>
 				<td></td>
 			</tr>
@@ -211,16 +211,16 @@
 					type="checkbox" id="watchLists" /> <label for="watchLists"><fmt:message
 							key="header.watchLists" />
 				</label><br /> <input type="checkbox" id="graphicalViews" /> <label
-					for="graphicalViews"><fmt:message key="header.views" />
+					for="graphicalViews"><spring:message code="header.views" />
 				</label><br /> <input type="checkbox" id="eventHandlers" /> <label
-					for="eventHandlers"><fmt:message key="header.eventHandlers" />
+					for="eventHandlers"><spring:message code="header.eventHandlers" />
 				</label><br /> <input type="checkbox" id="dataSources" /> <label
-					for="dataSources"><fmt:message key="header.dataSources" />
+					for="dataSources"><spring:message code="header.dataSources" />
 				</label><br /> <input type="checkbox" id="dataPoints"
 					onchange="dataPointsCheckboxChanged();" /> <label for="dataPoints"><fmt:message
 							key="emport.dataPoints" />
 				</label><br /> - <input type="checkbox" id="pointValues" /> <label
-					for="pointValues"><fmt:message key="emport.pointValues" />
+					for="pointValues"><spring:message code="emport.pointValues" />
 				</label><br /> <input type="checkbox" id="scheduledEvents" /> <label
 					for="scheduledEvents"><fmt:message
 							key="header.scheduledEvents" />
@@ -228,7 +228,7 @@
 					for="compoundEventDetectors"><fmt:message
 							key="header.compoundEvents" />
 				</label><br /> <input type="checkbox" id="pointLinks" /> <label
-                    for="pointLinks"><fmt:message key="header.pointLinks" />
+                    for="pointLinks"><spring:message code="header.pointLinks" />
                 </label><br />
                 </td>
 				<td><input type="checkbox" id="users" /> <label for="users"><fmt:message
@@ -237,33 +237,33 @@
 					for="pointHierarchy"><fmt:message
 							key="header.pointHierarchy" />
 				</label><br /> <input type="checkbox" id="mailingLists" /> <label
-					for="mailingLists"><fmt:message key="header.mailingLists" />
+					for="mailingLists"><spring:message code="header.mailingLists" />
 				</label><br /> <input type="checkbox" id="publishers" /> <label
-					for="publishers"><fmt:message key="header.publishers" />
+					for="publishers"><spring:message code="header.publishers" />
 				</label><br /> <input type="checkbox" id="maintenanceEvents" /> <label
 					for="maintenanceEvents"><fmt:message
 							key="header.maintenanceEvents" />
 				</label><br /> <input type="checkbox" id="scripts" /> <label for="scripts"><fmt:message
 							key="header.scripts" />
 				</label><br /> <input type="checkbox" id="systemSettings" /> <label
-					for="scripts"><fmt:message key="header.systemSettings" />
+					for="scripts"><spring:message code="header.systemSettings" />
 				</label><br />
 				<input type="checkbox" id="usersProfiles" /> <label
-					for="usersProfiles"><fmt:message key="header.usersProfiles" />
+					for="usersProfiles"><spring:message code="header.usersProfiles" />
 				</label>
 				<br />
 				<input type="checkbox" id="reports" /> <label
-                    for="reports"><fmt:message key="header.reports" />
+                    for="reports"><spring:message code="header.reports" />
                 </label>
                 <br />
 				</td>
-				<!--          <input type="checkbox" id="reports"/> <label for="reports"><fmt:message key="header.reports"/></label><br/>-->
-				<!--          <input type="checkbox" id="systemSettings"/> <label for="systemSettings"><fmt:message key="header.systemSettings"/></label><br/>-->
-				<!--          <input type="checkbox" id="imageSets"/> <label for="imageSets"><fmt:message key="header.imageSets"/></label><br/>-->
-				<!--          <input type="checkbox" id="dynamicImages"/> <label for="dynamicImages"><fmt:message key="header.dynamicImages"/></label><br/>-->
+				<!--          <input type="checkbox" id="reports"/> <label for="reports"><spring:message code="header.reports"/></label><br/>-->
+				<!--          <input type="checkbox" id="systemSettings"/> <label for="systemSettings"><spring:message code="header.systemSettings"/></label><br/>-->
+				<!--          <input type="checkbox" id="imageSets"/> <label for="imageSets"><spring:message code="header.imageSets"/></label><br/>-->
+				<!--          <input type="checkbox" id="dynamicImages"/> <label for="dynamicImages"><spring:message code="header.dynamicImages"/></label><br/>-->
 			</tr>
 			<tr>
-				<td class="formLabelRequired"><fmt:message key="emport.indent" />
+				<td class="formLabelRequired"><spring:message code="emport.indent" />
 				</td>
 				<td><input type="text" id="prettyIndent" value="3"
 					class="formVeryShort" />
@@ -290,10 +290,10 @@
 			</tr>
 			<tr>
 				<td colspan="2" align="center"><input id="exportJsonBtn"
-					type="button" value="<fmt:message key="emport.exportJson"/>"
+					type="button" value="<spring:message code="emport.exportJson"/>"
 					onclick="doExportJson()" /></td>
 			</tr>
-			
+
 			<tr>
 				<td colspan="2" align="center">
 				<p></p>
@@ -307,11 +307,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td><fmt:message key="emport.importInstruction" /> <input
+				<td><spring:message code="emport.importInstruction" /> <input
 					id="importJsonBtn" type="button"
-					value="<fmt:message key="emport.import"/>" onclick="doImport()" />
+					value="<spring:message code="emport.import"/>" onclick="doImport()" />
 					<input id="cancelBtn" type="button"
-					value="<fmt:message key="common.cancel"/>" onclick="importCancel()"
+					value="<spring:message code="common.cancel"/>" onclick="importCancel()"
 					disabled="disabled" /></td>
 			</tr>
 			<tbody id="importMessages"></tbody>
@@ -320,7 +320,7 @@
 			</tr>
 		</table>
 	</div>
-				
+
 				</td>
 			</tr>
 
@@ -381,16 +381,16 @@
 				</select></td>
 			</tr>
 			<tr>
-				<td><fmt:message key="emport.exportProjectInstruction" /> <input
+				<td><spring:message code="emport.exportProjectInstruction" /> <input
 					id="exportBtn" type="button"
-					value="<fmt:message key="emport.exportProject"/>"
+					value="<spring:message code="emport.exportProject"/>"
 					onclick="doExport()" /></td>
 			</tr>
 			<tbody></tbody>
 			<tr>
 				<td></td>
 			</tr>
-			
+
 			<tr>
 				<td colspan="2" align="center">
 				<p></p>
@@ -406,13 +406,13 @@
 				</tr>
 
 				<tr>
-					<td><fmt:message key="emport.importProjectInstruction" /></td>
+					<td><spring:message code="emport.importProjectInstruction" /></td>
 				</tr>
 
 				<tr>
 					<td><input type="file" name="importFile" id="importFile" /> <input
 						id="importBtn" type="submit"
-						value="<fmt:message key="emport.send"/>" /></td>
+						value="<spring:message code="emport.send"/>" /></td>
 				</tr>
 
 				<tr>
@@ -422,17 +422,17 @@
 		</form>
 
 	</div>
-				
-				
+
+
 				</td>
 			</tr>
-			
-			
+
+
 		</table>
 	</div>
 
 	<div style="clear: both;">
-		<span class="formLabelRequired"><fmt:message key="emport.data" />
+		<span class="formLabelRequired"><spring:message code="emport.data" />
 		</span><br />
 		<textarea rows="40" cols="150" id="emportData"></textarea>
 	</div>

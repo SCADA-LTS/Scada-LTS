@@ -20,10 +20,11 @@
 					</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>
-							{{ comment.comment }}
+							<span v-html="comment.comment"></span>
 						</v-list-item-title>
 						<v-list-item-subtitle>
-							{{ comment.username }}, {{ new Date(comment.ts).toLocaleString() }}
+							<span v-html="comment.username"></span>,
+							{{ new Date(comment.ts).toLocaleString() }}
 						</v-list-item-subtitle>
 					</v-list-item-content>
 					<v-list-item-action
@@ -87,7 +88,7 @@ export default {
 			this.activeUserId = this.$store.state.loggedUser.id;
 		},
 
-		addComment() {
+		async addComment() {
 			let time = new Date();
 			let comment = {
 				userId: this.$store.state.loggedUser.id,
@@ -96,13 +97,13 @@ export default {
 				username: this.$store.state.loggedUser.username,
 				prettyTime: time.toLocaleTimeString(),
 			};
-			this.data.comments.push(Object.assign({}, comment));
-			this.$store.dispatch('addUserComment', {
+			let response = await this.$store.dispatch('addUserComment', {
 				comment: comment,
 				typeId: 2,
 				refId: this.data.id,
 			});
 			this.newComment = '';
+			this.data.comments.push(Object.assign({}, response));
 		},
 
 		deleteComment(e) {

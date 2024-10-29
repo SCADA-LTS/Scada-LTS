@@ -37,8 +37,8 @@
 </script>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.dnp3Serial.commPortId" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.dnp3Serial.commPortId" /></td>
 	<td class="formField"><c:choose>
 		<c:when test="${!empty commPortError}">
 			<input id="commPortId" type="hidden" value="" />
@@ -55,8 +55,8 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.dnp3Serial.baud" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.dnp3Serial.baud" /></td>
 	<td class="formField"><sst:select id="baudRate"
 		value="${dataSource.baudRate}">
 		<sst:option>110</sst:option>
@@ -76,7 +76,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3Serial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.dnp3Serial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -88,7 +88,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3Serial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.dnp3Serial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -99,14 +99,14 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.dnp3Serial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.dnp3Serial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>

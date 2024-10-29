@@ -61,12 +61,12 @@
 	                       dshtml +=   '<td class="formLabelRequired">'+ dp.name +'</td>';
 	                       dshtml +=   '<td>';
 	                       dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/0" value="0">';
-	                       dshtml +=             '<label for="dp'+ dp.id +'/0"><fmt:message key="common.access.none"/></label> ';
+	                       dshtml +=             '<label for="dp'+ dp.id +'/0"><spring:message code="common.access.none"/></label> ';
 	                       dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/1" value="1">';
-	                       dshtml +=             '<label for="dp'+ dp.id +'/1"><fmt:message key="common.access.read"/></label> ';
+	                       dshtml +=             '<label for="dp'+ dp.id +'/1"><spring:message code="common.access.read"/></label> ';
 	                       if (dp.settable) {
 	                           dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/2" value="2">';
-	                           dshtml +=             '<label for="dp'+ dp.id +'/2"><fmt:message key="common.access.set"/></label>';
+	                           dshtml +=             '<label for="dp'+ dp.id +'/2"><spring:message code="common.access.set"/></label>';
 	                       }
 	                       dshtml +=   '</td>';
 	                       dshtml += '</tr>';
@@ -92,11 +92,11 @@
 	                       wlhtml += '<tr>';
 	                       wlhtml +=   '<td>';
 	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/0" value="0" checked>';
-	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.none"/></label> ';
+	                       wlhtml +=             '<label for="wl'+ id +'"><spring:message code="common.access.none"/></label> ';
 	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/1" value="1">';
-	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.read"/></label> ';
+	                       wlhtml +=             '<label for="wl'+ id +'"><spring:message code="common.access.read"/></label> ';
 	                       wlhtml +=     '<input type="radio" name="wl'+ id +'" id="wl'+ id +'/2" value="2">';
-	                       wlhtml +=             '<label for="wl'+ id +'"><fmt:message key="common.access.set"/></label>';
+	                       wlhtml +=             '<label for="wl'+ id +'"><spring:message code="common.access.set"/></label>';
 	                       wlhtml +=   '</td>';
 	                       wlhtml += '</tr>';
 	                   wlhtml +=   '</table>';
@@ -116,11 +116,11 @@
 	                       vwhtml += '<tr>';
 	                       vwhtml +=   '<td>';
 	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/0" value="0" checked>';
-	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.none"/></label> ';
+	                       vwhtml +=             '<label for="vw'+ id +'"><spring:message code="common.access.none"/></label> ';
 	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/1" value="1">';
-	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.read"/></label> ';
+	                       vwhtml +=             '<label for="vw'+ id +'"><spring:message code="common.access.read"/></label> ';
 	                       vwhtml +=     '<input type="radio" name="vw'+ id +'" id="vw'+ id +'/2" value="2">';
-	                       vwhtml +=             '<label for="vw'+ id +'"><fmt:message key="common.access.set"/></label>';
+	                       vwhtml +=             '<label for="vw'+ id +'"><spring:message code="common.access.set"/></label>';
 	                       vwhtml +=   '</td>';
 	                       vwhtml += '</tr>';
 	                   vwhtml +=   '</table>';
@@ -255,7 +255,7 @@
         if (response.hasMessages)
             showDwrMessages(response.messages, "genericMessages");
         else if (!adminUser)
-            setUserProfileMessage("<fmt:message key="userProfiles.saved"/>");
+            setUserProfileMessage("<spring:message code="userProfiles.saved"/>");
         else {
             if (editingUserProfileId == <c:out value="<%= Common.NEW_ID %>"/>) 
             {
@@ -263,10 +263,10 @@
                 editingUserProfileId = response.data.userProfileId;
                 appendUserProfile(editingUserProfileId);
                 startImageFader($("u"+ editingUserProfileId +"Img"));
-                setUserProfileMessage("<fmt:message key="userProfiles.added"/>");
+                setUserProfileMessage("<spring:message code="userProfiles.added"/>");
                 show($("deleteButton"));
             } else {
-                setUserProfileMessage("<fmt:message key="userProfiles.saved"/>");
+                setUserProfileMessage("<spring:message code="userProfiles.saved"/>");
                 stopImageFader($("u"+ editingUserProfileId +"Img"));
         	}
             UsersProfilesDwr.getUserProfile(editingUserProfileId, updateUserProfile)
@@ -335,7 +335,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="userProfiles.title"/></span>
+                <span class="smallTitle"><spring:message code="userProfiles.title"/></span>
               </td>
               <td align="right"><tag:img png="user_add" onclick="showUserProfile(${applicationScope['constants.Common.NEW_ID']})"
                       title="userProfiles.add" id="u${applicationScope['constants.Common.NEW_ID']}Img"/></td>
@@ -356,7 +356,7 @@
             <tr>
               <td>
                 <span class="smallTitle"><tag:img id="userImg" png="user_green" title="userProfile.user"/>
-                <fmt:message key="userProfiles.details"/></span>
+                <spring:message code="userProfiles.details"/></span>
               </td>
               <td align="right">
                 <tag:img png="save" id="saveButton" onclick="saveUserProfile();" title="common.save"/>
@@ -372,21 +372,21 @@
               <td colspan="2" id="userProfileMessage" class="formError"></td>
             </tr>
             <tr id="userProfileNameRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="userProfiles.name"/></td>
+              <td class="formLabelRequired"><spring:message code="userProfiles.name"/></td>
               <td class="formField"><input id="userProfileName" type="text"/></td>
             </tr>
             <tbody id="dataSources" style="display:none;">
               <tr><td class="horzSeparator" colspan="2"></td></tr>
               <tr id="dataSources">
-                <td class="formLabelRequired"><fmt:message key="userProfiles.dataSources"/></td>
+                <td class="formLabelRequired"><spring:message code="userProfiles.dataSources"/></td>
                 <td class="formField" id="dataSourceList"></td>
               </tr>
               <tr id="watchlists">
-                <td class="formLabelRequired"><fmt:message key="header.watchLists"/></td>
+                <td class="formLabelRequired"><spring:message code="header.watchLists"/></td>
                 <td class="formField" id="watchlistsList"></td>
               </tr>
               <tr id="views">
-                <td class="formLabelRequired"><fmt:message key="views.title"/></td>
+                <td class="formLabelRequired"><spring:message code="views.title"/></td>
                 <td class="formField" id="viewsList"></td>
               </tr>
             </tbody>

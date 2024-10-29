@@ -43,7 +43,6 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
-import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -158,9 +157,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
 
 		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
-				systemSettingsService.getMiscSettings().isHideShortcutDisableFullScreen());
+				systemSettingsService.getMiscSettings().isViewHideShortcutDisableFullScreenEnabled());
 		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
-				systemSettingsService.getMiscSettings().isEnableFullScreen());
+				systemSettingsService.getMiscSettings().isViewForceFullScreenEnabled());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
 				systemSettingsService.getMiscSettings().getEventPendingLimit());
 		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
@@ -177,6 +176,14 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getMiscSettings().getWebResourceGraphicsPath());
 		settings.put(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH,
 				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
+		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
+				systemSettingsService.getMiscSettings().isEventAssignEnabled());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION,
+				systemSettingsService.getSystemInfoSettings().getTopDescription());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
+				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
+		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT,
+				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportsLimit());
 		return settings;
 	}
 
@@ -329,65 +336,24 @@ public class SystemSettingsDwr extends BaseDwr {
 											int eventPendingLimit, boolean eventPendingCacheEnabled,
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
-											String webResourceGraphicsPath, String webResourceUploadsPath) {
+											String webResourceGraphicsPath, String webResourceUploadsPath,
+											boolean eventAssignEnabled, int pointExtendedNameLengthInReportsLimit) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
         DwrResponseI18n response = new DwrResponseI18n();
-        if(uiPerformance < 0) {
-            response.addContextualMessage(SystemSettingsDAO.UI_PERFORMANCE, "validate.invalidValue");
-            return response;
-        } else {
-            systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, uiPerformance);
-        }
-		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				String.valueOf(dataPointRtValueSynchronized));
-
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, viewEnableFullScreen);
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, viewHideShortcutDisableFullScreen);
-		if(eventPendingLimit < 0) {
-			response.addContextualMessage(SystemSettingsDAO.EVENT_PENDING_LIMIT, "validate.invalidValue");
-		} else {
-			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PENDING_LIMIT, eventPendingLimit);
-		}
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED, eventPendingCacheEnabled);
-		if(eventPendingLimit < 0) {
-			response.addContextualMessage(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, "validate.invalidValue");
-		} else {
-			systemSettingsDAO.setIntValue(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH, threadsNameAdditionalLength);
-		}
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED, workItemsReportingEnabled);
-		if(workItemsReportingEnabled) {
-			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, workItemsReportingItemsPerSecondEnabled);
-			if(workItemsReportingItemsPerSecondEnabled) {
-				if (workItemsReportingItemsPerSecondLimit < 0) {
-					response.addContextualMessage(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, "validate.invalidValue");
-				} else {
-					systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, workItemsReportingItemsPerSecondLimit);
-				}
-			} else {
-				systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
-			}
-		} else {
-			systemSettingsDAO.setBooleanValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, false);
-			systemSettingsDAO.setIntValue(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, 0);
-		}
-		if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)
-				|| (webResourceGraphicsPath.endsWith("graphics")
-				|| webResourceGraphicsPath.endsWith("graphics" + File.separator)))) {
-			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, webResourceGraphicsPath);
-		}
-		else {
-			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "systemsettings.webresource.graphics.path.wrong", File.separator);
-		}
-		if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
-				|| (webResourceUploadsPath.endsWith("uploads")
-				|| webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
-			systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
-		}
-		else {
-			response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "systemsettings.webresource.uploads.path.wrong", File.separator);
-		}
-
+		systemSettingsService.saveUiPerformanceMisc(uiPerformance, response);
+		systemSettingsService.saveDataPointRuntimeValueSynchronizedMisc(dataPointRtValueSynchronized);
+		systemSettingsService.saveViewForceFullScreenModeMisc(viewEnableFullScreen);
+		systemSettingsService.saveViewHideShortcutDisableFullScreenMisc(viewHideShortcutDisableFullScreen);
+		systemSettingsService.saveEventPendingCacheEnabledMisc(eventPendingCacheEnabled);
+		systemSettingsService.saveEventPendingLimitMisc(eventPendingLimit, response);
+		systemSettingsService.saveThreadsNameAdditionalLengthMisc(threadsNameAdditionalLength, response);
+		systemSettingsService.saveWorkItemsReportingMisc(workItemsReportingItemsPerSecondEnabled, workItemsReportingItemsPerSecondLimit,
+				workItemsReportingEnabled, response);
+		systemSettingsService.saveResourceGraphicsPathMisc(webResourceGraphicsPath, response);
+		systemSettingsService.saveResourceUploadsPathMisc(webResourceUploadsPath, response);
+		systemSettingsService.saveDataPointExtendedNameLengthInReportsLimitMisc(pointExtendedNameLengthInReportsLimit, response);
+		systemSettingsService.saveEventAssignEnabledMisc(eventAssignEnabled);
 		return response;
 	}
 
@@ -467,7 +433,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	
 	public void saveInfoSettings(String newVersionNotificationLevel,
-			String instanceDescription) {
+			String instanceDescription,String topDescriptionPrefix, String topDescription) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO.setValue(
@@ -475,6 +441,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				newVersionNotificationLevel);
 		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, topDescriptionPrefix);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, topDescription);
 	}
 
 	

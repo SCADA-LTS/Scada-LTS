@@ -154,6 +154,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return response;
     }
 
+    @Deprecated(since = "2.8.0")
     public String getConfigurationByXid(HttpServletRequest request, String xid) {
         checkIfNonAdminThenUnauthorized(request);
         if(StringUtils.isEmpty(xid)) {
@@ -170,6 +171,17 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
             throw new BadRequestException(ex, request.getRequestURI());
         }
         return response;
+    }
+
+    public Map<String, Object> getDataPointByXid(HttpServletRequest request, String xid) {
+        checkIfNonAdminThenUnauthorized(request);
+        if(StringUtils.isEmpty(xid)) {
+            throw new ScadaApiException(ScadaErrorMessage.builder(HttpStatus.OK)
+                    .detail("Given xid is empty.")
+                    .instance(request.getRequestURI())
+                    .build());
+        }
+        return EmportDwr.exportDataPointBy(xid);
     }
 
     public DataPointVO getDataPointFromDatabase(HttpServletRequest request, String xid, Integer id) {

@@ -37,10 +37,10 @@
         <div id="dataSourceMessage" class="ctxmsg formError"></div>
         <table>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="dsEdit.head.name"/></td>
+            <td class="formLabelRequired"><spring:message code="dsEdit.head.name"/></td>
             <td class="formField"><input type="text" id="dataSourceName" value="${dataSource.name}"/></td>
           </tr>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+            <td class="formLabelRequired"><spring:message code="common.xid"/></td>
             <td class="formField"><input type="text" id="dataSourceXid" value="${dataSource.xid}"/></td>
           </tr>

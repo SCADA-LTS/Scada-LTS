@@ -125,12 +125,14 @@ public class ScriptWithObjectContextWriteDataPointTest {
         this.script = script;
     }
 
-    private RuntimeManager runtimeManager = mock(RuntimeManager.class);
-    private DPCommandsScriptContextObject scriptContextObject = mock(DPCommandsScriptContextObject.class);
+    private RuntimeManager runtimeManager;
+    private DPCommandsScriptContextObject scriptContextObject;
 
     @Before
     public void config() throws Exception {
-        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+        runtimeManager = mock(RuntimeManager.class);
+        scriptContextObject = mock(DPCommandsScriptContextObject.class);
+        ScriptTestUtils.configScriptMock(runtimeManager, scriptContextObject);
     }
 
     @After

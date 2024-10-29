@@ -327,7 +327,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						<a :title="(item.message) | clearHtml">{{ (item.message) | clearHtml | truncate}}</a>
+						<a :title="(item.message) | clearHtml"><span v-html="item.message"></span></a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -621,7 +621,7 @@ export default {
 			return input;
 		},
 		clearHtml(str) {
-			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ')
+			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ').replaceAll('&#39;', ' ').replaceAll('&quot;', ' ')
 		}
 	},
 	
@@ -729,9 +729,13 @@ export default {
 			this.loading = false;
 		},
 		async fetchEventSelected() {
-			this.loading = true;
-			this.comments = await this.$store.dispatch('getCommentsByEventId', this.selectedEventId);
-			this.loading = false;
+      try {
+        this.loading = true;
+        this.comments = await this.$store.dispatch('getCommentsByEventId', this.selectedEventId);
+        this.loading = false;
+      } catch (error) {
+        console.error("Error acknowledging event:", error);
+      }
 		},
 		async acknowledgeEventSelected() {
 			this.loading = true;
@@ -755,8 +759,12 @@ export default {
 			await this.fetchEventList();
 		},
 		async acknowledgeEvent(event) {
-			await this.$store.dispatch('acknowledgeEvent', {eventId: event.id});
-			await this.fetchEventList();
+      try {
+			  await this.$store.dispatch('acknowledgeEvent', {eventId: event.id});
+			  await this.fetchEventList();
+      } catch (error) {
+        console.error("Error acknowledging event:", error);
+      }
 		},
 		async silenceEvent(event) {
 			await this.$store.dispatch('silenceEvent', {eventId: event.id});

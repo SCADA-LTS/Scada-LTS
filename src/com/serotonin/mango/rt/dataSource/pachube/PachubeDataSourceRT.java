@@ -59,29 +59,42 @@ import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 import static com.serotonin.mango.Common.createGetMethod;
 
 public class PachubeDataSourceRT extends PollingDataSource {
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int INITIALIZATION_EXCEPTION_EVENT = 4;
 
     public static final String HEADER_API_KEY = "X-PachubeApiKey";
 
     final Log log = LogFactory.getLog(PachubeDataSourceRT.class);
     final PachubeDataSourceVO vo;
-    private final HttpClient httpClient;
-    final SimpleDateFormat sdf;
+    private HttpClient httpClient;
+    private SimpleDateFormat sdf;
 
     public PachubeDataSourceRT(PachubeDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.vo = vo;
+    }
 
-        httpClient = createHttpClient(vo.getTimeoutSeconds(), vo.getRetries());
-
-        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    @Override
+    public void initialize() {
+        try {
+            httpClient = createHttpClient(vo.getTimeoutSeconds(), vo.getRetries());
+            sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            returnToNormal(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis());
+        } catch (Throwable e) {
+            raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.exception2",
+                            vo.getName(), e.getMessage()));
+            return;
+        }
+        super.initialize();
     }
 
     public static HttpClient createHttpClient(int timeoutSeconds, int retries) {
@@ -94,12 +107,12 @@ public class PachubeDataSourceRT extends PollingDataSource {
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
         super.addDataPoint(dataPoint);
-        dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+        setUnreliableDataPoint(dataPoint);
     }
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis());
+        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         super.removeDataPoint(dataPoint);
     }
 
@@ -139,17 +152,13 @@ public class PachubeDataSourceRT extends PollingDataSource {
         try {
             data = getData(httpClient, feedId, vo.getApiKey());
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
                 lm = ((LocalizableException) e).getLocalizableMessage();
             else
                 lm = new LocalizableMessage("event.pachube.feed.retrievalError", feedId, e.getMessage());
             raiseEvent(DATA_RETRIEVAL_FAILURE_EVENT, time, true, lm);
-
-            // Mark points as unreliable.
-            for (DataPointRT point : points)
-                point.setAttribute(ATTR_UNRELIABLE_KEY, true);
 
             return;
         }
@@ -166,7 +175,6 @@ public class PachubeDataSourceRT extends PollingDataSource {
             if (dataValue == null) {
                 parseErrorMessage = new LocalizableMessage("event.pachube.dataStreamNotFound",
                         locator.getDataStreamId(), feedId);
-                dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
             }
             else {
                 try {
@@ -187,24 +195,25 @@ public class PachubeDataSourceRT extends PollingDataSource {
                     // Save the new value if it is new
                     if (!ObjectUtils.isEqual(dp.getPointValue(), pvt))
                         dp.updatePointValue(new PointValueTime(value, valueTime));
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, false);
                 }
                 catch (LocalizableException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = e.getLocalizableMessage();
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
                 }
                 catch (ParseException e) {
                     if (parseErrorMessage == null)
                         parseErrorMessage = new LocalizableMessage("event.valueParse.timeParsePoint",
                                 dataValue.getTimestamp(), dp.getVO().getName());
-                    dp.setAttribute(ATTR_UNRELIABLE_KEY, true);
+                }
+                catch (Throwable e) {
+                    if (parseErrorMessage == null)
+                        parseErrorMessage = new LocalizableMessage("common.default", e.getMessage());
                 }
             }
         }
 
         if (parseErrorMessage != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseErrorMessage);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseErrorMessage);
         else
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
@@ -276,12 +285,12 @@ public class PachubeDataSourceRT extends PollingDataSource {
             dataPoint.setPointValue(valueTime, source);
 
             // Deactivate any existing event.
-            returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime());
+            returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), dataPoint);
         }
         catch (IOException e) {
             // Raise an event.
             raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), true, new LocalizableMessage(
-                    "event.exception2", dataPoint.getVO().getName(), e.getMessage()));
+                    "event.exception2", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
         }
     }
 }

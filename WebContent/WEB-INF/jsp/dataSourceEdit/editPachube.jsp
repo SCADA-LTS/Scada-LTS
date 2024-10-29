@@ -37,9 +37,9 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.pachube.feedId"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.pachube.feedId"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.feedId; };
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.pachube.dataStreamId"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.pachube.dataStreamId"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
           function(p) { return encodeHtml(p.pointLocator.dataStreamId); };
   }
@@ -71,11 +71,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.pachube.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.pachube.desc"/></c:set>
 <c:set var="dsHelpId" value="pachubeDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -85,24 +85,24 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pachube.apiKey"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pachube.apiKey"/></td>
           <td class="formField"><input id="apiKey" type="text" value="${dataSource.apiKey}" class="formLong"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pachube.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pachube.timeout"/></td>
           <td class="formField"><input id="timeoutSeconds" type="text" value="${dataSource.timeoutSeconds}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.pachube.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.pachube.retries"/></td>
           <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
         </tr>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="pachubePP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId" onchange="dataTypeChanged()">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -111,13 +111,13 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pachube.feedId"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pachube.feedId"/></td>
     <td class="formField"><input type="text" id="feedId"/></td>
   </tr>
   
   <tr>
     <td class="formLabelRequired">
-      <fmt:message key="dsEdit.pachube.dataStreamId"/>
+      <spring:message code="dsEdit.pachube.dataStreamId"/>
       <tag:img id="valueTestImg" png="accept" title="dsEdit.pachube.testValue" onclick="testValueParams()"/>
     </td>
     <td class="formField"><input type="text" id="dataStreamId"/></td>
@@ -132,13 +132,13 @@
   
   <tbody id="binaryZeroValueRow">
     <tr>
-      <td><fmt:message key="dsEdit.pachube.binaryZeroValue"/></td>
+      <td><spring:message code="dsEdit.pachube.binaryZeroValue"/></td>
       <td class="formField"><input type="text" id="binary0Value"/></td>
     </tr>
   </tbody>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
 </tag:pointList>

@@ -3,13 +3,13 @@
 <%@attribute name="vc" type="com.serotonin.mango.view.component.EnhancedImageChartComponent" required="true" rtexprvalue="true"%>
 <div id="c${vc.id}SeriesConfig" class="enhancedImageChartConfig">
 	<div>
-		<h3 style="float: left;"><fmt:message key="graphic.enhancedImageChart.seriesConfig"/></h3>
+		<h3 style="float: left;"><spring:message code="graphic.enhancedImageChart.seriesConfig"/></h3>
 		<tag:img png="cross" onclick="jQuery('#c${vc.id}SeriesConfig').hide()" title="common.close" style="display: inline; float: right; margin-top: 13px;"/>
 	</div>
 	<div>
 		<form>
 			<div>
-				<span><fmt:message key="graphic.enhancedImageChart.seriesConfig.visibility"/></span><br/>
+				<span><spring:message code="graphic.enhancedImageChart.seriesConfig.visibility"/></span><br/>
 				<c:forEach items="${vc.childComponents}" var="point">
 					<c:if test="${!empty point.viewComponent.extendedName}">
 						<c:set var="pointName">
@@ -41,13 +41,12 @@
 					</c:set>
 					<div>
 						<span>
-							<fmt:message key="graphic.enhancedImageChart.seriesConfig.seriesOptions">
-								<fmt:param>${pointName}</fmt:param>
-							</fmt:message>
+							<spring:message code="graphic.enhancedImageChart.seriesConfig.seriesOptions" arguments="${pointName}">
+					        </spring:message>
 						</span><br/>
-						<label for="c${vc.id}${point.id}_color" class="margin"><fmt:message key="graphic.enhancedImageChart.seriesConfig.seriesOptions.color"/></label>
+						<label for="c${vc.id}${point.id}_color" class="margin"><spring:message code="graphic.enhancedImageChart.seriesConfig.seriesOptions.color"/></label>
 						<input id="c${vc.id}${point.id}_color" type="hidden" value="${point.viewComponent.color}"/><br/>
-						<label for="c${vc.id}${point.id}_strokeWidth" class="margin"><fmt:message key="graphic.enhancedImageChart.seriesConfig.seriesOptions.strokeWidth"/></label>
+						<label for="c${vc.id}${point.id}_strokeWidth" class="margin"><spring:message code="graphic.enhancedImageChart.seriesConfig.seriesOptions.strokeWidth"/></label>
 						<input id="c${vc.id}${point.id}_strokeWidth" value="${point.viewComponent.strokeWidth}"/>
 						<br/>
 					</div>

@@ -3,9 +3,14 @@ package org.scada_lts.login;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.catalina.Session;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -17,23 +22,18 @@ import static com.serotonin.mango.Common.SESSION_USER;
 
 public class LoggedUsers implements ILoggedUsers {
 
-    private static final Log LOG = LogFactory.getLog(LoggedUsers.class);
-
-    public LoggedUsers() {}
+    private static final Logger LOG = LogManager.getLogger(LoggedUsers.class);
 
     private final Map<Integer, User> loggedUsers = new ConcurrentHashMap<>();
     private final Map<Integer, List<HttpSession>> loggedSessions = new ConcurrentHashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final ThreadLocal<String> blocked = new ThreadLocal<>();
+
+    public LoggedUsers() {}
 
     @Override
     public User addUser(User user, HttpSession session) {
         lock.writeLock().lock();
         try {
-            if("setAttribute".equals(blocked.get())) {
-                LOG.warn("blocked addUser: " + LoggingUtils.userInfo(user) + ", thread: " + Thread.currentThread().getName());
-                return null;
-            }
             loggedSessions.putIfAbsent(user.getId(), new CopyOnWriteArrayList<>());
             if(!loggedSessions.get(user.getId()).contains(session)) {
                 loggedSessions.get(user.getId()).add(session);
@@ -50,7 +50,7 @@ public class LoggedUsers implements ILoggedUsers {
     public void updateUser(User user) {
         lock.writeLock().lock();
         try {
-            update(user, loggedUsers, loggedSessions, blocked);
+            update(user, loggedUsers, loggedSessions);
         } finally {
             lock.writeLock().unlock();
         }
@@ -63,7 +63,7 @@ public class LoggedUsers implements ILoggedUsers {
             for(User user: new ArrayList<>(loggedUsers.values())) {
                 if(user.getUserProfile() == profile.getId()) {
                     profile.apply(user);
-                    update(user, loggedUsers, loggedSessions, blocked);
+                    update(user, loggedUsers, loggedSessions);
                 }
             }
         } finally {
@@ -75,10 +75,6 @@ public class LoggedUsers implements ILoggedUsers {
     public User removeUser(User user, HttpSession session) {
         lock.writeLock().lock();
         try {
-            if("setAttribute".equals(blocked.get())) {
-                LOG.warn("blocked removeUser: " + LoggingUtils.userInfo(user) + ", thread: " + Thread.currentThread().getName());
-                return null;
-            }
             if (loggedSessions.get(user.getId()) == null || (loggedSessions.get(user.getId()).remove(session)
                     && loggedSessions.get(user.getId()).isEmpty())) {
                 loggedSessions.remove(user.getId());
@@ -120,9 +116,31 @@ public class LoggedUsers implements ILoggedUsers {
         }
     }
 
+    @Override
+    public void loadSessions(Session[] sessions) {
+        for(Session session: sessions) {
+            HttpSession httpSession = session.getSession();
+            UserService userService = ApplicationBeans.getBean("userService", UserService.class);
+            SecurityContext securityContext = (SecurityContext)httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+            if(securityContext != null) {
+                Authentication authentication = securityContext.getAuthentication();
+                if(authentication != null) {
+                    String username = authentication.getName();
+                    User sessionUser = userService.getUser(username);
+                    if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
+                        int userId = sessionUser.getId();
+                        loggedSessions.putIfAbsent(userId, new ArrayList<>());
+                        loggedSessions.get(userId).add(httpSession);
+                        loggedUsers.put(userId, sessionUser);
+                        LOG.info("Loaded session for user: {}", username);
+                    }
+                }
+            }
+        }
+    }
+
     private static void update(User user, Map<Integer, User> loggedUsers,
-                               Map<Integer, List<HttpSession>> loggedSessions,
-                               ThreadLocal<String> blocked) {
+                               Map<Integer, List<HttpSession>> loggedSessions) {
         User loggedUser = loggedUsers.get(user.getId());
         if(loggedUser == null) {
             LOG.warn("not logged user: " + LoggingUtils.userInfo(user) + ", thread: " + Thread.currentThread().getName());
@@ -133,10 +151,17 @@ public class LoggedUsers implements ILoggedUsers {
             user.setAttribute("roles", roles);
         loggedSessions.putIfAbsent(user.getId(), new CopyOnWriteArrayList<>());
         for(HttpSession session : loggedSessions.get(user.getId())) {
-            blocked.set("setAttribute");
             session.setAttribute(SESSION_USER, user);
-            blocked.set("");
         }
         loggedUsers.put(user.getId(), user);
+    }
+
+    private static boolean isAdmin(Authentication authentication) {
+        for(GrantedAuthority authority: authentication.getAuthorities()) {
+            if("ROLE_ADMIN".equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

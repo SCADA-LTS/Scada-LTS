@@ -21,6 +21,8 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
@@ -69,6 +71,9 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static org.scada_lts.utils.MetaDataPointUtils.isDataPointInContext;
+import static org.scada_lts.utils.MetaDataPointUtils.isMetaDataPointRT;
 
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
@@ -490,7 +495,9 @@ public class RuntimeManager {
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 
-				LOG.info("Data point '" + vo.getExtendedName() + "' initialized");
+				boolean unreliable = dataPoint.isUnreliable();
+
+				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - unreliable: " + unreliable);
 			}
 		}
 	}
@@ -1083,4 +1090,23 @@ public class RuntimeManager {
 	private void stopPoints() {
 		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
 	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
+		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
+		return filterRunningDataPoints(dataPoints.values(), dataPoint -> isMetaDataPointRT(dataPoint)
+				&& isDataPointInContext(dataPoint, dataPointInContextId));
+	}
+
+	private static List<DataPointRT> filterRunningDataPoints(List<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
+	private static List<DataPointRT> filterRunningDataPoints(Collection<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
 }

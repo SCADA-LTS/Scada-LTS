@@ -32,12 +32,12 @@ public class EventServiceMock extends EventService {
     }
 
     @Override
-    public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
+    public void ackEvent(EventInstance eventId, long time, User userId, int alternateAckSource, boolean signalAlarmLevelChange) {
 
     }
 
     @Override
-    public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
+    public void ackEvent(EventInstance eventId, long time, User userId, int alternateAckSource) {
 
     }
 
@@ -224,8 +224,8 @@ public class EventServiceMock extends EventService {
     }
 
     @Override
-    public boolean toggleSilence(int eventId, int userId) {
-        return super.toggleSilence(eventId, userId);
+    public boolean toggleSilence(EventInstance event, User user) {
+        return false;
     }
 
     @Override
@@ -299,5 +299,15 @@ public class EventServiceMock extends EventService {
 
     public void addEvent(EventInstance eventInstance) {
         this.events.add(eventInstance);
+    }
+
+    @Override
+    public void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange) {
+
+    }
+
+    @Override
+    public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
+
     }
 }

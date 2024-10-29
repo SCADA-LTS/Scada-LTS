@@ -32,7 +32,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Create by at Grzesiek Bylica
@@ -217,20 +219,21 @@ public class PointHierarchyAPI {
     }
 
     @RequestMapping(value = "/api/pointHierarchy/cacheRefresh", method = RequestMethod.POST)
-    public ResponseEntity<String> cacheRefresh(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> cacheRefresh(HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/cacheRefresh");
-        ResponseEntity<String> result = null;
+        ResponseEntity<Map<String, String>> result = null;
+        Map<String, String> empty = new HashMap<>();
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 pointHierarchyXidService.cacheRefresh();
-                result = new ResponseEntity<>("{}", HttpStatus.OK);
+                result = new ResponseEntity<>(empty, HttpStatus.OK);
             } else {
-                result = new ResponseEntity<>("{}", HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<>(empty, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<>("{}", HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<>(empty, HttpStatus.BAD_REQUEST);
         }
         return result;
     }

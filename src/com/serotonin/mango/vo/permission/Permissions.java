@@ -287,6 +287,8 @@ public class Permissions {
             return hasDataPointReadPermission(user, eventType.getDataSourceId(), eventType.getDataPointId());
         case EventType.EventSources.DATA_SOURCE:
             return hasDataSourcePermission(user, eventType.getDataSourceId());
+        case EventType.EventSources.DATA_SOURCE_POINT:
+            return hasDataSourcePermission(user, eventType.getDataSourceId()) || hasDataPointReadPermission(user, eventType.getDataSourceId(), eventType.getDataPointId());
         case EventType.EventSources.SYSTEM:
         case EventType.EventSources.COMPOUND:
         case EventType.EventSources.SCHEDULED:

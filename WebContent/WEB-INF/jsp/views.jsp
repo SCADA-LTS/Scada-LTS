@@ -243,7 +243,7 @@
 
 	<table class="subPageHeader" id="graphical">
 		<tr>
-			<td class="smallTitle"><fmt:message key="views.title" /> <tag:help
+			<td class="smallTitle"><spring:message code="views.title" /> <tag:help
 					id="graphicalViews" /></td>
 			<td width="50"></td>
 			<c:if test="${fn:length(views) != 0}">
@@ -277,7 +277,7 @@
 	<table id="fullScreenOut">
 		<tr>
 			<td class="smallTitle" id="fsOut">
-				<fmt:message key="fullScreenOut"/>
+				<spring:message code="fullScreenOut"/>
 			</td>
 		</tr>
 	</table>

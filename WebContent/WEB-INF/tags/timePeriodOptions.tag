@@ -32,48 +32,48 @@
   <c:when test="${sst}">
     <c:choose>
       <c:when test="${singular}">
-        <c:if test="${ms}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MILLISECONDS) %>"><fmt:message key="common.tp.millisecond"/></sst:option></c:if>
-        <c:if test="${s}"><sst:option value="<%= Integer.toString(Common.TimePeriods.SECONDS) %>"><fmt:message key="common.tp.second"/></sst:option></c:if>
-        <c:if test="${min}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MINUTES) %>"><fmt:message key="common.tp.minute"/></sst:option></c:if>
-        <c:if test="${h}"><sst:option value="<%= Integer.toString(Common.TimePeriods.HOURS) %>"><fmt:message key="common.tp.hour"/></sst:option></c:if>
-        <c:if test="${d}"><sst:option value="<%= Integer.toString(Common.TimePeriods.DAYS) %>"><fmt:message key="common.tp.day"/></sst:option></c:if>
-        <c:if test="${w}"><sst:option value="<%= Integer.toString(Common.TimePeriods.WEEKS) %>"><fmt:message key="common.tp.week"/></sst:option></c:if>
-        <c:if test="${mon}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MONTHS) %>"><fmt:message key="common.tp.month"/></sst:option></c:if>
-        <c:if test="${y}"><sst:option value="<%= Integer.toString(Common.TimePeriods.YEARS) %>"><fmt:message key="common.tp.year"/></sst:option></c:if>
+        <c:if test="${ms}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MILLISECONDS) %>"><spring:message code="common.tp.millisecond"/></sst:option></c:if>
+        <c:if test="${s}"><sst:option value="<%= Integer.toString(Common.TimePeriods.SECONDS) %>"><spring:message code="common.tp.second"/></sst:option></c:if>
+        <c:if test="${min}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MINUTES) %>"><spring:message code="common.tp.minute"/></sst:option></c:if>
+        <c:if test="${h}"><sst:option value="<%= Integer.toString(Common.TimePeriods.HOURS) %>"><spring:message code="common.tp.hour"/></sst:option></c:if>
+        <c:if test="${d}"><sst:option value="<%= Integer.toString(Common.TimePeriods.DAYS) %>"><spring:message code="common.tp.day"/></sst:option></c:if>
+        <c:if test="${w}"><sst:option value="<%= Integer.toString(Common.TimePeriods.WEEKS) %>"><spring:message code="common.tp.week"/></sst:option></c:if>
+        <c:if test="${mon}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MONTHS) %>"><spring:message code="common.tp.month"/></sst:option></c:if>
+        <c:if test="${y}"><sst:option value="<%= Integer.toString(Common.TimePeriods.YEARS) %>"><spring:message code="common.tp.year"/></sst:option></c:if>
       </c:when>
       <c:otherwise>
-        <c:if test="${ms}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MILLISECONDS) %>"><fmt:message key="common.tp.milliseconds"/></sst:option></c:if>
-        <c:if test="${s}"><sst:option value="<%= Integer.toString(Common.TimePeriods.SECONDS) %>"><fmt:message key="common.tp.seconds"/></sst:option></c:if>
-        <c:if test="${min}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MINUTES) %>"><fmt:message key="common.tp.minutes"/></sst:option></c:if>
-        <c:if test="${h}"><sst:option value="<%= Integer.toString(Common.TimePeriods.HOURS) %>"><fmt:message key="common.tp.hours"/></sst:option></c:if>
-        <c:if test="${d}"><sst:option value="<%= Integer.toString(Common.TimePeriods.DAYS) %>"><fmt:message key="common.tp.days"/></sst:option></c:if>
-        <c:if test="${w}"><sst:option value="<%= Integer.toString(Common.TimePeriods.WEEKS) %>"><fmt:message key="common.tp.weeks"/></sst:option></c:if>
-        <c:if test="${mon}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MONTHS) %>"><fmt:message key="common.tp.months"/></sst:option></c:if>
-        <c:if test="${y}"><sst:option value="<%= Integer.toString(Common.TimePeriods.YEARS) %>"><fmt:message key="common.tp.years"/></sst:option></c:if>
+        <c:if test="${ms}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MILLISECONDS) %>"><spring:message code="common.tp.milliseconds"/></sst:option></c:if>
+        <c:if test="${s}"><sst:option value="<%= Integer.toString(Common.TimePeriods.SECONDS) %>"><spring:message code="common.tp.seconds"/></sst:option></c:if>
+        <c:if test="${min}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MINUTES) %>"><spring:message code="common.tp.minutes"/></sst:option></c:if>
+        <c:if test="${h}"><sst:option value="<%= Integer.toString(Common.TimePeriods.HOURS) %>"><spring:message code="common.tp.hours"/></sst:option></c:if>
+        <c:if test="${d}"><sst:option value="<%= Integer.toString(Common.TimePeriods.DAYS) %>"><spring:message code="common.tp.days"/></sst:option></c:if>
+        <c:if test="${w}"><sst:option value="<%= Integer.toString(Common.TimePeriods.WEEKS) %>"><spring:message code="common.tp.weeks"/></sst:option></c:if>
+        <c:if test="${mon}"><sst:option value="<%= Integer.toString(Common.TimePeriods.MONTHS) %>"><spring:message code="common.tp.months"/></sst:option></c:if>
+        <c:if test="${y}"><sst:option value="<%= Integer.toString(Common.TimePeriods.YEARS) %>"><spring:message code="common.tp.years"/></sst:option></c:if>
       </c:otherwise>
     </c:choose>  
   </c:when>
   <c:otherwise>
     <c:choose>
       <c:when test="${singular}">
-        <c:if test="${ms}"><option value="<%= Common.TimePeriods.MILLISECONDS %>"><fmt:message key="common.tp.millisecond"/></option></c:if>
-        <c:if test="${s}"><option value="<%= Common.TimePeriods.SECONDS %>"><fmt:message key="common.tp.second"/></option></c:if>
-        <c:if test="${min}"><option value="<%= Common.TimePeriods.MINUTES %>"><fmt:message key="common.tp.minute"/></option></c:if>
-        <c:if test="${h}"><option value="<%= Common.TimePeriods.HOURS %>"><fmt:message key="common.tp.hour"/></option></c:if>
-        <c:if test="${d}"><option value="<%= Common.TimePeriods.DAYS %>"><fmt:message key="common.tp.day"/></option></c:if>
-        <c:if test="${w}"><option value="<%= Common.TimePeriods.WEEKS %>"><fmt:message key="common.tp.week"/></option></c:if>
-        <c:if test="${mon}"><option value="<%= Common.TimePeriods.MONTHS %>"><fmt:message key="common.tp.month"/></option></c:if>
-        <c:if test="${y}"><option value="<%= Common.TimePeriods.YEARS %>"><fmt:message key="common.tp.year"/></option></c:if>
+        <c:if test="${ms}"><option value="<%= Common.TimePeriods.MILLISECONDS %>"><spring:message code="common.tp.millisecond"/></option></c:if>
+        <c:if test="${s}"><option value="<%= Common.TimePeriods.SECONDS %>"><spring:message code="common.tp.second"/></option></c:if>
+        <c:if test="${min}"><option value="<%= Common.TimePeriods.MINUTES %>"><spring:message code="common.tp.minute"/></option></c:if>
+        <c:if test="${h}"><option value="<%= Common.TimePeriods.HOURS %>"><spring:message code="common.tp.hour"/></option></c:if>
+        <c:if test="${d}"><option value="<%= Common.TimePeriods.DAYS %>"><spring:message code="common.tp.day"/></option></c:if>
+        <c:if test="${w}"><option value="<%= Common.TimePeriods.WEEKS %>"><spring:message code="common.tp.week"/></option></c:if>
+        <c:if test="${mon}"><option value="<%= Common.TimePeriods.MONTHS %>"><spring:message code="common.tp.month"/></option></c:if>
+        <c:if test="${y}"><option value="<%= Common.TimePeriods.YEARS %>"><spring:message code="common.tp.year"/></option></c:if>
       </c:when>
       <c:otherwise>
-        <c:if test="${ms}"><option value="<%= Common.TimePeriods.MILLISECONDS %>"><fmt:message key="common.tp.milliseconds"/></option></c:if>
-        <c:if test="${s}"><option value="<%= Common.TimePeriods.SECONDS %>"><fmt:message key="common.tp.seconds"/></option></c:if>
-        <c:if test="${min}"><option value="<%= Common.TimePeriods.MINUTES %>"><fmt:message key="common.tp.minutes"/></option></c:if>
-        <c:if test="${h}"><option value="<%= Common.TimePeriods.HOURS %>"><fmt:message key="common.tp.hours"/></option></c:if>
-        <c:if test="${d}"><option value="<%= Common.TimePeriods.DAYS %>"><fmt:message key="common.tp.days"/></option></c:if>
-        <c:if test="${w}"><option value="<%= Common.TimePeriods.WEEKS %>"><fmt:message key="common.tp.weeks"/></option></c:if>
-        <c:if test="${mon}"><option value="<%= Common.TimePeriods.MONTHS %>"><fmt:message key="common.tp.months"/></option></c:if>
-        <c:if test="${y}"><option value="<%= Common.TimePeriods.YEARS %>"><fmt:message key="common.tp.years"/></option></c:if>
+        <c:if test="${ms}"><option value="<%= Common.TimePeriods.MILLISECONDS %>"><spring:message code="common.tp.milliseconds"/></option></c:if>
+        <c:if test="${s}"><option value="<%= Common.TimePeriods.SECONDS %>"><spring:message code="common.tp.seconds"/></option></c:if>
+        <c:if test="${min}"><option value="<%= Common.TimePeriods.MINUTES %>"><spring:message code="common.tp.minutes"/></option></c:if>
+        <c:if test="${h}"><option value="<%= Common.TimePeriods.HOURS %>"><spring:message code="common.tp.hours"/></option></c:if>
+        <c:if test="${d}"><option value="<%= Common.TimePeriods.DAYS %>"><spring:message code="common.tp.days"/></option></c:if>
+        <c:if test="${w}"><option value="<%= Common.TimePeriods.WEEKS %>"><spring:message code="common.tp.weeks"/></option></c:if>
+        <c:if test="${mon}"><option value="<%= Common.TimePeriods.MONTHS %>"><spring:message code="common.tp.months"/></option></c:if>
+        <c:if test="${y}"><option value="<%= Common.TimePeriods.YEARS %>"><spring:message code="common.tp.years"/></option></c:if>
       </c:otherwise>
     </c:choose>
   </c:otherwise>

@@ -34,6 +34,7 @@
 <script>
 import customComponentMixin from '../../components/SynopticPanel/CustomComponentMixin.js';
 import SynopticPanelItemEditor from './SynopticPanelItemEditor.vue';
+import {unescapeHtml} from '../../utils/common';
 
 /**
  * Synoptic Panel component - Item
@@ -85,9 +86,10 @@ export default {
 			if (!!dom && !!dom.firstChild) {
 				dom.firstChild.remove();
 			}
+			let vectorImage = unescapeHtml(this.panel.vectorImage);
 			this.$svg('panel-canvas')
 				.size(window.innerWidth, window.innerHeight)
-				.svg(this.panel.vectorImage);
+				.svg(vectorImage);
 			this.$emit('loaded', this.panel.id);
 			this.initSvgComponentData();
 		},
@@ -120,7 +122,8 @@ export default {
 		initSvgComponentData() {
 			try {
 				let graphicItems = this.parseSvgContent();
-				let componentData = new Map(JSON.parse(this.panel.componentData));
+				let unescapeComponentData = unescapeHtml(this.panel.componentData);
+				let componentData = new Map(JSON.parse(unescapeComponentData));
 				if (componentData !== undefined) {
 					for (const [key, value] of componentData.entries()) {
 						graphicItems.set(key, value);
@@ -136,7 +139,8 @@ export default {
 		savePanel(childGraphicItems) {
 			this.graphicItems = childGraphicItems;
 			this.panel.componentData = JSON.stringify([...this.graphicItems]);
-			
+			this.panel.vectorImage = unescapeHtml(this.panel.vectorImage);
+
             this.$store.dispatch('updateSynopticPanel', this.panel).then(() => {
                 this.$emit('updated', true);
             }).catch(() => {

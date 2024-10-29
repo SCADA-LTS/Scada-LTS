@@ -3,10 +3,14 @@ package org.scada_lts.config;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 
 
 import java.io.FileInputStream;
 import java.util.Properties;
+
+import static org.scada_lts.dao.SystemSettingsDAO.TOP_DESCRIPTION;
+import static org.scada_lts.dao.SystemSettingsDAO.TOP_DESCRIPTION_PREFIX;
 
 /**
  * Scada Version class

@@ -112,7 +112,7 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 	}
 
 	@Override
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof ModbusInitException) {
 			Throwable cause = e.getCause();
 			if (cause instanceof NoSuchPortException)

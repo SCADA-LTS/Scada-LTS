@@ -21,16 +21,16 @@
 <div class="borderDiv">
   <table id="eventDetectorTable">
     <tr><td colspan="2">
-      <span class="smallTitle"><fmt:message key="pointEdit.detectors.eventDetectors"/></span>
+      <span class="smallTitle"><spring:message code="pointEdit.detectors.eventDetectors"/></span>
       <tag:help id="eventDetectors"/>
     </td></tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.type"/></td>
+      <td class="formLabelRequired"><spring:message code="pointEdit.detectors.type"/></td>
       <td class="formField">
         <select id="eventDetectorSelect">
           <c:forEach items="${eventDetectors}" var="eddef">
-            <option value="${eddef.id}"><fmt:message key="${eddef.nameKey}"/></option>
+            <option value="${eddef.id}"><spring:message code="${eddef.nameKey}"/></option>
           </c:forEach>
         </select>
         <tag:img png="bell_add" title="common.add" onclick="pointEventDetectorEditor.addEventDetector();"/>
@@ -39,7 +39,7 @@
     
     <tr><td colspan="2">
       <div id="emptyListMessage" style="color:#888888;padding:10px;text-align:center;">
-        <fmt:message key="pointEdit.detectors.empty"/>
+        <spring:message code="pointEdit.detectors.empty"/>
       </div>
     </td></tr>
   </table>
@@ -50,20 +50,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.highLimitDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.highLimitDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -73,11 +73,11 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.highLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.highLimit"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Limit" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -91,20 +91,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.lowLimitDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.lowLimitDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -114,11 +114,11 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.lowLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.lowLimit"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Limit" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -132,20 +132,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.stateDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.stateDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -155,16 +155,16 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.state"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.state"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_State">
-            <option value="false"><fmt:message key="pointEdit.detectors.zero"/></option>
-            <option value="true"><fmt:message key="pointEdit.detectors.one"/></option>
+            <option value="false"><spring:message code="pointEdit.detectors.zero"/></option>
+            <option value="true"><spring:message code="pointEdit.detectors.one"/></option>
           </select>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -178,20 +178,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.stateDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.stateDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -201,11 +201,11 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.state"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.state"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_State" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -219,20 +219,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.changeDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.changeDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -249,20 +249,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.changeCounter"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.changeCounter"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -272,11 +272,11 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.changeCount"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.changeCount"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_ChangeCount" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -290,20 +290,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.noChange"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.noChange"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -313,7 +313,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -327,20 +327,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.noUpdate"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.noUpdate"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -350,7 +350,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -364,20 +364,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.stateDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.stateDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -387,11 +387,11 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.state"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.state"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_State" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -405,20 +405,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.posCusumDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.posCusumDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -428,15 +428,15 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.posLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.posLimit"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Limit" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.weight"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.weight"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Weight" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -450,20 +450,20 @@
       <tr>
         <td class="formLabelRequired">
           <tag:img png="bell_delete" title="common.delete" onclick="pointEventDetectorEditor.deleteDetector(getPedId(this))"/>
-          <fmt:message key="pointEdit.detectors.type"/>
+          <spring:message code="pointEdit.detectors.type"/>
         </td>
-        <td class="formField"><fmt:message key="pointEdit.detectors.negCusumDet"/></td>
+        <td class="formField"><spring:message code="pointEdit.detectors.negCusumDet"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+        <td class="formLabelRequired"><spring:message code="common.xid"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Xid" type="text" class="formLong" maxlength="50"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.alias"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.alias"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Alias" type="text" class="formLong"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="common.alarmLevel"/></td>
+        <td class="formLabelRequired"><spring:message code="common.alarmLevel"/></td>
         <td class="formField">
           <select id="eventDetector_TEMPLATE_AlarmLevel"
                   onchange="pointEventDetectorEditor.updateAlarmLevelImage(this.value, getPedId(this))">
@@ -473,15 +473,15 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.negLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.negLimit"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Limit" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="pointEdit.detectors.weight"/></td>
+        <td class="formLabelRequired"><spring:message code="pointEdit.detectors.weight"/></td>
         <td class="formField"><input id="eventDetector_TEMPLATE_Weight" type="text" class="formShort"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="pointEdit.detectors.duration"/></td>
+        <td class="formLabel"><spring:message code="pointEdit.detectors.duration"/></td>
         <td class="formField">
           <input id="eventDetector_TEMPLATE_Duration" type="text" class="formShort"/>
           <select id="eventDetector_TEMPLATE_DurationType"><tag:timePeriodOptions s="true" min="true" h="true"/></select>
@@ -643,11 +643,11 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(limit))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingLimit"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingLimit"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateHighLimitDetector(pedId, xid, alias, limit, duration, durationType,
@@ -660,11 +660,11 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(limit))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingLimit"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingLimit"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateLowLimitDetector(pedId, xid, alias, limit, duration, durationType,
@@ -677,9 +677,9 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateBinaryStateDetector(pedId, xid, alias, state, duration, durationType,
@@ -692,11 +692,11 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(state))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingState"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingState"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateMultistateStateDetector(pedId, xid, alias, state, duration, durationType,
@@ -713,13 +713,13 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(count))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingChangeCount"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingChangeCount"/>";
                   else if (count < 2)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidChangeCount"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidChangeCount"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 1)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateStateChangeCountDetector(pedId, xid, alias, count, duration, durationType, 
@@ -731,9 +731,9 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 1)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateNoChangeDetector(pedId, xid, alias, duration, durationType, alarmLevel,
@@ -745,9 +745,9 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 1)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateNoUpdateDetector(pedId, xid, alias, duration, durationType, alarmLevel,
@@ -760,11 +760,11 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (state && state.length > 128)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidState"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidState"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateAlphanumericStateDetector(pedId, xid, alias, state, duration, durationType, 
@@ -778,13 +778,13 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(limit))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingLimit"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingLimit"/>";
                   else if (isNaN(weight))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingWeight"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingWeight"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updatePositiveCusumDetector(pedId, xid, alias, limit, weight, duration,
@@ -798,13 +798,13 @@
                   var durationType = parseInt($get("eventDetector"+ pedId +"DurationType"));
                   
                   if (isNaN(limit))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingLimit"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingLimit"/>";
                   else if (isNaN(weight))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingWeight"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingWeight"/>";
                   else if (isNaN(duration))
-                      errorMessage = "<fmt:message key="pointEdit.detectors.errorParsingDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.errorParsingDuration"/>";
                   else if (duration < 0)
-                      errorMessage = "<fmt:message key="pointEdit.detectors.invalidDuration"/>";
+                      errorMessage = "<spring:message code="pointEdit.detectors.invalidDuration"/>";
                   else {
                       saveCBCount++;
                       DataPointEditDwr.updateNegativeCusumDetector(pedId, xid, alias, limit, weight, duration,

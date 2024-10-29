@@ -34,7 +34,7 @@
   
   function getNetworkInfo() {
       setDisabled("scanBtn", true);
-      showMessage("scanMessage", "<fmt:message key="dsEdit.1wire.scanning"/>");
+      showMessage("scanMessage", "<spring:message code="dsEdit.1wire.scanning"/>");
       hide("scanResults");
       DataSourceEditDwr.readOneWireNetwork($get("commPortId"), getNetworkInfoCB);
   }
@@ -49,7 +49,7 @@
       }
       else {
           // Show the results of the scan
-          showMessage("scanMessage", "<fmt:message key="dsEdit.1wire.scanComplete"/>");
+          showMessage("scanMessage", "<spring:message code="dsEdit.1wire.scanComplete"/>");
           networkInfo = result.data.devices;
           
           dwr.util.removeAllRows("scanDevices");
@@ -58,7 +58,7 @@
                       function(device) { return device.description; },
                       function(device) {
                           return writeImage("scanDeviceImg"+ device.addressString, null, "icon_comp_add",
-                                  "<fmt:message key="common.add"/>", "addPoint('"+ device.addressString +"')");
+                                  "<spring:message code="common.add"/>", "addPoint('"+ device.addressString +"')");
                           }
                   ],
                   {
@@ -88,10 +88,10 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.1wire.address"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.1wire.address"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.address; };
       
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.1wire.attribute"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.1wire.attribute"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = 
               function(p) { return p.pointLocator.attributeIndexDescription; };
   }
@@ -102,7 +102,7 @@
   
   function editPointCBImpl(locator) {
       if (!networkInfo) {
-          alert("<fmt:message key="dsEdit.1wire.scanWarn"/>");
+          alert("<spring:message code="dsEdit.1wire.scanWarn"/>");
           return true;
       }
       
@@ -168,13 +168,13 @@
           hide("indexRow");
       else {
           if (attributeId == <%= OneWirePointLocatorVO.AttributeTypes.AD_VOLTAGE %>)
-              $set("indexLabel", "<fmt:message key="dsEdit.1wire.attribute.adChannel"/>");
+              $set("indexLabel", "<spring:message code="dsEdit.1wire.attribute.adChannel"/>");
           else if (attributeId == <%= OneWirePointLocatorVO.AttributeTypes.LATCH_STATE %>)
-              $set("indexLabel", "<fmt:message key="dsEdit.1wire.attribute.channel"/>");
+              $set("indexLabel", "<spring:message code="dsEdit.1wire.attribute.channel"/>");
           else if (attributeId == <%= OneWirePointLocatorVO.AttributeTypes.WIPER_POSITION %>)
-              $set("indexLabel", "<fmt:message key="dsEdit.1wire.attribute.wiper"/>");
+              $set("indexLabel", "<spring:message code="dsEdit.1wire.attribute.wiper"/>");
           else if (attributeId == <%= OneWirePointLocatorVO.AttributeTypes.COUNTER %>)
-              $set("indexLabel", "<fmt:message key="dsEdit.1wire.attribute.counter"/>");
+              $set("indexLabel", "<spring:message code="dsEdit.1wire.attribute.counter"/>");
           
           var indexSel = $("index");
           for (var i=0; i<length; i++)
@@ -192,11 +192,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.1wire.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.1wire.desc"/></c:set>
 <c:set var="dsHelpId" value="1wireDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.1wire.port"/></td>
           <td class="formField">
             <c:choose>
               <c:when test="${!empty commPortError}">
@@ -215,7 +215,7 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -225,11 +225,11 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.scheduledRescan"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.1wire.scheduledRescan"/></td>
           <td class="formField">
             <input type="text" id="rescanPeriods" value="${dataSource.rescanPeriods}" class="formShort"/>
             <sst:select id="rescanPeriodType" value="${dataSource.rescanPeriodType}" onchange="rescanChanged()">
-              <sst:option value="<%= Integer.toString(OneWireDataSourceVO.RESCAN_NONE) %>"><fmt:message key="dsEdit.1wire.none"/></sst:option>
+              <sst:option value="<%= Integer.toString(OneWireDataSourceVO.RESCAN_NONE) %>"><spring:message code="dsEdit.1wire.none"/></sst:option>
               <tag:timePeriodOptions sst="true" min="true" h="true" d="true" w="true"/>
             </sst:select>
           </td>
@@ -242,22 +242,22 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td class="smallTitle"><fmt:message key="dsEdit.1wire.scan"/></td></tr>
+        <tr><td class="smallTitle"><spring:message code="dsEdit.1wire.scan"/></td></tr>
         
         <tr>
           <td align="center">
-            <input id="scanBtn" type="button" value="<fmt:message key="dsEdit.1wire.runScan"/>" onclick="getNetworkInfo();"/>
+            <input id="scanBtn" type="button" value="<spring:message code="dsEdit.1wire.runScan"/>" onclick="getNetworkInfo();"/>
           </td>
         </tr>
         
         <tr><td id="scanMessage" style="display:none;" class="formError"></td></tr>
         <tbody id="scanResults" style="display:none;"><tr><td><table cellspacing="1">
           <tr class="rowHeader">
-            <td><fmt:message key="dsEdit.1wire.address"/></td>
-            <td><fmt:message key="dsEdit.1wire.description"/></td>
+            <td><spring:message code="dsEdit.1wire.address"/></td>
+            <td><spring:message code="dsEdit.1wire.description"/></td>
             <td></td>
           </tr>
-          <tbody id="scanDevicesNoneFound"><td colspan="3"><fmt:message key="dsEdit.1wire.noDevices"/></td></tbody>
+          <tbody id="scanDevicesNoneFound"><td colspan="3"><spring:message code="dsEdit.1wire.noDevices"/></td></tbody>
           <tbody id="scanDevices"></tbody>
         </table></td></tr></tbody>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>
@@ -265,17 +265,17 @@
 <tag:pointList pointHelpId="1wirePP">
   <tbody id="editableAttributes">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.address"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.address"/></td>
       <td class="formField"><select id="address" onchange="addressChanged()"></select></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.deviceType"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.deviceType"/></td>
       <td class="formField"><input type="text" id="deviceType" disabled="disabled" class="formLong"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.attribute"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.attribute"/></td>
       <td class="formField"><select id="attributeId" onchange="attributeIdChanged()"></select></td>
     </tr>
   </tbody>
@@ -289,20 +289,20 @@
   
   <tbody id="readonlyAttributes">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.address"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.address"/></td>
       <td class="formField"><input type="text" id="roAddress" disabled="disabled"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.attribute"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.attribute"/></td>
       <td class="formField"><input type="text" id="roAttributeDescription" disabled="disabled"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.1wire.index"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.1wire.index"/></td>
       <td class="formField"><input type="text" id="roIndex" disabled="disabled"/></td>
     </tr>
     
-    <tr><td colspan="2" class="formError"><fmt:message key="dsEdit.1wire.noInfo"/></td></tr>
+    <tr><td colspan="2" class="formError"><spring:message code="dsEdit.1wire.noInfo"/></td></tr>
   </tbody>
 </tag:pointList>

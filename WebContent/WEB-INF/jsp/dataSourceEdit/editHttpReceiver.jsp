@@ -42,7 +42,7 @@
       
       for (var i=0; i<ipWhiteList.length; i++) {
           if (ipWhiteList[i] == ipMask) {
-              alert("<fmt:message key="dsEdit.httpReceiver.containsIpMask"/> "+ ipMask);
+              alert("<spring:message code="dsEdit.httpReceiver.containsIpMask"/> "+ ipMask);
               return;
           }
       }
@@ -63,7 +63,7 @@
       
       for (var i=0; i<deviceIdWhiteList.length; i++) {
           if (deviceIdWhiteList[i] == deviceIdMask) {
-              alert("<fmt:message key="dsEdit.httpReceiver.containsDeviceMask"/> "+ deviceIdMask);
+              alert("<spring:message code="dsEdit.httpReceiver.containsDeviceMask"/> "+ deviceIdMask);
               return;
           }
       }
@@ -99,7 +99,7 @@
                   function(data) { return ""; },
                   function(data) {
                       return data +" <img src='images/bullet_delete.png' onclick='removeIpMask(\""+ data + "\");' "+
-                              "class='ptr' alt='<fmt:message key="common.delete"/>' title='<fmt:message key="common.delete"/>'/>";
+                              "class='ptr' alt='<spring:message code="common.delete"/>' title='<spring:message code="common.delete"/>'/>";
                   }
                   ], null);
       }
@@ -115,8 +115,8 @@
                   function(data) { return ""; },
                   function(data) {
                       return data +" <img src='images/bullet_delete.png' onclick='removeDeviceIdMask(\""+ data 
-                              +"\");' class='ptr' alt='<fmt:message key="common.delete"/>' "+
-                              "title='<fmt:message key="common.delete"/>'/>";
+                              +"\");' class='ptr' alt='<spring:message code="common.delete"/>' "+
+                              "title='<spring:message code="common.delete"/>'/>";
                   }
                   ], null);
       }
@@ -129,7 +129,7 @@
   }
   
   function httpListen() {
-      $set("httpListenMessage", "<fmt:message key="dsEdit.httpReceiver.listening"/>");
+      $set("httpListenMessage", "<spring:message code="dsEdit.httpReceiver.listening"/>");
       $set("httpListenData");
       httpListenButtons(true);
       DataSourceEditDwr.httpReceiverListenForData(ipWhiteList, deviceIdWhiteList, httpListenCB);
@@ -149,12 +149,12 @@
           if (result) {
               $set("httpListenMessage", result.message);
               if (result.remoteIp) {
-                  var data = "<b><fmt:message key="dsEdit.httpReceiver.source"/>: "+ result.remoteIp +"</b><br/>";
+                  var data = "<b><spring:message code="dsEdit.httpReceiver.source"/>: "+ result.remoteIp +"</b><br/>";
                   if (result.deviceId)
-                      data += "<b><fmt:message key="dsEdit.httpReceiver.deviceId"/>: "+ result.deviceId +"</b><br/>";
+                      data += "<b><spring:message code="dsEdit.httpReceiver.deviceId"/>: "+ result.deviceId +"</b><br/>";
                   else
-                      data += "<b><fmt:message key="dsEdit.httpReceiver.deviceId"/>: -</b><br/>";
-                  data += "<b><fmt:message key="dsEdit.httpReceiver.time"/>: "+ result.time +"</b><br/>";
+                      data += "<b><spring:message code="dsEdit.httpReceiver.deviceId"/>: -</b><br/>";
+                  data += "<b><spring:message code="dsEdit.httpReceiver.time"/>: "+ result.time +"</b><br/>";
                   for (var i=0; i<result.data.length; i++) {
                       var sample = result.data[i];
                       data += sample.key.replace(/</, "&lt;") +"="+ sample.value.replace(/</, "&lt;");
@@ -172,12 +172,12 @@
   function httpListenCancel() {
       DataSourceEditDwr.cancelTestingUtility(function() {
           httpListenButtons(false);
-          $set("httpListenMessage", "<fmt:message key="common.cancelled"/>");
+          $set("httpListenMessage", "<spring:message code="common.cancelled"/>");
       });
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.httpReceiver.parameter"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.httpReceiver.parameter"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.parameterName; };
   }
   
@@ -207,11 +207,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.httpReceiver.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.httpReceiver.desc"/></c:set>
 <c:set var="dsHelpId" value="httpReceiverDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpReceiver.ipWhiteList"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpReceiver.ipWhiteList"/></td>
           <td class="formField">
             <table cellpadding="0" cellspacing="0">
               <tr>
@@ -225,12 +225,12 @@
 
         <tr id="noAddressesMessage" style="display:none;">
           <td></td>
-          <td><fmt:message key="dsEdit.httpReceiver.noIpAddresses"/></td>
+          <td><spring:message code="dsEdit.httpReceiver.noIpAddresses"/></td>
         </tr>
         <tbody id="ipWhiteList"></tbody>
 
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpReceiver.deviceWhiteList"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.httpReceiver.deviceWhiteList"/></td>
           <td class="formField">
             <table cellpadding="0" cellspacing="0">
               <tr>
@@ -244,7 +244,7 @@
 
         <tr id="noDevicesMessage" style="display:none;">
           <td></td>
-          <td><fmt:message key="dsEdit.httpReceiver.noDevices"/></td>
+          <td><spring:message code="dsEdit.httpReceiver.noDevices"/></td>
         </tr>
         <tbody id="deviceIdWhiteList"></tbody>
       </table>
@@ -255,11 +255,11 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td class="smallTitle"><fmt:message key="dsEdit.httpReceiver.receiverListener"/></td></tr>
+        <tr><td class="smallTitle"><spring:message code="dsEdit.httpReceiver.receiverListener"/></td></tr>
         <tr>
           <td align="center">
-            <input id="httpListenBtn" type="button" value="<fmt:message key="dsEdit.httpReceiver.startListener"/>" onclick="httpListen();"/>
-            <input id="httpListenCancelBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="httpListenCancel();"/>
+            <input id="httpListenBtn" type="button" value="<spring:message code="dsEdit.httpReceiver.startListener"/>" onclick="httpListen();"/>
+            <input id="httpListenCancelBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="httpListenCancel();"/>
           </td>
         </tr>
         <tr><td id="httpListenMessage" class="formError"></td></tr>
@@ -268,12 +268,12 @@
 
 <tag:pointList pointHelpId="httpReceiverPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpReceiver.httpParamName"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpReceiver.httpParamName"/></td>
     <td class="formField"><input type="text" id="parameterName"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId" onchange="changeDataTypeId();">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -282,7 +282,7 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpReceiver.binaryZeroValue"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpReceiver.binaryZeroValue"/></td>
     <td class="formField"><input id="binary0Value" type="text"/></td>
   </tr>
 </tag:pointList>

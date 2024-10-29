@@ -31,7 +31,7 @@
   }
   
   function listen() {
-      $set("listenMessage", "<fmt:message key="dsEdit.nmea.listening"/>");
+      $set("listenMessage", "<spring:message code="dsEdit.nmea.listening"/>");
       dwr.util.removeAllRows("messagesList");
       listenButtons(true);
       DataSourceEditDwr.nmeaListenForMessages($get("commPortId"), $get("baudRate"), listenCB);
@@ -59,16 +59,16 @@
   function listenCancel() {
       DataSourceEditDwr.cancelTestingUtility(function() {
           listenButtons(false);
-          $("listenMessage").innerHTML = "<fmt:message key="common.cancelled"/>";
+          $("listenMessage").innerHTML = "<spring:message code="common.cancelled"/>";
       });
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.nmea.messageName"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.nmea.messageName"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
           function(p) { return encodeHtml(p.pointLocator.messageName); };
       
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.nmea.fieldIndex"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.nmea.fieldIndex"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
           function(p) { return p.pointLocator.fieldIndex; };
   }
@@ -101,11 +101,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.nmea.props"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.nmea.props"/></c:set>
 <c:set var="dsHelpId" value="nmeaListenerDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.nmea.port"/></td>
           <td class="formField">
             <c:choose>
               <c:when test="${!empty commPortError}">
@@ -124,7 +124,7 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.baud"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.nmea.baud"/></td>
           <td class="formField">
             <sst:select id="baudRate" value="${dataSource.baudRate}">
               <sst:option>1200</sst:option>
@@ -136,7 +136,7 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.resetTimeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.nmea.resetTimeout"/></td>
           <td class="formField"><input type="text" id="resetTimeout" value="${dataSource.resetTimeout}"/></td>
         </tr>
       </table>
@@ -147,12 +147,12 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.nmea.listener"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.nmea.listener"/></td></tr>
         
         <tr>
           <td colspan="2">
-            <input id="listenBtn" type="button" value="<fmt:message key="dsEdit.nmea.listen"/>" onclick="listen();"/>
-            <input id="listenCancelBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="listenCancel();"/>
+            <input id="listenBtn" type="button" value="<spring:message code="dsEdit.nmea.listen"/>" onclick="listen();"/>
+            <input id="listenCancelBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="listenCancel();"/>
           </td>
         </tr>
         
@@ -165,7 +165,7 @@
 
 <tag:pointList pointHelpId="nmeaListenerPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId" onchange="dataTypeChanged()">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -174,17 +174,17 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.binary0Value"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.nmea.binary0Value"/></td>
     <td class="formField"><input type="text" id="binary0Value"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.messageName"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.nmea.messageName"/></td>
     <td class="formField"><input type="text" id="messageName"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.nmea.fieldIndex"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.nmea.fieldIndex"/></td>
     <td class="formField"><input type="text" id="fieldIndex"/></td>
   </tr>
 </tag:pointList>

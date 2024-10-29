@@ -13,6 +13,8 @@ const storeSystemSettings = {
 			instanceDescription: 'Scada-LTS 2.3.3',
 			language: 'en',
 			newVersionNotificationLevel: '0',
+			topDescriptionPrefix: '',
+			topDescription: '',
 		},
 		emailSettings: {
 			auth: false,

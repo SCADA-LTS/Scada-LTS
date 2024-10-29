@@ -30,13 +30,13 @@
     }
 
     function loadProject() {
-		resp = confirm("<fmt:message key="emport.confirmImport"/>");
+		resp = confirm("<spring:message code="emport.confirmImport"/>");
 
 		if(!resp)
 			return;
         
     	setDisabled("loadBtn", true);
-    	messages = [createValidationMessage("importMessages","<fmt:message key="emport.importInit"/>")];
+    	messages = [createValidationMessage("importMessages","<spring:message code="emport.importInit"/>")];
 		showDwrMessages(messages);
 		hide("eventsRow");
 		hide("subHeader");
@@ -46,7 +46,7 @@
                     if(success) {
                     	importUpdate();
                     } else {
-                    	messages = [createValidationMessage("importMessages","<fmt:message key="emport.importFailed"/>")];
+                    	messages = [createValidationMessage("importMessages","<spring:message code="emport.importFailed"/>")];
                 		showDwrMessages(messages);
                     }
                 	
@@ -60,7 +60,7 @@
             	return;
             }
             
-            $set("alternateMessage", "<fmt:message key="emport.importProgress"/>");
+            $set("alternateMessage", "<spring:message code="emport.importProgress"/>");
             setDisabled("loadBtn", true);
             showDwrMessages(response.messages, $("importMessages"));
             
@@ -68,11 +68,11 @@
                 setDisabled("loadBtn", false);
                 
                 if (response.data.cancelled)
-                    $set("alternateMessage", "<fmt:message key="emport.importCancelled"/>");
+                    $set("alternateMessage", "<spring:message code="emport.importCancelled"/>");
                 else {
                 	window.onunload = function() {};
-                	$set("alternateMessage", "<fmt:message key="emport.importComplete"/>");
-                	alert("<fmt:message key="emport.importCompleteWarn"/>");
+                	$set("alternateMessage", "<spring:message code="emport.importComplete"/>");
+                	alert("<spring:message code="emport.importCompleteWarn"/>");
                 	window.location = "logout.htm";
                 }
                     
@@ -88,7 +88,7 @@
    <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   	<c:if test="${!empty errorMessages}">
   		<tr>
-  			<td> <fmt:message key="emport.errorMessage"/> </td>
+  			<td> <spring:message code="emport.errorMessage"/> </td>
   		</tr>
   		
   		<tr> 
@@ -99,23 +99,23 @@
   	</c:if>
   	<c:if test="${empty errorMessages}">
   		<td>
-      		<span class="smallTitle"><fmt:message key="emport.importProjectTitle"/></span>
+      		<span class="smallTitle"><spring:message code="emport.importProjectTitle"/></span>
       		<tag:help id="importProject"/>
       	</td>
   		<tr>
-      		<td> <b> <fmt:message key="emport.projectName"/> </b>   </td>
+      		<td> <b> <spring:message code="emport.projectName"/> </b>   </td>
     		<td> ${projectName} </td>
     	</tr>
     	<tr>
-      		<td> <b> <fmt:message key="emport.projectDescription"/> </b>  </td>
+      		<td> <b> <spring:message code="emport.projectDescription"/> </b>  </td>
     		<td>  ${projectDescription} </td>
     	</tr>
     	<tr>
-      		<td> <b> <fmt:message key="emport.serverVersion"/> </b>  </td>
+      		<td> <b> <spring:message code="emport.serverVersion"/> </b>  </td>
     		<td>  ${projectServerVersion} </td>
     	</tr>
     	<tr>
-      		<td> <b> <fmt:message key="emport.exportDate"/> </b>   </td>
+      		<td> <b> <spring:message code="emport.exportDate"/> </b>   </td>
     		<td> ${exportDate} </td>
     	</tr>
     	<tbody id="importMessages"></tbody>
@@ -123,7 +123,7 @@
     	<tr>
     	   <td> </td>
       	   <td> 
-      	     <input id="loadBtn" type="button" value="<fmt:message key="emport.importButton"/>" onclick="loadProject();"/>
+      	     <input id="loadBtn" type="button" value="<spring:message code="emport.importButton"/>" onclick="loadProject();"/>
       	   </td>
     	</tr>
   	</c:if>

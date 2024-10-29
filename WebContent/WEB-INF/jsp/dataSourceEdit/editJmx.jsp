@@ -30,7 +30,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.jmx.attributeName"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.jmx.attributeName"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
               function(p) { return p.pointLocator.configurationDescription; };
   }
@@ -60,7 +60,7 @@
   }
   
   function getObjectNames() {
-      $set("objectNamesMessage", "<fmt:message key="dsEdit.jmx.gettingObjectNames"/>");
+      $set("objectNamesMessage", "<spring:message code="dsEdit.jmx.gettingObjectNames"/>");
       setDisabled("objectNamesBtn", true);
       
       var tree = dojo.widget.manager.getWidgetById("inspectionTree");
@@ -78,7 +78,7 @@
               $set("objectNamesMessage");
     		  
               var parentNode = dojo.widget.createWidget("TreeNode", {
-            	  title: "<b>"+ (localServer ? "<fmt:message key="dsEdit.jmx.dsconn.local"/>" : $("remoteServerAddr")) +"</b>",
+            	  title: "<b>"+ (localServer ? "<spring:message code="dsEdit.jmx.dsconn.local"/>" : $("remoteServerAddr")) +"</b>",
             	  isFolder: true
               });
     		  tree.addChild(parentNode);
@@ -95,7 +95,7 @@
                     	  var func = "preAddPoint(`"+ name +"`, `"+ attr.name +"`, ``)";
                           attrNode = dojo.widget.createWidget("TreeNode", {
                               title: attr.name +"("+ attr.type +") "+ writeImageSQuote(null, null,
-                                      "icon_comp_add", "<fmt:message key="dsEdit.jmx.addPoint"/>", func),
+                                      "icon_comp_add", "<spring:message code="dsEdit.jmx.addPoint"/>", func),
                               isFolder: false
                           });
                           objNode.addChild(attrNode);
@@ -112,7 +112,7 @@
                               var func = "preAddPoint(`"+ name +"`, `"+ attr.name +"`, `"+ item.name +"`)";
                               var itemNode = dojo.widget.createWidget("TreeNode", { 
                                   title: item.name +"("+ item.type +") "+ writeImageSQuote(null, null,
-                                          "icon_comp_add", "<fmt:message key="dsEdit.jmx.addPoint"/>", func),
+                                          "icon_comp_add", "<spring:message code="dsEdit.jmx.addPoint"/>", func),
                                   isFolder: false
                               });
                               
@@ -148,21 +148,21 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.jmx.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.jmx.desc"/></c:set>
 <c:set var="dsHelpId" value="jmxDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.jmx.useLocalServer"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.jmx.useLocalServer"/></td>
           <td class="formField">
             <sst:checkbox id="useLocalServer" selectedValue="${dataSource.useLocalServer}" onclick="useLocalServerChange()"/>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.jmx.remoteServerAddr"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.jmx.remoteServerAddr"/></td>
           <td class="formField"><input id="remoteServerAddr" type="text" value="${dataSource.remoteServerAddr}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -171,7 +171,7 @@
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
           <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
         </tr>
       </table>
@@ -183,10 +183,10 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.jmx.inspect"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.jmx.inspect"/></td></tr>
         <tr>
           <td colspan="2" align="center">
-            <input id="objectNamesBtn" type="button" value="<fmt:message key="dsEdit.jmx.getObjectNames"/>" onclick="getObjectNames();"/>
+            <input id="objectNamesBtn" type="button" value="<spring:message code="dsEdit.jmx.getObjectNames"/>" onclick="getObjectNames();"/>
           </td>
         </tr>
         
@@ -199,19 +199,19 @@
 
 <tag:pointList pointHelpId="jmxPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.jmx.objectName"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.jmx.objectName"/></td>
     <td class="formField"><input type="text" id="objectName"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.jmx.attributeName"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.jmx.attributeName"/></td>
     <td class="formField"><input type="text" id="attributeName"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.jmx.compositeItemName"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.jmx.compositeItemName"/></td>
     <td class="formField"><input type="text" id="compositeItemName"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeImage="true" excludeMultistate="true"/>
@@ -219,7 +219,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
 </tag:pointList>

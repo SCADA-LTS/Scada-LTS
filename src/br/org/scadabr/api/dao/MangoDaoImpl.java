@@ -567,7 +567,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 
 		if (eventInstance != null) {
 			// alternateAckSource? - REM
-			eventService.ackEvent(eventId, 1, 0, 0);
+			eventService.ackEvent(eventInstance, 1, this.user, 0);
 			// new EventDao().ackEvent(eventId, 1);
 			return APIUtils.toEventNotification(eventInstance);
 		} else {
@@ -1237,7 +1237,7 @@ public class MangoDaoImpl implements ScadaBRAPIDao {
 		mangoPoint.setPointLocator(mangoLocator);
 		DwrResponseI18n validate = new DwrResponseI18n();
 		validate(mangoPoint, validate);
-		mangoLocator.validate(validate);
+		mangoLocator.validate(validate, point.getId());
 		if (validate.getHasMessages()) {
 			throw new ScadaBRAPIException(new APIError(
 					ErrorCode.INVALID_PARAMETER,

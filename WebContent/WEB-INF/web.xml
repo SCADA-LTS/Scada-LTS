@@ -44,6 +44,10 @@
     <param-name>com.serotonin.web.taglib.ListSortTag.downImage.altKey</param-name>
     <param-value>pagination.descending</param-value>
   </context-param>
+  <context-param>
+    <param-name>defaultHtmlEscape</param-name>
+    <param-value>true</param-value>
+  </context-param>
 
   <!-- Log4j2 -->
   <context-param>

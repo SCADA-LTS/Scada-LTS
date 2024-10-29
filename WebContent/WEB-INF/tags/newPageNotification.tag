@@ -10,11 +10,11 @@
     </div>
     <div class="content">
         <div class="message">
-            <fmt:message key="notification.newui.title"/>
+            <spring:message code="notification.newui.title"/>
         </div>
         <div class="actions">
-            <a href="${href}"><fmt:message key="notification.newui.move"/></a>
-            <a onclick="dontShowAgain()"><fmt:message key="notification.newui.dontshow"/></a>
+            <a href="${href}"><spring:message code="notification.newui.move"/></a>
+            <a onclick="dontShowAgain()"><spring:message code="notification.newui.dontshow"/></a>
         </div>
     </div>
 

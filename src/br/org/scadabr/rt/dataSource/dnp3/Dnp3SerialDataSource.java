@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.dataSource.dnp3;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.NoSuchPortException;
 
 import java.util.Date;
@@ -8,8 +9,12 @@ import br.org.scadabr.vo.dataSource.dnp3.Dnp3SerialDataSourceVO;
 
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class Dnp3SerialDataSource extends Dnp3DataSource {
+
+	private static final Log LOG = LogFactory.getLog(Dnp3SerialDataSource.class);
 	private final Dnp3SerialDataSourceVO configuration;
 
 	public Dnp3SerialDataSource(Dnp3SerialDataSourceVO configuration) {
@@ -26,18 +31,18 @@ public class Dnp3SerialDataSource extends Dnp3DataSource {
 					configuration.getSlaveAddress(), configuration
 							.getCommPortId(), configuration.getBaudRate(),
 					configuration.getStaticPollPeriods());
-		} catch (Exception e) {
-			e.printStackTrace();
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
-					new LocalizableMessage("event.exception2", configuration
-							.getName(), e.getMessage()));
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true, getLocalExceptionMessage(e));
+			return;
 		}
 
 		super.initialize(dnp3Master);
 	}
 
 	@Override
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof Exception) {
 			Throwable cause = e.getCause();
 			if (cause instanceof NoSuchPortException)

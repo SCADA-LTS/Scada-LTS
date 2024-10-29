@@ -51,18 +51,18 @@
 				</table>
 				<table>
 					<tr>
-        				<td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
+        				<td class="formLabel"><spring:message code="viewEdit.position.x"/></td>
         				<td class="formField"><input id="compoundPositionX" type="number" default="0" min="0"/></td>
       				</tr>
       				<tr>
-        				<td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
+        				<td class="formLabel"><spring:message code="viewEdit.position.y"/></td>
         				<td class="formField"><input id="compoundPositionY" type="number" default="0" min="0"/></td>
       				</tr>
 				</table>
 				<table>
 					<tr>
 						<td class="formLabelRequired">
-							<fmt:message key="viewEdit.compound.name"/>
+							<spring:message code="viewEdit.compound.name"/>
 						</td>
 						<td class="formField">
 							<input id="compoundName" type="text"/>
@@ -71,7 +71,7 @@
 					<tbody id="simpleCompoundAttrs">
 						<tr>
 							<td class="formLabel">
-								<fmt:message key="viewEdit.compound.backgroundColour"/>
+								<spring:message code="viewEdit.compound.backgroundColour"/>
 							</td>
 							<td class="formField">
 								<input id="compoundBackgroundColour" type="text"/>
@@ -81,7 +81,7 @@
 					<tbody id="imageChartAttrs">
 						<tr>
 							<td class="formLabelRequired">
-								<fmt:message key="viewEdit.compound.width"/>
+								<spring:message code="viewEdit.compound.width"/>
 							</td>
 							<td class="formField">
 								<input id="imageChartWidth" type="text" />
@@ -89,7 +89,7 @@
 						</tr>
 						<tr>
 							<td class="formLabelRequired">
-								<fmt:message key="viewEdit.compound.height" />
+								<spring:message code="viewEdit.compound.height" />
 							</td>
 							<td class="formField">
 								<input id="imageChartHeight" type="text" />
@@ -97,7 +97,7 @@
 						</tr>
 						<tr>
 							<td class="formLabelRequired">
-								<fmt:message key="viewEdit.compound.duration"/>
+								<spring:message code="viewEdit.compound.duration"/>
 							</td>
 							<td class="formField">
 								<input type="text" id="imageChartDurationPeriods" class="formShort" />
@@ -111,15 +111,15 @@
 					<tbody id="enhancedImageChartAttrs">
 						<tr>
 							<td class="formLabelRequired">
-								<fmt:message key="viewEdit.compound.type"/>
+								<spring:message code="viewEdit.compound.type"/>
 							</td>
 							<td class="formField">
 								<input name="enhancedImageChartType" type="radio" 
 									value="<%= EnhancedImageChartType.STATIC.name() %>">
-								<fmt:message key="viewEdit.compound.type.static" /></input> 
+								<spring:message code="viewEdit.compound.type.static" /></input>
 								<input name="enhancedImageChartType" type="radio"
 									value="<%= EnhancedImageChartType.DYNAMIC.name() %>">
-								<fmt:message key="viewEdit.compound.type.dynamic" /></input>
+								<spring:message code="viewEdit.compound.type.dynamic" /></input>
 							</td>
 						</tr>
 					</tbody>
@@ -308,17 +308,17 @@
             	functions = [
                     (data) => { return data.description; },
                     (data) => { return '<select id="compoundPointSelect'+ data.id +'"></select></br></br>' + 
-                    	'<label for="compoundPointColor'+ data.id +'"><span><fmt:message key="viewEdit.compound.point.color"/></span></label>' +
+                    	'<label for="compoundPointColor'+ data.id +'"><span><spring:message code="viewEdit.compound.point.color"/></span></label>' +
                     	'<input id="compoundPointColor'+ data.id +'" type="hidden" value="' + data.viewComponent.color + '"/>' +
-                    	'<label for="compoundPointStrokeWidth'+ data.id +'"><span><fmt:message key="viewEdit.compound.point.strokeWidth"/></span></label>' + 
+                    	'<label for="compoundPointStrokeWidth'+ data.id +'"><span><spring:message code="viewEdit.compound.point.strokeWidth"/></span></label>' +
                     	'<input id="compoundPointStrokeWidth'+ data.id +'" value="' + data.viewComponent.strokeWidth + '" style="width: 20%;"/>'; },
-                    (data) => { return '<label for="compoundPointName'+ data.id +'"><span><fmt:message key="viewEdit.compound.point.alias"/></span></label>' +
+                    (data) => { return '<label for="compoundPointName'+ data.id +'"><span><spring:message code="viewEdit.compound.point.alias"/></span></label>' +
                     	'<input id="compoundPointName' + data.id + '" type="text" value="' + defaultIfBlank(data.viewComponent.alias, "") + '"/></br>' +
                     	'<input name="compoundPointLineType'+ data.id +'" type="radio" ' + ((data.viewComponent.lineType === "<%= EnhancedPointLineType.LINE.name() %>" ) ? 'checked="checked"' : '')  +
-                   		' value="<%= EnhancedPointLineType.LINE.name() %>"><fmt:message key="viewEdit.compound.point.lineType.line"/></input>' +
+                   		' value="<%= EnhancedPointLineType.LINE.name() %>"><spring:message code="viewEdit.compound.point.lineType.line"/></input>' +
           				'<input name="compoundPointLineType'+ data.id +'" type="radio" ' + ((data.viewComponent.lineType === "<%= EnhancedPointLineType.SPLINE.name() %>" ) ? 'checked="checked"' : '')  +
-						' value="<%= EnhancedPointLineType.SPLINE.name() %>"><fmt:message key="viewEdit.compound.point.lineType.spline"/></input>' + 
-						'<input id="compoundPointShowPoints' + data.id + '" type="checkbox" ' + (data.viewComponent.showPoints ? 'checked':'') + '><fmt:message key="viewEdit.compound.point.showPoints"/></input>'; }
+						' value="<%= EnhancedPointLineType.SPLINE.name() %>"><spring:message code="viewEdit.compound.point.lineType.spline"/></input>' +
+						'<input id="compoundPointShowPoints' + data.id + '" type="checkbox" ' + (data.viewComponent.showPoints ? 'checked':'') + '><spring:message code="viewEdit.compound.point.showPoints"/></input>'; }
                 ];
             }
             

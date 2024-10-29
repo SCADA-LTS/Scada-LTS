@@ -9,13 +9,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.HtmlComponent;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.view.components.html.*;
 
 import java.io.IOException;
 
 public class HtmlComponentDeserializer extends JsonDeserializer<HtmlBaseComponentDTO> {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
 
     @Override
     public HtmlBaseComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

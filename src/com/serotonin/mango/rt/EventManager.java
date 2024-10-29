@@ -42,7 +42,6 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.web.ws.model.WsEventMessage;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
@@ -139,7 +138,7 @@ public class EventManager implements ILifecycle {
 
 				eventConfirmForUsers.add(user);
 				if(evt.getAlarmLevel() > AlarmLevels.NONE)
-					notifyEventUpdate(user, WsEventMessage.create(evt));
+					notifyEventCreate(user, evt);
 			}
 		}
 
@@ -158,9 +157,9 @@ public class EventManager implements ILifecycle {
 				User admin = userService.getUser("admin");
 				if(admin != null) {
 					eventService.ackEvent(
-							evt.getId(),
+							evt,
 							time,
-							admin.getId(),
+							admin,
 							EventInstance.AlternateAcknowledgementSources.MAINTENANCE_MODE,
 							false); // no signaling of AlarmLevel change
 					for(User user: eventConfirmForUsers) {
@@ -450,19 +449,29 @@ public class EventManager implements ILifecycle {
 
 	}
 
-	public void resetHighestAlarmLevels() {
-		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userService, userEventServiceWebSocket);
+	public void notifyEventReset() {
+		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket);
 	}
 
 	public int getHighestAlarmLevel(int userId) {
 		return highestAlarmLevelService.getAlarmLevel(User.onlyId(userId));
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventRaise(int eventId, int userId) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
 			User user = userService.getUser(userId);
 			notifyEventRaise(evt, user);
+		}
+	}
+
+	@Deprecated(since = "2.8.0")
+	public void notifyEventRaise(int eventId) {
+		if(eventId != Common.NEW_ID) {
+			for(int userId: ApplicationBeans.getLoggedUsersBean().getUserIds()) {
+				notifyEventRaise(eventId, userId);
+			}
 		}
 	}
 
@@ -474,6 +483,7 @@ public class EventManager implements ILifecycle {
 		NotifyEventUtils.notifyEventAck(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventAck(int eventId, User user) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -481,10 +491,19 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventAck(int eventId) {
 		if(eventId != Common.NEW_ID) {
-			for (User user : userService.getActiveUsers())
-				notifyEventAck(eventId, user);
+			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
+				notifyEventAck(eventId, userService.getUser(userId));
+		}
+	}
+
+	@Deprecated(since = "2.8.0")
+	public void notifyEventAssignee(int eventId) {
+		if(eventId != Common.NEW_ID) {
+			for (int userId : ApplicationBeans.getLoggedUsersBean().getUserIds())
+				notifyEventAck(eventId, userService.getUser(userId));
 		}
 	}
 
@@ -494,8 +513,9 @@ public class EventManager implements ILifecycle {
 
 	public void notifyEventRtn(EventInstance event) {
 		if(event.getId() != Common.NEW_ID) {
-			for (User user : userService.getActiveUsers())
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
 				notifyEventRtn(event, user);
+			}
 		}
 	}
 
@@ -503,6 +523,7 @@ public class EventManager implements ILifecycle {
 		NotifyEventUtils.notifyEventToggle(highestAlarmLevelService, evt, user, userEventServiceWebSocket);
 	}
 
+	@Deprecated(since = "2.8.0")
 	public void notifyEventToggle(int eventId, int userId) {
 		if(eventId != Common.NEW_ID) {
 			EventInstance evt = eventService.getEvent(eventId);
@@ -511,7 +532,31 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void notifyEventUpdate(User user, WsEventMessage message) {
-		NotifyEventUtils.notifyEventUpdate(user, message, userEventServiceWebSocket);
+	public void notifyEventCreate(User user, EventInstance event) {
+		NotifyEventUtils.notifyEventCreate(event, user, userEventServiceWebSocket);
+	}
+
+	public void notifyEventRaise(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventRaise(event, user);
+			}
+		}
+	}
+
+	public void notifyEventAck(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventAck(event, user);
+			}
+		}
+	}
+
+	public void notifyEventAssignee(EventInstance event) {
+		if(event.getId() != Common.NEW_ID) {
+			for (User user : ApplicationBeans.getLoggedUsersBean().getUsers()) {
+				notifyEventToggle(event, user);
+			}
+		}
 	}
 }

@@ -1,17 +1,28 @@
 package org.scada_lts.utils;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.svg.SvgUtils;
+import org.scada_lts.utils.security.SafeFile;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import static br.org.scadabr.vo.exporter.util.FileUtil.createSvgTempFile;
+
 public final class ValidationUtils {
+
+    private static final Logger LOG = LogManager.getLogger(SafeFile.class);
+
 
     private ValidationUtils() {}
 
@@ -39,6 +50,24 @@ public final class ValidationUtils {
         if (errorXid.isEmpty())
             return "";
         return "Correct id or xid;";
+    }
+
+    public static String validSvg(String xmlContent) {
+        SafeFile safeFile = null;
+        try {
+            File temp = createSvgTempFile(xmlContent);
+            safeFile = SafeFile.safe(temp);
+            if (SvgUtils.isSvg(safeFile)) {
+                return "";
+            }
+        } catch (Exception ex) {
+            LOG.error(LoggingUtils.exceptionInfo(ex));
+        } finally {
+            if(safeFile != null) {
+                safeFile.delete();
+            }
+        }
+        return "Invalid image";
     }
 
     static <T> String msgIfNull(String msg, T value) {

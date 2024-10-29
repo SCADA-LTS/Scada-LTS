@@ -35,24 +35,24 @@
     <table>
       <tbody id="graphicRenderer_analogGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererAnalogMin" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.max"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.max"/></td>
           <td class="formField"><input id="graphicRendererAnalogMax" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererAnalogDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererAnalogImageSet" onchange="graphicRendererEditor.updateSampleImageSet(this)">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select><br/>
             <img id="graphicRendererAnalogImageSetSample"/>
@@ -62,29 +62,29 @@
       
       <tbody id="graphicRenderer_binaryGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererBinaryDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererBinaryImageSet" onchange="graphicRendererEditor.displayBinaryImages($get(this));">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.zero"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.zero"/></td>
           <td class="formField">
             <div id="graphicRendererBinaryImageSetZero" style="width:200px; overflow:auto; white-space:nowrap;"></div>
             <input type="hidden" id="graphicRendererBinaryImageSetZeroMsg"/>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.one"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.one"/></td>
           <td class="formField">
             <div id="graphicRendererBinaryImageSetOne" style="width:200px; overflow:auto; white-space:nowrap;"></div>
             <input type="hidden" id="graphicRendererBinaryImageSetOneMsg"/>
@@ -94,19 +94,19 @@
       
       <tbody id="graphicRenderer_dynamicGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererDynamicMin" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.max"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.max"/></td>
           <td class="formField"><input id="graphicRendererDynamicMax" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererDynamicDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.dynamicImage"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.dynamicImage"/></td>
           <td>
             <select id="graphicRendererDynamicImage" onchange="graphicRendererEditor.updateSampleDynamicImage(this)">
               <option value=""></option>
@@ -121,22 +121,22 @@
       
       <tbody id="graphicRenderer_multistateGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererMultistateDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererMultistateImageSet" onchange="graphicRendererEditor.displayMultistateImages($get(this));">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.state"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.state"/></td>
           <td class="formField" id="graphicRendererMultistateImageSetList">
           </td>
         </tr>
@@ -145,48 +145,48 @@
       <tbody id="graphicRenderer_script" style="display:none;">
         <tr>
           <td colspan="2">
-            <span class="formLabelRequired"><fmt:message key="viewEdit.graphic.script"/></span><br/>
+            <span class="formLabelRequired"><spring:message code="viewEdit.graphic.script"/></span><br/>
             <span class="formField"><textarea id="graphicRendererScriptScript" rows="10" cols="50"></textarea></span>
           </td>
         </tr>
       </tbody>
       
       <tbody id="graphicRenderer_simpleImage" style="display:none;">
-        <tr><td class="formLabelRequired"><fmt:message key="viewEdit.graphic.noConfig"/></td></tr>
+        <tr><td class="formLabelRequired"><spring:message code="viewEdit.graphic.noConfig"/></td></tr>
       </tbody>
       
       <tbody id="graphicRenderer_simple" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayPointName"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayPointName"/></td>
           <td class="formField"><input id="graphicRendererSimpleDisplayPointName" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.styleAttribute"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.styleAttribute"/></td>
           <td class="formField"><input id="graphicRendererSimpleStyleAttribute" type="text"/></td>
         </tr>
       </tbody>
       
       <tbody id="graphicRenderer_thumbnailImage" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.scale"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.scale"/></td>
           <td class="formField"><input id="graphicRendererThumbnailScalePercent" type="text"/></td>
         </tr>
       </tbody>
       <tbody id="graphicRenderer_button" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.whenOnLabel"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.whenOnLabel"/></td>
           <td class="formField"><input id="graphicRendererButtonWhenOnLabel" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.whenOffLabel"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.whenOffLabel"/></td>
           <td class="formField"><input id="graphicRendererButtonWhenOffLabel" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.height"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.height"/></td>
           <td class="formField"><input id="graphicRendererButtonHeight" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.width"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.width"/></td>
           <td class="formField"><input id="graphicRendererButtonWidth" type="text"/></td>
         </tr>
         
@@ -406,9 +406,9 @@
                 var html = "\
                     <table>\
                       <tr>\
-                        <th><fmt:message key="viewEdit.graphic.image"/></th>\
-                        <th><fmt:message key="viewEdit.graphic.stateList"/></th>\
-                        <th><fmt:message key="viewEdit.graphic.default"/></th>\
+                        <th><spring:message code="viewEdit.graphic.image"/></th>\
+                        <th><spring:message code="viewEdit.graphic.stateList"/></th>\
+                        <th><spring:message code="viewEdit.graphic.default"/></th>\
                       </tr>";
 
                 for (var i=0; i<imageSet.imageFilenames.length; i++) {

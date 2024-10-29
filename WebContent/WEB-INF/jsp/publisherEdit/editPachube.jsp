@@ -155,11 +155,11 @@
       <div class="borderDiv marR marB">
         <table>
           <tr>
-            <td colspan="2" class="smallTitle"><fmt:message key="publisherEdit.pachube.props"/> <tag:help id="pachubePublishing"/></td>
+            <td colspan="2" class="smallTitle"><spring:message code="publisherEdit.pachube.props"/> <tag:help id="pachubePublishing"/></td>
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.pachube.apiKey"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.pachube.apiKey"/></td>
             <td class="formField">
               <input type="text" id="apiKey" value="${publisher.apiKey}" class="formLong"/>
               <div id="apiKeyMsg" class="formError" style="display:none;"></div>
@@ -167,7 +167,7 @@
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.pachube.timeoutSeconds"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.pachube.timeoutSeconds"/></td>
             <td class="formField">
               <input type="text" id="timeoutSeconds" value="${publisher.timeoutSeconds}"/>
               <div id="timeoutSecondsMsg" class="formError" style="display:none;"></div>
@@ -175,7 +175,7 @@
           </tr>
           
           <tr>
-            <td class="formLabelRequired"><fmt:message key="publisherEdit.pachube.retries"/></td>
+            <td class="formLabelRequired"><spring:message code="publisherEdit.pachube.retries"/></td>
             <td class="formField">
               <input type="text" id="retries" value="${publisher.retries}"/>
               <div id="retriesMsg" class="formError" style="display:none;"></div>
@@ -191,7 +191,7 @@
   <div class="borderDiv">
     <table width="100%">
       <tr>
-        <td class="smallTitle"><fmt:message key="publisherEdit.points"/></td>
+        <td class="smallTitle"><spring:message code="publisherEdit.points"/></td>
         <td align="right">
           <select id="availablePoints"></select>
           <tag:img png="icon_comp_add" onclick="selectPoint()"/>
@@ -201,14 +201,14 @@
     
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
-        <td><fmt:message key="publisherEdit.point.name"/></td>
-        <td><fmt:message key="publisherEdit.point.status"/></td>
-        <td><fmt:message key="publisherEdit.point.type"/></td>
-        <td><fmt:message key="publisherEdit.pachube.point.feedId"/></td>
-        <td><fmt:message key="publisherEdit.pachube.point.dataStreamId"/></td>
+        <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.status"/></td>
+        <td><spring:message code="publisherEdit.point.type"/></td>
+        <td><spring:message code="publisherEdit.pachube.point.feedId"/></td>
+        <td><spring:message code="publisherEdit.pachube.point.dataStreamId"/></td>
         <td></td>
       </tr>
-      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><fmt:message key="publisherEdit.noPoints"/></td></tr></tbody>
+      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
       <tbody id="selectedPoints"></tbody>
     </table>
     <div id="pointsMsg" class="formError" style="display:none;"></div>

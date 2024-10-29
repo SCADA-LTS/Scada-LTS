@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
@@ -42,18 +41,16 @@ public class ResetCacheHighestAlarmLevel implements StatefulJob {
 
 	private final IHighestAlarmLevelService highestAlarmLevelService;
 	private final UserEventServiceWebSocket userEventServiceWebSocket;
-	private final UserService userService;
 
 	public ResetCacheHighestAlarmLevel() {
 		this.highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-		this.userService = new UserService();
 		this.userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 	}
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		long time = System.currentTimeMillis();
-		NotifyEventUtils.resetHighestAlarmLevels(highestAlarmLevelService, userService, userEventServiceWebSocket);
+		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket);
 		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed in [" + (System.currentTimeMillis() - time)+ "] ms");
 	}
 }

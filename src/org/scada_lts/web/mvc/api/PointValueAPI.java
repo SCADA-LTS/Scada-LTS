@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.DataTypes;
@@ -13,14 +12,12 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
@@ -321,11 +318,13 @@ public class PointValueAPI {
 
     private static final Log LOG = LogFactory.getLog(PointValueAPI.class);
 
-    private DataPointService dataPointService = new DataPointService();
-    private DataSourceService dataSourceService = new DataSourceService();
+    private final DataPointService dataPointService;
+    private final PointValueService pointValueService;
 
-    @Resource
-    private PointValueService pointValueService;
+    public PointValueAPI(DataPointService dataPointService,PointValueService pointValueService) {
+        this.dataPointService = dataPointService;
+        this.pointValueService = pointValueService;
+    }
 
     private String getValue(MangoValue value, String type) {
 
@@ -356,7 +355,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValue/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<ValueToJSON> getValue(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/point_value/getValue/{xid} id:" + xid);
 
         try {
@@ -365,25 +364,22 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(xid);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
+
+                // API should show datapoint is disabled if datasource is disabled
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
 
                 ValueToJSON v = new ValueToJSON();
                 if (pvt != null)
                     v.set(pvt, dpvo);
                 else
                     v.setDataPoint(dpvo);
-
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -393,7 +389,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValue/id/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValue(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<ValueToJSON> getValue(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("/api/point_value/getValue/id/{id} id:" + id);
 
         try {
@@ -402,25 +398,23 @@ public class PointValueAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(id);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
+
+                // API should show datapoint is disabled if datasource is disabled
+                dpvo.setEnabled(dataPointService.isDataPointRunning(dpvo));
 
                 ValueToJSON v = new ValueToJSON();
                 if (pvt != null)
                     v.set(pvt, dpvo);
                 else
                     v.setDataPoint(dpvo);
-
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -533,7 +527,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValuesFromTime/{ts}/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValuesFromTime(@PathVariable("ts") long ts, @PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<ValuesToJSON> getValuesFromTime(@PathVariable("ts") long ts, @PathVariable("xid") String xid, HttpServletRequest request) {
 
         LOG.info("/api/point_value/getValuesFromTime/{ts}/{xid} ts:" + ts + " id:" + xid);
 
@@ -543,8 +537,6 @@ public class PointValueAPI {
             if (user != null) {
                 long to = System.currentTimeMillis();
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
 
                 List<ValueTime> values = new ArrayList<ValueTime>();
                 String type = null;
@@ -552,16 +544,14 @@ public class PointValueAPI {
                     values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
                 }
                 ValuesToJSON v = new ValuesToJSON(values, dpvo, type, ts, to);
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -571,7 +561,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValuesFromTime/id/{ts}/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValuesFromTimeId(@PathVariable("ts") long ts, @PathVariable("xid") int id, HttpServletRequest request) {
+    public ResponseEntity<ValuesToJSON> getValuesFromTimeId(@PathVariable("ts") long ts, @PathVariable("xid") int id, HttpServletRequest request) {
 
         LOG.info("/api/point_value/getValuesFromTime/{ts}/{xid} ts:" + ts + " id:" + id);
 
@@ -581,25 +571,20 @@ public class PointValueAPI {
             if (user != null) {
                 long to = System.currentTimeMillis();
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-
                 List<ValueTime> values = new ArrayList<ValueTime>();
                 String type = null;
                 for (PointValueTime pvt : pvts) {
                     values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
                 }
                 ValuesToJSON v = new ValuesToJSON(values, dpvo, type, ts, to);
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -611,7 +596,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValuesFromTimePeriod/xid/{xid}/{sts}/{ets}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValuesFromTimePeriodXid(@PathVariable("xid") String xid, @PathVariable("sts") long sts, @PathVariable("ets") long ets, HttpServletRequest request) {
+    public ResponseEntity<ValuesToJSON> getValuesFromTimePeriodXid(@PathVariable("xid") String xid, @PathVariable("sts") long sts, @PathVariable("ets") long ets, HttpServletRequest request) {
 
         LOG.info("/api/point_value/getValuesFromTimePeriod/xid/{id}/{sts}/{ets} id: " + xid + " sts: " + sts + " ets: " + ets);
 
@@ -620,9 +605,6 @@ public class PointValueAPI {
             DataPointVO dpvo = dataPointService.getDataPoint(xid);
             if (user != null) {
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), sts, ets);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-
                 List<ValueTime> values = new ArrayList<ValueTime>();
                 String type = null;
                 if(pvts.size() > 0) {
@@ -636,16 +618,14 @@ public class PointValueAPI {
                     values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
                 }
                 ValuesToJSON v = new ValuesToJSON(values, dpvo, type, sts, ets);
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -655,7 +635,7 @@ public class PointValueAPI {
      * @return
      */
     @RequestMapping(value = "/api/point_value/getValuesFromTimePeriod/{id}/{sts}/{ets}", method = RequestMethod.GET)
-    public ResponseEntity<String> getValuesFromTimePeriod(@PathVariable("id") int id, @PathVariable("sts") long sts, @PathVariable("ets") long ets, HttpServletRequest request) {
+    public ResponseEntity<ValuesToJSON> getValuesFromTimePeriod(@PathVariable("id") int id, @PathVariable("sts") long sts, @PathVariable("ets") long ets, HttpServletRequest request) {
 
         LOG.info("/api/point_value/getValuesFromTimePeriod/{id}/{sts}/{ets} id: " + id + " sts: " + sts + " ets: " + ets);
 
@@ -664,9 +644,6 @@ public class PointValueAPI {
             DataPointVO dpvo = dataPointService.getDataPoint(id);
             if (user != null) {
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), sts, ets);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-
                 List<ValueTime> values = new ArrayList<ValueTime>();
                 String type = null;
                 if(pvts.size() > 0) {
@@ -680,16 +657,14 @@ public class PointValueAPI {
                     values.add(new ValueTime(getValue(pvt.getValue(), type), pvt.getTime()));
                 }
                 ValuesToJSON v = new ValuesToJSON(values, dpvo, type, sts, ets);
-                json = mapper.writeValueAsString(v);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(v, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -1215,8 +1215,11 @@ function disconnectWebsocket() {
 }
 
 function onloadHandlerWebsocket() {
-    let endpoint = scadalts.websocket.endpoints.main;
-    scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+    let location = window.location.href;
+    if(!location.includes('app.shtm')) {
+        let endpoint = scadalts.websocket.endpoints.main;
+        scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+    }
 }
 
 function getAppLocation() {
@@ -1261,6 +1264,34 @@ function OnListWebsocketStats() {
 	} );
 }
 
+function assignEvent(eventId) {
+    MiscDwr.assignEvent(eventId, function(response) {
+        if(response) {
+            hide("assigneeImg"+ eventId);
+            var imgNode = $("assigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_delete.png", mango.i18n["events.unassign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
+function unassignEvent(eventId) {
+    MiscDwr.unassignEvent(eventId, function(response) {
+        if(response) {
+            hide("unassigneeImg"+ eventId);
+            var imgNode = $("unassigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_add.png", mango.i18n["events.assign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
 function isEmpty(value) {
     return !value || (typeof value === "string" && value.trim() === "");
+}
+
+function unescapeHtml(value) {
+   let div = document.createElement("div");
+   div.innerHTML = value;
+   return div.textContent || div.innerText;
 }

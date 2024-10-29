@@ -40,6 +40,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 public class EventsDwr extends BaseDwr {
 	private static final int PAGE_SIZE = 50;
@@ -49,6 +50,7 @@ public class EventsDwr extends BaseDwr {
 	public static final String STATUS_ACTIVE = "A";
 	public static final String STATUS_RTN = "R";
 	public static final String STATUS_NORTN = "N";
+	public static final String STATUS_ASSIGNEE = "U";
 
 	public static final int DATE_RANGE_TYPE_NONE = 1;
 	public static final int DATE_RANGE_TYPE_RELATIVE = 2;
@@ -87,6 +89,9 @@ public class EventsDwr extends BaseDwr {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("events", results);
 		model.put("showControls", false);
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
 
 		response.addData("content",
 				generateContent(request, "eventList.jsp", model));
@@ -181,6 +186,9 @@ public class EventsDwr extends BaseDwr {
 		model.put("events", results);
 		model.put("page", page);
 		model.put("pendingEvents", false);
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
 
 		response.addData("content",
 				generateContent(request, "eventList.jsp", model));

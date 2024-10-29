@@ -6,10 +6,8 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.service.MultiChangesHistoryService;
 import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -28,15 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 public class ChangeDataAPI {
     private static final Log LOG = LogFactory.getLog(ChangeDataAPI.class);
 
-    @Autowired
-    private DataPointService dataPointService;
+    private final DataPointService dataPointService;
+    private final MultiChangesHistoryService multiChangesHistoryService;
 
-    @Resource
-    private PointValueService pointValueService;
-
-    @Resource
-    private MultiChangesHistoryService multiChangesHistoryService;
-
+    public ChangeDataAPI(DataPointService dataPointService, MultiChangesHistoryService multiChangesHistoryService) {
+        this.dataPointService = dataPointService;
+        this.multiChangesHistoryService = multiChangesHistoryService;
+    }
 
     @RequestMapping(value = "/api/cmp/set/{xIdViewAndIdCmp}/{interpretedState}", method = RequestMethod.POST)
     public ResponseEntity<SetValuePointDTO[]> set(

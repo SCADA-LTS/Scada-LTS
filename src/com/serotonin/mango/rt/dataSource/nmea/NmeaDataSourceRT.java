@@ -91,7 +91,7 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             LocalizableMessage message = getSerialExceptionMessage(e, vo.getCommPortId());
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, message);
             log.debug("Error while initializing data source", e);
@@ -102,7 +102,8 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
     }
 
     synchronized private void termNmea() {
-        nmeaReceiver.terminate();
+        if(nmeaReceiver != null)
+            nmeaReceiver.terminate();
     }
 
     //
@@ -131,7 +132,7 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
                     if (parseError == null)
                         parseError = e.getLocalizableMessage();
                 }
-                catch (Exception e) {
+                catch (Throwable e) {
                     if (parseError == null)
                         parseError = new LocalizableMessage("event.exception2", dp.getVO().getName(), e.getMessage());
                 }
@@ -139,7 +140,9 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
         }
 
         if (parseError != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseError);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseError);
+        else
+            returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
     private void receivedMessageImpl(DataPointRT dp, NmeaMessage message, long time) throws Exception {

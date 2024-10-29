@@ -76,11 +76,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.httpImage.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.httpImage.desc"/></c:set>
 <c:set var="dsHelpId" value="httpImageDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -92,7 +92,7 @@
 
 <tag:pointList pointHelpId="httpImagePP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.url"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.url"/></td>
     <td class="formField">
       <input id="url" type="text" class="formLong"/>
       <tag:img png="bullet_go" onclick="window.open($get('url'), 'httpImageTarget')" title="dsEdit.httpImage.openUrl"/>
@@ -100,54 +100,54 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.timeout"/></td>
     <td class="formField"><input id="timeoutSeconds" type="text"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.retries"/></td>
     <td class="formField"><input id="retries" type="text"/></td>
   </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.scalingType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.scalingType"/></td>
     <td class="formField">
       <select id="scaleType" onchange="scaleTypeChanged()">
-        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_NONE %>"/>"><fmt:message key="dsEdit.httpImage.scalingType.none"/></option>
-        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_PERCENT %>"/>"><fmt:message key="dsEdit.httpImage.scalingType.percent"/></option>
-        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_BOX %>"/>"><fmt:message key="dsEdit.httpImage.scalingType.box"/></option>
+        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_NONE %>"/>"><spring:message code="dsEdit.httpImage.scalingType.none"/></option>
+        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_PERCENT %>"/>"><spring:message code="dsEdit.httpImage.scalingType.percent"/></option>
+        <option value="<c:out value="<%= HttpImagePointLocatorVO.SCALE_TYPE_BOX %>"/>"><spring:message code="dsEdit.httpImage.scalingType.box"/></option>
       </select>
     </td>
   </tr>
   
   <tbody id="scalePercentRow">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.scalePercent"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.scalePercent"/></td>
       <td class="formField"><input id="scalePercent" type="text"/></td>
     </tr>
   </tbody>
   
   <tbody id="scaleWidthRow">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.scaleWidth"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.scaleWidth"/></td>
       <td class="formField"><input id="scaleWidth" type="text"/></td>
     </tr>
   </tbody>
   
   <tbody id="scaleHeightRow">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.scaleHeight"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.scaleHeight"/></td>
       <td class="formField"><input id="scaleHeight" type="text"/></td>
     </tr>
   </tbody>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.readLimit"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.readLimit"/></td>
     <td class="formField"><input id="readLimit" type="text"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.httpImage.liveFeed"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.httpImage.liveFeed"/></td>
     <td class="formField"><textarea id="webcamLiveFeedCode" rows="10" cols="37"></textarea></td>
   </tr>
 </tag:pointList>

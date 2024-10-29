@@ -1,12 +1,22 @@
 package org.scada_lts.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.web.ContextWrapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.quartz.ItemsPerSecond;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import javax.servlet.ServletContext;
 
@@ -18,7 +28,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(Parameterized.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(Parameterized.class)
+@PrepareForTest({ApplicationBeans.class})
+// resources/org/powermock/extensions/configuration.properties is not working
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
+        "javax.activation.*", "javax.management.*"})
 public class ThreadPoolExecutorConfigSystemSettingsUtilsTest {
 
 
@@ -56,6 +71,9 @@ public class ThreadPoolExecutorConfigSystemSettingsUtilsTest {
         when(servletContext.getRealPath("")).thenReturn("test/");
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
         Common.ctx = contextWrapper;
+        ObjectMapper objectMapper = new ObjectMapper();
+        PowerMockito.mockStatic(ApplicationBeans.class);
+        when(ApplicationBeans.getObjectMapper()).thenReturn(objectMapper);
     }
 
     @Test

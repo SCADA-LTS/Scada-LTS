@@ -20,7 +20,7 @@
 <%@page import="com.serotonin.mango.Common"%>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.port"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.port"/></td>
   <td class="formField">
     <c:choose>
       <c:when test="${!empty commPortError}">
@@ -39,7 +39,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.baud"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.baud"/></td>
   <td class="formField">
     <sst:select id="baudRate" value="${serialPortSettings != null ? serialPortSettings.baudRate : rxtxDefaultBaudrate}">
       <sst:option>110</sst:option>
@@ -60,29 +60,29 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.flowControlIn"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.flowControlIn"/></td>
   <td class="formField">
     <sst:select id="flowControlIn" value="${serialPortSettings != null ? serialPortSettings.flowControlIn : rxtxDefaultFlowControl}">
-      <sst:option value="NONE"><fmt:message key="dsEdit.serial.flow.none"/></sst:option>
-      <sst:option value="RTS|CTS"><fmt:message key="dsEdit.serial.flow.rtsCts"/></sst:option>
-      <sst:option value="XON|XOFF"><fmt:message key="dsEdit.serial.flow.xonXoff"/></sst:option>
+      <sst:option value="NONE"><spring:message code="dsEdit.serial.flow.none"/></sst:option>
+      <sst:option value="RTS|CTS"><spring:message code="dsEdit.serial.flow.rtsCts"/></sst:option>
+      <sst:option value="XON|XOFF"><spring:message code="dsEdit.serial.flow.xonXoff"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.flowOut"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.flowOut"/></td>
   <td class="formField">
     <sst:select id="flowControlOut" value="${serialPortSettings != null ? serialPortSettings.flowControlOut : rxtxDefaultFlowControl}">
-      <sst:option value="NONE"><fmt:message key="dsEdit.serial.flow.none"/></sst:option>
-      <sst:option value="RTS|CTS"><fmt:message key="dsEdit.serial.flow.rtsCts"/></sst:option>
-      <sst:option value="XON|XOFF"><fmt:message key="dsEdit.serial.flow.xonXoff"/></sst:option>
+      <sst:option value="NONE"><spring:message code="dsEdit.serial.flow.none"/></sst:option>
+      <sst:option value="RTS|CTS"><spring:message code="dsEdit.serial.flow.rtsCts"/></sst:option>
+      <sst:option value="XON|XOFF"><spring:message code="dsEdit.serial.flow.xonXoff"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${serialPortSettings != null ? serialPortSettings.dataBits : rxtxDefaultDataBits}">
       <sst:option value="5">5</sst:option>
@@ -94,7 +94,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${serialPortSettings != null ? serialPortSettings.stopBits : rxtxDefaultStopBits}">
       <sst:option value="1">1</sst:option>
@@ -105,24 +105,24 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.serial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.serial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${serialPortSettings != null ? serialPortSettings.parity : rxtxDefaultParity}">
-      <sst:option value="NONE"><fmt:message key="dsEdit.serial.parity.none"/></sst:option>
-      <sst:option value="ODD"><fmt:message key="dsEdit.serial.parity.odd"/></sst:option>
-      <sst:option value="EVEN"><fmt:message key="dsEdit.serial.parity.even"/></sst:option>
-      <sst:option value="MARK"><fmt:message key="dsEdit.serial.parity.mark"/></sst:option>
-      <sst:option value="SPACE"><fmt:message key="dsEdit.serial.parity.space"/></sst:option>
+      <sst:option value="NONE"><spring:message code="dsEdit.serial.parity.none"/></sst:option>
+      <sst:option value="ODD"><spring:message code="dsEdit.serial.parity.odd"/></sst:option>
+      <sst:option value="EVEN"><spring:message code="dsEdit.serial.parity.even"/></sst:option>
+      <sst:option value="MARK"><spring:message code="dsEdit.serial.parity.mark"/></sst:option>
+      <sst:option value="SPACE"><spring:message code="dsEdit.serial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-    <td class="formLabelRequired" for="inputBufferSize" ><fmt:message key="dsEdit.serial.inputBufferSize"/></td>
+    <td class="formLabelRequired" for="inputBufferSize" ><spring:message code="dsEdit.serial.inputBufferSize"/></td>
     <td><input class="formShort" type="text" id="inputBufferSize" value="${serialPortSettings != null ? serialPortSettings.inputBufferSize : rxtxDefaultInputBufferSize}" /></td>
 </tr>
 
 <tr>
-    <td class="formLabelRequired" for="outputBufferSize" ><fmt:message key="dsEdit.serial.outputBufferSize"/></td>
+    <td class="formLabelRequired" for="outputBufferSize" ><spring:message code="dsEdit.serial.outputBufferSize"/></td>
     <td><input class="formShort" type="text" id="outputBufferSize" value="${serialPortSettings != null ? serialPortSettings.outputBufferSize : rxtxDefaultOutputBufferSize}" /></td>
 </tr>

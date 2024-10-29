@@ -38,6 +38,7 @@ public class AnalogStatistics implements StatisticsGenerator {
     private boolean noData = true;
     private long realStart;
     private final long end;
+    private final long start;
 
     // State values.
     private long lastTime = -1;
@@ -56,6 +57,7 @@ public class AnalogStatistics implements StatisticsGenerator {
     }
 
     public AnalogStatistics(Double startValue, long start, long end) {
+        this.start = start;
         this.end = end;
 
         if (startValue != null) {
@@ -175,11 +177,28 @@ public class AnalogStatistics implements StatisticsGenerator {
         return toString();
     }
 
+    public long getStart() {
+        return start;
+    }
+
     @Override
     public String toString() {
-        return "{minimum: " + minimum + ", minTime=" + minTime + ", maximum: " + maximum + ", maxTime=" + maxTime
-                + ", average: " + average + ", sum: " + sum + ", count: " + count + ", noData: " + noData
-                + ", realStart: " + realStart + ", end: " + end + "}";
+        return "AnalogStatistics{" +
+                "minimum=" + minimum +
+                ", minTime=" + minTime +
+                ", maximum=" + maximum +
+                ", maxTime=" + maxTime +
+                ", average=" + average +
+                ", sum=" + sum +
+                ", count=" + count +
+                ", noData=" + noData +
+                ", realStart=" + realStart +
+                ", start=" + start +
+                ", end=" + end +
+                ", lastTime=" + lastTime +
+                ", realDuration=" + realDuration +
+                ", lastValue=" + lastValue +
+                '}';
     }
 
     public static void main(String[] args) {

@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.dataSource.http;
 
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +38,8 @@ import com.serotonin.util.StringUtils;
  * @author Matthew Lohbihler
  */
 public class HttpReceiverDataSourceRT extends EventDataSource implements HttpMulticastListener {
+
+    public static final int INITIALIZATION_EXCEPTION_EVENT = 1;
     private final Log log = LogFactory.getLog(HttpReceiverDataSourceRT.class);
     private final HttpReceiverDataSourceVO vo;
 
@@ -51,14 +55,26 @@ public class HttpReceiverDataSourceRT extends EventDataSource implements HttpMul
     //
     @Override
     public void initialize() {
-        Common.ctx.getHttpReceiverMulticaster().addListener(this);
+        try {
+            Common.ctx.getHttpReceiverMulticaster().addListener(this);
+            returnToNormal(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis());
+        } catch (Throwable e) {
+            raiseEvent(INITIALIZATION_EXCEPTION_EVENT,
+                    System.currentTimeMillis(), true, new LocalizableMessage(
+                            "event.initializationError", e.getMessage()));
+            return;
+        }
         super.initialize();
     }
 
     @Override
     public void terminate() {
         super.terminate();
-        Common.ctx.getHttpReceiverMulticaster().removeListener(this);
+        try {
+            Common.ctx.getHttpReceiverMulticaster().removeListener(this);
+        } catch (Throwable e) {
+            log.warn(LoggingUtils.info(e, this), e);
+        }
     }
 
     //

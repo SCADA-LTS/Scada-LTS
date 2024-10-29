@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,12 +39,16 @@ public class IEC101DataSource extends PollingDataSource {
 	@Override
 	protected void doPoll(long time) {
 		try {
+			if(iec101Master == null)
+				throw new IllegalStateException("Data source is not initialized!");
 			iec101Master.doPoll();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Exception e) {
-			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
+			LOG.error(LoggingUtils.info(e, this));
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			return;
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -58,8 +63,15 @@ public class IEC101DataSource extends PollingDataSource {
 						.getValue(), pointLocator.getDataTypeId());
 				Calendar ts = Calendar.getInstance();
 				ts.setTimeInMillis(dataElement.getTimestamp());
-				dataPoint.updatePointValue(new PointValueTime(value, ts
-						.getTimeInMillis()));
+				try {
+					dataPoint.updatePointValue(new PointValueTime(value, ts
+							.getTimeInMillis()));
+					returnToNormal(POINT_READ_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+				} catch (Exception e) {
+					raiseEvent(POINT_READ_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+							new LocalizableMessage("event.exception2", vo.getName(), e
+									.getMessage()), dataPoint);
+				}
 			}
 		}
 	}
@@ -85,11 +97,12 @@ public class IEC101DataSource extends PollingDataSource {
 				iec101Master.setPointCommand(ioa, select, qualifier, valueTime
 						.getIntegerValue());
 			}
-		} catch (Exception e) {
-			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, new Date().getTime(), true,
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
+			raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			e.printStackTrace();
+							.getMessage()), dataPoint);
 		}
 	}
 
@@ -112,11 +125,13 @@ public class IEC101DataSource extends PollingDataSource {
 		this.iec101Master = iec101Master;
 		try {
 			iec101Master.init(vo.getGiRelativePeriod());
-		} catch (Exception e) {
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
+			return;
 		}
 		super.initialize();
 	}
@@ -125,12 +140,14 @@ public class IEC101DataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			iec101Master.terminate();
-		} catch (Exception e) {
+			if(iec101Master != null)
+				iec101Master.terminate();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this), e);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, new Date().getTime(), true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
-			e.printStackTrace();
 		}
 	}
 

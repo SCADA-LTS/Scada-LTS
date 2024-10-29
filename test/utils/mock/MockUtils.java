@@ -53,7 +53,7 @@ public class MockUtils {
         when(Common.getUser()).thenReturn(user);
         when(Common.getUser(any(HttpServletRequest.class))).thenReturn(user);
 
-        PropertiesUtils propertiesUtils = new PropertiesUtils("WEB-INF/classes/env");
+        PropertiesUtils propertiesUtils = new PropertiesUtils("env");
         when(Common.getEnvironmentProfile()).thenReturn(propertiesUtils);
     }
 

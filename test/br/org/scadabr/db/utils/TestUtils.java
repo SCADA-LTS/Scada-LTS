@@ -6,6 +6,7 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -59,8 +60,8 @@ public final class TestUtils {
 		user.setHomeUrl("url");
 		user.setReceiveAlarmEmails(1);
 		user.setReceiveOwnAuditEvents(true);
-		user.setDataSourcePermissions(new ArrayList<Integer>());
-		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
+		user.setDataSourcePermissions(new ArrayList<>());
+		user.setDataPointPermissions(new ArrayList<>());
 
 		new UserDao().saveUser(user);
 		return user;
@@ -78,8 +79,8 @@ public final class TestUtils {
 		user.setHomeUrl("url");
 		user.setReceiveAlarmEmails(1);
 		user.setReceiveOwnAuditEvents(true);
-		user.setDataSourcePermissions(new ArrayList<Integer>());
-		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
+		user.setDataSourcePermissions(new ArrayList<>());
+		user.setDataPointPermissions(new ArrayList<>());
 		return user;
 	}
 
@@ -96,6 +97,7 @@ public final class TestUtils {
 		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
 		pointLocatorVO.setSettable(true);
 		dataPoint1.setPointLocator(pointLocatorVO);
+		dataPoint1.setEventDetectors(new ArrayList<>());
 		return dataPoint1;
 	}
 
@@ -112,6 +114,23 @@ public final class TestUtils {
 		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
 		pointLocatorVO.setSettable(true);
 		dataPoint1.setPointLocator(pointLocatorVO);
+		dataPoint1.setEventDetectors(new ArrayList<>());
+		return dataPoint1;
+	}
+
+	public static DataPointVO newPointSettable(int id, DataSourceVO<?> dataSource,
+											   int folderId, PointLocatorVO metaPointLocatorVO) {
+		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		dataPoint1.setId(id);
+		dataPoint1.setXid("DP_" + id);
+		dataPoint1.setName("dp_" + id);
+		dataPoint1.setDataSourceId(dataSource.getId());
+		dataPoint1.setDataSourceName(dataSource.getName());
+		dataPoint1.setDataSourceTypeId(dataSource.getType().getId());
+		dataPoint1.setDataSourceXid(dataSource.getXid());
+		dataPoint1.setPointFolderId(folderId);
+		dataPoint1.setPointLocator(metaPointLocatorVO);
+		dataPoint1.setEventDetectors(new ArrayList<>());
 		return dataPoint1;
 	}
 
@@ -128,6 +147,7 @@ public final class TestUtils {
 		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
 		pointLocatorVO.setSettable(false);
 		dataPoint1.setPointLocator(pointLocatorVO);
+		dataPoint1.setEventDetectors(new ArrayList<>());
 		return dataPoint1;
 	}
 

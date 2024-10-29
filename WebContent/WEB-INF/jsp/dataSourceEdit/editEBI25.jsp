@@ -28,7 +28,7 @@
   function readInterface() {
       disableButtons(true);
       cancelEditPoint();
-      $set("readInterfaceMessage", "<fmt:message key="dsEdit.ebi25.startRead"/>");
+      $set("readInterfaceMessage", "<spring:message code="dsEdit.ebi25.startRead"/>");
       DataSourceEditDwr.ebi25ReadInterface($get("host"), $get("port"), $get("keepAlive"), $get("timeout"),
               $get("retries"), function(reader) {
           disableButtons(false);
@@ -51,13 +51,13 @@
   
   function syncTime() {
       disableButtons(true);
-      $set("readInterfaceMessage", "<fmt:message key="dsEdit.ebi25.syncing"/>");
+      $set("readInterfaceMessage", "<spring:message code="dsEdit.ebi25.syncing"/>");
       DataSourceEditDwr.ebi25SyncTime($get("host"), $get("port"), $get("timeout"), $get("retries"), function(result) {
           disableButtons(false);
           if (result)
               $set("readInterfaceMessage", result);
           else
-              $set("readInterfaceMessage", "<fmt:message key="dsEdit.ebi25.synced"/>");
+              $set("readInterfaceMessage", "<spring:message code="dsEdit.ebi25.synced"/>");
       });
   }
   
@@ -73,10 +73,10 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.ebi25.unit"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.ebi25.unit"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.configurationDescription; };
       
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.ebi25.serialNumber"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.ebi25.serialNumber"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.serialNumber; };
   }
   
@@ -116,26 +116,26 @@
 </script>
 
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.ebi25.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.ebi25.desc"/></c:set>
 <c:set var="dsHelpId" value="ebi25DS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.host"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.host"/></td>
           <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.port"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.port"/></td>
           <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.keepAlive"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.keepAlive"/></td>
           <td class="formField"><sst:checkbox id="keepAlive" value="${dataSource.keepAlive}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -145,34 +145,34 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.timeout"/></td>
           <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.retries"/></td>
           <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
         </tr>
         
         <tr><td class="horzSeparator" colspan="2"></td></tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.ebi25.serialNumber"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.ebi25.serialNumber"/></td>
           <td class="formField" id="serialNumber">${dataSource.serialNumber}</td>
         </tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.ebi25.productionDate"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.ebi25.productionDate"/></td>
           <td class="formField" id="productionDate">${dataSource.productionDate}</td>
         </tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.ebi25.hardwareVersion"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.ebi25.hardwareVersion"/></td>
           <td class="formField" id="hardwareVersion">${dataSource.hardwareVersion}</td>
         </tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.ebi25.firmwareVersion"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.ebi25.firmwareVersion"/></td>
           <td class="formField" id="firmwareVersion">${dataSource.firmwareVersion}</td>
         </tr>
         
@@ -185,12 +185,12 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.ebi25.ebi25Interface"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.ebi25.ebi25Interface"/></td></tr>
         
         <tr>
           <td colspan="2" align="center">
-            <input id="readInterfaceBtn" type="button" value="<fmt:message key="dsEdit.ebi25.readInterface"/>" onclick="readInterface();"/>
-            <input id="syncTimeBtn" type="button" value="<fmt:message key="dsEdit.ebi25.syncTime"/>" onclick="syncTime();"/>
+            <input id="readInterfaceBtn" type="button" value="<spring:message code="dsEdit.ebi25.readInterface"/>" onclick="readInterface();"/>
+            <input id="syncTimeBtn" type="button" value="<spring:message code="dsEdit.ebi25.syncTime"/>" onclick="syncTime();"/>
           </td>
         </tr>
         
@@ -199,58 +199,58 @@
 
 <tag:pointList pointHelpId="ebi25PP">
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.index"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.index"/></td>
     <td class="formField" id="index"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.type"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.type"/></td>
     <td class="formField" id="type"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.serialNumber"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.serialNumber"/></td>
     <td class="formField" id="serialNumberPoint"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.productionDate"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.productionDate"/></td>
     <td class="formField" id="productionDatePoint"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.calibrationDate"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.calibrationDate"/></td>
     <td class="formField" id="calibrationDatePoint"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.hardwareVersion"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.hardwareVersion"/></td>
     <td class="formField" id="hardwareVersionPoint"></td>
   </tr>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.ebi25.firmwareVersion"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.ebi25.firmwareVersion"/></td>
     <td class="formField" id="firmwareVersionPoint"></td>
   </tr>
   
   <tbody id="valuePointDetails">
     <tr>
-      <td class="formLabel"><fmt:message key="dsEdit.ebi25.unit"/></td>
+      <td class="formLabel"><spring:message code="dsEdit.ebi25.unit"/></td>
       <td class="formField" id="unit"></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.sampleRate"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.sampleRate"/></td>
       <td class="formField"><input type="text" id="sampleRate"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.lowLimit"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.lowLimit"/></td>
       <td class="formField"><input type="text" id="lowLimit"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.ebi25.highLimit"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.ebi25.highLimit"/></td>
       <td class="formField"><input type="text" id="highLimit"/></td>
     </tr>
   </tbody>

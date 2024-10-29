@@ -18,7 +18,11 @@ const webSocketModule = {
 
     mutations: {
         INIT_WEBSOCKET(state) {
-            let socket = new SockJS(getAppLocation() + state.webSocketUrl);
+            let base = getAppLocation();
+            if(!state.webSocketUrl.includes(base)) {
+                state.webSocketUrl = base + state.webSocketUrl;
+            }
+            let socket = new SockJS(state.webSocketUrl);
             let client = Stomp.over(socket);
             if(!state.debugMode) {
                 client.debug = () => {};

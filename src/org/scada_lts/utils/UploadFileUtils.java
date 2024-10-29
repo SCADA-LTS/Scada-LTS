@@ -431,7 +431,7 @@ public final class UploadFileUtils {
     }
 
     private static Path basePath() {
-        String catalinaHome = System.getenv("CATALINA_HOME");
+        String catalinaHome = System.getProperty("catalina.home");
         return Paths.get(catalinaHome);
     }
 

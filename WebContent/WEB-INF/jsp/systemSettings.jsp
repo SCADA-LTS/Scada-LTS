@@ -33,7 +33,7 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
-    
+
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
@@ -53,11 +53,11 @@
                     var etid = et.typeId +"-"+ et.typeRef1;
                     var content = "<select id='alarmLevel"+ etid +"' ";
                     content += "onchange='updateAlarmLevel("+ et.typeId +", "+ et.typeRef1 +", this.value)'>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.NONE %>"/>'><fmt:message key="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.INFORMATION %>"/>'><fmt:message key="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.URGENT %>"/>'><fmt:message key="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.CRITICAL %>"/>'><fmt:message key="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.LIFE_SAFETY %>"/>'><fmt:message key="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.NONE %>"/>'><spring:message code="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.INFORMATION %>"/>'><spring:message code="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.URGENT %>"/>'><spring:message code="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.CRITICAL %>"/>'><spring:message code="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.LIFE_SAFETY %>"/>'><spring:message code="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>";
                     content += "</select> ";
                     content += "<img id='alarmLevelImg"+ etid +"' src='images/flag_green.png' style='display:none'>";
                     return content;
@@ -109,14 +109,19 @@
             $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>);
 
+
             setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
             setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/> || !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
 
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>);
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>);
         });
 
 <%--
@@ -148,7 +153,7 @@
     }
     
     function dbSizeUpdate() {
-        $set("databaseSize", "<fmt:message key="systemSettings.retrieving"/>");
+        $set("databaseSize", "<spring:message code="systemSettings.retrieving"/>");
         $set("filedataSize", "-");
         $set("totalSize", "-");
         $set("historyCount", "-");
@@ -157,7 +162,7 @@
         hide("refreshImg");
         SystemSettingsDwr.getDatabaseSize(function(data) {
             $set("databaseSize", data.databaseSize);
-            $set("filedataSize", data.filedataSize +" ("+ data.filedataCount +" <fmt:message key="systemSettings.files"/>)");
+            $set("filedataSize", data.filedataSize +" ("+ data.filedataCount +" <spring:message code="systemSettings.files"/>)");
             $set("totalSize", data.totalSize);
             $set("historyCount", data.historyCount);
             show("refreshImg");
@@ -187,7 +192,7 @@
             $get("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>"),
             function() {
                 stopImageFader("saveEmailSettingsImg");
-                setUserMessage("emailMessage", "<fmt:message key="systemSettings.emailSettingsSaved"/>");
+                setUserMessage("emailMessage", "<spring:message code="systemSettings.emailSettingsSaved"/>");
             });
         setUserMessage("emailMessage");
         startImageFader("saveEmailSettingsImg");
@@ -228,7 +233,7 @@
     function saveSystemEventAlarmLevels() {
         SystemSettingsDwr.saveSystemEventAlarmLevels(systemEventAlarmLevels, function() {
                 stopImageFader("saveSystemEventAlarmLevelsImg");
-                setUserMessage("systemEventAlarmLevelsMessage", "<fmt:message key="systemSettings.systemAlarmLevelsSaved"/>");
+                setUserMessage("systemEventAlarmLevelsMessage", "<spring:message code="systemSettings.systemAlarmLevelsSaved"/>");
         });
         setUserMessage("systemEventAlarmLevelsMessage");
         startImageFader("saveSystemEventAlarmLevelsImg");
@@ -237,7 +242,7 @@
     function saveAuditEventAlarmLevels() {
         SystemSettingsDwr.saveAuditEventAlarmLevels(auditEventAlarmLevels, function() {
                 stopImageFader("saveAuditEventAlarmLevelsImg");
-                setUserMessage("auditEventAlarmLevelsMessage", "<fmt:message key="systemSettings.auditAlarmLevelsSaved"/>");
+                setUserMessage("auditEventAlarmLevelsMessage", "<spring:message code="systemSettings.auditAlarmLevelsSaved"/>");
         });
         setUserMessage("auditEventAlarmLevelsMessage");
         startImageFader("saveAuditEventAlarmLevelsImg");
@@ -262,7 +267,7 @@
                     if(a.messages && a.messages.length > 0) {
                         setUserMessage("httpMessage", a.messages[0].contextualMessage);
                     } else {
-                        setUserMessage("httpMessage", "<fmt:message key="systemSettings.httpSaved"/>");
+                        setUserMessage("httpMessage", "<spring:message code="systemSettings.httpSaved"/>");
                     }
                 });
         setUserMessage("httpMessage");
@@ -308,12 +313,14 @@
                 $get("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>"),
                 function(response) {
                     stopImageFader("saveMiscSettingsImg");
                     if (response.hasMessages)
                         setUserMessage("miscMessage", response.messages[0].contextualMessage);
                     else {
-                        setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
+                        setUserMessage("miscMessage", "<spring:message code="systemSettings.miscSaved"/>");
                     }
                 });
         setUserMessage("miscMessage");
@@ -331,7 +338,7 @@
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
                     function() {
                         stopImageFader("saveDataRetentionSettingsImg");
-                        setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.dataRetentionSaved"/>");
+                        setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.dataRetentionSaved"/>");
                     });
             setUserMessage("dataRetentionMessage");
             startImageFader("saveDataRetentionSettingsImg");
@@ -343,15 +350,23 @@
         else
             $set(type, "");
     }
-    
+
     function saveInfoSettings() {
+        var topDescriptionPrefix = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>");
+        var topDescription = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>");
+
         SystemSettingsDwr.saveInfoSettings("0",
-                //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
-                function() {
-                    stopImageFader("saveInfoSettingsImg");
-                    setUserMessage("infoMessage", "<fmt:message key="systemSettings.infoSaved"/>");
-                });
+            $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
+            topDescriptionPrefix,
+            topDescription,
+            function() {
+                stopImageFader("saveInfoSettingsImg");
+                document.getElementById('top-description-prefix').innerText = topDescriptionPrefix;
+                document.getElementById('top-description').innerText = topDescription;
+                setUserMessage("infoMessage", "<spring:message code='systemSettings.infoSaved'/>");
+            }
+        );
+
         setUserMessage("infoMessage");
         startImageFader("saveInfoSettingsImg");
     }
@@ -360,14 +375,14 @@
         SystemSettingsDwr.newVersionCheck($get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
                 function(result) {
                     if (!result)
-                        result = "<fmt:message key="systemSettings.upToDate"/>";
+                        result = "<spring:message code="systemSettings.upToDate"/>";
                     alert(result);
                 }
         );
     }
     
     function purgeNow() {
-        if (confirm("<fmt:message key="systemSettings.purgeDataPointStrategyConfirm"/>")) {
+        if (confirm("<spring:message code="systemSettings.purgeDataPointStrategyConfirm"/>")) {
             SystemSettingsDwr.purgeNow(function() {
                 stopImageFader("purgeNowImg");
                 dbSizeUpdate();
@@ -379,15 +394,15 @@
     function saveLangSettings() {
         SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
             stopImageFader("saveLangSettingsImg");
-            setUserMessage("langMessage", "<fmt:message key="systemSettings.langSaved"/>");
+            setUserMessage("langMessage", "<spring:message code="systemSettings.langSaved"/>");
         });
         setUserMessage("langMessage");
         startImageFader("saveLangSettingsImg");
     }
     
     function checkPurgeAllData() {
-        if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
-            setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
+        if (confirm("<spring:message code="systemSettings.purgeDataConfirm"/>")) {
+            setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.purgeDataInProgress"/>");
             SystemSettingsDwr.purgeAllData(function(msg) {
                 setUserMessage("dataRetentionMessage", msg);
                 dbSizeUpdate();
@@ -432,7 +447,7 @@
     function useDerbyDB() {
     	SystemSettingsDwr.useDerbyDB();
 		SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
 		
     }
@@ -440,14 +455,14 @@
     function useMysqlDB() {
     	SystemSettingsDwr.useMysqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
     
     function useMssqlDB() {
     	SystemSettingsDwr.useMssqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
     
@@ -469,7 +484,7 @@
         jQuery.ajax({
             type: 'GET',
             dataType: 'text',
-            url:myLocation+"/api/resources/imagesRefresh",
+            url:myLocation+"api/resources/imagesRefresh",
             success: function(msg){
                 alert("Success: the resource images has been refreshed");
             },
@@ -494,15 +509,11 @@
       dialog.style.display = 'none';
     }
 
-    function saveCssSettings() {
-      hideCssDialog();
-      saveCustomCssConfig();
-    }
-
     function initCustomCssData() {
       fetchCustomCssConfig().then((val) => {
-        document.getElementById('cssEditor').value = val;
-        updateCodeText(val, '#cssHighlightingContent');
+        let res = JSON.parse(val);
+        document.getElementById('cssEditor').innerHTML = res.content;
+        updateCodeTextEscaped(res.content, '#cssHighlightingContent');
       });
     }
 
@@ -512,7 +523,7 @@
         req.open('GET', customCssUrl, true);
         req.onload = () => {
           if (req.status === 200) {
-            resolve(req.responseText);
+            resolve(req.response);
           } else {
             reject(req.status);
           }
@@ -528,10 +539,18 @@
       return new Promise((resolve, reject) => {
         let req = new XMLHttpRequest();
         req.open('POST', customCssUrl, true);
-        req.setRequestHeader('Content-type', 'application/text');
+        req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        setUserMessage("customCssMessage");
         req.onload = () => {
           if (req.status === 200) {
             resolve(req.responseText);
+            setUserMessage("customCssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
+          } else if (req.status === 400) {
+            let errors = JSON.parse(req.responseText);
+            if(errors.length > 0) {
+              setUserMessage("customCssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
+            }
+            reject(errors);
           } else {
             reject(req.status);
           }
@@ -539,7 +558,12 @@
         req.onerror = () => {
           reject(req.status);
         }
-        req.send(document.getElementById('cssEditor').value);
+        let cssContent = document.getElementById('cssEditor').value;
+        let cssStyle = {
+            content: cssContent
+        };
+        let body = JSON.stringify(cssStyle);
+        req.send(body);
       });
     }
 
@@ -550,41 +574,58 @@
         }
         $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cssEditor = document.getElementById('cssEditor');
+      const cssHighlighting = document.getElementById('cssHighlighting');
+      if (cssEditor && cssHighlighting) {
+        cssEditor.addEventListener('input', () => {
+          updateCodeText(cssEditor.value, '#cssHighlightingContent');
+        });
+        cssEditor.addEventListener('scroll', () => {
+          syncCodeScroll(cssEditor, '#cssHighlighting');
+        });
+      }
+    });
+
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.systemInformation"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.systemInformation"/></span>
           <tag:help id="systemInformation"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveInfoSettingsImg" png="save" onclick="saveInfoSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.version"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.version"/></td>
         <td class="formField"><c:out value="<%= Common.getVersion() %>"/></td>
       </tr>
       <%-- 
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.notify"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.notify"/></td>
         <td class="formField" valign="top">
           <select id="<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>">
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_STABLE %>"/>"><fmt:message key="systemSettings.notifyStable"/></option>
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_RC %>"/>"><fmt:message key="systemSettings.notifyRC"/></option>
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_BETA %>"/>"><fmt:message key="systemSettings.notifyBeta"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_STABLE %>"/>"><spring:message code="systemSettings.notifyStable"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_RC %>"/>"><spring:message code="systemSettings.notifyRC"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_BETA %>"/>"><spring:message code="systemSettings.notifyBeta"/></option>
           </select>
           <tag:img png="accept" title="systemSettings.checkNow" onclick="newVersionCheck()"/>
         </td>
       </tr>
       --%>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#system-info-settings'"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.instanceDescription"/></td>
+        <td align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#system-info-settings'"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.databaseSize"/></td>
         <td class="formField">
           <span id="databaseSize"></span>
           <tag:img id="refreshImg" png="control_repeat_blue" onclick="dbSizeUpdate();" title="common.refresh"/>
@@ -592,24 +633,36 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.filedataSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.filedataSize"/></td>
         <td class="formField" id="filedataSize"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.totalSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.totalSize"/></td>
         <td class="formField" id="totalSize"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.historyCount"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.historyCount"/></td>
         <td class="formField" id="historyCount"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.topPoints"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.topPoints"/></td>
         <td class="formField" id="topPoints"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.eventCount"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.eventCount"/></td>
         <td class="formField" id="eventCount"></td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.top.description.prefix"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 150px"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.top.description"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
+        </td>
       </tr>
       <tr>
         <td colspan="2" id="infoMessage" class="formError"></td>
@@ -621,7 +674,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.systemAlarmLevels"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.systemAlarmLevels"/></span>
           <tag:help id="systemAlarmLevels"/>
         </td>
         <td align="right">
@@ -642,7 +695,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.auditAlarmLevels"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.auditAlarmLevels"/></span>
           <tag:help id="auditAlarmLevels"/>
         </td>
         <td align="right">
@@ -663,7 +716,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.languageSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.languageSettings"/></span>
           <tag:help id="languageSettings"/>
         </td>
         <td align="right">
@@ -674,7 +727,7 @@
 
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.systemLanguage"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.systemLanguage"/></td>
         <td class="formField">
           <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
         </td>
@@ -688,7 +741,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.emailSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.emailSettings"/></span>
           <tag:help id="emailSettings"/>
         </td>
         <td align="right">
@@ -699,46 +752,46 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.smtpHost"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.smtpHost"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.smtpPort"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.smtpPort"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.fromAddress"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.fromAddress"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.fromName"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.fromName"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.auth"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.auth"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>" type="checkbox" onclick="smtpAuthChange()"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.smtpUsername"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.smtpUsername"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.smtpPassword"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.smtpPassword"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.tls"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.tls"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>" type="checkbox"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.contentType"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.contentType"/></td>
         <td class="formField">
           <select id="<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>">
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_BOTH %>"/>"><fmt:message key="systemSettings.contentType.both"/></option>
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_HTML %>"/>"><fmt:message key="systemSettings.contentType.html"/></option>
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_TEXT %>"/>"><fmt:message key="systemSettings.contentType.text"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_BOTH %>"/>"><spring:message code="systemSettings.contentType.both"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_HTML %>"/>"><spring:message code="systemSettings.contentType.html"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_TEXT %>"/>"><spring:message code="systemSettings.contentType.text"/></option>
           </select>
         </td>
       </tr>
@@ -753,7 +806,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.httpSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.httpSettings"/></span>
           <tag:help id="httpSettings"/>
         </td>
         <td align="right">
@@ -763,33 +816,33 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.useProxy"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.useProxy"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>" type="checkbox"
                   onclick="httpUseProxyChange()"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyHost"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyHost"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyPort"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyPort"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyUsername"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyUsername"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyPassword"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyPassword"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
-        <td colspan="2" align="center"><fmt:message key="systemsettings.http.response.headers"/></td>
+        <td colspan="2" align="center"><spring:message code="systemsettings.http.response.headers"/></td>
       </tr>
       <tr>
-        <td colspan="2" align="center"><textarea placeholder="<fmt:message key="systemsettings.http.response.headers"/>" rows="5" cols="60" id="<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"></textarea></td>
+        <td colspan="2" align="center"><textarea placeholder="<spring:message code="systemsettings.http.response.headers"/>" rows="5" cols="60" id="<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"></textarea></td>
       </tr>
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
@@ -801,7 +854,7 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.dataRetentionSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.dataRetentionSettings"/></span>
           <tag:help id="dataRetentionSettings"/>
         </td>
         <td align="right">
@@ -812,12 +865,12 @@
     <table>
       <%--
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.groveLogging"/></td>
         <td class="formField"><input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.GROVE_LOGGING %>"/>"/></td>
       </tr>
       --%>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.purgeEvents"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgeEvents"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>">
@@ -826,7 +879,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.purgeReports"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgeReports"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>">
@@ -835,7 +888,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.futureDateLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.futureDateLimit"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
@@ -844,17 +897,17 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
-        <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
+        <td><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
       </tr>
       <tr>
         <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
+          <input type="button" value="<spring:message code="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
         </td>
       </tr>
       <tr>
         <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
+          <input type="button" value="<spring:message code="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
         </td>
       </tr>
       <tr>
@@ -867,7 +920,7 @@
       <table width="100%">
         <tr>
           <td>
-            <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
+            <span class="smallTitle"><spring:message code="systemSettings.otherSettings"/></span>
             <tag:help id="otherSettings"/>
           </td>
           <td align="right">
@@ -877,89 +930,101 @@
       </table>
       <table>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
+          <td class="formLabelRequired"><spring:message code="systemSettings.uiPerformance"/></td>
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
             <select id="uiPerformanceId" onchange="toUiPerformanceId()">
               <option value=""></option>
-              <option value="1000"><fmt:message key="systemSettings.uiPerformance.veryHigh"/></option>
-              <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
-              <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
-              <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
+              <option value="1000"><spring:message code="systemSettings.uiPerformance.veryHigh"/></option>
+              <option value="2000"><spring:message code="systemSettings.uiPerformance.high"/></option>
+              <option value="5000"><spring:message code="systemSettings.uiPerformance.med"/></option>
+              <option value="10000"><spring:message code="systemSettings.uiPerformance.low"/></option>
             </select>
           </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
          <td class="formField">
            <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
-             <option value="NONE"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
-             <option value="PARTIAL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
-             <option value="ALL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
+             <option value="NONE"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
+             <option value="PARTIAL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
+             <option value="ALL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
            </select>
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.view.forceFullScreen"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.view.forceFullScreen"/></td>
          <td class="formField">
            <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>" />
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.view.hideShortcutDisableFullScreen"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.view.hideShortcutDisableFullScreen"/></td>
          <td class="formField">
            <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.event.pendingCacheEnabled"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingCacheEnabled"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>" type="checkbox" />
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.event.pendingLimit"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingLimit"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.enabled"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.enabled"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingEnabledChange()"/>
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingItemsPerSecondEnabledChange()"/>
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>" type="number" class="formShort"/>
          </td>
         </tr>
         <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.threads.name.additional.length"/></td>
+         <td class="formLabelRequired"><spring:message code="systemsettings.threads.name.additional.length"/></td>
          <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>" type="number" class="formShort"/>
          </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="systemsettings.webresource.graphics.path"/></td>
+          <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
           </td>
           <td colspan="2" id="uploadsPathMessage" class="formError"></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="systemsettings.webresource.uploads.path"/></td>
+          <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
           <td class="formField">
             <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
           </td>
           <td colspan="2" id="graphicsPathMessage" class="formError"></td>
+        </tr>
+        <tr>
+         <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
+          <td class="formField">
+           <input id="<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>" type="checkbox" />
+          </td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><spring:message code="systemsettings.reports.dataPointExtendedNameLengthLimit"/></td>
+          <td class="formField">
+            <input id="<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>" type="number" class="formShort"/>
+          </td>
         </tr>
         <tr>
           <td colspan="2" id="miscMessage" class="formError"></td>
@@ -972,7 +1037,7 @@
     <table align="center" "100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.dbConfiguration"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.dbConfiguration"/></span>
           <tag:help id="dbConfiguration"/>
         </td>
         <td align="right">
@@ -982,20 +1047,20 @@
       </table>
       <table align="center">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.dbConfiguration.Derby"/></td>
         <td class="formField">
           <input id="radioDerby" name="db" type="radio"/>
         </td>
       </tr>
       
        <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Mysql"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.dbConfiguration.Mysql"/></td>
         <td class="formField">
           <input id="radioMysql" name="db" type="radio"/>
         </td>
       </tr>
        <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.dbConfiguration.Mssql"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.dbConfiguration.Mssql"/></td>
         <td class="formField">
           <input id="radioMssql" name="db" type="radio" disabled/>
         </td>
@@ -1003,7 +1068,7 @@
        
        <tr>
         <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
+          <input type="button" value="<spring:message code="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
       <tr>
@@ -1032,27 +1097,27 @@
          <table align="center" "100%">
            <tr>
              <td>
-               <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
+               <span class="smallTitle"><spring:message code="systemSettings.newUI"/></span>
                <tag:help id="newUISettings"/>
              </td>
           </tr>
        </table>
        <table>
                   <tr>
-                    <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
-                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
+                    <td class="formLabelRequired"><spring:message code="systemSettings.smsDomain"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
                   </tr>
                   <tr>
-                    <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
-                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
+                    <td class="formLabelRequired"><spring:message code="systemSettings.amCharts"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
                   </tr>
                   <tr>
-                    <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
-                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
+                    <td class="formLabelRequired"><spring:message code="systemSettings.defaultDataPointLoggingType"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
                   </tr>
                   <tr>
-                    <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
-                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
+                    <td class="formLabelRequired"><spring:message code="systemSettings.environmentSettings"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
                   </tr>
                   <tr>
                     <td colspan="2" id="httpMessage" class="formError"></td>
@@ -1064,14 +1129,14 @@
         <table>
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="systemSettings.customCss.title"/></span>
+                <span class="smallTitle"><spring:message code="systemSettings.customCss.title"/></span>
               </td>
             </tr>
         </table>
         <table>
           <tr>
             <td>
-              <button onclick="showCssDialog()"><fmt:message key="systemSettings.customCss.edit"/></button>
+              <button onclick="showCssDialog()"><spring:message code="systemSettings.customCss.edit"/></button>
             </td>
           </tr>
         </table>
@@ -1083,10 +1148,10 @@
   <div id="css-editor-dialog">
         <div class="css-dialog-content">
           <div>
-            <h2><fmt:message key="systemSettings.customCss.dialog.title"/></h2>
+            <h2><spring:message code="systemSettings.customCss.dialog.title"/></h2>
           </div>
           <div class="note">
-            <fmt:message key="systemSettings.customCss.dialog.note"/>
+            <spring:message code="systemSettings.customCss.dialog.note"/>
           </div>
           <div class="css-dialog-editor">
             <textarea
@@ -1106,11 +1171,16 @@
           <table>
             <tr>
               <td>
-                <button onclick="hideCssDialog()"><fmt:message key="common.cancel"/></button>
+                <button onclick="hideCssDialog()"><spring:message code="common.close"/></button>
               </td>
               <td>
-                <button onclick="saveCssSettings()"><fmt:message key="common.save"/></button>
+                <button onclick="saveCustomCssConfig()"><spring:message code="common.save"/></button>
               </td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td colspan="2" id="customCssMessage" class="formError"></td>
             </tr>
           </table>
           </div>

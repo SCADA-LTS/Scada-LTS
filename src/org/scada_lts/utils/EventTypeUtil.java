@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.event.type.MaintenanceEventType;
 import com.serotonin.mango.rt.event.type.PublisherEventType;
 import com.serotonin.mango.rt.event.type.ScheduledEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 
 /** 
  * Deliver type corresponding with mango.
@@ -38,7 +39,7 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
  */
 public class EventTypeUtil {
 	
-	public static EventType createEventType(int typeId, int typeRef1, int typeRef2)
+	public static EventType createEventType(int typeId, int typeRef1, int typeRef2, int typeRef3)
 			throws SQLException {
 		
 		EventType type;
@@ -58,6 +59,8 @@ public class EventTypeUtil {
 			type = new AuditEventType(typeRef1,typeRef2);
 		} else if (typeId == EventType.EventSources.MAINTENANCE) {
 			type = new MaintenanceEventType(typeRef1);
+		} else if (typeId == EventType.EventSources.DATA_SOURCE_POINT) {
+			type = new DataSourcePointEventType(new DataSourceEventType(typeRef1, typeRef2), typeRef3);
 		} else {
 			throw new ShouldNeverHappenException("Unknown event type: "	+ typeId);
 		}

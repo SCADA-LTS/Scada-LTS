@@ -174,13 +174,26 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.updateCronPattern = updateCronPattern;
     }
 
+    @Override
     public void validate(DwrResponseI18n response) {
+        validate(response, Common.NEW_ID);
+    }
+
+    @Override
+    public void validate(DwrResponseI18n response, int dataPointId) {
         if (StringUtils.isEmpty(script))
             response.addContextualMessage("script", "validate.required");
 
         List<String> varNameSpace = new ArrayList<String>();
         for (IntValuePair point : context) {
             String varName = point.getValue();
+            int pointId = point.getKey();
+
+            if(pointId != Common.NEW_ID && pointId == dataPointId) {
+                response.addContextualMessage("context", "validate.invalidVariable", varName);
+                break;
+            }
+
             if (StringUtils.isEmpty(varName)) {
                 response.addContextualMessage("context", "validate.allVarNames");
                 break;
