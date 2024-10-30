@@ -3,14 +3,17 @@ before(() => {
 	cy.fixture('AlarmNotifications/BasicConfiguration').then((configuration) => {
 		cy.loadConfiguration(configuration);
 		cy.visit('app.shtm#/alarm-notifications');
+		cy.wait(500);
 	});
 });
 
 after(() => {
 	cy.restLogin();
 	cy.visit('data_sources.shtm');
+	cy.wait(500);
 	cy.get('img[src="images/icon_ds_delete.png"]').click({ multiple: true });
 	cy.visit('mailing_lists.shtm');
+	cy.wait(500);
 	for (let i = 0; i < 6; i++) {
 		cy.get('#mailingListsTable > tbody:nth-of-type(2)').click();
 		cy.get('#mailingListDetails #deleteMailingListImg').click();
@@ -27,6 +30,8 @@ after(() => {
 context('Scenario - PLC Alarm Page validation', () => {
 	describe('Test - Validate visible elements', () => {
 		it('Is Header displayed properly', () => {
+			cy.restLogin();
+			cy.visit('app.shtm#/alarm-notifications');
 			cy.get('h1').contains('PLC Alarms Notification List');
 			cy.get(
 				'.v-main__wrap > .container .container > .row .col:nth-of-type(2) .mdi-pencil',
@@ -43,6 +48,8 @@ context('Scenario - PLC Alarm Page validation', () => {
 		});
 
 		it('Is Mailing List select list rendered properly', () => {
+			cy.restLogin();
+			cy.visit('app.shtm#/alarm-notifications');
 			cy.get(
 				'.v-main__wrap > .container .container > .row .col:nth-of-type(3) .v-select',
 			).trigger('click');
@@ -53,7 +60,8 @@ context('Scenario - PLC Alarm Page validation', () => {
 		});
 
 		it('Is Alarm Data Source List rendered properly', () => {
-			cy.restLogin();
+            cy.restLogin();
+            cy.visit('app.shtm#/alarm-notifications');
 			cy.get(
 				'.v-main__wrap > .container .container > .row .col:nth-of-type(3) .v-select',
 			).trigger('click');
@@ -69,7 +77,8 @@ context('Scenario - PLC Alarm Page validation', () => {
 		});
 
 		it('Is Alarm Data Point List rendered properly', () => {
-			cy.restLogin();
+            cy.restLogin();
+            cy.visit('app.shtm#/alarm-notifications');
 			cy.get('.v-treeview > .v-treeview-node:nth-of-type(1) button').trigger('click');
 			cy.get('.v-treeview > .v-treeview-node:nth-of-type(1) > .v-treeview-node__children')
 				.find('div.v-treeview-node')
@@ -81,6 +90,8 @@ context('Scenario - PLC Alarm Page validation', () => {
 		});
 
 		it('Is Handler Settings rendered properly', () => {
+            cy.restLogin();
+            cy.visit('app.shtm#/alarm-notifications');
 			cy.get('button .mdi-pencil').trigger('click');
 			cy.get('.v-dialog--active .v-card__title').contains('Settings');
 			cy.get('.v-dialog--active .v-card__text > div:nth-of-type(1) h3').contains(
@@ -112,6 +123,7 @@ context('Scenario - PLC Alarm Page validation', () => {
 	describe('Test - Basic configuration', () => {
 		it('Create E-mail communication channel', () => {
 			cy.restLogin();
+			cy.visit('app.shtm#/alarm-notifications');
 			cy.get(
 				'.v-treeview > .v-treeview-node:nth-of-type(1) > .v-treeview-node__children > div.v-treeview-node:nth-of-type(1) .v-treeview-node__append .v-input--checkbox:nth-of-type(1)',
 			).trigger('click');
