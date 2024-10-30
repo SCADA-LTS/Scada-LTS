@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -51,7 +52,8 @@ public class ReportChartController extends AbstractController {
         User user = Common.getUser(request);
         Permissions.ensureReportInstancePermission(user, instance);
 
-        ReportChartCreator creator = new ReportChartCreator(Common.getBundle(request));
+        SystemSettingsService service = new SystemSettingsService();
+        ReportChartCreator creator = new ReportChartCreator(Common.getBundle(request), service);
         creator.createContent(instance, reportDao, null, false);
 
         Map<String, byte[]> imageData = new HashMap<String, byte[]>();
