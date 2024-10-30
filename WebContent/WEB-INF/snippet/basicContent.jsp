@@ -23,31 +23,31 @@
     --%><c:otherwise>${mango:htmlText(point, pointValue)}</c:otherwise><%--
   --%></c:choose><%--
 --%></c:set>
-<c:if test="${!empty styleAttribute}"><div style="${styleAttribute}"></c:if>
+<c:if test="${!empty styleAttribute}"><div style="<c:out value="${styleAttribute}"/>"></c:if>
 <c:choose>
   <c:when test='${!empty viewComponent}'>
     <c:choose>
       <c:when test='${empty viewComponent.bkgdColorOverride}'>
-        <span class="simpleRenderer"/><c:out value="${content}" /></span>
+        <span class="simpleRenderer"/>${content}</span>
       </c:when>
       <c:when test='${viewComponent.bkgdColorOverride == "transparent"}'>
-        <span class="simpleRenderer" style="background:transparent;border:0;"/><c:out value="${content}"/></span>
+        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}/></span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${viewComponent.bkgdColorOverride};"/><c:out value="${content}" /></span>
+        <span class="simpleRenderer" style="background-color:<c:out value="${viewComponent.bkgdColorOverride}"/>;"/>${content}</span>
       </c:otherwise>
     </c:choose>
   </c:when>
   <c:otherwise>
     <c:choose>
       <c:when test='${empty pointComponent.bkgdColorOverride}'>
-        <span class="simpleRenderer"/><c:out value="${content}" /></span>
+        <span class="simpleRenderer"/>${content}</span>
       </c:when>
       <c:when test='${pointComponent.bkgdColorOverride == "transparent"}'>
-        <span class="simpleRenderer" style="background:transparent;border:0;"/><c:out value="${content}" /></span>
+        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}</span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${pointComponent.bkgdColorOverride};"/><c:out value="${content}" /></span>
+        <span class="simpleRenderer" style="background-color:<c:out value="${pointComponent.bkgdColorOverride}"/>;"/>${content}</span>
       </c:otherwise>
     </c:choose>
   </c:otherwise>
