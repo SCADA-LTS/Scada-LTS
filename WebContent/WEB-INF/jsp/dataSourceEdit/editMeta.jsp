@@ -28,9 +28,9 @@
       <c:forEach items="${userPoints}" var="dp">
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
-            name : '<c:out value="${dp.extendedName}"/>',
-            xid : '${dp.xid}',
-            type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
+            name : "<c:out value="${dp.extendedName}"/>",
+            xid : "<c:out value="${dp.xid}"/>",
+            type : "<sst:i18n message="${dp.dataTypeMessage}"/>"
         };
       </c:forEach>
       
@@ -172,7 +172,6 @@
               }
           }
           if (!found) {
-              pointsArray[i].name = unescapeHtml(pointsArray[i].name);
               availPoints[availPoints.length] = pointsArray[i];
           }
       }

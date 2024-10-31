@@ -158,6 +158,7 @@
 		        	if (response.hasMessages)
 		                showDwrMessages(response.messages);
 		            else {
+		                hideContextualMessages("scriptDetails");
 		                if (editingScript.id == ${NEW_ID}) {
 		                    stopImageFader($("se"+ editingScript.id +"Img"));
 		                    editingScript.id = response.data.seId;
