@@ -38,9 +38,9 @@
         <table>
           <tr>
             <td class="formLabelRequired"><spring:message code="dsEdit.head.name"/></td>
-            <td class="formField"><input type="text" id="dataSourceName" value="${dataSource.name}"/></td>
+            <td class="formField"><input type="text" id="dataSourceName" value="<c:out value="${dataSource.name}"/>"/></td>
           </tr>
           <tr>
             <td class="formLabelRequired"><spring:message code="common.xid"/></td>
-            <td class="formField"><input type="text" id="dataSourceXid" value="${dataSource.xid}"/></td>
+            <td class="formField"><input type="text" id="dataSourceXid" value="<c:out value="${dataSource.xid}"/>"/></td>
           </tr>
