@@ -550,7 +550,7 @@ public class SystemSettingsService {
         }
     }
     public void saveDataPointExtendedNameLengthInReportsLimitMisc(int dataPointExtendedNameLengthInReportsLimit, DwrResponseI18n response) {
-        if(dataPointExtendedNameLengthInReportsLimit < 0) {
+        if(dataPointExtendedNameLengthInReportsLimit < 4) {
             response.addContextualMessage(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "validate.invalidValue");
         } else {
             saveDataPointExtendedNameLengthInReportsLimitMisc(dataPointExtendedNameLengthInReportsLimit);
