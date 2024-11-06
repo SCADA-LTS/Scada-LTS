@@ -80,18 +80,17 @@ public class Functions {
         String result;
 
         if (text != null && detectOverflow && text.length() > 30) {
-            text = encodeDQuot(text);
             if (StringUtils.isEmpty(colour))
                 result = "<input type='text' readonly='readonly' class='ovrflw' value=\"" + escape(text) + "\"/>";
             else
-                result = "<input type='text' readonly='readonly' class='ovrflw' style='color:" + colour + ";' value=\""
-                        + text + "\"/>";
+                result = "<input type='text' readonly='readonly' class='ovrflw' style='color:" + escape(colour) + ";' value=\""
+                        + escape(text) + "\"/>";
         }
         else {
             if (StringUtils.isEmpty(colour))
                 result = "<span>" + escape(text) + "</span>";
             else
-                result = "<span style='color:" + colour + ";'>" + escape(text) + "</span>";
+                result = "<span style='color:" + escape(colour) + ";'>" + escape(text) + "</span>";
         }
 
         return result;

@@ -78,7 +78,9 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.body.access.denied.regex";
     private static final String SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.body.access.granted.regex";
     private static final String SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY = "scadalts.security.http.body.protect.enabled";
-    private static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "systemsettings.reports.data-point-extended-name-length.limit";
+    private static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT_KEY = "systemsettings.reports.data-point-extended-name-length.limit";
+
+    private static final String DATA_TYPE_ALPHANUMERIC_SAVE_VALUE_AS_ESCAPED_KEY = "data-type.alphanumeric.save-value-as-escaped";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -641,11 +643,21 @@ public final class SystemSettingsUtils {
 
     public static int getDataPointExtendedNameLengthInReportsLimit() {
         try {
-            String config = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, "65");
+            String config = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT_KEY, "65");
             return Integer.parseInt(config);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 66;
+        }
+    }
+
+    public static boolean isDataTypeAlphanumericSaveValueAsEscaped() {
+        try {
+            String dataPointTypeAlphanumericEscaped = ScadaConfig.getInstance().getConf().getProperty(DATA_TYPE_ALPHANUMERIC_SAVE_VALUE_AS_ESCAPED_KEY, "true");
+            return Boolean.parseBoolean(dataPointTypeAlphanumericEscaped);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
         }
     }
 }
