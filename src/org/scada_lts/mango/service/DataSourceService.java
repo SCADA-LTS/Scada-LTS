@@ -284,4 +284,8 @@ public class DataSourceService implements MangoDataSource {
 		Common.ctx.getRuntimeManager().saveDataSource(vo);
 		return vo.isEnabled();
 	}
+
+	public boolean isBacNetDataSourcePortUsed(int excludeId, int port) {
+		return DAO.getInstance().isBacNetDataSourcePortUsed(excludeId, port);
+	}
 }

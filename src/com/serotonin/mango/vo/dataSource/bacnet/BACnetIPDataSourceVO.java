@@ -42,6 +42,7 @@ import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * @author Matthew Lohbihler
@@ -246,6 +247,11 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
         }
         catch (IllegalArgumentException e) {
             response.addContextualMessage("broadcastAddress", "common.default", e.getMessage());
+        }
+
+        DataSourceService dataSourceService = new DataSourceService();
+        if(getPort()!=0 && dataSourceService.isBacNetDataSourcePortUsed(getId(), getPort())){
+            response.addContextualMessage("port", "Bacnet.invalid.port");
         }
 
         try {

@@ -141,7 +141,12 @@
     function toggleDataSourceCB(result) {
         var imgNode = $("dsStatusImg");
         stopImageFader(imgNode);
-        setDataSourceStatusImg(result.enabled, imgNode);
+
+		if (result.error) {
+			return;
+		}
+
+		setDataSourceStatusImg(result.enabled, imgNode);
         getAlarms();
     }
 
