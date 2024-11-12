@@ -142,11 +142,11 @@
         var imgNode = $("dsStatusImg");
         stopImageFader(imgNode);
 
-		if (result.error) {
-			return;
-		}
+        if (result.error) {
+        	return;
+        }
 
-		setDataSourceStatusImg(result.enabled, imgNode);
+        setDataSourceStatusImg(result.enabled, imgNode);
         getAlarms();
     }
 
