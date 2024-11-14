@@ -43,6 +43,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
+import com.serotonin.bacnet4j.type.enumerated.ObjectType;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.web.dwr.beans.*;
@@ -2989,5 +2990,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         response.addData("id", dataPointCopy.getId());
 
         return response;
+    }
+    public String getObjectTypeName(int objectTypeId) {
+        ObjectType objectType = new ObjectType(objectTypeId);
+        return objectType.toString();
     }
 }

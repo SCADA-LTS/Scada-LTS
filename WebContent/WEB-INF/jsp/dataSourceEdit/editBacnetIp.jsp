@@ -176,8 +176,21 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.device"/>";
-      pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.remoteDeviceIp; };
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.device"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return '<div style="text-align: center;">' + p.pointLocator.remoteDeviceIp + '</div>';};
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.objectType"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function (p) {
+      const element = document.createElement("div");
+      element.style.textAlign = "center";
+
+      DataSourceEditDwr.getObjectTypeName(p.pointLocator.objectTypeId, function (result) {
+        element.innerHTML = result;
+      });
+
+      return element;
+    };
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.objectInstanceNumber"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function(p) {return '<div style="text-align: center;">' + p.pointLocator.objectInstanceNumber + '</div>';};
   }
 
   function editPointCBImpl(locator) {
