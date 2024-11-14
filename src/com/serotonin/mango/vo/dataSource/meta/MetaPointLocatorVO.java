@@ -212,7 +212,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 break;
             }
 
-            varNameSpace.add(escape(varName));
+            varNameSpace.add(varName);
         }
 
         if (!DataTypes.CODES.isValidId(dataTypeId))

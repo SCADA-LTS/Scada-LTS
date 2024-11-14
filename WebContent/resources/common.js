@@ -1309,3 +1309,366 @@ function setValueInNode(id, text) {
        node.value = text;
    }
 }
+
+function ScriptPointsContext(startContext, points) {
+
+    this.contextArray = new Array();
+    this.pointsArray = new Array();
+    this.contextTableId = "contextTable";
+    this.contextTableEmptyId = "contextTableEmpty";
+    this.contextTableHeadersId = "contextTableHeaders";
+    this.allPointsListId = "allPointsList";
+
+    this.initContextArray = function (context, points) {
+       console.log('initContextArray context: ', context);
+       console.log('initContextArray points: ', points);
+       this.pointsArray = points;
+       dwr.util.removeAllRows(this.contextTableId);
+       for (let i = 0; i < context.length; i++) {
+            let row = this.addToContextArray(context[i].key, context[i].value);
+            this.writeContextArray(row);
+       }
+       this.updatePointsList();
+    }
+
+    this.convertToSave = function () {
+       let context = new Array();
+       for (let i = 0; i < this.contextArray.length; i++) {
+          context[context.length] = {
+              key : this.contextArray[i].pointId,
+              value : this.contextArray[i].scriptVarName
+          };
+       }
+       return context;
+    }
+
+    this.addPointToContext = function () {
+        let pointId = $get(this.allPointsListId);
+        let row = this.addToContextArray(pointId, "p"+ pointId);
+        this.writeContextArray(row);
+    }
+
+    this.addToContextArray = function (pointId, scriptVarName) {
+       let data = getElement(this.pointsArray, pointId);
+       if (data) {
+          this.contextArray[this.contextArray.length] = {
+              pointId : pointId,
+              pointName : data.name,
+              xid : data.xid,
+              pointType : data.type,
+              scriptVarName : scriptVarName
+          };
+          return this.contextArray[this.contextArray.length - 1];
+       }
+       return null;
+    }
+
+    this.removeFromContextArray = function (pointId) {
+       for (let i = 0; i < this.contextArray.length; i++) {
+          let context = this.contextArray[i];
+          if (context.pointId == pointId) {
+              this.removeContextArray(context);
+              this.contextArray.splice(i, 1);
+              this.updatePointsList();
+          }
+       }
+    }
+
+    this.writeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          dwr.util.addRows(this.contextTableId, [row],
+              [
+                  function(data) { return "<span>" + data.pointName + "</span>" },
+                  function(data) { return "<span>" + data.xid + "</span>"; },
+                  function(data) { return data.pointType; },
+                  function(data) {
+                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                                  "onblur='scriptPointsContext.updatePoint("+ data.pointId +",\'scriptVarName\', this.value)'/>";
+                  },
+                  function(data) {
+                          return "<img src='images/bullet_delete.png' class='ptr' "+
+                                  "onclick='scriptPointsContext.removeFromContextArray("+ data.pointId +")'/>";
+                  }
+              ],
+              {
+                  rowCreator:function(options) {
+                      var tr = document.createElement("tr");
+                      tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                      return tr;
+                  }
+              });
+      }
+      this.updatePointsList();
+    }
+
+    this.removeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          this.removeRow(this.contextTableId, row, [1], ["xid"]);
+       }
+    }
+
+    this.updatePointsList = function () {
+       let availPoints = new Array();
+       for (let i = 0; i < this.pointsArray.length; i++) {
+          let found = false;
+          for (let j = 0; j < this.contextArray.length; j++) {
+              if (this.contextArray[j].pointId == this.pointsArray[i].id) {
+                  found = true;
+                  break;
+              }
+          }
+          if (!found) {
+              availPoints[availPoints.length] = this.pointsArray[i];
+          }
+       }
+       this.addOptions(this.allPointsListId, availPoints, "id", "name");
+       jQuery("#" + this.allPointsListId).trigger('chosen:updated');
+    }
+
+    this.addOptions = function (id, availPoints, key, value) {
+      document.getElementById(id).options.length = 0;
+      let select = document.getElementById(id);
+      for (let i = 0; i < availPoints.length; i++) {
+          let opt = document.createElement('option');
+          opt.value = availPoints[i][key];
+          opt.innerHTML = availPoints[i][value];
+          select.appendChild(opt);
+      }
+    }
+
+    this.removeRow = function (tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+      let table = document.getElementById(tableId);
+      let rows = table.rows;
+      let toDeleteIndexes = new Array();
+      for (let i = 0; i < rows.length; i++) {
+          let row = rows[i];
+          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+              toDeleteIndexes[toDeleteIndexes.length] = i;
+          }
+      }
+
+      for(let i = 0; i < toDeleteIndexes.length; i++) {
+          table.deleteRow(toDeleteIndexes[i]);
+      }
+    }
+
+    this.equalsByOptions = function (row, obj, rowOptions, objOptions) {
+      for (let i = 0; i < objOptions.length; i++) {
+          let cellValue = row.cells[rowOptions[i]].textContent;
+          let objectValue = obj[objOptions[i]];
+          if (!cellValue || !objectValue) {
+              return false;
+          }
+          if (cellValue != objectValue) {
+              return false;
+          }
+      }
+      return true;
+    }
+
+    this.updatePoint = function (pointId, key, value) {
+        var item = getElement(this.contextArray, pointId, "pointId");
+        if (item)
+            item[key] = value;
+    }
+
+    this.initContextArray(startContext, points);
+}
+
+function ReportPointsContext(startContext, points) {
+
+    this.contextArray = new Array();
+    this.pointsArray = new Array();
+    this.contextTableId = "contextTable";
+    this.contextTableEmptyId = "contextTableEmpty";
+    this.contextTableHeadersId = "contextTableHeaders";
+    this.allPointsListId = "allPointsList";
+
+    this.initContextArray = function (context, points) {
+       console.log('initContextArray context: ', context);
+       console.log('initContextArray points: ', points);
+       this.pointsArray = points;
+       dwr.util.removeAllRows(this.contextTableId);
+       for (let i = 0; i < context.length; i++) {
+            let row = this.addToContextArray(context[i].pointId, context[i].colour, context[i].consolidatedChart);
+            this.writeContextArray(row);
+       }
+       this.updatePointsList();
+    }
+
+    this.convertToSave = function () {
+       let context = new Array();
+       for (let i = 0; i < this.contextArray.length; i++) {
+          context[context.length] = {
+                pointId: this.contextArray[i].pointId,
+                pointXid: this.contextArray[i].xid,
+                colour: this.contextArray[i].colour,
+                consolidatedChart: this.contextArray[i].consolidatedChart
+          };
+       }
+       return context;
+    }
+
+    this.addPointToContext = function () {
+        let pointId = $get(this.allPointsListId);
+        let reportRow = this.addToContextArray(pointId, "", true);
+        this.writeContextArray(reportRow);
+    }
+
+    this.addToContextArray = function (pointId, colour, consolidatedChart) {
+       let data = getElement(this.pointsArray, pointId);
+       if (data) {
+          this.contextArray[this.contextArray.length] = {
+                pointId: pointId,
+                pointXid: data.xid,
+                pointName : data.name,
+                pointType : data.dataTypeMessage,
+                colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
+                consolidatedChart : consolidatedChart
+          };
+          return this.contextArray[this.contextArray.length - 1];
+       }
+       return null;
+    }
+
+    this.writeContextArray = function (row) {
+        if (this.contextArray.length == 0) {
+            show($(this.contextTableEmptyId));
+            hide($(this.contextTableHeadersId));
+        } else {
+            hide($(this.contextTableEmptyId));
+            show($(this.contextTableHeadersId));
+            dwr.util.addRows(this.contextTableId, [row],
+                [
+                    function(data) { return data.pointName; },
+                    function(data) { return data.pointXid; },
+                    function(data) { return data.pointType; },
+                    function(data) {
+                            return "<input type='text' value='"+ data.colour +"' "+
+                                    "onblur='reportPointsContext.updatePoint("+ data.pointId +", \"colour\", this.value)'/>";
+                    },
+                    function(data) {
+                        return "<input type='checkbox'"+ (data.consolidatedChart ? " checked='checked'" : "") +
+                                " onclick='reportPointsContext.updatePoint("+ data.pointId +", \"consolidatedChart\", this.checked)'/>";
+                    },
+                    function(data) {
+                            return "<img src='images/bullet_delete.png' class='ptr' "+
+                                    "onclick='reportPointsContext.removeFromContextArray("+ data.pointId +")'/>";
+                    }
+                ],
+                {
+                    rowCreator:function(options) {
+                        var tr = document.createElement("tr");
+                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                        return tr;
+                    },
+                    cellCreator:function(options) {
+                        var td = document.createElement("td");
+                        if (options.cellNum == 4)
+                            td.align = "center";
+                        return td;
+                    }
+                });
+        }
+        this.updatePointsList();
+    }
+
+    this.removeFromContextArray = function (pointId) {
+       for (let i = 0; i < this.contextArray.length; i++) {
+          let context = this.contextArray[i];
+          if (context.pointId == pointId) {
+              this.removeContextArray(context);
+              this.contextArray.splice(i, 1);
+              this.updatePointsList();
+          }
+       }
+    }
+
+    this.removeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          this.removeRow(this.contextTableId, row, [1], ["pointXid"]);
+       }
+    }
+
+    this.updatePointsList = function () {
+       let availPoints = new Array();
+       for (let i = 0; i < this.pointsArray.length; i++) {
+          let found = false;
+          for (let j = 0; j < this.contextArray.length; j++) {
+              if (this.contextArray[j].pointId == this.pointsArray[i].id) {
+                  found = true;
+                  break;
+              }
+          }
+          if (!found) {
+              availPoints[availPoints.length] = this.pointsArray[i];
+          }
+       }
+       this.addOptions(this.allPointsListId, availPoints, "id", "name");
+       jQuery("#" + this.allPointsListId).trigger('chosen:updated');
+    }
+
+    this.addOptions = function (id, availPoints, key, value) {
+      document.getElementById(id).options.length = 0;
+      let select = document.getElementById(id);
+      for (let i = 0; i < availPoints.length; i++) {
+          let opt = document.createElement('option');
+          opt.value = availPoints[i][key];
+          opt.innerHTML = availPoints[i][value];
+          select.appendChild(opt);
+      }
+    }
+
+    this.removeRow = function (tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+      let table = document.getElementById(tableId);
+      let rows = table.rows;
+      let toDeleteIndexes = new Array();
+      for (let i = 0; i < rows.length; i++) {
+          let row = rows[i];
+          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+              toDeleteIndexes[toDeleteIndexes.length] = i;
+          }
+      }
+
+      for(let i = 0; i < toDeleteIndexes.length; i++) {
+          table.deleteRow(toDeleteIndexes[i]);
+      }
+    }
+
+    this.equalsByOptions = function (row, obj, rowOptions, objOptions) {
+      for (let i = 0; i < objOptions.length; i++) {
+          let cellValue = row.cells[rowOptions[i]].textContent;
+          let objectValue = obj[objOptions[i]];
+          if (!cellValue || !objectValue) {
+              return false;
+          }
+          if (cellValue != objectValue) {
+              return false;
+          }
+      }
+      return true;
+    }
+
+    this.updatePoint = function (pointId, key, value) {
+        var item = getElement(this.contextArray, pointId, "pointId");
+        if (item)
+            item[key] = value;
+    }
+
+    this.initContextArray(startContext, points);
+}

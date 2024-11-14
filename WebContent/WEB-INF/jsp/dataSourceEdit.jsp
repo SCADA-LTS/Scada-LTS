@@ -179,7 +179,6 @@
 
         if (currentPoint)
             stopImageFader("editImg"+ currentPoint.id);
-        escapePoints(points);
         dwr.util.removeAllRows("pointsList");
         dwr.util.addRows("pointsList", points, pointListColumnFunctions, pointListOptions);
     }
