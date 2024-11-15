@@ -288,13 +288,13 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
 
         if (count > MAX_RECURSION) {
-            handleScriptError(runtime, dataPoint, new LocalizableMessage("event.meta.recursionFailure"));
+            handleRecursiveError(runtime, dataPoint, new LocalizableMessage("event.meta.recursionFailure"));
             String msg = MessageFormat.format("Recursion failure: exceeded MAX_RECURSION: expected <= {0} but was {1}, Context: {2}",
                     String.valueOf(MAX_RECURSION), count, generateContext(dataPoint, dataSource));
             LOG.warn(msg);
             return;
         } else {
-            returnToNormal(runtime, dataPoint);
+            returnToNormalRecursive(runtime, dataPoint);
         }
 
         sourceIds.add(dataPoint.getId());
@@ -370,6 +370,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         returnToNormal(System.currentTimeMillis(), dataPoint);
     }
 
+    protected void handleRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseRecursiveError(runtime, dataPoint, message);
+    }
+
     protected void handleScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
     }
@@ -380,6 +384,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void returnToNormal(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalScript(runtime, dataPoint);
+    }
+
+    protected void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalRecursive(runtime, dataPoint);
     }
 
     protected void returnToNormalContext(long runtime, DataPointRT dataPoint) {
