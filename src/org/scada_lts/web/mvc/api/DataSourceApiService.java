@@ -5,6 +5,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.model.DataSourceIdentifier;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.utils.ApiUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
@@ -15,10 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.ApiUtils.idExists;
-import static org.scada_lts.utils.ApiUtils.validateObject;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
@@ -59,10 +60,10 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Source cannot be null.", dataSource);
 
-        DataSourceVO<?> vo = toDataSourceVO(request, dataSource);
+        DataSourceVO<?> fromRequest = toDataSourceVO(request, dataSource, ApiUtils::validateObjectForCreate);
         DataSourceJson response;
         try {
-            DataSourceVO<?> created = dataSourceService.createDataSource(vo);
+            DataSourceVO<?> created = dataSourceService.createDataSource(fromRequest);
             response = DataSourcePointJsonFactory.getDataSourceJson(created);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
@@ -75,7 +76,7 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Source cannot be null.", dataSource);
         getDataSourceFromDatabase(request, dataSource.getXid(), dataSource.getId());
-        DataSourceVO<?> fromRequest = toDataSourceVO(request, dataSource);
+        DataSourceVO<?> fromRequest = toDataSourceVO(request, dataSource, ApiUtils::validateObject);
         try {
             dataSourceService.updateAndInitializeDataSource(fromRequest);
         } catch (Exception ex) {
@@ -211,14 +212,15 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         return response;
     }
 
-    private static DataSourceVO<?> toDataSourceVO(HttpServletRequest request, DataSourceJson dataSource) {
+    private static DataSourceVO<?> toDataSourceVO(HttpServletRequest request, DataSourceJson dataSource,
+                                                  BiConsumer<HttpServletRequest, DataSourceVO<?>> doValidate) {
         DataSourceVO<?> dataSourceVO;
         try {
             dataSourceVO = dataSource.createDataSourceVO();
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        validateObject(request, dataSourceVO);
+        doValidate.accept(request, dataSourceVO);
         return dataSourceVO;
     }
 }

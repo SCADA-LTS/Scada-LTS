@@ -495,7 +495,15 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 
 	@Override
 	public void validate(DwrResponseI18n response) {
+		validate(response, id);
+	}
 
+	@Override
+	public void validateForCreate(DwrResponseI18n response) {
+		validate(response, -1);
+	}
+
+	private void validate(DwrResponseI18n response, int id) {
 		DataSourceService dataSourceService = new DataSourceService();
 		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
 

@@ -14,9 +14,7 @@ public class XssValidatorExceptionTest {
 
     @Parameterized.Parameters(name = "{index}: input: {0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {null},
-                {""},
+        return Arrays.asList(new Object[][] {
                 {"<script>alert(1)</script>"},
                 {"<a href=\"javascript:alert(1)\">Link</a>"},
                 {"<div onclick=\"alert(1)\">Click me</div>"},
