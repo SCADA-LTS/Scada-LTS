@@ -40,6 +40,7 @@ public class MetaDataSourceRT extends DataSourceRT {
     public static final int EVENT_TYPE_CONTEXT_POINT_DISABLED = 1;
     public static final int EVENT_TYPE_SCRIPT_ERROR = 2;
     public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
+    public static final int EVENT_TYPE_RECURSIVE_ERROR = 4;
 
     private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
     @Deprecated(since = "2.8.0")
@@ -111,6 +112,15 @@ public class MetaDataSourceRT extends DataSourceRT {
                 .getVO().getName(), message), dataPoint);
     }
 
+    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
+            setUnreliableDataPoint(dataPoint);
+            return;
+        }
+        raiseEvent(EVENT_TYPE_RECURSIVE_ERROR, runtime, true, new LocalizableMessage("event.meta.recursiveError", dataPoint
+                .getVO().getName(), message), dataPoint);
+    }
+
     public void raiseContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
             setUnreliableDataPoint(dataPoint);
@@ -125,6 +135,14 @@ public class MetaDataSourceRT extends DataSourceRT {
             return;
         }
         returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
+    }
+
+    public void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
+            return;
+        }
+        returnToNormal(EVENT_TYPE_RECURSIVE_ERROR, runtime, dataPoint);
     }
 
     public void returnToNormalContext(long runtime, DataPointRT dataPoint) {
