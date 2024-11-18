@@ -15,15 +15,15 @@
 						<c:set var="pointName">
 							<c:choose>
 								<c:when test="${!empty point.viewComponent.alias}">
-									${point.viewComponent.alias}
+									<c:out value="${point.viewComponent.alias}"/>
 								</c:when>
 								<c:otherwise>
-									${point.viewComponent.extendedName}
+									<c:out value="${point.viewComponent.extendedName}"/>
 								</c:otherwise>
 							</c:choose>
 						</c:set>
 						<input id="c${vc.id}${point.id}_visibility" type="checkbox" checked="checked" onchange="dygraphsCharts['${vc.id}'].changeVisibility('${pointName}', this.checked)"/>
-						<label for="c${vc.id}${point.id}_visibility">${pointName}</label><br/>
+						<label for="c${vc.id}${point.id}_visibility"><c:out value="${pointName}"/></label><br/>
 					</c:if>
 				</c:forEach>
 			</div>
@@ -32,10 +32,10 @@
 					<c:set var="pointName">
 						<c:choose>
 							<c:when test="${!empty point.viewComponent.alias}">
-								${point.viewComponent.alias}
+								<c:out value="${point.viewComponent.alias}"/>
 							</c:when>
 							<c:otherwise>
-								${point.viewComponent.extendedName}
+								<c:out value="${point.viewComponent.extendedName}"/>
 							</c:otherwise>
 						</c:choose>
 					</c:set>

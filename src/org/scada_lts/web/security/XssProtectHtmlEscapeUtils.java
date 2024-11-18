@@ -7,6 +7,8 @@ public final class XssProtectHtmlEscapeUtils {
     private XssProtectHtmlEscapeUtils() {}
 
     public static String escape(String value) {
+        if(value == null)
+            return "";
         String content = HtmlUtils.htmlEscape(value);
         return whiteSpaceHtmlCode(newLineHtmlCode(content));
     }

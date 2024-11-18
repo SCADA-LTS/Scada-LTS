@@ -20,7 +20,7 @@
   This snippet supports all data types.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<b>${compoundComponent.name}</b><br/>
+<b><c:out value="${compoundComponent.name}"/></b><br/>
 <c:forEach items="${childData}" var="child">
   <c:if test="${!empty child.point}">
     &nbsp;&nbsp;&nbsp;
@@ -28,6 +28,6 @@
       <tag:img png="icon_comp" title="watchlist.pointDetails" style="display:inline"
               onclick="window.location='data_point_details.shtm?dpid=${child.point.id}'"/>
     </c:if>
-    ${child.name}: <span class="infoData">${mango:htmlText(child.point, child.pointValue)}</span><br/>
+    <c:out value="${child.name}"/>: <span class="infoData">${mango:htmlText(child.point, child.pointValue)}</span><br/>
   </c:if>
 </c:forEach>

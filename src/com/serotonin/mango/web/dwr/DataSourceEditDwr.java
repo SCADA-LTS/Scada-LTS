@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -297,9 +298,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (ds.getId() == Common.NEW_ID)
             return null;
 
-        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
-                DataPointNameComparator.instance);
-        return points;
+        List<DataPointVO> points = super.getPoints();
+        return points.stream()
+                .filter(a -> a.getDataSourceId() == ds.getId())
+                .collect(Collectors.toList());
     }
 
     //

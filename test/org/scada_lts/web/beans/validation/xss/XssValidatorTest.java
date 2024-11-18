@@ -15,6 +15,8 @@ public class XssValidatorTest {
     @Parameterized.Parameters(name = "{index}: input: {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                {null},
+                {""},
                 {"<b>Bold</b>"},
                 {"Hello, World!"},
                 {"<i>Italic text</i>"},

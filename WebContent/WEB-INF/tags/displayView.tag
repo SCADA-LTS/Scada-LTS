@@ -35,7 +35,7 @@
       <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
     </c:when>
     <c:otherwise>
-      <img id="viewBackground" src="${view.backgroundFilename}" alt=""/>
+      <img id="viewBackground" src="<c:out value="${view.backgroundFilename}"/>" alt=""/>
     </c:otherwise>
   </c:choose>
   
@@ -50,10 +50,10 @@
           <tag:pointComponent vc="${vc.leadComponent}"/>
           <c:choose>
             <c:when test="${empty vc.backgroundColour}"><c:set var="bkgd"></c:set></c:when>
-            <c:otherwise><c:set var="bkgd">background:${vc.backgroundColour};</c:set></c:otherwise>
+            <c:otherwise><c:set var="bkgd">background:<c:out value="${vc.backgroundColour}"/>;</c:set></c:otherwise>
           </c:choose>
           <div id="c${vc.id}Controls" class="controlContent" style="left:5px;top:5px;${bkgd}">
-            <b>${vc.name}</b><br/>
+            <b><c:out value="${vc.name}"/></b><br/>
             <c:forEach items="${vc.childComponents}" var="child">
               <c:if test="${child.viewComponent.visible && child.viewComponent.id != vc.leadComponent.id}">
                 <tag:pointComponent vc="${child.viewComponent}"/>
@@ -96,9 +96,9 @@
 			<c:forEach var="childComponent" items="${vc.childComponents}">
 				<c:if test="${not empty childComponent.viewComponent.extendedName}">
 					pointProps.push({
-						pointName: "${childComponent.viewComponent.extendedName}",
-	        			alias: "${childComponent.viewComponent.alias}",
-	        			color: "${childComponent.viewComponent.color}",
+						pointName: "<c:out value="${childComponent.viewComponent.extendedName}"/>",
+	        			alias: "<c:out value="${childComponent.viewComponent.alias}"/>",
+	        			color: "<c:out value="${childComponent.viewComponent.color}"/>",
 	        			strokeWidth: ${childComponent.viewComponent.strokeWidth},
 	        			lineType: "${childComponent.viewComponent.lineType}",
 	        			showPoints: ${childComponent.viewComponent.showPoints}

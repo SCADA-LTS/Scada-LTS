@@ -39,7 +39,7 @@ public final class XssUtils {
             return true;
 
         if (input == null || input.isEmpty()) {
-            return false;
+            return true;
         }
 
         if(beforeCheckRegex.test(input)) {

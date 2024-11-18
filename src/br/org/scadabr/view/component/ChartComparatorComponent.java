@@ -22,6 +22,9 @@ import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 
+import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+
+
 @JsonRemoteEntity
 public class ChartComparatorComponent extends HtmlComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition(
@@ -113,7 +116,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<option value='0'> &nbsp; </option>");
 
 		for (ScadaObjectIdentifier dp : dataPoints) {
-			sb.append("<option value='" + dp.getId() + "'> " + dp.getName()
+			sb.append("<option value='" + dp.getId() + "'> " + escape(dp.getName())
 					+ "</option>");
 		}
 		sb.append("</select>");
@@ -135,10 +138,10 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<table>");
 		sb.append("<tr> <td> De </td> <td> A </td> </tr>");
 		sb.append("<tr> <td><input type='text' class='formField' id='"
-				+ fromDateId + "' value='" + defaultFromDateString
+				+ escape(fromDateId) + "' value='" + escape(defaultFromDateString)
 				+ "'/> </td> "
-				+ "<td> <input type='text' class='formField' id='" + toDateId
-				+ "' value='" + defaultToDateString + "'/> </td> </tr>");
+				+ "<td> <input type='text' class='formField' id='" + escape(toDateId)
+				+ "' value='" + escape(defaultToDateString) + "'/> </td> </tr>");
 		sb.append("</table>");
 		return sb.toString();
 	}
