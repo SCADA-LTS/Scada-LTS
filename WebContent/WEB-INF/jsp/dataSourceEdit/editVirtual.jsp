@@ -398,7 +398,7 @@
       <td class="formLabelRequired"><spring:message code="dsEdit.virtual.attractionPoint"/></td>
       <td class="formField"><select id="analogAttractorChange.attractionPointId">
         <c:forEach items="${analogPoints}" var="dataPoint">
-          <option value="${dataPoint.id}">${dataPoint.extendedName}</option>
+          <option value="${dataPoint.id}"><c:out value="${dataPoint.extendedName}"/></option>
         </c:forEach>
       </select></td>
     </tr>

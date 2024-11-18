@@ -152,8 +152,11 @@
       }
 
       function addPoint(point, parent) {
+          var spanNode = document.createElement("span");
+          spanNode.id = 'ph'+ point.key +'Name';
+          spanNode.textContent = point.value;
           var pointNode = dojo.widget.createWidget("TreeNode", {
-                  title: "<img src='images/icon_comp.png'/> <span id='ph"+ point.key +"Name'>"+ point.value +"</span> "+
+                  title: "<img src='images/icon_comp.png'/> " + spanNode.innerHTML +
                           "<img src='images/bullet_go.png' id='ph"+ point.key +"Image' title='<spring:message code="watchlist.addToWatchlist"/>'/>",
                   object: point
           });
@@ -344,7 +347,7 @@
               show("p"+ pointId +"Delete");
           }
 
-          $("p"+ pointId +"Name").innerHTML = pointNames[pointId];
+          $("p"+ pointId +"Name").textContent = pointNames[pointId];
 
           // Disable the element in the point list.
           togglePointTreeIcon(pointId, false);

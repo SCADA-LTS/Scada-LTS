@@ -24,7 +24,7 @@
 <tag:page dwr="ReportsDwr" js="emailRecipients" onload="init">
   <script type="text/javascript">
     var allPointsArray = new Array();
-    var reportPointsArray;
+    var reportPointsContext;
     var selectedReport;
     var emailRecipients;
     
@@ -78,10 +78,9 @@
         selectedReport = report;
         
         $set("name", report.name);
-        reportPointsArray = new Array();
-        for (var i=0; i<report.points.length; i++)
-            addToReportPointsArray(report.points[i].pointId, report.points[i].colour,
-                    report.points[i].consolidatedChart);
+        let handlePointsContext = new ReportPointsContext(report.points, allPointsArray);
+        setPointsContext(handlePointsContext);
+
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);
         $set("dateRangeType", report.dateRangeType);
@@ -116,125 +115,24 @@
         emailRecipients.updateRecipientList(report.recipients);
         
         showMessage("userMessage");
-  
-        writeReportPointsArray();
         updateDateRangeFields();
         updateScheduleFields();
         updateSchedulePeriodFields();
         updateEmailFields();
     }
-    
-    function addPointToReport() {
-        var pointId = $get("allPointsList");
-        addToReportPointsArray(pointId, "", true);
-        writeReportPointsArray();
-    }
-    
-    function addToReportPointsArray(pointId, colour, consolidatedChart) {
-        var data = getPointData(pointId);
-        if (data) {
-            // Missing names imply that the point was deleted, so ignore.
-            reportPointsArray[reportPointsArray.length] = {
-                pointId: pointId,
-                pointXid: data.xid,
-                pointName : data.name,
-                pointType : data.dataTypeMessage,
-                colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
-                consolidatedChart : consolidatedChart
-            };
-        }
-    }
-    
-    function getPointData(pointId) {
-        for (var i=0; i<allPointsArray.length; i++) {
-            if (allPointsArray[i].id == pointId)
-                return allPointsArray[i];
-        }
-        return null;
-    }
-    
-    function writeReportPointsArray() {
-        dwr.util.removeAllRows("reportPointsTable");
-        if (reportPointsArray.length == 0) {
-            show($("reportPointsTableEmpty"));
-            hide($("reportPointsTableHeaders"));
-        }
-        else {
-            hide($("reportPointsTableEmpty"));
-            show($("reportPointsTableHeaders"));
-            dwr.util.addRows("reportPointsTable", reportPointsArray,
-                [
-                    function(data) { return data.pointName; },
-                    function(data) { return data.pointType; },
-                    function(data) {
-                            return "<input type='text' value='"+ data.colour +"' "+
-                                    "onblur='updatePointColour("+ data.pointId +", this.value)'/>";
-                    },
-                    function(data) {
-                        return "<input type='checkbox'"+ (data.consolidatedChart ? " checked='checked'" : "") +
-                                " onclick='updatePointConsolidatedChart("+ data.pointId +", this.checked)'/>";
-                    },
-                    function(data) { 
-                            return "<img src='images/bullet_delete.png' class='ptr' "+
-                                    "onclick='removeFromReportPointsArray("+ data.pointId +")'/>";
-                    }
-                ],
-                {
-                    rowCreator:function(options) {
-                        var tr = document.createElement("tr");
-                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                        return tr;
-                    },
-                    cellCreator:function(options) {
-                        var td = document.createElement("td");
-                        if (options.cellNum == 3)
-                            td.align = "center";
-                        return td;
-                    }
-                });
-        }
-        updatePointsList();
+
+    function setPointsContext(reportPointsContext) {
+        this.reportPointsContext = reportPointsContext;
     }
     
     function updatePointColour(pointId, colour) {
-        var item = getElement(reportPointsArray, pointId, "pointId");
-        if (item)
-            item["colour"] = colour;
+        reportPointsContext.updatePoint(pointId, "colour", colour);
     }
     
     function updatePointConsolidatedChart(pointId, consolidatedChart) {
-        var item = getElement(reportPointsArray, pointId, "pointId");
-        if (item)
-            item["consolidatedChart"] = consolidatedChart;
+        reportPointsContext.updatePoint(pointId, "consolidatedChart", consolidatedChart);
     }
-    
-    function updatePointsList() {
-        dwr.util.removeAllOptions("allPointsList");
-        var availPoints = new Array();
-        for (var i=0; i<allPointsArray.length; i++) {
-            var found = false;
-            for (var j=0; j<reportPointsArray.length; j++) {
-                if (reportPointsArray[j].pointId == allPointsArray[i].id) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found)
-                availPoints[availPoints.length] = allPointsArray[i];
-        }
-        dwr.util.addOptions("allPointsList", availPoints, "id", "name");
-        jQuery("#allPointsList").trigger('chosen:updated');
-    }
-    
-    function removeFromReportPointsArray(pointId) {
-        for (var i=reportPointsArray.length-1; i>=0; i--) {
-            if (reportPointsArray[i].pointId == pointId)
-                reportPointsArray.splice(i, 1);
-        }
-        writeReportPointsArray();
-    }
-    
+
     function updateReportInstancesList(instanceArray) {
         stopImageFader("reportInstancesRefreshImg");
         dwr.util.removeAllRows("reportInstancesList");
@@ -244,7 +142,7 @@
             hide("noReportInstances");
             dwr.util.addRows("reportInstancesList", instanceArray,
                 [
-                    function(ri) { return ri.name; },
+                    function(ri) { return "<span>" + ri.name + "</span>"; },
                     function(ri) { return ri.prettyRunStartTime; },
                     function(ri) { return ri.prettyRunDuration; },
                     function(ri) { return ri.prettyReportStartTime; },
@@ -260,15 +158,15 @@
                             return "";
                             
                         var result = "<img src='images/bullet_down.png' class='ptr' title='<spring:message code="reports.export"/>' "+
-                                "onclick='exportData(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                                "onclick='exportData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeEvents != <c:out value="<%= ReportVO.EVENTS_NONE %>"/>)
                             result += "<img src='images/flag_white.png' class='ptr' title='<spring:message code="reports.eventExport"/>' "+
-                                    "onclick='exportEventData(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                                    "onclick='exportEventData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeUserComments)
                             result += "<img src='images/comment.png' class='ptr' title='<spring:message code="reports.userCommentExport"/>' "+
-                                    "onclick='exportUserComments(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                                    "onclick='exportUserComments(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
                         result += "<img src='images/icon_chart.png' class='ptr' title='<spring:message code="reports.charts"/>' "+
                                 "onclick='viewChart("+ ri.id +")'/>"+
@@ -401,21 +299,9 @@
         display("emailRecipBody", email);
     }
     
-    function getReportPointIdsArray() {
-        var points = new Array();
-        for (var i=0; i<reportPointsArray.length; i++)
-            points[points.length] = {
-                pointId: reportPointsArray[i].pointId,
-                pointXid: reportPointsArray[i].pointXid,
-                colour: reportPointsArray[i].colour,
-                consolidatedChart: reportPointsArray[i].consolidatedChart
-            };
-        return points;
-    }
-    
     function saveReport() {
         startImageFader("saveImg");
-        ReportsDwr.saveReport(selectedReport.id, $get("name"), getReportPointIdsArray(), $get("includeEvents"),
+        ReportsDwr.saveReport(selectedReport.id, $get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -485,7 +371,7 @@
         if (hasImageFader("runImg"))
             return;
         
-        ReportsDwr.runReport($get("name"), getReportPointIdsArray(), $get("includeEvents"),
+        ReportsDwr.runReport($get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -600,22 +486,23 @@
               <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
                 <select id="allPointsList"></select>
-                <tag:img png="add" onclick="addPointToReport();" title="common.add"/>
+                <tag:img png="add" onclick="reportPointsContext.addPointToContext();" title="common.add"/>
                 
                 <table cellspacing="1">
-                  <tbody id="reportPointsTableEmpty" style="display:none;">
+                  <tbody id="contextTableEmpty" style="display:none;">
                     <tr><th colspan="4"><spring:message code="reports.noPoints"/></th></tr>
                   </tbody>
-                  <tbody id="reportPointsTableHeaders" style="display:none;">
+                  <tbody id="contextTableHeaders" style="display:none;">
                     <tr class="smRowHeader">
                       <td><spring:message code="reports.pointName"/></td>
+                      <td><spring:message code="pointHierarchySLTS.xid"/></td>
                       <td><spring:message code="reports.dataType"/></td>
                       <td><spring:message code="reports.colour"/></td>
                       <td><spring:message code="reports.consolidatedChart"/></td>
                       <td></td>
                     </tr>
                   </tbody>
-                  <tbody id="reportPointsTable"></tbody>
+                  <tbody id="contextTable"></tbody>
                 </table>
                 <span id="pointsError" class="formError"></span>
               </td>

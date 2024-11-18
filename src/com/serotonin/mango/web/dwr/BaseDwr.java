@@ -48,9 +48,12 @@ import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.content.SnippetContentGenerator;
 
 abstract public class BaseDwr {
@@ -248,23 +251,20 @@ abstract public class BaseDwr {
     }
 
     protected List<DataPointBean> getReadablePoints() {
-        User user = Common.getUser();
-
-        List<DataPointVO> points = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        if (!Permissions.hasAdmin(user)) {
-            List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
-            for (DataPointVO dp : points) {
-                if (Permissions.hasDataPointReadPermission(user, dp))
-                    userPoints.add(dp);
-            }
-            points = userPoints;
-        }
+        List<DataPointVO> points = getPoints();
 
         List<DataPointBean> result = new ArrayList<DataPointBean>();
         for (DataPointVO dp : points)
             result.add(new DataPointBean(dp));
 
         return result;
+    }
+
+    protected List<DataPointVO> getPoints() {
+        User user = Common.getUser();
+        DataPointDAO dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
+        GetDataPointsWithAccess getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
+        return getDataPointsWithAccess.getObjectsWithAccess(user);
     }
 
     public Map<String, Object> getDateRangeDefaults(int periodType, int period) {

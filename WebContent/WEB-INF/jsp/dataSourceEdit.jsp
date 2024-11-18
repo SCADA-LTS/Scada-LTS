@@ -330,6 +330,14 @@
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
     }
+
+    function escapePoints(points) {
+        for(var i=0; i < points.length; i++) {
+            var point = points[i];
+            point.name = escapeHtml(point.name);
+            point.xid = escapeHtml(point.xid);
+        }
+    }
     
     function copyDataPoint(fromDataSourceId, dataPointId) {
         return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(response) {

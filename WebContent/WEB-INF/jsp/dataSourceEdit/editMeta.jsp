@@ -22,15 +22,15 @@
 
 <script type="text/javascript">
   var pointsArray = new Array();
-  var contextArray = new Array();
+  var scriptPointsContext;
   
   function initImpl() {
       <c:forEach items="${userPoints}" var="dp">
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
-            name : '${sst:quotEncode(dp.extendedName)}',
-            xid : '${dp.xid}',
-            type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
+            name : "<c:out value="${dp.extendedName}"/>",
+            xid : "<c:out value="${dp.xid}"/>",
+            type : "<sst:i18n message="${dp.dataTypeMessage}"/>"
         };
       </c:forEach>
       
@@ -68,10 +68,7 @@
   }
   
   function editPointCBImpl(locator) {
-      contextArray.length = 0;
-      for (var i=0; i<locator.context.length; i++)
-          addToContextArray(locator.context[i].key, locator.context[i].value);
-      writeContextArray();
+      this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
       
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
@@ -86,7 +83,7 @@
   }
   
   function savePointImpl(locator) {
-      locator.context = createContextArray();
+      locator.context = this.scriptPointsContext.convertToSave();
       locator.script = $get("script");
       locator.dataTypeId = $get("dataTypeId");
       locator.settable = $get("settable");
@@ -97,108 +94,10 @@
       
       DataSourceEditDwr.saveMetaPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
-  
-  function addPointToContext() {
-      var pointId = $get("allPointsList");
-      addToContextArray(pointId, "p"+ pointId);
-      writeContextArray();
-  }
-  
-  function addToContextArray(pointId, scriptVarName) {
-      var data = getElement(pointsArray, pointId);
-      if (data) {
-          // Missing names imply that the point was deleted, so ignore.
-          contextArray[contextArray.length] = {
-              pointId : pointId,
-              pointName : data.name,
-              xid : data.xid,
-              pointType : data.type,
-              scriptVarName : scriptVarName
-          };
-      }
-  }
-  
-  function removeFromContextArray(pointId) {
-      for (var i=contextArray.length-1; i>=0; i--) {
-          if (contextArray[i].pointId == pointId)
-              contextArray.splice(i, 1);
-      }
-      writeContextArray();
-  }
-  
-  function writeContextArray() {
-      dwr.util.removeAllRows("contextTable");
-      if (contextArray.length == 0) {
-          show($("contextTableEmpty"));
-          hide($("contextTableHeaders"));
-      }
-      else {
-          hide($("contextTableEmpty"));
-          show($("contextTableHeaders"));
-          dwr.util.addRows("contextTable", contextArray,
-              [
-                  function(data) { return data.pointName; },
-                  function(data) { return data.xid; },
-                  function(data) { return data.pointType; },
-                  function(data) {
-                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
-                                  "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
-                  },
-                  function(data) { 
-                          return "<img src='images/bullet_delete.png' class='ptr' "+
-                                  "onclick='removeFromContextArray("+ data.pointId +")'/>";
-                  }
-              ],
-              {
-                  rowCreator:function(options) {
-                      var tr = document.createElement("tr");
-                      tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                      return tr;
-                  }
-              });
-      }
-      updatePointsList();
-  }
-  
-  function updatePointsList() {
-      dwr.util.removeAllOptions("allPointsList");
-      var availPoints = new Array();
-      for (var i=0; i<pointsArray.length; i++) {
-          var found = false;
-          for (var j=0; j<contextArray.length; j++) {
-              if (contextArray[j].pointId == pointsArray[i].id) {
-                  found = true;
-                  break;
-              }
-          }
-          if (!found)
-              availPoints[availPoints.length] = pointsArray[i];
-      }
-      dwr.util.addOptions("allPointsList", availPoints, "id", "name");
-      jQuery("#allPointsList").trigger('chosen:updated');
-  }
-  
-  function updateScriptVarName(pointId, scriptVarName) {
-      for (var i=contextArray.length-1; i>=0; i--) {
-          if (contextArray[i].pointId == pointId)
-              contextArray[i].scriptVarName = scriptVarName;
-      }
-  }
-  
+
   function validateScript() {
       hideContextualMessages("pointProperties");
-      DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB);
-  }
-  
-  function createContextArray() {
-      var context = new Array();
-      for (var i=0; i<contextArray.length; i++) {
-          context[context.length] = {
-              key : contextArray[i].pointId,
-              value : contextArray[i].scriptVarName
-          };
-      }
-      return context;
+      DataSourceEditDwr.validateScript($get("script"), this.scriptPointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
   }
   
   function validateScriptCB(response) {
@@ -241,7 +140,7 @@
     <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
       <select id="allPointsList"></select>
-      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
+      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">
