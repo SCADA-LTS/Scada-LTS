@@ -41,7 +41,7 @@
             
             for (var i=0; i<response.data.reports.length; i++) {
                 appendReport(response.data.reports[i].id);
-                updateReport(response.data.reports[i].id, response.data.reports[i].name);
+                updateReport(response.data.reports[i].id, escapeHtml(response.data.reports[i].name));
             }
             
             <c:if test="${!empty param.wlid}">
@@ -301,7 +301,8 @@
     
     function saveReport() {
         startImageFader("saveImg");
-        ReportsDwr.saveReport(selectedReport.id, $get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
+        let name = escapeHtml($get("name"));
+        ReportsDwr.saveReport(selectedReport.id, name, reportPointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -325,7 +326,7 @@
                 }
                 else
                     showMessage("userMessage", "<spring:message code="reports.reportSaved"/>");
-                updateReport(selectedReport.id, $get("name"));
+                updateReport(selectedReport.id, name);
             }
         });
         startImageFader("saveImg");
