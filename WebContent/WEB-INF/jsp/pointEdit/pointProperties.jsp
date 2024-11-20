@@ -49,7 +49,7 @@
     <spring:bind path="form.name">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
-        <td class="formField"><input type="text" name="name" value="${status.value}"/></td>
+        <td class="formField" style="width: 98%;"><input type="text" name="name" value="${status.value}" style="width: 98%;"/></td>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
