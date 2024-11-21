@@ -17,7 +17,7 @@
                 <v-col>
                     <v-text-field 
                         :label="$t('common.name')"
-						v-model="name"
+						v-model="reportName"
                     ></v-text-field>
                 </v-col>
                 <v-col>
@@ -242,7 +242,7 @@
 
 						<v-col cols="6" v-if="report.schedulePeriod === 0">
 							<v-text-field
-								v-model="scheduleCron"
+								v-model="report.scheduleCron"
 								validate-on-blur
 								:rules="cronRules"
 								label="Cron pattern"
@@ -321,10 +321,12 @@
 							<v-text-field
 								v-model="email"
 								label="Add email address"
-								append-outer-icon="mdi-plus"
-								@click:append-outer="addMail"
 								:rules="emailRules"
-							></v-text-field>
+							>
+							   <template slot="append-outer">
+                                 <v-icon v-if="validEmail" color="green darken-2" @click="addMail" >mdi-plus</v-icon>
+                               </template>
+                            </v-text-field>
 						</v-col>
 					</v-row>
 				</v-col>
@@ -392,13 +394,16 @@ export default {
 				this.$t('reports.cronPatternMustBeValid')
 			],
 			emailRules: [
-				v =>  /\S+@\S+\.\S+/.test(v) || this.$t('reports.emailMustBeValid')
+				v =>  /\S+@\S+\.\S+/.test(v) || this.$t('reports.emailMustBeValid'),
+				v => !(/^(.*?((expression\s*\()|url\s*\(\s*['\"]?javascript:|url\s*\(\s*['\"]?data:|<script[^>]*>|<\/script>|<img[^>]+onerror=|@import\s+url\s*\(\s*['\"]?javascript:|<img[^>]*>|<script[^>]*>|<[^>]+>onerror\s*=|onload\s*=|eval\s*\(|alert\s*\(|onerror\s*=|document.location){1}.*?)$/.test(v)) || this.$t('reports.emailMustBeValid')
 			],
 
 			userList: [],
-			recipientList: [],	
-			emailText: '',
+			recipientList: [],
 			activeRecipients: [],
+			validEmail: false,
+			emailText: '',
+			reportName: ''
         }
     },
     computed: {
@@ -414,28 +419,13 @@ export default {
 			periods.push({id: 0, label: 'Cron pattern'})
 			return  periods;
 		},
-        name: {
-          get() {
-            return unescapeHtml(this.report.name);
-          },
-          set(newValue) {
-            this.report.name = escapeHtml(newValue);
-          }
-        },
         email: {
           get() {
-            return unescapeHtml(this.emailText);
+            return this.emailText;
           },
           set(newValue) {
-            this.emailText = escapeHtml(newValue);
-          }
-        },
-        scheduleCron: {
-          get() {
-            return unescapeHtml(this.report.scheduleCron);
-          },
-          set(newValue) {
-            this.report.scheduleCron = escapeHtml(newValue);
+            this.validEmail = this.validateEmail(newValue);
+            this.emailText = newValue;
           }
         }
     },
@@ -451,18 +441,14 @@ export default {
 			this.initDateTimeFields();
 			this.initReportTimeFields();
 			this.initRecipients();
+			this.reportName = this.report.name;
 		},
 
 		saveReport() {
-		    this.name = unescapeHtml(this.name);
-            this.scheduleCron = unescapeHtml(this.scheduleCron);
-
-            let report = JSON.parse(JSON.stringify(this.report));
 			this.setDateTime();
+			let report = JSON.parse(JSON.stringify(this.report));
+			report.name = this.reportName;
 			this.$emit('saved', report);
-
-            this.name = escapeHtml(this.name);
-            this.scheduleCron = escapeHtml(this.scheduleCron);
 		},
 
 		async fetchUserList() {
@@ -593,8 +579,6 @@ export default {
 		},
 
 		addMail() {
-		    this.email = unescapeHtml(this.email);
-		    console.log('this.email: ' + this.email);
 			if(!!this.email) {
 				this.addRecipient(RECIPIENT.TYPE_MAIL, this.email);
 				this.email = '';
@@ -634,9 +618,14 @@ export default {
 				}))
 			.then(() => this.$store.dispatch("showSuccessNotification", "Test emails sent successfully"))
 			.catch(() => this.$slots.dispatch("showErrorNotification", "Test emails could not be sent"));
-		}
+		},
 
-		
+        validateEmail(v) {
+            if(!v) {
+                return false;
+            }
+            return !(typeof this.emailRules[0](v) === 'string') && !(typeof this.emailRules[1](v) === 'string');
+        }
 	}
 }
 </script>

@@ -537,11 +537,11 @@ export default {
 			this.$emit('canceled');
 		},
 
-		async save() {
+		async save(data) {
 			console.debug('VirtualDataSource.point.vue::save()');
 			await this.validateScript();
 			if (this.validScript)
-				this.$emit('saved', this.datapoint);
+				this.$emit('saved', data);
 		},
 
 		addMsValue(array) {

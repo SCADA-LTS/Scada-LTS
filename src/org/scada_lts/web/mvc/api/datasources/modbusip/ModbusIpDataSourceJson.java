@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.datasources.modbusip;
 
 import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 
 public class ModbusIpDataSourceJson extends DataSourceJson {
@@ -17,7 +18,9 @@ public class ModbusIpDataSourceJson extends DataSourceJson {
     private int maxReadRegisterCount;
     private int maxWriteRegisterCount;
 
+    @XssProtect
     private String transportType;
+    @XssProtect
     private String host;
     private int port;
     private boolean encapsulated;
@@ -38,7 +41,7 @@ public class ModbusIpDataSourceJson extends DataSourceJson {
         this.maxReadRegisterCount = dataSourceVO.getMaxReadRegisterCount();
         this.maxWriteRegisterCount = dataSourceVO.getMaxWriteRegisterCount();
 
-        this.transportType = dataSourceVO.getTransportType().name();
+        this.transportType = dataSourceVO.getTransportTypeStr();
         this.host = dataSourceVO.getHost();
         this.port = dataSourceVO.getPort();
         this.encapsulated = dataSourceVO.isEncapsulated();

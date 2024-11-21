@@ -27,7 +27,7 @@
                             <v-list-item v-for="p in report.points" :key="p.pointId">
                                 
                                 <v-list-item-title>
-                                    {{ p.name }}
+                                    <span v-html="p.extendName"></span>
                                 </v-list-item-title>
 
                                 <v-list-item-action class="datapoint--actions">
@@ -64,6 +64,7 @@
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import {unescapeHtml} from "@/utils/common";
 export default {
     components: {
         DataPointSearchComponent
@@ -88,6 +89,7 @@ export default {
                     pointId: point.id,
                     pointXid: point.xid,
                     name: point.name,
+                    extendName: point.extendName,
                     colour: '#000000',
                     consolidatedChart: true,
                 }

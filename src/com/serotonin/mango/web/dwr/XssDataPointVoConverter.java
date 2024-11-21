@@ -4,7 +4,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.directwebremoting.convert.BeanConverter;
 import org.directwebremoting.extend.*;
 
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
 
 public class XssDataPointVoConverter extends BeanConverter {
 

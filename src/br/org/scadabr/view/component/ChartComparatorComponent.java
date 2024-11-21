@@ -22,7 +22,7 @@ import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
 
 
 @JsonRemoteEntity

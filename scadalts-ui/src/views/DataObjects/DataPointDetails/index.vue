@@ -186,22 +186,22 @@ export default {
 			}
 		},
 
-		saveDataPointDetails() {
+		saveDataPointDetails(data) {
 			this.$store
-				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.dispatch('saveDataPointDetails', data)
 				.catch((e) => {
 					this.$store.dispatch(
 						'showErrorNotification', 
 						`${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`)
 				})
 				.then((resp) => {
-					if (resp === 'saved') {
+					if (resp.status === 'saved') {
 						this.$store.dispatch(
 							'showSuccessNotification',
 							this.$t('common.snackbar.update.success')
 						);
 						this.$refs.valueHistory.fetchData();
-
+                        this.fetchDataPointDetails(data.id);
 					}
 				});
 		},

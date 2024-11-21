@@ -197,7 +197,8 @@ export default {
 		_updateReportPointsDetails(pointList) {
 			return pointList.map((p) => {
 				const name = this.allDataPoints.find((dp) => dp.id === p.pointId).name;
-				return { ...p, name };
+				const extendName = this.allDataPoints.find((dp) => dp.id === p.pointId).extendName;
+				return { ...p, name, extendName };
 			});
 		},
 	},

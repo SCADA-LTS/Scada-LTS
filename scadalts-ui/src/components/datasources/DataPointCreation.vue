@@ -6,8 +6,7 @@
 					<h1>
 						<span v-if="creator"> Create </span>
 						<span v-else> Update </span>
-						<span>
-							{{ title }}
+						<span v-html="title">
 						</span>
 					</h1>
 				</v-col>
@@ -23,7 +22,7 @@
 					<v-col cols="12" :sm="6">
 						<v-text-field
 							autofocus
-							v-model="name"
+							v-model="datapointName"
 							label="Data Point Name"
 							:rules="[ruleNotNull]"
 							required
@@ -31,7 +30,7 @@
 					</v-col>
 					<v-col cols="6" :sm="4">
 						<v-text-field
-							v-model="xid"
+							v-model="datapointXid"
 							label="Data Point Export ID"
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
@@ -47,7 +46,7 @@
 					</v-col>
 					<v-col cols="12">
 						<v-text-field
-							v-model="description"
+							v-model="datapointDescription"
 							label="Description"
 						></v-text-field>
 					</v-col>
@@ -100,6 +99,9 @@ export default {
 
 	async mounted(){
 		this.initialState = JSON.parse(JSON.stringify(this.datapoint));
+		this.datapointName = this.datapoint.name;
+        this.datapointXid = this.datapoint.xid;
+        this.datapointDescription = this.datapoint.description;
 	},
 
 	data() {
@@ -109,35 +111,11 @@ export default {
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
+			datapointName: '',
+			datapointXid: '',
+			datapointDescription: ''
 		};
 	},
-
-    computed: {
-        name: {
-          get() {
-            return unescapeHtml(this.datapoint.name);
-          },
-          set(newValue) {
-            this.datapoint.name = escapeHtml(newValue);
-          }
-        },
-        description: {
-          get() {
-            return unescapeHtml(this.datapoint.description);
-          },
-          set(newValue) {
-            this.datapoint.description = escapeHtml(newValue);
-          }
-        },
-        xid: {
-          get() {
-            return unescapeHtml(this.datapoint.xid);
-          },
-          set(newValue) {
-            this.datapoint.xid = escapeHtml(newValue);
-          }
-        }
-    },
 
 	methods: {
 		cancel() {
@@ -151,18 +129,15 @@ export default {
 		},
 
 		accept() {
-		    this.xid =  unescapeHtml(this.xid);
-		    this.name = unescapeHtml(this.name);
-		    this.description = unescapeHtml(this.description);
+            let datapoint = JSON.parse(JSON.stringify(this.datapoint));
+            datapoint.name = this.datapointName;
+            datapoint.xid = this.datapointXid;
+            datapoint.description = this.datapointDescription;
 
 			console.debug('datasources.DataPointCreation.vue::accept()');
 			if (this.formValid) {
-				this.$emit('accept');
+				this.$emit('accept', datapoint);
 			}
-
-            this.xid =  escapeHtml(this.xid);
-            this.name = escapeHtml(this.name);
-            this.description = escapeHtml(this.description);
 		},
 
 		async checkXidUnique() {

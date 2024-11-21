@@ -6,7 +6,7 @@ import org.directwebremoting.extend.MarshallException;
 import org.directwebremoting.extend.OutboundContext;
 import org.directwebremoting.extend.OutboundVariable;
 
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
 
 public class XssDataPointBeanConverter extends BeanConverter {
 

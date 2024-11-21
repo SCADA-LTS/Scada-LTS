@@ -69,8 +69,8 @@ export const dataSourceConfigMixin = {
             this.$emit('canceled');
         },
 
-        save() {
-            this.$emit('saved', this.datasource);
+        save(data) {
+            this.$emit('saved', data);
         },
     },
 }

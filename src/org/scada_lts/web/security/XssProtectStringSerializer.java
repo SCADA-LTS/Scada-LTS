@@ -14,7 +14,7 @@ public class XssProtectStringSerializer extends StdSerializer<String> {
 
     @Override
     public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        String content = XssProtectHtmlEscapeUtils.escape(value);
+        String content = XssProtectHtmlUtils.escape(value);
         jgen.writeString(content);
     }
 }

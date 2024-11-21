@@ -4,7 +4,7 @@
 		:datasource="datasource"
 		:creator="createMode"
 		@cancel="cancel()"
-		@accept="save()"
+		@accept="save"
 	>
 		<template v-slot:selector>
 			<slot name="selector"></slot>

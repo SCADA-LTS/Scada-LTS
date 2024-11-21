@@ -30,7 +30,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.taglib.DateFunctions;
 
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
 
 public class Functions {
     public static String getHtmlText(DataPointVO point, PointValueTime pointValue) {

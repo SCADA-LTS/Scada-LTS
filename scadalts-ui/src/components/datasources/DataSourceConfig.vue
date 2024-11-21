@@ -6,9 +6,7 @@
 					<h1>
 						<span v-if="creator"> Create </span>
 						<span v-else> Update </span>
-						<span>
-							{{ title }}
-						</span>
+						<span v-html="title"> </span>
 					</h1>
 				</v-col>
 				<v-col cols="4">
@@ -23,7 +21,7 @@
 					<v-col cols="12" :md="8" :sm="12" id="datasource-config--name">
 						<v-text-field
 							autofocus
-							v-model="datasource.name"
+							v-model="datasourceName"
 							label="DataSource Name"
 							:rules="[ruleNotNull]"
 							required
@@ -31,7 +29,7 @@
 					</v-col>
 					<v-col cols="12" :md="4" :sm="12" id="datasource-config--xid">
 						<v-text-field
-							v-model="datasource.xid"
+							v-model="datasourceXid"
 							label="DataSource Export Id"
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
@@ -128,7 +126,12 @@ export default {
 		if (this.creator) {
 			this.$store.dispatch('getUniqueDataSourceXid').then((resp) => {
 				this.datasource.xid = resp;
+				this.datasourceXid = resp;
 			});
+			this.datasourceName = this.datasource.name;
+		} else {
+            this.datasourceName = this.datasource.name;
+            this.datasourceXid = this.datasource.xid;
 		}
 	},
 
@@ -139,6 +142,8 @@ export default {
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
 			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
+			datasourceName: '',
+			datasourceXid: ''
 		};
 	},
 
@@ -149,8 +154,12 @@ export default {
 		},
 
 		accept() {
-			console.debug('datasources.DataSourceConfig.vue::accept()');
-			this.$emit('accept');
+		    let datasource = JSON.parse(JSON.stringify(this.datasource));
+        	datasource.name = this.datasourceName;
+        	datasource.xid = this.datasourceXid;
+
+        	console.debug('datasources.DataSourceConfig.vue::accept()');
+			this.$emit('accept', datasource);
 		},
 
 		onUpdatePeriodTypeUpdate(value) {

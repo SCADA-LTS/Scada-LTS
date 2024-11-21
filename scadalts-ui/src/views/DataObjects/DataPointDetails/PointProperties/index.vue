@@ -66,7 +66,7 @@
 
 							<v-col md="6" cols="12">
 								<v-text-field
-									v-model="name"
+									v-model="dataPointName"
 									:label="$t('datapointDetails.pointProperties.point.name')"
 									dense
 								></v-text-field>
@@ -80,7 +80,7 @@
 							</v-col>
 							<v-col cols="12">
 								<v-text-field
-									v-model="description"
+									v-model="dataPointDescription"
 									:label="$t('datapointDetails.pointProperties.point.description')"
 									dense
 								></v-text-field>
@@ -153,38 +153,24 @@ export default {
 		return {
 			dialog: false,
 			purgeDialog: false,
+			dataPointName: '',
+			dataPointDescription: ''
 		};
 	},
 
-    computed: {
-        name: {
-          get() {
-            return unescapeHtml(this.data.name);
-          },
-          set(newValue) {
-            this.data.name = escapeHtml(newValue);
-          }
-        },
-        description: {
-          get() {
-            return unescapeHtml(this.data.description);
-          },
-          set(newValue) {
-            this.data.description = escapeHtml(newValue);
-          }
-        },
+    mounted() {
+        this.dataPointName = this.data.name;
+        this.dataPointDescription = this.data.description;
     },
 
 	methods: {
 		save() {
-		    this.name = unescapeHtml(this.name);
-		    this.description = unescapeHtml(this.description);
+            let datapoint = JSON.parse(JSON.stringify(this.data));
+            datapoint.name = this.dataPointName;
+            datapoint.description = this.dataPointDescription;
 
-			this.$emit('saved');
+			this.$emit('saved', datapoint);
 			this.dialog = false;
-
-            this.name = escapeHtml(this.name);
-            this.description = escapeHtml(this.description);
 		},
 
 		toggleDataPoint() {

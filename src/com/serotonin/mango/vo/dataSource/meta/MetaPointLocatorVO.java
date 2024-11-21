@@ -54,7 +54,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
 
 /**
  * @author Matthew Lohbihler

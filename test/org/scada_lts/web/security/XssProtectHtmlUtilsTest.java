@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RunWith(Parameterized.class)
-public class XssProtectHtmlEscapeUtilsTest {
+public class XssProtectHtmlUtilsTest {
 
     @Parameterized.Parameters(name = "{index}: content: {0}, expected: {1}")
     public static List<Object[]> data() {
@@ -45,7 +45,7 @@ public class XssProtectHtmlEscapeUtilsTest {
     private final String content;
     private final String expected;
 
-    public XssProtectHtmlEscapeUtilsTest(String content, String expected) {
+    public XssProtectHtmlUtilsTest(String content, String expected) {
         this.content = content;
         this.expected = expected;
     }
@@ -54,7 +54,7 @@ public class XssProtectHtmlEscapeUtilsTest {
     public void escape() {
 
         //when
-        String result = XssProtectHtmlEscapeUtils.escape(content);
+        String result = XssProtectHtmlUtils.escape(content);
 
         //then:
         Assert.assertEquals(expected, result);

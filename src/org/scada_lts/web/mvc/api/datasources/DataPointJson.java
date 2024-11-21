@@ -1,14 +1,18 @@
 package org.scada_lts.web.mvc.api.datasources;
 
 import com.serotonin.mango.vo.DataPointVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.ArrayList;
 
 public class DataPointJson {
 
     private Integer id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
+    @XssProtect
     private String description;
     private Boolean enabled;
     private int dataSourceTypeId;
