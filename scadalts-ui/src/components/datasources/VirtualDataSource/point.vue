@@ -38,7 +38,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.alternateBooleanChange.startValue"
 								:items="booleanSelectBox"
-                                :rules = "ruleSelectNotNull"
+                                :rules = "[ruleNotNull]"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -50,7 +50,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.randomBooleanChange.startValue"
 								:items="booleanSelectBox"
-                                :rules = "ruleSelectNotNull"
+                                :rules = "[ruleNotNull]"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -60,7 +60,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.noChange.startValue"
 								:items="booleanSelectBox"
-                                :rules = "ruleSelectNotNull"
+                                :rules = "[ruleNotNull]"
                                 required
 							></v-select>
 						</v-col>
@@ -393,8 +393,7 @@ export default {
 					value: true,
 				},
 			],
-			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
-			ruleSelectNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull')
 		};
 	},
 

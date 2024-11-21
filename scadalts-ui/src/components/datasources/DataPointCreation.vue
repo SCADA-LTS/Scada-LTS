@@ -71,7 +71,6 @@
 </template>
 <script>
 import Vue from "vue";
-import {escapeHtml, unescapeHtml} from '@/utils/common';
 
 export default {
 	props: {

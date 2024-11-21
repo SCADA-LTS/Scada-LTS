@@ -321,7 +321,7 @@
 							<v-text-field
 								v-model="email"
 								label="Add email address"
-								:rules="emailRules"
+								:rules="[emailRules, xssRules]"
 							>
 							   <template slot="append-outer">
                                  <v-icon v-if="validEmail" color="green darken-2" @click="addMail" >mdi-plus</v-icon>
@@ -370,7 +370,7 @@
 import { RECIPIENT } from '../../store/mailingList/constants';
 import { ALARM_OPTIONS, DATE_RANGE_TYPE_OPTIONS } from '../../store/reports/constants';
 import DataPointsSettingsDialog from './DataPointsDialog.vue'
-import {escapeHtml, unescapeHtml} from '@/utils/common';
+import {unescapeHtml} from '@/utils/common';
 
 export default {
     components: {
@@ -395,8 +395,10 @@ export default {
 			],
 			emailRules: [
 				v =>  /\S+@\S+\.\S+/.test(v) || this.$t('reports.emailMustBeValid'),
-				v => !(/^(.*?((expression\s*\()|url\s*\(\s*['\"]?javascript:|url\s*\(\s*['\"]?data:|<script[^>]*>|<\/script>|<img[^>]+onerror=|@import\s+url\s*\(\s*['\"]?javascript:|<img[^>]*>|<script[^>]*>|<[^>]+>onerror\s*=|onload\s*=|eval\s*\(|alert\s*\(|onerror\s*=|document.location){1}.*?)$/.test(v)) || this.$t('reports.emailMustBeValid')
 			],
+            xssRules: [
+                v => !(/^(.*?((expression\s*\()|url\s*\(\s*['\"]?javascript:|url\s*\(\s*['\"]?data:|<script[^>]*>|<\/script>|<img[^>]+onerror=|@import\s+url\s*\(\s*['\"]?javascript:|<img[^>]*>|<script[^>]*>|<[^>]+>onerror\s*=|onload\s*=|eval\s*\(|alert\s*\(|onerror\s*=|document.location){1}.*?)$/.test(v)) || this.$t('reports.emailMustBeValid')
+            ],
 
 			userList: [],
 			recipientList: [],
@@ -624,7 +626,7 @@ export default {
             if(!v) {
                 return false;
             }
-            return !(typeof this.emailRules[0](v) === 'string') && !(typeof this.emailRules[1](v) === 'string');
+            return !(typeof this.emailRules[0](v) === 'string') && !(typeof this.xssRules[0](v) === 'string');
         }
 	}
 }
