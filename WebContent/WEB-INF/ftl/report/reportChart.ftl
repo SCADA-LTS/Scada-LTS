@@ -87,7 +87,7 @@
       <td>
         <table>
           <tr>
-            <td colspan="2"><h1>${instance.name}</h1></td>
+            <td colspan="2"><h1>${escapeHtml.escapeHtml(instance.name)}</h1></td>
           </tr>
           <tr>
             <td class="label"><@fmt key="reports.runTimeStart"/></td>
