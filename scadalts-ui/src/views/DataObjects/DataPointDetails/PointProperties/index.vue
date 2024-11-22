@@ -157,8 +157,7 @@ export default {
 	},
 
     mounted() {
-        this.data.tempName = this.data.name;
-        this.data.tempDescription = this.data.description;
+        this.reload();
     },
 
 	methods: {
@@ -208,6 +207,11 @@ export default {
 				}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`,
 			);
 		},
+
+		reload() {
+            this.data.tempName = this.data.name;
+            this.data.tempDescription = this.data.description;
+		}
 	},
 };
 </script>

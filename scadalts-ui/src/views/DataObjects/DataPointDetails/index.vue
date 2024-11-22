@@ -49,6 +49,7 @@
 					<PointProperties
 						:data="dataPointDetails"
 						@saved="saveDataPointDetails"
+						ref="pointProperties"
 					></PointProperties>
 				</v-col>
 				<v-col cols="2">
@@ -160,6 +161,8 @@ export default {
 					'getDatasourceByXid',
 					this.dataPointDetails.dataSourceXid,
 				);
+				if(this.$refs.pointProperties)
+				    this.$refs.pointProperties.reload();
 			} catch (e) {
 				this.dataPointDetails = null;
 				this.datasource = null;
