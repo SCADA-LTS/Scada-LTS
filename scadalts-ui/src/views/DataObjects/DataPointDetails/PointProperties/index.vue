@@ -66,7 +66,7 @@
 
 							<v-col md="6" cols="12">
 								<v-text-field
-									v-model="dataPointName"
+									v-model="data.tempName"
 									:label="$t('datapointDetails.pointProperties.point.name')"
 									dense
 								></v-text-field>
@@ -80,7 +80,7 @@
 							</v-col>
 							<v-col cols="12">
 								<v-text-field
-									v-model="dataPointDescription"
+									v-model="data.tempDescription"
 									:label="$t('datapointDetails.pointProperties.point.description')"
 									dense
 								></v-text-field>
@@ -152,22 +152,20 @@ export default {
 	data() {
 		return {
 			dialog: false,
-			purgeDialog: false,
-			dataPointName: '',
-			dataPointDescription: ''
+			purgeDialog: false
 		};
 	},
 
     mounted() {
-        this.dataPointName = this.data.name;
-        this.dataPointDescription = this.data.description;
+        this.data.tempName = this.data.name;
+        this.data.tempDescription = this.data.description;
     },
 
 	methods: {
 		save() {
             let datapoint = JSON.parse(JSON.stringify(this.data));
-            datapoint.name = this.dataPointName;
-            datapoint.description = this.dataPointDescription;
+            datapoint.name = this.data.tempName;
+            datapoint.description = this.data.tempDescription;
 
 			this.$emit('saved', datapoint);
 			this.dialog = false;

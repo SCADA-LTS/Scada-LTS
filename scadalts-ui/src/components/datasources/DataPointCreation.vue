@@ -22,7 +22,7 @@
 					<v-col cols="12" :sm="6">
 						<v-text-field
 							autofocus
-							v-model="datapointName"
+							v-model="datapoint.tempName"
 							label="Data Point Name"
 							:rules="[ruleNotNull]"
 							required
@@ -30,7 +30,7 @@
 					</v-col>
 					<v-col cols="6" :sm="4">
 						<v-text-field
-							v-model="datapointXid"
+							v-model="datapoint.tempXid"
 							label="Data Point Export ID"
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
@@ -46,7 +46,7 @@
 					</v-col>
 					<v-col cols="12">
 						<v-text-field
-							v-model="datapointDescription"
+							v-model="datapoint.tempDescription"
 							label="Description"
 						></v-text-field>
 					</v-col>
@@ -98,9 +98,9 @@ export default {
 
 	async mounted(){
 		this.initialState = JSON.parse(JSON.stringify(this.datapoint));
-		this.datapointName = this.datapoint.name;
-        this.datapointXid = this.datapoint.xid;
-        this.datapointDescription = this.datapoint.description;
+		this.datapoint.tempName = this.datapoint.name;
+        this.datapoint.tempXid = this.datapoint.xid;
+        this.datapoint.tempDescription = this.datapoint.description;
 	},
 
 	data() {
@@ -109,10 +109,7 @@ export default {
 			formValid: false,
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
-			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
-			datapointName: '',
-			datapointXid: '',
-			datapointDescription: ''
+			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique')
 		};
 	},
 
@@ -129,9 +126,9 @@ export default {
 
 		accept() {
             let datapoint = JSON.parse(JSON.stringify(this.datapoint));
-            datapoint.name = this.datapointName;
-            datapoint.xid = this.datapointXid;
-            datapoint.description = this.datapointDescription;
+            datapoint.name = this.datapoint.tempName;
+            datapoint.xid = this.datapoint.tempXid;
+            datapoint.description = this.datapoint.tempDescription;
 
 			console.debug('datasources.DataPointCreation.vue::accept()');
 			if (this.formValid) {

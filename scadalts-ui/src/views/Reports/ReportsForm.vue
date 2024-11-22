@@ -17,7 +17,7 @@
                 <v-col>
                     <v-text-field 
                         :label="$t('common.name')"
-						v-model="reportName"
+						v-model="report.tempName"
                     ></v-text-field>
                 </v-col>
                 <v-col>
@@ -404,8 +404,7 @@ export default {
 			recipientList: [],
 			activeRecipients: [],
 			validEmail: false,
-			emailText: '',
-			reportName: ''
+			emailText: ''
         }
     },
     computed: {
@@ -443,13 +442,13 @@ export default {
 			this.initDateTimeFields();
 			this.initReportTimeFields();
 			this.initRecipients();
-			this.reportName = this.report.name;
+			this.report.tempName= this.report.name;
 		},
 
 		saveReport() {
 			this.setDateTime();
 			let report = JSON.parse(JSON.stringify(this.report));
-			report.name = this.reportName;
+			report.name = this.report.tempName;
 			this.$emit('saved', report);
 		},
 

@@ -64,7 +64,7 @@
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
-import {unescapeHtml} from "@/utils/common";
+
 export default {
     components: {
         DataPointSearchComponent
