@@ -44,6 +44,8 @@ import java.sql.Statement;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.report.ReportInstance;
 
+import static org.directwebremoting.Security.escapeHtml;
+
 /**
  * DAO for ReportInstance
  *
@@ -154,7 +156,7 @@ public class ReportInstanceDAO {
 			ReportInstance reportInstance = new ReportInstance();
 			reportInstance.setId(rs.getInt(COLUMN_NAME_ID));
 			reportInstance.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
-			reportInstance.setName(rs.getString(COLUMN_NAME_NAME));
+			reportInstance.setName(escapeHtml(rs.getString(COLUMN_NAME_NAME)));
 			reportInstance.setIncludeEvents(rs.getInt(COLUMN_NAME_INCLUDE_EVENTS));
 			reportInstance.setIncludeUserComments(DAO.charToBool(rs.getString(COLUMN_NAME_INCLUDE_USER_COMMENTS)));
 			reportInstance.setReportStartTime(rs.getLong(COLUMN_NAME_REPORT_START_TIME));
