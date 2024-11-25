@@ -11,12 +11,12 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class BodyXssUtilsTest {
+public class BodyXssValidatorUtilsTest {
 
     private final String input;
     private final boolean expectedResult;
 
-    public BodyXssUtilsTest(String input, boolean expectedResult) {
+    public BodyXssValidatorUtilsTest(String input, boolean expectedResult) {
         this.input = input;
         this.expectedResult = expectedResult;
     }
@@ -152,7 +152,7 @@ public class BodyXssUtilsTest {
     public void testValidate() {
 
         //when:
-        boolean result = XssUtils.validateHttpBody(input);
+        boolean result = XssValidatorUtils.validateHttpBody(input);
 
         //then:
         assertEquals("Validation Body failed for input: " + input, expectedResult, result);

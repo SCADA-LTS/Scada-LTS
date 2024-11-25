@@ -6,9 +6,9 @@ import org.scada_lts.utils.SystemSettingsUtils;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public final class XssUtils {
+public final class XssValidatorUtils {
 
-    private XssUtils() {}
+    private XssValidatorUtils() {}
 
     private static final Pattern SECURITY_HTTP_ACCESS_DENIED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessDeniedRegex());
     private static final Pattern SECURITY_HTTP_ACCESS_GRANTED_QUERY_REGEX = init(SystemSettingsUtils.getSecurityHttpQueryAccessGrantedRegex());

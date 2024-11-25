@@ -80,7 +80,7 @@ public class ScriptExecutor {
 				if (point == null) {
 					LOG.error("Error DataPointRT null "
 							+ new Exception("key:" + contextEntry.getKey()
-							+ " value:" + contextEntry.getValue()));
+							+ " value:" + contextEntry.getValue()) + " from:" + LoggingUtils.dataPointInfo(dataPoint));
 					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry);
 					if(dataPoint != null && metaDataSource != null) {
 						metaDataSource.raiseContextError(System.currentTimeMillis(), dataPoint, dataPointStateException.getLocalizableMessage());

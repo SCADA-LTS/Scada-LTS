@@ -2,11 +2,11 @@ package org.scada_lts.web.security;
 
 import org.springframework.web.util.HtmlUtils;
 
-public final class XssProtectHtmlUtils {
+public final class XssProtectUtils {
 
-    private XssProtectHtmlUtils() {}
+    public XssProtectUtils() {}
 
-    public static String escape(String value) {
+    public static String escapeHtml(String value) {
         if(value == null)
             return "";
         String content = HtmlUtils.htmlEscape(value);

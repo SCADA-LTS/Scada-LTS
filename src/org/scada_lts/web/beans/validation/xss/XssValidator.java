@@ -2,7 +2,7 @@ package org.scada_lts.web.beans.validation.xss;
 
 import org.scada_lts.web.beans.validation.ScadaValidator;
 
-import static org.scada_lts.web.security.XssUtils.validateHttpBody;
+import static org.scada_lts.web.security.XssValidatorUtils.validateHttpBody;
 
 public class XssValidator implements ScadaValidator<String> {
 

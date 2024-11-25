@@ -12,7 +12,7 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
-import static org.scada_lts.web.security.XssProtectHtmlUtils.escape;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 @JsonRemoteEntity
 public class ScriptButtonComponent extends HtmlComponent {
@@ -50,9 +50,9 @@ public class ScriptButtonComponent extends HtmlComponent {
 
 	public String createScriptButtonContent() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + escape(scriptXid)
+		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + escapeHtml(scriptXid)
 				+ "\");'>");
-		sb.append(escape(text));
+		sb.append(escapeHtml(text));
 		sb.append("</button>");
 		return sb.toString();
 	}

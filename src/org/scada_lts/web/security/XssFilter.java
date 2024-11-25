@@ -17,7 +17,7 @@ public class XssFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String queryString = request.getQueryString();
-        if (queryString != null && !XssUtils.validateHttpQuery(queryString)) {
+        if (queryString != null && !XssValidatorUtils.validateHttpQuery(queryString)) {
             LOG.warn("Potential XSS detected in request. Request URI: {}, Query: {}",
                     request.getRequestURI(), queryString);
 
