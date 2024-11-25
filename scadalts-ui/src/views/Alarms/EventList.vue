@@ -327,7 +327,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						<a :title="(item.message) | clearHtml"><span v-html="item.message"></span></a>
+						<a><span v-html="item.message"></span></a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -619,9 +619,6 @@ export default {
 				return input.substring(0, 45) + '...';
 			}
 			return input;
-		},
-		clearHtml(str) {
-			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ').replaceAll('&#39;', ' ').replaceAll('&quot;', ' ')
 		}
 	},
 	
