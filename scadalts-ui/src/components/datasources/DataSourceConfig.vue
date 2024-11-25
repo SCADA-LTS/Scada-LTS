@@ -125,10 +125,9 @@ export default {
 	mounted() {
 		if (this.creator) {
 			this.$store.dispatch('getUniqueDataSourceXid').then((resp) => {
-				this.datasource.xid = resp;
 				this.datasource.tempXid = resp;
+				this.datasource = JSON.parse(JSON.stringify(this.datasource));
 			});
-			this.datasource.tempName = this.datasource.name;
 		} else {
             this.datasource.tempName = this.datasource.name;
             this.datasource.tempXid = this.datasource.xid;
@@ -176,7 +175,7 @@ export default {
 			} catch (e) {
 				console.error('Failed to fetch data');
 			}
-		},
+		}
 	},
 };
 </script>
