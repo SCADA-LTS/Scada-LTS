@@ -142,7 +142,7 @@
             hide("noReportInstances");
             dwr.util.addRows("reportInstancesList", instanceArray,
                 [
-                    function(ri) { return "<span>" + ri.name + "</span>"; },
+                    function(ri) { return "<span>" + escapeHtml(ri.name) + "</span>"; },
                     function(ri) { return ri.prettyRunStartTime; },
                     function(ri) { return ri.prettyRunDuration; },
                     function(ri) { return ri.prettyReportStartTime; },
@@ -336,7 +336,8 @@
     }
     
     function updateReport(id, name) {
-        $("r"+ id +"Name").innerHTML = name;
+        let escapedName = escapeHtml(name);
+        $("r"+ id +"Name").innerHTML = escapedName;
     }
     
     function clearMessages() {

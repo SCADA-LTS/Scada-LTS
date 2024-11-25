@@ -35,6 +35,7 @@ import com.serotonin.web.taglib.DateFunctions;
 import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.Security;
 import org.jfree.data.time.TimeSeries;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
@@ -123,6 +124,7 @@ public class ReportChartCreator {
         model.put("instance", reportInstance);
         model.put("points", pointStatistics);
         model.put("inline", inlinePrefix == null ? "" : "cid:");
+        model.put("security", new Security());
 
         model.put("ALPHANUMERIC", DataTypes.ALPHANUMERIC);
         model.put("BINARY", DataTypes.BINARY);
