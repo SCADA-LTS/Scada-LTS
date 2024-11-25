@@ -38,6 +38,6 @@ public class SeriesIdentifier implements Comparable<SeriesIdentifier> {
 
     @Override
     public String toString() {
-        return name;
+        return XssProtectHtmlEscapeUtils.escape(name);
     }
 }
