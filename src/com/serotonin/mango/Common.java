@@ -20,6 +20,7 @@ package com.serotonin.mango;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -355,7 +356,7 @@ public class Common {
 				name = ctx.getServletContext().getRealPath(name.substring(1));
 
 			File file = new File(name);
-			if (!file.exists())
+			if (Files.notExists(file.toPath()))
 				file.mkdirs();
 
 			lazyFiledataPath = name;
