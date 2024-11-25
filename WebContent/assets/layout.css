@@ -440,3 +440,15 @@ textarea#cssEditor {
     text-align: center;
     vertical-align: middle;
 }
+.tooltip {
+	position: absolute;
+	background: #333;
+	color: #fff;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 14px;
+	white-space: nowrap;
+	display: none;
+	pointer-events: none;
+	z-index: 1000;
+}

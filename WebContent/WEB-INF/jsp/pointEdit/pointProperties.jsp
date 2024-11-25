@@ -24,6 +24,30 @@
       if (dataTypeId == <%= DataTypes.NUMERIC %>)
           show("engineeringUnitsSection");
   });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('.formLong');
+    const tooltip = document.getElementById('tooltip');
+
+    inputs.forEach(input => {
+      input.addEventListener('mouseover', (event) => {
+        const tooltipText = event.target.getAttribute('data-tooltip');
+        if (tooltipText) {
+          tooltip.textContent = tooltipText;
+          tooltip.style.display = 'block';
+        }
+      });
+
+      input.addEventListener('mousemove', (event) => {
+        tooltip.style.left = event.pageX + 10 + 'px';
+        tooltip.style.top = event.pageY + 10 + 'px';
+      });
+
+      input.addEventListener('mouseout', () => {
+        tooltip.style.display = 'none';
+      });
+    });
+  });
 </script>
 
 <div class="borderDiv marB marR">
@@ -49,7 +73,10 @@
     <spring:bind path="form.name">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
-        <td class="formField" style="width: 98%;"><input type="text" name="name" value="${status.value}" style="width: 98%;"/></td>
+        <div>
+        <td class="formField"><input type="text" class="formLong"  name="name" data-tooltip="<c:out value="${status.value}"/>" value="<c:out value="${status.value}"/>"/></td>
+        </div>
+        <div id="tooltip" class="tooltip"></div>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
