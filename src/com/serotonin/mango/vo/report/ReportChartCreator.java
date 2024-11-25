@@ -124,7 +124,7 @@ public class ReportChartCreator {
         model.put("instance", reportInstance);
         model.put("points", pointStatistics);
         model.put("inline", inlinePrefix == null ? "" : "cid:");
-        model.put("escapeHtml", new Security());
+        model.put("security", new Security());
 
         model.put("ALPHANUMERIC", DataTypes.ALPHANUMERIC);
         model.put("BINARY", DataTypes.BINARY);
