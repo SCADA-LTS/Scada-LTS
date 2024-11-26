@@ -24,30 +24,6 @@
       if (dataTypeId == <%= DataTypes.NUMERIC %>)
           show("engineeringUnitsSection");
   });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const inputs = document.querySelectorAll('.formLong');
-    const tooltip = document.getElementById('tooltip');
-
-    inputs.forEach(input => {
-      input.addEventListener('mouseover', (event) => {
-        const tooltipText = event.target.getAttribute('data-tooltip');
-        if (tooltipText) {
-          tooltip.textContent = tooltipText;
-          tooltip.style.display = 'block';
-        }
-      });
-
-      input.addEventListener('mousemove', (event) => {
-        tooltip.style.left = event.pageX + 10 + 'px';
-        tooltip.style.top = event.pageY + 10 + 'px';
-      });
-
-      input.addEventListener('mouseout', () => {
-        tooltip.style.display = 'none';
-      });
-    });
-  });
 </script>
 
 <div class="borderDiv marB marR">
@@ -74,9 +50,8 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
         <div>
-        <td class="formField"><input type="text" class="formLong"  name="name" data-tooltip="<c:out value="${status.value}"/>" value="<c:out value="${status.value}"/>"/></td>
+        <td class="formField"><input type="text" class="formLongFieldSizing" name="name" value="<c:out value="${status.value}"/>" title="<c:out value="${status.value}"/>"/></td>
         </div>
-        <div id="tooltip" class="tooltip"></div>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
@@ -84,7 +59,7 @@
     <spring:bind path="form.description">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.description"/></td>
-        <td class="formField"><input type="text" class="formLong" name="description" value="${status.value}"/></td>
+        <td class="formField"><input type="text" class="formLong" name="description" value="<c:out value="${status.value}"/>"/></td>
         <c:if test="${error.description != null}"><td class="formError"><spring:message code="${error.description}"/></td></c:if>
       </tr>
     </spring:bind>

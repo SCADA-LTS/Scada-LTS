@@ -142,6 +142,10 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formLong {
 	width: 250px;
 }
+.formLongFieldSizing {
+	min-width: 250px;
+    field-sizing: content;
+}
 input[type="submit"], input[type="button"] {
 	overflow: visible;
 }
@@ -439,16 +443,4 @@ textarea#cssEditor {
 #viewContent input[type='button'] {
     text-align: center;
     vertical-align: middle;
-}
-.tooltip {
-	position: absolute;
-	background: #333;
-	color: #fff;
-	padding: 5px 10px;
-	border-radius: 4px;
-	font-size: 14px;
-	white-space: nowrap;
-	display: none;
-	pointer-events: none;
-	z-index: 1000;
 }
