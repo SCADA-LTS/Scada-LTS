@@ -28,7 +28,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 @JsonRemoteEntity
 public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
@@ -55,16 +55,16 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 			}
 
 			if (!validateVarNameScript(varName)) {
-				response.addContextualMessage("context", "validate.invalidVarName", escape(varName));
+				response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
 				break;
 			}
 
 			if (varNameSpace.contains(varName)) {
-				response.addContextualMessage("context", "validate.duplicateVarName", escape(varName));
+				response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
 				break;
 			}
 
-			varNameSpace.add(escape(varName));
+			varNameSpace.add(escapeHtml(varName));
 		}
 
 		for (IntValuePair point : objectsOnContext) {
@@ -76,16 +76,16 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 			}
 
 			if (!validateVarNameScript(varName)) {
-				response.addContextualMessage("context", "validate.invalidVarName", escape(varName));
+				response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
 				break;
 			}
 
 			if (varNameSpace.contains(varName)) {
-				response.addContextualMessage("context", "validate.duplicateVarName", escape(varName));
+				response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
 				break;
 			}
 
-			varNameSpace.add(escape(varName));
+			varNameSpace.add(escapeHtml(varName));
 		}
 
 		super.validate(response);

@@ -4,7 +4,7 @@
 			<config
 				v-if="detailsLoaded"
 				@canceled="closeEditor()"
-				@saved="onSaved($event)"
+				@saved="onSaved"
 				:datasource="ds"
 				:createMode="false"
 			/>

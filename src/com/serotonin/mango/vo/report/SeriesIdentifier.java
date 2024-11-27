@@ -1,7 +1,5 @@
 package com.serotonin.mango.vo.report;
 
-import org.scada_lts.web.security.XssProtectHtmlEscapeUtils;
-
 import java.util.Objects;
 
 public class SeriesIdentifier implements Comparable<SeriesIdentifier> {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -63,7 +64,7 @@ public class ReportsAPI {
      * @return ReportVO List
      */
     @PostMapping(value = "/save")
-    public HttpEntity<String> save(@RequestBody ReportDTO query, HttpServletRequest request) {
+    public HttpEntity<String> save(@RequestBody @Valid ReportDTO query, HttpServletRequest request) {
         LOG.info("GET::/api/reports/save");
         ReportVO report = reportsApiService.toReport(request, query);
         reportsApiService.create(request, report);

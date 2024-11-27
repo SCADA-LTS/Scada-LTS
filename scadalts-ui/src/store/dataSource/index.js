@@ -310,10 +310,14 @@ const ds = {
 					url: `/datapoint`,
 					data: dataPoint,
 				}).then(response => {
-					console.log(response);
-					resolve();
-					// commit('UPDATE_DATA_SOURCE',response);
-					// resolve(response);
+					let dataSourceId = response.dataSourceId;
+					let dataPointXid = response.xid;
+					commit("REMOVE_DATA_POINT_IN_DS", {dataSourceId, dataPointXid});
+				    commit('ADD_DATA_POINT_IN_DS', {
+                        dataSourceId: dataSourceId,
+                        dataPoint: response
+                    });
+                    resolve();
 				}).catch(error => {
 					console.error(error);
 					reject();

@@ -7,7 +7,7 @@
 			:datapoint="datapoint"
 			:settableDisabled="settingsInputDisabled"
 			@cancel="cancel()"
-			@accept="save()"
+			@accept="save"
 		>
 			<template v-slot:selector>
 				<v-select
@@ -317,9 +317,9 @@ export default {
 			this.$emit('canceled');
 		},
 
-		save() {
+		save(data) {
 			console.debug('VirtualDataSource.point.vue::save()');
-			this.$emit('saved', this.datapoint);
+			this.$emit('saved', data);
 		},
 
 		changeRegisterRange() {

@@ -4,20 +4,20 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.directwebremoting.convert.BeanConverter;
 import org.directwebremoting.extend.*;
 
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 public class XssDataPointVoConverter extends BeanConverter {
 
     @Override
     public OutboundVariable convertOutbound(Object data, OutboundContext outctx) throws MarshallException {
         DataPointVO dataPointVo = (DataPointVO)data;
-        dataPointVo.setName(escape(dataPointVo.getName()));
-        dataPointVo.setXid(escape(dataPointVo.getXid()));
-        dataPointVo.setDataSourceXid(escape(dataPointVo.getDataSourceXid()));
-        dataPointVo.setChartColour(escape(dataPointVo.getChartColour()));
-        dataPointVo.setDataSourceName(escape(dataPointVo.getDataSourceName()));
-        dataPointVo.setDescription(escape(dataPointVo.getDescription()));
-        dataPointVo.setDeviceName(escape(dataPointVo.getDeviceName()));
+        dataPointVo.setName(escapeHtml(dataPointVo.getName()));
+        dataPointVo.setXid(escapeHtml(dataPointVo.getXid()));
+        dataPointVo.setDataSourceXid(escapeHtml(dataPointVo.getDataSourceXid()));
+        dataPointVo.setChartColour(escapeHtml(dataPointVo.getChartColour()));
+        dataPointVo.setDataSourceName(escapeHtml(dataPointVo.getDataSourceName()));
+        dataPointVo.setDescription(escapeHtml(dataPointVo.getDescription()));
+        dataPointVo.setDeviceName(escapeHtml(dataPointVo.getDeviceName()));
         return super.convertOutbound(dataPointVo, outctx);
     }
 }

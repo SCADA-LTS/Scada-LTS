@@ -11,12 +11,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class XssUtilsTest {
+public class XssValidatorUtilsTest {
 
     private final String input;
     private final boolean expectedResult;
 
-    public XssUtilsTest(String input, boolean expectedResult) {
+    public XssValidatorUtilsTest(String input, boolean expectedResult) {
         this.input = input;
         this.expectedResult = expectedResult;
     }
@@ -152,7 +152,7 @@ public class XssUtilsTest {
     public void testValidate() {
 
         //when:
-        boolean result = XssUtils.validateHttpQuery(input);
+        boolean result = XssValidatorUtils.validateHttpQuery(input);
 
         //then:
         assertEquals("Validation failed for input: " + input, expectedResult, result);

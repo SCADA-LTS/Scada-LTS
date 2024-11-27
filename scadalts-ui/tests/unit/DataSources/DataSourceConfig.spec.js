@@ -26,7 +26,7 @@ context('💠️ Test DataSourceConfig Base Component', () => {
         });
 
         it('Is title rendered', () => {
-            expect(dialogText).to.contain('Create  Data Source Config');
+            expect(dialogText).to.contain('Create Data Source Config');
         });
 
         it('Is data source name field rendered', () => {
@@ -62,7 +62,7 @@ context('💠️ Test DataSourceConfig Base Component', () => {
         });
 
         it('Is title rendered', () => {
-            expect(dialogText).to.contain('Update  Data Source Config');
+            expect(dialogText).to.contain('Update Data Source Config');
         });
 
         it('Is update button visible', () => {
@@ -82,7 +82,7 @@ context('💠️ Test DataSourceConfig Base Component', () => {
         });
 
         it('Is title rendered', () => {
-            expect(dialogText).to.contain('Create  Data Source Config');
+            expect(dialogText).to.contain('Create Data Source Config');
         });
 
         it('Is update period field not rendered', () => {
@@ -102,7 +102,7 @@ context('💠️ Test DataSourceConfig Base Component', () => {
 
         it('Is Unique XID generated on mounted() hook', async() => {
             await wrapper.vm.$nextTick();
-            expect(wrapper.vm.datasource.xid).to.equal('UNIT_XID_01');
+            expect(wrapper.vm.datasource.tempXid).to.equal('UNIT_XID_01');
         });
 
         it('CheckXidUnique valid', async() => {
@@ -112,7 +112,7 @@ context('💠️ Test DataSourceConfig Base Component', () => {
         });
 
         it('CheckXidUnique not-valid', async() => {
-            wrapper.vm.datasource.xid = 'NOT_UNIQUE';
+            wrapper.vm.datasource.tempXid = 'NOT_UNIQUE';
             wrapper.vm.checkXidUnique()
             await wrapper.vm.$nextTick();
             expect(wrapper.vm.xidUnique).to.be.false;

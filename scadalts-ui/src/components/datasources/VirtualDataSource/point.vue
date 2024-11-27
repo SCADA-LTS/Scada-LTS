@@ -5,13 +5,13 @@
 			:creator="createMode"
 			:datapoint="datapoint"
 			@cancel="cancel()"
-			@accept="save()"
+			@accept="save"
 		>
 			<template v-slot:selector>
 				<v-select
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
-          @change="resetPointLocatorToDefault"
+                    @change="resetPointLocatorToDefault"
 				></v-select>
 			</template>
 
@@ -38,7 +38,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.alternateBooleanChange.startValue"
 								:items="booleanSelectBox"
-                :rules = "ruleSelectNotNull"
+                                :rules = "ruleNotNull"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -50,7 +50,7 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.randomBooleanChange.startValue"
 								:items="booleanSelectBox"
-                :rules = "ruleSelectNotNull"
+                                :rules = "ruleNotNull"
 							></v-select>
 						</v-col>
 					</v-row>
@@ -60,8 +60,8 @@
 								label="Start Value"
 								v-model="datapoint.pointLocator.noChange.startValue"
 								:items="booleanSelectBox"
-                :rules = "ruleSelectNotNull"
-                required
+                                :rules = "ruleNotNull"
+                                required
 							></v-select>
 						</v-col>
 					</v-row>
@@ -97,7 +97,7 @@
 								label="Initail Value"
 								v-model="datapoint.pointLocator.incrementMultistateChange.startValue"
 								:items="datapoint.pointLocator.incrementMultistateChange.values"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-select>
 						</v-col>
 						<v-col
@@ -145,7 +145,7 @@
 								label="Initail Value"
 								v-model="datapoint.pointLocator.randomMultistateChange.startValue"
 								:items="datapoint.pointLocator.randomMultistateChange.values"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-select>
 						</v-col>
 						<v-col
@@ -171,7 +171,7 @@
 								label="Start Value"
 								type="number"
 								v-model="datapoint.pointLocator.noChange.startValue"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -194,7 +194,7 @@
 								type="Number"
 								label="Maximum"
 								v-model="datapoint.pointLocator.brownianChange.max"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -202,7 +202,7 @@
 								type="Number"
 								label="Maximum Change"
 								v-model="datapoint.pointLocator.brownianChange.maxChange"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -210,7 +210,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.brownianChange.startValue"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -232,7 +232,7 @@
 								type="Number"
 								label="Maximum"
 								v-model="datapoint.pointLocator.incrementAnalogChange.max"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -240,7 +240,7 @@
 								type="Number"
 								label="Maximum Change"
 								v-model="datapoint.pointLocator.incrementAnalogChange.change"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -254,7 +254,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.incrementAnalogChange.startValue"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -265,7 +265,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.noChange.startValue"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -292,7 +292,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.randomAnalogChange.startValue"
-								:rules="[ruleNotNull]"
+								:rules="ruleNotNull"
 							></v-text-field>
 							<!-- TODO: Add rule for not null -->
 						</v-col>
@@ -309,7 +309,7 @@
 								type="Number"
 								label="Attraction Point ID"
 								v-model="datapoint.pointLocator.analogAttractorChange.attractionPointId"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -317,7 +317,7 @@
 								type="Number"
 								label="volatility"
 								v-model="datapoint.pointLocator.analogAttractorChange.volatility"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -325,7 +325,7 @@
 								type="Number"
 								label="maxChange"
 								v-model="datapoint.pointLocator.analogAttractorChange.maxChange"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 						<v-col>
@@ -333,7 +333,7 @@
 								type="Number"
 								label="Start value"
 								v-model="datapoint.pointLocator.analogAttractorChange.startValue"
-                :rules="[ruleNotNull]"
+                                :rules="ruleNotNull"
 							></v-text-field>
 						</v-col>
 					</v-row>
@@ -346,7 +346,7 @@
 					<v-text-field
 						label="Initial Value"
 						v-model="datapoint.pointLocator.noChange.startValue"
-            :rules="[ruleNotNull]"
+                        :rules="ruleNotNull"
 					></v-text-field>
 				</v-col>
 			</v-row>
@@ -393,7 +393,7 @@ export default {
 					value: true,
 				},
 			],
-			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull')
 		};
 	},
 
@@ -415,11 +415,7 @@ export default {
 
 		datapointTypes() {
 			return this.$store.state.dataSourceState.datapointTypes;
-		},
-
-    ruleSelectNotNull: function() {
-      return [v => !!v || this.$t('validation.rule.notNull')]
-    },
+		}
 	},
 
 	methods: {
@@ -428,9 +424,9 @@ export default {
 			this.$emit('canceled');
 		},
 
-		save() {
+		save(data) {
 			console.debug('VirtualDataSource.point.vue::save()');
-			this.$emit('saved', this.datapoint);
+			this.$emit('saved', data);
 		},
 
 		addMsValue(array) {
@@ -453,11 +449,11 @@ export default {
 			}
 		},
 
-    resetPointLocatorToDefault() {
-      var oldValue = this.datapoint.pointLocator.dataTypeId;
-      this.datapoint.pointLocator = new ScadaVirtualDataPoint().pointLocator;
-      this.datapoint.pointLocator.dataTypeId = oldValue;
-    },
+        resetPointLocatorToDefault() {
+            var oldValue = this.datapoint.pointLocator.dataTypeId;
+            this.datapoint.pointLocator = new ScadaVirtualDataPoint().pointLocator;
+            this.datapoint.pointLocator.dataTypeId = oldValue;
+        },
   },
 };
 </script>

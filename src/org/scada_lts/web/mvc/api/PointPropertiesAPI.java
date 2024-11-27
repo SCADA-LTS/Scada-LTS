@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -13,6 +14,8 @@ import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
+import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.http.HttpStatus;
@@ -156,7 +159,7 @@ public class PointPropertiesAPI {
     public ResponseEntity<Map<String, String>> updatePointProperties(@RequestParam(required = false) Integer id,
                                                         @RequestParam(required = false) String xid,
                                                         HttpServletRequest request,
-                                                        @RequestBody JsonPointProperties body) {
+                                                        @RequestBody @Valid JsonPointProperties body) {
         try {
             User user = Common.getUser(request);
             if (user != null) {

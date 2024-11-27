@@ -5,7 +5,7 @@
 			:creator="createMode"
 			:datapoint="datapoint"
 			@cancel="cancel()"
-			@accept="save()"
+			@accept="save"
 		>
 			<template v-slot:selector>
 				<v-select
@@ -537,11 +537,11 @@ export default {
 			this.$emit('canceled');
 		},
 
-		async save() {
+		async save(data) {
 			console.debug('VirtualDataSource.point.vue::save()');
 			await this.validateScript();
 			if (this.validScript)
-				this.$emit('saved', this.datapoint);
+				this.$emit('saved', data);
 		},
 
 		addMsValue(array) {

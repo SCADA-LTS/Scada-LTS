@@ -132,6 +132,7 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.0")
 	public void deleteReport(int reportId) {
 		reportDAO.delete(reportId);
 	}
@@ -424,5 +425,11 @@ public class ReportService implements MangoReport {
 		System.arraycopy(params, 0, result, 0, params.length);
 		System.arraycopy(toAppend, 0, result, params.length, toAppend.length);
 		return result;
+	}
+
+	@Override
+	public void deleteReport(ReportVO report) {
+		ReportJob.unscheduleReportJob(report);
+		reportDAO.delete(report.getId());
 	}
 }

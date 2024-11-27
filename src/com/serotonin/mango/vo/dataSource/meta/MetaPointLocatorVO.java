@@ -54,7 +54,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
-import static org.scada_lts.web.security.XssProtectHtmlEscapeUtils.escape;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 /**
  * @author Matthew Lohbihler
@@ -193,7 +193,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             int pointId = point.getKey();
 
             if(pointId != Common.NEW_ID && pointId == dataPointId) {
-                response.addContextualMessage("context", "validate.invalidVariable", escape(varName));
+                response.addContextualMessage("context", "validate.invalidVariable", escapeHtml(varName));
                 break;
             }
 
@@ -203,12 +203,12 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             }
 
             if (!validateVarNameScript(varName)) {
-                response.addContextualMessage("context", "validate.invalidVarName", escape(varName));
+                response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
                 break;
             }
 
             if (varNameSpace.contains(varName)) {
-                response.addContextualMessage("context", "validate.duplicateVarName", escape(varName));
+                response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
                 break;
             }
 
