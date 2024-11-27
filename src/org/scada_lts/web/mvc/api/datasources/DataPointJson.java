@@ -17,9 +17,12 @@ public class DataPointJson {
     private Boolean enabled;
     private int dataSourceTypeId;
     private int dataSourceId;
+    @XssProtect
     private String deviceName;
     private DataPointLocatorJson pointLocator;
+    @XssProtect
     private String datasourceName;
+    @XssProtect
     private String dataSourceXid;
     private int typeId;
     private Boolean settable;

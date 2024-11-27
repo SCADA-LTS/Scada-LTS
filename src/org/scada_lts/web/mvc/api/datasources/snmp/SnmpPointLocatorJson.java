@@ -1,15 +1,18 @@
 package org.scada_lts.web.mvc.api.datasources.snmp;
 
 import com.serotonin.mango.vo.dataSource.snmp.SnmpPointLocatorVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
 public class SnmpPointLocatorJson extends DataPointLocatorJson {
 
-    String oid;
-    String binary0Value;
-    int setType;
-    boolean trapOnly;
-    boolean relinquishable;
+    @XssProtect
+    private String oid;
+    @XssProtect
+    private String binary0Value;
+    private int setType;
+    private boolean trapOnly;
+    private boolean relinquishable;
 
     public SnmpPointLocatorJson() {}
 

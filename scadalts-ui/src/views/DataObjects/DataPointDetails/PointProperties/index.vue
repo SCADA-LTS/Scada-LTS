@@ -119,8 +119,6 @@ import PointPropEventDetectors from './PointPropEventDetectors';
 import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
-import {escapeHtml, unescapeHtml} from '@/utils/common'
-
 /**
  * Point Properties
  *
