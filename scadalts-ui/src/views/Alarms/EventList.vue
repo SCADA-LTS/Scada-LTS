@@ -391,6 +391,10 @@
 						</v-badge>
 
     				</template>
+    				<template v-slot:item.xid="{ item }">
+    				    <span v-if="item.xid" v-html="item.xid"/>
+                        <span v-else> {{$t('event.list.reloadPage')}} </span>
+    				</template>
 			</v-data-table>
 		</v-container>
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
