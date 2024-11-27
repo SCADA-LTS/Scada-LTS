@@ -69,14 +69,14 @@
     <input type="hidden" id="taskName" name="asdf" value=""/>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td valign="top">
+        <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
         </td>
-        <td valign="top">
+        <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
         </td>
       </tr>

@@ -142,6 +142,11 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formLong {
 	width: 250px;
 }
+.formLongFieldSizing {
+	min-width: 250px;
+	max-width: 650px;
+    field-sizing: content;
+}
 input[type="submit"], input[type="button"] {
 	overflow: visible;
 }
