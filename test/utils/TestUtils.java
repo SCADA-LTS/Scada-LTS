@@ -1,12 +1,15 @@
-package br.org.scadabr.db.utils;
+package utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -174,5 +177,23 @@ public final class TestUtils {
 		user.setDataSourcePermissions(new ArrayList<Integer>());
 		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
 		return user;
+	}
+
+	public static DataPointVO newMetaPointSettable(int id, int folderId, List<IntValuePair> context) {
+		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		dataPoint1.setId(id);
+		dataPoint1.setXid("DP_" + id);
+		dataPoint1.setName("dp_" + id);
+		dataPoint1.setDataSourceId(99999);
+		dataPoint1.setDataSourceName("ds_name");
+		dataPoint1.setDataSourceTypeId(9);
+		dataPoint1.setDataSourceXid("DS_XID");
+		dataPoint1.setPointFolderId(folderId);
+		MetaPointLocatorVO pointLocatorVO = new MetaPointLocatorVO();
+		pointLocatorVO.setContext(context);
+		pointLocatorVO.setSettable(true);
+		dataPoint1.setPointLocator(pointLocatorVO);
+		dataPoint1.setEventDetectors(new ArrayList<>());
+		return dataPoint1;
 	}
 }

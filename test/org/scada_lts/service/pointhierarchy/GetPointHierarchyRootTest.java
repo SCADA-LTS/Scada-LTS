@@ -1,6 +1,6 @@
 package org.scada_lts.service.pointhierarchy;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -13,7 +13,6 @@ import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
-import org.scada_lts.utils.PointHierarchyUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

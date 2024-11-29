@@ -1,6 +1,6 @@
 package org.scada_lts.ds.messaging.channel;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Assert;

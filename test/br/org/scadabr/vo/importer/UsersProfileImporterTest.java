@@ -18,7 +18,7 @@ import br.org.scadabr.db.dao.mocks.MockDataSourceDao;
 import br.org.scadabr.db.dao.mocks.MockViewDao;
 import br.org.scadabr.db.dao.mocks.MockWatchlistDao;
 import br.org.scadabr.db.scenarios.DatalessDatabaseScenario;
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;

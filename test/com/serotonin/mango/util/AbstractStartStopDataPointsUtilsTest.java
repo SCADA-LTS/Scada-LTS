@@ -1,6 +1,6 @@
 package com.serotonin.mango.util;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;

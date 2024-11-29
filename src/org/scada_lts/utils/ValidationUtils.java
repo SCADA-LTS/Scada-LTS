@@ -1,7 +1,11 @@
 package org.scada_lts.utils;
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.scada_lts.serorepl.utils.StringUtils;
@@ -13,6 +17,8 @@ import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -127,5 +133,35 @@ public final class ValidationUtils {
         if (user == null || !user.isAdmin()) {
             throw new UnauthorizedException(request.getRequestURI());
         }
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int safe) {
+        if(starDataPointId == findDataPointId) {
+            return true;
+        }
+        if(safe < 0) {
+            return false;
+        }
+        DataPointVO dataPoint = dataPoints.get(starDataPointId);
+        PointLocatorVO pointLocator = dataPoint.getPointLocator();
+        if(pointLocator instanceof MetaPointLocatorVO) {
+            MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
+            List<IntValuePair> context = metaPointLocator.getContext();
+            if (context == null || context.isEmpty()) {
+                return false;
+            }
+            for (IntValuePair keyValue : context) {
+                int contextDataPointId = keyValue.getKey();
+                DataPointVO contextDataPoint = dataPoints.get(contextDataPointId);
+                if(contextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
+                    if (contextDataPointId == findDataPointId) {
+                        return true;
+                    } else {
+                        return isCyclicDependency(contextDataPointId, findDataPointId, dataPoints, --safe);
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

@@ -1,6 +1,6 @@
 package org.scada_lts.permissions.migration;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
