@@ -1,9 +1,8 @@
 package org.scada_lts.dao;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.vo.User;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

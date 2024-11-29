@@ -1,14 +1,11 @@
 package org.scada_lts.ds.messaging.channel;
 
-import br.org.scadabr.db.utils.TestUtils;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import utils.mock.MockUtils;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;

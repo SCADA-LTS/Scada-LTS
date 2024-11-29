@@ -1,6 +1,6 @@
 package org.scada_lts.service.pointhierarchy;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.generateDataPointAccess;
-import static org.scada_lts.utils.PointHierarchyUtils.sort;
 
 public class GetPointHierarchyByKeyTest {
 
