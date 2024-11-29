@@ -16,7 +16,7 @@ import java.util.Map;
 @RunWith(Parameterized.class)
 public class CyclicDependencyValidationUtilsTest {
 
-    @Parameterized.Parameters(name = "{index}: starDataPointId: {0}, checkDataPointId: {1}, cyclicDependency: {2}")
+    @Parameterized.Parameters(name = "{index}: starDataPointId: {0}, findDataPointId: {1}, cyclicDependency: {2}")
     public static Object[][] data() {
         return new Object[][] {
                 { 1, 1, true },
@@ -58,12 +58,12 @@ public class CyclicDependencyValidationUtilsTest {
         };
     }
     private final int starDataPointId;
-    private final int checkDataPointId;
+    private final int findDataPointId;
     private final boolean cyclicDependencyExpected;
 
-    public CyclicDependencyValidationUtilsTest(int starDataPointId, int checkDataPointId, boolean cyclicDependency) {
+    public CyclicDependencyValidationUtilsTest(int starDataPointId, int findDataPointId, boolean cyclicDependency) {
         this.starDataPointId = starDataPointId;
-        this.checkDataPointId = checkDataPointId;
+        this.findDataPointId = findDataPointId;
         this.cyclicDependencyExpected = cyclicDependency;
     }
 
@@ -107,7 +107,7 @@ public class CyclicDependencyValidationUtilsTest {
     public void when_isCyclicDependency() {
 
         //when:
-        boolean cyclicDependencyResult = ValidationUtils.isCyclicDependency(starDataPointId, checkDataPointId, DATA_POINTS, 10);
+        boolean cyclicDependencyResult = ValidationUtils.isCyclicDependency(starDataPointId, findDataPointId, DATA_POINTS, 10);
 
         //then:
         Assert.assertEquals(cyclicDependencyExpected, cyclicDependencyResult);

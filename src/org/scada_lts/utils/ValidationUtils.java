@@ -135,29 +135,29 @@ public final class ValidationUtils {
         }
     }
 
-    public static boolean isCyclicDependency(int starDataPointId, int checkDataPointId, Map<Integer, DataPointVO> dataPoints, int safe) {
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int safe) {
+        if(starDataPointId == findDataPointId) {
+            return true;
+        }
         if(safe < 0) {
             return false;
-        }
-        if(starDataPointId == checkDataPointId) {
-            return true;
         }
         DataPointVO dataPoint = dataPoints.get(starDataPointId);
         PointLocatorVO pointLocator = dataPoint.getPointLocator();
         if(pointLocator instanceof MetaPointLocatorVO) {
             MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
-            List<IntValuePair> pairs = metaPointLocator.getContext();
-            if (pairs.isEmpty()) {
+            List<IntValuePair> context = metaPointLocator.getContext();
+            if (context == null || context.isEmpty()) {
                 return false;
             }
-            for(IntValuePair pair: pairs) {
-                int id = pair.getKey();
-                if(id == checkDataPointId) {
-                    return true;
-                } else {
-                    DataPointVO dp = dataPoints.get(id);
-                    if(dp.getPointLocator() instanceof MetaPointLocatorVO) {
-                        return isCyclicDependency(id, checkDataPointId, dataPoints, --safe);
+            for (IntValuePair keyValue : context) {
+                int contextDataPointId = keyValue.getKey();
+                DataPointVO contextDataPoint = dataPoints.get(contextDataPointId);
+                if(contextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
+                    if (contextDataPointId == findDataPointId) {
+                        return true;
+                    } else {
+                        return isCyclicDependency(contextDataPointId, findDataPointId, dataPoints, --safe);
                     }
                 }
             }

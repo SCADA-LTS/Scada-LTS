@@ -194,7 +194,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 .stream()
                 .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
 
-        List<String> varNameSpace = new ArrayList<String>();
+        List<String> varNameSpace = new ArrayList<>();
         for (IntValuePair point : context) {
             String varName = point.getValue();
             int pointId = point.getKey();
