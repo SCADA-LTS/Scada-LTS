@@ -73,6 +73,7 @@ import org.scada_lts.quartz.EverySecond;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.utils.ThreadInfoApiUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 import javax.servlet.ServletContext;
@@ -86,6 +87,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
@@ -227,10 +229,45 @@ public class MangoContextListener implements ServletContextListener {
 		utilitiesTerminate(ctx);
 		highPriorityServiceTerminate();
 		databaseTerminate(ctx);
+		otherThreadsTerminate();
 
 		Common.ctx = null;
 
 		log.info("Scada-LTS context terminated");
+	}
+
+	private void otherThreadsTerminate() {
+
+		List<Thread> threads = ThreadInfoApiUtils.getThreads()
+				.stream()
+				.filter(a -> toInterrupt(a))
+				.collect(Collectors.toList());
+		log.info("Threads size before terminating: " + threads.size());
+
+		List<Thread> notInterruptedthreads = threads.stream()
+				.peek(a -> {
+					log.info(a.getName() + " - terminating");
+					try {
+						a.interrupt();
+						a.stop();
+					} catch (Throwable ex) {
+						log.info(a.getName() + " - terminating - error: " + ex.getMessage());
+					}
+					log.info(a.getName() + " - terminated");
+				})
+				.filter(a -> !a.isInterrupted())
+				.collect(Collectors.toList());
+
+		log.info("Threads size after terminating: " + notInterruptedthreads.size());
+	}
+
+	private static boolean toInterrupt(Thread a) {
+		return !a.isDaemon() && !a.getName().equals("main") && !a.getName().equals(Thread.currentThread().getName())
+				&& !a.getName().startsWith("MessageBroker")
+				&& !a.getName().startsWith("clientOutboundChannel")
+				&& !a.getName().startsWith("clientInboundChannel")
+				&& !a.getName().startsWith("Catalina-utility")
+				&& !a.getName().startsWith("DefaultQuartzScheduler_");
 	}
 
 	private void highPriorityServiceTerminate() {
@@ -345,6 +382,9 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.JMX.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
 				DataSourceVO.Type.MQTT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC_UA",
+				DataSourceVO.Type.OPC_UA.getId());
+
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",

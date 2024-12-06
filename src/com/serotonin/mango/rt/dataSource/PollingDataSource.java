@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.dataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
@@ -49,6 +50,8 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private long jobThreadStartTime;
     private static volatile boolean markAsTerminating = false;
 
+    private final AtomicInteger lock = new AtomicInteger(0);
+
     public PollingDataSource(DataSourceVO<?> vo) {
         super(vo);
         this.vo = vo;
@@ -59,7 +62,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         this.quantize = quantize;
     }
 
-    public void scheduleTimeout(long fireTime) {
+    public void scheduleTimeout2(long fireTime) {
         if(isMarkAsTerminating()) {
             return;
         }
@@ -83,6 +86,29 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         }
         finally {
             jobThread = null;
+        }
+    }
+
+    public void scheduleTimeout(long fireTime) {
+
+        if(isMarkAsTerminating()) {
+            return;
+        }
+
+        if(lock.getAndIncrement() == 0) {
+            try {
+                jobThreadStartTime = fireTime;
+                updateChangedPoints();
+                doPoll(fireTime);
+            } finally {
+                lock.set(0);
+            }
+        } else {
+            // There is another poll still running, so abort this one.
+            LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
+                    + " aborted because a previous poll started at "
+                    + DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
+            return;
         }
     }
 

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.*;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.scada_lts.monitor.IMonitoredValues;
 import gnu.io.CommPortIdentifier;
@@ -53,8 +54,6 @@ import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.custom.CustomView;
-import com.serotonin.mango.vo.CommPortProxy;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
 import org.scada_lts.monitor.ConcurrentMonitoredValues;
 import com.serotonin.timer.CronTimerTrigger;
@@ -215,6 +214,13 @@ public class Common {
 					+ periodType);
 		}
 
+		return new LocalizableMessage("common.tp.description", periods,
+				new LocalizableMessage(periodKey));
+	}
+
+	public static LocalizableMessage getPeriodDescription(TimePeriod periodType,
+														  int periods) {
+		String periodKey = periodType.getKey();
 		return new LocalizableMessage("common.tp.description", periods,
 				new LocalizableMessage(periodKey));
 	}

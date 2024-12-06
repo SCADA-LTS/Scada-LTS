@@ -24,6 +24,11 @@
     <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
     <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
+    <converter id="opcUaDataTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaDataTypeConverter"/>
+    <converter id="opcUaIdentifierTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaIdentifierTypeConverter"/>
+    <converter id="opcUaMessageSecurityTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaMessageSecurityTypeConverter"/>
+    <converter id="opcUaSecurityPolicyTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaSecurityPolicyTypeConverter"/>
+    <converter id="keyStoreTypeConverter" class="com.serotonin.mango.web.dwr.KeyStoreTypeConverter"/>
   </init>
   
   <allow>
@@ -107,6 +112,7 @@
     </create>
 
     <convert converter="bean" match="br.org.scadabr.OPCItem" />
+    <convert converter="bean" match="br.org.scadabr.vo.dataSource.opcua.OpcUaItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
 
     <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
@@ -215,6 +221,11 @@
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.MessageAckType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion" />
     <convert converter="protocolVersionConverter" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
+    <convert converter="opcUaDataTypeConverter" match="br.org.scadabr.vo.dataSource.opcua.OpcUaDataType" />
+    <convert converter="opcUaIdentifierTypeConverter" match="br.org.scadabr.vo.dataSource.opcua.OpcUaIdentifierType" />
+    <convert converter="opcUaMessageSecurityTypeConverter" match="br.org.scadabr.vo.dataSource.opcua.OpcUaMessageSecurityType" />
+    <convert converter="opcUaSecurityPolicyTypeConverter" match="br.org.scadabr.vo.dataSource.opcua.OpcUaSecurityPolicyType" />
+    <convert converter="keyStoreTypeConverter" match="br.org.scadabr.KeyStoreType" />
 
     <!-- MQTT stuff -->
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion" />

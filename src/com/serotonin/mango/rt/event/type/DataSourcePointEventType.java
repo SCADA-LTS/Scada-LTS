@@ -35,7 +35,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     private DataSourceEventType dataSourceEventType;
     private int dataPointId;
-    private final int duplicateHandling = DuplicateHandling.IGNORE_SAME_MESSAGE;
+    private final int duplicateHandling = DuplicateHandling.IGNORE;
 
     private final Log LOG = LogFactory.getLog(DataSourcePointEventType.class);
 

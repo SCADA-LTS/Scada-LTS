@@ -44,9 +44,10 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
+import br.org.scadabr.*;
+import br.org.scadabr.vo.dataSource.opcua.*;
 import com.serotonin.bacnet4j.type.enumerated.ObjectType;
 import com.serotonin.db.KeyValuePair;
-import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import net.sf.mbus4j.Connection;
@@ -64,9 +65,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jinterop.dcom.common.JISystem;
 
-import br.org.scadabr.OPCItem;
-import br.org.scadabr.OPCUtils;
-import br.org.scadabr.RealOPCMaster;
 import br.org.scadabr.vo.dataSource.alpha2.Alpha2DataSourceVO;
 import br.org.scadabr.vo.dataSource.alpha2.Alpha2PointLocatorVO;
 import br.org.scadabr.vo.dataSource.asciiFile.ASCIIFileDataSourceVO;
@@ -331,23 +329,23 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return dp;
     }
 
-    private DwrResponseI18n validatePoint(int id, String xid, String name,
-                                          PointLocatorVO locator, DataPointDefaulter defaulter) {
+    private DwrResponseI18n validatePoint(int dataPointId, String dataPointXid, String dataPointName,
+                                          PointLocatorVO pointLocator, DataPointDefaulter defaulter) {
         Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
-        DataPointVO dp = getPoint(id, defaulter);
-        dp.setXid(xid);
-        dp.setName(name);
-        dp.setPointLocator(locator);
+        DataPointVO dp = getPoint(dataPointId, defaulter);
+        dp.setXid(dataPointXid);
+        dp.setName(dataPointName);
+        dp.setPointLocator(pointLocator);
 
         DataPointService dataPointService = new DataPointService();
-        validateXid(response, dataPointService::isXidUnique, xid, id);
+        validateXid(response, dataPointService::isXidUnique, dataPointXid, dataPointId);
 
-        if (StringUtils.isEmpty(name))
+        if (StringUtils.isEmpty(dataPointName))
             response.addContextualMessage("name", "dsEdit.validate.required");
 
-        locator.validate(response, dp.getId());
+        pointLocator.validate(response, dp.getId());
 
         if (!response.getHasMessages()) {
             Common.ctx.getRuntimeManager().saveDataPoint(dp);
@@ -2425,11 +2423,106 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     }
 
-    // public void saveOPCTags(OPCItem[] opcItems) {
-    // for (int i = 0; i < opcItems.length; i++) {
-    // OPCItem opcItem = new OPCItem("", 0, false);
-    // }
-    // }
+    public DwrResponseI18n saveOpcUaDataSource(OpcUaDataSourceVO<?> ds) {
+        Permissions.ensureAdmin();
+        return tryDataSourceSave(ds);
+    }
+
+    public DwrResponseI18n saveOpcUaPointLocator(int id, String xid, String name,
+                                               OpcUaPointLocatorVO locator) {
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    public LinkedHashSet<String> searchServerOpcUa(OpcUaDataSourceVO<?> dataSourceVO) {
+
+        Logger log = JISystem.getLogger();
+        log.setLevel(Level.OFF);
+
+        LinkedHashSet<String> serverList = new LinkedHashSet<>();
+        try {
+            OpcUaMaster opcUaMaster = new OpcUaMaster(dataSourceVO);
+            opcUaMaster.init();
+            serverList.add(dataSourceVO.getServerAddress());
+            opcUaMaster.terminate();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return serverList;
+    }
+
+    public OpcUaItem findTagOpcUa(OpcUaDataSourceVO<?> dataSource, String tag, String identifier,
+                                  OpcUaIdentifierType identifierType, OpcUaDataType dataType) {
+
+        Logger log = JISystem.getLogger();
+        log.setLevel(Level.OFF);
+
+        OpcUaPointLocatorVO pointLocator = new OpcUaPointLocatorVO();
+        pointLocator.setTag(tag);
+        pointLocator.setIdentifier(identifier);
+        pointLocator.setIdentifierType(identifierType);
+        pointLocator.setDataType(dataType);
+
+        OpcUaMaster opcUaMaster;
+        try {
+            opcUaMaster = new OpcUaMaster(dataSource);
+            opcUaMaster.init();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return new OpcUaItem(false, pointLocator);
+        }
+
+        int namespaceIndex = opcUaMaster.findNamespaceIndex(1000, pointLocator);
+        pointLocator.setNamespaceIndex(namespaceIndex);
+        boolean validated = opcUaMaster.validateTag(pointLocator, tag);
+        pointLocator.setSettable(false);
+
+        try {
+            opcUaMaster.terminate();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        return new OpcUaItem(validated, pointLocator);
+    }
+
+    public DwrResponseI18n saveMultipleOpcUaPointLocator(OpcUaPointLocatorVO[] locators, String context) {
+
+        return validateMultipleOpcUaPoints(locators,
+                context, null);
+    }
+
+    private DwrResponseI18n validateMultipleOpcUaPoints(OpcUaPointLocatorVO[] locators, String context,
+                                                        DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
+        DwrResponseI18n response = new DwrResponseI18n();
+        OpcUaDataSourceVO<?> ds = (OpcUaDataSourceVO<?>) Common.getUser()
+                .getEditDataSource();
+        if (ds.isNew()) {
+            response.addContextualMessage(context,
+                    "dsEdit.opc.validate.dataSourceNotSaved");
+            return response;
+        }
+        for (int i = 0; i < locators.length; i++) {
+            DataPointVO dp = getPoint(Common.NEW_ID, defaulter);
+            String dataPointName = locators[i].getTag();
+            dp.setName(dataPointName);
+            dp.setPointLocator(locators[i]);
+
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
+
+            // locators[i].validate(response);
+            if (!response.getHasMessages()) {
+                Common.ctx.getRuntimeManager().saveDataPoint(dp);
+                response.addData("id", dp.getId());
+                response.addData("points", getPoints());
+            }
+        }
+        return response;
+    }
+
+
+    /// //
 
     public DwrResponseI18n saveMultipleOPCPointLocator(String[] tags,
                                                        int[] dataTypes, boolean[] settables, OPCPointLocatorVO[] locators,

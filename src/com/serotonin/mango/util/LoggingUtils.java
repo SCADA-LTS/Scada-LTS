@@ -1,5 +1,6 @@
 package com.serotonin.mango.util;
 
+import br.org.scadabr.vo.dataSource.opcua.OpcUaPointLocatorVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -14,6 +15,7 @@ import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -249,6 +251,20 @@ public final class LoggingUtils {
             return "";
         String info =  "{0} (key: {1})";
         return MessageFormat.format(info, pair.getValue(), pair.getKey());
+    }
+
+    public static String pointLocatorInfo(PointLocatorVO pointLocator) {
+        if(pointLocator == null)
+            return "";
+        if(pointLocator instanceof OpcUaPointLocatorVO) {
+            String info =  "locator: {0} (nodeId: {4}, namespaceIndex: {1}, identifier: {2}, identifierType: {3}, dataTypeId: {4}, dataType: {5}, dataType [OPC UA]: {6})";
+            OpcUaPointLocatorVO opcUa = (OpcUaPointLocatorVO) pointLocator;
+            return MessageFormat.format(info, opcUa.getTag(), opcUa.getNodeId(), opcUa.getNamespaceIndex(),
+                    opcUa.getIdentifierType(), opcUa.getDataTypeId(), opcUa.getDataTypeMessage().getLocalizedMessage(Common.getBundle()), opcUa.getDataType());
+        }
+        String info =  "locator: {0} (dataTypeId: {1}, dataType: {2})";
+        return MessageFormat.format(info, pointLocator.getConfigurationDescription().getLocalizedMessage(Common.getBundle()), pointLocator.getDataTypeId(), pointLocator.getDataTypeMessage().getLocalizedMessage(Common.getBundle()));
+
     }
 
     private static String msg(EventHandlerVO eventHandler) {

@@ -423,4 +423,12 @@
   <item id="dataRetentionSettings">
     <relation id="reportInstances"/>
   </item>
+
+  <item id="opcUaDS">
+    <relation id="opcUaPP"/>
+  </item>
+
+  <item id="opcUaPP">
+    <relation id="opcUaDS"/>
+  </item>
 </doxManifest>
