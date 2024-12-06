@@ -18,7 +18,7 @@ public enum OpcUaSecurityPolicyType {
     }
 
     public String getCode() {
-        return this.name();
+        return this == NONE ? this.name() : this.description;
     }
 
     public String getDescription() {

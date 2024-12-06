@@ -231,7 +231,7 @@ public class OpcUaDataSourceVO<T extends OpcUaDataSourceVO<?>> extends
 
      */
 	@JsonRemoteProperty
-	private long negotiationTimeout = 60000;
+	private long negotiationTimeout = 6000;
 
 	/*
     @ConfigurationParameter("request-timeout")
@@ -569,7 +569,7 @@ public class OpcUaDataSourceVO<T extends OpcUaDataSourceVO<?>> extends
 		/// Sec
 
 		if (getSecurityPolicy() != null) {
-			query += MessageFormat.format("&security-policy={0}", getSecurityPolicy().getDescription());
+			query += MessageFormat.format("&security-policy={0}", getSecurityPolicy().getCode());
 
 			if(getSecurityPolicy() != OpcUaSecurityPolicyType.NONE) {
 

@@ -2446,6 +2446,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             opcUaMaster.terminate();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
+            serverList.add("Error: " + e.getMessage());
         }
         return serverList;
     }

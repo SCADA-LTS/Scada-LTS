@@ -226,9 +226,9 @@ public class OpcUaPointLocatorVO extends AbstractPointLocatorVO implements
 
 	public String getNodeId() {
 		if (!StringUtils.isEmpty(getAttributes())) {
-			return MessageFormat.format("ns={0};{1}={2};{3};{4}", getNamespaceIndex(), getIdentifierType().getCode(), getIdentifier(), getAttributes(), getDataType());
+			return MessageFormat.format("ns={0};{1}={2};{3};{4}", getNamespaceIndex(), getIdentifierType().getCode(), getIdentifier(), getAttributes(), getDataType().getCode());
 		}
-		return MessageFormat.format("ns={0};{1}={2};{3}", getNamespaceIndex(), getIdentifierType().getCode(), getIdentifier(), getDataType());
+		return MessageFormat.format("ns={0};{1}={2};{3}", getNamespaceIndex(), getIdentifierType().getCode(), getIdentifier(), getDataType().getCode());
 	}
 
 	public OpcUaPointLocatorVO copy() {
