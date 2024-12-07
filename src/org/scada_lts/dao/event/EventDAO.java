@@ -796,10 +796,23 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 
 	private static EventType createEventType(ResultSet rs) throws SQLException {
-		int typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
-		int typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
-		int typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
-		int typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
+		int typeId;
+		int typeRef1;
+		int typeRef2;
+		int typeRef3;
+
+		try {
+			typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
+			typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
+			typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
+			typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
+		} catch (SQLException e) {
+			typeId = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_ID);
+			typeRef1 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF1);
+			typeRef2 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
+			typeRef3 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
+		}
+
 		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, typeRef3);
 	}
 
