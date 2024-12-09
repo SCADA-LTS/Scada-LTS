@@ -8,7 +8,6 @@
 
 <script type="text/javascript"><!--
   function initImpl() {
-	  hide("console");
 	  hide("editImg-1");
 	  if (!newDataSource())
 		 searchServer();
