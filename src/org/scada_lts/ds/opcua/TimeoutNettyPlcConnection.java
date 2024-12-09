@@ -114,7 +114,7 @@ public class TimeoutNettyPlcConnection extends DefaultNettyPlcConnection {
 
         try {
             if (this.awaitSessionDisconnectComplete) {
-                this.sessionDisconnectCompleteFuture.get(100000000, TimeUnit.MILLISECONDS);
+                this.sessionDisconnectCompleteFuture.get(closingTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (Exception var2) {
             LOG.error("Timeout while trying to close connection");

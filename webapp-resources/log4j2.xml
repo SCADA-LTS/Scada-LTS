@@ -150,6 +150,8 @@
         <!-- Startup Logging-->
         <Logger name="com.serotonin.mango.MangoContextListener" level="${startupLoggingLevel}"/>
 
+        <Logger name="com.serotonin.mango.util.ThreadPoolExecutorUtils" level="${startupLoggingLevel}"/>
+
         <Logger name="org.scada_lts.dao.migration" level="${startupLoggingLevel}">
             <AppenderRef ref="ASYNC_FLYWAY"/>
         </Logger>

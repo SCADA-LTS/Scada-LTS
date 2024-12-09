@@ -62,6 +62,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         this.quantize = quantize;
     }
 
+    @Deprecated(since = "2.8.0")
     public void scheduleTimeout2(long fireTime) {
         if(isMarkAsTerminating()) {
             return;
@@ -101,7 +102,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
                 updateChangedPoints();
                 doPoll(fireTime);
             } finally {
-                lock.set(0);
+                lock.getAndSet(0);
             }
         } else {
             // There is another poll still running, so abort this one.

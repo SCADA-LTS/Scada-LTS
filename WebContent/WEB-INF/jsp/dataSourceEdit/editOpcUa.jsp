@@ -8,7 +8,7 @@
 
 <script type="text/javascript"><!--
   function initImpl() {
-	  //hide("console");
+	  hide("console");
 	  hide("editImg-1");
 	  if (!newDataSource())
 		 searchServer();
@@ -48,18 +48,19 @@
   function searchServer() {
       let dataSource = createDataSource();
       DataSourceEditDwr.searchServerOpcUa(dataSource, function(response) {
-    	  if (response.hasMessages)
-              $set("console", response.messages[0].contextualMessage);
-    	  else {
-              $set("console");
-              
+    	  if (response.hasMessages) {
+    	      let messages = response.messages;
+              document.getElementById("console").textContent = messages[0].contextualMessage;
+    	  } else {
+    	      document.getElementById("console").textContent = '';
+
+              let serverList = response.data.serverList;
+
               dwr.util.removeAllOptions("serverName");
-              dwr.util.addOptions("serverName", response);
-              //dwr.util.addOptions("serverName", response.data.servers);
+              dwr.util.addOptions("serverName", serverList);
               
               if (!newDataSource()) {
                   let server = '${dataSource.serverName}';
-                  serverList = $('serverName');
                   for (index = 0; index < serverList.length; index++) {
                       if (serverList[index].value == server)
                           serverList.selectedIndex = index;
@@ -254,8 +255,9 @@
 		let existTag = false ;
 		for (let i = 0; i < list.rows.length; i++) {
 		    let finds = list.rows[i].cells[0].innerHTML;
-			if (finds == $get("searchTag")){
+			if (finds == $get("searchTag")) {
 				existTag = true;
+				document.getElementById("tagsMessage").textContent = "<spring:message code="dsEdit.opcua.tagAlreadyExists"/>";
 				break;
 			}
 		}
@@ -264,14 +266,12 @@
 		      DataSourceEditDwr.findTagOpcUa(dataSourceToSave, $get("searchTag"),
 	 			$get("searchIdentifier"), $get("searchIdentifierType"), $get("searchDataType"), function(response) {
 	 			let tag = response.data.tag;
-	 			console.log('tag: ', tag);
-	 			console.log('response: ', response);
 	 			if(response.hasMessages) {
 	 			    let messages = response.messages;
-	 			    document.getElementById(messages[0].contextKey).textContent = messages[0].contextualMessage;
+	 			    document.getElementById("tagsMessage").textContent = messages[0].contextualMessage;
 	 			    return;
 	 			} else {
-	 			    document.getElementById(messages[0].contextKey).textContent = '';
+	 			    document.getElementById("tagsMessage").textContent = '';
 	 			}
 	 			let tbody = document.getElementById('addTagsTable');
 	 			let row = document.createElement("TR");

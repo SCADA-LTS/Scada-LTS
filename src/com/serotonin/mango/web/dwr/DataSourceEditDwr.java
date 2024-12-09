@@ -2436,15 +2436,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    public LinkedHashSet<String> searchServerOpcUa(OpcUaDataSourceVO<?> dataSourceVO) {
+    public DwrResponseI18n searchServerOpcUa(OpcUaDataSourceVO<?> dataSourceVO) {
         Logger log = JISystem.getLogger();
         log.setLevel(Level.OFF);
 
+        DwrResponseI18n response = new DwrResponseI18n();
         LinkedHashSet<String> serverList = new LinkedHashSet<>();
 
         if(TIME_LOCKER.remainingSeconds() > 0) {
-            serverList.add(TIME_LOCKER.getDetails());
-            return serverList;
+            response.addMessage("console", new LocalizableMessage("common.default", TIME_LOCKER.getDetails()));
+            response.addData("serverList", serverList);
+            return response;
         }
 
         try {
@@ -2454,9 +2456,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             master.terminate();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            serverList.add("Error: " + e.getMessage());
+            response.addMessage("console", new LocalizableMessage("common.default", e.getMessage()));
         }
-        return serverList;
+        response.addData("serverList", serverList);
+        return response;
     }
 
     public DwrResponseI18n findTagOpcUa(OpcUaDataSourceVO<?> dataSource, String tag, String identifier,
@@ -2494,6 +2497,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         pointLocator.setNamespaceIndex(namespaceIndex);
         boolean validated = master.validateTag(pointLocator, tag);
         pointLocator.setSettable(false);
+
+        if(!validated)
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", master.getErrorMessage()));
 
         try {
             master.terminate();

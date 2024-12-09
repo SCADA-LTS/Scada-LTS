@@ -25,6 +25,7 @@ import java.util.concurrent.*;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 
+import com.serotonin.mango.util.ThreadPoolExecutorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -119,47 +120,8 @@ public class BackgroundProcessing implements ILifecycle {
 
 	public void joinTermination() {
 		this.terminating = true;
-		boolean medDone = false;
-		boolean lowDone = false;
-
-		try {
-			// With 5 second waits and a worst case of both of both high and low
-			// priority jobs that just won't finish,
-			// this thread will wait a maximum of 2 minutes.
-			int rewaits = 12;
-			while (rewaits > 0) {
-				medDone = mediumPriorityService.awaitTermination(5, TimeUnit.SECONDS) && mediumPriorityService.isTerminated();
-				lowDone = lowPriorityService.awaitTermination(5, TimeUnit.SECONDS) && lowPriorityService.isTerminated();
-
-				if (lowDone && medDone)
-					break;
-
-				if (!medDone)
-					LOG.info("BackgroundProcessing waiting for medium ("
-							+ mediumPriorityService.getQueue().size()
-							+ ") and low priority tasks to complete");
-				if (!lowDone)
-					LOG.info("BackgroundProcessing waiting for low priority tasks to complete");
-
-				rewaits--;
-			}
-			if(!mediumPriorityService.isTerminated() && !mediumPriorityService.awaitTermination(5, TimeUnit.SECONDS)) {
-				mediumPriorityService.shutdownNow();
-			}
-			if(!lowPriorityService.isTerminated() && !lowPriorityService.awaitTermination(5, TimeUnit.SECONDS))
-				lowPriorityService.shutdownNow();
-		} catch (InterruptedException e) {
-			LOG.info(LoggingUtils.exceptionInfo(e), e);
-		} finally {
-			if(mediumPriorityService.isTerminated())
-				LOG.info("Stopped MediumPriorityService");
-			else
-				LOG.info("Stopped MediumPriorityService Fail");
-			if(lowPriorityService.isTerminated())
-				LOG.info("Stopped LowPriorityService");
-			else
-				LOG.info("Stopped LowPriorityService Fail");
-		}
+		ThreadPoolExecutorUtils.terminate(mediumPriorityService, "MediumPriorityService");
+		ThreadPoolExecutorUtils.terminate(lowPriorityService, "LowPriorityService");
 	}
 
 	public boolean isTerminating() {
