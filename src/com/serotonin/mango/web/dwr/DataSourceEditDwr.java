@@ -212,6 +212,7 @@ import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
+import org.scada_lts.utils.TimeLocker;
 
 import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyAndSaveDataPoint;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -225,7 +226,9 @@ import static org.scada_lts.utils.XidUtils.validateXid;
 public class DataSourceEditDwr extends DataSourceListDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceEditDwr.class);
 
-	//
+    private static TimeLocker TIME_LOCKER = new TimeLocker(20, 15);
+
+    //
 	//
 	// Common methods
 	//
@@ -2434,16 +2437,21 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     public LinkedHashSet<String> searchServerOpcUa(OpcUaDataSourceVO<?> dataSourceVO) {
-
         Logger log = JISystem.getLogger();
         log.setLevel(Level.OFF);
 
         LinkedHashSet<String> serverList = new LinkedHashSet<>();
+
+        if(TIME_LOCKER.remainingSeconds() > 0) {
+            serverList.add(TIME_LOCKER.getDetails());
+            return serverList;
+        }
+
         try {
-            OpcUaMaster opcUaMaster = new OpcUaMaster(dataSourceVO);
-            opcUaMaster.init();
+            OpcUaMaster master = new OpcUaMaster(dataSourceVO);
+            master.init();
             serverList.add(dataSourceVO.getServerAddress());
-            opcUaMaster.terminate();
+            master.terminate();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             serverList.add("Error: " + e.getMessage());
@@ -2451,11 +2459,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return serverList;
     }
 
-    public OpcUaItem findTagOpcUa(OpcUaDataSourceVO<?> dataSource, String tag, String identifier,
+    public DwrResponseI18n findTagOpcUa(OpcUaDataSourceVO<?> dataSource, String tag, String identifier,
                                   OpcUaIdentifierType identifierType, OpcUaDataType dataType) {
 
         Logger log = JISystem.getLogger();
         log.setLevel(Level.OFF);
+
+        DwrResponseI18n response = new DwrResponseI18n();
 
         OpcUaPointLocatorVO pointLocator = new OpcUaPointLocatorVO();
         pointLocator.setTag(tag);
@@ -2463,27 +2473,35 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         pointLocator.setIdentifierType(identifierType);
         pointLocator.setDataType(dataType);
 
-        OpcUaMaster opcUaMaster;
-        try {
-            opcUaMaster = new OpcUaMaster(dataSource);
-            opcUaMaster.init();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            return new OpcUaItem(false, pointLocator);
+        if(TIME_LOCKER.remainingSeconds() > 0) {
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", TIME_LOCKER.getDetails()));
+            response.addData("tag", new OpcUaItem(false, pointLocator));
+            return response;
         }
 
-        int namespaceIndex = opcUaMaster.findNamespaceIndex(1000, pointLocator);
+        OpcUaMaster master;
+        try {
+            master = new OpcUaMaster(dataSource);
+            master.init();
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", e.getMessage()));
+            response.addData("tag", new OpcUaItem(false, pointLocator));
+            return response;
+        }
+
+        int namespaceIndex = master.findNamespaceIndex(1000, pointLocator);
         pointLocator.setNamespaceIndex(namespaceIndex);
-        boolean validated = opcUaMaster.validateTag(pointLocator, tag);
+        boolean validated = master.validateTag(pointLocator, tag);
         pointLocator.setSettable(false);
 
         try {
-            opcUaMaster.terminate();
+            master.terminate();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
-
-        return new OpcUaItem(validated, pointLocator);
+        response.addData("tag", new OpcUaItem(validated, pointLocator));
+        return response;
     }
 
     public DwrResponseI18n saveMultipleOpcUaPointLocator(OpcUaPointLocatorVO[] locators, String context) {

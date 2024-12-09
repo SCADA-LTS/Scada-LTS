@@ -8,7 +8,7 @@
 
 <script type="text/javascript"><!--
   function initImpl() {
-	  hide("console");
+	  //hide("console");
 	  hide("editImg-1");
 	  if (!newDataSource())
 		 searchServer();
@@ -21,7 +21,7 @@
       alert(pointId);
   }
   
-  var cellFuncs = [
+  let cellFuncs = [
           function(data) { return data.tag; },
           function(data) {
               if (data.dataType == ${applicationScope['constants.DataTypes.BINARY']})
@@ -49,7 +49,7 @@
       let dataSource = createDataSource();
       DataSourceEditDwr.searchServerOpcUa(dataSource, function(response) {
     	  if (response.hasMessages)
-              $set("console", response.messages[0]);
+              $set("console", response.messages[0].contextualMessage);
     	  else {
               $set("console");
               
@@ -58,7 +58,7 @@
               //dwr.util.addOptions("serverName", response.data.servers);
               
               if (!newDataSource()) {
-                  var server = '${dataSource.serverName}';
+                  let server = '${dataSource.serverName}';
                   serverList = $('serverName');
                   for (index = 0; index < serverList.length; index++) {
                       if (serverList[index].value == server)
@@ -145,12 +145,12 @@
         $set("attributes", locator.attributes);
 
         let identifierType = document.getElementById("identifierType");
-        for (var i = 0; i < identifierType.options.length; i++) {
+        for (let i = 0; i < identifierType.options.length; i++) {
             identifierType.options[i].selected = identifierType.options[i].value == locator.identifierType;
         }
 
         let dataType = document.getElementById("dataType");
-        for (var i = 0; i < dataType.options.length; i++) {
+        for (let i = 0; i < dataType.options.length; i++) {
             dataType.options[i].selected = dataType.options[i].value == locator.dataType;
         }
   }
@@ -172,16 +172,16 @@
   
   function addTagsImpl(point) {
 	  list = document.getElementById('tagsTable');
-	  var locator = point.pointLocator;
+	  let locator = point.pointLocator;
 
       // Prevents DWR warnings
       delete locator.configurationDescription;
       delete locator.dataTypeMessage;
       delete locator.relinquish;
 
-	  var locators = new Array();
-	  for (var i = 0; i < list.rows.length; i++) {
-		var check = list.rows[i].getElementsByTagName('input');
+	  let locators = new Array();
+	  for (let i = 0; i < list.rows.length; i++) {
+		let check = list.rows[i].getElementsByTagName('input');
 		if (check[0] == null){
 			continue;
 		}
@@ -212,16 +212,16 @@
 
   function addTagsImplOpcUa(point) {
 	  list = document.getElementById('addTagsTable');
-	  var locator = point.pointLocator;
+	  let locator = point.pointLocator;
       
       // Prevents DWR warnings
       delete locator.configurationDescription;
       delete locator.dataTypeMessage;
       delete locator.relinquish;
 
-	  var locators = new Array();
-	  for (var i = 0; i < list.rows.length; i++) {
-		var check = list.rows[i].getElementsByTagName('input');
+	  let locators = new Array();
+	  for (let i = 0; i < list.rows.length; i++) {
+		let check = list.rows[i].getElementsByTagName('input');
 		if (check[0] == null){
 			continue;
 		}
@@ -251,8 +251,8 @@
 	  if($get("searchTag") != ''){
 
 		list = document.getElementById('addTagsTable');
-		var existTag = false ;
-		for (var i = 0; i < list.rows.length; i++) {
+		let existTag = false ;
+		for (let i = 0; i < list.rows.length; i++) {
 		    let finds = list.rows[i].cells[0].innerHTML;
 			if (finds == $get("searchTag")){
 				existTag = true;
@@ -263,43 +263,52 @@
 		      let dataSourceToSave = createDataSource();
 		      DataSourceEditDwr.findTagOpcUa(dataSourceToSave, $get("searchTag"),
 	 			$get("searchIdentifier"), $get("searchIdentifierType"), $get("searchDataType"), function(response) {
-			    console.log('response: ', response);
-	 			var tbody = document.getElementById('addTagsTable');
-	 			var row = document.createElement("TR");
-	 			var td1 = document.createElement("TD");
+	 			let tag = response.data.tag;
+	 			console.log('tag: ', tag);
+	 			console.log('response: ', response);
+	 			if(response.hasMessages) {
+	 			    let messages = response.messages;
+	 			    document.getElementById(messages[0].contextKey).textContent = messages[0].contextualMessage;
+	 			    return;
+	 			} else {
+	 			    document.getElementById(messages[0].contextKey).textContent = '';
+	 			}
+	 			let tbody = document.getElementById('addTagsTable');
+	 			let row = document.createElement("TR");
+	 			let td1 = document.createElement("TD");
 	 			td1.setAttribute("align","center");
 				text1 = document.createTextNode($get("searchTag"));
 				td1.appendChild(text1);
 
-				var td2 = document.createElement("TD");
-				var dataType = document.createTextNode(response.dataType);
+				let td2 = document.createElement("TD");
+				let dataType = document.createTextNode(tag.dataType);
 				td2.setAttribute("align","center");
 				td2.appendChild(dataType);
 
-                var td21 = document.createElement("TD");
-                var namespaceIndex = document.createTextNode(response.namespaceIndex);
+                let td21 = document.createElement("TD");
+                let namespaceIndex = document.createTextNode(tag.namespaceIndex);
 				td21.setAttribute("align","center");
                 td21.appendChild(namespaceIndex);
 
-                var td22 = document.createElement("TD");
-                var identifier = document.createTextNode(response.identifier);
+                let td22 = document.createElement("TD");
+                let identifier = document.createTextNode(tag.identifier);
 				td22.setAttribute("align","center");
                 td22.appendChild(identifier);
 
-                var td23 = document.createElement("TD");
-                var identifierType = document.createTextNode(response.identifierType);
+                let td23 = document.createElement("TD");
+                let identifierType = document.createTextNode(tag.identifierType);
                 td23.setAttribute("align","center");
                 td23.appendChild(identifierType);
 
-	 			var td3 = document.createElement("TD");
+	 			let td3 = document.createElement("TD");
 	 			td3.setAttribute("align","center");
-	 			var text3 = "";
+	 			let text3 = "";
 
-				var td4 = document.createElement("TD");
+				let td4 = document.createElement("TD");
 	 			td4.setAttribute("align","center");
 	 			img = document.createElement("IMG");
 
-	 			if (response.validate == true) {
+	 			if (tag.validate == true) {
 	 				img.setAttribute("src","images/accept.png");
 	 				img.setAttribute("title","<spring:message code="dsEdit.opcua.TagValidated"/>")
 	 				text3 = document.createTextNode("true");
@@ -313,9 +322,9 @@
 				td3.appendChild(text3);
 	 			td4.appendChild(img);
 
-	 			var td5 = document.createElement("TD");
+	 			let td5 = document.createElement("TD");
 	 			td5.setAttribute("align","center");
-	 			var input = document.createElement("INPUT");
+	 			let input = document.createElement("INPUT");
 	 			input.type = 'checkbox'
 	 	 		input.name = 'addTag'
 				td5.appendChild(input)
@@ -517,6 +526,9 @@ function toggleDiv(elem) {
 			value="<spring:message code="dsEdit.opcua.refreshServers"/>"
 			onclick="searchServer();" /></td>
 	</tr>
+    <tr>
+        <td colspan="2" id="console" class="formError"></td>
+    </tr>
 	<tr>
 		<td class="formLabelRequired"><spring:message
 			code="dsEdit.updatePeriod" /></td>
@@ -641,11 +653,6 @@ function toggleDiv(elem) {
 			</table>
 			</td>
 
-		</tr>
-        <tr>
-			<td>
-			<div id="console"></div>
-			</td>
 		</tr>
 		<tr>
 			<td colspan="2" align="center"><input id="btnAddTag"

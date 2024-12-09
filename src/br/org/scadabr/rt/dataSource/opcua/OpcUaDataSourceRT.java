@@ -16,6 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.serorepl.utils.StringUtils;
 
+ import java.util.List;
+
 
 public class OpcUaDataSourceRT extends PollingDataSource {
 
@@ -45,8 +47,13 @@ public class OpcUaDataSourceRT extends PollingDataSource {
 				timeoutCount = 0;
 				initialize();
 			} else {
-				opcMaster.ping();
-				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+				List<DataPointRT> points = getDataPoints();
+				if(!points.isEmpty()) {
+					DataPointRT dataPointRT =  points.get(0);
+					DataPointVO  dataPointVO = dataPointRT.getVO();
+					opcMaster.ping(dataPointVO.getPointLocator());
+					returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+				}
 			}
 
 		} catch (Throwable e) {

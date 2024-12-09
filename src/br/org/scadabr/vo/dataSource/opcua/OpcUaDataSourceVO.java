@@ -240,7 +240,7 @@ public class OpcUaDataSourceVO<T extends OpcUaDataSourceVO<?>> extends
 
      */
 	@JsonRemoteProperty
-	private long requestTimeout = 30000;
+	private long requestTimeout = 3000;
 
 	/*
     @ConfigurationParameter("receive-buffer-size")
@@ -303,7 +303,7 @@ public class OpcUaDataSourceVO<T extends OpcUaDataSourceVO<?>> extends
 
      */
 	@JsonRemoteProperty
-	private long defaultTimeout = 1000;
+	private long defaultTimeout = 2000;
 
 	@JsonRemoteProperty
 	private int creationMode;

@@ -138,4 +138,24 @@ public class TimeoutOpcuaPlcDriver extends OpcuaPlcDriver {
                 connectingTimeout,
                 closingTimeout);
     }
+
+    @Override
+    protected boolean awaitDiscoverComplete() {
+        return false;
+    }
+
+    @Override
+    protected boolean fireDiscoverEvent() {
+        return false;
+    }
+
+    @Override
+    protected boolean awaitDisconnectComplete() {
+        return false;
+    }
+
+    @Override
+    protected boolean awaitSetupComplete() {
+        return true;
+    }
 }

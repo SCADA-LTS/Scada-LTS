@@ -1,7 +1,6 @@
 package com.serotonin.mango.web.dwr;
 
 import br.org.scadabr.vo.dataSource.opcua.OpcUaDataType;
-import org.apache.plc4x.java.opcua.security.SecurityPolicy;
 import org.directwebremoting.convert.EnumConverter;
 import org.directwebremoting.extend.*;
 import org.directwebremoting.util.LocalUtil;

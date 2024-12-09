@@ -98,9 +98,11 @@ public class TimeoutNettyPlcConnection extends DefaultNettyPlcConnection {
             // Set the connection to "connected"
             connected = true;
         } catch (InterruptedException e) {
+            close();
             Thread.currentThread().interrupt();
             throw new PlcConnectionException(e);
         } catch (Exception e) {
+            close();
             throw new PlcConnectionException(e);
         }
     }
@@ -112,7 +114,7 @@ public class TimeoutNettyPlcConnection extends DefaultNettyPlcConnection {
 
         try {
             if (this.awaitSessionDisconnectComplete) {
-                this.sessionDisconnectCompleteFuture.get(closingTimeout, TimeUnit.MILLISECONDS);
+                this.sessionDisconnectCompleteFuture.get(100000000, TimeUnit.MILLISECONDS);
             }
         } catch (Exception var2) {
             LOG.error("Timeout while trying to close connection");
@@ -121,10 +123,10 @@ public class TimeoutNettyPlcConnection extends DefaultNettyPlcConnection {
         if (this.channel.isOpen()) {
             try {
                 this.channel.pipeline().fireUserEventTriggered(new CloseConnectionEvent());
-                this.channel.close().awaitUninterruptibly();
-            } catch (RejectedExecutionException ex) {
+                this.channel.close().awaitUninterruptibly().get();
+            } catch (Exception ex) {
                 if (this.channel.isOpen()) {
-                    throw ex;
+                    throw new PlcConnectionException(ex.getMessage(), ex);
                 }
             }
         }
