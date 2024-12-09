@@ -82,7 +82,6 @@ public class OpcUaDataSourceVO<T extends OpcUaDataSourceVO<?>> extends
 		return TYPE;
 	}
 
-	@JsonRemoteProperty
 	private int updatePeriodType = Common.TimePeriods.SECONDS;
 	@JsonRemoteProperty
 	private int updatePeriods = 1;
