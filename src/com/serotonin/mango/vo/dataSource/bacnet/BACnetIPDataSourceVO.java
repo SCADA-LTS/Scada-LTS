@@ -75,7 +75,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        return new LocalizableMessage("dsEdit.bacnetIp.dsconn", deviceId);
+        return new LocalizableMessage("common.tp.description", Common.getPeriodDescription(updatePeriodType, updatePeriods), new LocalizableMessage("common.default", " / Device ID: " + getDeviceId() + " / " + getBroadcastAddress() + ":" + getPort()));
     }
 
     @Override
