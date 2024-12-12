@@ -18,12 +18,9 @@
 
 package org.scada_lts.dao.event;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
@@ -799,21 +796,39 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		int typeId;
 		int typeRef1;
 		int typeRef2;
-		int typeRef3;
-
-		try {
+		if(hasColumn(rs, COLUMN_NAME_TYPE_ID)) {
 			typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
-			typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
-			typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
-			typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
-		} catch (SQLException e) {
-			typeId = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_ID);
-			typeRef1 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF1);
-			typeRef2 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
-			typeRef3 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
 		}
-
+		else {
+			typeId = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_ID);
+		}
+		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_1)) {
+			typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
+		}
+		else {
+			typeRef1 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF1);
+		}
+		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_2)) {
+			typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
+		}
+		else {
+			typeRef2 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
+		}
+		int typeRef3 = -1;
+		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_3))
+			typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
 		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, typeRef3);
+	}
+
+	public static boolean hasColumn(ResultSet resultSet, String columnName) throws SQLException {
+		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+		int columns = resultSetMetaData.getColumnCount();
+		for (int i = 1; i <= columns; i++) {
+			if (columnName.equals(resultSetMetaData.getColumnName(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
