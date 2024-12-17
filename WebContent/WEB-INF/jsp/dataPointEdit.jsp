@@ -18,7 +18,7 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
-<tag:page dwr="DataPointEditDwr">
+<tag:page dwr="DataPointEditDwr" onload="init">
 
      <link href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
      <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
@@ -83,6 +83,14 @@
       <tr>
         <td>
             <script>
+                    function init() {
+                        jQuery("#selected_base_on_existing_point_chooser").chosen({
+                            allow_single_deselect: true,
+                            placeholder_text_single: "Select a point...",
+                            search_contains: true,
+                            width: "400px"
+                        });
+                    }
 
                    function checkGetAlertError() {
                      return jQuery("#checkGetAlertError").prop('checked');
@@ -883,6 +891,12 @@
                            					        	   }
                            					        	});
                   }
+                    jQuery(document).ready(function(){
+                        (function($) {
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+                        })(jQuery);
+                    });
             </script>
 
         </td>

@@ -54,6 +54,12 @@
       refreshSelectedPoints();
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
+      jQuery("#availablePoints").chosen({
+          allow_single_deselect: true,
+          placeholder_text_single: "Select a point...",
+          search_contains: true,
+          width: "100%"
+      });
   }
 
   function initStaticHeaders(response) {
@@ -376,6 +382,12 @@
   function showHttpSenderTest() {
       document.getElementById("httpSenderTest").style.visibility = "visible";
   }
+  jQuery(document).ready(function(){
+      (function($) {
+          loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+          loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+  });
 </script>
 
 <table id="publisherEditor" cellpadding="0" cellspacing="0">
