@@ -66,14 +66,14 @@
                 for (i=0; i<dataSources.length; i++) {
                     id = "ds"+ dataSources[i].id;
                     dshtml += '<input type="checkbox" id="'+ id +'" onclick="dataSourceChange(this)">';
-                    dshtml += '<label for="'+ id +'"> '+ <c:out value="dataSources[i].name"/> +'</label><br/>';
+                    dshtml += '<label for="'+ id +'"> '+ escapeHtml(dataSources[i].name) +'</label><br/>';
                     dshtml += '<div style="margin-left:25px;" id="dsps'+ dataSources[i].id +'">';
                     if (dataSources[i].points.length > 0) {
                         dshtml +=   '<table cellspacing="0" cellpadding="1">';
                         for (j=0; j<dataSources[i].points.length; j++) {
                             dp = dataSources[i].points[j];
                             dshtml += '<tr>';
-                            dshtml +=   '<td class="formLabelRequired">'+ <c:out value="dp.name" /> +'</td>';
+                            dshtml +=   '<td class="formLabelRequired">'+ escapeHtml(dp.name) +'</td>';
                             dshtml +=   '<td>';
                             dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/0" value="0">';
                             dshtml +=             '<label for="dp'+ dp.id +'/0"><spring:message code="common.access.none"/></label> ';
