@@ -676,9 +676,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	//TODO rewrite
-	private class EventTypeRowMapper implements RowMapper<EventType> {
+	private class EventHandlerTypeRowMapper implements RowMapper<EventType> {
 		public EventType mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createEventType(rs);
+            return createHandlerEventType(rs);
 		}
 	}
 	
@@ -793,42 +793,18 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 
 	private static EventType createEventType(ResultSet rs) throws SQLException {
-		int typeId;
-		int typeRef1;
-		int typeRef2;
-		if(hasColumn(rs, COLUMN_NAME_TYPE_ID)) {
-			typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
-		}
-		else {
-			typeId = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_ID);
-		}
-		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_1)) {
-			typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
-		}
-		else {
-			typeRef1 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF1);
-		}
-		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_2)) {
-			typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
-		}
-		else {
-			typeRef2 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
-		}
-		int typeRef3 = -1;
-		if(hasColumn(rs, COLUMN_NAME_TYPE_REF_3))
-			typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
+		int typeId = rs.getInt(COLUMN_NAME_TYPE_ID);
+		int typeRef1 = rs.getInt(COLUMN_NAME_TYPE_REF_1);
+		int typeRef2 = rs.getInt(COLUMN_NAME_TYPE_REF_2);
+		int typeRef3 = rs.getInt(COLUMN_NAME_TYPE_REF_3);
 		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, typeRef3);
 	}
 
-	public static boolean hasColumn(ResultSet resultSet, String columnName) throws SQLException {
-		ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-		int columns = resultSetMetaData.getColumnCount();
-		for (int i = 1; i <= columns; i++) {
-			if (columnName.equals(resultSetMetaData.getColumnName(i))) {
-				return true;
-			}
-		}
-		return false;
+	private static EventType createHandlerEventType(ResultSet rs) throws SQLException {
+		int typeId = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_ID);
+		int typeRef1 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF1);
+		int typeRef2 = rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE_REF2);
+		return EventTypeUtil.createEventType(typeId, typeRef1, typeRef2, -1);
 	}
 
 	/**
@@ -1399,7 +1375,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public EventType getEventHandlerType(int handlerId) {
-		return (EventType) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventTypeRowMapper() );
+		return (EventType) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventHandlerTypeRowMapper() );
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
