@@ -95,12 +95,6 @@ public final class ViewControllerUtils {
         viewCopy.setId(Common.NEW_ID);
         viewCopy.setXid(viewService.generateUniqueXid());
         viewCopy.setName(generateCopyName(Common.getBundle(), view.getName(), 250));
-        /*viewCopy.setViewComponents(view.getViewComponents());
-        viewCopy.setViewUsers(view.getViewUsers());
-        viewCopy.setResolution(view.getResolution());
-        viewCopy.setBackgroundFilename(view.getBackgroundFilename());
-        viewCopy.setUserId(view.getUserId());
-        viewCopy.setAnonymousAccess(view.getAnonymousAccess());*/
 
         viewService.saveView(viewCopy);
 
