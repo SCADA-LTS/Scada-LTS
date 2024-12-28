@@ -99,6 +99,7 @@ import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
 
+import static com.serotonin.mango.util.ViewControllerUtils.copyAndSaveView;
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
@@ -1093,4 +1094,18 @@ public class ViewDwr extends BaseDwr {
 			}
 		}
 	}
+
+	public DwrResponseI18n copyView(final int viewId){
+		ViewService viewService = new ViewService();
+		View view = viewService.getView(viewId);
+
+		View viewCopy = copyAndSaveView(view, viewService);
+		DwrResponseI18n response = new DwrResponseI18n();
+
+		response.addData("viewId", viewId);
+		response.addData("viewCopy", viewCopy);
+
+		return response;
+	}
+
 }
