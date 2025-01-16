@@ -329,7 +329,6 @@ public class EventsDwr extends BaseDwr {
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
 		model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
 
-		// Render the results using an existing JSP snippet, for example "eventList.jsp".
 		response.addData("content", generateContent(request, "eventList.jsp", model));
 		response.addData("resultCount", new LocalizableMessage("events.search.resultCount", results.size()));
 

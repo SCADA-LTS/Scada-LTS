@@ -563,6 +563,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "where "
 			+ STATUS_ACTIVE_CONDITION_SQL;
 
+	public static String getStatusActiveCondition() {
+		return STATUS_ASSIGNEE_CONDITION_SQL;
+	}
+
+	public static String getBasicEventSelect() {
+		return EVENT_SELECT_WITH_USER_DATA;
+	}
+
 	// @formatter:on
 	@Deprecated(since = "2.8.0")
 	//TODO rewrite
@@ -1603,79 +1611,20 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			int userId,
 			ResourceBundle bundle
 	) {
-		List<String> where = new ArrayList<>();
-		List<Object> params = new ArrayList<>();
-
-		StringBuilder sql = new StringBuilder();
-		sql.append(EVENT_SELECT_WITH_USER_DATA);
-		sql.append(" WHERE ue.userId=?");
-		params.add(userId);
-
-		if (eventSourceTypes != null && eventSourceTypes.length > 0) {
-			String inClause = buildInClause("e.typeId", eventSourceTypes.length);
-			where.add(inClause);
-			for (String src : eventSourceTypes) {
-				params.add(Integer.valueOf(src));
-			}
-		}
-
-		if (statuses != null && statuses.length > 0) {
-			List<String> orClauses = new ArrayList<>();
-			for (String s : statuses) {
-				if (EventsDwr.STATUS_ACTIVE.equals(s)) {
-					orClauses.add("( e.rtnApplicable='Y' AND e.rtnTs=0 )");
-				} else if (EventsDwr.STATUS_RTN.equals(s)) {
-					orClauses.add("( e.rtnApplicable='Y' AND e.rtnTs>0 )");
-				} else if (EventsDwr.STATUS_NORTN.equals(s)) {
-					orClauses.add("( e.rtnApplicable='N' )");
-				} else if (EventsDwr.STATUS_ASSIGNEE.equals(s)) {
-					orClauses.add("( " + STATUS_ASSIGNEE_CONDITION_SQL + " )");
-				}
-			}
-			if (!orClauses.isEmpty()) {
-				String statusBlock = "(" + String.join(" OR ", orClauses) + ")";
-				where.add(statusBlock);
-			}
-		}
-
-		if (alarmLevels != null && alarmLevels.length > 0) {
-			String inClause = buildInClause("e.alarmLevel", alarmLevels.length);
-			where.add(inClause);
-			for (String lvl : alarmLevels) {
-				params.add(Integer.valueOf(lvl));
-			}
-		}
-
-		if (startDate != null) {
-			where.add("e.activeTs >= ?");
-			params.add(startDate.getTime());
-		}
-		if (endDate != null) {
-			where.add("e.activeTs <= ?");
-			params.add(endDate.getTime());
-		}
-
-		if (keywordArr != null && keywordArr.length > 0) {
-			List<String> orKeywords = new ArrayList<>();
-			for (String kw : keywordArr) {
-				orKeywords.add(" e.message LIKE ? ");
-				params.add("%" + kw + "%");
-			}
-			if (!orKeywords.isEmpty()) {
-				where.add("(" + String.join(" OR ", orKeywords) + ")");
-			}
-		}
-
-		for (String s : where) {
-			sql.append(" AND ");
-			sql.append(s);
-		}
-
-		sql.append(" ORDER BY e.activeTs DESC");
+		QueryUtils.EventSearchQuery eq = QueryUtils.buildSearchSql(
+				userId,
+				eventSourceTypes,
+				statuses,
+				alarmLevels,
+				startDate,
+				endDate,
+				keywordArr
+		);
 
 		final List<EventInstance> results = new ArrayList<>();
 		final UserEventRowMapper rowMapper = new UserEventRowMapper();
-		DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), rs -> {
+
+		DAO.getInstance().getJdbcTemp().query(eq.getSql(), eq.getParamsArray(), rs -> {
 			IUserCommentDAO userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 			while (rs.next()) {
 				EventInstance e = rowMapper.mapRow(rs, 0);
@@ -1688,13 +1637,4 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		return results;
 	}
 
-	private String buildInClause(String columnName, int length) {
-		StringBuilder sb = new StringBuilder(columnName).append(" IN (");
-		for (int i = 0; i < length; i++) {
-			if (i > 0) sb.append(", ");
-			sb.append("?");
-		}
-		sb.append(")");
-		return sb.toString();
-	}
 }
