@@ -714,4 +714,21 @@ public class EventService implements MangoEvent {
 		clearCache();
 		notifyEventAck(event);
 	}
+
+	public List<EventInstance> searchNew(String[] eventSourceTypes, String[] statuses, String[] alarmLevels,
+			Date startDate, Date endDate, String[] keywordArr, int userId, ResourceBundle bundle)
+	{
+		List<EventInstance> results = eventDAO.searchNew(
+				eventSourceTypes,
+				statuses,
+				alarmLevels,
+				startDate,
+				endDate,
+				keywordArr,
+				userId,
+				bundle
+		);
+
+		return results;
+	}
 }

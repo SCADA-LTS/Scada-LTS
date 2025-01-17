@@ -563,6 +563,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "where "
 			+ STATUS_ACTIVE_CONDITION_SQL;
 
+	public static String getStatusActiveCondition() {
+		return STATUS_ASSIGNEE_CONDITION_SQL;
+	}
+
+	public static String getBasicEventSelect() {
+		return EVENT_SELECT_WITH_USER_DATA;
+	}
+
 	// @formatter:on
 	@Deprecated(since = "2.8.0")
 	//TODO rewrite
@@ -1592,4 +1600,41 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		int updates = DAO.getInstance().getJdbcTemp().update(EVENT_UNASSIGN_EVENT, new Object[]  { eventId } );
 		return updates > 0;
 	}
+
+	public List<EventInstance> searchNew(
+			String[] eventSourceTypes,
+			String[] statuses,
+			String[] alarmLevels,
+			Date startDate,
+			Date endDate,
+			String[] keywordArr,
+			int userId,
+			ResourceBundle bundle
+	) {
+		QueryUtils.EventSearchQuery eq = QueryUtils.buildSearchSql(
+				userId,
+				eventSourceTypes,
+				statuses,
+				alarmLevels,
+				startDate,
+				endDate,
+				keywordArr
+		);
+
+		final List<EventInstance> results = new ArrayList<>();
+		final UserEventRowMapper rowMapper = new UserEventRowMapper();
+
+		DAO.getInstance().getJdbcTemp().query(eq.getSql(), eq.getParamsArray(), rs -> {
+			IUserCommentDAO userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
+			while (rs.next()) {
+				EventInstance e = rowMapper.mapRow(rs, 0);
+				e.setEventComments(userCommentDAO.getEventComments(e));
+				results.add(e);
+			}
+			return null;
+		});
+
+		return results;
+	}
+
 }

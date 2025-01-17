@@ -38,6 +38,8 @@ import com.serotonin.mango.web.dwr.beans.EventExportDefinition;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -276,5 +278,60 @@ public class EventsDwr extends BaseDwr {
 		}
 
 		return range;
+	}
+
+	public DwrResponseI18n searchNew(
+			String[] eventSourceTypes,
+			String[] statuses,
+			String[] alarmLevels,
+			String startDateStr,
+			String endDateStr,
+			String keywords)
+	{
+		DwrResponseI18n response = new DwrResponseI18n();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		User user = Common.getUser(request);
+
+		// Parse the date strings
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+		Date startDate = null;
+		Date endDate = null;
+
+		if (startDateStr != null && !startDateStr.trim().isEmpty()) {
+			startDate = DateTime.parse(startDateStr.trim(), formatter).toDate();
+		}
+		if (endDateStr != null && !endDateStr.trim().isEmpty()) {
+			endDate = DateTime.parse(endDateStr.trim(), formatter).toDate();
+		}
+
+
+		// Split keywords
+		String[] keywordArr = getKeywords(keywords);
+
+		// Use event service class to perform the search.
+		EventService eventService = new EventService();
+		List<EventInstance> results = eventService.searchNew(
+				eventSourceTypes,
+				statuses,
+				alarmLevels,
+				startDate,
+				endDate,
+				keywordArr,
+				user.getId(),
+				getResourceBundle()
+		);
+
+		// Prepare the JSP model
+		Map<String, Object> model = new HashMap<>();
+		model.put("events", results);
+		model.put("showControls", false);
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
+
+		response.addData("content", generateContent(request, "eventList.jsp", model));
+		response.addData("resultCount", new LocalizableMessage("events.search.resultCount", results.size()));
+
+		return response;
 	}
 }
