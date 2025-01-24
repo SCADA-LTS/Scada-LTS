@@ -17,6 +17,10 @@ public class EverySecond implements StatefulJob {
         JOB_SCHEDULE_EXECUTOR.schedule(job);
     }
 
+    public static void unschedule(Job job) {
+        JOB_SCHEDULE_EXECUTOR.unschedule(job);
+    }
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         JOB_SCHEDULE_EXECUTOR.execute(jobExecutionContext);

@@ -19,6 +19,7 @@
 
 package com.serotonin.mango;
 
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaClientFactory;
 import br.org.scadabr.api.utils.APIUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;
@@ -70,6 +71,7 @@ import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
+import org.scada_lts.quartz.EverySecondTool;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -345,6 +347,9 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.JMX.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
 				DataSourceVO.Type.MQTT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC_UA",
+				DataSourceVO.Type.OPC_UA.getId());
+
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",
@@ -688,6 +693,13 @@ public class MangoContextListener implements ServletContextListener {
 		try {
 			EverySecond.init();
 			log.info("Quartz EverySecond initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+			EverySecondTool.init();
+			log.info("Quartz EverySecondTool initialized");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

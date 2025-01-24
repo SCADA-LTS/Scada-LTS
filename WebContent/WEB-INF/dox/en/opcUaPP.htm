@@ -1,0 +1,492 @@
+<!--
+    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuration</h1>
+<p>All Data Point requires a <b>Name</b>, which may have any description.</p>
+
+<p><b>Node Id</b> Format:</p>
+<p><b>ns={Namespace Index/Required};[s|i|g|b]={Identifier/Required};[a]={Attributes a/Optional}</b></p>
+<p>Example: ns=3;i=1234;a=EventNotifier</p>
+
+<p>The <b>Data Type</b> indicates what kind of data is being requested by the OPC Client. </p>
+<p>
+    The following data types are supported:
+</p>
+<table class="table table-striped">
+    <tbody>
+    <tr>
+        <td>
+            <p>
+					<span style="padding-left:0em">
+						<strong>ID</strong>
+					</span>
+            </p>
+        </td>
+        <td>
+            <p>
+					<span style="padding-left:0em">
+						<strong>Name</strong>
+					</span>
+            </p>
+        </td>
+        <td>
+            <p>
+					<span style="padding-left:0em">
+						<strong>Description</strong>
+					</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">1</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Boolean</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A two-state logical value (true or false).</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">2</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">SByte</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between -128 and 127 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">3</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Byte</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between 0 and 255 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">4</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Int16</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between -32&nbsp;768 and 32&nbsp;767 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">5</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">UInt16</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between 0 and 65&nbsp;535 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">6</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Int32</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between -2&nbsp;147&nbsp;483&nbsp;648 and 2&nbsp;147&nbsp;483&nbsp;647 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">7</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">UInt32</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between 0 and 4 294 967&nbsp;295 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">8</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Int64</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between -9&nbsp;223&nbsp;372&nbsp;036&nbsp;854&nbsp;775&nbsp;808 and 9&nbsp;223&nbsp;372&nbsp;036&nbsp;854&nbsp;775&nbsp;807 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">9</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">UInt64</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An integer value between 0 and 18&nbsp;446&nbsp;744&nbsp;073&nbsp;709&nbsp;551&nbsp;615 inclusive.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">10</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Float</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An IEEE single precision (32 bit) floating point value.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">11</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Double</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An IEEE double precision (64 bit) floating point value.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">12</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">String</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A sequence of Unicode characters.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">13</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">DateTime</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An instance in time.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">14</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Guid</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A 16-byte value that can be used as a globally unique identifier.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">15</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">ByteString</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A sequence of octets.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">16</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">XmlElement</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An XML element.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">17</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">NodeId</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">An identifier for a node in the address space of an OPC UA </span>
+                <span style="padding-left:0em">
+                    <em class="text-primary">Server</em>
+				</span>
+                <span style="padding-left:0em">.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">18</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">ExpandedNodeId</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A NodeId that allows the namespace URI to be specified instead of an index.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">19</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">StatusCode</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A numeric identifier for an error or condition that is associated with a value or an operation.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">20</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">QualifiedName</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A name qualified by a namespace.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">21</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">LocalizedText</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Human readable text with an optional locale identifier.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">22</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">ExtensionObject</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A structure that contains an application specific data type that may not be recognized by the receiver.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">23</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">DataValue</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A data value with an associated status code and timestamps.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">24</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">Variant</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A union of all of the types specified above.</span>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <span style="padding-left:0em">25</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">DiagnosticInfo</span>
+            </p>
+        </td>
+        <td>
+            <p>
+                <span style="padding-left:0em">A structure that contains detailed error and diagnostic information associated with a StatusCode.</span>
+            </p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</p>
+<p>The <b>Tag Name</b></p>
+<p>The <b>Namespace Index</b> The namespace (e.g. ns=2) within the address is specific to the server you are connecting to. Objects appearing in namespaces can, and will vary, as namespaces are used to separate scope of objects.</p>
+<p>The <b>Identifier</b> address</p>
+<p>The <b>Identifier Type</b> string(s), numeric(i), binary(b) or guid(g)</p>
+<p>The <b>Attributes a</b> parameter which stands for attributeId of an object is optional, and by default it is assumed to be Value 13 (0x0d). Value of this parameter can be specified using numeric value or OPC-UA attribute name (case-sensitive).</p>

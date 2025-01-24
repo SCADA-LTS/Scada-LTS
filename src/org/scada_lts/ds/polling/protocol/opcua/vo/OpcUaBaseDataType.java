@@ -1,0 +1,457 @@
+package org.scada_lts.ds.polling.protocol.opcua.vo;
+
+import com.serotonin.mango.DataTypes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.*;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.*;
+
+import java.math.BigInteger;
+import java.util.Objects;
+import java.util.UUID;
+
+import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaConverterUtils.*;
+
+
+public enum OpcUaBaseDataType implements OpcUaDataType {
+
+    NUMBER ("Number", DataTypes.NUMERIC, -4, Number.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toNumber(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return false;
+        }
+    },
+
+    UNUMBER ("UNumber", DataTypes.NUMERIC, -3, UNumber.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toUNumber(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return false;
+        }
+    },
+
+    UNKNOWN ("Unknown", DataTypes.ALPHANUMERIC, -2, Object.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toStringType(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return false;
+        }
+    },
+
+    ALL ("ALL", DataTypes.UNKNOWN, -1, Objects.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return value;
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return false;
+        }
+    },
+
+    BOOLEAN ("Boolean", DataTypes.BINARY, 1, Boolean.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toBoolean(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                double value1 = (double) value;
+                return value1 >= 0 && value1 <= 1;
+            }
+            if (value instanceof Float) {
+                float value1 = (float) value;
+                return value1 >= 0 && value1 <= 1;
+            }
+            if (value instanceof Integer) {
+                int value1 = (int) value;
+                return value1 >= 0 && value1 <= 1;
+            }
+            if (value instanceof String) {
+                String value1 = (String) value;
+                return "true".equalsIgnoreCase(value1) || "false".equalsIgnoreCase(value1);
+            }
+            return value instanceof Boolean;
+        }
+    },
+
+    SBYTE ("SByte", DataTypes.NUMERIC, 2, Byte.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toByte(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                byte min = Byte.MIN_VALUE;
+                byte max = Byte.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof Byte;
+        }
+    },
+
+    BYTE ("Byte", DataTypes.NUMERIC, 3, UByte.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toUByte(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                short min = UByte.MIN_VALUE;
+                short max = UByte.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof UByte;
+        }
+    },
+
+    INT16 ("Int16", DataTypes.NUMERIC, 4, Short.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toShort(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                short min = Short.MIN_VALUE;
+                short max = Short.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof Short;
+        }
+    },
+
+    UINT16 ("UInt16", DataTypes.NUMERIC, 5, UShort.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toUShort(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                int min = UShort.MIN_VALUE;
+                int max = UShort.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof UShort;
+        }
+    },
+
+    INT32 ("Int32", DataTypes.NUMERIC, 6, Integer.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toInt(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                int min = Integer.MIN_VALUE;
+                int max = Integer.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof Integer;
+        }
+    },
+
+    UINT32 ("UInt32", DataTypes.NUMERIC, 7, UInteger.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toUInteger(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                long min = UInteger.MIN_VALUE;
+                long max = UInteger.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof UInteger;
+        }
+    },
+
+    INT64 ("Int64", DataTypes.NUMERIC, 8, Long.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toLong(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                long min = Long.MIN_VALUE;
+                long max = Long.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof Long;
+        }
+    },
+
+    UINT64 ("UInt64", DataTypes.NUMERIC, 9, ULong.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toULong(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                BigInteger min = ULong.MIN_VALUE;
+                BigInteger max = ULong.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof ULong;
+        }
+    },
+
+    FLOAT ("Float", DataTypes.NUMERIC, 10, Float.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toFloat(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            if (value instanceof Double) {
+                float min = Float.MIN_VALUE;
+                float max = Float.MAX_VALUE;
+                return compare(value, min, max);
+            }
+            return value instanceof Float;
+        }
+    },
+
+    DOUBLE ("Double", DataTypes.NUMERIC, 11, Double.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toDouble(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return value instanceof Double;
+        }
+    },
+
+    STRING ("String", DataTypes.ALPHANUMERIC, 12, String.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toStringType(value);
+        }
+
+        @Override
+        public boolean validate(Object value) {
+            return value instanceof String;
+        }
+    },
+
+    DATE_TIME ("DateTime", DataTypes.ALPHANUMERIC, 13, DateTime.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toDateTime(value);
+        }
+    },
+
+    GUID ("Guid", DataTypes.ALPHANUMERIC, 14, UUID.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toUuid(value);
+        }
+    },
+
+    BYTE_STRING ("ByteString", DataTypes.ALPHANUMERIC, 15, ByteString.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toByteString(value);
+        }
+    },
+
+    XML_ELEMENT ("XmlElement", DataTypes.ALPHANUMERIC, 16, XmlElement.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toXmlElement(value);
+        }
+    },
+
+    NODE_ID ("NodeId", DataTypes.ALPHANUMERIC, 17, NodeId.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toNodeId(value);
+        }
+    },
+
+    EXPANDED_NODE_ID ("ExpandedNodeId", DataTypes.ALPHANUMERIC, 18, ExpandedNodeId.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toExpandedNodeId(value);
+        }
+    },
+
+    STATUS_CODE ("StatusCode", DataTypes.ALPHANUMERIC, 19, StatusCode.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toStatusCode(value);
+        }
+    },
+
+    QUALIFIED_NAME ("QualifiedName", DataTypes.ALPHANUMERIC, 20, QualifiedName.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toQualifiedName(value);
+        }
+    },
+
+    LOCALIZED_TEXT ("LocalizedText", DataTypes.ALPHANUMERIC, 21, LocalizedText.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toLocalizedText(value);
+        }
+    },
+
+    EXTENSION_OBJECT ("ExtensionObject", DataTypes.ALPHANUMERIC, 22, ExtensionObject.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toExtensionObject(value);
+        }
+    },
+
+    DATA_VALUE ("DataValue", DataTypes.ALPHANUMERIC, 23, DataValue.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toDataValue(value);
+        }
+    },
+
+    VARIANT ("Variant", DataTypes.ALPHANUMERIC, 24, Variant.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toVariant(value);
+        }
+    },
+
+    DIAGNOSTIC_INFO ("DiagnosticInfo", DataTypes.ALPHANUMERIC, 25, DiagnosticInfo.class) {
+
+        @Override
+        public Object convertToWrite(Object value) throws Exception {
+            return toStringType(value);
+        }
+    };
+
+    private static boolean compare(Object value, Object min, Object max) {
+        Double minValue;
+        Double maxValue;
+        if(max instanceof Float || max instanceof Double) {
+            minValue = Double.parseDouble(String.valueOf(max)) * -1;
+            maxValue = Double.parseDouble(String.valueOf(max));
+        } else {
+            minValue = Double.parseDouble(String.valueOf(min));
+            maxValue = Double.parseDouble(String.valueOf(max));
+        }
+        Double valueDouble = Double.parseDouble(String.valueOf(value));
+        return valueDouble.compareTo(minValue) >= 0 && valueDouble.compareTo(maxValue) <= 0;
+    }
+
+    public static final OpcUaDataType DEFAULT = OpcUaDataType.unknownType();
+
+    private final String description;
+    private final int dataTypeId;
+    private final int opcTypeId;
+
+    private final Class<?> type;
+
+    OpcUaBaseDataType(String description, int dataTypeId, int opcTypeId, Class<?> type) {
+        this.dataTypeId = dataTypeId;
+        this.description = description;
+        this.opcTypeId = opcTypeId;
+        this.type = type;
+    }
+
+    @Override
+    public String getName() {
+        return this.name();
+    }
+
+    @Override
+    public int getDataTypeId() {
+        return dataTypeId;
+    }
+
+    @Override
+    public int getOpcTypeId() {
+        return opcTypeId;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description + " (" + this.opcTypeId + ")";
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    @Override
+    public boolean validate(Object value) {
+        return value instanceof String;
+    }
+
+    @Override
+    public boolean toJson() {
+        return this.dataTypeId == DataTypes.ALPHANUMERIC && this != STRING && this != GUID;
+    }
+
+    @Override
+    public boolean isPossibleSettable() {
+        return this.dataTypeId > 0 && (((this.dataTypeId != DataTypes.ALPHANUMERIC) || this == STRING || this == GUID || this == DATE_TIME) && this != NUMBER && this != UNUMBER);
+    }
+
+}
