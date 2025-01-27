@@ -2,7 +2,6 @@ package org.scada_lts.ds.polling;
 
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.polling.service.IMaster;
 import org.scada_lts.ds.polling.service.DataPointReadResponse;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class PollingDataSourceRT<D extends DataSourceUpdatable<?>> extends PollingDataSource {
+public class PollingDataSourceRT extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(PollingDataSourceRT.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
@@ -36,7 +35,7 @@ public class PollingDataSourceRT<D extends DataSourceUpdatable<?>> extends Polli
 	private int timeoutCount = 0;
 	private volatile boolean reconnected = false;
 
-	public PollingDataSourceRT(D vo, IMaster master) {
+	public PollingDataSourceRT(DataSourceUpdatable<?> vo, IMaster master) {
 		super(vo.toDataSource());
 		this.vo = vo.toDataSource();
 		this.master = master;
@@ -82,7 +81,7 @@ public class PollingDataSourceRT<D extends DataSourceUpdatable<?>> extends Polli
 
 		DataPointReadResponse response;
 		try {
-			response = master.readAll(dataPointsVO, time);
+			response = master.read(dataPointsVO, time);
 			_returnToNormal(POINT_READ_ALL_EXCEPTION_EVENT, time);
 		} catch (Throwable throwable) {
 			DataPointUnreliableUtils.setUnreliableDataPoints(dataPoints);

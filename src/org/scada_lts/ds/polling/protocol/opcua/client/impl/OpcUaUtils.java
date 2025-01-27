@@ -12,15 +12,27 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.types.builtin.*;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.*;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
-import org.scada_lts.ds.polling.protocol.opcua.vo.*;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaIdentifierType;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 
 import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -32,8 +44,8 @@ public final class OpcUaUtils {
 
     public static ReadResponse sendRead(UaClient client, NodeId nodeId) throws InterruptedException, ExecutionException, TimeoutException {
         ReadValueId valueId = new ReadValueId(nodeId, AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
-        long connectionTimeout = client.getConfig().getConnectTimeout().longValue();
-        return client.read(0.0, TimestampsToReturn.Source, Arrays.asList(valueId)).get(connectionTimeout, TimeUnit.MILLISECONDS);
+        long requestTimeout = client.getConfig().getRequestTimeout().longValue();
+        return client.read(0.0, TimestampsToReturn.Source, Arrays.asList(valueId)).get(requestTimeout, TimeUnit.MILLISECONDS);
     }
 
     public static ReadResponse sendRead(UaClient client, List<NodeId> nodeIds) throws InterruptedException, ExecutionException, TimeoutException {
@@ -43,14 +55,15 @@ public final class OpcUaUtils {
             ReadValueId valueId = new ReadValueId(nodeId, AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
             reads.add(valueId);
         }
-        long connectionTimeout = client.getConfig().getConnectTimeout().longValue();
-        return client.read(0.0, TimestampsToReturn.Source, reads).get(connectionTimeout, TimeUnit.MILLISECONDS);
+        long requestTimeout = client.getConfig().getRequestTimeout().longValue();
+        return client.read(0.0, TimestampsToReturn.Source, reads).get(requestTimeout, TimeUnit.MILLISECONDS);
     }
 
     public static WriteResponse sendWrite(UaClient client, NodeId nodeId, Object value) throws InterruptedException, ExecutionException, TimeoutException {
         Variant valueToSave = toVariant(value);
         WriteValue readValueId = new WriteValue(nodeId, AttributeId.Value.uid(), null, new DataValue(valueToSave, null, null));
-        WriteResponse response = client.write(Arrays.asList(readValueId)).get(client.getConfig().getRequestTimeout().longValue(), TimeUnit.SECONDS);
+        long requestTimeout = client.getConfig().getRequestTimeout().longValue();
+        WriteResponse response = client.write(Arrays.asList(readValueId)).get(requestTimeout, TimeUnit.SECONDS);
         return response;
     }
 
@@ -72,8 +85,8 @@ public final class OpcUaUtils {
         List<NodeId> nodeIds = List.of(
                 Identifiers.Server_ServerStatus_State,
                 Identifiers.Server_ServerStatus_CurrentTime);
-
-        return client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get(client.getConfig().getRequestTimeout().longValue(), TimeUnit.MILLISECONDS);
+        long requestTimeout = client.getConfig().getRequestTimeout().longValue();
+        return client.readValues(0.0, TimestampsToReturn.Both, nodeIds).get(requestTimeout, TimeUnit.MILLISECONDS);
     }
 
     public static String getNodeId(int namespaceIndex, String identifier, OpcUaIdentifierType identifierType) {

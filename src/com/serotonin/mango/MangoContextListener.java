@@ -19,7 +19,6 @@
 
 package com.serotonin.mango;
 
-import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaClientFactory;
 import br.org.scadabr.api.utils.APIUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.db.DatabaseAccess;

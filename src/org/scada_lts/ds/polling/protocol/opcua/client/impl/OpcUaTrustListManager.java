@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.scada_lts.ds.polling.protocol.opcua.client.TrustListUtils;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.scada_lts.ds.polling.protocol.opcua.client.impl;
+package org.scada_lts.ds.polling.protocol.opcua.client;
 
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.logging.log4j.LogManager;

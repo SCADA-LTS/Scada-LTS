@@ -1,10 +1,7 @@
 package org.scada_lts.ds.polling.protocol.opcua.vo;
 
-
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaConverterUtils;
-
-import java.util.stream.Stream;
 
 public interface OpcUaDataType {
 
@@ -18,9 +15,7 @@ public interface OpcUaDataType {
 
     Object convertToWrite(Object value) throws Exception;
 
-    default MangoValue convertToRead(Object value) throws Exception {
-        return OpcUaConverterUtils.convertToRead(this, value);
-    }
+    MangoValue convertToRead(Object value) throws Exception;
 
     boolean validate(Object value);
 
@@ -29,35 +24,26 @@ public interface OpcUaDataType {
     boolean isPossibleSettable();
 
     static OpcUaDataType unknownType() {
-        return OpcUaBaseDataType.UNKNOWN;
+        return BaseDataTypeUtils.unknownType();
     }
 
     static OpcUaDataType allType() {
-        return OpcUaBaseDataType.ALL;
+        return BaseDataTypeUtils.allType();
     }
 
     static OpcUaDataType valueByNameOf(String name) {
-        return Stream.of(OpcUaBaseDataType.values())
-                .filter(data -> data.getName().equalsIgnoreCase(name))
-                .findAny()
-                .orElse(OpcUaBaseDataType.UNKNOWN);
+        return BaseDataTypeUtils.valueByNameOf(name);
     }
 
     static OpcUaDataType valueOf(int opcTypeId) {
-        return Stream.of(OpcUaBaseDataType.values())
-                .filter(type -> type.getOpcTypeId() == opcTypeId)
-                .findAny()
-                .orElse(OpcUaBaseDataType.UNKNOWN);
+        return BaseDataTypeUtils.valueOf(opcTypeId);
     }
 
     static OpcUaDataType valueOf(Class<?> typeClass) {
-        return Stream.of(OpcUaBaseDataType.values())
-                .filter(type -> type.getType().equals(typeClass))
-                .findAny()
-                .orElse(OpcUaBaseDataType.UNKNOWN);
+        return BaseDataTypeUtils.valueOf(typeClass);
     }
 
     static OpcUaDataType[] types() {
-        return OpcUaBaseDataType.values();
+        return BaseDataTypeUtils.types();
     }
 }

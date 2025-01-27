@@ -14,8 +14,8 @@ public class IsPossibleSettableOpcUaDataTypeTest {
             {OpcUaBaseDataType.UNKNOWN, false},
             {OpcUaBaseDataType.ALL, false},
 
-            {OpcUaBaseDataType.UNUMBER, false},
-            {OpcUaBaseDataType.NUMBER, false},
+            {OpcUaBaseDataType.UNUMBER, true},
+            {OpcUaBaseDataType.NUMBER, true},
 
             {OpcUaBaseDataType.STRING, true},
             {OpcUaBaseDataType.BOOLEAN, true},

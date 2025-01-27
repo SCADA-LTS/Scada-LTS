@@ -1,7 +1,5 @@
 package org.scada_lts.ds.polling.protocol.opcua.vo;
 
-import org.scada_lts.ds.polling.PollingPointLocatorRT;
-import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils;
 import com.serotonin.json.*;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -9,6 +7,8 @@ import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.polling.PollingPointLocatorRT;
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +16,8 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static org.scada_lts.ds.polling.protocol.opcua.vo.BaseDataTypeUtils.valueByNameOf;
 
 @JsonRemoteEntity
 public class OpcUaPointLocatorVO extends AbstractPointLocatorVO implements
@@ -159,7 +161,7 @@ public class OpcUaPointLocatorVO extends AbstractPointLocatorVO implements
 		String dataTypeJson = json.getString("opcDataType");
 		if(dataTypeJson != null) {
 			try {
-				opcDataType = OpcUaDataType.valueByNameOf(dataTypeJson);
+				opcDataType = valueByNameOf(dataTypeJson);
 			} catch (Exception ex) {
 				opcDataType = OpcUaDataType.unknownType();
 			}

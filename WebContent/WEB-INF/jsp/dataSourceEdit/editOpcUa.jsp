@@ -118,7 +118,7 @@
   function savePointImpl(locator) {
     delete locator.relinquishable;
     locator.settable = $get("settable");
-    locator.dataType = $get("dataType");
+    locator.opcDataType = $get("opcDataType");
     locator.nodeName = $get("nodeName");
     locator.identifierType = $get("identifierType");
     locator.identifier = $get("identifier");

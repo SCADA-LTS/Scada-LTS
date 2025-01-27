@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.*;
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.type.ScadaNumber;
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.type.ScadaUNumber;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
 import org.scada_lts.web.beans.ApplicationBeans;
 
@@ -51,70 +53,11 @@ public final class OpcUaConverterUtils {
     }
 
     public static Number toNumber(Object value) {
-        Number number = new Number() {
-            private Object value;
-
-            public Number setValue(Object value) {
-                this.value = value;
-                return this;
-            }
-
-            @Override
-            public int intValue() {
-                return toInt(value);
-            }
-
-            @Override
-            public long longValue() {
-                return toLong(value);
-            }
-
-            @Override
-            public float floatValue() {
-                return toFloat(value);
-            }
-
-            @Override
-            public double doubleValue() {
-                return toDouble(value);
-            }
-        }.setValue(value);
-
-        return number;
+        return new ScadaNumber(value).toNumber();
     }
 
-    public static Number toUNumber(Object value) {
-
-        UNumber uNumber = new UNumber() {
-            private Object value;
-
-            public UNumber setValue(Object value) {
-                this.value = value;
-                return this;
-            }
-
-            @Override
-            public int intValue() {
-                return toInt(value);
-            }
-
-            @Override
-            public long longValue() {
-                return toLong(value);
-            }
-
-            @Override
-            public float floatValue() {
-                return toFloat(value);
-            }
-
-            @Override
-            public double doubleValue() {
-                return toDouble(value);
-            }
-        }.setValue(value);
-
-        return uNumber;
+    public static UNumber toUNumber(Object value) {
+        return new ScadaUNumber(value).toUNumber();
     }
 
     public static MangoValue convertToRead(OpcUaDataType dataType, Object value) throws Exception {
@@ -130,7 +73,6 @@ public final class OpcUaConverterUtils {
         }
         return MangoValue.stringToValue(stringToSave, dataType.getDataTypeId());
     }
-
 
     public static long toStringToLong(Object value) {
         BigDecimal result = BigDecimal.valueOf(toDouble(value));

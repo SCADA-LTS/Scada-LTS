@@ -3027,7 +3027,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             master.init();
             serverList.add(dataSourceVO.getServerAddress());
         } catch (Throwable e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(e.getMessage());
             response.addMessage("console", new LocalizableMessage("common.default", e.getMessage()));
         }
         response.addData("serverList", serverList);
@@ -3065,15 +3065,15 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             root.setIdentifier(identifier);
             root.setIdentifierType(identifierType);
             long time = System.currentTimeMillis();
-            List<OpcUaPointLocatorVO> result = master.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName));
-            for(OpcUaPointLocatorVO pointLocatorVO: result) {
-                boolean validated = master.validate(pointLocatorVO);
-                nodes.add(new OpcUaItem(validated, pointLocatorVO));
+            List<OpcUaPointLocatorVO> pointLocators = master.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName));
+            for(OpcUaPointLocatorVO pointLocator: pointLocators) {
+                boolean validated = master.validate(pointLocator);
+                nodes.add(new OpcUaItem(validated, pointLocator));
             }
             response.addMessage("tagsMessage", new LocalizableMessage("common.default",  nodes.size() + " nodes found, in time: " + (System.currentTimeMillis() - time) + " [ms]"));
             response.addData("nodes", nodes);
         } catch (Throwable e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(e.getMessage());
             response.addMessage("tagsMessage", new LocalizableMessage("common.default", e.getMessage()));
             response.addData("nodes", Collections.emptyList());
             return response;

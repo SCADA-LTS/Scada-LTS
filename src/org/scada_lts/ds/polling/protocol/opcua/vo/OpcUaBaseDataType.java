@@ -1,8 +1,9 @@
 package org.scada_lts.ds.polling.protocol.opcua.vo;
 
 import com.serotonin.mango.DataTypes;
-import org.eclipse.milo.opcua.stack.core.types.builtin.*;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.*;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaConverterUtils;
+import org.scada_lts.ds.polling.protocol.opcua.client.impl.type.*;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -22,11 +23,11 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
 
         @Override
         public boolean validate(Object value) {
-            return false;
+            return value instanceof Number;
         }
     },
 
-    UNUMBER ("UNumber", DataTypes.NUMERIC, -3, UNumber.class) {
+    UNUMBER ("UNumber", DataTypes.NUMERIC, -3, ScadaUNumber.getType()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -35,6 +36,10 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
 
         @Override
         public boolean validate(Object value) {
+            if (value instanceof Double) {
+                double value1 = (double) value;
+                return value1 >= 0;
+            }
             return false;
         }
     },
@@ -48,7 +53,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
 
         @Override
         public boolean validate(Object value) {
-            return false;
+            return value instanceof String;
         }
     },
 
@@ -112,7 +117,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    BYTE ("Byte", DataTypes.NUMERIC, 3, UByte.class) {
+    BYTE ("Byte", DataTypes.NUMERIC, 3, new UByteWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -122,11 +127,11 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         @Override
         public boolean validate(Object value) {
             if (value instanceof Double) {
-                short min = UByte.MIN_VALUE;
-                short max = UByte.MAX_VALUE;
+                short min = UByteWrapper.MIN_VALUE;
+                short max = UByteWrapper.MAX_VALUE;
                 return compare(value, min, max);
             }
-            return value instanceof UByte;
+            return value instanceof UByteWrapper;
         }
     },
 
@@ -148,7 +153,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    UINT16 ("UInt16", DataTypes.NUMERIC, 5, UShort.class) {
+    UINT16 ("UInt16", DataTypes.NUMERIC, 5, new UShortWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -158,11 +163,11 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         @Override
         public boolean validate(Object value) {
             if (value instanceof Double) {
-                int min = UShort.MIN_VALUE;
-                int max = UShort.MAX_VALUE;
+                int min = UShortWrapper.MIN_VALUE;
+                int max = UShortWrapper.MAX_VALUE;
                 return compare(value, min, max);
             }
-            return value instanceof UShort;
+            return value instanceof UShortWrapper;
         }
     },
 
@@ -184,7 +189,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    UINT32 ("UInt32", DataTypes.NUMERIC, 7, UInteger.class) {
+    UINT32 ("UInt32", DataTypes.NUMERIC, 7, new UIntegerWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -194,11 +199,11 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         @Override
         public boolean validate(Object value) {
             if (value instanceof Double) {
-                long min = UInteger.MIN_VALUE;
-                long max = UInteger.MAX_VALUE;
+                long min = UIntegerWrapper.MIN_VALUE;
+                long max = UIntegerWrapper.MAX_VALUE;
                 return compare(value, min, max);
             }
-            return value instanceof UInteger;
+            return value instanceof UIntegerWrapper;
         }
     },
 
@@ -220,7 +225,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    UINT64 ("UInt64", DataTypes.NUMERIC, 9, ULong.class) {
+    UINT64 ("UInt64", DataTypes.NUMERIC, 9, new ULongWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -230,11 +235,11 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         @Override
         public boolean validate(Object value) {
             if (value instanceof Double) {
-                BigInteger min = ULong.MIN_VALUE;
-                BigInteger max = ULong.MAX_VALUE;
+                BigInteger min = ULongWrapper.MIN_VALUE;
+                BigInteger max = ULongWrapper.MAX_VALUE;
                 return compare(value, min, max);
             }
-            return value instanceof ULong;
+            return value instanceof ULongWrapper;
         }
     },
 
@@ -275,14 +280,9 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         public Object convertToWrite(Object value) throws Exception {
             return toStringType(value);
         }
-
-        @Override
-        public boolean validate(Object value) {
-            return value instanceof String;
-        }
     },
 
-    DATE_TIME ("DateTime", DataTypes.ALPHANUMERIC, 13, DateTime.class) {
+    DATE_TIME ("DateTime", DataTypes.ALPHANUMERIC, 13, new DateTimeWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -298,7 +298,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    BYTE_STRING ("ByteString", DataTypes.ALPHANUMERIC, 15, ByteString.class) {
+    BYTE_STRING ("ByteString", DataTypes.ALPHANUMERIC, 15, new ByteStringWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -306,7 +306,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    XML_ELEMENT ("XmlElement", DataTypes.ALPHANUMERIC, 16, XmlElement.class) {
+    XML_ELEMENT ("XmlElement", DataTypes.ALPHANUMERIC, 16, new XmlElementWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -314,7 +314,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    NODE_ID ("NodeId", DataTypes.ALPHANUMERIC, 17, NodeId.class) {
+    NODE_ID ("NodeId", DataTypes.ALPHANUMERIC, 17, new NodeIdWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -322,7 +322,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    EXPANDED_NODE_ID ("ExpandedNodeId", DataTypes.ALPHANUMERIC, 18, ExpandedNodeId.class) {
+    EXPANDED_NODE_ID ("ExpandedNodeId", DataTypes.ALPHANUMERIC, 18, new ExpandedNodeIdWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -330,7 +330,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    STATUS_CODE ("StatusCode", DataTypes.ALPHANUMERIC, 19, StatusCode.class) {
+    STATUS_CODE ("StatusCode", DataTypes.ALPHANUMERIC, 19, new StatusCodeWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -338,7 +338,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    QUALIFIED_NAME ("QualifiedName", DataTypes.ALPHANUMERIC, 20, QualifiedName.class) {
+    QUALIFIED_NAME ("QualifiedName", DataTypes.ALPHANUMERIC, 20, new QualifiedNameWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -346,7 +346,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    LOCALIZED_TEXT ("LocalizedText", DataTypes.ALPHANUMERIC, 21, LocalizedText.class) {
+    LOCALIZED_TEXT ("LocalizedText", DataTypes.ALPHANUMERIC, 21, new LocalizedTextWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -354,7 +354,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    EXTENSION_OBJECT ("ExtensionObject", DataTypes.ALPHANUMERIC, 22, ExtensionObject.class) {
+    EXTENSION_OBJECT ("ExtensionObject", DataTypes.ALPHANUMERIC, 22, new ExtensionObjectWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -362,7 +362,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    DATA_VALUE ("DataValue", DataTypes.ALPHANUMERIC, 23, DataValue.class) {
+    DATA_VALUE ("DataValue", DataTypes.ALPHANUMERIC, 23, new DataValueWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -370,7 +370,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    VARIANT ("Variant", DataTypes.ALPHANUMERIC, 24, Variant.class) {
+    VARIANT ("Variant", DataTypes.ALPHANUMERIC, 24, new VariantWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -378,7 +378,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     },
 
-    DIAGNOSTIC_INFO ("DiagnosticInfo", DataTypes.ALPHANUMERIC, 25, DiagnosticInfo.class) {
+    DIAGNOSTIC_INFO ("DiagnosticInfo", DataTypes.ALPHANUMERIC, 25, new DiagnosticInfoWrapper()) {
 
         @Override
         public Object convertToWrite(Object value) throws Exception {
@@ -386,29 +386,15 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         }
     };
 
-    private static boolean compare(Object value, Object min, Object max) {
-        Double minValue;
-        Double maxValue;
-        if(max instanceof Float || max instanceof Double) {
-            minValue = Double.parseDouble(String.valueOf(max)) * -1;
-            maxValue = Double.parseDouble(String.valueOf(max));
-        } else {
-            minValue = Double.parseDouble(String.valueOf(min));
-            maxValue = Double.parseDouble(String.valueOf(max));
-        }
-        Double valueDouble = Double.parseDouble(String.valueOf(value));
-        return valueDouble.compareTo(minValue) >= 0 && valueDouble.compareTo(maxValue) <= 0;
-    }
-
     public static final OpcUaDataType DEFAULT = OpcUaDataType.unknownType();
 
     private final String description;
     private final int dataTypeId;
     private final int opcTypeId;
 
-    private final Class<?> type;
+    private final Object type;
 
-    OpcUaBaseDataType(String description, int dataTypeId, int opcTypeId, Class<?> type) {
+    OpcUaBaseDataType(String description, int dataTypeId, int opcTypeId, Object type) {
         this.dataTypeId = dataTypeId;
         this.description = description;
         this.opcTypeId = opcTypeId;
@@ -436,7 +422,18 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     }
 
     public Class<?> getType() {
-        return type;
+        if(type instanceof TypeWrapper) {
+            return ((TypeWrapper<?>)type).getType();
+        }
+        if(type instanceof Class) {
+            return (Class<?>) type;
+        }
+        throw new IllegalStateException("Unsupported type: " + type.getClass().getName());
+    }
+
+    @Override
+    public MangoValue convertToRead(Object value) throws Exception {
+        return OpcUaConverterUtils.convertToRead(this, value);
     }
 
     @Override
@@ -451,7 +448,20 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
 
     @Override
     public boolean isPossibleSettable() {
-        return this.dataTypeId > 0 && (((this.dataTypeId != DataTypes.ALPHANUMERIC) || this == STRING || this == GUID || this == DATE_TIME) && this != NUMBER && this != UNUMBER);
+        return (this.dataTypeId > 0 || this == NUMBER || this == UNUMBER) && (((this.dataTypeId != DataTypes.ALPHANUMERIC) || this == STRING || this == GUID || this == DATE_TIME));
     }
 
+    private static boolean compare(Object value, Object min, Object max) {
+        double minValue;
+        double maxValue;
+        if(max instanceof Float || max instanceof Double) {
+            minValue = Double.parseDouble(String.valueOf(max)) * -1;
+            maxValue = Double.parseDouble(String.valueOf(max));
+        } else {
+            minValue = Double.parseDouble(String.valueOf(min));
+            maxValue = Double.parseDouble(String.valueOf(max));
+        }
+        Double valueDouble = Double.parseDouble(String.valueOf(value));
+        return valueDouble.compareTo(minValue) >= 0 && valueDouble.compareTo(maxValue) <= 0;
+    }
 }

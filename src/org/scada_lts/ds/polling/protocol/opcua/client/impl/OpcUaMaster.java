@@ -61,7 +61,7 @@ public class OpcUaMaster implements IOpcUaMaster {
     }
 
     @Override
-    public DataPointReadResponse readAll(List<DataPointVO> dataPoints, long time) throws MasterException {
+    public DataPointReadResponse read(List<DataPointVO> dataPoints, long time) throws MasterException {
         DataPointReadResponse response = new DataPointReadResponse();
 
         List<NodeId> nodeIds = new ArrayList<>();
@@ -110,31 +110,6 @@ public class OpcUaMaster implements IOpcUaMaster {
         }
 
         return response;
-    }
-
-    @Override
-    public PointValueTime read(DataPointVO dataPoint, long time) throws MasterException {
-        UaClient client;
-        try {
-            client = getClient();
-            OpcUaPointLocatorVO pointLocator = dataPoint.getPointLocator();
-            NodeId nodeId = NodeId.parse(pointLocator.getNodeId());
-            ReadResponse readResponse = OpcUaUtils.sendRead(client, nodeId);
-            StatusCode responseCode = readResponse.getResponseHeader().getServiceResult();
-            DataValue dataValue = readResponse.getResults()[0];
-            Variant variant = dataValue.getValue();
-            if (!responseCode.isGood()) {
-                throw new IllegalStateException(getMessage("Read", pointLocator, variant.getValue(), responseCode.toString()));
-            }
-            if (dataValue.getStatusCode() != null && !dataValue.getStatusCode().isGood()) {
-                throw new IllegalStateException(getMessage("Read", pointLocator, variant.getValue(), dataValue.getStatusCode().toString()));
-            }
-            return convertToPointValueTime(time, pointLocator, dataValue);
-        } catch (Exception ex) {
-            LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
-            throw new MasterException(ex.getMessage(), ex);
-        } finally {
-        }
     }
 
     @Override
