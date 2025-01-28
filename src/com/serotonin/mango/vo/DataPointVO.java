@@ -40,6 +40,7 @@ import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
@@ -598,11 +599,24 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public int getEngineeringUnits() {
-        return engineeringUnits;
+        if (pointLocator instanceof BACnetIPPointLocatorVO) {
+            BACnetIPPointLocatorVO locator = (BACnetIPPointLocatorVO) pointLocator;
+            if (locator.getEngineeringUnit() != null)
+                return locator.getEngineeringUnit().getCode();
+            else
+                return 95; //NO_UNITS
+        }
+        return this.engineeringUnits;
     }
 
-    public void setEngineeringUnits(int engineeringUnits) {
-        this.engineeringUnits = engineeringUnits;
+    public void setEngineeringUnits(int code) {
+        if (pointLocator instanceof BACnetIPPointLocatorVO) {
+            BACnetIPPointLocatorVO locator = (BACnetIPPointLocatorVO) pointLocator;
+            locator.setEngineeringUnit(BACnetEngineeringUnit.fromCode(code));
+        }
+        else {
+            this.engineeringUnits = code;
+        }
     }
 
     public String getChartColour() {

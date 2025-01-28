@@ -221,8 +221,9 @@
       locator.settable = $get("settable");
       locator.writePriority = $get("writePriority");
       locator.dataTypeId = $get("dataTypeId");
-      
-      DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
+      locator.engineeringUnits = $get("engineeringUnits");
+
+    DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
   
   function objectTypeChanged() {

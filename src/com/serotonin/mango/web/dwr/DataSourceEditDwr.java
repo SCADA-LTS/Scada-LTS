@@ -47,6 +47,7 @@ import javax.script.ScriptException;
 import com.serotonin.bacnet4j.type.enumerated.ObjectType;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.BACnetEngineeringUnit;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
 import net.sf.mbus4j.Connection;
@@ -1359,6 +1360,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         // We would like to default text renderer values too, but it's rather
         // inconvenient to do.
+
+        if (bean.getUnitCode() != null) {
+            BACnetEngineeringUnit e = BACnetEngineeringUnit.fromCode(bean.getUnitCode());
+            locator.setEngineeringUnit(e);
+        }
 
         return dp;
     }

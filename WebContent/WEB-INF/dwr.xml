@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -24,6 +24,7 @@
     <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
     <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
+    <converter id="BACnetEngineeringUnitConverter" class="com.serotonin.mango.web.dwr.BACnetEngineeringUnitConverter" />
   </init>
   
   <allow>
@@ -108,6 +109,7 @@
 
     <convert converter="bean" match="br.org.scadabr.OPCItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
+    <convert converter="BACnetEngineeringUnitConverter" match="com.serotonin.mango.vo.BACnetEngineeringUnit" />
 
     <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
     <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
@@ -192,7 +194,8 @@
     <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
     	<param name="exclude" value="type"/>
     </convert>
-     <!-- MBus4J stuff-->
+    <convert converter="com.serotonin.mango.web.dwr.BACnetEngineeringUnitConverter" match="com.serotonin.mango.web.dwr.bacnet.BACnetEngineeringUnit" />
+    <!-- MBus4J stuff-->
     <convert converter="bean" match="net.sf.mbus4j.Connection">
       <param name="include" value="bitPerSecond,responseTimeOutOffset"/><!--copy to child classes-->
     </convert>

@@ -42,6 +42,7 @@ import com.serotonin.mango.rt.dataSource.bacnet.BACnetIPPointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.BACnetEngineeringUnit;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.SerializationHelper;
@@ -84,6 +85,7 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
     @JsonRemoteProperty
     private int writePriority = 16;
     private int dataTypeId;
+    private BACnetEngineeringUnit engineeringUnit;
 
     public int getDataTypeId() {
         return dataTypeId;
@@ -181,6 +183,14 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
         this.writePriority = writePriority;
     }
 
+    public BACnetEngineeringUnit getEngineeringUnit() {
+        return engineeringUnit;
+    }
+
+    public void setEngineeringUnit(BACnetEngineeringUnit engineeringUnit) {
+        this.engineeringUnit = engineeringUnit;
+    }
+
     @Override
     public boolean isRelinquishable() {
         return ObjectProperties.isCommandable(new ObjectType(objectTypeId),
@@ -251,6 +261,11 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
         AuditEventType.addPropertyMessage(list, "dsEdit.settable", settable);
         AuditEventType.addDataTypeMessage(list, "dsEdit.pointDataType", dataTypeId);
         AuditEventType.addPropertyMessage(list, "dsEdit.bacnetIp.writePriority", writePriority);
+        if (engineeringUnit != null) {
+            AuditEventType.addPropertyMessage(
+                    list,
+                    "pointEdit.props.engineeringUnits", engineeringUnit.getLabel());
+        }
     }
 
     @Override
@@ -278,6 +293,14 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
         AuditEventType.maybeAddDataTypeChangeMessage(list, "dsEdit.pointDataType", from.dataTypeId, dataTypeId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.bacnetIp.writePriority", from.writePriority,
                 writePriority);
+        if (from.engineeringUnit != engineeringUnit) {
+            String oldVal = (from.engineeringUnit == null) ? "null"
+                    : from.engineeringUnit.getCode() + " (" + from.engineeringUnit.getLabel() + ")";
+            String newVal = (engineeringUnit == null) ? "null"
+                    : engineeringUnit.getCode() + " (" + engineeringUnit.getLabel() + ")";
+            AuditEventType.maybeAddPropertyChangeMessage(list,
+                    "pointEdit.props.engineeringUnits", oldVal, newVal);
+        }
     }
 
     //
@@ -286,7 +309,7 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 4;
+    private static final int version = 5;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -302,6 +325,7 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
         out.writeBoolean(settable);
         out.writeInt(dataTypeId);
         out.writeInt(writePriority);
+        out.writeInt(engineeringUnit == null ? -1 : engineeringUnit.getCode());
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -363,6 +387,25 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
             settable = in.readBoolean();
             dataTypeId = in.readInt();
             writePriority = in.readInt();
+        }
+        else if (ver == 5) {
+            remoteDeviceIp = SerializationHelper.readSafeUTF(in);
+            remoteDevicePort = in.readInt();
+            networkNumber = in.readInt();
+            networkAddress = SerializationHelper.readSafeUTF(in);
+            remoteDeviceInstanceNumber = in.readInt();
+            objectTypeId = in.readInt();
+            objectInstanceNumber = in.readInt();
+            propertyIdentifierId = in.readInt();
+            useCovSubscription = in.readBoolean();
+            settable = in.readBoolean();
+            dataTypeId = in.readInt();
+            writePriority = in.readInt();
+            int euCode = in.readInt();
+            if (euCode == -1)
+                engineeringUnit = null;
+            else
+                engineeringUnit = BACnetEngineeringUnit.fromCode(euCode);
         }
     }
 
