@@ -91,6 +91,8 @@ public class EventTypeVO {
     public EventType createEventType() {
         if (typeId == EventType.EventSources.DATA_POINT)
             return new DataPointEventType(typeRef1, typeRef2);
+        if (typeId == EventType.EventSources.DATA_SOURCE && typeRef3 > 0)
+            return new DataSourcePointEventType(new DataSourceEventType(typeRef1, typeRef2, alarmLevel, duplicateHandling), typeRef3);
         if (typeId == EventType.EventSources.DATA_SOURCE)
             return new DataSourceEventType(typeRef1, typeRef2, alarmLevel, duplicateHandling);
         if (typeId == EventType.EventSources.SYSTEM)
@@ -105,8 +107,6 @@ public class EventTypeVO {
             return new AuditEventType(typeRef1, typeRef2);
         if (typeId == EventType.EventSources.MAINTENANCE)
             return new MaintenanceEventType(typeRef1);
-        if(typeId == EventType.EventSources.DATA_SOURCE_POINT)
-            return new DataSourcePointEventType(new DataSourceEventType(typeRef1, typeRef2, alarmLevel, duplicateHandling), typeRef3);
         return null;
     }
 
