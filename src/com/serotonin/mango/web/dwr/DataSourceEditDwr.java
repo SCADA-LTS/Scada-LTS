@@ -1372,7 +1372,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         BACnetIPPointLocatorVO locator = dp.getPointLocator();
 
         dp.setName(bean.getObjectName());
-        dp.setEngineeringUnits(bean.getUnitCode());
+        if(bean.getUnitCode() != null) {
+            dp.setEngineeringUnits(bean.getUnitCode());
+        }
 
         // Default some of the locator values.
         locator.setRemoteDeviceIp(ip);
