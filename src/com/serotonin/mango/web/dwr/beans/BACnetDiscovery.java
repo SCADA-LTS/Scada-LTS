@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -281,8 +282,15 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
                 bean.setObjectName(values.getString(oid, pid));
             else if (pid.equals(PropertyIdentifier.presentValue))
                 bean.setPresentValue(values.getString(oid, pid));
-            else if (pid.equals(PropertyIdentifier.units))
+            else if (pid.equals(PropertyIdentifier.units)) {
                 bean.getUnitsDescription().add(values.getString(oid, pid));
+
+                Encodable e = values.getNullOnError(oid, pid);
+                if (e instanceof EngineeringUnits) {
+                    EngineeringUnits engUnit = (EngineeringUnits) e;
+                    bean.setUnitCode(engUnit.intValue());
+                }
+            }
             else if (pid.equals(PropertyIdentifier.inactiveText)) {
                 Encodable e = values.getNullOnError(oid, pid);
                 bean.getUnitsDescription().set(0, e == null ? "0" : e.toString());

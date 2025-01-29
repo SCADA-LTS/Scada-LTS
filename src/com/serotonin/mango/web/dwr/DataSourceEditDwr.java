@@ -358,6 +358,35 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return response;
     }
 
+    private DwrResponseI18n validateBACnetPoint(int engineeringUnits, int id, String xid, String name,
+                                          PointLocatorVO locator, DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
+        DwrResponseI18n response = new DwrResponseI18n();
+
+        DataPointVO dp = getPoint(id, defaulter);
+        dp.setXid(xid);
+        dp.setName(name);
+        dp.setPointLocator(locator);
+        dp.setEngineeringUnits(engineeringUnits);
+
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
+
+        if (StringUtils.isEmpty(name))
+            response.addContextualMessage("name", "dsEdit.validate.required");
+
+        locator.validate(response, dp.getId());
+
+        if (!response.getHasMessages()) {
+            Common.ctx.getRuntimeManager().saveDataPoint(dp);
+            response.addData("id", dp.getId());
+            response.addData("points", getPoints());
+        }
+
+        return response;
+    }
+
+
     //
     public List<DataPointVO> deletePoint(int id) {
         Permissions.ensureAdmin();
@@ -1232,9 +1261,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     
-    public DwrResponseI18n saveBACnetIPPointLocator(int id, String xid,
+    public DwrResponseI18n saveBACnetIPPointLocator(int engineeringUnits, int id, String xid,
                                                     String name, BACnetIPPointLocatorVO locator) {
-        return validatePoint(id, xid, name, locator, null);
+        return validateBACnetPoint(engineeringUnits, id, xid, name, locator, null);
     }
 
     
@@ -1343,6 +1372,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         BACnetIPPointLocatorVO locator = dp.getPointLocator();
 
         dp.setName(bean.getObjectName());
+        dp.setEngineeringUnits(bean.getUnitCode());
 
         // Default some of the locator values.
         locator.setRemoteDeviceIp(ip);
