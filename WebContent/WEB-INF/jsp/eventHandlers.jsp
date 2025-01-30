@@ -24,12 +24,26 @@
 
 <tag:page dwr="EventHandlersDwr,ScriptsDwr" js="emailRecipients" onload="init">
   <script>
+    jQuery(document).ready(function(){
+      (function($) {
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+    });
+
     function init() {
     	ScriptsDwr.getScripts(getScriptsCB);
         EventHandlersDwr.getInitData(initCB);
         
         var tree = dojo.widget.manager.getWidgetById('eventTypeTree');
         dojo.event.topic.subscribe("eventTypeTree/titleClick", new TreeClickHandler(), 'handle');
+
+      jQuery("#targetPointSelect").chosen({
+        allow_single_deselect: true,
+        placeholder_text_single: "Select a point...",
+        search_contains: true,
+        width: "400px"
+      });
     }
 
 	function getScriptsCB(scripts) {
@@ -260,7 +274,8 @@
             if (dp.settable)
                 pointSelect.options[pointSelect.options.length] = new Option(dp.name, dp.id);
         }
-        if (selectedHandlerNode) {
+      jQuery("#targetPointSelect").trigger("chosen:updated");
+      if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
 
@@ -638,7 +653,11 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="eventHandlers.target"/></td>
               <td class="formField">
-                <select id="targetPointSelect" onchange="targetPointSelectChanged()"></select>
+                <select id="targetPointSelect"
+                        class="chzn-select"
+                        data-placeholder="Select a point..."
+                        onchange="targetPointSelectChanged()">
+                </select>
               </td>
             </tr>
 
