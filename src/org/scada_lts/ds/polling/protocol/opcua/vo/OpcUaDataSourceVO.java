@@ -401,9 +401,9 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 	public void validate(DwrResponseI18n response) {
 		super.validate(response);
 		if (StringUtils.isEmpty(serverHost))
-			response.addContextualMessage("host", "validate.required");
+			response.addContextualMessage("serverHost", "validate.required");
 		if (StringUtils.isEmpty(serverName))
-			response.addContextualMessage("server", "validate.required");
+			response.addContextualMessage("serverName", "validate.required");
 		if (updatePeriods <= 0)
 			response.addContextualMessage("updatePeriods",
 					"validate.greaterThanZero");
@@ -411,6 +411,18 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 			response.addContextualMessage("user", "validate.required");
 		if (!StringUtils.isEmpty(user) && StringUtils.isEmpty(password))
 			response.addContextualMessage("password", "validate.required");
+
+		if(messageSecurity != OpcUaMessageSecurityType.NONE) {
+			if(keyStoreType == null) {
+				response.addContextualMessage("keyStoreType", "validate.required");
+			}
+			if(StringUtils.isEmpty(keyStoreFile)) {
+				response.addContextualMessage("keyStoreFile", "validate.required");
+			}
+			if(StringUtils.isEmpty(keyStorePassword)) {
+				response.addContextualMessage("keyStorePassword", "validate.required");
+			}
+		}
 	}
 
 	@Override

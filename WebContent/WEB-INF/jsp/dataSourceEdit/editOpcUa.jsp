@@ -9,8 +9,7 @@
 <script type="text/javascript"><!--
   function initImpl() {
 	  hide("editImg-1");
-	  if (!newDataSource())
-		 searchServer();
+      searchServer();
 }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -53,6 +52,7 @@
               document.getElementById("console").textContent = messages[0].contextualMessage;
     	  } else {
     	      document.getElementById("console").textContent = '';
+    	      hideContextualMessages('serverNameNode');
 
               let serverList = response.data.serverList;
 
@@ -185,8 +185,16 @@
 		  DataSourceEditDwr.saveMultipleOpcUaPointLocator(locators, "btnAddNode", savePointCB);
 	  } 
   }
+
+  function resetNodes() {
+       let addNodesTable = document.getElementById('addNodesTable');
+       while(addNodesTable.children.length > 0) {
+           addNodesTable.children[0].remove();
+       }
+       document.getElementById("nodesMessage").textContent = '';
+  }
   
-  function findNode() {
+  function findNodes() {
 	document.getElementById("nodesMessage").textContent = "<spring:message code="dsEdit.opcua.wait"/>";
     let dataSourceToSave = createDataSource();
     DataSourceEditDwr.findNodesOpcUa(dataSourceToSave, $get("searchDepth"), $get("searchNamespaceIndex"), $get("searchIdentifier"),
@@ -203,10 +211,9 @@
                 document.getElementById("nodesMessage").textContent = '';
             }
 
+            let tbody = document.createElement('tbody');
             for(var i=0; i < nodes.length; i++) {
                 let node = nodes[i];
-
-                let tbody = document.getElementById('addNodesTable');
                 let row = document.createElement("TR");
 
                 let td1 = document.createElement("TD");
@@ -282,6 +289,11 @@
                 row.appendChild(td4);
                 row.appendChild(td5);
                 tbody.appendChild(row);
+            }
+
+            let addNodesTable = document.getElementById('addNodesTable');
+            while(tbody.children.length > 0) {
+                addNodesTable.insertBefore(tbody.children[0], addNodesTable.children[0]);
             }
         });
   }
@@ -401,13 +413,13 @@ function toggleDiv(elem) {
 		value="${dataSource.defaultTimeout}" /></td>
 </tr>
 <tr>
-	<tr>
+	<tr id="serverNameNode">
 		<td class="formLabelRequired"><spring:message
 			code="dsEdit.opcua.serverName" /></td>
 		<td class="formField"><sst:select id="serverName" value=""></sst:select>
 		<div style="height: 2px;"></div>
 		<input id="searchBtn" type="button"
-			value="<spring:message code="dsEdit.opcua.refreshServers"/>"
+			value="<spring:message code="dsEdit.opcua.searchServers"/>"
 			onclick="searchServer();" /></td>
 	</tr>
     <tr>
@@ -525,7 +537,10 @@ function toggleDiv(elem) {
 
         <tr>
             <td class="formLabelRequired"></td>
-            <td class="formField"><input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.findNode"/>" onclick="findNode();"/></td>
+            <td class="formField">
+                <input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.findNodes"/>" onclick="findNodes();"/>
+                <input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.resetNodes"/>" onclick="resetNodes();"/>
+            </td>
         </tr>
 
 		<tr>

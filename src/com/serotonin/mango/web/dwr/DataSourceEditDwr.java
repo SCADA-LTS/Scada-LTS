@@ -230,7 +230,7 @@ import static org.scada_lts.utils.XidUtils.validateXid;
 public class DataSourceEditDwr extends DataSourceListDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceEditDwr.class);
 
-    private static TimeLocker TIME_LOCKER = new TimeLocker(10, 15);
+    private static TimeLocker TIME_LOCKER = new TimeLocker(20, 15);
 
 	//
 	//
@@ -3065,7 +3065,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             root.setIdentifier(identifier);
             root.setIdentifierType(identifierType);
             long time = System.currentTimeMillis();
-            List<OpcUaPointLocatorVO> pointLocators = master.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName));
+            List<OpcUaPointLocatorVO> pointLocators = master.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName).reversed());
             for(OpcUaPointLocatorVO pointLocator: pointLocators) {
                 boolean validated = master.validate(pointLocator);
                 nodes.add(new OpcUaItem(validated, pointLocator));
