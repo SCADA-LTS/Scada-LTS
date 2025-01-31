@@ -50,7 +50,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     @Override
     public int getEventSourceId() {
-        return EventSources.DATA_SOURCE_POINT;
+        return dataSourceEventType.getEventSourceId();
     }
 
     @Override
@@ -85,12 +85,12 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     @Override
     public int getReferenceId1() {
-        return dataSourceEventType.getDataSourceId();
+        return dataSourceEventType.getReferenceId1();
     }
 
     @Override
     public int getReferenceId2() {
-        return dataSourceEventType.getDataSourceEventTypeId();
+        return dataSourceEventType.getReferenceId2();
     }
 
     @Override
