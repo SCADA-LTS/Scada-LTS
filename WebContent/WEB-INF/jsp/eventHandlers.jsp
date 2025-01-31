@@ -44,6 +44,18 @@
         search_contains: true,
         width: "400px"
       });
+      jQuery("#targetPointSelect").chosen({
+        allow_single_deselect: true,
+        placeholder_text_single: "Select a point...",
+        search_contains: true,
+        width: "400px"
+      });
+      jQuery("#activePointId, #inactivePointId").chosen({
+        allow_single_deselect: true,
+        placeholder_text_single: "Select a point...",
+        search_contains: true,
+        width: "400px"
+      });
     }
 
 	function getScriptsCB(scripts) {
@@ -275,6 +287,8 @@
                 pointSelect.options[pointSelect.options.length] = new Option(dp.name, dp.id);
         }
       jQuery("#targetPointSelect").trigger("chosen:updated");
+      jQuery("#activePointId").trigger("chosen:updated");
+      jQuery("#inactivePointId").trigger("chosen:updated");
       if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
@@ -403,6 +417,10 @@
                 inactiveSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
             }
         }
+
+        jQuery("#activePointId").trigger("chosen:updated");
+        jQuery("#inactivePointId").trigger("chosen:updated");
+
         if (selectedHandlerNode) {
             $set(activeSourceSelect, selectedHandlerNode.object.activePointId);
             $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
@@ -674,7 +692,12 @@
 
             <tr id="activePointIdRow">
               <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="activePointId"></select></td>
+              <td class="formField">
+                <select id="activePointId"
+                        class="chzn-select"
+                        data-placeholder="Select a point...">
+                </select>
+              </td>
             </tr>
 
             <tr id="activeValueToSetRow">
@@ -695,7 +718,12 @@
 
             <tr id="inactivePointIdRow">
               <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="inactivePointId"></select></td>
+              <td class="formField">
+                <select id="inactivePointId"
+                        class="chzn-select"
+                        data-placeholder="Select a point...">
+                </select>
+              </td>
             </tr>
 
             <tr id="inactiveValueToSetRow">
