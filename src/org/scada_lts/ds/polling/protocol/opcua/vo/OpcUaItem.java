@@ -59,10 +59,6 @@ public class OpcUaItem {
         return identifier;
     }
 
-    public String getIdentifierDisplay() {
-        return org.scada_lts.serorepl.utils.StringUtils.truncate(String.valueOf(getIdentifier()), "...", 128);
-    }
-
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }

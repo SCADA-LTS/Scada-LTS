@@ -171,11 +171,11 @@
 		if (check == true) {
 		      let copyLocator = JSON.parse(JSON.stringify(locator));
 		      copyLocator.nodeName = list.rows[i].cells[0].innerHTML;
-		      copyLocator.identifier = list.rows[i].cells[1].innerHTML;
-              copyLocator.identifierType = list.rows[i].cells[2].innerHTML
-			  copyLocator.opcDataType = list.rows[i].cells[3].innerHTML;
-			  copyLocator.namespaceIndex = list.rows[i].cells[4].innerHTML;
-			  copyLocator.settable = list.rows[i].cells[5].innerHTML;
+		      copyLocator.identifier = list.rows[i].cells[2].innerHTML;
+              copyLocator.identifierType = list.rows[i].cells[3].innerHTML
+			  copyLocator.opcDataType = list.rows[i].cells[4].innerHTML;
+			  copyLocator.namespaceIndex = list.rows[i].cells[5].innerHTML;
+			  copyLocator.settable = list.rows[i].cells[6].innerHTML;
 			  locators.push(copyLocator);
 
 		}
@@ -192,6 +192,18 @@
            addNodesTable.children[0].remove();
        }
        document.getElementById("nodesMessage").textContent = '';
+       hide("btnResetNode");
+       hide("findResult");
+  }
+
+  function setCheckedAllNodes(checked) {
+       let addNodesTable = document.getElementById('addNodesTable');
+       let inputs = addNodesTable.getElementsByTagName("input");
+       if(inputs) {
+           for(let i = 0; i < inputs.length; i++) {
+                inputs[i].checked = checked;
+           }
+       }
   }
   
   function findNodes() {
@@ -222,9 +234,16 @@
                 td1.appendChild(nodeName);
 
                 let td22 = document.createElement("TD");
-                let identifier = document.createTextNode(node.identifierDisplay);
+                let identifierDisplay = node.identifier.length > 90 ? node.identifier.substring(0, 90) + "..." : node.identifier;
+                let identifierTextNode = document.createTextNode(identifierDisplay);
                 td22.setAttribute("align","center");
-                td22.appendChild(identifier);
+                td22.appendChild(identifierTextNode);
+
+                let td221 = document.createElement("TD");
+                let identifier = document.createTextNode(node.identifier);
+                td221.setAttribute("align","center");
+                td221.setAttribute("style","display: none");
+                td221.appendChild(identifier);
 
                 let td23 = document.createElement("TD");
                 let identifierType = document.createTextNode(node.identifierType);
@@ -282,6 +301,7 @@
 
                 row.appendChild(td1);
                 row.appendChild(td22);
+                row.appendChild(td221);
                 row.appendChild(td23);
                 row.appendChild(td2);
                 row.appendChild(td21);
@@ -295,6 +315,9 @@
             while(tbody.children.length > 0) {
                 addNodesTable.insertBefore(tbody.children[0], addNodesTable.children[0]);
             }
+
+            show("btnResetNode");
+            show("findResult");
         });
   }
 
@@ -539,7 +562,7 @@ function toggleDiv(elem) {
             <td class="formLabelRequired"></td>
             <td class="formField">
                 <input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.findNodes"/>" onclick="findNodes();"/>
-                <input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.resetNodes"/>" onclick="resetNodes();"/>
+                <input id="btnResetNode" style="display: none"[ type="button" value="<spring:message code="dsEdit.opcua.resetNodes"/>" onclick="resetNodes();"/>
             </td>
         </tr>
 
@@ -548,7 +571,7 @@ function toggleDiv(elem) {
 			<td colspan="2" id="nodesMessage" class="formError"></td>
 		</tr>
 
-		<tr>
+		<tr id="findResult" style="display: none">
 			<td colspan="2">
 			<table cellspacing="2" cellpadding="0" border="0">
 				<thead class="rowHeader">
@@ -564,14 +587,17 @@ function toggleDiv(elem) {
 
 				<!-- TODO why is the height being enforced? -->
 				<tbody id="addNodesTable" style="height: 160px; overflow: auto;"></tbody>
+
+                <tr>
+                    <td colspan="8" align="center">
+                        <input id="btnAddNode" type="button" value="<spring:message code="dsEdit.opcua.addNodes"/>" onclick="btnAddNode();" />
+                        <input type="button" value="<spring:message code="dsEdit.opcua.checkAllNodes"/>" onclick="setCheckedAllNodes(true);"/>
+                        <input type="button" value="<spring:message code="dsEdit.opcua.uncheckAllNodes"/>" onclick="setCheckedAllNodes(false);"/>
+                    </td>
+                </tr>
 			</table>
 			</td>
 
-		</tr>
-		<tr>
-			<td colspan="2" align="center"><input id="btnAddNode"
-				type="button" value="<spring:message code="dsEdit.opcua.addNodes"/>"
-				onclick="btnAddNode();" /></td>
 		</tr>
 
 		<%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf"%>
