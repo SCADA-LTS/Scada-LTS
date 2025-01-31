@@ -156,21 +156,21 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
     }
 
-    private void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
         _raiseEvent(eventId, time, rtn, message, -1);
     }
 
-    private void _returnToNormal(int eventId, long time) {
+    protected void _returnToNormal(int eventId, long time) {
         _returnToNormal(eventId, time, -1);
     }
 
-    private void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointVO dataPoint) {
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointVO dataPoint) {
         message = new LocalizableMessage("event.ds", dataPoint.getExtendedName(), message);
         _raiseEvent(eventId, time, rtn, message, dataPoint.getId());
     }
 
-    private void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
         Map<String, Object> context = new HashMap<String, Object>();
@@ -179,7 +179,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
-    private void _returnToNormal(int eventId, long time, int dataPointId) {
+    protected void _returnToNormal(int eventId, long time, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
         Common.ctx.getEventManager().returnToNormal(type, time);
     }

@@ -40,7 +40,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
         this.messagingService = messagingService;
         this.updateAttemptsCounters = new ConcurrentHashMap<>();
         this.updateAttempts = vo.getUpdateAttempts();
-        setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
+        setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), vo.isQuantize());
     }
 
     @Override

@@ -14,6 +14,10 @@ class ScheduleExecutor<T extends Job> {
         toExecutes.add(execute);
     }
 
+    public void unschedule(T execute) {
+        toExecutes.remove(execute);
+    }
+
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         for(T toExecute: toExecutes) {
             toExecute.execute(jobExecutionContext);

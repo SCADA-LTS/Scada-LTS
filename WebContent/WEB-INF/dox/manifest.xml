@@ -384,19 +384,19 @@
    </item>
 
   <item id="amqpPP">
-    <relation id="amqpPP"/>
-  </item>
-
-  <item id="amqpDS">
     <relation id="amqpDS"/>
   </item>
 
+  <item id="amqpDS">
+    <relation id="amqpPP"/>
+  </item>
+
   <item id="mqttPP">
-    <relation id="mqttPP"/>
+    <relation id="mqttDS"/>
   </item>
 
   <item id="mqttDS">
-    <relation id="mqttDS"/>
+    <relation id="mqttPP"/>
   </item>
 
     <item id="collectInactiveMsg">
@@ -422,5 +422,13 @@
 
   <item id="dataRetentionSettings">
     <relation id="reportInstances"/>
+  </item>
+
+  <item id="opcUaDS">
+    <relation id="opcUaPP"/>
+  </item>
+
+  <item id="opcUaPP">
+    <relation id="opcUaDS"/>
   </item>
 </doxManifest>

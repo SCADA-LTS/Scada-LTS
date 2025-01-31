@@ -245,6 +245,7 @@ test {
         includeTestsMatching "org.scada_lts.web.mvc.api.validation.css.CssValidatorTestsSuite"
         includeTestsMatching "org.scada_lts.web.beans.validation.xss.XssValidatorTestsSuite"
         includeTestsMatching "org.scada_lts.utils.CyclicDependencyValidationUtilsTest"
+        includeTestsMatching "org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataTypeTestsSuite"
     }
 
     failFast = true

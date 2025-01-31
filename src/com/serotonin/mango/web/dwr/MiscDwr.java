@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -185,16 +181,15 @@ public class MiscDwr extends BaseDwr {
 			result.put("error", getMessage("dox.notFound"));
 		else {
 			// Read the content.
-			String filename = Common.getDocPath() + "/" + getMessage("dox.dir")
-					+ "/" + documentId + ".htm";
+			String filename = Common.getDocPath() + File.separator + getMessage("dox.dir")
+					+ File.separator + documentId + ".htm";
 			try {
-				Reader in = new FileReader(filename);
-				StringWriter out = new StringWriter();
-				StreamUtils.transfer(in, out);
-				in.close();
-
-				addDocumentationItem(result, item);
-				result.put("content", out.toString());
+				try (Reader in = new FileReader(filename);
+					 StringWriter out = new StringWriter()) {
+					StreamUtils.transfer(in, out);
+					addDocumentationItem(result, item);
+					result.put("content", out.toString());
+				}
 
 				List<Map<String, Object>> related = new ArrayList<Map<String, Object>>();
 				for (String relatedId : item.getRelated()) {
