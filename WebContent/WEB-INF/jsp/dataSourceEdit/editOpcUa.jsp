@@ -562,7 +562,7 @@ function toggleDiv(elem) {
             <td class="formLabelRequired"></td>
             <td class="formField">
                 <input id="btnFindNode" type="button" value="<spring:message code="dsEdit.opcua.findNodes"/>" onclick="findNodes();"/>
-                <input id="btnResetNode" style="display: none"[ type="button" value="<spring:message code="dsEdit.opcua.resetNodes"/>" onclick="resetNodes();"/>
+                <input id="btnResetNode" style="display: none" type="button" value="<spring:message code="dsEdit.opcua.resetNodes"/>" onclick="resetNodes();"/>
             </td>
         </tr>
 
