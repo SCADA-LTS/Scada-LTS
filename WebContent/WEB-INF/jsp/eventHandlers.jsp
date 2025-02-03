@@ -414,7 +414,7 @@
             dp = allPoints[i];
             if (dp.id != targetPointId && dp.dataType == targetDataTypeId) {
                 activeSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
-                inactiveSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
+                inactiveSourceSelect.options[inactiveSourceSelect.options.length] = new Option(dp.name, dp.id);
             }
         }
 
