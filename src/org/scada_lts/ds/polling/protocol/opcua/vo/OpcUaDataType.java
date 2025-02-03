@@ -1,7 +1,6 @@
 package org.scada_lts.ds.polling.protocol.opcua.vo;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaConverterUtils;
 
 public interface OpcUaDataType {
 
