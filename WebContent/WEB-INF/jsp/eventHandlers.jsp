@@ -302,6 +302,7 @@
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
                 $set("targetPointSelect", handler.targetPointId);
+                jQuery("#targetPointSelect").trigger("chosen:updated");
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
             }
@@ -418,13 +419,12 @@
             }
         }
 
-        jQuery("#activePointId").trigger("chosen:updated");
-        jQuery("#inactivePointId").trigger("chosen:updated");
-
         if (selectedHandlerNode) {
             $set(activeSourceSelect, selectedHandlerNode.object.activePointId);
             $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
         }
+        jQuery("#activePointId").trigger("chosen:updated");
+        jQuery("#inactivePointId").trigger("chosen:updated");
     }
 
     function activeActionChanged() {

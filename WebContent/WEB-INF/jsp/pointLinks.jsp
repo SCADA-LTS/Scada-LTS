@@ -72,8 +72,11 @@
             $set("script", pl.script);
             $set("event", pl.event);
             $set("disabled", pl.disabled);
-            
-            setUserMessage();
+
+          jQuery("#sourcePointId").trigger("chosen:updated");
+          jQuery("#targetPointId").trigger("chosen:updated");
+
+          setUserMessage();
         });
         startImageFader($("pl"+ plId +"Img"));
         display("deletePointLinkImg", plId != ${NEW_ID});
