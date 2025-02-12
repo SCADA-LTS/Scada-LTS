@@ -125,4 +125,12 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
+    public void deleteFolderAndMovePointsToRoot(String xidFolder, List<String> childrenPointsXids) {
+        if(childrenPointsXids != null) {
+            for (String xid : childrenPointsXids) {
+                movePoint(xid, "_");
+            }
+        }
+        getPointHierarchyDAO().deleteFolderXid(xidFolder);
+    }
 }

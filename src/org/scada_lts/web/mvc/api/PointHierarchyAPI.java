@@ -23,10 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
-import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
-import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
-import org.scada_lts.web.mvc.api.dto.PointHierarchyConsistencyCheck;
-import org.scada_lts.web.mvc.api.dto.PointHierarchyExp;
+import org.scada_lts.web.mvc.api.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -328,5 +325,64 @@ public class PointHierarchyAPI {
             LOG.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @RequestMapping(value = "/api/pointHierarchy/moveBatch", method = RequestMethod.POST)
+    public ResponseEntity<String> moveBatch(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/moveBatch newParentXidFolder: "
+                + pointHierarchyDTO.getNewParentIdFolder() + " keys: " + pointHierarchyDTO.getXids());
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                boolean allMoved = true;
+                for (String xidPoint : pointHierarchyDTO.getXids()) {
+                    boolean moved = pointHierarchyXidService.movePoint(xidPoint, pointHierarchyDTO.getNewParentIdFolder());
+                    if (!moved) {
+                        allMoved = false;
+                    }
+                }
+                FolderPointHierarchy fph = new FolderPointHierarchy();
+                fph.setPointXids(pointHierarchyDTO.getXids());
+                result = new ResponseEntity<String>(String.valueOf(allMoved), HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/api/pointHierarchy/deleteFolderMoveToRootBatch", method = RequestMethod.POST)
+    public ResponseEntity<String> deleteFolderMoveToRootBatch(
+            @RequestBody PointHierarchyDTO pointHierarchyDTO,
+            HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/deleteFolderMoveToRootBatch keys: " + pointHierarchyDTO.getXids());
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                boolean allSuccess = true;
+                for (String xid : pointHierarchyDTO.getXids()) {
+                    if (xid.startsWith("DIR_")) {
+                        pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
+                    } else if (xid.startsWith("DP_")) {
+                        boolean moved = pointHierarchyXidService.movePoint(xid, "_");
+                        if (!moved) {
+                            allSuccess = false;
+                        }
+                    }
+                }
+                result = new ResponseEntity<String>(String.valueOf(allSuccess), HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
     }
 }
