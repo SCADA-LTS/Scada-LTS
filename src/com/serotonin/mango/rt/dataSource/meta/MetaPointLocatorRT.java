@@ -20,11 +20,7 @@ package com.serotonin.mango.rt.dataSource.meta;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 import javax.script.ScriptException;
 
@@ -38,7 +34,7 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.DateUtils;
-import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.AbstractTimer;
 import com.serotonin.timer.CronExpression;
@@ -48,6 +44,7 @@ import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.ValidationUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.generateContext;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -69,9 +66,6 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     protected volatile Map<String, IDataPoint> context;
     boolean initialized;
     TimerTask timerTask;
-
-    private final AtomicInteger pointInitializedSafe = new AtomicInteger(MAX_RECURSION);
-    private final AtomicInteger pointTerminatedSafe = new AtomicInteger(MAX_RECURSION);
 
     private static final Log LOG = LogFactory.getLog(MetaPointLocatorRT.class);
 
@@ -179,16 +173,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             return;
         }
 
-        if(pointInitializedSafe.getAndDecrement() < 0) {
-            LOG.error("Exceeded recursive level: " + LoggingUtils.dataPointInfo(dataPoint));
-            pointInitializedSafe.set(MAX_RECURSION);
-            return;
-        }
-
         if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
             DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
-            if(dataPointListener != null) {
-                dataPointListener.pointInitialized();
+            if(dataPointListener != null && dataPointListener != this) {
+                if(dataPointListener instanceof MetaPointLocatorRT) {
+                    MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointInitialized);
+                }
+
             }
         }
     }
@@ -197,18 +189,19 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         context = createContext(dataPoint);
 
-        if(pointTerminatedSafe.getAndDecrement() < 0) {
-            LOG.error("Exceeded recursive level: " + LoggingUtils.dataPointInfo(dataPoint));
-            pointTerminatedSafe.set(MAX_RECURSION);
-            return;
-        }
-
         if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
             DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
-            if(dataPointListener != null) {
-                dataPointListener.pointTerminated();
+            if(dataPointListener != null && dataPointListener != this) {
+                if(dataPointListener instanceof MetaPointLocatorRT) {
+                    MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointTerminated);
+                }
             }
         }
+    }
+
+    public DataPointRT getDataPoint() {
+        return dataPoint;
     }
 
     //
@@ -406,5 +399,18 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         return !initializeMode || (metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
                 && metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)
                 || (previousValueTime == null || !ObjectUtils.isEqual(valueTime.getValue(), previousValueTime.getValue()));
+    }
+
+    private static void execute(DataPointRT dataPointStart, MetaPointLocatorRT fromContext, MetaDataSourceRT dataSource,
+                                Runnable execute) {
+        DataPointRT dataPointRtFromContext = fromContext.getDataPoint();
+        DataPointVO dataPointVoFromContext = dataPointRtFromContext.getVO();
+
+        if(ValidationUtils.isCyclicDependency(dataPointStart.getId(), dataPointRtFromContext.getId())) {
+            dataSource.raiseRecursiveError(System.currentTimeMillis(), dataPointStart,
+                    new LocalizableMessage("validate.cyclicDependency", dataPointVoFromContext.getName()));
+        } else {
+            execute.run();
+        }
     }
 }

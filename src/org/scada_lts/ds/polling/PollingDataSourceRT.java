@@ -5,7 +5,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.polling.service.IMaster;
 import org.scada_lts.ds.polling.service.DataPointReadResponse;
-import org.scada_lts.utils.DataPointUnreliableUtils;
+import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
