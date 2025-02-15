@@ -3,6 +3,7 @@ package org.scada_lts.session;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.login.AuthenticationUtils;
+import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +24,9 @@ public class SetDataSessionFilter implements Filter {
             if (authentication != null && authentication.isAuthenticated() && !isAnonymousUser(authentication)) {
                 User user = Common.getUser(req);
                 if (user == null) {
-                    UserService userService = new UserService();
+                    MangoUser userService = new UserService();
                     user = userService.getUser(authentication.getName());
-                    AuthenticationUtils.authenticateLocal(req, res, authentication, user);
+                    AuthenticationUtils.authenticateLocal(req, res, authentication, user, userService);
                 }
             }
         }

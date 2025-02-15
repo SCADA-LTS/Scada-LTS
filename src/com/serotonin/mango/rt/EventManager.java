@@ -45,7 +45,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Matthew Lohbihler
@@ -53,7 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class EventManager implements ILifecycle {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
-	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
+	private final Map<Integer, EventInstance> activeEvents = new ConcurrentHashMap<>();
 	private MangoEvent eventService;
 	private MangoUser userService;
 	private long lastAlarmTimestamp = 0;
@@ -150,7 +150,7 @@ public class EventManager implements ILifecycle {
 		}
 
 		if (evt.isRtnApplicable())
-			activeEvents.add(evt);
+			activeEvents.put(evt.getId(), evt);
 
 		if (suppressed) {
 			if(evt.getAlarmLevel() != AlarmLevels.NONE) {
@@ -220,7 +220,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	private void deactivateEvent(EventInstance evt, long time, int inactiveCause) {
-		activeEvents.remove(evt);
+		activeEvents.remove(evt.getId());
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
@@ -239,7 +239,7 @@ public class EventManager implements ILifecycle {
 	// Canceling events.
 	//
 	public void cancelEventsForDataPoint(int dataPointId) {
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().getDataPointId() == dataPointId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -247,7 +247,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForDataSource(int dataSourceId) {
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().getDataSourceId() == dataSourceId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -255,7 +255,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForPublisher(int publisherId) {
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().getPublisherId() == publisherId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -263,7 +263,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForHandler(int handlerId) {
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().getEventHandlerId() == handlerId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -272,7 +272,7 @@ public class EventManager implements ILifecycle {
 
 	private void resetHighestAlarmLevel(long time, boolean init) {
 		int max = 0;
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getAlarmLevel() > max)
 				max = e.getAlarmLevel();
 		}
@@ -320,7 +320,9 @@ public class EventManager implements ILifecycle {
 		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 
 		// Get all active events from the database.
-		activeEvents.addAll(eventService.getActiveEvents());
+		eventService.getActiveEvents().forEach(event -> {
+			activeEvents.put(event.getId(), event);
+		});
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
@@ -346,7 +348,7 @@ public class EventManager implements ILifecycle {
 	 * none.
 	 */
 	private EventInstance get(EventType type) {
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().equals(type))
 				return e;
 		}
@@ -355,7 +357,7 @@ public class EventManager implements ILifecycle {
 
 	private List<EventInstance> getAll(EventType type) {
 		List<EventInstance> result = new ArrayList<EventInstance>();
-		for (EventInstance e : activeEvents) {
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().equals(type))
 				result.add(e);
 		}
@@ -370,11 +372,16 @@ public class EventManager implements ILifecycle {
 	 * @return
 	 */
 	private EventInstance remove(EventType type) {
-		for (EventInstance e : activeEvents) {
+		EventInstance eventInstance = null;
+		for (EventInstance e : activeEvents.values()) {
 			if (e.getEventType().equals(type)) {
-				activeEvents.remove(e);
-				return e;
+				eventInstance = e;
+				break;
 			}
+		}
+		if(eventInstance != null) {
+			activeEvents.remove(eventInstance.getId());
+			return eventInstance;
 		}
 		return null;
 	}
