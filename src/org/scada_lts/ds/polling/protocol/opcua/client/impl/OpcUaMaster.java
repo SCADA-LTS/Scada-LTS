@@ -182,7 +182,7 @@ public class OpcUaMaster implements IOpcUaMaster {
                 }
                 Set<OpcUaPointLocatorVO> result = new CopyOnWriteArraySet<>();
 
-                SearchOpcUaNodesAction nodesFinder = new SearchOpcUaNodesAction(Identifiers.RootFolder,
+                SearchOpcUaNodesAction searchNodes = new SearchOpcUaNodesAction(Identifiers.RootFolder,
                         result,
                         searchDepth == 0 ? 3 : searchDepth,
                         item -> false,
@@ -192,7 +192,7 @@ public class OpcUaMaster implements IOpcUaMaster {
                                 && (namespaceIndex == -1 || item.getNamespaceIndex() == namespaceIndex),
                         client, dataTypeTree);
 
-                nodesFinder.call();
+                searchNodes.call();
 
                 List<OpcUaPointLocatorVO> items = new ArrayList<>(result);
                 items.sort(comparator);
