@@ -94,6 +94,8 @@ import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
+	private boolean initialized;
+
 	@Override
 	public void contextInitialized(ServletContextEvent evt) {
 		try {
@@ -103,10 +105,16 @@ public class MangoContextListener implements ServletContextListener {
 					SystemEventType.TYPE_SYSTEM_STARTUP), System
 					.currentTimeMillis(), false, new LocalizableMessage(
 					"event.system.startup"));
+			initialized = true;
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
+			initialized = false;
 			throw ex;
 		}
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	private void initialized(ServletContextEvent evt) {

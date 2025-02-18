@@ -1092,9 +1092,18 @@ public class RuntimeManager {
 	}
 
 	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
+		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> true);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, boolean unreliable) {
+		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> dataPoint.isUnreliable() == unreliable);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, Predicate<DataPointRT> condition) {
 		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
 		return filterRunningDataPoints(dataPoints.values(), dataPoint -> isMetaDataPointRT(dataPoint)
-				&& isDataPointInContext(dataPoint, dataPointInContextId));
+				&& isDataPointInContext(dataPoint, dataPointInContextId)
+				&& condition.test(dataPoint));
 	}
 
 	private static List<DataPointRT> filterRunningDataPoints(List<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {

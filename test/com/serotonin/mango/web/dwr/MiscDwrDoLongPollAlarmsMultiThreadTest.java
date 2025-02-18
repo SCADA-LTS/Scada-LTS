@@ -19,7 +19,7 @@ import org.scada_lts.web.content.SnippetContentGenerator;
 import org.springframework.mock.web.MockHttpSession;
 import utils.TestConcurrentUtils;
 import utils.mock.EventServiceMock;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -66,7 +66,7 @@ public class MiscDwrDoLongPollAlarmsMultiThreadTest {
         });
 
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
-        MockUtils.configMock(runtimeManagerMock, user);
+        PowerMockUtils.configMock(runtimeManagerMock, user);
 
         //WebContext mock
         HttpSession httpSession = new MockHttpSession();

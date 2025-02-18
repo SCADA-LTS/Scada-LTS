@@ -1,28 +1,21 @@
 package com.serotonin.mango.rt.dataSource;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.recursive.SetUnreliableDataPointsAction;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class DataPointUnreliableUtils {
 
     private static final Log LOG = LogFactory.getLog(DataPointUnreliableUtils.class);
-
-    private static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
     private static final int SAFE = 10;
 
     private DataPointUnreliableUtils() {}
 
-    public static boolean isSetUnreliable(DataPointRT dataPoint, boolean unreliable) {
-        return dataPoint.getAttribute(ATTR_UNRELIABLE_KEY) instanceof Boolean
-                && ((boolean) dataPoint.getAttribute(ATTR_UNRELIABLE_KEY)) == unreliable;
-    }
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
         unreliable(dataPoints, true, SAFE);
@@ -40,31 +33,16 @@ public final class DataPointUnreliableUtils {
         unreliable(Collections.singletonList(dataPoint), false, SAFE);
     }
 
-    private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable, int safe) {
-        setAttributes(filter(dataPoints, unreliable), unreliable);
-        for(DataPointRT dataPoint: dataPoints) {
-            List<DataPointRT> metaDataPoints = Common.ctx.getRuntimeManager().getRunningMetaDataPoints(dataPoint.getId());
-            if(!metaDataPoints.isEmpty()) {
-                if(safe > -1)
-                    unreliable(metaDataPoints, unreliable, --safe);
-                else {
-                    LOG.warn("The safe counter has been exceeded!: " + LoggingUtils.dataPointInfo(dataPoint));
-                    setAttributes(filter(metaDataPoints, unreliable), unreliable);
-                }
-            }
+    private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable, int depth) {
+        SetUnreliableDataPointsAction setUnreliableDataPointsAction = new SetUnreliableDataPointsAction(dataPoints, unreliable, depth);
+        try {
+            setUnreliableDataPointsAction.call();
+        } catch (Exception e) {
+            LOG.error(LoggingUtils.exceptionInfo(e));
         }
     }
 
-    private static void setAttributes(List<DataPointRT> dataPoints, boolean unreliable) {
-        for (DataPointRT dataPoint : dataPoints) {
-            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, unreliable);
-        }
+    public static boolean isSetUnreliable(DataPointRT dataPointRT, boolean unreliable) {
+        return SetUnreliableDataPointsAction.isSetUnreliable(dataPointRT, unreliable);
     }
-
-    private static List<DataPointRT> filter(List<DataPointRT> dataPoints, boolean unreliable) {
-        return dataPoints.stream().filter(dataPoint -> !isSetUnreliable(dataPoint, unreliable))
-                .collect(Collectors.toList());
-    }
-
-
 }

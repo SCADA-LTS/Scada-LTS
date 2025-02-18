@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
@@ -46,13 +44,11 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.mango.vo.TimePeriodType;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.DataPointService;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
 import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
@@ -189,17 +185,14 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         if (StringUtils.isEmpty(script))
             response.addContextualMessage("script", "validate.required");
 
-        DataPointService dataPointService = new DataPointService();
-        Map<Integer, DataPointVO> dataPoints = dataPointService.getDataPoints(null, true)
-                .stream()
-                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+
 
         List<String> varNameSpace = new ArrayList<>();
         for (IntValuePair point : context) {
             String varName = point.getValue();
             int pointId = point.getKey();
 
-            if(pointId != Common.NEW_ID && isCyclicDependency(pointId, dataPointId, dataPoints, 10)) {
+            if(pointId != Common.NEW_ID && isCyclicDependency(pointId, dataPointId)) {
                 response.addContextualMessage("context", "validate.cyclicDependency", escapeHtml(varName));
                 break;
             }

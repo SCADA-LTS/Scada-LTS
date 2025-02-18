@@ -25,11 +25,11 @@ import org.scada_lts.ds.polling.exception.MasterException;
 import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaMaster;
 import org.scada_lts.ds.polling.service.DataPointReadResponse;
 import org.scada_lts.ds.polling.protocol.opcua.vo.*;
+import org.scada_lts.recursive.SearchOpcUaNodesAction;
 
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
 
 import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils.createLocator;
 import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils.sendReadServerStateAndTime;
@@ -182,7 +182,7 @@ public class OpcUaMaster implements IOpcUaMaster {
                 }
                 Set<OpcUaPointLocatorVO> result = new CopyOnWriteArraySet<>();
 
-                SearchNodesAction searchNodesAction = new SearchNodesAction(Identifiers.RootFolder,
+                SearchOpcUaNodesAction searchNodes = new SearchOpcUaNodesAction(Identifiers.RootFolder,
                         result,
                         searchDepth == 0 ? 3 : searchDepth,
                         item -> false,
@@ -192,7 +192,7 @@ public class OpcUaMaster implements IOpcUaMaster {
                                 && (namespaceIndex == -1 || item.getNamespaceIndex() == namespaceIndex),
                         client, dataTypeTree);
 
-                searchNodesAction.compute();
+                searchNodes.call();
 
                 List<OpcUaPointLocatorVO> items = new ArrayList<>(result);
                 items.sort(comparator);
@@ -284,72 +284,5 @@ public class OpcUaMaster implements IOpcUaMaster {
             throw new RuntimeException(e);
         }
         return new PointValueTime(mangoValue, time);
-    }
-    
-    static class SearchNodesAction extends RecursiveAction {
-
-        private final NodeId nodeId;
-        private final Set<OpcUaPointLocatorVO> result;
-        private int searchDepth;
-        private final Predicate<OpcUaPointLocatorVO> exclude;
-        private final Predicate<OpcUaPointLocatorVO> include;
-        private final UaClient client;
-        private final DataTypeTree dataTypeTree;
-
-        public SearchNodesAction(NodeId nodeId, Set<OpcUaPointLocatorVO> result, int searchDepth, Predicate<OpcUaPointLocatorVO> exclude,
-                                 Predicate<OpcUaPointLocatorVO> include, UaClient client, DataTypeTree dataTypeTree) {
-            this.exclude = exclude;
-            this.include = include;
-            this.nodeId = nodeId;
-            this.result = result;
-            this.searchDepth = searchDepth;
-            this.client = client;
-            this.dataTypeTree = dataTypeTree;
-        }
-
-        @Override
-        protected void compute() {
-
-            if(searchDepth < 0)
-                return;
-
-            BrowseResult browseResult = null;
-            try {
-                browseResult = OpcUaUtils.sendBrowse(client, nodeId);
-            } catch (Exception e) {
-                LOG.error("Failed browse nodeId: {}, message: {}", nodeId, e.getMessage());
-                return;
-            }
-
-            StatusCode statusCode = browseResult.getStatusCode();
-            if(!statusCode.isGood()) {
-                LOG.error("Failed browse nodeId: {}, code: {}", nodeId, statusCode);
-                return;
-            }
-
-            if(browseResult.getReferences() == null || browseResult.getReferences().length == 0) {
-                LOG.info("End browse operation, nodeId: {}", nodeId);
-                return;
-            }
-
-            int depth = --searchDepth;
-            List<Callable<Void>> tasks = new ArrayList<>();
-            for(ReferenceDescription referenceDescription: browseResult.getReferences()) {
-
-                int namespaceIndex = referenceDescription.getNodeId().getNamespaceIndex().intValue();
-                String identifier = String.valueOf(referenceDescription.getNodeId().getIdentifier());
-                OpcUaIdentifierType identifierType = OpcUaIdentifierType.valueOf(referenceDescription.getNodeId().getType().getValue());
-                OpcUaPointLocatorVO pointLocator = createLocator(namespaceIndex, identifier, identifierType, client, dataTypeTree);
-
-                if(!exclude.test(pointLocator) && include.test(pointLocator)) {
-                    result.add(pointLocator);
-                }
-
-                tasks.add(() -> new SearchNodesAction(NodeId.parse(pointLocator.getNodeId()), result, depth, exclude, include, client, dataTypeTree).invoke());
-            }
-
-            if(!tasks.isEmpty())
-                Common.ctx.getBackgroundProcessing().getCommonPool().invokeAll(tasks);
-        }
     }
 }

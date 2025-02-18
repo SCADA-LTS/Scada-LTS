@@ -84,6 +84,8 @@ public final class SystemSettingsUtils {
 
     private static final String DATA_TYPE_ALPHANUMERIC_SAVE_VALUE_AS_ESCAPED_KEY = "data-type.alphanumeric.save-value-as-escaped";
 
+    private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -743,6 +745,17 @@ public final class SystemSettingsUtils {
         int defaultValue = 6;
         try {
             String value = ScadaConfig.getInstance().getConf().getProperty(OPC_UA_SEARCH_DEPTH_LIMIT_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getValidationSearchCyclicDepth() {
+        int defaultValue = 100;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(VALIDATION_SEARCH_CYCLIC_DEPTH_KEY, String.valueOf(defaultValue));
             return Integer.parseInt(value);
         } catch (Exception e) {
             LOG.error(e.getMessage());

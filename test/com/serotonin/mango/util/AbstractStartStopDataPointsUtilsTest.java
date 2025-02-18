@@ -1,12 +1,16 @@
 package com.serotonin.mango.util;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.BackgroundProcessing;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import utils.TestUtils;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.junit.Before;
 import org.scada_lts.mango.service.DataPointService;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +18,8 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static utils.mock.MockitoUtils.mockBackgroundProcessing;
+import static utils.mock.MockitoUtils.mockContextWrapper;
 
 public class AbstractStartStopDataPointsUtilsTest {
 
@@ -33,10 +39,25 @@ public class AbstractStartStopDataPointsUtilsTest {
     private DataSourceRT dataSourceRtMock;
     private List<DataPointVO> dataPoints;
 
+
+    private static BackgroundProcessing backgroundProcessing;
+
+    @AfterClass
+    public static void terminateBackgroundProcessing() {
+        backgroundProcessing.terminate();
+    }
+
+    @BeforeClass
+    public static void configBackgroundProcessing() {
+
+        backgroundProcessing = mockBackgroundProcessing();
+        Common.ctx = mockContextWrapper(backgroundProcessing);
+    }
+
     @Before
     public void config() throws Exception {
 
-        MockUtils.configDaoMock();
+        PowerMockUtils.configDaoMock();
 
         dataPoint1 = TestUtils.newPointSettable(1, -1);
         dataPoint2 = TestUtils.newPointSettable(2, -1);
