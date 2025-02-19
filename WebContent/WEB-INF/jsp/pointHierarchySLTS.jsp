@@ -732,46 +732,46 @@ var messages = {
     	    	    }
     	        },
 			  	dragDrop: function(targetNode, data) {
-				  var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
-				  if(!targetNode.folder) {
-					  return;
-				  }
+			  	  var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
+			  	  if(!targetNode.folder) {
+			  		  return;
+			  	  }
 
-				  BootstrapDialog.confirm({
-					  title: "Moving elements",
-					  message: function(dialog) {
-						  var list = $('<ul></ul>');
-						  nodesToMove.forEach(function(n) {
-							  list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
-						  });
-						  return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
-					  },
-					  callback: function(result) {
-						  if(result) {
-							  var xids = nodesToMove.map(function(n) { return n.data.xid; });
-							  $.ajax({
-								  type: "POST",
-								  url: myLocation + 'api/pointHierarchy/moveBatch/',
-								  data: JSON.stringify({
-									  xids: xids,
-									  newParentIdFolder: targetNode.data.xid,
-									  keys: targetNode.data.key
-								  }),
-								  contentType: "application/json; charset=utf-8",
-								  dataType: "json",
-								  success: function(msg) {
-									  BootstrapDialog.alert("Elements moved succesfully.");
-									  var tree = $("#tree").fancytree("getTree");
-									  tree.reload();
-									  refreshCache();
-								  },
-								  error: function(xhr, textStatus, errorThrown) {
-									  BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
-								  }
-							  });
-						  }
-					  }
-				  });
+			  	  BootstrapDialog.confirm({
+			  		  title: "Moving elements",
+			  		  message: function(dialog) {
+			  			  var list = $('<ul></ul>');
+			  			  nodesToMove.forEach(function(n) {
+			  				  list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+			  			  });
+			  			  return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
+			  		  },
+			  		  callback: function(result) {
+			  			  if(result) {
+			  				  var xids = nodesToMove.map(function(n) { return n.data.xid; });
+			  				  $.ajax({
+			  					  type: "POST",
+			  					  url: myLocation + 'api/pointHierarchy/moveBatch/',
+			  					  data: JSON.stringify({
+			  						  xids: xids,
+			  						  newParentIdFolder: targetNode.data.xid,
+			  						  keys: targetNode.data.key
+			  					  }),
+			  					  contentType: "application/json; charset=utf-8",
+			  					  dataType: "json",
+			  					  success: function(msg) {
+			  						  BootstrapDialog.alert("Elements moved succesfully.");
+			  						  var tree = $("#tree").fancytree("getTree");
+			  						  tree.reload();
+			  						  refreshCache();
+			  					  },
+			  					  error: function(xhr, textStatus, errorThrown) {
+			  						  BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
+			  					  }
+			  				  });
+			  			  }
+			  		  }
+			  	  });
 			  	}
     	      },
     	      glyph: glyph_opts,
