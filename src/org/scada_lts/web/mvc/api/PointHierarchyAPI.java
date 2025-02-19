@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Create by at Grzesiek Bylica
@@ -336,14 +337,16 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 boolean allMoved = true;
-                for (String xidPoint : pointHierarchyDTO.getXids()) {
-                    boolean moved = pointHierarchyXidService.movePoint(xidPoint, pointHierarchyDTO.getNewParentIdFolder());
-                    if (!moved) {
-                        allMoved = false;
+                for (String xid : pointHierarchyDTO.getXids()) {
+                    if (xid.startsWith("DIR_")) {
+                        pointHierarchyXidService.moveFolder(xid, pointHierarchyDTO.getNewParentIdFolder());
+                    } else if (xid.startsWith("DP_")) {
+                        boolean moved = pointHierarchyXidService.movePoint(xid, pointHierarchyDTO.getNewParentIdFolder());
+                        if (!moved) {
+                            allMoved = false;
+                        }
                     }
                 }
-                FolderPointHierarchy fph = new FolderPointHierarchy();
-                fph.setPointXids(pointHierarchyDTO.getXids());
                 result = new ResponseEntity<String>(String.valueOf(allMoved), HttpStatus.OK);
             } else {
                 result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
@@ -367,7 +370,13 @@ public class PointHierarchyAPI {
                 boolean allSuccess = true;
                 for (String xid : pointHierarchyDTO.getXids()) {
                     if (xid.startsWith("DIR_")) {
-                        pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
+                        for (FolderPointHierarchy folder : pointHierarchyXidService.getFolders()){
+                            if (Objects.equals(folder.getXid(), xid) && folder.getParentXid() != null){
+                                pointHierarchyXidService.moveFolder(xid, "_");
+                            } else if (Objects.equals(folder.getXid(), xid) && folder.getParentXid() == null) {
+                                pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
+                            }
+                        }
                     } else if (xid.startsWith("DP_")) {
                         boolean moved = pointHierarchyXidService.movePoint(xid, "_");
                         if (!moved) {
