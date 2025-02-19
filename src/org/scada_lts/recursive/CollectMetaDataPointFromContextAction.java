@@ -8,6 +8,7 @@ import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.ValidationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,8 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                                     .findAny()
                                     .orElse(null);
                             if (fromContextDataPoint != null
-                                    && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)) {
+                                    && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)
+                            && !ValidationUtils.isCyclicDependency(startDataPoint.getId(), fromContextDataPoint.getId(), 10)) {
                                 tasks.add(new CollectMetaDataPointFromContextAction(toCheck, toRunning, fromContextDataPoint, temp, dataPoints, isExecute));
                             }
                         }

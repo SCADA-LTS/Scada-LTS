@@ -151,10 +151,10 @@ public final class ValidationUtils {
         }
     }
 
-    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int findCyclicDepth) {
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int searchDepth) {
         Set<Boolean> result = new CopyOnWriteArraySet<>();
-        SearchCyclicDependencyAction searchCyclicDependecyAction = new SearchCyclicDependencyAction(starDataPointId, findDataPointId, dataPoints, findCyclicDepth, result);
-        searchCyclicDependecyAction.call();
+        SearchCyclicDependencyAction searchCyclicDependencyAction = new SearchCyclicDependencyAction(starDataPointId, findDataPointId, dataPoints, searchDepth, result);
+        searchCyclicDependencyAction.call();
         return result.stream().anyMatch(a -> a);
     }
 }

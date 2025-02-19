@@ -32,6 +32,10 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
     @Override
     public Void call() {
 
+        if(result.size() > 1) {
+            return null;
+        }
+
         if(starDataPointId == findDataPointId) {
             result.add(true);
             return null;
@@ -40,6 +44,11 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
             result.add(false);
             return null;
         }
+
+        if(result.stream().anyMatch(a -> a)) {
+            return null;
+        }
+
         DataPointVO dataPoint = dataPoints.get(starDataPointId);
         PointLocatorVO pointLocator = dataPoint.getPointLocator();
         if(pointLocator instanceof MetaPointLocatorVO) {
