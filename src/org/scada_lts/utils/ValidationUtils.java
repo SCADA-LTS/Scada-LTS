@@ -1,13 +1,12 @@
 package org.scada_lts.utils;
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
-import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.recursive.SearchCyclicDependencyAction;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.svg.SvgUtils;
 import org.scada_lts.utils.security.SafeFile;
@@ -17,18 +16,18 @@ import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static br.org.scadabr.vo.exporter.util.FileUtil.createSvgTempFile;
 
 public final class ValidationUtils {
 
-    private static final Logger LOG = LogManager.getLogger(SafeFile.class);
-
+    private static final Logger LOG = LogManager.getLogger(ValidationUtils.class);
 
     private ValidationUtils() {}
 
@@ -135,33 +134,27 @@ public final class ValidationUtils {
         }
     }
 
-    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int safe) {
-        if(starDataPointId == findDataPointId) {
-            return true;
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId) {
+        int validationSearchCyclicDepth = SystemSettingsUtils.getValidationSearchCyclicDepth();
+        return isCyclicDependency(starDataPointId, findDataPointId, validationSearchCyclicDepth);
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, int validationSearchCyclicDepth) {
+        DataPointService dataPointService = new DataPointService();
+        Map<Integer, DataPointVO> dataPoints = dataPointService.getDataPoints(null, true)
+                .stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+        try {
+            return isCyclicDependency(starDataPointId, findDataPointId, dataPoints, validationSearchCyclicDepth);
+        } finally {
+            dataPoints.clear();
         }
-        if(safe < 0) {
-            return false;
-        }
-        DataPointVO dataPoint = dataPoints.get(starDataPointId);
-        PointLocatorVO pointLocator = dataPoint.getPointLocator();
-        if(pointLocator instanceof MetaPointLocatorVO) {
-            MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
-            List<IntValuePair> context = metaPointLocator.getContext();
-            if (context == null || context.isEmpty()) {
-                return false;
-            }
-            for (IntValuePair keyValue : context) {
-                int contextDataPointId = keyValue.getKey();
-                DataPointVO contextDataPoint = dataPoints.get(contextDataPointId);
-                if(contextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
-                    if (contextDataPointId == findDataPointId) {
-                        return true;
-                    } else {
-                        return isCyclicDependency(contextDataPointId, findDataPointId, dataPoints, --safe);
-                    }
-                }
-            }
-        }
-        return false;
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int searchDepth) {
+        Set<Boolean> result = new CopyOnWriteArraySet<>();
+        SearchCyclicDependencyAction searchCyclicDependencyAction = new SearchCyclicDependencyAction(starDataPointId, findDataPointId, dataPoints, searchDepth, result);
+        searchCyclicDependencyAction.call();
+        return result.stream().anyMatch(a -> a);
     }
 }

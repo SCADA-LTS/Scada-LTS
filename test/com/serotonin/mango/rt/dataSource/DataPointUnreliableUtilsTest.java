@@ -1,5 +1,8 @@
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.rt.maint.BackgroundProcessing;
+import org.junit.*;
+import org.scada_lts.utils.ValidationUtils;
 import utils.TestUtils;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
@@ -18,9 +21,6 @@ import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.web.dwr.MiscDwr;
 import com.serotonin.web.content.ContentGenerator;
 import org.directwebremoting.WebContextFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -36,13 +36,15 @@ import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoints;
 import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.resetUnreliable;
 import static com.serotonin.mango.util.InitializeDataSourceRtMockUtils.setUnreliable;
-import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static utils.mock.PowerMockUtils.mockBackgroundProcessing;
+import static utils.mock.RuntimeMockUtils.mockingServices;
 import static utils.mock.RuntimeMockUtils.runtimeManagerMock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({WebContextFactory.class, Common.class, MiscDwr.class, SystemSettingsDAO.class,
         ContentGenerator.class, PointValueCache.class, DataPointRT.class, RuntimeManager.class, DataPointDao.class,
-        PointValueDao.class, ApplicationBeans.class, PollingDataSource.class})
+        PointValueDao.class, ApplicationBeans.class, PollingDataSource.class, ValidationUtils.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class DataPointUnreliableUtilsTest {
@@ -69,16 +71,25 @@ public class DataPointUnreliableUtilsTest {
     private final List<DataPointRT> metaDataPointsWithContext = new ArrayList<>();
     private final List<DataPointRT> virtualDataPoints = new ArrayList<>();
 
+    private static BackgroundProcessing backgroundProcessing;
+
+    @AfterClass
+    public static void clean() {
+        backgroundProcessing.terminate();
+    }
+
+    @After
+    public void cleanTimer() {
+        Common.timer.cancel();
+    }
+
+    @BeforeClass
+    public static void config() {
+        backgroundProcessing = mockBackgroundProcessing();
+    }
 
     @Before
     public void configMock() throws Exception {
-
-        runtimeManagerMock(this.runtimeManager = new RuntimeManager(), mock(EventManager.class));
-
-        configData();
-    }
-
-    private void configData() {
 
         metaDataSourceVO1 = new MetaDataSourceVO();
         metaDataSourceVO1.setId(123);
@@ -138,6 +149,10 @@ public class DataPointUnreliableUtilsTest {
         virtualDataPoint2 = TestUtils.newPointSettable(122, virtualDataSourceVO, -1, new VirtualPointLocatorVO());
         virtualDataPoint2.setEnabled(true);
 
+        mockingServices(Arrays.asList(metaDataPoint1, metaDataPoint2, metaDataPoint6WithVirtualDataPoint1,
+                metaDataPoint7WithVirtualDataPoint1, metaDataPoint8, metaDataPoint9WithVirtualDataPoint2,
+                virtualDataPoint1, virtualDataPoint2));
+        runtimeManagerMock(this.runtimeManager = new RuntimeManager(), mock(EventManager.class), backgroundProcessing);
 
         runtimeManager.saveDataSource(metaDataSourceVO1);
         runtimeManager.saveDataPoint(metaDataPoint1);
@@ -522,5 +537,69 @@ public class DataPointUnreliableUtilsTest {
         //then:
         Assert.assertEquals(false, metaDataPointRT.isUnreliable());
 
+    }
+
+    @Test
+    public void when_getRunningMetaDataPoints_with_unreliable_false_for_all_points_unreliable_true_then_return_list_points_empty() {
+
+        //given:
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
+        setUnreliableDataPoint(dataPointRT);
+
+        //when:
+        List<DataPointRT> result = runtimeManager.getRunningMetaDataPoints(dataPointRT.getId(), false);
+
+        //then:
+        Assert.assertEquals(true, result.isEmpty());
+    }
+
+    @Test
+    public void when_getRunningMetaDataPoints_with_unreliable_true_for_all_points_unreliable_false_then_return_list_points_empty() {
+
+        //given:
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
+        resetUnreliableDataPoint(dataPointRT);
+
+        //when:
+        List<DataPointRT> result = runtimeManager.getRunningMetaDataPoints(dataPointRT.getId(), true);
+
+        //then:
+        Assert.assertEquals(true, result.isEmpty());
+    }
+
+    @Test
+    public void when_getRunningMetaDataPoints_with_unreliable_true_for_all_points_unreliable_true_then_return_list_points_unreliable_true() {
+
+        //given:
+        resetUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
+        setUnreliableDataPoint(dataPointRT);
+
+        //when:
+        List<DataPointRT> result = runtimeManager.getRunningMetaDataPoints(dataPointRT.getId(), true);
+
+        //then:
+        for(DataPointRT dataPoint: result) {
+            Assert.assertEquals(true, dataPoint.isUnreliable());
+        }
+    }
+
+    @Test
+    public void when_getRunningMetaDataPoints_with_unreliable_false_for_all_points_unreliable_false_then_return_list_points_unreliable_false() {
+
+        //given:
+        setUnreliable(virtualDataPoints, metaDataPoints, metaDataPointsWithContext);
+        DataPointRT dataPointRT = runtimeManager.getDataPoint(virtualDataPoint1.getId());
+        resetUnreliableDataPoint(dataPointRT);
+
+        //when:
+        List<DataPointRT> result = runtimeManager.getRunningMetaDataPoints(dataPointRT.getId(), false);
+
+        //then:
+        for(DataPointRT dataPoint: result) {
+            Assert.assertEquals(false, dataPoint.isUnreliable());
+        }
     }
 }

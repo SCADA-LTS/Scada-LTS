@@ -18,7 +18,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.web.beans.ApplicationBeans;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.util.ArrayList;
 
@@ -44,7 +44,7 @@ public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
     public void config() throws Exception {
         MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
-        MockUtils.configMockContextWrapper(runtimeManagerMock);
+        PowerMockUtils.configMockContextWrapper(runtimeManagerMock);
         vo.setContext(new ArrayList<>());
         vo.setDataTypeId(DataTypes.NUMERIC);
         vo.setScript("return 1;");

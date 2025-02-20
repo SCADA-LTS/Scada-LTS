@@ -22,9 +22,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.*;
 
-import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 
+import com.serotonin.mango.util.ThreadPoolExecutorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,6 +32,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
 
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createForkJoinPool;
 import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 
 /**
@@ -49,6 +50,7 @@ public class BackgroundProcessing implements ILifecycle {
 
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
+	private ForkJoinPool commonPool;
 	private volatile boolean terminating;
 
 	public void addWorkItem(final WorkItem item) {
@@ -108,6 +110,7 @@ public class BackgroundProcessing implements ILifecycle {
 		mediumPriorityService = createPool(WorkItemPriority.MEDIUM);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
 		lowPriorityService = createPool(WorkItemPriority.LOW);
+		commonPool = createForkJoinPool();
 	}
 
 	public void terminate() {
@@ -115,51 +118,18 @@ public class BackgroundProcessing implements ILifecycle {
 		// Close the executor services.
 		mediumPriorityService.shutdown();
 		lowPriorityService.shutdown();
+		commonPool.shutdown();
 	}
 
 	public void joinTermination() {
 		this.terminating = true;
-		boolean medDone = false;
-		boolean lowDone = false;
+		ThreadPoolExecutorUtils.joinTermination(mediumPriorityService, "MediumPriorityService");
+		ThreadPoolExecutorUtils.joinTermination(lowPriorityService, "LowPriorityService");
+		ThreadPoolExecutorUtils.joinTermination(commonPool, "CommonPool");
+	}
 
-		try {
-			// With 5 second waits and a worst case of both of both high and low
-			// priority jobs that just won't finish,
-			// this thread will wait a maximum of 2 minutes.
-			int rewaits = 12;
-			while (rewaits > 0) {
-				medDone = mediumPriorityService.awaitTermination(5, TimeUnit.SECONDS) && mediumPriorityService.isTerminated();
-				lowDone = lowPriorityService.awaitTermination(5, TimeUnit.SECONDS) && lowPriorityService.isTerminated();
-
-				if (lowDone && medDone)
-					break;
-
-				if (!medDone)
-					LOG.info("BackgroundProcessing waiting for medium ("
-							+ mediumPriorityService.getQueue().size()
-							+ ") and low priority tasks to complete");
-				if (!lowDone)
-					LOG.info("BackgroundProcessing waiting for low priority tasks to complete");
-
-				rewaits--;
-			}
-			if(!mediumPriorityService.isTerminated() && !mediumPriorityService.awaitTermination(5, TimeUnit.SECONDS)) {
-				mediumPriorityService.shutdownNow();
-			}
-			if(!lowPriorityService.isTerminated() && !lowPriorityService.awaitTermination(5, TimeUnit.SECONDS))
-				lowPriorityService.shutdownNow();
-		} catch (InterruptedException e) {
-			LOG.info(LoggingUtils.exceptionInfo(e), e);
-		} finally {
-			if(mediumPriorityService.isTerminated())
-				LOG.info("Stopped MediumPriorityService");
-			else
-				LOG.info("Stopped MediumPriorityService Fail");
-			if(lowPriorityService.isTerminated())
-				LOG.info("Stopped LowPriorityService");
-			else
-				LOG.info("Stopped LowPriorityService Fail");
-		}
+	public ForkJoinPool getCommonPool() {
+		return commonPool;
 	}
 
 	public boolean isTerminating() {
