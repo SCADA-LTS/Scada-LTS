@@ -223,7 +223,7 @@
       locator.dataTypeId = $get("dataTypeId");
       console.log("point.engineeringUnits: " + currentPoint.engineeringUnits);
       
-      DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.engineeringUnits, currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
+      DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.id, $get("xid"), $get("name"), currentPoint.engineeringUnits, locator, savePointCB);
   }
   
   function objectTypeChanged() {

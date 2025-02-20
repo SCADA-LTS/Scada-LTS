@@ -39,7 +39,7 @@ public class BACnetObjectBean {
     private int dataTypeId;
     private List<String> unitsDescription = new ArrayList<String>();
 
-    private Integer unitCode;
+    private int engineeringUnitValue;
 
     public String getPrettyPresentValue() {
         if (objectTypeId == ObjectType.binaryInput.intValue() || objectTypeId == ObjectType.binaryOutput.intValue()
@@ -141,11 +141,11 @@ public class BACnetObjectBean {
         this.cov = cov;
     }
 
-    public Integer getUnitCode() {
-        return unitCode;
+    public int getEngineeringUnitValue() {
+        return engineeringUnitValue;
     }
 
-    public void setUnitCode(Integer unitCode) {
-        this.unitCode = unitCode;
+    public void setEngineeringUnitsValue(int engineeringUnitValue) {
+        this.engineeringUnitValue = engineeringUnitValue;
     }
 }
