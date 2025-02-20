@@ -340,7 +340,7 @@ public class PointHierarchyAPI {
                 for (String xid : pointHierarchyDTO.getXids()) {
                     if (xid.startsWith("DIR_")) {
                         pointHierarchyXidService.moveFolder(xid, pointHierarchyDTO.getNewParentIdFolder());
-                    } else if (xid.startsWith("DP_")) {
+                    } else {
                         boolean moved = pointHierarchyXidService.movePoint(xid, pointHierarchyDTO.getNewParentIdFolder());
                         if (!moved) {
                             allMoved = false;
@@ -377,7 +377,7 @@ public class PointHierarchyAPI {
                                 pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
                             }
                         }
-                    } else if (xid.startsWith("DP_")) {
+                    } else {
                         boolean moved = pointHierarchyXidService.movePoint(xid, "_");
                         if (!moved) {
                             allSuccess = false;
