@@ -339,28 +339,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     private DwrResponseI18n validatePoint(int id, String xid, String name,
                                           PointLocatorVO locator, DataPointDefaulter defaulter) {
         Permissions.ensureAdmin();
-        DwrResponseI18n response = new DwrResponseI18n();
 
         DataPointVO dp = getPoint(id, defaulter);
         dp.setXid(xid);
         dp.setName(name);
         dp.setPointLocator(locator);
 
-        DataPointService dataPointService = new DataPointService();
-        validateXid(response, dataPointService::isXidUnique, xid, id);
-
-        if (StringUtils.isEmpty(name))
-            response.addContextualMessage("name", "dsEdit.validate.required");
-
-        locator.validate(response, dp.getId());
-
-        if (!response.getHasMessages()) {
-            Common.ctx.getRuntimeManager().saveDataPoint(dp);
-            response.addData("id", dp.getId());
-            response.addData("points", getPoints());
-        }
-
-        return response;
+        return validateAndSaveDataPoint(dp);
     }
 
     //
@@ -1237,9 +1222,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     
-    public DwrResponseI18n saveBACnetIPPointLocator(int id, String xid,
-                                                    String name, BACnetIPPointLocatorVO locator) {
-        return validatePoint(id, xid, name, locator, null);
+    public DwrResponseI18n saveBACnetIPPointLocator(int id, String xid, String name, int engineeringUnits,
+                                                    BACnetIPPointLocatorVO locator) {
+        Permissions.ensureAdmin();
+
+        DataPointVO dp = getPoint(id, null);
+        dp.setXid(xid);
+        dp.setName(name);
+        dp.setPointLocator(locator);
+        dp.setEngineeringUnits(engineeringUnits);
+
+        return validateAndSaveDataPoint(dp);
     }
 
     
@@ -1348,6 +1341,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         BACnetIPPointLocatorVO locator = dp.getPointLocator();
 
         dp.setName(bean.getObjectName());
+        dp.setEngineeringUnits(bean.getEngineeringUnitValue());
 
         // Default some of the locator values.
         locator.setRemoteDeviceIp(ip);
@@ -3113,6 +3107,27 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 response.addData("points", getPoints());
             }
         }
+        return response;
+    }
+
+    public DwrResponseI18n validateAndSaveDataPoint(DataPointVO dp) {
+        Permissions.ensureAdmin();
+        DwrResponseI18n response = new DwrResponseI18n();
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, dp.getXid(), dp.getId());
+
+        if (StringUtils.isEmpty(dp.getName()))
+            response.addContextualMessage("name", "dsEdit.validate.required");
+
+        PointLocatorVO locator = dp.getPointLocator();
+        locator.validate(response, dp.getId());
+
+        if (!response.getHasMessages()) {
+            Common.ctx.getRuntimeManager().saveDataPoint(dp);
+            response.addData("id", dp.getId());
+            response.addData("points", getPoints());
+        }
+
         return response;
     }
 }
