@@ -11,18 +11,25 @@ import com.serotonin.mango.Common;
 
 public class ConfigurationDB {
 
-	public static void copy(File src, File dst) throws IOException {
-		InputStream in = new FileInputStream(src);
-		OutputStream out = new FileOutputStream(dst);
+public static void copy(File src, File dst) throws IOException {
+    InputStream in = new FileInputStream(src);
+    try {
+        OutputStream out = new FileOutputStream(dst);
+        try {
+            // Transfer bytes from in to out
+            byte[] buf = new byte[2048];  // Increased buffer size for performance
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        } finally {
+            out.close();  // Ensures out stream closes even if write fails
+        }
+    } finally {
+        in.close();  // Ensures in stream closes even if output stream creation fails
+    }
+}
 
-		byte[] buf = new byte[2048];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		in.close();
-		out.close();
-	}
 
 	public static void useDerbyDB() {
 
