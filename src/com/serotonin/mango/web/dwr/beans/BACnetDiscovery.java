@@ -288,7 +288,7 @@ public class BACnetDiscovery extends DefaultDeviceEventListener implements Testi
                 Encodable e = values.getNullOnError(oid, pid);
                 if (e instanceof EngineeringUnits) {
                     EngineeringUnits engineeringUnits = (EngineeringUnits) e;
-                    bean.setEngineeringUnitsValue(engineeringUnits.intValue());
+                    bean.setEngineeringUnitValue(engineeringUnits.intValue());
                 }
             }
             else if (pid.equals(PropertyIdentifier.inactiveText)) {

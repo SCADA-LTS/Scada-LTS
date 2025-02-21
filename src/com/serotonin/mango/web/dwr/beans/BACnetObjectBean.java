@@ -145,7 +145,7 @@ public class BACnetObjectBean {
         return engineeringUnitValue;
     }
 
-    public void setEngineeringUnitsValue(int engineeringUnitValue) {
+    public void setEngineeringUnitValue(int engineeringUnitValue) {
         this.engineeringUnitValue = engineeringUnitValue;
     }
 }
