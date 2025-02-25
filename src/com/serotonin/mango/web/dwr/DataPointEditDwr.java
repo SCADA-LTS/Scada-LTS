@@ -42,7 +42,6 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.view.text.TimeRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.bacnet.BACnetEngineeringUnits;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
 
@@ -371,9 +370,4 @@ public class DataPointEditDwr extends BaseDwr {
         }
         return null;
     }
-
-    public String getEngineeringUnitSuffix(int unitValue) {
-        return BACnetEngineeringUnits.valueOf(unitValue).getSuffix();
-    }
-
 }

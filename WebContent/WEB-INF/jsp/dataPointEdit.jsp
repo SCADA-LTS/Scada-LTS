@@ -72,9 +72,9 @@
         <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
         </td>
         <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
@@ -884,49 +884,29 @@
                            					        	});
                   }
 
-                   jQuery(document).ready(function(){
-                       function updateSuffixForEngineeringUnits(){
-                           var unitValue = parseInt(jQuery("select[name='engineeringUnits']").val(), 10);
-                           jQuery("#textRendererSelect").val("textRendererAnalog").trigger("change");
-                           DataPointEditDwr.getEngineeringUnitSuffix(unitValue, {
-                               callback: function(suffix) {
-                                   jQuery("#textRendererAnalogSuffix").val(suffix);
-                               },
-                               errorHandler: function(error) {
-                                   console.error("getSuffix error: ", error);
-                               }
+                   jQuery(document).ready(function() {
+                       function updateSuffixForEngineeringUnits() {
+                           let value = jQuery("select[name='engineeringUnits']").val();
+                           let unitValue = parseInt(value);
+                           let units = ${unitsListJson};
+                           units.forEach(unit => {
+                                if(unit.value === unitValue) {
+                                    jQuery("#textRendererAnalogFormat").val('#.##');
+                                    jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                    jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                }
                            });
                        }
 
-                       jQuery("select[name='engineeringUnits']").on("change", function(){
+                       jQuery("select[name='engineeringUnits']").on("change", function() {
                            updateSuffixForEngineeringUnits();
                        });
 
-                       if(!jQuery("#textRendererAnalogSuffix").val()){
+                       let suffix = jQuery("#textRendererAnalogSuffix").val();
+
+                       if(!suffix){
                            updateSuffixForEngineeringUnits();
                        }
-                   });
-
-                   jQuery(document).ready(function(){
-                       jQuery("#textRendererAnalogFormat").on("focusout", function(){
-                           var format = jQuery(this).val();
-                           var tolerance = "";
-                           var dotIndex = format.indexOf(".");
-                           if (dotIndex !== -1 && dotIndex < format.length - 1) {
-                               var decimalPart = format.substring(dotIndex + 1);
-                               var count = 0;
-                               for (var i = 0; i < decimalPart.length; i++) {
-                                   var ch = decimalPart.charAt(i);
-                                   if (ch === '#' || ch === '0') {
-                                       count++;
-                                   }
-                               }
-                               if (count > 0) {
-                                   tolerance = "0." + "0".repeat(count - 1) + "1";
-                               }
-                           }
-                           jQuery("#tolerance").val(tolerance);
-                       });
                    });
             </script>
 
