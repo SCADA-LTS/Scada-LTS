@@ -23,10 +23,9 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
-import com.serotonin.mango.vo.EngineeringUnitJson;
+import org.scada_lts.web.mvc.api.EngineeringUnitJson;
 import com.serotonin.mango.vo.EngineeringUnitsTypes;
 import com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -272,15 +271,21 @@ public class DataPointEditController {
     }
 
     private static String getUnitsListAsJson() {
-        List<EngineeringUnitJson> units =  EngineeringUnitsTypes.getUnits().stream()
+        List<EngineeringUnitJson> units = EngineeringUnitsTypes.getUnits().stream()
                 .map(EngineeringUnitJson::new)
                 .collect(Collectors.toList());
 
         ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
         try {
             return objectMapper.writeValueAsString(units);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            try {
+                return objectMapper.writeValueAsString(List.of(new EngineeringUnitJson(EngineeringUnitsTypes.NO_UNITS)));
+            } catch (Throwable ex) {
+                LOG.error(ex.getMessage());
+                return "[]";
+            }
         }
     }
 

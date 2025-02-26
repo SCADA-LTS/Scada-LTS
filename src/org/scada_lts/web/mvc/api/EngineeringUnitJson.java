@@ -1,8 +1,9 @@
-package com.serotonin.mango.vo;
+package org.scada_lts.web.mvc.api;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.serotonin.mango.vo.EngineeringUnit;
 
-@JsonSerialize(as=EngineeringUnit.class)
+@JsonSerialize(as= EngineeringUnit.class)
 public class EngineeringUnitJson implements EngineeringUnit {
 
     private final EngineeringUnit engineeringUnit;
