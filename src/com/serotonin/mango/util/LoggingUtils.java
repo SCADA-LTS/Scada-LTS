@@ -125,10 +125,15 @@ public final class LoggingUtils {
     }
 
     public static String pointValueTimeInfo(PointValueTime pointValueTime, SetPointSource source) {
-        String info = "pointValueTime: {0} (source: {1})";
+        String info = "pointValueTime: {0} ({1})";
+        return MessageFormat.format(info, pointValueTime, setPointSourceInfo(source));
+    }
+
+    public static String setPointSourceInfo(SetPointSource source) {
+        String info = "source: {0}";
         if(source != null)
-            return MessageFormat.format(info, pointValueTime, source.getClass().getSimpleName());
-        return MessageFormat.format(info, pointValueTime, "unknown");
+            return MessageFormat.format(info, source.getClass().getSimpleName());
+        return MessageFormat.format(info, "unknown");
     }
 
     public static String dataSourcePointInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint) {
@@ -137,6 +142,10 @@ public final class LoggingUtils {
 
     public static String dataSourcePointValueTimeInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, PointValueTime valueTime, SetPointSource source) {
         return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
+    }
+
+    public static String dataSourcePointSetPointSourceInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, SetPointSource source) {
+        return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.setPointSourceInfo(source);
     }
 
     public static String causeInfo(Throwable e) {
