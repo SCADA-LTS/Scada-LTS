@@ -69,7 +69,7 @@
         <tr>
           <td class="formLabelRequired"><spring:message code="pointEdit.props.engineeringUnits"/></td>
           <td class="formField">
-            <sst:select name="engineeringUnits" value="${status.value}"><tag:engineeringUnits/></sst:select>
+            <sst:select name="engineeringUnits" value="${status.value}"><tag:engineeringUnits unitsMap="${unitsMap}"/></sst:select>
           </td>
           <c:if test="${error.engineeringUnits != null}"><td class="formError"><spring:message code="${error.engineeringUnits}"/></td></c:if>
         </tr>
