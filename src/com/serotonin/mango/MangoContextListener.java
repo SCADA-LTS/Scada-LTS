@@ -70,6 +70,7 @@ import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
+import org.scada_lts.quartz.EverySecondTool;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -93,6 +94,8 @@ import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
+	private boolean initialized;
+
 	@Override
 	public void contextInitialized(ServletContextEvent evt) {
 		try {
@@ -102,10 +105,16 @@ public class MangoContextListener implements ServletContextListener {
 					SystemEventType.TYPE_SYSTEM_STARTUP), System
 					.currentTimeMillis(), false, new LocalizableMessage(
 					"event.system.startup"));
+			initialized = true;
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
+			initialized = false;
 			throw ex;
 		}
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	private void initialized(ServletContextEvent evt) {
@@ -345,6 +354,9 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.JMX.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
 				DataSourceVO.Type.MQTT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC_UA",
+				DataSourceVO.Type.OPC_UA.getId());
+
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",
@@ -373,8 +385,6 @@ public class MangoContextListener implements ServletContextListener {
 				EventType.EventSources.AUDIT);
 		ctx.setAttribute("constants.EventType.EventSources.MAINTENANCE",
 				EventType.EventSources.MAINTENANCE);
-		ctx.setAttribute("constants.EventType.EventSources.DATA_SOURCE_POINT",
-				EventType.EventSources.DATA_SOURCE_POINT);
 		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_STARTUP",
 				SystemEventType.TYPE_SYSTEM_STARTUP);
 		ctx.setAttribute("constants.SystemEventType.TYPE_SYSTEM_SHUTDOWN",
@@ -688,6 +698,13 @@ public class MangoContextListener implements ServletContextListener {
 		try {
 			EverySecond.init();
 			log.info("Quartz EverySecond initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+			EverySecondTool.init();
+			log.info("Quartz EverySecondTool initialized");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

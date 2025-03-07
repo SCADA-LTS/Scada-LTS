@@ -6,38 +6,49 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public enum TimePeriodType {
+public enum TimePeriodType implements TimePeriod {
 
-    MILLISECONDS(Common.TimePeriods.MILLISECONDS),
-    SECONDS(Common.TimePeriods.SECONDS) {
+    MILLISECONDS(Common.TimePeriods.MILLISECONDS, "common.tp.milliseconds"),
+    SECONDS(Common.TimePeriods.SECONDS, "common.tp.seconds") {
         @Override
         public long toMs(long time) {
             return time * 1000;
         }
     },
-    MINUTES(Common.TimePeriods.MINUTES) {
+    MINUTES(Common.TimePeriods.MINUTES, "common.tp.minutes") {
         @Override
         public long toMs(long time) {
             return time * 1000 * 60;
         }
     },
-    HOURS(Common.TimePeriods.HOURS) {
+    HOURS(Common.TimePeriods.HOURS, "common.tp.hours") {
         @Override
         public long toMs(long time) {
             return time * 1000 * 60 * 60;
         }
     };
 
-    private final int code;
+    public static final TimePeriodType DEFAULT = TimePeriodType.SECONDS;
 
-    TimePeriodType(int code) {
+    private final int code;
+    private final String key;
+
+    TimePeriodType(int code, String key) {
         this.code = code;
+        this.key = key;
     }
 
+    @Override
     public int getCode() {
         return code;
     }
 
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
     public long toMs(long value) {
         return value;
     }

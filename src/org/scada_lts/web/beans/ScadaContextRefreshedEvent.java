@@ -21,6 +21,7 @@ public class ScadaContextRefreshedEvent implements ApplicationListener<ContextRe
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         WebApplicationContext webApplicationContext = (WebApplicationContext)contextRefreshedEvent.getSource();
         ServletContextEvent servletContextEvent = new ServletContextEvent(webApplicationContext.getServletContext());
-        mangoContextListener.contextInitialized(servletContextEvent);
+        if(!mangoContextListener.isInitialized())
+            mangoContextListener.contextInitialized(servletContextEvent);
     }
 }

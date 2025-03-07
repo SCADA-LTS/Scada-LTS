@@ -40,12 +40,12 @@
           <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_POINT']}">
             <a href="data_point_details.shtm?dpid=${event.eventType.dataPointId}"><tag:img png="icon_comp" title="events.pointDetails"/></a>
           </c:when>
-          <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_SOURCE']}">
-            <a href="data_source_edit.shtm?dsid=${event.eventType.dataSourceId}"><tag:img png="icon_ds_edit" title="events.editDataSource"/></a>
-          </c:when>
-          <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_SOURCE_POINT']}">
+          <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_SOURCE'] && event.eventType.referenceId3 > 0}">
             <a href="data_source_edit.shtm?dsid=${event.eventType.dataSourceId}&pid=${event.eventType.dataPointId}"><tag:img png="icon_ds_edit" title="events.editDataSource"/></a>
             <a href="data_point_details.shtm?dpid=${event.eventType.dataPointId}"><tag:img png="icon_comp" title="events.pointDetails"/></a>
+          </c:when>
+          <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.DATA_SOURCE']}">
+            <a href="data_source_edit.shtm?dsid=${event.eventType.dataSourceId}"><tag:img png="icon_ds_edit" title="events.editDataSource"/></a>
           </c:when>
           <c:when test="${event.eventType.eventSourceId == applicationScope['constants.EventType.EventSources.SYSTEM']}">
             <c:choose>

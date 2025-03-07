@@ -1,16 +1,17 @@
 package com.serotonin.mango.util;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.recursive.CollectMetaDataPointFromContextAction;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.*;
 import java.util.stream.Collectors;
 
@@ -63,11 +64,11 @@ public final class StartStopDataPointsUtils {
     }
 
     private static List<DataPointVO> getSequenceMetaDataPoints(Predicate<Integer> isExecute, List<DataPointVO> metaDataPoints) {
-        List<DataPointVO> sequenceDataPoints = new ArrayList<>();
-        Set<Integer> toCheck = new HashSet<>();
-        int safe = 10;
+        List<DataPointVO> sequenceDataPoints = new CopyOnWriteArrayList<>();
+        Set<Integer> toCheck = new CopyOnWriteArraySet<>();
+        int depth = 100;
         for(DataPointVO dataPoint: metaDataPoints) {
-            collectMetaDataPointsFromContext(toCheck, sequenceDataPoints, dataPoint, safe, metaDataPoints, isExecute);
+            collectMetaDataPointsFromContext(toCheck, sequenceDataPoints, dataPoint, depth, metaDataPoints, isExecute);
         }
         return sequenceDataPoints;
     }
@@ -95,40 +96,15 @@ public final class StartStopDataPointsUtils {
     }
 
     private static void collectMetaDataPointsFromContext(Set<Integer> toCheck, List<DataPointVO> toRunning,
-                                                         DataPointVO dataPoint, int safe, List<DataPointVO> dataPoints,
+                                                         DataPointVO dataPoint, int depth, List<DataPointVO> dataPoints,
                                                          Predicate<Integer> isExecute) {
-        if(safe < 0) {
-            LOG.error("Recursion level exceeded: " + LoggingUtils.dataPointInfo(dataPoint));
-            return;
-        }
-        if(dataPoint.isEnabled()) {
-            PointLocatorVO pointLocator = dataPoint.getPointLocator();
-            if(pointLocator instanceof MetaPointLocatorVO) {
-                updateList(toCheck, toRunning, dataPoint);
-                MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
-                List<IntValuePair> context = metaPointLocator.getContext();
-                if(context != null && !context.isEmpty()) {
-                    for(IntValuePair intValuePair : context) {
-                        if(intValuePair.getKey() > 0 && isExecute.test(intValuePair.getKey())) {
-                            DataPointVO fromContextDataPoint = dataPoints.stream()
-                                    .filter(point -> point.getId() == intValuePair.getKey())
-                                    .findAny()
-                                    .orElse(null);
-                            if (fromContextDataPoint != null && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)) {
-                                collectMetaDataPointsFromContext(toCheck, toRunning, fromContextDataPoint, --safe, dataPoints, isExecute);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
-    private static void updateList(Set<Integer> toCheck, List<DataPointVO> toRunning, DataPointVO dataPoint) {
-        if (toCheck.contains(dataPoint.getId())) {
-            toRunning.removeIf(toRunningPoint -> toRunningPoint.getId() == dataPoint.getId());
+        CollectMetaDataPointFromContextAction metaDataPointCollector =
+                new CollectMetaDataPointFromContextAction(toCheck, toRunning, dataPoint, depth, dataPoints, isExecute);
+        try {
+            metaDataPointCollector.call();
+        } catch (Exception e) {
+            LOG.error(LoggingUtils.exceptionInfo(e));
         }
-        toCheck.add(dataPoint.getId());
-        toRunning.add(dataPoint);
     }
 }

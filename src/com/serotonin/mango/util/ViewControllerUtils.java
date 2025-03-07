@@ -2,11 +2,13 @@ package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.HttpParameterUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ResourceBundle;
 
 public final class ViewControllerUtils {
 
@@ -85,5 +87,21 @@ public final class ViewControllerUtils {
 
     private static String getViewXid(HttpServletRequest request) {
         return HttpParameterUtils.getValueOnlyRequest("viewXid", request, a -> a).orElse("");
+    }
+
+
+    public static View copyAndSaveView(View view, ViewService viewService) {
+        View viewCopy = view.copy();
+        viewCopy.setId(Common.NEW_ID);
+        viewCopy.setXid(viewService.generateUniqueXid());
+        viewCopy.setName(generateCopyName(Common.getBundle(), view.getName(), 250));
+
+        viewService.saveView(viewCopy);
+
+        return viewCopy;
+    }
+
+    public static String generateCopyName(ResourceBundle bundle, String name, int length) {
+        return StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", name), length);
     }
 }

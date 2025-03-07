@@ -21,6 +21,8 @@ package com.serotonin.mango.web.mvc.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -43,6 +45,10 @@ public class LogoutController extends AbstractController {
         if (user != null) {
             // The user is in fact logged in. Invalidate the session.
             request.getSession().invalidate();
+
+            SystemEventType.returnToNormal(new SystemEventType(
+                    SystemEventType.TYPE_USER_LOGIN, user.getId()), System
+                    .currentTimeMillis());
 
             if (CrowdUtils.isCrowdEnabled())
                 CrowdUtils.logout(request, response);

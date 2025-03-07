@@ -24,6 +24,7 @@
     <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
     <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
+    <converter id="opcUaDataTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaDataTypeConverter"/>
   </init>
   
   <allow>
@@ -107,6 +108,7 @@
     </create>
 
     <convert converter="bean" match="br.org.scadabr.OPCItem" />
+    <convert converter="bean" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
 
     <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
@@ -156,7 +158,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.publish.persistent.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.report.*"/>
     <convert converter="xssDataPointVoConverter" match="com.serotonin.mango.vo.DataPointVO">
-      <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator"/>
+      <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator,engineeringUnits"/>
     </convert>
     <convert converter="xssDataPointBeanConverter" match="com.serotonin.mango.web.dwr.beans.DataPointBean">
       <param name="include" value="id,xid,name,settable,dataType,dataTypeMessage,chartColour"/>
@@ -215,6 +217,11 @@
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.MessageAckType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion" />
     <convert converter="protocolVersionConverter" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
+    <convert converter="opcUaDataTypeConverter" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType" />
+    <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaIdentifierType" />
+    <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType" />
+    <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.security.OpcUaSecurityPolicyType" />
+    <convert converter="enum" match="org.scada_lts.utils.security.KeyStoreType" />
 
     <!-- MQTT stuff -->
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion" />

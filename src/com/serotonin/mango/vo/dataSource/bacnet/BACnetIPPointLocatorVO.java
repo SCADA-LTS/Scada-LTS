@@ -59,7 +59,8 @@ public class BACnetIPPointLocatorVO extends AbstractPointLocatorVO implements Js
     }
 
     public LocalizableMessage getConfigurationDescription() {
-        return new LocalizableMessage("common.default", remoteDeviceIp);
+        ObjectType objectType = new ObjectType(getObjectTypeId());
+        return new LocalizableMessage("common.default", remoteDeviceIp + " / " + objectType.toString() + " / Obj Instance number: " + getObjectInstanceNumber());
     }
 
     @JsonRemoteProperty
