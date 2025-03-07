@@ -891,7 +891,7 @@
                            let units = ${unitsListJson};
                            units.forEach(unit => {
                                 if(unit.value === unitValue) {
-                                    jQuery("#textRendererAnalogFormat").val('#.##');
+                                    jQuery("#textRendererAnalogFormat").val('#.#');
                                     jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
                                     jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
                                 }
