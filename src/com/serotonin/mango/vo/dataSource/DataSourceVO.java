@@ -378,6 +378,8 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 
 	public static final String XID_PREFIX = "DS_";
 
+	public static final int TIMEOUT_EVENT_ID = 3;
+
 	public static DataSourceVO<?> createDataSourceVO(int typeId) {
 		return Type.valueOf(typeId).createDataSourceVO();
 	}
@@ -399,6 +401,24 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	final public List<EventTypeVO> getEventTypes() {
 		List<EventTypeVO> eventTypes = new ArrayList<EventTypeVO>();
 		addEventTypes(eventTypes);
+
+		boolean timeoutDefined = false;
+		for (EventTypeVO et : eventTypes) {
+			if (et.getTypeRef2() == TIMEOUT_EVENT_ID) {
+				timeoutDefined = true;
+				break;
+			}
+		}
+
+		if (!timeoutDefined) {
+			eventTypes.add(createEventType(
+					TIMEOUT_EVENT_ID,
+					new LocalizableMessage("event.ds.timeout", getName()),
+					EventType.DuplicateHandling.IGNORE_SAME_MESSAGE,
+					AlarmLevels.URGENT
+			));
+		}
+
 		return eventTypes;
 	}
 
