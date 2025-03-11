@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,6 +56,10 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     public PollingDataSource(DataSourceVO<?> vo) {
         super(vo);
         this.vo = vo;
+    }
+
+    public int getPointReadExceptionEvent(){
+        return 1;
     }
 
     public void setPollingPeriod(int periodType, int periods, boolean quantize) {
@@ -96,16 +101,22 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         }
 
         if(lock.getAndIncrement() == 0) {
+            long startTime = System.currentTimeMillis();
             try {
                 jobThreadStartTime = fireTime;
                 updateChangedPoints();
                 doPoll(fireTime);
             } finally {
+                long elapsed = System.currentTimeMillis() - startTime;
                 lock.getAndSet(0);
+                if (elapsed > pollingPeriodMillis) {
+                    String msg = LoggingUtils.dataSourceInfo(vo) + ": doPoll execution time (" + elapsed + "ms) exceeded polling period (" + pollingPeriodMillis + "ms)";
+                    LOG.warn(msg);
+                    raiseEvent(getPointReadExceptionEvent(), fireTime, true, new LocalizableMessage("event.doPoll.timeout", LoggingUtils.dataSourceInfo(vo), elapsed, pollingPeriodMillis));
+                }
             }
         } else {
-
-            LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
+            LOG.warn(LoggingUtils.dataSourceInfo(vo) + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
                     + " aborted because a previous poll started at "
                     + DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
             return;
