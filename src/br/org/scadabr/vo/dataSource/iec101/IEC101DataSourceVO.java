@@ -31,6 +31,8 @@ abstract public class IEC101DataSourceVO<T extends IEC101DataSourceVO<?>>
 				new LocalizableMessage("event.ds.pointRead")));
 		ets.add(createEventType(IEC101DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointWrite")));
+		ets.add(createEventType(IEC101DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 
 	}
 
@@ -42,6 +44,8 @@ abstract public class IEC101DataSourceVO<T extends IEC101DataSourceVO<?>>
 				"POINT_READ_EXCEPTION");
 		EVENT_CODES.addElement(IEC101DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				"POINT_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(IEC101DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override

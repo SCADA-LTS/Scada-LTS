@@ -38,6 +38,9 @@ public class ASCIISerialDataSourceVO<T extends ASCIISerialDataSourceVO<?>>
 		eventTypes.add(createEventType(
 				ASCIISerialDataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
+		eventTypes.add(createEventType(
+				ASCIISerialDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 
 	}
 
@@ -49,6 +52,9 @@ public class ASCIISerialDataSourceVO<T extends ASCIISerialDataSourceVO<?>>
 		EVENT_CODES.addElement(
 				ASCIISerialDataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
+		EVENT_CODES.addElement(
+				ASCIISerialDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override

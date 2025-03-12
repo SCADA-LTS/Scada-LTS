@@ -51,9 +51,11 @@ public class Pop3DataSourceVO extends DataSourceVO<Pop3DataSourceVO> {
     @Override
     protected void addEventTypes(List<EventTypeVO> ets) {
         ets.add(createEventType(Pop3DataSourceRT.INBOX_EXCEPTION_EVENT, new LocalizableMessage("event.ds.emailInbox")));
-        ets.add(createEventType(Pop3DataSourceRT.MESSAGE_READ_EXCEPTION_EVENT, new LocalizableMessage(
-                "event.ds.emailRead")));
+        ets.add(createEventType(Pop3DataSourceRT.MESSAGE_READ_EXCEPTION_EVENT,
+                new LocalizableMessage("event.ds.emailRead")));
         ets.add(createEventType(Pop3DataSourceRT.PARSE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.emailParse")));
+        ets.add(createEventType(Pop3DataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+                new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -61,6 +63,7 @@ public class Pop3DataSourceVO extends DataSourceVO<Pop3DataSourceVO> {
         EVENT_CODES.addElement(Pop3DataSourceRT.INBOX_EXCEPTION_EVENT, "INBOX_EXCEPTION");
         EVENT_CODES.addElement(Pop3DataSourceRT.MESSAGE_READ_EXCEPTION_EVENT, "MESSAGE_READ_EXCEPTION");
         EVENT_CODES.addElement(Pop3DataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
+        EVENT_CODES.addElement(Pop3DataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

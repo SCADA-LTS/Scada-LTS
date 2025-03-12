@@ -50,6 +50,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private volatile Thread jobThread;
     private long jobThreadStartTime;
     private static volatile boolean markAsTerminating = false;
+    private static final ThreadLocal<Long> DO_RAISE_EVENT = ThreadLocal.withInitial(() -> 0L);
 
     private final AtomicInteger lock = new AtomicInteger(0);
 
@@ -107,13 +108,8 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
                 updateChangedPoints();
                 doPoll(fireTime);
             } finally {
-                long elapsed = System.currentTimeMillis() - startTime;
+                DO_RAISE_EVENT.set(System.currentTimeMillis() - startTime);
                 lock.getAndSet(0);
-                if (elapsed > pollingPeriodMillis) {
-                    String msg = LoggingUtils.dataSourceInfo(vo) + ": doPoll execution time (" + elapsed + "ms) exceeded polling period (" + pollingPeriodMillis + "ms)";
-                    LOG.warn(msg);
-                    raiseEvent(getPointReadExceptionEvent(), fireTime, true, new LocalizableMessage("event.doPoll.timeout", LoggingUtils.dataSourceInfo(vo), elapsed, pollingPeriodMillis));
-                }
             }
         } else {
             LOG.warn(LoggingUtils.dataSourceInfo(vo) + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
@@ -121,6 +117,10 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
                     + DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
             return;
         }
+
+
+        long executedMillis = DO_RAISE_EVENT.get();
+        raiseEvent(fireTime, executedMillis);
     }
 
     abstract protected void doPoll(long time);
@@ -197,5 +197,18 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
 
     public static void markAsTerminating() {
         markAsTerminating = true;
+    }
+
+    protected abstract int getUpdateTimeExceededUpdatePeriodEventId();
+
+    private void raiseEvent(long fireTime, long executedMillis) {
+        if(isInitialized() && !isMarkAsTerminating() && executedMillis > pollingPeriodMillis) {
+            LocalizableMessage msg = new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriodAttention",
+                    executedMillis, pollingPeriodMillis);
+            LOG.warn(msg.getLocalizedMessage(Common.getBundle()) + " For: " + LoggingUtils.dataSourceInfo(vo));
+            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
+        } else {
+            _returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
+        }
     }
 }
