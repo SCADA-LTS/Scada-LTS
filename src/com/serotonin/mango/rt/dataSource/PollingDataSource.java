@@ -120,7 +120,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
 
 
         long executedMillis = DO_RAISE_EVENT.get();
-        raiseEvent(fireTime, executedMillis);
+        doRaiseEvent(fireTime, executedMillis);
     }
 
     abstract protected void doPoll(long time);
@@ -201,11 +201,11 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
 
     protected abstract int getUpdateTimeExceededUpdatePeriodEventId();
 
-    private void raiseEvent(long fireTime, long executedMillis) {
+    private void doRaiseEvent(long fireTime, long executedMillis) {
         if(isInitialized() && !isMarkAsTerminating() && executedMillis > pollingPeriodMillis) {
             LocalizableMessage msg = new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriodAttention",
-                    executedMillis, pollingPeriodMillis);
-            LOG.warn(msg.getLocalizedMessage(Common.getBundle()) + " For: " + LoggingUtils.dataSourceInfo(vo));
+                    executedMillis, pollingPeriodMillis, LoggingUtils.dataSourceInfo(vo));
+            LOG.warn(msg.getLocalizedMessage(Common.getBundle()));
             raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
         } else {
             _returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
