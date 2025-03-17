@@ -49,6 +49,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -193,24 +194,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeValuesLimit;
 
     public DataPointVO(){
-        id = Common.NEW_ID;
-        loggingType = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE);
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = PurgeStrategy.PERIOD;
-        purgeValuesLimit = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
+        this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
     }
 
     public DataPointVO(int loggingType) {
@@ -220,8 +204,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         intervalLoggingPeriod = 15;
         intervalLoggingType = IntervalLoggingTypes.INSTANT;
         tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
+        purgeType = SystemSettingsService.getDefaultPurgePeriodType();
+        purgePeriod = SystemSettingsService.getDefaultPurgePeriod();
         defaultCacheSize = 1;
         discardExtremeValues = false;
         discardLowLimit = -Double.MAX_VALUE;

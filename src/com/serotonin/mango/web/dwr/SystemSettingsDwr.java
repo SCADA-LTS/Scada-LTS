@@ -184,6 +184,12 @@ public class SystemSettingsDwr extends BaseDwr {
 				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
 		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT,
 				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportsLimit());
+		settings.put(
+				SystemSettingsDAO.DEFAULT_PURGE_PERIOD,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD));
+		settings.put(
+				SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE));
 		return settings;
 	}
 
@@ -361,7 +367,8 @@ public class SystemSettingsDwr extends BaseDwr {
 	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
-								 int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
+							     int defaultPurgePeriod, int defaultPurgePeriodType) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO
@@ -382,6 +389,12 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.DEFAULT_PURGE_PERIOD,
+				defaultPurgePeriod);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE,
+				defaultPurgePeriodType);
 
 	}
 

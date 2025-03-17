@@ -120,6 +120,10 @@ public class SystemSettingsDAO {
 	// Purge with values limit
 	public static final String VALUES_LIMIT_FOR_PURGE = "valuesLimitForPurge";
 
+	// Values purging
+	public static final String DEFAULT_PURGE_PERIOD_TYPE = "defaultPurgePeriodType";
+	public static final String DEFAULT_PURGE_PERIOD = "defaultPurgePeriod";
+
 	// Aggregation values
 	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
@@ -422,6 +426,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
         DEFAULT_VALUES.put(CUSTOM_CSS_CONTENT, SystemSettingsUtils.getCustomCssContent());
 		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
+		DEFAULT_VALUES.put(DEFAULT_PURGE_PERIOD_TYPE, SystemSettingsUtils.getDefaultPurgePeriodType());
+		DEFAULT_VALUES.put(DEFAULT_PURGE_PERIOD, SystemSettingsUtils.getDefaultPurgePeriod());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
