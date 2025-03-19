@@ -34,14 +34,14 @@
             dwr.util.addOptions("sourcePointId", response.sourcePoints, "key", "value");
             jQuery("#sourcePointId").chosen({
                 allow_single_deselect: true,
-                placeholder_text_single: "Select a source point...",
+                placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
                 search_contains: true,
                 width: "100%"
             });
             dwr.util.addOptions("targetPointId", response.targetPoints, "key", "value");
             jQuery("#targetPointId").chosen({
               allow_single_deselect: true,
-              placeholder_text_single: "Select a target point...",
+              placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
               search_contains: true,
               width: "100%"
             });

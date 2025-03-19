@@ -86,7 +86,7 @@
                     function init() {
                         jQuery("#selected_base_on_existing_point_chooser").chosen({
                             allow_single_deselect: true,
-                            placeholder_text_single: "Select a point...",
+                            placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
                             search_contains: true,
                             width: "400px"
                         });

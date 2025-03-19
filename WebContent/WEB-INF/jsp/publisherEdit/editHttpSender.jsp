@@ -56,7 +56,7 @@
       PublisherEditDwr.getIsUseJSON(setUseJSON);
       jQuery("#availablePoints").chosen({
           allow_single_deselect: true,
-          placeholder_text_single: "Select a point...",
+          placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
           search_contains: true,
           width: "100%"
       });

@@ -40,19 +40,19 @@
 
       jQuery("#targetPointSelect").chosen({
         allow_single_deselect: true,
-        placeholder_text_single: "Select a point...",
+        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
         search_contains: true,
         width: "400px"
       });
       jQuery("#targetPointSelect").chosen({
         allow_single_deselect: true,
-        placeholder_text_single: "Select a point...",
+        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
         search_contains: true,
         width: "400px"
       });
       jQuery("#activePointId, #inactivePointId").chosen({
         allow_single_deselect: true,
-        placeholder_text_single: "Select a point...",
+        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
         search_contains: true,
         width: "400px"
       });
@@ -673,7 +673,7 @@
               <td class="formField">
                 <select id="targetPointSelect"
                         class="chzn-select"
-                        data-placeholder="Select a point..."
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         onchange="targetPointSelectChanged()">
                 </select>
               </td>
@@ -695,7 +695,7 @@
               <td class="formField">
                 <select id="activePointId"
                         class="chzn-select"
-                        data-placeholder="Select a point...">
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
                 </select>
               </td>
             </tr>
@@ -721,7 +721,7 @@
               <td class="formField">
                 <select id="inactivePointId"
                         class="chzn-select"
-                        data-placeholder="Select a point...">
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
                 </select>
               </td>
             </tr>
