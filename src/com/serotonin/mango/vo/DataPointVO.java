@@ -49,7 +49,6 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -194,26 +193,28 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeValuesLimit;
 
     public DataPointVO(){
-        this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
+        this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE),
+                (SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD)));
     }
 
-    public DataPointVO(int loggingType) {
-        id = Common.NEW_ID;
+    public DataPointVO(int loggingType, int purgeValuesPeriodType, int purgeValuesPeriod) {
+        this.id = Common.NEW_ID;
         this.loggingType = loggingType;
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = SystemSettingsService.getDefaultPurgePeriodType();
-        purgePeriod = SystemSettingsService.getDefaultPurgePeriod();
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = PurgeStrategy.PERIOD;
-        purgeValuesLimit = 100;
+        this.intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        this.intervalLoggingPeriod = 15;
+        this.intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        this.tolerance = 0;
+        this.purgeType = purgeValuesPeriodType;
+        this.purgePeriod = purgeValuesPeriod;
+        this.defaultCacheSize = 1;
+        this.discardExtremeValues = false;
+        this.discardLowLimit = -Double.MAX_VALUE;
+        this.discardHighLimit = Double.MAX_VALUE;
+        this.engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        this.eventTextRenderer = new NoneEventRenderer();
+        this.purgeStrategy = PurgeStrategy.PERIOD;
+        this.purgeValuesLimit = 100;
     }
 
 

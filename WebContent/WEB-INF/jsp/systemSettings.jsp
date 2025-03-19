@@ -122,8 +122,8 @@
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>);
-          $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD %>"/>);
-          $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE %>"/>);
         });
 
 <%--
@@ -339,8 +339,8 @@
                     1,
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
-                    $get("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD %>"/>"),
-                    $get("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE %>"/>"),
                     function() {
                         stopImageFader("saveDataRetentionSettingsImg");
                         setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.dataRetentionSaved"/>");
@@ -902,10 +902,10 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.defaultPurgePeriod"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.defaultPurgeValuesPeriod"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE %>"/>">
+          <input id="<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
         </td>

@@ -27,6 +27,7 @@ import java.util.List;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -228,7 +229,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
-			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getDefaultPurgePeriodType(), SystemSettingsUtils.getDefaultPurgePeriod());
 			dataPointVO.setId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
 			pointEventDetector.njbSetDataPoint(dataPointVO);
 			return pointEventDetector;

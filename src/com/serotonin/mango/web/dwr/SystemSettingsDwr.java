@@ -185,11 +185,11 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT,
 				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportsLimit());
 		settings.put(
-				SystemSettingsDAO.DEFAULT_PURGE_PERIOD,
-				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD));
+				SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD));
 		settings.put(
-				SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE,
-				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE));
+				SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE));
 		return settings;
 	}
 
@@ -390,10 +390,10 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
 		systemSettingsDAO.setIntValue(
-				SystemSettingsDAO.DEFAULT_PURGE_PERIOD,
+				SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD,
 				defaultPurgePeriod);
 		systemSettingsDAO.setIntValue(
-				SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE,
+				SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE,
 				defaultPurgePeriodType);
 
 	}

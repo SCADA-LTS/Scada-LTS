@@ -11,6 +11,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.api.mockito.PowerMockito;
+import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -33,7 +34,7 @@ public class DataPointEditDwrTest {
         dataPointEditDwr = PowerMockito.spy(new DataPointEditDwr());
         Common.ctx = contextWrapper;
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
-        doReturn(new DataPointVO(1)).when(dataPointEditDwr, "getDataPoint");
+        doReturn(TestUtils.newDefaultEmptyDataPointVO()).when(dataPointEditDwr, "getDataPoint");
     }
 
     @Test

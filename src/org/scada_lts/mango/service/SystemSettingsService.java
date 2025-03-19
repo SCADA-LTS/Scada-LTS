@@ -181,8 +181,8 @@ public class SystemSettingsService {
         settings.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         settings.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         settings.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
-        settings.setDefaultPurgePeriod(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD));
-        settings.setDefaultPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE));
+        settings.setDefaultPurgePeriod(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD));
+        settings.setDefaultPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE));
         return settings;
     }
 
@@ -195,8 +195,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, settings.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, settings.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, settings.getValuesLimitForPurge());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD, settings.getDefaultPurgePeriod());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE, settings.getDefaultPurgePeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD, settings.getDefaultPurgePeriod());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.DEFAULT_PURGE_VALUES_PERIOD_TYPE, settings.getDefaultPurgePeriodType());
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
@@ -675,25 +675,5 @@ public class SystemSettingsService {
 
     private void saveResourceUploadsPathMisc(String webResourceUploadsPath) {
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
-    }
-
-    public static int getDefaultPurgePeriod() {
-        int defaultPeriod = SystemSettingsUtils.getDefaultPurgePeriod();
-        try {
-            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD);
-        } catch (Exception ex) {
-            LOG.error(LoggingUtils.exceptionInfo(ex));
-            return defaultPeriod;
-        }
-    }
-
-    public static int getDefaultPurgePeriodType() {
-        int defaultPeriodType = SystemSettingsUtils.getDefaultPurgePeriodType();
-        try {
-            return SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_PURGE_PERIOD_TYPE);
-        } catch (Exception ex) {
-            LOG.error(LoggingUtils.exceptionInfo(ex));
-            return defaultPeriodType;
-        }
     }
 }

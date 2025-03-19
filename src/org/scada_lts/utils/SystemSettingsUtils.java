@@ -86,8 +86,8 @@ public final class SystemSettingsUtils {
 
     private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
 
-    private static final String DEFAULT_PURGE_PERIOD = "systemsettings.default.purge.period";
-    private static final String DEFAULT_PURGE_PERIOD_TYPE = "systemsettings.default.purge.period.type";
+    private static final String DEFAULT_PURGE_PERIOD = "systemsettings.purge-values.period-default";
+    private static final String DEFAULT_PURGE_PERIOD_TYPE = "systemsettings.default-purge.values-type-period";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
