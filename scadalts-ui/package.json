@@ -24,7 +24,7 @@
 		"build-config": "node build-config"
 	},
 	"dependencies": {
-		"@amcharts/amcharts4": "4.8.9",
+		"@amcharts/amcharts4": "4.10.40",
 		"@fortawesome/fontawesome-svg-core": "1.2.29",
 		"@fortawesome/free-solid-svg-icons": "5.13.1",
 		"@fortawesome/vue-fontawesome": "0.1.10",
