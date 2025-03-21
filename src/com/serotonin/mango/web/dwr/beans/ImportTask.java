@@ -30,11 +30,7 @@ import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 import br.org.scadabr.vo.importer.UsersProfileImporter;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -49,6 +45,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
@@ -198,6 +195,17 @@ public class ImportTask extends ProgressiveTask {
 									0));
 							vo.setTextRenderer(new PlainRenderer());
 							vo.setEventTextRenderer(new NoneEventRenderer());
+
+							if (vo.getPointLocator() instanceof VMStatPointLocatorVO) {
+								JsonObject pointLocatorJson = dataPoint.getJsonObject("pointLocator");
+								if (pointLocatorJson != null) {
+									JsonValue valueJson = pointLocatorJson.getProperties().get("attributeId");
+									if (valueJson != null) {
+										int attributeId = Integer.parseInt(((JsonNumber) valueJson).getValue());
+										((VMStatPointLocatorVO) vo.getPointLocator()).setAttributeId(attributeId);
+									}
+								}
+							}
 
 							boolean isnew = vo.isNew();
 
