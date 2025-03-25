@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.datasources.modbusip;
 
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
 public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
@@ -13,6 +14,7 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
     private int offset;
     private byte bit;
     private int registerCount;
+    @XssProtect
     private String charset;
     private boolean settableOverride;
     private double multiplier;

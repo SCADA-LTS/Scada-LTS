@@ -1076,5 +1076,6 @@
 	"systemsettings.misc.webResourceUploadsPath.wrong":"Uploaded images save path must end with 'uploads' or 'uploads{0}' ",
 	"systemsettings.misc.webResourceGraphicsPath.wrong": "Graphics images path must end with 'graphics' or 'graphics{0}' ",
 	"systemsettings.top.description": "Top description",
-	"systemsettings.top.description.prefix": "Top description prefix"
+	"systemsettings.top.description.prefix": "Top description prefix",
+	"event.list.reloadPage": "Reload the page"
 }

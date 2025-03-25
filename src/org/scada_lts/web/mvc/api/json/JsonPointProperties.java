@@ -4,12 +4,15 @@ import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.io.Serializable;
 
 public class JsonPointProperties implements Serializable {
 
+    @XssProtect
     private String name;
+    @XssProtect
     private String description;
     private Boolean enabled;
     private Integer loggingType;
@@ -27,6 +30,7 @@ public class JsonPointProperties implements Serializable {
     private Double discardLowLimit;
     private Double discardHighLimit;
     private Integer engineeringUnits;
+    @XssProtect
     private String chartColour;
     private Integer purgeStrategy;
     private Integer purgeValuesLimit;

@@ -5,7 +5,7 @@
 			:creator="createMode"
 			:datapoint="datapoint"
 			@cancel="cancel()"
-			@accept="save()"
+			@accept="save"
 		>
 			<template v-slot:selector>
 				<v-select
@@ -142,8 +142,8 @@ export default {
 			this.$emit('canceled');
 		},
 
-		save() {
-			this.$emit('saved', this.datapoint);
+		save(data) {
+			this.$emit('saved', data);
 		},
 	},
 };

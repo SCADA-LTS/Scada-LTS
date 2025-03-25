@@ -335,6 +335,14 @@
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
     }
+
+    function escapePoints(points) {
+        for(var i=0; i < points.length; i++) {
+            var point = points[i];
+            point.name = escapeHtml(point.name);
+            point.xid = escapeHtml(point.xid);
+        }
+    }
     
     function copyDataPoint(fromDataSourceId, dataPointId) {
         return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(response) {
@@ -516,5 +524,9 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.RADIUINO']}">
 			<jsp:include page="dataSourceEdit/editRadiuino.jsp" />
 		</c:when>
+        <c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.OPC_UA']}">
+            <jsp:include page="dataSourceEdit/editOpcUa.jsp" />
+        </c:when>
 	</c:choose>
 </tag:page>

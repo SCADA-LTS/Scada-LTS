@@ -40,7 +40,7 @@
     <tr>
       <td class="formLabelRequired"><spring:message code="pointEdit.props.ds"/></td>
       <td colspan="2" class="formField">
-        ${dataSource.name}
+        <c:out value="${dataSource.name}"/>
         <a href="data_source_edit.shtm?dsid=${dataSource.id}&pid=${form.id}"><tag:img png="icon_ds_edit"
                 title="pointEdit.props.editDs"/></a>
       </td>
@@ -49,7 +49,9 @@
     <spring:bind path="form.name">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
-        <td class="formField"><input type="text" name="name" value="${status.value}"/></td>
+        <div>
+        <td class="formField"><input type="text" class="formLongFieldSizing" name="name" value="<c:out value="${status.value}"/>" title="<c:out value="${status.value}"/>"/></td>
+        </div>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
@@ -57,7 +59,7 @@
     <spring:bind path="form.description">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.description"/></td>
-        <td class="formField"><input type="text" class="formLong" name="description" value="${status.value}"/></td>
+        <td class="formField"><input type="text" class="formLong" name="description" value="<c:out value="${status.value}"/>"/></td>
         <c:if test="${error.description != null}"><td class="formError"><spring:message code="${error.description}"/></td></c:if>
       </tr>
     </spring:bind>
@@ -67,7 +69,7 @@
         <tr>
           <td class="formLabelRequired"><spring:message code="pointEdit.props.engineeringUnits"/></td>
           <td class="formField">
-            <sst:select name="engineeringUnits" value="${status.value}"><tag:engineeringUnits/></sst:select>
+            <sst:select name="engineeringUnits" value="${status.value}"><tag:engineeringUnits unitsMap="${unitsMap}"/></sst:select>
           </td>
           <c:if test="${error.engineeringUnits != null}"><td class="formError"><spring:message code="${error.engineeringUnits}"/></td></c:if>
         </tr>

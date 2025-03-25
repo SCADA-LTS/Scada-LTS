@@ -7,7 +7,7 @@
 		cache-items
 		hide-no-data
 		hide-details
-		item-text="name"
+		item-text="extendName"
 		item-value="xid"
 		:label="`${$t('datapoint.search.label')}: ${value}`"
 		:placeholder="`${$t('datapoint.search.placeholder')}`"
@@ -15,6 +15,9 @@
 		prepend-icon="mdi-magnify"
 		@change="emit()"
 	>
+         <template v-slot:item="data">
+            <span v-html="data.item.extendName"></span>
+         </template>
 	</v-autocomplete>
 </template>
 <script>

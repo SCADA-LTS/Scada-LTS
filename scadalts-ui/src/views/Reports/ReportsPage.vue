@@ -27,7 +27,7 @@
 							@click:row="clickRow"
 						>
 							<template v-slot:item.name="{ item }">
-								{{ item.name }}
+								<span v-html="item.name"></span>
 							</template>
 							<template v-slot:item.actions="{ item }">
 								<v-btn icon @click.stop="runReport(item.id)">
@@ -197,7 +197,8 @@ export default {
 		_updateReportPointsDetails(pointList) {
 			return pointList.map((p) => {
 				const name = this.allDataPoints.find((dp) => dp.id === p.pointId).name;
-				return { ...p, name };
+				const extendName = this.allDataPoints.find((dp) => dp.id === p.pointId).extendName;
+				return { ...p, name, extendName };
 			});
 		},
 	},

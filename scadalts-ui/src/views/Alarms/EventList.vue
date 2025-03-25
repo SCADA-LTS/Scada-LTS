@@ -327,7 +327,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						<a :title="(item.message) | clearHtml"><span v-html="item.message"></span></a>
+						<a><span v-html="item.message"></span></a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -391,6 +391,10 @@
 						</v-badge>
 
     				</template>
+    				<template v-slot:item.xid="{ item }">
+    				    <span v-if="item.xid" v-html="item.xid"/>
+                        <span v-else> {{$t('event.list.reloadPage')}} </span>
+    				</template>
 			</v-data-table>
 		</v-container>
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
@@ -412,7 +416,7 @@ tbody tr:nth-of-type(odd) {
 import store from '../../store';
 import RangeChartComponent from '../../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import {getEventList} from '../../utils/common';
+import {getEventList, escapeHtml} from '../../utils/common';
 
 export default {
 	name: 'EventList',
@@ -619,9 +623,6 @@ export default {
 				return input.substring(0, 45) + '...';
 			}
 			return input;
-		},
-		clearHtml(str) {
-			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ').replaceAll('&#39;', ' ').replaceAll('&quot;', ' ')
 		}
 	},
 	
@@ -803,6 +804,23 @@ export default {
         fetchEvent(message, searchFilters) {
             if(message) {
                 let event = JSON.parse(message.body);
+                event.message = escapeHtml(event.message);
+                event.shortMessage = escapeHtml(event.shortMessage);
+                event.assigneeUsername = escapeHtml(event.assigneeUsername);
+                event.ackMessage = escapeHtml(event.ackMessage);
+                event.acknowledgedByUsername = escapeHtml(event.acknowledgedByUsername);
+                event.action = escapeHtml(event.action);
+                event.assigneeMessage = escapeHtml(event.assigneeMessage);
+                event.exportAckMessage = escapeHtml(event.exportAckMessage);
+                event.assigneeUsername = escapeHtml(event.assigneeUsername);
+                event.ackMessage = escapeHtml(event.ackMessage);
+                event.fullPrettyAcknowledgedTimestamp = escapeHtml(event.fullPrettyAcknowledgedTimestamp);
+                event.fullPrettyActiveTimestamp = escapeHtml(event.fullPrettyActiveTimestamp);
+                event.fullPrettyRtnTimestamp = escapeHtml(event.fullPrettyRtnTimestamp);
+                event.prettyActiveTimestamp = escapeHtml(event.prettyActiveTimestamp);
+                event.prettyRtnTimestamp = escapeHtml(event.prettyRtnTimestamp);
+                event.rtnMessage = escapeHtml(event.rtnMessage);
+
                 let sortBy = searchFilters.sortBy;
                 let sortDesc = searchFilters.sortDesc;
 

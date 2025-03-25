@@ -254,27 +254,6 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-	@Deprecated(since = "2.7.7")
-	public void save(User user, String value, String xid, int pointValueType) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
-		setPoint(user, dpvo, value);
-	}
-
-	@Deprecated(since = "2.7.7")
-	private void setPoint(User user, DataPointVO point, String valueStr) {
-		Permissions.ensureDataPointSetPermission(user, point);
-		setPointImpl(point, valueStr, user);
-
-	}
-
-	@Deprecated(since = "2.7.7")
-	public void saveAPI(User user, String value, String xid) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		Permissions.ensureDataPointSetPermission(user, dpvo);
-		setPointImpl(dpvo, value, user);
-	}
-
 	public void save(User user, String value, String xid, int pointValueType, SetPointSource source) {
 		DataPointVO point = dataPointDAO.getDataPoint(xid);
 		if(point == null || point.getPointLocator() == null)

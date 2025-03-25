@@ -1,7 +1,6 @@
 package com.serotonin.mango.vo;
 
-import br.org.scadabr.db.utils.TestUtils;
-import org.junit.After;
+import utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import org.scada_lts.login.ILoggedUsers;
 import org.scada_lts.login.LoggedUsers;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.mock.web.MockHttpSession;
-import utils.TestConcurrentUtils;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;

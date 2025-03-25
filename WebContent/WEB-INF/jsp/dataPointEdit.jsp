@@ -69,14 +69,14 @@
     <input type="hidden" id="taskName" name="asdf" value=""/>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td valign="top">
+        <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
         </td>
-        <td valign="top">
+        <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
         </td>
       </tr>
@@ -883,6 +883,31 @@
                            					        	   }
                            					        	});
                   }
+
+                   jQuery(document).ready(function() {
+                       function updateSuffixForEngineeringUnits() {
+                           let value = jQuery("select[name='engineeringUnits']").val();
+                           let unitValue = parseInt(value);
+                           let units = ${unitsListJson};
+                           units.forEach(unit => {
+                                if(unit.value === unitValue) {
+                                    jQuery("#textRendererAnalogFormat").val('#.#');
+                                    jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                    jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                }
+                           });
+                       }
+
+                       jQuery("select[name='engineeringUnits']").on("change", function() {
+                           updateSuffixForEngineeringUnits();
+                       });
+
+                       let suffix = jQuery("#textRendererAnalogSuffix").val();
+
+                       if(!suffix){
+                           updateSuffixForEngineeringUnits();
+                       }
+                   });
             </script>
 
         </td>
@@ -905,7 +930,7 @@
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
                                     <c:forEach items="${userPoints}" var="point">
-                                        <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                        <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
                                     </c:forEach>
                                 </select>
                             </td>

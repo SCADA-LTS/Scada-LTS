@@ -24,7 +24,7 @@ context('💠️ Test DataSource Component - Virtual Scenario', () => {
         it('Are DataSource labels rendered', async() => {
             await wrapper.vm.$nextTick();
             const dialogText = wrapper.get('#datasource-config').text();
-            expect(dialogText).to.contain('Create  Virtual Data Source');
+            expect(dialogText).to.contain('Create Virtual Data Source');
             expect(dialogText).to.contain('DataSource Name');
             expect(dialogText).to.contain('DataSource Export Id');
             expect(dialogText).to.contain('Update Period');
@@ -75,6 +75,8 @@ context('💠️ Test DataSource Component - Virtual Scenario', () => {
                     xid: "MTS_0123456789",
                     updatePeriod: 10,
                     updatePeriodType: 2,
+                    tempName: "test name",
+                    tempXid: "test xid"
                 }
             });
         });
@@ -82,7 +84,7 @@ context('💠️ Test DataSource Component - Virtual Scenario', () => {
         it('Are DataSource labels rendered', async() => {
             await wrapper.vm.$nextTick();
             const dialogText = wrapper.get('#datasource-config').text();
-            expect(dialogText).to.contain('Update  Virtual Data Source');
+            expect(dialogText).to.contain('Update Virtual Data Source');
             expect(dialogText).to.contain('DataSource Name');
             expect(dialogText).to.contain('DataSource Export Id');
             expect(dialogText).to.contain('Update Period');
@@ -102,6 +104,8 @@ context('💠️ Test DataSource Component - Virtual Scenario', () => {
                     xid: "MTS_0123456789",
                     updatePeriod: 10,
                     updatePeriodType: 2,
+                    tempName: "test name",
+                    tempXid: "test xid"
                 }
             });
         });
@@ -110,14 +114,14 @@ context('💠️ Test DataSource Component - Virtual Scenario', () => {
             const value = "MockDataSourceEdit";
             const nameInput = wrapper.get('#datasource-config--name input');
             nameInput.setValue(value);
-            expect(wrapper.vm.datasource.name).to.equal(value);
+            expect(wrapper.vm.datasource.tempName).to.equal(value);
         });
 
         it('Is ExportID changing', async() => {
             const value = "XID_TEST_01";
             const nameInput = wrapper.get('#datasource-config--xid input');
             nameInput.setValue(value);
-            expect(wrapper.vm.datasource.xid).to.equal(value);
+            expect(wrapper.vm.datasource.tempXid).to.equal(value);
         }); 
 
         it('Is Update Period time changing', async() => {

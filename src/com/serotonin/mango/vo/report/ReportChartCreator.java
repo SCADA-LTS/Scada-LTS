@@ -39,6 +39,7 @@ import org.jfree.data.time.TimeSeries;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
+import org.scada_lts.web.security.XssProtectUtils;
 
 import java.awt.*;
 import java.io.*;
@@ -123,6 +124,7 @@ public class ReportChartCreator {
         model.put("instance", reportInstance);
         model.put("points", pointStatistics);
         model.put("inline", inlinePrefix == null ? "" : "cid:");
+        model.put("security", new XssProtectUtils());
 
         model.put("ALPHANUMERIC", DataTypes.ALPHANUMERIC);
         model.put("BINARY", DataTypes.BINARY);

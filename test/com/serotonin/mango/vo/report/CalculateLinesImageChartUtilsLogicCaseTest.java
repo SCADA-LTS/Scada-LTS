@@ -7,7 +7,7 @@ import org.junit.runners.Parameterized;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.org.scadabr.db.utils.TestUtils.*;
+import static utils.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)

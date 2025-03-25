@@ -7,7 +7,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static br.org.scadabr.db.utils.TestUtils.*;
+import static utils.TestUtils.*;
 
 @RunWith(Parameterized.class)
 public class TruncateStringUtilsExceptionTest {

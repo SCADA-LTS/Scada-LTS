@@ -23,7 +23,12 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 @JsonRemoteEntity
 public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
@@ -37,6 +42,54 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 
 	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
 	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
+
+	public void validate(DwrResponseI18n response) {
+
+		List<String> varNameSpace = new ArrayList<String>();
+		for (IntValuePair point : pointsOnContext) {
+			String varName = point.getValue();
+
+			if (StringUtils.isEmpty(varName)) {
+				response.addContextualMessage("context", "validate.allVarNames");
+				break;
+			}
+
+			if (!validateVarNameScript(varName)) {
+				response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
+				break;
+			}
+
+			if (varNameSpace.contains(varName)) {
+				response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
+				break;
+			}
+
+			varNameSpace.add(escapeHtml(varName));
+		}
+
+		for (IntValuePair point : objectsOnContext) {
+			String varName = point.getValue();
+
+			if (StringUtils.isEmpty(varName)) {
+				response.addContextualMessage("context", "validate.allVarNames");
+				break;
+			}
+
+			if (!validateVarNameScript(varName)) {
+				response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
+				break;
+			}
+
+			if (varNameSpace.contains(varName)) {
+				response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
+				break;
+			}
+
+			varNameSpace.add(escapeHtml(varName));
+		}
+
+		super.validate(response);
+	}
 
 	//
 	// /

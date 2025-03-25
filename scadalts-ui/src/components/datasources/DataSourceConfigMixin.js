@@ -60,7 +60,8 @@ export const dataSourceConfigMixin = {
         generateUniqueXid() {
             if (this.createMode) {
                 this.$store.dispatch('getUniqueDataSourceXid').then(resp => {
-                    this.datasource.xid = resp;
+                    this.datasource.tempXid = resp;
+                    this.datasource = JSON.parse(JSON.stringify(this.datasource));
                 });
             }
         },
@@ -69,8 +70,8 @@ export const dataSourceConfigMixin = {
             this.$emit('canceled');
         },
 
-        save() {
-            this.$emit('saved', this.datasource);
+        save(data) {
+            this.$emit('saved', data);
         },
     },
 }

@@ -20,6 +20,7 @@ package com.serotonin.mango;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.*;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.scada_lts.monitor.IMonitoredValues;
 import gnu.io.CommPortIdentifier;
@@ -52,8 +54,6 @@ import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.custom.CustomView;
-import com.serotonin.mango.vo.CommPortProxy;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
 import org.scada_lts.monitor.ConcurrentMonitoredValues;
 import com.serotonin.timer.CronTimerTrigger;
@@ -218,6 +218,13 @@ public class Common {
 				new LocalizableMessage(periodKey));
 	}
 
+	public static LocalizableMessage getPeriodDescription(TimePeriod periodType,
+														  int periods) {
+		String periodKey = periodType.getKey();
+		return new LocalizableMessage("common.tp.description", periods,
+				new LocalizableMessage(periodKey));
+	}
+
 	//
 	// Session user
 	public static User getUser() {
@@ -342,7 +349,7 @@ public class Common {
 	}
 
 	public static String getDocPath() {
-		return ctx.getServletContext().getRealPath("WEB-INF/dox") + "/";
+		return ctx.getServletContext().getRealPath("WEB-INF/dox") + File.separator;
 	}
 
 	private static String lazyFiledataPath = null;
@@ -355,7 +362,7 @@ public class Common {
 				name = ctx.getServletContext().getRealPath(name.substring(1));
 
 			File file = new File(name);
-			if (!file.exists())
+			if (Files.notExists(file.toPath()))
 				file.mkdirs();
 
 			lazyFiledataPath = name;
@@ -548,6 +555,10 @@ public class Common {
 	public static boolean isTerminating() {
 		return ctx == null || ctx.getBackgroundProcessing() == null || ctx.getBackgroundProcessing().isTerminating();
   	}
+
+    public static String getHomeDir() {
+		return System.getProperty("catalina.home");
+	}
 
 	public static GetMethod createGetMethod(String url) {
 		GetMethod getMethod = new GetMethod(url);

@@ -76,7 +76,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        return new LocalizableMessage("dsEdit.bacnetIp.dsconn", deviceId);
+        return new LocalizableMessage("common.tp.description", Common.getPeriodDescription(updatePeriodType, updatePeriods), new LocalizableMessage("common.default", " / Device ID: " + getDeviceId() + " / " + getBroadcastAddress() + ":" + getPort()));
     }
 
     @Override
@@ -122,7 +122,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
         // Create a local device object from which to get default values.
         LocalDevice localDevice = new LocalDevice(0, null);
         broadcastAddress = "255.255.255.255";
-        port = localDevice.getPort();
+        port = 0;
         timeout = localDevice.getTimeout();
         segTimeout = localDevice.getSegTimeout();
         segWindow = localDevice.getSegWindow();

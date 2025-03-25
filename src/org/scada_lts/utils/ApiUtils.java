@@ -158,6 +158,15 @@ public final class ApiUtils {
         }
     }
 
+    public static void validateObjectForCreate(HttpServletRequest request, ScadaValidation toUpdate) {
+        DwrResponseI18n responseI18n = new DwrResponseI18n();
+        toUpdate.validateForCreate(responseI18n);
+        if(responseI18n.getHasMessages()) {
+            throw new BadRequestException(toMapMessages(responseI18n),
+                    request.getRequestURI());
+        }
+    }
+
     public static boolean idExists(Integer id) {
         return id != null && id > 0;
     }

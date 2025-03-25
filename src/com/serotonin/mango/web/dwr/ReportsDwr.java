@@ -208,7 +208,7 @@ public class ReportsDwr extends BaseDwr {
         if (report != null) {
             GetReportsWithAccess.ensureReportOwnerPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            reportService.deleteReport(id);
+            reportService.deleteReport(report);
         }
     }
 

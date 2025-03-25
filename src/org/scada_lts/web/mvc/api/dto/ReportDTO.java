@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 public class ReportDTO {
 
     private int id;
+    @XssProtect
     private String name;
     private List<HashMap<String, Object>> points;
     private List<RecipientListEntryBean> recipients;
@@ -37,6 +39,7 @@ public class ReportDTO {
     private boolean schedule;
     private int schedulePeriod;
     private int runDelayMinutes;
+    @XssProtect
     private String scheduleCron;
     private boolean email;
     private boolean includeData;

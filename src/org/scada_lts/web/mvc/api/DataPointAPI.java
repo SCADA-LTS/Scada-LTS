@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class DataPointAPI {
     }
 
     @PostMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) DataPointJson datapoint,
+    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
                                                          HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 
@@ -100,7 +101,7 @@ public class DataPointAPI {
     }
 
     @PutMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) DataPointJson datapoint,
+    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
                                                          HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 

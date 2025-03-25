@@ -16,7 +16,7 @@ public class XssProtectCssStyleSerializer extends StdSerializer<CssStyle> {
 
     @Override
     public void serialize(CssStyle value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        String content = XssProtectHtmlEscapeUtils.escape(value.getContent());
+        String content = XssProtectUtils.escapeHtml(value.getContent());
         jgen.writeStartObject();
         jgen.writeStringField("content", content);
         jgen.writeEndObject();

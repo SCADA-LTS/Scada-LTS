@@ -14,6 +14,7 @@ import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -24,6 +25,7 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 import org.scada_lts.mango.service.PointValueService;
 
 import java.text.MessageFormat;
@@ -123,10 +125,15 @@ public final class LoggingUtils {
     }
 
     public static String pointValueTimeInfo(PointValueTime pointValueTime, SetPointSource source) {
-        String info = "pointValueTime: {0} (source: {1})";
+        String info = "pointValueTime: {0} ({1})";
+        return MessageFormat.format(info, pointValueTime, setPointSourceInfo(source));
+    }
+
+    public static String setPointSourceInfo(SetPointSource source) {
+        String info = "source: {0}";
         if(source != null)
-            return MessageFormat.format(info, pointValueTime, source.getClass().getSimpleName());
-        return MessageFormat.format(info, pointValueTime, "unknown");
+            return MessageFormat.format(info, source.getClass().getSimpleName());
+        return MessageFormat.format(info, "unknown");
     }
 
     public static String dataSourcePointInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint) {
@@ -135,6 +142,10 @@ public final class LoggingUtils {
 
     public static String dataSourcePointValueTimeInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, PointValueTime valueTime, SetPointSource source) {
         return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
+    }
+
+    public static String dataSourcePointSetPointSourceInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, SetPointSource source) {
+        return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.setPointSourceInfo(source);
     }
 
     public static String causeInfo(Throwable e) {
@@ -221,20 +232,23 @@ public final class LoggingUtils {
         return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT) + " - " + dataPointInfo(dataPointRT);
     }
 
-    public static String dataPointInfo(DataPointRT dataPointRT) {
-        if(dataPointRT == null)
-            return "";
-        DataPointVO dataPointVO = dataPointRT.getVO();
-        if(dataPointVO == null)
-            return dataPointRtInfo(dataPointRT);
-        return dataPointInfo(dataPointVO);
+    public static String info(Throwable e, DataSourceRT dataSourceRT, DataPointVO dataPointVO) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceRT) + " - " + dataPointInfo(dataPointVO);
     }
 
-    public static String dataPointRtInfo(DataPointRT dataPoint) {
+    public static String info(Throwable e, DataSourceVO<?> dataSourceVO, DataPointVO dataPointVO) {
+        return exceptionInfo(e) + " - " + dataSourceInfo(dataSourceVO) + " - " + dataPointInfo(dataPointVO);
+    }
+
+    public static String dataPointInfo(DataPointRT dataPoint) {
         if(dataPoint == null)
             return "";
-        String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
-        return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
+        DataPointVO dataPointVO = dataPoint.getVO();
+        if(dataPointVO == null) {
+            String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
+            return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
+        }
+        return dataPointInfo(dataPointVO);
     }
   
     public static String publisherInfo(PublisherVO<?> publisher) {
@@ -249,6 +263,20 @@ public final class LoggingUtils {
             return "";
         String info =  "{0} (key: {1})";
         return MessageFormat.format(info, pair.getValue(), pair.getKey());
+    }
+
+    public static String pointLocatorInfo(PointLocatorVO pointLocator) {
+        if(pointLocator == null)
+            return "";
+        if(pointLocator instanceof OpcUaPointLocatorVO) {
+            String info =  "locator: {0} (nodeId: {4}, namespaceIndex: {1}, identifier: {2}, identifierType: {3}, dataTypeId: {4}, dataType: {5}, opcDataType: {6})";
+            OpcUaPointLocatorVO opcUa = (OpcUaPointLocatorVO) pointLocator;
+            return MessageFormat.format(info, opcUa.getNodeName(), opcUa.getNodeId(), opcUa.getNamespaceIndex(),
+                    opcUa.getIdentifierType(), opcUa.getDataTypeId(), opcUa.getDataTypeMessage().getLocalizedMessage(Common.getBundle()), opcUa.getOpcDataType());
+        }
+        String info =  "locator: {0} (dataTypeId: {1}, dataType: {2})";
+        return MessageFormat.format(info, pointLocator.getConfigurationDescription().getLocalizedMessage(Common.getBundle()), pointLocator.getDataTypeId(), pointLocator.getDataTypeMessage().getLocalizedMessage(Common.getBundle()));
+
     }
 
     private static String msg(EventHandlerVO eventHandler) {

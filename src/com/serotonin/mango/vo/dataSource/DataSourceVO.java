@@ -28,6 +28,7 @@ import br.org.scadabr.vo.dataSource.iec101.IEC101EthernetDataSourceVO;
 import br.org.scadabr.vo.dataSource.iec101.IEC101SerialDataSourceVO;
 import br.org.scadabr.vo.dataSource.nodaves7.NodaveS7DataSourceVO;
 import br.org.scadabr.vo.dataSource.opc.OPCDataSourceVO;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
@@ -317,7 +318,13 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 				return new MqttDataSourceVO();
 			}
-		},;
+		},
+		OPC_UA(48, "dsEdit.opcua", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new OpcUaDataSourceVO();
+			}
+		};
 
 		private Type(int id, String key, boolean display) {
 			this.id = id;
@@ -495,7 +502,15 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 
 	@Override
 	public void validate(DwrResponseI18n response) {
+		validate(response, id);
+	}
 
+	@Override
+	public void validateForCreate(DwrResponseI18n response) {
+		validate(response, -1);
+	}
+
+	private void validate(DwrResponseI18n response, int id) {
 		DataSourceService dataSourceService = new DataSourceService();
 		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
 

@@ -238,7 +238,20 @@
    		keyListen(evnt);
 	}
 
-	
+	function copyCurrentView(viewId) {
+		ViewDwr.copyView(viewId, function(response) {
+			if (response.hasMessages) {
+				alert(response.messages.join("\n"));
+			} else {
+				var newView = response.data["viewCopy"];
+				if (newView && newView.id) {
+					window.location = 'view_edit.shtm?viewId=' + newView.id;
+				} else {
+					alert("Error: cannot copy current view");
+				}
+			}
+		});
+	}
 </script>
 
 	<table class="subPageHeader" id="graphical">
@@ -261,6 +274,7 @@
 						<c:when test="${owner}">
 							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
+							<a><tag:img png="icon_view_copy" title="viewEdit.copyView" onclick="copyCurrentView(${currentView.id})"/></a>
 						</c:when>
 						<c:otherwise>
 							<!-- Apenas Admin pode remover compartilhamento

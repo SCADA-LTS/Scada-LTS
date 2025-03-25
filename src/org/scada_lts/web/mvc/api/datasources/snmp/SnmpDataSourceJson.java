@@ -1,21 +1,32 @@
 package org.scada_lts.web.mvc.api.datasources.snmp;
 
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 
 public class SnmpDataSourceJson extends DataSourceJson {
 
+    @XssProtect
     private String host;
     private int port;
     private int snmpVersion;
+    @XssProtect
     private String community;
+    @XssProtect
     private String engineId;
+    @XssProtect
     private String contextEngineId;
+    @XssProtect
     private String contextName;
+    @XssProtect
     private String securityName;
+    @XssProtect
     private String authProtocol;
+    @XssProtect
     private String authPassphrase;
+    @XssProtect
     private String privProtocol;
+    @XssProtect
     private String privPassphrase;
     private int securityLevel;
     private int retries;
@@ -24,6 +35,7 @@ public class SnmpDataSourceJson extends DataSourceJson {
     private int updatePeriods;
     private boolean trapEnabled;
     private int trapPort;
+    @XssProtect
     private String localAddress;
 
     public SnmpDataSourceJson(){}

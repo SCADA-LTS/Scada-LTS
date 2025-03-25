@@ -176,8 +176,21 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.device"/>";
-      pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.remoteDeviceIp; };
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.device"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return '<div style="text-align: center;">' + p.pointLocator.remoteDeviceIp + '</div>';};
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.objectType"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function (p) {
+      const element = document.createElement("div");
+      element.style.textAlign = "center";
+
+      DataSourceEditDwr.getObjectTypeName(p.pointLocator.objectTypeId, function (result) {
+        element.innerHTML = result;
+      });
+
+      return element;
+    };
+    pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.bacnetIp.objectInstanceNumber"/>";
+    pointListColumnFunctions[pointListColumnFunctions.length] = function(p) {return '<div style="text-align: center;">' + p.pointLocator.objectInstanceNumber + '</div>';};
   }
 
   function editPointCBImpl(locator) {
@@ -208,8 +221,9 @@
       locator.settable = $get("settable");
       locator.writePriority = $get("writePriority");
       locator.dataTypeId = $get("dataTypeId");
+      console.log("point.engineeringUnits: " + currentPoint.engineeringUnits);
       
-      DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
+      DataSourceEditDwr.saveBACnetIPPointLocator(currentPoint.id, $get("xid"), $get("name"), currentPoint.engineeringUnits, locator, savePointCB);
   }
   
   function objectTypeChanged() {
