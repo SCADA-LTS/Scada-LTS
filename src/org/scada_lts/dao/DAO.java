@@ -17,16 +17,12 @@
  */
 package org.scada_lts.dao;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import javax.sql.DataSource;
 
-import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -172,24 +168,6 @@ public class DAO {
 	 */
 	public void setTest(boolean test) {
 		this.test = test;
-	}
-
-	public boolean isBacNetDataSourcePortUsed(int excludeId, int port) {
-		String sql = "SELECT data FROM dataSources WHERE dataSourceType = 10 AND id <> ?";
-
-		List<byte[]> results = DAO.getInstance().getJdbcTemp().queryForList(sql, new Object[] { excludeId }, byte[].class);
-
-		for (byte[] data : results) {
-			try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
-				BACnetIPDataSourceVO dataSource = (BACnetIPDataSourceVO) ois.readObject();
-				if (dataSource.getPort() == port) {
-					return true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
 	}
 	
 }

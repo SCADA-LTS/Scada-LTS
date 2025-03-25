@@ -33,6 +33,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.dataSource.bacnet.BACnetIPDataSourceRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
@@ -42,7 +43,6 @@ import com.serotonin.util.IpAddressUtils;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * @author Matthew Lohbihler
@@ -249,11 +249,6 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
             response.addContextualMessage("broadcastAddress", "common.default", e.getMessage());
         }
 
-        DataSourceService dataSourceService = new DataSourceService();
-        if(getPort()!=0 && dataSourceService.isBacNetDataSourcePortUsed(getId(), getPort())){
-            response.addContextualMessage("port", "Bacnet.invalid.port");
-        }
-
         try {
             new InetSocketAddress(broadcastAddress, port);
         }
@@ -263,6 +258,8 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
             else
                 response.addContextualMessage("broadcastAddress", "validate.illegalValue");
         }
+
+        DataSourceUtils.checkPort(response, port);
 
         if (timeout < 0)
             response.addContextualMessage("timeout", "validate.cannotBeNegative");
