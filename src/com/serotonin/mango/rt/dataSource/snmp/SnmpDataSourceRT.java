@@ -104,6 +104,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int PDU_EXCEPTION_EVENT = 2;
     public static final int TRAP_NOT_HANDLED_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
     private final Log log = LogFactory.getLog(SnmpDataSourceRT.class);
 
@@ -426,5 +427,10 @@ public class SnmpDataSourceRT extends PollingDataSource {
         } catch (IOException e) {
             throw new ShouldNeverHappenException(e);
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

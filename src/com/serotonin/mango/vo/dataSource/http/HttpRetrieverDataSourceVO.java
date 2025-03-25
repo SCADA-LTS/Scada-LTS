@@ -57,12 +57,15 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
                 "event.ds.dataRetrieval")));
         ets.add(createEventType(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.dataParse")));
+        ets.add(createEventType(HttpRetrieverDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
         EVENT_CODES.addElement(HttpRetrieverDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, "DATA_RETRIEVAL_FAILURE");
         EVENT_CODES.addElement(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
+        EVENT_CODES.addElement(HttpRetrieverDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

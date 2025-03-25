@@ -60,6 +60,8 @@ public class OneWireDataSourceVO extends DataSourceVO<OneWireDataSourceVO> {
                 "event.ds.pointRead")));
         ets.add(createEventType(OneWireDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.pointWrite")));
+        ets.add(createEventType(OneWireDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -67,6 +69,7 @@ public class OneWireDataSourceVO extends DataSourceVO<OneWireDataSourceVO> {
         EVENT_CODES.addElement(OneWireDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(OneWireDataSourceRT.POINT_READ_EXCEPTION_EVENT, "POINT_READ_EXCEPTION");
         EVENT_CODES.addElement(OneWireDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, "POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(OneWireDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

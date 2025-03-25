@@ -50,6 +50,9 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 		eventTypes.add(createEventType(
 				PollingDataSourceRT.POINT_UPDATE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointUpdate")));
+		eventTypes.add(createEventType(
+				PollingDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -64,6 +67,8 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 				"POINT_READ_ALL_EXCEPTION");
 		EVENT_CODES.addElement(PollingDataSourceRT.POINT_UPDATE_EXCEPTION_EVENT,
 				"POINT_UPDATE_EXCEPTION");
+		EVENT_CODES.addElement(PollingDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 
 	}
 
