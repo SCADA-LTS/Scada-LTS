@@ -209,11 +209,10 @@ public class DataSourceUtils {
 		try{
 			localDevice.initialize();
 		} catch (IOException e) {
-            response.addContextualMessage("port", "bacnet.invalid.port");
-        } finally {
+			response.addContextualMessage("port", "bacnet.invalid.port");
+		} finally {
 			localDevice.terminate();
 		}
 		return response;
 	}
-
 }
