@@ -51,6 +51,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
 
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
     private final HttpRetrieverDataSourceVO vo;
     private StopSleepRT stopSleepRT;
@@ -215,5 +216,10 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         ReactivationDs reactivationDs = new ReactivationDs();
         reactivationDs.setSleep(false);
         return getData(url, timeoutSeconds, retries, false, reactivationDs, staticHeaders, null);
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -50,6 +50,8 @@ public class MBusDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int POINT_READ_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
+
     private final MBusDataSourceVO vo;
     private final MBusMaster master = new MBusMaster();
 
@@ -196,5 +198,10 @@ public class MBusDataSourceRT extends PollingDataSource {
         } finally {
             master.setConnection(null);
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -53,12 +53,15 @@ public class HttpImageDataSourceVO extends DataSourceVO<HttpImageDataSourceVO> {
                 "event.ds.dataRetrieval")));
         ets.add(createEventType(HttpImageDataSourceRT.FILE_SAVE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.fileSave")));
+        ets.add(createEventType(HttpImageDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
         EVENT_CODES.addElement(HttpImageDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, "DATA_RETRIEVAL_FAILURE");
         EVENT_CODES.addElement(HttpImageDataSourceRT.FILE_SAVE_EXCEPTION_EVENT, "FILE_SAVE_EXCEPTION");
+        EVENT_CODES.addElement(HttpImageDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

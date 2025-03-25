@@ -29,6 +29,7 @@ public class PollingDataSourceRT extends PollingDataSource {
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
 	public static final int POINT_UPDATE_EXCEPTION_EVENT = 4;
 	public static final int POINT_READ_ALL_EXCEPTION_EVENT = 5;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 6;
 
 	private final IMaster master;
 	private final DataSourceVO<?> vo;
@@ -213,5 +214,10 @@ public class PollingDataSourceRT extends PollingDataSource {
 					true,
 					new LocalizableMessage("event.exception2", vo.getName(), message));
 		}
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

@@ -36,6 +36,8 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 	private final Log LOG = LogFactory.getLog(RadiuinoPollingDataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
+
 	private static final int INDICE_ENDERECO_ORIGEM = 10;
 	private static final int INDICE_ENDERECO_DESTINO = 8;
 	private final RadiuinoDataSourceVO<?> vo;
@@ -450,4 +452,8 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 		}
 	}
 
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
+	}
 }

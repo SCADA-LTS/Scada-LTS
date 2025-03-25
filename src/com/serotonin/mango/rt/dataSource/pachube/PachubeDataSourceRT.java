@@ -67,6 +67,7 @@ public class PachubeDataSourceRT extends PollingDataSource {
     public static final int PARSE_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
     public static final int INITIALIZATION_EXCEPTION_EVENT = 4;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 5;
 
     public static final String HEADER_API_KEY = "X-PachubeApiKey";
 
@@ -292,5 +293,10 @@ public class PachubeDataSourceRT extends PollingDataSource {
             raiseEvent(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), true, new LocalizableMessage(
                     "event.exception2", dataPoint.getVO().getName(), e.getMessage()), dataPoint);
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

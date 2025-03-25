@@ -59,6 +59,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
 
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int FILE_SAVE_EXCEPTION_EVENT = 2;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
     public HttpImageDataSourceRT(HttpImageDataSourceVO vo) {
         super(vo);
@@ -283,5 +284,10 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
 
         return data;
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -255,22 +255,26 @@ public class Alpha2DataSourceVO<T extends Alpha2DataSourceVO<?>> extends
 
 	@Override
 	protected void addEventTypes(List<EventTypeVO> ets) {
-		ets.add(createEventType(ModbusDataSource.DATA_SOURCE_EXCEPTION_EVENT,
+		ets.add(createEventType(Alpha2DataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
-		ets.add(createEventType(ModbusDataSource.POINT_READ_EXCEPTION_EVENT,
+		ets.add(createEventType(Alpha2DataSource.POINT_READ_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointRead")));
-		ets.add(createEventType(ModbusDataSource.POINT_WRITE_EXCEPTION_EVENT,
+		ets.add(createEventType(Alpha2DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointWrite")));
+		ets.add(createEventType(Alpha2DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
 	static {
-		EVENT_CODES.addElement(ModbusDataSource.DATA_SOURCE_EXCEPTION_EVENT,
+		EVENT_CODES.addElement(Alpha2DataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				"DATA_SOURCE_EXCEPTION");
-		EVENT_CODES.addElement(ModbusDataSource.POINT_READ_EXCEPTION_EVENT,
+		EVENT_CODES.addElement(Alpha2DataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
-		EVENT_CODES.addElement(ModbusDataSource.POINT_WRITE_EXCEPTION_EVENT,
+		EVENT_CODES.addElement(Alpha2DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				"POINT_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(Alpha2DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 }

@@ -27,6 +27,8 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 	private final static Log LOG = LogFactory.getLog(DrStorageHt5bDataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
+
 	private final DrStorageHt5bDataSourceVO<?> vo;
 	private Enumeration portList;
 	private InputStream inSerialStream;
@@ -368,5 +370,10 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 			return;
 		}
 		super.initialize();
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }
