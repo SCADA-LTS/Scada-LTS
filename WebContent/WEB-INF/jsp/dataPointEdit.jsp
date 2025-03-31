@@ -71,10 +71,10 @@
       <tr>
         <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
         </td>
         <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
@@ -891,12 +891,39 @@
                            					        	   }
                            					        	});
                   }
+
                     jQuery(document).ready(function(){
                         (function($) {
                             loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
                             loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
                         })(jQuery);
                     });
+
+                   jQuery(document).ready(function() {
+                       function updateSuffixForEngineeringUnits() {
+                           let value = jQuery("select[name='engineeringUnits']").val();
+                           let unitValue = parseInt(value);
+                           let units = ${unitsListJson};
+                           units.forEach(unit => {
+                                if(unit.value === unitValue) {
+                                    jQuery("#textRendererAnalogFormat").val('#.#');
+                                    jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                    jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                }
+                           });
+                       }
+
+                       jQuery("select[name='engineeringUnits']").on("change", function() {
+                           updateSuffixForEngineeringUnits();
+                       });
+
+                       let suffix = jQuery("#textRendererAnalogSuffix").val();
+
+                       if(!suffix){
+                           updateSuffixForEngineeringUnits();
+                       }
+                   });
+
             </script>
 
         </td>

@@ -31,6 +31,9 @@ import org.scada_lts.monitor.type.IntegerMonitor;
  * @author Matthew Lohbihler
  */
 public class InternalDataSourceRT extends PollingDataSource {
+
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 1;
+
     public InternalDataSourceRT(InternalDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -52,5 +55,10 @@ public class InternalDataSourceRT extends PollingDataSource {
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
         // no op
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -60,6 +60,7 @@ public class OpenV4JDataSourceVO extends DataSourceVO<OpenV4JDataSourceVO> {
         EVENT_CODES.addElement(OpenV4JDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(OpenV4JDataSourceRT.POINT_READ_EXCEPTION_EVENT, "POINT_READ_EXCEPTION");
         EVENT_CODES.addElement(OpenV4JDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, "POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(OpenV4JDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
     @JsonRemoteProperty
     private String commPortId;
@@ -84,6 +85,8 @@ public class OpenV4JDataSourceVO extends DataSourceVO<OpenV4JDataSourceVO> {
                 "event.ds.pointRead")));
         eventTypes.add(createEventType(OpenV4JDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.pointWrite")));
+        eventTypes.add(createEventType(OpenV4JDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     @Override

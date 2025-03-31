@@ -26,6 +26,8 @@ public class NodaveS7DataSource extends PollingDataSource {
 	private final Log LOG = LogFactory.getLog(NodaveS7DataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
+
 	private final NodaveS7DataSourceVO<?> vo;
 
 	public NodaveS7DataSource(NodaveS7DataSourceVO<?> vo) {
@@ -229,6 +231,11 @@ public class NodaveS7DataSource extends PollingDataSource {
 			e.printStackTrace();
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 
 }

@@ -51,6 +51,8 @@ public class OpenV4JDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int POINT_READ_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
+
     private final OpenV4JDataSourceVO vo;
     // private final long nextRescan = 0;
     private SerialPort sPort;
@@ -210,5 +212,10 @@ public class OpenV4JDataSourceRT extends PollingDataSource {
             sPort.close();
             sPort = null;
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -43,14 +43,21 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class VirtualDataSourceVO extends DataSourceVO<VirtualDataSourceVO> {
     public static final Type TYPE = Type.VIRTUAL;
 
+    private static final ExportCodes EVENT_CODES = new ExportCodes();
+    static {
+        EVENT_CODES.addElement(VirtualDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+                "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
+    }
+
     @Override
     protected void addEventTypes(List<EventTypeVO> ets) {
-        // no op
+        ets.add(createEventType(VirtualDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+                new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     @Override
     public ExportCodes getEventCodes() {
-        return null;
+        return EVENT_CODES;
     }
 
     @Override
