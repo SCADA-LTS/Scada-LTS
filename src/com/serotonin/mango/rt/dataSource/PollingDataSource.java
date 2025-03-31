@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,12 +50,17 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private volatile Thread jobThread;
     private long jobThreadStartTime;
     private static volatile boolean markAsTerminating = false;
+    private static final ThreadLocal<Long> DO_RAISE_EVENT = ThreadLocal.withInitial(() -> 0L);
 
     private final AtomicInteger lock = new AtomicInteger(0);
 
     public PollingDataSource(DataSourceVO<?> vo) {
         super(vo);
         this.vo = vo;
+    }
+
+    public int getPointReadExceptionEvent(){
+        return 1;
     }
 
     public void setPollingPeriod(int periodType, int periods, boolean quantize) {
@@ -96,20 +102,25 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
         }
 
         if(lock.getAndIncrement() == 0) {
+            long startTime = System.currentTimeMillis();
             try {
                 jobThreadStartTime = fireTime;
                 updateChangedPoints();
                 doPoll(fireTime);
             } finally {
+                DO_RAISE_EVENT.set(System.currentTimeMillis() - startTime);
                 lock.getAndSet(0);
             }
         } else {
-
-            LOG.warn(vo.getName() + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
+            LOG.warn(LoggingUtils.dataSourceInfo(vo) + ": poll at " + DateFunctions.getFullSecondTime(fireTime)
                     + " aborted because a previous poll started at "
                     + DateFunctions.getFullSecondTime(jobThreadStartTime) + " is still running");
             return;
         }
+
+
+        long executedMillis = DO_RAISE_EVENT.get();
+        doRaiseEvent(fireTime, executedMillis);
     }
 
     abstract protected void doPoll(long time);
@@ -186,5 +197,18 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
 
     public static void markAsTerminating() {
         markAsTerminating = true;
+    }
+
+    protected abstract int getUpdateTimeExceededUpdatePeriodEventId();
+
+    private void doRaiseEvent(long fireTime, long executedMillis) {
+        if(isInitialized() && !isMarkAsTerminating() && executedMillis > pollingPeriodMillis) {
+            LocalizableMessage msg = new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriodAttention",
+                    executedMillis, pollingPeriodMillis, LoggingUtils.dataSourceInfo(vo));
+            LOG.warn(msg.getLocalizedMessage(Common.getBundle()));
+            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
+        } else {
+            _returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
+        }
     }
 }

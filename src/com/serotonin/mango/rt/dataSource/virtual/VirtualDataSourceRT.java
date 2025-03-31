@@ -25,6 +25,9 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 
 public class VirtualDataSourceRT extends PollingDataSource {
+
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
+
     public VirtualDataSourceRT(VirtualDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -59,5 +62,10 @@ public class VirtualDataSourceRT extends PollingDataSource {
         }
 
         super.addDataPoint(dataPoint);
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

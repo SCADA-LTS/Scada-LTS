@@ -36,6 +36,9 @@ abstract public class Dnp3DataSourceVO<T extends Dnp3DataSourceVO<?>> extends
 		eventTypes.add(createEventType(
 				Dnp3DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointWrite")));
+		eventTypes.add(createEventType(
+				Dnp3DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -46,6 +49,8 @@ abstract public class Dnp3DataSourceVO<T extends Dnp3DataSourceVO<?>> extends
 				"POINT_READ_EXCEPTION");
 		EVENT_CODES.addElement(Dnp3DataSource.POINT_WRITE_EXCEPTION_EVENT,
 				"POINT_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(Dnp3DataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override

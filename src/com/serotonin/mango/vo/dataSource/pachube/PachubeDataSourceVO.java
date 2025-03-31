@@ -49,14 +49,14 @@ public class PachubeDataSourceVO extends DataSourceVO<PachubeDataSourceVO> {
     protected void addEventTypes(List<EventTypeVO> ets) {
         ets.add(createEventType(PachubeDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, new LocalizableMessage(
                 "event.ds.dataRetrieval")));
-        ets
-                .add(createEventType(PachubeDataSourceRT.PARSE_EXCEPTION_EVENT, new LocalizableMessage(
-                        "event.ds.dataParse")));
+        ets.add(createEventType(PachubeDataSourceRT.PARSE_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.dataParse")));
         ets.add(createEventType(PachubeDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.pointWrite")));
         ets.add(createEventType(PachubeDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, new LocalizableMessage(
-                "event.ds.initialization"
-        )));
+                "event.ds.initialization")));
+        ets.add(createEventType(PachubeDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -65,6 +65,7 @@ public class PachubeDataSourceVO extends DataSourceVO<PachubeDataSourceVO> {
         EVENT_CODES.addElement(PachubeDataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
         EVENT_CODES.addElement(PachubeDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, "POINT_WRITE_EXCEPTION");
         EVENT_CODES.addElement(PachubeDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, "INITIALIZATION_EXCEPTION");
+        EVENT_CODES.addElement(PachubeDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

@@ -81,7 +81,6 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.timer.FixedRateTrigger;
@@ -101,6 +100,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     public static final int INITIALIZATION_EXCEPTION_EVENT = 1;
     public static final int MESSAGE_EXCEPTION_EVENT = 2;
     public static final int DEVICE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
     final Log log = LogFactory.getLog(BACnetIPDataSourceRT.class);
     final BACnetIPDataSourceVO vo;
@@ -814,5 +814,10 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
     private boolean isInitialized(LocalDevice localDevice) {
         return localDevice != null && localDevice.isInitialized() && super.isInitialized();
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }
