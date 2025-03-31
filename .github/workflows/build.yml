@@ -10,7 +10,7 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 11
@@ -38,7 +38,7 @@ jobs:
           check_name: Java JUnit Test Results
           files: ./build/test-results/**/*.xml
       - name: Publish JUnit Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: junit-java-test-results
           path: ./build/test-reports/
@@ -54,7 +54,7 @@ jobs:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -81,7 +81,7 @@ jobs:
           check_name: Java Script Mocha Unit Test Results
           files: ./scadalts-ui/test-results.xml
       - name: Publish Mocha Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mocha-js-test-results
           path: ./scadalts-ui/test-results.xml
@@ -110,7 +110,7 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK
@@ -166,7 +166,7 @@ jobs:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
       - name: Deploy WAR artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Scada-LTS
           path: ./build/libs/Scada-LTS.war
@@ -176,7 +176,7 @@ jobs:
     needs: [ war ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
