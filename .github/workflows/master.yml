@@ -151,7 +151,7 @@ jobs:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
       - name: Deploy WAR artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Scada-LTS
           path: ./build/libs/Scada-LTS.war
