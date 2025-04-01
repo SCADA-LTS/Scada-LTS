@@ -196,17 +196,6 @@ public class ImportTask extends ProgressiveTask {
 							vo.setTextRenderer(new PlainRenderer());
 							vo.setEventTextRenderer(new NoneEventRenderer());
 
-							if (vo.getPointLocator() instanceof VMStatPointLocatorVO) {
-								JsonObject pointLocatorJson = dataPoint.getJsonObject("pointLocator");
-								if (pointLocatorJson != null) {
-									JsonValue valueJson = pointLocatorJson.getProperties().get("attributeId");
-									if (valueJson != null) {
-										int attributeId = Integer.parseInt(((JsonNumber) valueJson).getValue());
-										((VMStatPointLocatorVO) vo.getPointLocator()).setAttributeId(attributeId);
-									}
-								}
-							}
-
 							boolean isnew = vo.isNew();
 
 							// Check if this data source is enabled. Because

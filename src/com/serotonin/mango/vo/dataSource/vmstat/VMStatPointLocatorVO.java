@@ -155,10 +155,10 @@ public class VMStatPointLocatorVO extends AbstractPointLocatorVO implements Json
 
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
-        String text = json.getString("attributeId");
+        String text = json.getInt("attributeId").toString();
         if (text == null)
             throw new LocalizableJsonException("emport.error.missing", "attributeId", ATTRIBUTE_CODES.getCodeList());
-        attributeId = ATTRIBUTE_CODES.getId(text);
+        attributeId = Integer.parseInt(text);
         if (!ATTRIBUTE_CODES.isValidId(attributeId))
             throw new LocalizableJsonException("emport.error.invalid", "attributeId", text, ATTRIBUTE_CODES
                     .getCodeList());
