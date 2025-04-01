@@ -902,7 +902,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.purgeValuesPeriodDefault"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgePointValuesPeriodDefault"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>">
