@@ -10,13 +10,13 @@ public class SettingsDataRetention {
     private int futureDateLimitPeriodType;
     private int futureDateLimitPeriods;
     private int valuesLimitForPurge;
-    private int defaultPurgePeriod;
-    private int defaultPurgePeriodType;
+    private int purgePeriodDefault;
+    private int purgePeriodTypeDefault;
 
     public SettingsDataRetention() {
     }
 
-    public SettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge, int defaultPurgePeriod, int defaultPurgePeriodType) {
+    public SettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge, int purgePeriodDefault, int purgePeriodTypeDefault) {
         this.groveLogging = groveLogging;
         this.eventPurgePeriodType = eventPurgePeriodType;
         this.eventPurgePeriods = eventPurgePeriods;
@@ -25,8 +25,8 @@ public class SettingsDataRetention {
         this.futureDateLimitPeriodType = futureDateLimitPeriodType;
         this.futureDateLimitPeriods = futureDateLimitPeriods;
         this.valuesLimitForPurge = valuesLimitForPurge;
-        this.defaultPurgePeriod = defaultPurgePeriod;
-        this.defaultPurgePeriodType = defaultPurgePeriodType;
+        this.purgePeriodDefault = purgePeriodDefault;
+        this.purgePeriodTypeDefault = purgePeriodTypeDefault;
     }
 
     public boolean isGroveLogging() {
@@ -93,19 +93,19 @@ public class SettingsDataRetention {
         this.valuesLimitForPurge = valuesLimitForPurge;
     }
 
-    public int getDefaultPurgePeriod() {
-        return defaultPurgePeriod;
+    public int getPurgePeriodDefault() {
+        return purgePeriodDefault;
     }
 
-    public void setDefaultPurgePeriod(int defaultPurgePeriod) {
-        this.defaultPurgePeriod = defaultPurgePeriod;
+    public void setPurgePeriodDefault(int purgePeriodDefault) {
+        this.purgePeriodDefault = purgePeriodDefault;
     }
 
-    public int getDefaultPurgePeriodType() {
-        return defaultPurgePeriodType;
+    public int getPurgePeriodTypeDefault() {
+        return purgePeriodTypeDefault;
     }
 
-    public void setDefaultPurgePeriodType(int defaultPurgePeriodType) {
-        this.defaultPurgePeriodType = defaultPurgePeriodType;
+    public void setPurgePeriodTypeDefault(int purgePeriodTypeDefault) {
+        this.purgePeriodTypeDefault = purgePeriodTypeDefault;
     }
 }

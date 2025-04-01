@@ -199,6 +199,6 @@ public final class TestUtils {
 	}
 
 	public static DataPointVO newDefaultEmptyDataPointVO(){
-		return new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getDefaultPurgePeriodType(), SystemSettingsUtils.getDefaultPurgePeriod());
+		return new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault(), SystemSettingsUtils.getPurgePointValuesPeriodDefault());
 	}
 }

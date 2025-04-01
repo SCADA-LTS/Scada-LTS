@@ -229,7 +229,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
 			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
 			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
-			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getDefaultPurgePeriodType(), SystemSettingsUtils.getDefaultPurgePeriod());
+			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault(), SystemSettingsUtils.getPurgePointValuesPeriodDefault());
 			dataPointVO.setId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
 			pointEventDetector.njbSetDataPoint(dataPointVO);
 			return pointEventDetector;
