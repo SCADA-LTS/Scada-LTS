@@ -87,7 +87,7 @@ public final class SystemSettingsUtils {
     private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
 
     private static final String DEFAULT_PURGE_PERIOD = "systemsettings.purge-values.period-default";
-    private static final String DEFAULT_PURGE_PERIOD_TYPE = "systemsettings.default-purge.values-type-period";
+    private static final String DEFAULT_PURGE_PERIOD_TYPE = "systemsettings.purge-values.period-type-default";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -767,22 +767,24 @@ public final class SystemSettingsUtils {
     }
 
     public static int getDefaultPurgePeriod() {
+        int defaultValue = 1;
         try {
             String period = ScadaConfig.getInstance().getConf().getProperty(DEFAULT_PURGE_PERIOD, "1");
             return Integer.parseInt(period);
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            return 0;
+            return defaultValue;
         }
     }
 
     public static int getDefaultPurgePeriodType() {
+        int defaultValue = 7;
         try {
             String periodType = ScadaConfig.getInstance().getConf().getProperty(DEFAULT_PURGE_PERIOD_TYPE, "7");
             return Integer.parseInt(periodType);
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            return 7;
+            return defaultValue;
         }
     }
 }
