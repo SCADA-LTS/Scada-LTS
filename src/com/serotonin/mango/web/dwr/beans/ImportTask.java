@@ -45,7 +45,6 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
-import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
