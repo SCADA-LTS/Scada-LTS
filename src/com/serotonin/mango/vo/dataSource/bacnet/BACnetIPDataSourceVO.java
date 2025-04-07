@@ -261,8 +261,6 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
                 response.addContextualMessage("broadcastAddress", "validate.illegalValue");
         }
 
-        DataSourceUtils.checkPort(response, port);
-
         if (timeout < 0)
             response.addContextualMessage("timeout", "validate.cannotBeNegative");
         if (segTimeout < 0)

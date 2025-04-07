@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -27,7 +26,6 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.serotonin.bacnet4j.LocalDevice;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
@@ -41,7 +39,6 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
@@ -201,18 +198,5 @@ public class DataSourceUtils {
 
 	public static String generateCopyName(ResourceBundle bundle, String name, int length) {
 		return StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", name), length);
-	}
-
-	public static DwrResponseI18n checkPort(DwrResponseI18n response, int port) {
-		LocalDevice localDevice = new LocalDevice(0, "255.255.255.255");
-		localDevice.setPort(port);
-		try{
-			localDevice.initialize();
-		} catch (IOException e) {
-			response.addContextualMessage("port", "bacnet.invalid.port");
-		} finally {
-			localDevice.terminate();
-		}
-		return response;
 	}
 }
