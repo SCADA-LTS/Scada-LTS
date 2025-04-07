@@ -186,7 +186,7 @@ public final class CopyViewTestUtils {
         TextRenderer textRenderer = new MultistateRenderer();
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(value.getValue().getDataType());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         dataPointVO.setPointLocator(locatorFromContext);
         dataPointVO.setEventDetectors(Collections.emptyList());
         dataPointVO.setId(id);

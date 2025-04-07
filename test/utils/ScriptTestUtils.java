@@ -43,7 +43,7 @@ public class ScriptTestUtils {
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(mangoValue.getDataType());
 
-        DataPointVO pointFromContextVO = new DataPointVO(LoggingTypes.ON_CHANGE);
+        DataPointVO pointFromContextVO = TestUtils.newDefaultEmptyDataPointVO();
         pointFromContextVO.setPointLocator(locatorFromContext);
         pointFromContextVO.setEventDetectors(Collections.emptyList());
         pointFromContextVO.setId(pointFromContextId);
