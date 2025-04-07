@@ -10,11 +10,13 @@ public class SettingsDataRetention {
     private int futureDateLimitPeriodType;
     private int futureDateLimitPeriods;
     private int valuesLimitForPurge;
+    private int purgePeriodDefault;
+    private int purgePeriodTypeDefault;
 
     public SettingsDataRetention() {
     }
 
-    public SettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge) {
+    public SettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge, int purgePeriodDefault, int purgePeriodTypeDefault) {
         this.groveLogging = groveLogging;
         this.eventPurgePeriodType = eventPurgePeriodType;
         this.eventPurgePeriods = eventPurgePeriods;
@@ -23,6 +25,8 @@ public class SettingsDataRetention {
         this.futureDateLimitPeriodType = futureDateLimitPeriodType;
         this.futureDateLimitPeriods = futureDateLimitPeriods;
         this.valuesLimitForPurge = valuesLimitForPurge;
+        this.purgePeriodDefault = purgePeriodDefault;
+        this.purgePeriodTypeDefault = purgePeriodTypeDefault;
     }
 
     public boolean isGroveLogging() {
@@ -87,5 +91,21 @@ public class SettingsDataRetention {
 
     public void setValuesLimitForPurge(int valuesLimitForPurge) {
         this.valuesLimitForPurge = valuesLimitForPurge;
+    }
+
+    public int getPurgePeriodDefault() {
+        return purgePeriodDefault;
+    }
+
+    public void setPurgePeriodDefault(int purgePeriodDefault) {
+        this.purgePeriodDefault = purgePeriodDefault;
+    }
+
+    public int getPurgePeriodTypeDefault() {
+        return purgePeriodTypeDefault;
+    }
+
+    public void setPurgePeriodTypeDefault(int purgePeriodTypeDefault) {
+        this.purgePeriodTypeDefault = purgePeriodTypeDefault;
     }
 }

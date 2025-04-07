@@ -86,6 +86,9 @@ public final class SystemSettingsUtils {
 
     private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
 
+    private static final String PURGE_POINT_VALUES_PERIOD_DEFAULT = "systemsettings.purge-point-values.period-default";
+    private static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT = "systemsettings.purge-point-values.period-type-default";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -757,6 +760,28 @@ public final class SystemSettingsUtils {
         try {
             String value = ScadaConfig.getInstance().getConf().getProperty(VALIDATION_SEARCH_CYCLIC_DEPTH_KEY, String.valueOf(defaultValue));
             return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getPurgePointValuesPeriodDefault() {
+        int defaultValue = 1;
+        try {
+            String period = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_DEFAULT, "1");
+            return Integer.parseInt(period);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getPurgePointValuesPeriodTypeDefault() {
+        int defaultValue = 7;
+        try {
+            String periodType = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, "7");
+            return Integer.parseInt(periodType);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;

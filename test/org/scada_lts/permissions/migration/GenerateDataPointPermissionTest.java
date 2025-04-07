@@ -4,6 +4,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Test;
+import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.generateDataPointAccess;
@@ -15,7 +16,7 @@ public class GenerateDataPointPermissionTest {
 
         //given:
         int dataPointIdExpected = 123;
-        DataPointVO dataPoint = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint.setId(dataPointIdExpected);
         ShareUser shareUser = new ShareUser(1234, ShareUser.ACCESS_SET);
 
@@ -34,7 +35,7 @@ public class GenerateDataPointPermissionTest {
         int permissionExpected = ShareUser.ACCESS_SET;
         int setAccess = ShareUser.ACCESS_SET;
 
-        DataPointVO dataPoint = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint.setId(123);
         dataPoint.setSettable(settable);
         ShareUser shareUser = new ShareUser(1234, setAccess);
@@ -53,7 +54,7 @@ public class GenerateDataPointPermissionTest {
         int permissionExpected = ShareUser.ACCESS_READ;
         int readAccess = ShareUser.ACCESS_READ;
 
-        DataPointVO dataPoint = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint.setId(123);
         dataPoint.setSettable(settable);
         ShareUser shareUser = new ShareUser(1234, readAccess);
@@ -72,7 +73,7 @@ public class GenerateDataPointPermissionTest {
         int permissionExpected = ShareUser.ACCESS_READ;
         int setAccess = ShareUser.ACCESS_SET;
 
-        DataPointVO dataPoint = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint.setId(123);
         dataPoint.setSettable(settable);
         ShareUser shareUser = new ShareUser(1234, setAccess);
@@ -91,7 +92,7 @@ public class GenerateDataPointPermissionTest {
         int permissionExpected = ShareUser.ACCESS_READ;
         int readAccess = ShareUser.ACCESS_READ;
 
-        DataPointVO dataPoint = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint.setId(123);
         dataPoint.setSettable(settable);
         ShareUser shareUser = new ShareUser(1234, readAccess);

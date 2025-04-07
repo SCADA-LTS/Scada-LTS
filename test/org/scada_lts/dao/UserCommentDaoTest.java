@@ -21,6 +21,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.UserComment;
 import org.junit.Test;
+import utils.TestUtils;
 
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class UserCommentDaoTest extends TestDAO {
 		userCommentDAO.update(firstId);
 
 		//Select all objects with TYPE_POINT
-		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
 		dataPoint.setId(2);
 		List<UserComment> userCommentList = userCommentDAO.getPointComments(dataPoint);
 		//Check list size

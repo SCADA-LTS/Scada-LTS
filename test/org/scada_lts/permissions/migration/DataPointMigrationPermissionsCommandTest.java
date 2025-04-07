@@ -388,37 +388,37 @@ public class DataPointMigrationPermissionsCommandTest {
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
 
 
-        DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint1 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint1.setId(dataPointId1);
         VirtualPointLocatorVO virtualPointLocator1 = new VirtualPointLocatorVO();
         virtualPointLocator1.setSettable(true);
         dataPoint1.setPointLocator(virtualPointLocator1);
 
-        DataPointVO dataPoint2 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint2 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint2.setId(dataPointId2);
         VirtualPointLocatorVO virtualPointLocator2 = new VirtualPointLocatorVO();
         virtualPointLocator2.setSettable(true);
         dataPoint2.setPointLocator(virtualPointLocator2);
 
-        DataPointVO dataPoint3 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint3 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint3.setId(dataPointId3);
         VirtualPointLocatorVO virtualPointLocator3 = new VirtualPointLocatorVO();
         virtualPointLocator3.setSettable(true);
         dataPoint3.setPointLocator(virtualPointLocator3);
 
-        DataPointVO dataPoint4 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint4 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint4.setId(dataPointId4);
         VirtualPointLocatorVO virtualPointLocator4 = new VirtualPointLocatorVO();
         virtualPointLocator4.setSettable(true);
         dataPoint4.setPointLocator(virtualPointLocator4);
 
-        DataPointVO dataPoint5 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint5 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint5.setId(dataPointId5);
         VirtualPointLocatorVO virtualPointLocator5 = new VirtualPointLocatorVO();
         virtualPointLocator5.setSettable(true);
         dataPoint5.setPointLocator(virtualPointLocator5);
 
-        DataPointVO dataPoint6 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint6 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint6.setId(dataPointId6);
         VirtualPointLocatorVO virtualPointLocator6 = new VirtualPointLocatorVO();
         virtualPointLocator6.setSettable(true);

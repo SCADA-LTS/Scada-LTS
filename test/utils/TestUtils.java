@@ -13,6 +13,7 @@ import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 public final class TestUtils {
 
@@ -88,7 +89,7 @@ public final class TestUtils {
 	}
 
 	public static DataPointVO newPointSettable(int id, int folderId) {
-		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
 		dataPoint1.setXid("DP_" + id);
 		dataPoint1.setName("dp_" + id);
@@ -105,7 +106,7 @@ public final class TestUtils {
 	}
 
 	public static DataPointVO newPointSettable(int id, DataSourceVO<?> dataSource, int folderId) {
-		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
 		dataPoint1.setXid("DP_" + id);
 		dataPoint1.setName("dp_" + id);
@@ -123,7 +124,7 @@ public final class TestUtils {
 
 	public static DataPointVO newPointSettable(int id, DataSourceVO<?> dataSource,
 											   int folderId, PointLocatorVO metaPointLocatorVO) {
-		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
 		dataPoint1.setXid("DP_" + id);
 		dataPoint1.setName("dp_" + id);
@@ -138,7 +139,7 @@ public final class TestUtils {
 	}
 
 	public static DataPointVO newPointNonSettable(int id, DataSourceVO<?> dataSource, int folderId) {
-		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
 		dataPoint1.setXid("DP_" + id);
 		dataPoint1.setName("dp_" + id);
@@ -180,7 +181,7 @@ public final class TestUtils {
 	}
 
 	public static DataPointVO newMetaPointSettable(int id, int folderId, List<IntValuePair> context) {
-		DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
 		dataPoint1.setXid("DP_" + id);
 		dataPoint1.setName("dp_" + id);
@@ -195,5 +196,9 @@ public final class TestUtils {
 		dataPoint1.setPointLocator(pointLocatorVO);
 		dataPoint1.setEventDetectors(new ArrayList<>());
 		return dataPoint1;
+	}
+
+	public static DataPointVO newDefaultEmptyDataPointVO(){
+		return new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault(), SystemSettingsUtils.getPurgePointValuesPeriodDefault());
 	}
 }
