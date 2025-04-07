@@ -752,12 +752,11 @@ var messages = {
 									  return n.data.xid;
 								  });
 								  $.ajax({
-									  type: "POST",
+									  type: "PUT",
 									  url: myLocation + 'api/pointHierarchy/moveBatch/',
 									  data: JSON.stringify({
 										  xids: xids,
 										  newParentIdFolder: targetNode.data.xid,
-										  keys: targetNode.data.key
 									  }),
 									  contentType: "application/json; charset=utf-8",
 									  dataType: "json",
@@ -902,7 +901,7 @@ var messages = {
 				callback: function(result) {
 					if(result) {
 						$.ajax({
-							type: "POST",
+							type: "DELETE",
 							url: myLocation + "api/pointHierarchy/deleteFolderMoveToRootBatch",
 							data: JSON.stringify({
 								xids: xids,

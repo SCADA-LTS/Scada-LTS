@@ -29,6 +29,7 @@ import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +47,18 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
     public List<FolderPointHierarchy> getFolders() {
         return getPointHierarchyDAO().getFolders();
+    }
+
+    public FolderPointHierarchy getFolderByXid(String xid) {
+        List<FolderPointHierarchy> folders = getFolders();
+        if (folders != null) {
+            for (FolderPointHierarchy folder : folders) {
+                if (Objects.equals(xid, folder.getXid())) {
+                    return folder;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean movePoint(String xidPoint, String xidFolder) {

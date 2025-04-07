@@ -328,70 +328,68 @@ public class PointHierarchyAPI {
         }
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/moveBatch", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/pointHierarchy/moveBatch", method = RequestMethod.PUT)
     public ResponseEntity<String> moveBatch(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/moveBatch newParentXidFolder: "
                 + pointHierarchyDTO.getNewParentIdFolder() + " keys: " + pointHierarchyDTO.getXids());
-        ResponseEntity<String> result = null;
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 boolean allMoved = true;
                 for (String xid : pointHierarchyDTO.getXids()) {
-                    if (xid.startsWith("DIR_")) {
-                        pointHierarchyXidService.moveFolder(xid, pointHierarchyDTO.getNewParentIdFolder());
+                    if (xid.startsWith("DIR_") && !xid.equals(pointHierarchyDTO.getNewParentIdFolder())) {
+                        if (!pointHierarchyXidService.moveFolder(xid, pointHierarchyDTO.getNewParentIdFolder())) {
+                            allMoved = false;
+                        }
                     } else {
-                        boolean moved = pointHierarchyXidService.movePoint(xid, pointHierarchyDTO.getNewParentIdFolder());
-                        if (!moved) {
+                        if (!pointHierarchyXidService.movePoint(xid, pointHierarchyDTO.getNewParentIdFolder())) {
                             allMoved = false;
                         }
                     }
                 }
-                result = new ResponseEntity<String>(String.valueOf(allMoved), HttpStatus.OK);
+                return new ResponseEntity<>(String.valueOf(allMoved), HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/deleteFolderMoveToRootBatch", method = RequestMethod.POST)
-    public ResponseEntity<String> deleteFolderMoveToRootBatch(
-            @RequestBody PointHierarchyDTO pointHierarchyDTO,
-            HttpServletRequest request) {
+    @DeleteMapping(value = "/api/pointHierarchy/deleteFolderMoveToRootBatch")
+    public ResponseEntity<String> deleteFolderMoveToRootBatch(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/deleteFolderMoveToRootBatch keys: " + pointHierarchyDTO.getXids());
-        ResponseEntity<String> result = null;
         try {
             User user = Common.getUser(request);
-            if (user.isAdmin()) {
-                boolean allSuccess = true;
-                for (String xid : pointHierarchyDTO.getXids()) {
-                    if (xid.startsWith("DIR_")) {
-                        for (FolderPointHierarchy folder : pointHierarchyXidService.getFolders()){
-                            if (Objects.equals(folder.getXid(), xid) && folder.getParentXid() != null){
-                                pointHierarchyXidService.moveFolder(xid, "_");
-                            } else if (Objects.equals(folder.getXid(), xid) && folder.getParentXid() == null) {
-                                pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
+            if (!user.isAdmin()) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+            boolean allSuccess = true;
+            for (String xid : pointHierarchyDTO.getXids()) {
+                if (xid.startsWith("DIR_")) {
+                    FolderPointHierarchy folder = pointHierarchyXidService.getFolderByXid(xid);
+                    if (folder != null) {
+                        if (folder.getParentXid() != null) {
+                            if (!pointHierarchyXidService.moveFolder(xid, "_")) {
+                                allSuccess = false;
                             }
+                        } else {
+                            pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
                         }
                     } else {
-                        boolean moved = pointHierarchyXidService.movePoint(xid, "_");
-                        if (!moved) {
-                            allSuccess = false;
-                        }
+                        allSuccess = false;
+                    }
+                } else {
+                    if (!pointHierarchyXidService.movePoint(xid, "_")) {
+                        allSuccess = false;
                     }
                 }
-                result = new ResponseEntity<String>(String.valueOf(allSuccess), HttpStatus.OK);
-            } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
             }
+            return new ResponseEntity<>(String.valueOf(allSuccess), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return result;
     }
 }
