@@ -716,7 +716,7 @@ public class EventService implements MangoEvent {
 	}
 
 	public List<EventInstance> searchNew(String[] eventSourceTypes, String[] statuses, String[] alarmLevels,
-			Date startDate, Date endDate, String[] keywordArr, int userId, ResourceBundle bundle)
+			Date startDate, Date endDate, String[] keywordArr, int userId, ResourceBundle bundle, int eventId)
 	{
 		List<EventInstance> results = eventDAO.searchNew(
 				eventSourceTypes,
@@ -726,7 +726,8 @@ public class EventService implements MangoEvent {
 				endDate,
 				keywordArr,
 				userId,
-				bundle
+				bundle,
+				eventId
 		);
 
 		return results;

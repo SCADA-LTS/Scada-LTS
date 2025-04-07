@@ -1609,7 +1609,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			Date endDate,
 			String[] keywordArr,
 			int userId,
-			ResourceBundle bundle
+			ResourceBundle bundle,
+			int eventId
 	) {
 		QueryUtils.EventSearchQuery eq = QueryUtils.buildSearchSql(
 				userId,
@@ -1618,7 +1619,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				alarmLevels,
 				startDate,
 				endDate,
-				keywordArr
+				keywordArr,
+				eventId
 		);
 
 		final List<EventInstance> results = new ArrayList<>();

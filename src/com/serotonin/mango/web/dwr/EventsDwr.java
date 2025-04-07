@@ -286,14 +286,15 @@ public class EventsDwr extends BaseDwr {
 			String[] alarmLevels,
 			String startDateStr,
 			String endDateStr,
-			String keywords)
+			String keywords,
+			int eventId)
 	{
 		DwrResponseI18n response = new DwrResponseI18n();
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		User user = Common.getUser(request);
 
 		// Parse the date strings
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy");
 		Date startDate = null;
 		Date endDate = null;
 
@@ -318,7 +319,8 @@ public class EventsDwr extends BaseDwr {
 				endDate,
 				keywordArr,
 				user.getId(),
-				getResourceBundle()
+				getResourceBundle(),
+				eventId
 		);
 
 		// Prepare the JSP model

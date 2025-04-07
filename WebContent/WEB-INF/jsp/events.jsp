@@ -151,8 +151,9 @@
       var startDate = jQuery('#startDate').val();
       var endDate   = jQuery('#endDate').val();
       var keywords  = jQuery('#keywords').val();
+      var eventIdStr = jQuery('#eventId').val();
+      var eventId = eventIdStr ? parseInt(eventIdStr, 10) : 0;
 
-      // Disable the Search button while searching (optional)
       jQuery('#searchBtn').prop('disabled', true);
       jQuery('#searchMessage').text("Searching...");
 
@@ -164,6 +165,7 @@
               startDate,
               endDate,
               keywords,
+              eventId,
               function(response) {
                 jQuery('#searchBtn').prop('disabled', false);
 
@@ -249,9 +251,18 @@
 
   <div class="borderDiv" style="clear:left; float:left;" id="eventSearchForm">
     <h3><spring:message code="events.search"/></h3>
+
+    <!-- Keywords -->
+    <div style="display: flex; margin-bottom: 1em; align-items: center;">
+      <label for="keywords" style="display:inline-block; font-weight:bold;">
+        <spring:message code="events.search.keywords"/>:
+      </label>
+      <input type="text" id="keywords" name="keywords" style="flex: 1;"/>
+    </div>
+
     <!-- Date range fields -->
     <div style="margin-bottom: 1em; white-space: nowrap;">
-      <label for="startDate" style="display:inline-block;">
+      <label for="startDate" style="display:inline-block; font-weight:bold;">
         <spring:message code="events.search.startDate"/>:
       </label>
       <input type="text" id="startDate" name="startDate" class="datepicker" />
@@ -263,7 +274,7 @@
               id="startDateIcon"
       />
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <label for="endDate" style="display:inline-block;">
+      <label for="endDate" style="display:inline-block; font-weight:bold;">
         <spring:message code="events.search.endDate"/>:
       </label>
       <input type="text" id="endDate" name="endDate" class="datepicker" />
@@ -274,21 +285,19 @@
               style="cursor:pointer; vertical-align: middle;"
               id="endDateIcon"
       />
-    </div>
-
-    <!-- Keywords -->
-    <div style="margin-bottom: 1em;">
-      <label for="keywords" style="display:inline-block; width:80px;">
-        <spring:message code="events.search.keywords"/>:
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <!-- eventID search -->
+      <label for="eventId" style="display:inline-block; font-weight:bold;">
+        <spring:message code="events.search.id"/>:
       </label>
-      <input type="text" id="keywords" name="keywords" />
+      <input type="text" id="eventId" name="eventId" style="width:80px;"/>
     </div>
 
     <!-- Checkbox groups in 3 columns -->
     <div style="display: flex; gap: 2rem;">
 
       <!-- Column 1: Event source type -->
-      <div style="flex: 1;">
+      <div style="flex: none; white-space: nowrap;">
         <strong><spring:message code="events.search.type"/>:</strong>
         <div>
           <label>
@@ -341,7 +350,7 @@
       </div>
 
       <!-- Column 2: Alarm level -->
-      <div style="flex: 1;">
+      <div style="flex: none; white-space: nowrap;">
         <strong><spring:message code="common.alarmLevel"/>:</strong>
         <div>
           <label>
@@ -376,7 +385,7 @@
       </div>
 
       <!-- Column 3: Status -->
-      <div style="flex: 1;">
+      <div style="flex: none; white-space: nowrap;">
         <strong><spring:message code="common.status"/>:</strong>
         <div>
           <label>

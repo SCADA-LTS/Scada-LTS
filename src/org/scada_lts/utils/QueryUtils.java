@@ -55,7 +55,8 @@ public final class QueryUtils {
             String[] alarmLevels,
             Date startDate,
             Date endDate,
-            String[] keywordArr
+            String[] keywordArr,
+            int eventId
     ) {
         StringBuilder sql = new StringBuilder();
         List<String> where = new ArrayList<>();
@@ -69,6 +70,7 @@ public final class QueryUtils {
         addAlarmLevelsCondition(alarmLevels, where, params);
         addDateCondition(startDate, endDate, where, params);
         addKeywordsCondition(keywordArr, where, params);
+        addEventIdCondition(eventId, where, params);
 
         for (String condition : where) {
             sql.append(" AND ").append(condition);
@@ -151,6 +153,17 @@ public final class QueryUtils {
             if (!orKeywords.isEmpty()) {
                 where.add("(" + String.join("OR", orKeywords) + ")");
             }
+        }
+    }
+
+    private static void addEventIdCondition(
+            int eventId,
+            List<String> where,
+            List<Object> params
+    ) {
+        if (eventId > 0) {
+            where.add(" e.id = ? ");
+            params.add(eventId);
         }
     }
 }
