@@ -7,6 +7,7 @@ import com.serotonin.mango.vo.IntervalLoggingType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.TestUtils;
 
 import java.util.function.Predicate;
 
@@ -70,7 +71,7 @@ public class DataPointLoggingIntervalUpdateDataPointTest {
     public void when_updateDataPoint_for_LoggingType_Interval() {
         //given:
         DataPointLoggingTypeProperties dataPointUpdate = DataPointLoggingTypeProperties.interval(intervalLoggingPeriodType, intervalLoggingPeriod, intervalLoggingType);
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         Predicate<DataPointVO> predicate = dataPoint ->
                 dataPoint.getLoggingType() == dataPointUpdate.getLoggingType().getCode()
                         && dataPoint.getIntervalLoggingPeriod() == dataPointUpdate.getIntervalPeriod()

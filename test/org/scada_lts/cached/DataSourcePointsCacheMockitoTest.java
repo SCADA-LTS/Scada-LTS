@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.scada_lts.cache.IDataPointsCacheWhenStart;
+import utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class DataSourcePointsCacheMockitoTest {
 	@Test
 	public void dataPoints() {
 		List<DataPointVO> dps = new ArrayList<DataPointVO>();
-		dps.add(new DataPointVO(LoggingTypes.ON_CHANGE));
+		dps.add(TestUtils.newDefaultEmptyDataPointVO());
 		
 		when(cache.getDataPoints(1L)).thenReturn(dps);
 		

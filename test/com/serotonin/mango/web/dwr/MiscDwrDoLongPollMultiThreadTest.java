@@ -69,7 +69,7 @@ public class MiscDwrDoLongPollMultiThreadTest {
         user.setId(534);
         user.setUsername(userName);
 
-        DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint1 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint1.setId(dataPointId1);
         dataPoint1.setXid("DP_TEST_123");
         dataPoint1.setName("point 1 mock");
@@ -79,7 +79,7 @@ public class MiscDwrDoLongPollMultiThreadTest {
         dataPoint1.setPointLocator(pointLocator1);
         user.setEditPoint(dataPoint1);
 
-        DataPointVO dataPoint2 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint2 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint2.setId(dataPointId2);
         dataPoint2.setXid("DP_TEST_124");
         dataPoint2.setName("point 2 mock");

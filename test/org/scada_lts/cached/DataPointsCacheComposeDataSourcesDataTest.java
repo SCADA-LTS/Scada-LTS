@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.scada_lts.cache.DataSourcePointsCache;
+import utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +35,13 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
-		DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dpvo = TestUtils.newDefaultEmptyDataPointVO();
 		dpvo.setDataSourceId(1);
 		
-		DataPointVO dpvo1 = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dpvo1 = TestUtils.newDefaultEmptyDataPointVO();
 		dpvo.setDataSourceId(2);
 		
-		DataPointVO dpvo2 = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dpvo2 = TestUtils.newDefaultEmptyDataPointVO();
 		dpvo.setDataSourceId(2);
 		
 		lst.add(dpvo);
@@ -58,7 +59,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
-		DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dpvo = TestUtils.newDefaultEmptyDataPointVO();
 		dpvo.setDataSourceId(1);
 		
 		lst.add(dpvo);
@@ -75,7 +76,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
 		for (int i=0; i<1000; i++) {
-			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
+			DataPointVO dpvo = TestUtils.newDefaultEmptyDataPointVO();
 			dpvo.setDataSourceId(1);
 			
 			lst.add(dpvo);
@@ -94,7 +95,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		int countOne = 0;
 		for (int i=0; i<1000; i++) {
-			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
+			DataPointVO dpvo = TestUtils.newDefaultEmptyDataPointVO();
 			dpvo.setDataSourceId(1);
 			
 			lst.add(dpvo);
@@ -102,7 +103,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		}
 		
 		for (int i=0; i<100;i++) {
-			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
+			DataPointVO dpvo = TestUtils.newDefaultEmptyDataPointVO();
 			if (i+1==1) {
 				countOne++;
 			}
