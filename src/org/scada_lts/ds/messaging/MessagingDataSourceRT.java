@@ -26,6 +26,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
     public static final int DATA_POINT_PUBLISH_EXCEPTION_EVENT = 2;
     public static final int DATA_POINT_INIT_EXCEPTION_EVENT = 3;
     public static final int DATA_POINT_UPDATE_EXCEPTION_EVENT = 4;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 5;
 
     private static final Log LOG = LogFactory.getLog(MessagingDataSourceRT.class);
 
@@ -165,5 +166,10 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_UPDATE_EXCEPTION_EVENT, System.currentTimeMillis());
             return null;
         };
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

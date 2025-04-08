@@ -20,6 +20,31 @@
 <!-- <p> -->
 <!--   Internal data points can be created to monitor specific values that monitor the internal workings of Scada-LTS. -->
 <!-- </p> -->
-<h1>Descri&ccedil;&atilde;o Geral</h1>
-<p>Data points Internal podem ser criados para monitorar valores
-	espec&iacute;ficos que monitoram os processos internos do Scada-LTS.</p>
+<body>
+<h1>Visão Geral</h1>
+
+<p>Pontos de dados internos podem ser criados para monitorar valores específicos que controlam o funcionamento interno do Scada-LTS.</p>
+
+<h3>Valores de pontos a serem escritos</h3>
+<p>Este atributo monitora o número de valores de pontos que estão aguardando para serem escritos, refletindo a carga de trabalho do mecanismo de processamento em lote.</p>
+
+<h3>Threads de escrita dos valores de pontos</h3>
+<p>Este atributo indica as threads que estão lidando com o processo de escrita dos valores de pontos, fornecendo uma visão de como o sistema distribui a carga de trabalho da escrita em lote.</p>
+
+<h3>Itens de trabalho de alta prioridade</h3>
+<p>Este atributo rastreia os itens de trabalho de alta prioridade na fila de processamento, permitindo que os administradores identifiquem e respondam rapidamente a atrasos críticos no processamento.</p>
+
+<h3>Itens de trabalho de prioridade média</h3>
+<p>Este atributo reflete os itens de trabalho com um nível de prioridade média que estão aguardando execução, ajudando a avaliar a carga de trabalho rotineira do sistema.</p>
+
+<h3>Itens de trabalho agendados</h3>
+<p>Este atributo representa os itens de trabalho que estão agendados para serem executados em intervalos específicos, garantindo que as tarefas periódicas sejam realizadas em tempo hábil.</p>
+
+<h3>Altura máxima da pilha de threads</h3>
+<p>Este atributo mostra a profundidade máxima da pilha de threads, indicando o nível de operações aninhadas que podem impactar o desempenho ou revelar problemas potenciais.</p>
+
+<h3>Contagem de threads ativas</h3>
+<p>Este atributo monitora o número de threads ativas, oferecendo uma visão geral sobre a concorrência e a carga do sistema.</p>
+
+<p>Para mais detalhes ou orientações de configuração, consulte a documentação do sistema ou entre em contato com o suporte.</p>
+</body>

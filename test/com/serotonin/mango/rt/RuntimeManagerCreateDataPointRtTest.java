@@ -19,6 +19,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.springframework.jdbc.core.JdbcTemplate;
+import utils.TestUtils;
 
 import java.util.ArrayList;
 
@@ -56,7 +57,7 @@ public class RuntimeManagerCreateDataPointRtTest {
         virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
         virtualPointLocatorVO.getNoChange().setStartValue("0.123");
 
-        dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         dataPointVO.setId(321);
         dataPointVO.setDefaultCacheSize(10);
         dataPointVO.setTolerance(0.0);

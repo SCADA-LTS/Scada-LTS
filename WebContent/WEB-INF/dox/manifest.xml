@@ -431,4 +431,12 @@
   <item id="opcUaPP">
     <relation id="opcUaDS"/>
   </item>
+
+  <item id="internalPP">
+    <relation id="internalDS"/>
+  </item>
+
+  <item id="internalDS">
+    <relation id="internalPP"/>
+  </item>
 </doxManifest>

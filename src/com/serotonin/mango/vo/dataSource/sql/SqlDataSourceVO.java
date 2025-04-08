@@ -56,6 +56,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				new LocalizableMessage("event.ds.dataSource")));
 		ets.add(createEventType(SqlDataSourceRT.STATEMENT_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.statement")));
+		ets.add(createEventType(SqlDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -64,6 +66,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				"DATA_SOURCE_EXCEPTION");
 		EVENT_CODES.addElement(SqlDataSourceRT.STATEMENT_EXCEPTION_EVENT,
 				"STATEMENT_EXCEPTION");
+		EVENT_CODES.addElement(SqlDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override

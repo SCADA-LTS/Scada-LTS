@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.PurgeType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.TestUtils;
 
 import java.util.function.Predicate;
 
@@ -41,7 +42,7 @@ public class DataPointPurgeTypeUpdateDataPointTest {
     public void when_updateDataPoint_for_LoggingType_Interval() {
         //given:
         DataPointPurgeTypeProperties dataPointUpdate = new DataPointPurgeTypeProperties(purgeType, purgePeriod);
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         Predicate<DataPointVO> predicate = dataPoint ->
                 dataPoint.getPurgeType() == dataPointUpdate.getPurgeType().getCode()
                         && dataPoint.getPurgePeriod() == dataPointUpdate.getPurgePeriod();

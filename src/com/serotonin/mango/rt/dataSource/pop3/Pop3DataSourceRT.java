@@ -49,6 +49,7 @@ public class Pop3DataSourceRT extends PollingDataSource {
     public static final int INBOX_EXCEPTION_EVENT = 1;
     public static final int MESSAGE_READ_EXCEPTION_EVENT = 2;
     public static final int PARSE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
     private final Pop3DataSourceVO vo;
 
@@ -228,5 +229,10 @@ public class Pop3DataSourceRT extends PollingDataSource {
             // Save the new value
             dp.updatePointValue(new PointValueTime(value, valueTime));
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

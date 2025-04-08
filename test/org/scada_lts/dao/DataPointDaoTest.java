@@ -21,6 +21,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
+import utils.TestUtils;
 
 import java.util.List;
 
@@ -56,14 +57,14 @@ public class DataPointDaoTest extends TestDAO {
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x24ll', 'dataName', 2, 0);");
 
-		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
 		dataPoint.setXid(XID);
 		dataPoint.setDataSourceId(DATA_SOURCE_ID);
 		dataPoint.setDataSourceName(DATA_SOURCE_NAME);
 		dataPoint.setDataSourceXid(DATA_SOURCE_XID);
 		dataPoint.setDataSourceTypeId(DATA_SOURCE_TYPE_ID);
 
-		DataPointVO secondDataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO secondDataPoint = TestUtils.newDefaultEmptyDataPointVO();
 		secondDataPoint.setXid(SECOND_XID);
 		secondDataPoint.setDataSourceId(SECOND_DATA_SOURCE_ID);
 		secondDataPoint.setDataSourceName(SECOND_DATA_SOURCE_NAME);
@@ -99,7 +100,7 @@ public class DataPointDaoTest extends TestDAO {
 		assertTrue(dataPointList.get(1).getId() == secondId);
 
 		//Update
-		DataPointVO dataPointUpdate = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dataPointUpdate = TestUtils.newDefaultEmptyDataPointVO();
 		dataPointUpdate.setId(firstId);
 		dataPointUpdate.setXid(UPDATE_XID);
 

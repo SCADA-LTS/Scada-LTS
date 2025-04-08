@@ -38,6 +38,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, "DATA_POINT_INIT_EXCEPTION");
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, "DATA_POINT_PUBLISH_EXCEPTION");
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_UPDATE_EXCEPTION_EVENT, "DATA_POINT_UPDATE_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 
     }
 
@@ -134,6 +135,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.initReceiver") ));
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointPublish") ));
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_UPDATE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointUpdate") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     @Override

@@ -79,12 +79,15 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         ets.add(createEventType(SnmpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.dataSource")));
         ets.add(createEventType(SnmpDataSourceRT.PDU_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pdu")));
+        ets.add(createEventType(SnmpDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
         EVENT_CODES.addElement(SnmpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(SnmpDataSourceRT.PDU_EXCEPTION_EVENT, "PDU_EXCEPTION");
+        EVENT_CODES.addElement(SnmpDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override
