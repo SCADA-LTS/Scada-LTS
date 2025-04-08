@@ -181,6 +181,8 @@ public class SystemSettingsService {
         settings.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         settings.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         settings.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        settings.setPurgePeriodDefault(SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT));
+        settings.setPurgePeriodTypeDefault(SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT));
         return settings;
     }
 
@@ -193,6 +195,8 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, settings.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, settings.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, settings.getValuesLimitForPurge());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT, settings.getPurgePeriodDefault());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, settings.getPurgePeriodTypeDefault());
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {

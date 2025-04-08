@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.PurgeType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.TestUtils;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -49,7 +50,7 @@ public class DataPointDiscardValuesUpdateDataPointTest {
     public void when_updateDataPoint_for_DiscardValues() {
         //given:
         DataPointDiscardValuesProperties dataPointUpdate = new DataPointDiscardValuesProperties(discardExtremeValues, discardHighLimit, discardLowLimit);
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         Predicate<DataPointVO> predicate = dataPoint -> dataPoint.isDiscardExtremeValues() == dataPointUpdate.isDiscardExtremeValues()
                         && Objects.equals(dataPoint.getDiscardHighLimit(), dataPointUpdate.getDiscardHighLimit())
                         && Objects.equals(dataPoint.getDiscardLowLimit(), dataPointUpdate.getDiscardLowLimit());

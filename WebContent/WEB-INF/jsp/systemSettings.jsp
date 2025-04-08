@@ -122,6 +122,8 @@
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>);
         });
 
 <%--
@@ -337,6 +339,8 @@
                     1,
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
                     function() {
                         stopImageFader("saveDataRetentionSettingsImg");
                         setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.dataRetentionSaved"/>");
@@ -894,6 +898,15 @@
           <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
             <tag:timePeriodOptions min="true" h="true"/>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgePointValuesPeriodDefault"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>">
+            <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
           </select>
         </td>
       </tr>

@@ -12,6 +12,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Test;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
+import utils.TestUtils;
 
 import static org.junit.Assert.*;
 
@@ -65,7 +66,7 @@ public class UpdateValuePointPropertiesTest {
     public void when_source_empty_then_data_point_no_change() {
 
         //given:
-        DataPointVO result = new DataPointVO(loggintTypeInterval);
+        DataPointVO result = TestUtils.newDefaultEmptyDataPointVO();
         result.setXid(dataPointXid);
         result.setId(dataPointId);
         result.setTextRenderer(textRenderer);
@@ -119,7 +120,7 @@ public class UpdateValuePointPropertiesTest {
     public void when_source_fields_set_then_data_point_change() {
 
         //given:
-        DataPointVO result = new DataPointVO(loggintTypeInterval);
+        DataPointVO result = TestUtils.newDefaultEmptyDataPointVO();
         result.setXid(dataPointXid);
         result.setId(dataPointId);
         result.setTextRenderer(textRenderer);

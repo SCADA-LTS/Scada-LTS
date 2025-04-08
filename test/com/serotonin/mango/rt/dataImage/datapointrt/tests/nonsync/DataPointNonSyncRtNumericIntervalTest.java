@@ -10,6 +10,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.ChangeTypeVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import org.junit.runners.Parameterized;
+import utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +54,7 @@ public class DataPointNonSyncRtNumericIntervalTest extends AbstractDataPointRtTe
         virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
         virtualPointLocatorVO.getNoChange().setStartValue(startValue);
 
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         dataPointVO.setId(321);
         dataPointVO.setName("test_dp");
         dataPointVO.setXid("test_dp_xid");

@@ -269,7 +269,7 @@ public class ConfigDataPointRtTest {
         virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
         virtualPointLocatorVO.getNoChange().setStartValue(startValue);
 
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         dataPointVO.setId(321);
         dataPointVO.setName("test_dp");
         dataPointVO.setXid("test_dp_xid");

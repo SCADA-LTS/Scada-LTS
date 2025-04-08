@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.dataImage.*;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.DataPointVO;
+import utils.TestUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,7 @@ public class ChangePointValueDataPointRtMock extends DataPointRT implements IDat
     private Iterator<PointValueTime> pointValueTimes;
 
     public ChangePointValueDataPointRtMock(List<PointValueTime> pointValueTimes) {
-        super(new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE), null);
+        super(TestUtils.newDefaultEmptyDataPointVO(), null);
         this.pointValueTimes = pointValueTimes.iterator();
     }
 

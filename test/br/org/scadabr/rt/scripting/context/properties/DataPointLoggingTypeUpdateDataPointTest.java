@@ -8,6 +8,7 @@ import com.serotonin.mango.vo.LoggingType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.TestUtils;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -67,7 +68,7 @@ public class DataPointLoggingTypeUpdateDataPointTest {
     public DataPointLoggingTypeUpdateDataPointTest(DataPointUpdate dataPointUpdate, Predicate<DataPointVO> predicate) {
         this.dataPointUpdate = dataPointUpdate;
         this.predicate = predicate;
-        this.dataPoint = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        this.dataPoint = TestUtils.newDefaultEmptyDataPointVO();
     }
 
     @Test
