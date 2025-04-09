@@ -23,22 +23,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.*;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.dataSource.vmstat.VMStatPointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
-import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static org.scada_lts.utils.ExportImportJsonUtils.getInt;
 
 /**
  * @author Matthew Lohbihler
@@ -86,7 +83,6 @@ public class VMStatPointLocatorVO extends AbstractPointLocatorVO implements Json
         ATTRIBUTE_CODES.addElement(Attributes.CPU_ST, "CPU_ST", "dsEdit.vmstat.attr.cpuSt");
     };
 
-    @JsonRemoteProperty
     private int attributeId = Attributes.CPU_ID;
 
     public boolean isSettable() {
@@ -155,7 +151,15 @@ public class VMStatPointLocatorVO extends AbstractPointLocatorVO implements Json
 
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
-        // no op
+        try {
+            this.attributeId = getInt("attributeId", json::getInt,
+                    attributeId -> attributeId == null || attributeId == 0,
+                    attributeId -> attributeId, ATTRIBUTE_CODES);
+        } catch (Exception ex) {
+            this.attributeId = getInt("attributeId", json::getString,
+                    Objects::isNull, attributeName -> ATTRIBUTE_CODES.getId(attributeName),
+                    ATTRIBUTE_CODES);
+        }
     }
 
     @Override
