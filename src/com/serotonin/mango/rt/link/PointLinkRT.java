@@ -159,17 +159,18 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 				}
 				newValue = pvt;
 			} catch (ScriptException e) {
+				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
 				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
 						"common.default", e.getMessage()));
-				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
 				return;
 			} catch (ResultTypeException e) {
-				raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
 				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
+				raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
 				return;
 			} catch (Exception e) {
 				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
-				throw e;
+				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+						"common.default", e.getMessage()));
 			}
 		}
 
