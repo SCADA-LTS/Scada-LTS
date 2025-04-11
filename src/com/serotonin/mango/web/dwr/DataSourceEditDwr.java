@@ -219,6 +219,7 @@ import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.TimeLocker;
 
 import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyAndSaveDataPoint;
+import static com.serotonin.mango.rt.dataSource.bacnet.BACnetUtils.checkFreePort;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
@@ -248,15 +249,20 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	private DwrResponseI18n tryDataSourceSave(DataSourceVO<?> ds) {
         Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
+        return tryDataSourceSave(ds, response);
+    }
 
-		ds.validate(response);
+    private DwrResponseI18n tryDataSourceSave(DataSourceVO<?> ds, DwrResponseI18n response) {
+        Permissions.ensureAdmin();
 
-		if (!response.getHasMessages()) {
-			LOG.debug("Trying to save datasource " + ds.getName());
-			Common.ctx.getRuntimeManager().saveDataSource(ds);
-			response.addData("id", ds.getId());
-			LOG.debug("Response: " + response.toString());
-		}
+        ds.validate(response);
+
+        if (!response.getHasMessages()) {
+            LOG.debug("Trying to save datasource " + ds.getName());
+            Common.ctx.getRuntimeManager().saveDataSource(ds);
+            response.addData("id", ds.getId());
+            LOG.debug("Response: " + response.toString());
+        }
 
         return response;
     }
@@ -1202,6 +1208,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         Permissions.ensureAdmin();
         BACnetIPDataSourceVO ds = (BACnetIPDataSourceVO) Common.getUser()
                 .getEditDataSource();
+        DwrResponseI18n response = new DwrResponseI18n();
 
         ds.setXid(xid);
         ds.setName(name);
@@ -1209,7 +1216,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setUpdatePeriodType(updatePeriodType);
         ds.setDeviceId(deviceId);
         ds.setBroadcastAddress(broadcastAddress);
-        ds.setPort(port);
+        if(ds.getPort() != port) {
+            checkFreePort(response, port);
+            if(!response.getHasMessages())
+                ds.setPort(port);
+        }
         ds.setTimeout(timeout);
         ds.setSegTimeout(segTimeout);
         ds.setSegWindow(segWindow);
@@ -1218,7 +1229,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setMaxReadMultipleReferencesSegmented(maxReadMultipleReferencesSegmented);
         ds.setMaxReadMultipleReferencesNonsegmented(maxReadMultipleReferencesNonsegmented);
 
-        return tryDataSourceSave(ds);
+        return tryDataSourceSave(ds, response);
     }
 
     

@@ -76,6 +76,13 @@ possibilita situa&ccedil;&otilde;es ondeo outro equipamento dentro da
 rede BACnet escute em outras portas, mas as mensagens de broadcast
 somente ser&atilde;o enviadas para a porta em que o Scada-LTS escuta.</p>
 
+<p>Por padrão, a porta é definida como <b>47808</b> (comumente representada como <b>0xBAC0</b>),
+que é a porta padrão para comunicação BACnet. No entanto, em alguns casos, pode ser necessário
+definir a porta como <b>0</b>. Definir a porta como <b>0</b> permite que o Mango
+detecte automaticamente a porta usada pelos dispositivos na rede, o que pode ser útil
+quando os dispositivos estão configurados para se comunicar em portas não padrão. Esse comportamento
+pode ajudar a resolver problemas relacionados a incompatibilidades de portas em determinadas configurações de rede.</p>
+
 <!--<p>The <b>Timeout</b>, <b>Segment timeout</b>, <b>Segment window</b>,-->
 <!--and <b>Retries</b> values are BACnet messaging attributes. In most cases-->
 <!--the given default values should be appropriate. Consult the BACnet I/P-->
