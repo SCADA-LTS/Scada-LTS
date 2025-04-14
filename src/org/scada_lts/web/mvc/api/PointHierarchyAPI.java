@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Create by at Grzesiek Bylica
@@ -328,9 +327,9 @@ public class PointHierarchyAPI {
         }
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/moveBatch", method = RequestMethod.PUT)
-    public ResponseEntity<String> moveBatch(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
-        LOG.info("/api/pointHierarchy/moveBatch newParentXidFolder: "
+    @RequestMapping(value = "/api/pointHierarchy/pointsMoveTo", method = RequestMethod.PUT)
+    public ResponseEntity<String> pointsMoveTo(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/pointsMoveTo newParentXidFolder: "
                 + pointHierarchyDTO.getNewParentIdFolder() + " keys: " + pointHierarchyDTO.getXids());
         try {
             User user = Common.getUser(request);
@@ -357,9 +356,9 @@ public class PointHierarchyAPI {
         }
     }
 
-    @DeleteMapping(value = "/api/pointHierarchy/deleteFolderMoveToRootBatch")
-    public ResponseEntity<String> deleteFolderMoveToRootBatch(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
-        LOG.info("/api/pointHierarchy/deleteFolderMoveToRootBatch keys: " + pointHierarchyDTO.getXids());
+    @DeleteMapping(value = "/api/pointHierarchy/deleteFolders")
+    public ResponseEntity<String> deleteFolders(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/deleteFolders keys: " + pointHierarchyDTO.getXids());
         try {
             User user = Common.getUser(request);
             if (!user.isAdmin()) {

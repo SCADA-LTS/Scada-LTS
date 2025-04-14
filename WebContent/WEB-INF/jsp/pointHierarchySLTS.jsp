@@ -731,49 +731,48 @@ var messages = {
     	    	      return false;
     	    	    }
     	        },
-				  dragDrop: function (targetNode, data) {
-					  var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
-					  if (!targetNode.folder) {
-						  return;
-					  }
-
-					  BootstrapDialog.confirm({
-						  title: "Moving elements",
-						  message: function (dialog) {
-							  var list = $('<ul></ul>');
-							  nodesToMove.forEach(function (n) {
-								  list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+			  dragDrop: function (targetNode, data) {
+					var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
+					if (!targetNode.folder) {
+						return;
+					}
+					BootstrapDialog.confirm({
+						title: "Moving elements",
+						message: function (dialog) {
+							var list = $('<ul></ul>');
+							nodesToMove.forEach(function (n) {
+								list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+							});
+							return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
+							},
+						callback: function (result) {
+							if (result) {
+								var xids = nodesToMove.map(function (n) {
+									return n.data.xid;
 							  });
-							  return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
-						  },
-						  callback: function (result) {
-							  if (result) {
-								  var xids = nodesToMove.map(function (n) {
-									  return n.data.xid;
-								  });
-								  $.ajax({
-									  type: "PUT",
-									  url: myLocation + 'api/pointHierarchy/moveBatch/',
-									  data: JSON.stringify({
-										  xids: xids,
-										  newParentIdFolder: targetNode.data.xid,
-									  }),
-									  contentType: "application/json; charset=utf-8",
-									  dataType: "json",
-									  success: function (msg) {
-										  BootstrapDialog.alert("Elements moved succesfully.");
-										  var tree = $("#tree").fancytree("getTree");
-										  tree.reload();
-										  refreshCache();
-									  },
-									  error: function (xhr, textStatus, errorThrown) {
-										  BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
-									  }
-								  });
-							  }
-						  }
-					  });
-				  }
+								$.ajax({
+									type: "PUT",
+									url: myLocation + 'api/pointHierarchy/pointsMoveTo/',
+									data: JSON.stringify({
+										xids: xids,
+										newParentIdFolder: targetNode.data.xid,
+									}),
+									contentType: "application/json; charset=utf-8",
+									dataType: "json",
+									success: function (msg) {
+										BootstrapDialog.alert("Elements moved succesfully.");
+										var tree = $("#tree").fancytree("getTree");
+										tree.reload();
+										refreshCache();
+										},
+									error: function (xhr, textStatus, errorThrown) {
+										BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
+									}
+								});
+							}
+						}
+					});
+				}
     	      },
     	      glyph: glyph_opts,
     	      selectMode: 2,
@@ -854,74 +853,73 @@ var messages = {
  		      }]
  		    });
     	});
-		$("button#deleteNode").click(function(){
-			var tree = $("#tree").fancytree("getTree");
-			var selectedNodes = tree.getSelectedNodes();
+    	$("button#deleteNode").click(function(){
+    		var tree = $("#tree").fancytree("getTree");
+    		var selectedNodes = tree.getSelectedNodes();
+    			if(selectedNodes.length === 0) {
+    				BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_WARNING,
+                        title: messages.warning,
+                        message: messages.pleaseSelectElement,
+                        buttons: [{
+							label: messages.close,
+							action: function(dialog) {
+								dialog.close();
+           		           }
+                        }]
+                    });
+    				return;
+    			}
 
-			if(selectedNodes.length === 0) {
-				BootstrapDialog.show({
-					type: BootstrapDialog.TYPE_WARNING,
-					title: messages.warning,
-					message: messages.pleaseSelectElement,
-					buttons: [{
-						label: messages.close,
-						action: function(dialog) {
-							dialog.close();
-						}
-					}]
-				});
-				return;
-			}
+    		var childrenXids = [];
 
-			var childrenXids = [];
+    		var xids = selectedNodes.map(function(n) {
+    			return n.data.xid;
+    		});
 
-			var xids = selectedNodes.map(function(n) {
-				return n.data.xid;
-			});
-
-			selectedNodes.forEach(function(n) {
-				if (n.children && n.children.length > 0) {
-					n.children.forEach(function(child) {
-						if (child.data && child.data.xid) {
+    		selectedNodes.forEach(function(n) {
+    			if (n.children && n.children.length > 0) {
+    				n.children.forEach(function(child) {
+                        if (child.data && child.data.xid) {
 							childrenXids.push(child.data.xid);
-						}
-					});
-				}
-			});
+                        }
+    				});
+    			}
+    		});
 
-			BootstrapDialog.confirm({
-				title: "Delete Folder / Move to Root",
-				message: function(dialog) {
-					var list = $('<ul></ul>');
-					selectedNodes.forEach(function(n) {
-						list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
-					});
-					return $('<div><h3>Delete folder // move points to root folder?</h3></div>').append(list);
-				},
-				callback: function(result) {
-					if(result) {
-						$.ajax({
-							type: "DELETE",
-							url: myLocation + "api/pointHierarchy/deleteFolderMoveToRootBatch",
-							data: JSON.stringify({
-								xids: xids,
-								childrenXids: childrenXids
-							}),
+    		BootstrapDialog.confirm({
+    			title: "Delete Folder / Move to Root",
+    			message: function(dialog) {
+    				var list = $('<ul></ul>');
+    				selectedNodes.forEach(function(n) {
+                        list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+    				});
+    				return $('<div><h3>Delete folder // move points to root folder?</h3></div>').append(list);
+    			},
+    			callback: function(result) {
+    				if(result) {
+                        $.ajax({
+                        	type: "DELETE",
+							url: myLocation + "api/pointHierarchy/deleteFolders",
+                        	data: JSON.stringify({
+                        		xids: xids,
+                        		childrenXids: childrenXids
+                        	}),
 
-							contentType: "application/json; charset=utf-8",
-							dataType: "json",
-							success: function(response) {
-								BootstrapDialog.alert("Operation successful.");
-								tree.reload();
-								refreshCache();
-							},
-							error: function(xhr, textStatus, errorThrown) {
-								BootstrapDialog.alert("Error occured: " + errorThrown);
-							}
-						});
-					}
-				}
-			});
+                        	contentType: "application/json; charset=utf-8",
+                        	dataType: "json",
+                        	success: function(response) {
+                        		BootstrapDialog.alert("Operation successful.");
+                        		tree.reload();
+                        		refreshCache();
+                        	},
+                        	error: function(xhr, textStatus, errorThrown) {
+                        		BootstrapDialog.alert("Error occured: " + errorThrown);
+                        	}
+                        });
+    				}
+    			}
+    		});
 		});
     	$("button#editNode").click(()=>{
     		if ( (nodeActivate != undefined) && (!nodeActivate.isFolder())) {

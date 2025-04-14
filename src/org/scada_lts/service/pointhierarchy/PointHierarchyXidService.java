@@ -143,8 +143,9 @@ public class PointHierarchyXidService extends PointHierarchyService {
             for (String xid : childrenPointsXids) {
                 if (xid.startsWith("DIR_")){
                     moveFolder(xid, "_");
+                } else {
+                    movePoint(xid, "_");
                 }
-                movePoint(xid, "_");
             }
         }
         getPointHierarchyDAO().deleteFolderXid(xidFolder);}
