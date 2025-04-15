@@ -676,4 +676,8 @@ public class SystemSettingsService {
     private void saveResourceUploadsPathMisc(String webResourceUploadsPath) {
         systemSettingsDAO.setValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, webResourceUploadsPath);
     }
+
+    public void saveDefaultLoggingType(int defaultLoggingType) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE, defaultLoggingType);
+    }
 }
