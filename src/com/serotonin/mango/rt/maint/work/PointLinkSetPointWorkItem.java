@@ -22,8 +22,11 @@ public class PointLinkSetPointWorkItem extends SetPointWorkItem {
 
 	@Override
 	public void work() {
-		super.work();
-		plSource.pointSetComplete();
+		try {
+			super.work();
+		} finally {
+			plSource.pointSetComplete();
+		}
 	}
 
 	@Override
