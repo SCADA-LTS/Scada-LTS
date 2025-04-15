@@ -34,7 +34,7 @@ import org.scada_lts.web.content.SnippetContentGenerator;
 import org.springframework.mock.web.MockHttpSession;
 import utils.*;
 import utils.mock.ChangePointValueDataPointRtMock;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -69,7 +69,7 @@ public class MiscDwrDoLongPollMultiThreadTest {
         user.setId(534);
         user.setUsername(userName);
 
-        DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint1 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint1.setId(dataPointId1);
         dataPoint1.setXid("DP_TEST_123");
         dataPoint1.setName("point 1 mock");
@@ -79,7 +79,7 @@ public class MiscDwrDoLongPollMultiThreadTest {
         dataPoint1.setPointLocator(pointLocator1);
         user.setEditPoint(dataPoint1);
 
-        DataPointVO dataPoint2 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPoint2 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint2.setId(dataPointId2);
         dataPoint2.setXid("DP_TEST_124");
         dataPoint2.setName("point 2 mock");
@@ -189,7 +189,7 @@ public class MiscDwrDoLongPollMultiThreadTest {
         });
 
         runtimeManagerMock = mock(RuntimeManager.class);
-        MockUtils.configMock(runtimeManagerMock, user);
+        PowerMockUtils.configMock(runtimeManagerMock, user);
 
         //WebContext mock
         HttpSession httpSession = new MockHttpSession();

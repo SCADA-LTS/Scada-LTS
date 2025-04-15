@@ -26,6 +26,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
     public static final int DATA_POINT_PUBLISH_EXCEPTION_EVENT = 2;
     public static final int DATA_POINT_INIT_EXCEPTION_EVENT = 3;
     public static final int DATA_POINT_UPDATE_EXCEPTION_EVENT = 4;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 5;
 
     private static final Log LOG = LogFactory.getLog(MessagingDataSourceRT.class);
 
@@ -49,7 +50,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
         if (!messagingService.isOpen(dataPoint)) {
             LOG.warn("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source));
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    getExceptionMessage(new RuntimeException("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", Message: Connection Closed. ")),
+                    getExceptionMessage(new RuntimeException("Error Publish: " + dataSourcePointSetPointSourceInfo(vo, dataPointVO, source) + ", Message: Connection Closed. ")),
                     dataPoint);
             return;
         }
@@ -59,7 +60,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         } catch (Throwable e) {
             LOG.error(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", "
-                    + exceptionInfo(e), e);
+                    + exceptionInfo(e));
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()), dataPoint);
         }
@@ -72,7 +73,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.open();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Throwable e) {
-            LOG.error(info(e, this), e);
+            LOG.error(info(e, this));
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
             return;
@@ -88,7 +89,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.close();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Throwable e) {
-            LOG.error(info(e, this), e);
+            LOG.error(info(e, this));
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
         } finally {
@@ -103,7 +104,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         } catch (Throwable e) {
-            LOG.error(info(e, this), e);
+            LOG.error(info(e, this));
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         }
@@ -116,7 +117,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.removeReceiver(dataPoint);
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         } catch (Throwable e) {
-            LOG.error(info(e, this), e);
+            LOG.error(info(e, this));
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         } finally {
@@ -140,7 +141,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
                 }
             } catch (Throwable e) {
-                LOG.error(info(e, this), e);
+                LOG.error(info(e, this));
                 int dataPointId = dataPoint.getId();
                 updateAttemptsCounters.computeIfPresent(dataPointId, (a,b) -> {b.incrementAndGet(); return b;});
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
@@ -155,7 +156,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
                     + exceptionInfo(ex), ex);
             raiseEvent(DATA_POINT_UPDATE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(new Exception("Error Update Data Point: " + dataPointInfo(dataPoint.getVO())
-                            + ", " + exceptionInfo(ex), ex)
+                            + ", " + exceptionInfo(ex))
                     ), dataPoint);
         };
     }
@@ -165,5 +166,10 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_UPDATE_EXCEPTION_EVENT, System.currentTimeMillis());
             return null;
         };
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

@@ -19,6 +19,7 @@
 package com.serotonin.mango.web.dwr;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -184,7 +185,7 @@ public class MiscDwr extends BaseDwr {
 			String filename = Common.getDocPath() + File.separator + getMessage("dox.dir")
 					+ File.separator + documentId + ".htm";
 			try {
-				try (Reader in = new FileReader(filename);
+				try (Reader in = new FileReader(filename, StandardCharsets.UTF_8);
 					 StringWriter out = new StringWriter()) {
 					StreamUtils.transfer(in, out);
 					addDocumentationItem(result, item);

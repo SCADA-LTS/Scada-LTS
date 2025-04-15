@@ -16,7 +16,31 @@
     Vous devriez avoir reçu une copie de la licence publique générale de GNU
     en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
+<body>
 <h1>Vue d'ensemble</h1>
-<p>
-  Des points de données internes peuvent être créés pour contrôler des valeurs spécifiques qui surveillent le fonctionnement interne de Scada-LTS.
-</p>
+
+<p>Des points de données internes peuvent être créés pour surveiller des valeurs spécifiques qui contrôlent le fonctionnement interne de Scada-LTS.</p>
+
+<h3>Valeurs de points à écrire</h3>
+<p>Cet attribut surveille le nombre de valeurs de points en attente d'écriture, reflétant la charge de travail du mécanisme de traitement par lots.</p>
+
+<h3>Threads d'écriture des valeurs de points</h3>
+<p>Cet attribut indique les threads gérant le processus d'écriture des valeurs de points, fournissant un aperçu de la manière dont le système répartit la charge de travail de l'écriture par lots.</p>
+
+<h3>Éléments de travail de haute priorité</h3>
+<p>Cet attribut suit les éléments de travail de haute priorité dans la file de traitement, permettant aux administrateurs d'identifier et de répondre rapidement aux retards critiques du traitement.</p>
+
+<h3>Éléments de travail de priorité moyenne</h3>
+<p>Cet attribut reflète les éléments de travail avec un niveau de priorité moyenne en attente d'exécution, aidant à évaluer la charge de travail de routine du système.</p>
+
+<h3>Éléments de travail programmés</h3>
+<p>Cet attribut représente les éléments de travail programmés pour s'exécuter à des intervalles spécifiques, assurant que les tâches périodiques soient exécutées en temps voulu.</p>
+
+<h3>Profondeur maximale de la pile de threads</h3>
+<p>Cet attribut affiche la profondeur maximale de la pile de threads, indiquant le niveau des opérations imbriquées qui pourraient affecter les performances ou révéler des problèmes potentiels.</p>
+
+<h3>Nombre de threads actifs</h3>
+<p>Cet attribut surveille le nombre de threads actifs, offrant un aperçu de la concurrence globale et de la charge du système.</p>
+
+<p>Pour plus de détails ou des conseils sur la configuration, veuillez consulter la documentation du système ou contacter le support.</p>
+</body>

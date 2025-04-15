@@ -57,6 +57,7 @@ import static com.serotonin.mango.util.SqlDataSourceUtils.createJdbcOperations;
 public class SqlDataSourceRT extends PollingDataSource {
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int STATEMENT_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
 	private static final Log LOG = LogFactory.getLog(SqlDataSourceRT.class);
 
@@ -357,5 +358,10 @@ public class SqlDataSourceRT extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

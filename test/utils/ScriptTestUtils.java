@@ -17,7 +17,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import org.mockito.Mockito;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class ScriptTestUtils {
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(mangoValue.getDataType());
 
-        DataPointVO pointFromContextVO = new DataPointVO(LoggingTypes.ON_CHANGE);
+        DataPointVO pointFromContextVO = TestUtils.newDefaultEmptyDataPointVO();
         pointFromContextVO.setPointLocator(locatorFromContext);
         pointFromContextVO.setEventDetectors(Collections.emptyList());
         pointFromContextVO.setId(pointFromContextId);
@@ -61,7 +61,7 @@ public class ScriptTestUtils {
         String userName = "user mock";
         User user = new User();
         user.setUsername(userName);
-        MockUtils.configMock(runtimeManager, user);
+        PowerMockUtils.configMock(runtimeManager, user);
 
         mockStatic(ScriptContextObject.Type.class);
         ScriptContextObject.Type type = mock(ScriptContextObject.Type.class);

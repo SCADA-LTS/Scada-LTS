@@ -64,6 +64,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 3;
 	public static final int MONITOR_WRITE_EXCEPTION_EVENT = 4;
 	public static final int INITIALIZATION_EXCEPTION_EVENT = 5;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 6;
 
 	private ModbusMaster modbusMaster;
 	private BatchRead<ModbusPointLocatorRT> batchRead;
@@ -514,5 +515,10 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
 				true,
 				new LocalizableMessage("event.modbus.master", e.getMessage()));
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

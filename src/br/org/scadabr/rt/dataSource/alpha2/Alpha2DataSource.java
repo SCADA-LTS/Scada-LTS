@@ -33,6 +33,7 @@ public class Alpha2DataSource extends PollingDataSource {
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 2;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 3;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
 	private final Alpha2DataSourceVO<?> vo;
 	private Alpha2Master master;
@@ -221,5 +222,10 @@ public class Alpha2DataSource extends PollingDataSource {
 			raiseEvent(exceptionType, time, true, new LocalizableMessage(
 					"alpha2.unknownException", vo.getName(), e.getMessage()), dataPointRT);
 		}
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

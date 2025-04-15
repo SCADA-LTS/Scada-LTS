@@ -39,7 +39,7 @@ public class LoggedUsers implements ILoggedUsers {
                 loggedSessions.get(user.getId()).add(session);
                 return loggedUsers.put(user.getId(), user);
             }
-            LOG.warn("session exists for: " + LoggingUtils.userInfo(user) + ", thread: " + Thread.currentThread().getName());
+            LOG.warn("session exists for: {}, thread: {}", LoggingUtils.userInfo(user), Thread.currentThread().getName());
             return null;
         } finally {
             lock.writeLock().unlock();
@@ -83,6 +83,7 @@ public class LoggedUsers implements ILoggedUsers {
             return null;
         } finally {
             lock.writeLock().unlock();
+            LOG.warn("session removed for: {}, thread: {}", LoggingUtils.userInfo(user), Thread.currentThread().getName());
         }
     }
 
@@ -143,7 +144,7 @@ public class LoggedUsers implements ILoggedUsers {
                                Map<Integer, List<HttpSession>> loggedSessions) {
         User loggedUser = loggedUsers.get(user.getId());
         if(loggedUser == null) {
-            LOG.warn("not logged user: " + LoggingUtils.userInfo(user) + ", thread: " + Thread.currentThread().getName());
+            LOG.warn("not logged user: {}, thread: {}", LoggingUtils.userInfo(user), Thread.currentThread().getName());
             return;
         }
         List<GrantedAuthority> roles = loggedUser.getAttribute("roles");

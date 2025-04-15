@@ -64,11 +64,15 @@ public final class ThreadPoolExecutorUtils {
     }
 
     public static void joinTermination(ExecutorService service, String poolName) {
+        joinTermination(service, poolName, 5, TimeUnit.SECONDS);
+    }
+
+    public static void joinTermination(ExecutorService service, String poolName, long timeoutSeconds, TimeUnit timeUnit) {
         boolean done;
         try {
             int rewaits = 3;
             while (rewaits > 0) {
-                done = service.awaitTermination(5, TimeUnit.SECONDS) && service.isTerminated();
+                done = service.awaitTermination(timeoutSeconds, timeUnit) && service.isTerminated();
 
                 if (done)
                     break;
@@ -77,7 +81,7 @@ public final class ThreadPoolExecutorUtils {
 
                 rewaits--;
             }
-            if(!service.isTerminated() && !service.awaitTermination(5, TimeUnit.SECONDS)) {
+            if(!service.isTerminated() && !service.awaitTermination(timeoutSeconds, timeUnit)) {
                 service.shutdownNow();
             }
         } catch (InterruptedException e) {

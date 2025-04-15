@@ -39,6 +39,8 @@ public class BACnetObjectBean {
     private int dataTypeId;
     private List<String> unitsDescription = new ArrayList<String>();
 
+    private int engineeringUnitValue;
+
     public String getPrettyPresentValue() {
         if (objectTypeId == ObjectType.binaryInput.intValue() || objectTypeId == ObjectType.binaryOutput.intValue()
                 || objectTypeId == ObjectType.binaryValue.intValue()) {
@@ -137,5 +139,13 @@ public class BACnetObjectBean {
 
     public void setCov(boolean cov) {
         this.cov = cov;
+    }
+
+    public int getEngineeringUnitValue() {
+        return engineeringUnitValue;
+    }
+
+    public void setEngineeringUnitValue(int engineeringUnitValue) {
+        this.engineeringUnitValue = engineeringUnitValue;
     }
 }

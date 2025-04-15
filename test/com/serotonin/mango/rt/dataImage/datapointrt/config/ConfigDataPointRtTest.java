@@ -44,7 +44,7 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import utils.PointValueDAOMemory;
 import org.springframework.context.ApplicationContext;
 import utils.UsersDAOMemory;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -157,7 +157,7 @@ public class ConfigDataPointRtTest {
         GetApplicationBeans getApplicationBeans = new GetApplicationBeans();
         getApplicationBeans.setApplicationContext(applicationContext);
 
-        MockUtils.configDaoMock();
+        PowerMockUtils.configDaoMock();
 
         ILoggedUsers loggedUsers = mock(ILoggedUsers.class);
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
@@ -269,7 +269,7 @@ public class ConfigDataPointRtTest {
         virtualPointLocatorVO.setChangeTypeId(ChangeTypeVO.Types.NO_CHANGE);
         virtualPointLocatorVO.getNoChange().setStartValue(startValue);
 
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         dataPointVO.setId(321);
         dataPointVO.setName("test_dp");
         dataPointVO.setXid("test_dp_xid");

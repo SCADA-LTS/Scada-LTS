@@ -56,18 +56,14 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 				vo.getTargetPointId());
 		if (targetPoint == null) {
 			raiseFailureEvent(new LocalizableMessage(
-					"event.setPoint.targetPointMissing"), evt.getEventType(), eventType, vo);
+					"event.setPoint.targetPointMissingX", LoggingUtils.eventHandlerInfo(vo)), evt.getEventType(), eventType, vo);
 			return;
-		} else {
-			returnToNormal(eventType);
 		}
 
 		if (!targetPoint.getPointLocator().isSettable()) {
 			raiseFailureEvent(new LocalizableMessage(
-					"event.setPoint.targetNotSettable"), evt.getEventType(), eventType, vo);
+					"event.setPoint.targetNotSettableX", LoggingUtils.eventHandlerInfo(vo)), evt.getEventType(), eventType, vo);
 			return;
-		} else {
-			returnToNormal(eventType);
 		}
 
 		int targetDataType = targetPoint.getVO().getPointLocator()
@@ -80,29 +76,23 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 					.getDataPoint(vo.getActivePointId());
 			if (sourcePoint == null) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.activePointMissing"),
+						"event.setPoint.activePointMissingX", LoggingUtils.eventHandlerInfo(vo)),
 						evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			PointValueTime valueTime = sourcePoint.getPointValue();
 			if (valueTime == null) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.activePointValue"), evt.getEventType(), eventType, vo);
+						"event.setPoint.activePointValueX", LoggingUtils.eventHandlerInfo(vo)), evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			if (DataTypes.getDataType(valueTime.getValue()) != targetDataType) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.activePointDataType"),
+						"event.setPoint.activePointDataTypeX", LoggingUtils.eventHandlerInfo(vo)),
 						evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			value = valueTime.getValue();
@@ -131,18 +121,14 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 				vo.getTargetPointId());
 		if (targetPoint == null) {
 			raiseFailureEvent(new LocalizableMessage(
-					"event.setPoint.targetPointMissing"), evt.getEventType(), eventType, vo);
+					"event.setPoint.targetPointMissingX", LoggingUtils.eventHandlerInfo(vo)), evt.getEventType(), eventType, vo);
 			return;
-		} else {
-			returnToNormal(eventType);
 		}
 
 		if (!targetPoint.getPointLocator().isSettable()) {
 			raiseFailureEvent(new LocalizableMessage(
-					"event.setPoint.targetNotSettable"), evt.getEventType(), eventType, vo);
+					"event.setPoint.targetNotSettableX", LoggingUtils.eventHandlerInfo(vo)), evt.getEventType(), eventType, vo);
 			return;
-		} else {
-			returnToNormal(eventType);
 		}
 
 		int targetDataType = targetPoint.getVO().getPointLocator()
@@ -155,30 +141,24 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 					.getDataPoint(vo.getInactivePointId());
 			if (sourcePoint == null) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.inactivePointMissing"),
+						"event.setPoint.inactivePointMissingX", LoggingUtils.eventHandlerInfo(vo)),
 						evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			PointValueTime valueTime = sourcePoint.getPointValue();
 			if (valueTime == null) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.inactivePointValue"),
+						"event.setPoint.inactivePointValueX", LoggingUtils.eventHandlerInfo(vo)),
 						evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			if (DataTypes.getDataType(valueTime.getValue()) != targetDataType) {
 				raiseFailureEvent(new LocalizableMessage(
-						"event.setPoint.inactivePointDataType"),
+						"event.setPoint.inactivePointDataTypeX", LoggingUtils.eventHandlerInfo(vo)),
 						evt.getEventType(), eventType, vo);
 				return;
-			} else {
-				returnToNormal(eventType);
 			}
 
 			value = valueTime.getValue();
@@ -217,12 +197,8 @@ public class SetPointHandlerRT extends EventHandlerRT implements SetPointSource 
 				true, message);
 	}
 
-	private static void returnToNormal(EventType eventType) {
-		SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
-	}
-
 	public void raiseRecursionFailureEvent() {
-		raiseFailureEvent(new LocalizableMessage("event.setPoint.recursionFailure"), null, getEventType(), getVo());
+		raiseFailureEvent(new LocalizableMessage("event.setPoint.recursionFailureX", LoggingUtils.eventHandlerInfo(vo)), null, getEventType(), getVo());
 	}
 
 	//

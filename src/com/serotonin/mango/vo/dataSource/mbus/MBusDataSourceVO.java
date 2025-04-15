@@ -66,6 +66,7 @@ public class MBusDataSourceVO extends DataSourceVO<MBusDataSourceVO> {
         EVENT_CODES.addElement(MBusDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(MBusDataSourceRT.POINT_READ_EXCEPTION_EVENT, "POINT_READ_EXCEPTION");
         EVENT_CODES.addElement(MBusDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, "POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(MBusDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
     @JsonRemoteProperty
     private int updatePeriodType = Common.TimePeriods.DAYS;
@@ -87,6 +88,8 @@ public class MBusDataSourceVO extends DataSourceVO<MBusDataSourceVO> {
                 "event.ds.pointRead")));
         eventTypes.add(createEventType(MBusDataSourceRT.POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.pointWrite")));
+        eventTypes.add(createEventType(MBusDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     @Override

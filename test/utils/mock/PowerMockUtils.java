@@ -5,6 +5,7 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
+import com.serotonin.mango.util.ThreadPoolExecutorUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.util.PropertiesUtils;
@@ -18,13 +19,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createForkJoinPool;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-public class MockUtils {
+public class PowerMockUtils {
 
     public static void configMock(RuntimeManager runtimeManager, User user) throws Exception {
         configMockContextWrapper(runtimeManager);
@@ -87,5 +90,17 @@ public class MockUtils {
                 .withParameterTypes(DataSource.class)
                 .withArguments(eq(dataSource))
                 .thenReturn(namedParameterJdbcTemplate);
+    }
+
+    public static BackgroundProcessing mockBackgroundProcessing() {
+        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
+        ForkJoinPool forkJoinPool = createForkJoinPool();
+        when(backgroundProcessing.getCommonPool()).thenReturn(forkJoinPool);
+        doAnswer(a -> {
+            ThreadPoolExecutorUtils.joinTermination(forkJoinPool, "test", 1, TimeUnit.MILLISECONDS);
+            return null;
+        }).when(backgroundProcessing)
+                .terminate();
+        return backgroundProcessing;
     }
 }

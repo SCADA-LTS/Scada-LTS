@@ -70,7 +70,7 @@ import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.service.MessagingService;
 import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
 import org.scada_lts.web.beans.ApplicationBeans;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -158,7 +158,7 @@ public class InitializeWithErrorsDataSourceRtTest {
     @Before
     public void config() throws Exception {
 
-        MockUtils.configDaoMock();
+        PowerMockUtils.configDaoMock();
 
         eventManager = PowerMockito.mock(EventManager.class);
 

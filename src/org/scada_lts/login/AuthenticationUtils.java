@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.session.HttpSessionListenerImpl;
 import org.scada_lts.session.SessionInfo;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,8 +55,7 @@ public final class AuthenticationUtils {
     public static User authenticateLocal(HttpServletRequest request, HttpServletResponse response,
                                          Authentication authentication, MangoUser mangoUser) {
         getUser(authentication, mangoUser).ifPresent(user -> {
-            authenticateLocal(request, response, authentication, user);
-            mangoUser.recordLogin(user.getId());
+            authenticateLocal(request, response, authentication, user, mangoUser);
         });
         User user = Common.getUser(request);
         if(user == null) {
@@ -67,8 +67,7 @@ public final class AuthenticationUtils {
     public static User authenticateLocalRaiseEvent(HttpServletRequest request, HttpServletResponse response,
                                                    Authentication authentication, MangoUser mangoUser) {
         getUser(authentication, mangoUser).ifPresent(user -> {
-            authenticateLocal(request, response, authentication, user);
-            mangoUser.recordLogin(user.getId());
+            authenticateLocal(request, response, authentication, user, mangoUser);
             SystemEventType.raiseEvent(new SystemEventType(
                     SystemEventType.TYPE_USER_LOGIN, user.getId()), System
                     .currentTimeMillis(), true, new LocalizableMessage(
@@ -82,12 +81,15 @@ public final class AuthenticationUtils {
     }
 
     public static void authenticateLocal(HttpServletRequest request, HttpServletResponse response,
-                                         Authentication authentication, User user) {
+                                         Authentication authentication, User user, MangoUser mangoUser) {
         setRoles(authentication, user);
         crowd(user);
         Common.setUser(request, user);
         putLogOnIpAddr(request);
+        ILoggedUsers loggedUsers = ApplicationBeans.getLoggedUsersBean();
+        loggedUsers.addUser(user, request.getSession());
         ScadaLocaleUtils.setLocaleInSession(request, response);
+        mangoUser.recordLogin(user.getId());
     }
 
     private static void setRoles(Authentication authentication, User user) {
@@ -105,6 +107,12 @@ public final class AuthenticationUtils {
         if(session != null) {
             session.invalidate();
             SecurityContextHolder.clearContext();
+            User user = Common.getUser();
+            if(user != null) {
+                SystemEventType.returnToNormal(new SystemEventType(
+                        SystemEventType.TYPE_USER_LOGIN, user.getId()), System
+                        .currentTimeMillis());
+            }
             Common.setUser(request, null);
         }
         if (CrowdUtils.isCrowdEnabled())
