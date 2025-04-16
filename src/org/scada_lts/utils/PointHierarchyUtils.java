@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
+import org.scada_lts.recursive.CreatePointHierarchyTree;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public final class PointHierarchyUtils {
 
-    private static final int TREE_DEPTH = 20;
+    private static final int TREE_DEPTH = 10;
 
     private PointHierarchyUtils() {}
 
@@ -71,21 +72,6 @@ public final class PointHierarchyUtils {
             node.getChildren().sort(Comparator.comparing(PointHierarchyNode::getTitle));
     }
 
-    private static void createTree(PointHierarchyNode root,
-                                   List<PointHierarchyNode> pointAndFolderNodes,
-                                   int safe) {
-        if(safe < 0)
-            return;
-        for(PointHierarchyNode node: pointAndFolderNodes) {
-            if(root.getKey() == node.getParentId()) {
-                root.getChildren().add(node);
-                if(Boolean.TRUE.equals(node.isFolder())) {
-                    createTree(node, pointAndFolderNodes, --safe);
-                }
-            }
-        }
-    }
-
     private static void cleanTree(PointHierarchyNode root) {
         int treeDepth = TREE_DEPTH;
         while (isEmptyRoot(root, TREE_DEPTH) && treeDepth > 0) {
@@ -98,12 +84,13 @@ public final class PointHierarchyUtils {
         if(treeDepth < 0)
             return;
         List<PointHierarchyNode> toRemove = new ArrayList<>();
+        int temp = --treeDepth;
         for (PointHierarchyNode node : root.getChildren()) {
             if (Boolean.TRUE.equals(node.isFolder())) {
                 if (node.getChildren().isEmpty())
                     toRemove.add(node);
                 else
-                    removeEmpty(node, --treeDepth);
+                    removeEmpty(node, temp);
             }
         }
         root.getChildren().removeAll(toRemove);
@@ -114,9 +101,10 @@ public final class PointHierarchyUtils {
             return false;
         if(Boolean.TRUE.equals(root.isFolder()) && root.getChildren().isEmpty())
             return true;
+        int temp = --treeDepth;
         for(PointHierarchyNode node: root.getChildren()) {
             if(Boolean.TRUE.equals(node.isFolder())) {
-                if(node.getChildren().isEmpty() || isEmptyRoot(node, --treeDepth))
+                if(node.getChildren().isEmpty() || isEmptyRoot(node, temp))
                     return true;
             }
         }
@@ -128,11 +116,12 @@ public final class PointHierarchyUtils {
                                       int treeDepth) {
         if(treeDepth < 0)
             return true;
+        int temp = --treeDepth;
         for(PointHierarchyNode node: nodes) {
             if(root.getKey() == node.getParentId()) {
                 if(!Boolean.TRUE.equals(node.isFolder()))
                     return true;
-                if(isNotEmpty(node, nodes, --treeDepth))
+                if(isNotEmpty(node, nodes, temp))
                     return true;
             }
         }
@@ -174,7 +163,12 @@ public final class PointHierarchyUtils {
         pointAndFolderNodes.addAll(folderNodes);
         pointAndFolderNodes.addAll(pointNodes);
         PointHierarchyNode root = PointHierarchyNode.rootNode();
-        createTree(root, pointAndFolderNodes, TREE_DEPTH);
+        CreatePointHierarchyTree createPointHierarchyTree = new CreatePointHierarchyTree(root, pointAndFolderNodes, TREE_DEPTH);
+        try {
+            createPointHierarchyTree.call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return root;
     }
 }

@@ -1,14 +1,14 @@
 package org.scada_lts.service.pointhierarchy;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.BackgroundProcessing;
+import org.junit.*;
 import utils.TestUtils;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
@@ -22,6 +22,8 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.generateDataPointAccess;
+import static utils.mock.MockitoUtils.mockBackgroundProcessing;
+import static utils.mock.MockitoUtils.mockContextWrapper;
 
 public class GetPointHierarchyRootTest {
 
@@ -36,6 +38,19 @@ public class GetPointHierarchyRootTest {
 
     private PointHierarchyNode emptyFolder;
     private PointHierarchyNode fakeFolder;
+
+    private static BackgroundProcessing backgroundProcessing;
+
+    @AfterClass
+    public static void clean() {
+        backgroundProcessing.terminate();
+    }
+
+    @BeforeClass
+    public static void config1() {
+        backgroundProcessing = mockBackgroundProcessing();
+        Common.ctx = mockContextWrapper(backgroundProcessing);
+    }
 
     @Before
     public void config() {

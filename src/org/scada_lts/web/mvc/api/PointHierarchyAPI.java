@@ -49,7 +49,7 @@ public class PointHierarchyAPI {
         this.pointHierarchyXidService = pointHierarchyXidService;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}", method = RequestMethod.PUT)
+    @PutMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}")
     public ResponseEntity<String> pointMoveTo(
             @PathVariable("xid_point") String xidPoint,
             @PathVariable("xid_folder") String xidFolder,
@@ -75,7 +75,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}", method = RequestMethod.PUT)
+    @PutMapping(value = "/api/pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}")
     public ResponseEntity<String> folderMoveTo(
             @PathVariable("xid_folder") String xidFolder,
             @PathVariable("new_parent_xid_folder") String newParentXidFolder,
@@ -102,7 +102,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/changeName/{xid_folder}/{new_name}", method = RequestMethod.PUT)
+    @PutMapping(value = "/api/pointHierarchy/changeName/{xid_folder}/{new_name}")
     public ResponseEntity<String> folderUpdateName(
             @PathVariable("xid_folder") String xidFolder,
             @PathVariable("new_name") String newName,
@@ -128,7 +128,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/folderAdd", method = RequestMethod.POST)
+    @PostMapping(value = "/api/pointHierarchy/folderAdd")
     public ResponseEntity<String> folderAdd(
             @RequestBody FolderPointHierarchy folderPointHierarchy,
             HttpServletRequest request)  {
@@ -150,7 +150,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/pointHierarchy/folderCheckExist/{xid_folder}")
     public ResponseEntity<FolderPointHierarchy> folderCheckExist(
             @PathVariable("xid_folder") String xidFolder,
             HttpServletRequest request)  {
@@ -172,7 +172,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/export", method = RequestMethod.GET)
+    @GetMapping(value = "/api/pointHierarchy/export")
     public ResponseEntity<PointHierarchyExp> exportData(HttpServletRequest request) {
 
         LOG.info("/api/pointHierarchy/exportData");
@@ -194,7 +194,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/deleteFolder/{xid_folder}", method = RequestMethod.POST)
+    @PostMapping(value = "/api/pointHierarchy/deleteFolder/{xid_folder}")
     public ResponseEntity<String> deleteFolder(
             @PathVariable("xid_folder") String xidFolder,
             HttpServletRequest request)  {
@@ -215,7 +215,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/cacheRefresh", method = RequestMethod.POST)
+    @PostMapping(value = "/api/pointHierarchy/cacheRefresh")
     public ResponseEntity<Map<String, String>> cacheRefresh(HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/cacheRefresh");
         ResponseEntity<Map<String, String>> result = null;
@@ -235,7 +235,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/checkConsitencyPointHierarchy", method = RequestMethod.GET)
+    @GetMapping(value = "/api/pointHierarchy/checkConsitencyPointHierarchy")
     public ResponseEntity<PointHierarchyConsistencyCheck> checkConsistencyPointHierarchy(
             HttpServletRequest request)  {
 
@@ -327,24 +327,16 @@ public class PointHierarchyAPI {
         }
     }
 
-    @RequestMapping(value = "/api/pointHierarchy/pointsMoveTo", method = RequestMethod.PUT)
-    public ResponseEntity<String> pointsMoveTo(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
+    @PutMapping(value = "/api/pointHierarchy/pointsMoveTo")
+    public ResponseEntity<String> pointsMoveTo(@RequestBody MoveObjectHierarchyDTO pointHierarchy, HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/pointsMoveTo newParentXidFolder: "
-                + pointHierarchyDTO.getNewParentIdFolder() + " keys: " + pointHierarchyDTO.getXids());
+                + pointHierarchy.getParentFolderXid() + " keys: " + pointHierarchy.getMoveObjects());
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 boolean allMoved = true;
-                for (String xid : pointHierarchyDTO.getXids()) {
-                    if (xid.startsWith("DIR_") && !xid.equals(pointHierarchyDTO.getNewParentIdFolder())) {
-                        if (!pointHierarchyXidService.moveFolder(xid, pointHierarchyDTO.getNewParentIdFolder())) {
-                            allMoved = false;
-                        }
-                    } else {
-                        if (!pointHierarchyXidService.movePoint(xid, pointHierarchyDTO.getNewParentIdFolder())) {
-                            allMoved = false;
-                        }
-                    }
+                for (ObjectHierarchy object : pointHierarchy.getMoveObjects()) {
+                    allMoved = allMoved && pointHierarchyXidService.moveObject(object, pointHierarchy.getParentFolderXid());
                 }
                 return new ResponseEntity<>(String.valueOf(allMoved), HttpStatus.OK);
             } else {
@@ -357,38 +349,20 @@ public class PointHierarchyAPI {
     }
 
     @DeleteMapping(value = "/api/pointHierarchy/deleteFolders")
-    public ResponseEntity<String> deleteFolders(@RequestBody PointHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
-        LOG.info("/api/pointHierarchy/deleteFolders keys: " + pointHierarchyDTO.getXids());
+    public ResponseEntity<String> deleteFolders(@RequestBody DeleteObjectHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/deleteFolders keys: " + pointHierarchyDTO.getMoveObjects());
         try {
             User user = Common.getUser(request);
             if (!user.isAdmin()) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-            boolean allSuccess = true;
-            for (String xid : pointHierarchyDTO.getXids()) {
-                if (xid.startsWith("DIR_")) {
-                    FolderPointHierarchy folder = pointHierarchyXidService.getFolderByXid(xid);
-                    if (folder != null) {
-                        if (folder.getParentXid() != null) {
-                            if (!pointHierarchyXidService.moveFolder(xid, "_")) {
-                                allSuccess = false;
-                            }
-                        } else {
-                            pointHierarchyXidService.deleteFolderAndMovePointsToRoot(xid, pointHierarchyDTO.getChildrenXids());
-                        }
-                    } else {
-                        allSuccess = false;
-                    }
-                } else {
-                    if (!pointHierarchyXidService.movePoint(xid, "_")) {
-                        allSuccess = false;
-                    }
-                }
+            for (ObjectHierarchy object : pointHierarchyDTO.getMoveObjects()) {
+                pointHierarchyXidService.deleteFolder(object.getXid(), pointHierarchyDTO.getChildrenMoveObjects());
             }
-            return new ResponseEntity<>(String.valueOf(allSuccess), HttpStatus.OK);
+            return new ResponseEntity<>(String.valueOf(true), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(String.valueOf(false), HttpStatus.BAD_REQUEST);
         }
     }
 }

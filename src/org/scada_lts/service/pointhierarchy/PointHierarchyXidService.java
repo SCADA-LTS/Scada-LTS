@@ -17,6 +17,7 @@
  */
 package org.scada_lts.service.pointhierarchy;
 
+import com.serotonin.ShouldNeverHappenException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
@@ -26,6 +27,8 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchy;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchyType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +82,19 @@ public class PointHierarchyXidService extends PointHierarchyService {
             res = getPointHierarchyDAO().updateFolder(xidFolder, newParentXidFolder);
         } catch (Exception e) {
             LOG.error(e);
+        }
+        return res;
+    }
+
+    public boolean moveObject(ObjectHierarchy moveObject, String newParentXidFolder) {
+        boolean res;
+
+        if(moveObject.getType() == ObjectHierarchyType.DIR) {
+            res = moveFolder(moveObject.getXid(), newParentXidFolder);
+        } else if(moveObject.getType() == ObjectHierarchyType.POINT) {
+            res = movePoint(moveObject.getXid(), newParentXidFolder);
+        } else {
+            throw new ShouldNeverHappenException("Unsupported type: " + moveObject.getType());
         }
         return res;
     }
@@ -138,15 +154,12 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
-    public void deleteFolderAndMovePointsToRoot(String xidFolder, List<String> childrenPointsXids) {
-        if(childrenPointsXids != null) {
-            for (String xid : childrenPointsXids) {
-                if (xid.startsWith("DIR_")){
-                    moveFolder(xid, "_");
-                } else {
-                    movePoint(xid, "_");
-                }
+    public void deleteFolder(String xidFolder, List<ObjectHierarchy> moveObjects) {
+        if(moveObjects != null) {
+            for (ObjectHierarchy object : moveObjects) {
+                moveObject(object, "_");
             }
         }
-        getPointHierarchyDAO().deleteFolderXid(xidFolder);}
+        getPointHierarchyDAO().deleteFolderXid(xidFolder);
+    }
 }

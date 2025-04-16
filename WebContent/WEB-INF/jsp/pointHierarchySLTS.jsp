@@ -747,15 +747,18 @@ var messages = {
     	        			},
     	        		callback: function (result) {
     	        			if (result) {
-    	        				var xids = nodesToMove.map(function (n) {
-    	        					return n.data.xid;
-    	        			  });
+    	        				var moveObjects = nodesToMove.map(function (n) {
+    	        				    console.log('n: ', n);
+
+    	        				    console.log('n.data.parentId: ', (n.data.parentId ? 'DIR': 'POINT'));
+  			                        return createMoveObject(n.data);
+    	        			    });
     	        				$.ajax({
     	        					type: "PUT",
     	        					url: myLocation + 'api/pointHierarchy/pointsMoveTo/',
     	        					data: JSON.stringify({
-    	        						xids: xids,
-    	        						newParentIdFolder: targetNode.data.xid,
+    	        						moveObjects: moveObjects,
+    	        						parentFolderXid: targetNode.data.xid,
     	        					}),
     	        					contentType: "application/json; charset=utf-8",
     	        					dataType: "json",
@@ -871,17 +874,18 @@ var messages = {
     				return;
     			}
 
-    		var childrenXids = [];
+    		var childrenMoveObjects = [];
 
-    		var xids = selectedNodes.map(function(n) {
-    			return n.data.xid;
+    		var moveObjects = selectedNodes.map(function(n) {
+    		    console.log('n: ', n);
+    			return createMoveObject(n.data);
     		});
 
     		selectedNodes.forEach(function(n) {
     			if (n.children && n.children.length > 0) {
     				n.children.forEach(function(child) {
                         if (child.data && child.data.xid) {
-							childrenXids.push(child.data.xid);
+							childrenMoveObjects.push(createMoveObject(child.data));
                         }
     				});
     			}
@@ -902,8 +906,8 @@ var messages = {
                         	type: "DELETE",
 							url: myLocation + "api/pointHierarchy/deleteFolders",
                         	data: JSON.stringify({
-                        		xids: xids,
-                        		childrenXids: childrenXids
+                        		moveObjects: moveObjects,
+                        		childrenMoveObjects: childrenMoveObjects
                         	}),
 
                         	contentType: "application/json; charset=utf-8",
@@ -1227,6 +1231,11 @@ var messages = {
 
     });
     $('.jsoneditor-menu').prop('hidden', true);
+
+    function createMoveObject(data) {
+        console.log('data: ', data)
+        return {xid:data.xid, type:(data.pointHierarchyDataSource ? 'POINT': 'DIR')}
+    }
     </script>
 
 </html>
