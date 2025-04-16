@@ -52,49 +52,26 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return getPointHierarchyDAO().getFolders();
     }
 
-    public FolderPointHierarchy getFolderByXid(String xid) {
-        List<FolderPointHierarchy> folders = getFolders();
-        if (folders != null) {
-            for (FolderPointHierarchy folder : folders) {
-                if (Objects.equals(xid, folder.getXid())) {
-                    return folder;
-                }
-            }
-        }
-        return null;
-    }
-
-    public boolean movePoint(String xidPoint, String xidFolder) {
+    @Deprecated(since = "2.8.0")
+    public boolean movePoint(String pointXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = getPointHierarchyDAO().updateParentPoint(xidPoint, xidFolder);
+            res = getPointHierarchyDAO().updateParentPoint(pointXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
         }
         return res;
     }
 
-    public boolean moveFolder(String xidFolder, String newParentXidFolder) {
+    @Deprecated(since = "2.8.0")
+    public boolean moveFolder(String folderXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = getPointHierarchyDAO().updateFolder(xidFolder, newParentXidFolder);
+            res = getPointHierarchyDAO().updateFolder(folderXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
-        }
-        return res;
-    }
-
-    public boolean moveObject(ObjectHierarchy moveObject, String newParentXidFolder) {
-        boolean res;
-
-        if(moveObject.getType() == ObjectHierarchyType.DIR) {
-            res = moveFolder(moveObject.getXid(), newParentXidFolder);
-        } else if(moveObject.getType() == ObjectHierarchyType.POINT) {
-            res = movePoint(moveObject.getXid(), newParentXidFolder);
-        } else {
-            throw new ShouldNeverHappenException("Unsupported type: " + moveObject.getType());
         }
         return res;
     }
@@ -154,12 +131,17 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
-    public void deleteFolder(String xidFolder, List<ObjectHierarchy> moveObjects) {
+    public void deleteFolder(String folderXid, List<ObjectHierarchy> moveObjects) {
         if(moveObjects != null) {
             for (ObjectHierarchy object : moveObjects) {
                 moveObject(object, "_");
             }
         }
-        getPointHierarchyDAO().deleteFolderXid(xidFolder);
+        getPointHierarchyDAO().deleteFolderXid(folderXid);
+    }
+
+
+    public boolean moveObject(ObjectHierarchy objectHierarchy, String destinationFolderXid) {
+        return objectHierarchy.getType().move(objectHierarchy.getXid(), destinationFolderXid, getPointHierarchyDAO());
     }
 }

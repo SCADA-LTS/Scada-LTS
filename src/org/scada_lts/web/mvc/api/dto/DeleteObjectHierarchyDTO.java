@@ -7,18 +7,18 @@ public class DeleteObjectHierarchyDTO extends ObjectHierarchyDTO implements Seri
 
     private static final long serialVersionUID = -1L;
 
-    private List<ObjectHierarchy> childrenMoveObjects;
+    private List<ObjectHierarchy> deleteObjects;
 
-    public List<ObjectHierarchy> getChildrenMoveObjects() {
-        return childrenMoveObjects;
+    public List<ObjectHierarchy> getDeleteObjects() {
+        return deleteObjects;
     }
 
-    public void setChildrenMoveObjects(List<ObjectHierarchy> childrenMoveObjects) {
-        this.childrenMoveObjects = childrenMoveObjects;
+    public void setDeleteObjects(List<ObjectHierarchy> deleteObjects) {
+        this.deleteObjects = deleteObjects;
     }
 
     @Override
     public String toString() {
-        return "childrenObjectsXidList=" + childrenMoveObjects + ", " + super.toString();
+        return "deleteObjects=" + deleteObjects + ", " + super.toString();
     }
 }

@@ -419,7 +419,7 @@ thead th {
              			<span class="glyphicon glyphicon-resize-small"></span>
              	</button>
              </div>
-                <div id=export-import-ph></div>
+                <div id="export-import-ph"></div>
             </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -433,6 +433,8 @@ thead th {
 		</table>
 	</div>
 	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
+
+    <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
@@ -451,7 +453,7 @@ thead th {
 <script src="resources/vue-components/export-import/export-import.js"></script>-->
 
 <script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+<link href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="resources/dojo/dojo.js"></script>
 <script type="text/javascript" src="dwr/engine.js"></script>
@@ -748,17 +750,14 @@ var messages = {
     	        		callback: function (result) {
     	        			if (result) {
     	        				var moveObjects = nodesToMove.map(function (n) {
-    	        				    console.log('n: ', n);
-
-    	        				    console.log('n.data.parentId: ', (n.data.parentId ? 'DIR': 'POINT'));
-  			                        return createMoveObject(n.data);
+                                    return createObjectHierarchy(n.data);
     	        			    });
     	        				$.ajax({
     	        					type: "PUT",
     	        					url: myLocation + 'api/pointHierarchy/pointsMoveTo/',
     	        					data: JSON.stringify({
     	        						moveObjects: moveObjects,
-    	        						parentFolderXid: targetNode.data.xid,
+    	        						destinationFolderXid: targetNode.data.xid,
     	        					}),
     	        					contentType: "application/json; charset=utf-8",
     	        					dataType: "json",
@@ -874,18 +873,17 @@ var messages = {
     				return;
     			}
 
-    		var childrenMoveObjects = [];
+    		var moveObjects = [];
 
-    		var moveObjects = selectedNodes.map(function(n) {
-    		    console.log('n: ', n);
-    			return createMoveObject(n.data);
+    		var deleteObjects = selectedNodes.map(function(n) {
+    			return createObjectHierarchy(n.data);
     		});
 
     		selectedNodes.forEach(function(n) {
     			if (n.children && n.children.length > 0) {
     				n.children.forEach(function(child) {
                         if (child.data && child.data.xid) {
-							childrenMoveObjects.push(createMoveObject(child.data));
+							moveObjects.push(createObjectHierarchy(child.data));
                         }
     				});
     			}
@@ -906,8 +904,8 @@ var messages = {
                         	type: "DELETE",
 							url: myLocation + "api/pointHierarchy/deleteFolders",
                         	data: JSON.stringify({
-                        		moveObjects: moveObjects,
-                        		childrenMoveObjects: childrenMoveObjects
+                        		deleteObjects: deleteObjects,
+                        		moveObjects: moveObjects
                         	}),
 
                         	contentType: "application/json; charset=utf-8",
@@ -1232,9 +1230,8 @@ var messages = {
     });
     $('.jsoneditor-menu').prop('hidden', true);
 
-    function createMoveObject(data) {
-        console.log('data: ', data)
-        return {xid:data.xid, type:(data.pointHierarchyDataSource ? 'POINT': 'DIR')}
+    function createObjectHierarchy(data) {
+        return {xid:data.xid, type:(data.pointHierarchyDataSource ? 'POINT': 'FOLDER')}
     }
     </script>
 

@@ -6,19 +6,18 @@ import java.io.Serializable;
 public class MoveObjectHierarchyDTO extends ObjectHierarchyDTO implements Serializable {
 
     private static final long serialVersionUID = -1L;
+    private String destinationFolderXid;
 
-    private String parentFolderXid;
-
-    public String getParentFolderXid() {
-        return parentFolderXid;
+    public String getDestinationFolderXid() {
+        return destinationFolderXid;
     }
 
-    public void setParentFolderXid(String parentFolderXid) {
-        this.parentFolderXid = parentFolderXid;
+    public void setDestinationFolderXid(String destinationFolderXid) {
+        this.destinationFolderXid = destinationFolderXid;
     }
 
     @Override
     public String toString() {
-        return "parentFolderXid=" + parentFolderXid + ", " + super.toString();
+        return "destinationFolderXid=" + destinationFolderXid  + ", " + super.toString();
     }
 }

@@ -49,6 +49,7 @@ public class PointHierarchyAPI {
         this.pointHierarchyXidService = pointHierarchyXidService;
     }
 
+    @Deprecated(since = "2.8.0")
     @PutMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}")
     public ResponseEntity<String> pointMoveTo(
             @PathVariable("xid_point") String xidPoint,
@@ -75,6 +76,7 @@ public class PointHierarchyAPI {
         return result;
     }
 
+    @Deprecated(since = "2.8.0")
     @PutMapping(value = "/api/pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}")
     public ResponseEntity<String> folderMoveTo(
             @PathVariable("xid_folder") String xidFolder,
@@ -328,15 +330,15 @@ public class PointHierarchyAPI {
     }
 
     @PutMapping(value = "/api/pointHierarchy/pointsMoveTo")
-    public ResponseEntity<String> pointsMoveTo(@RequestBody MoveObjectHierarchyDTO pointHierarchy, HttpServletRequest request) {
+    public ResponseEntity<String> pointsMoveTo(@RequestBody MoveObjectHierarchyDTO moveObjectHierarchyDTO, HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/pointsMoveTo newParentXidFolder: "
-                + pointHierarchy.getParentFolderXid() + " keys: " + pointHierarchy.getMoveObjects());
+                + moveObjectHierarchyDTO.getDestinationFolderXid() + " keys: " + moveObjectHierarchyDTO.getMoveObjects());
         try {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 boolean allMoved = true;
-                for (ObjectHierarchy object : pointHierarchy.getMoveObjects()) {
-                    allMoved = allMoved && pointHierarchyXidService.moveObject(object, pointHierarchy.getParentFolderXid());
+                for (ObjectHierarchy objectHierarchy : moveObjectHierarchyDTO.getMoveObjects()) {
+                    allMoved = allMoved && pointHierarchyXidService.moveObject(objectHierarchy, moveObjectHierarchyDTO.getDestinationFolderXid());
                 }
                 return new ResponseEntity<>(String.valueOf(allMoved), HttpStatus.OK);
             } else {
@@ -349,20 +351,21 @@ public class PointHierarchyAPI {
     }
 
     @DeleteMapping(value = "/api/pointHierarchy/deleteFolders")
-    public ResponseEntity<String> deleteFolders(@RequestBody DeleteObjectHierarchyDTO pointHierarchyDTO, HttpServletRequest request) {
-        LOG.info("/api/pointHierarchy/deleteFolders keys: " + pointHierarchyDTO.getMoveObjects());
+    public ResponseEntity<String> deleteFolders(@RequestBody DeleteObjectHierarchyDTO deleteObjectHierarchyDTO, HttpServletRequest request) {
+        LOG.info("/api/pointHierarchy/deleteFolders keys: " + deleteObjectHierarchyDTO.getDeleteObjects());
         try {
             User user = Common.getUser(request);
-            if (!user.isAdmin()) {
+            if (user.isAdmin()) {
+                for (ObjectHierarchy objectHierarchy : deleteObjectHierarchyDTO.getDeleteObjects()) {
+                    pointHierarchyXidService.deleteFolder(objectHierarchy.getXid(), deleteObjectHierarchyDTO.getMoveObjects());
+                }
+                return new ResponseEntity<>(String.valueOf(true), HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-            for (ObjectHierarchy object : pointHierarchyDTO.getMoveObjects()) {
-                pointHierarchyXidService.deleteFolder(object.getXid(), pointHierarchyDTO.getChildrenMoveObjects());
-            }
-            return new ResponseEntity<>(String.valueOf(true), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(String.valueOf(false), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
