@@ -25,11 +25,6 @@
 <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
 
-<link
-	href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
-    rel="stylesheet" type="text/css">
-
-
 <style type="text/css">
 
 /* correcting jsoneditor */

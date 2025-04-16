@@ -872,8 +872,6 @@ export default {
 
 				const apiDeleteFolders = `./api/pointHierarchy/deleteFolders/`;
 
-				console.log('this.toMoveFolder.xidFolderToMoveTo: ', this.toMoveFolder.xidFolderToMoveTo);
-
 				let moveObjects = [];
 				this.toMoveFolder.xidFolderToMoveTo.forEach(object => {
                     moveObjects.push({

@@ -47,7 +47,7 @@ public class GetPointHierarchyRootTest {
     }
 
     @BeforeClass
-    public static void config1() {
+    public static void configBackgroundProcessing() {
         backgroundProcessing = mockBackgroundProcessing();
         Common.ctx = mockContextWrapper(backgroundProcessing);
     }
