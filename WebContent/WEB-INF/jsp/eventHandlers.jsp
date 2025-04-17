@@ -38,19 +38,7 @@
         var tree = dojo.widget.manager.getWidgetById('eventTypeTree');
         dojo.event.topic.subscribe("eventTypeTree/titleClick", new TreeClickHandler(), 'handle');
 
-      jQuery("#targetPointSelect").chosen({
-        allow_single_deselect: true,
-        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-        search_contains: true,
-        width: "400px"
-      });
-      jQuery("#targetPointSelect").chosen({
-        allow_single_deselect: true,
-        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-        search_contains: true,
-        width: "400px"
-      });
-      jQuery("#activePointId, #inactivePointId").chosen({
+      jQuery("#targetPointSelect, #activePointId, #inactivePointId").chosen({
         allow_single_deselect: true,
         placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
         search_contains: true,
