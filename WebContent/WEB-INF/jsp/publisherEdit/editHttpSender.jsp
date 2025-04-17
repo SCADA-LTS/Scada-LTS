@@ -260,6 +260,7 @@
               availPoints[availPoints.length] = allPoints[i];
       }
       dwr.util.addOptions("availablePoints", availPoints, "id", "name");
+      jQuery("#availablePoints").trigger("chosen:updated");
   }
   
   function updateParameterName(pointId, parameterName) {
