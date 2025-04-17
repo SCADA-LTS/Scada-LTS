@@ -54,6 +54,12 @@
       refreshSelectedPoints();
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
+      jQuery("#availablePoints").chosen({
+          allow_single_deselect: true,
+          placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+          search_contains: true,
+          width: "100%"
+      });
   }
 
   function initStaticHeaders(response) {
@@ -254,6 +260,7 @@
               availPoints[availPoints.length] = allPoints[i];
       }
       dwr.util.addOptions("availablePoints", availPoints, "id", "name");
+      jQuery("#availablePoints").trigger("chosen:updated");
   }
   
   function updateParameterName(pointId, parameterName) {
@@ -376,6 +383,12 @@
   function showHttpSenderTest() {
       document.getElementById("httpSenderTest").style.visibility = "visible";
   }
+  jQuery(document).ready(function(){
+      (function($) {
+          loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+          loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+  });
 </script>
 
 <table id="publisherEditor" cellpadding="0" cellspacing="0">
