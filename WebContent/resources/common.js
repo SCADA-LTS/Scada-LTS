@@ -76,8 +76,15 @@ function defaultIfBlank(str, defaultStr) {
 //
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
-mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
+mango.longPoll.pollSessionId = generateSessionId();
 mango.longPoll.intervalId = null;
+
+function generateSessionId() {
+    let randomArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomArray);
+    let result = randomArray[0] % 1000000000;
+    return result;
+}
 
 window.addEventListener('beforeunload', (event) => {
   if(mango.longPoll.intervalId) {

@@ -37,6 +37,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverData;
 import com.serotonin.mango.rt.dataSource.http.HttpReceiverMulticaster;
 import com.serotonin.util.StringUtils;
+import org.scada_lts.web.security.XssProtectUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -148,16 +149,22 @@ public class HttpDataSourceServlet extends HttpServlet {
         for (String unconsumed : data.getUnconsumedKeys())
             messages.add("Unconsumed key: " + unconsumed);
 
+        String httpdsPrologue = SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_PROLOGUE);
+        String httpdsPrologueEscaped = XssProtectUtils.escapeHtml(httpdsPrologue);
+
         // Write the prologue
-        response.getWriter().write(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_EPILOGUE));
+        response.getWriter().write(httpdsPrologueEscaped);
 
         for (String message : messages) {
             response.getWriter().write(message);
             response.getWriter().write("\r\n");
         }
 
+        String httpdsEpilogue = SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_EPILOGUE);
+        String httpdsEpilogueEscaped = XssProtectUtils.escapeHtml(httpdsEpilogue);
+
         // Write the epilogue
-        response.getWriter().write(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTPDS_EPILOGUE));
+        response.getWriter().write(httpdsEpilogueEscaped);
     }
 
     private void addData(HttpReceiverData data, String name, String value, String time) {
