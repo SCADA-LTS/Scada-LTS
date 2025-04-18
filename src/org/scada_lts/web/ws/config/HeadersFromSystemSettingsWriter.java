@@ -2,6 +2,7 @@ package org.scada_lts.web.ws.config;
 
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.springframework.security.web.header.HeaderWriter;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +19,9 @@ public class HeadersFromSystemSettingsWriter implements HeaderWriter {
     @Override
     public void writeHeaders(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Map<String, String> staticHeaders = systemSettingsService.getHttpResponseHeaders();
-        staticHeaders.forEach(httpServletResponse::addHeader);
+        staticHeaders.forEach((key, value) -> {
+            httpServletResponse.addHeader(HtmlUtils.htmlUnescape(key),
+                    HtmlUtils.htmlUnescape(value));
+        });
     }
 }

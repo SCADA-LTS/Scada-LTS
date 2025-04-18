@@ -83,8 +83,10 @@ public class ZIPProjectManager {
 		Permissions.ensureAdmin(Common.getUser(request));
 		extractExportParametersFromRequest(request);
 
+ 		String sanitizedProjectName = sanitizeProjectName(projectName);
+
 		response.setHeader("Content-Disposition", "attachment; filename="
-				+ projectName.replaceAll(" ", "") + ".zip");
+				+ sanitizedProjectName + ".zip");
 
 		List<FileToPack> tempFiles = new ArrayList<>();
 
@@ -378,5 +380,9 @@ public class ZIPProjectManager {
 			}
 			return contentAsString.toString();
 		}
+	}
+
+	private String sanitizeProjectName(String projectName) {
+		return projectName.replaceAll("[^a-zA-Z0-9]", "");
 	}
 }

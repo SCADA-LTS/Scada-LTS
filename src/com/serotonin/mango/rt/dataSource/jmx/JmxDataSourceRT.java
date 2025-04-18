@@ -44,6 +44,8 @@ import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.vo.dataSource.jmx.JmxDataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -118,6 +120,7 @@ public class JmxDataSourceRT extends PollingDataSource {
 
             PointValueTime pvt = new PointValueTime(loc.managementValueToMangoValue(value), time);
             dprt.updatePointValue(pvt, true);
+            resetUnreliableDataPoint(dprt);
         }
     }
 
