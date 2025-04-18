@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import static org.scada_lts.web.security.XssProtectUtils.sanitize;
+import static org.scada_lts.web.security.XssProtectUtils.removeWhitespace;
 
 public class HeadersFromSystemSettingsWriter implements HeaderWriter {
 
@@ -22,8 +22,8 @@ public class HeadersFromSystemSettingsWriter implements HeaderWriter {
     public void writeHeaders(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Map<String, String> staticHeaders = systemSettingsService.getHttpResponseHeaders();
         staticHeaders.forEach((key, value) -> {
-            String unescapedKey = sanitize(HtmlUtils.htmlUnescape(key));
-            String unescapedValue = sanitize(HtmlUtils.htmlUnescape(key));
+            String unescapedKey = removeWhitespace(HtmlUtils.htmlUnescape(key));
+            String unescapedValue = removeWhitespace(HtmlUtils.htmlUnescape(value));
             httpServletResponse.addHeader(unescapedKey, unescapedValue);
         });
     }

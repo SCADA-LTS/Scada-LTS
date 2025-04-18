@@ -6,7 +6,7 @@ public final class XssProtectUtils {
 
     public XssProtectUtils() {}
 
-    public static String sanitize(String value) {
+    public static String removeWhitespace(String value) {
         return value.replaceAll("\\s", "");
     }
 
