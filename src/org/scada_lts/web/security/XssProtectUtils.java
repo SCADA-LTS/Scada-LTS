@@ -6,6 +6,10 @@ public final class XssProtectUtils {
 
     public XssProtectUtils() {}
 
+    public static String sanitize(String value) {
+        return value.replaceAll("\\s", "");
+    }
+
     public static String escapeHtml(String value) {
         if(value == null)
             return "";

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+import static org.scada_lts.web.security.XssProtectUtils.sanitize;
+
 public class HeadersFromSystemSettingsWriter implements HeaderWriter {
 
     private final SystemSettingsService systemSettingsService;
@@ -20,8 +22,9 @@ public class HeadersFromSystemSettingsWriter implements HeaderWriter {
     public void writeHeaders(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Map<String, String> staticHeaders = systemSettingsService.getHttpResponseHeaders();
         staticHeaders.forEach((key, value) -> {
-            httpServletResponse.addHeader(HtmlUtils.htmlUnescape(key),
-                    HtmlUtils.htmlUnescape(value));
+            String unescapedKey = sanitize(HtmlUtils.htmlUnescape(key));
+            String unescapedValue = sanitize(HtmlUtils.htmlUnescape(key));
+            httpServletResponse.addHeader(unescapedKey, unescapedValue);
         });
     }
 }
