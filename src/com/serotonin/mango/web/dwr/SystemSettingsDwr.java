@@ -209,6 +209,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(
 				SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR,
 				SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
+		settings.put(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
 		return settings;
 	}
 
@@ -390,7 +393,7 @@ public class SystemSettingsDwr extends BaseDwr {
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
 								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
-							     int defaultPurgePeriod, int defaultPurgePeriodType) {
+							     int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO
@@ -417,7 +420,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
 				defaultPurgePeriodType);
-
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				valuesLimitForPurge);
 	}
 
 	

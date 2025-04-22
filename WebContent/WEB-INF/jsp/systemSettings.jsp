@@ -349,6 +349,7 @@
                     $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
                     $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>"),
                     $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>"),
                     function() {
                         stopImageFader("saveDataRetentionSettingsImg");
                         setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.dataRetentionSaved"/>");
@@ -685,8 +686,9 @@
       --%>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.instanceDescription"/></td>
-        <td align="center"><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#system-info-settings'"/></td>
-      </tr>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
+        </td>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.databaseSize"/></td>
         <td class="formField">
@@ -738,12 +740,14 @@
             </td>
           </tr>
         </table>
+    </table>
+    <table>
       <tr>
         <td colspan="2" id="infoMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -981,7 +985,9 @@
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
-        <td><input type="button" value="<spring:message code="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="text" class="formShort" style="width: 100px"/>
+        </td>
       </tr>
       <tr>
         <td colspan="2" align="center">

@@ -413,7 +413,7 @@ public class SystemSettingsService {
     public void saveAggregateSettings(AggregateSettings aggregateSettings) {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
-        systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.AGGREGATION_ENABLED, aggregateSettings.isEnabled());
     }
 
     public void saveEventAssignEnabledMisc(boolean eventAssignEnabled) {
