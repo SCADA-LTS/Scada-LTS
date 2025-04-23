@@ -80,6 +80,7 @@ public class OpcUaService implements IOpcUaService {
             for(DataPointVO dataPointVO: dataPointReadable) {
                 response.add(dataPointVO.getXid(), new PollingServiceException(getMessage("Read", dataPointVO.getPointLocator(), "null", "The node ids number is different than the number of points for which we want to retrieve the value.")));
             }
+            return response;
         }
         ReadResponse readResponse = null;
         try {
@@ -94,6 +95,7 @@ public class OpcUaService implements IOpcUaService {
             for(DataPointVO dataPointVO: dataPointReadable) {
                 response.add(dataPointVO.getXid(), new PollingServiceException(getMessage("Read", dataPointVO.getPointLocator(), "null", "The number of results returned is different from the number of points for which a value was retrieved.")));
             }
+            return response;
         }
 
         for(int i = 0; i < readResponse.getResults().length; i++) {
