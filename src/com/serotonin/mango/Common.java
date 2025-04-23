@@ -557,7 +557,8 @@ public class Common {
   	}
 
     public static String getHomeDir() {
-		return System.getProperty("catalina.home");
+		String result = System.getProperty("catalina.home");
+		return result == null || result.isEmpty() ? System.getenv("CATALINA_HOME") : result;
 	}
 
 	public static GetMethod createGetMethod(String url) {

@@ -63,7 +63,7 @@ public class PathSecureUtilsTest {
     public void validateFilename() {
 
         //when:
-        boolean result = PathSecureUtils.validateFilename(fileName);
+        boolean result = PathSecureUtils.ValidationPaths.validateFilename(fileName);
 
         //then:
         assertEquals(expected, result);

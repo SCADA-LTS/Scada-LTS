@@ -36,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getGraphicsBaseSystemFilePath;
+import static org.scada_lts.utils.PathSecureUtils.normalizeSeparator;
 import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ViewGraphicLoader {

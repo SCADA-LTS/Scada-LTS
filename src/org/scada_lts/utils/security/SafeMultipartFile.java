@@ -4,8 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.scada_lts.utils.PathSecureUtils.validateFilename;
-import static org.scada_lts.utils.PathSecureUtils.validatePath;
+import static org.scada_lts.utils.PathSecureUtils.ValidationPaths.validateFilename;
 
 public class SafeMultipartFile {
 

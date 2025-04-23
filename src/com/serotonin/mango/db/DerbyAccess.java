@@ -24,13 +24,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -39,8 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.derby.jdbc.EmbeddedXADataSource40;
 import org.apache.derby.tools.ij;
-import org.scada_lts.utils.PathSecureUtils;
-import org.scada_lts.utils.UploadFileUtils;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -48,8 +43,9 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
+
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getAbsoluteResourcePath;
 
 public class DerbyAccess extends DatabaseAccess {
     private final Log log = LogFactory.getLog(DerbyAccess.class);
@@ -91,7 +87,7 @@ public class DerbyAccess extends DatabaseAccess {
     {
         String name = Common.getEnvironmentProfile().getString(propertyPrefix + "db.url", "~/../../mangoDB");
         if (name.startsWith("~"))
-            name = UploadFileUtils.getAbsoluteResourcePath(name.substring(1)).toString();
+            name = getAbsoluteResourcePath(name.substring(1)).toString();
         return name;
     }
 

@@ -55,7 +55,7 @@ import com.serotonin.mango.vo.User;
 
 import static com.serotonin.mango.util.ViewControllerUtils.*;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
-import static org.scada_lts.utils.UploadFileUtils.getUploadsSystemFileToWritePath;
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getUploadsSystemFileToWritePath;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 

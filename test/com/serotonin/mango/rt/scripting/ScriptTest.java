@@ -79,7 +79,7 @@ public class ScriptTest {
                         pointContext,
                         createScriptReturnState(pointToReadPair)},
 
-                /*{binaryValue2,
+                {binaryValue2,
                         pointToReadId,
                         Collections.emptyList(),
                         createScriptReturnState(binaryValue2)},
@@ -111,7 +111,7 @@ public class ScriptTest {
                 {alphanumericValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(alphanumericValue2)},*/
+                        createScriptWithJavaPointValueTime(alphanumericValue2)},
 
                 {new AlphanumericValue(""),
                         0,
@@ -149,8 +149,7 @@ public class ScriptTest {
     public void test_execute_js_with_object_context_writeDataPoint() throws Exception {
 
         //given:
-        ContextualizedScriptVO contextualizedScriptVO = createContext(pointContext, Collections.emptyList(),
-                script);
+        ContextualizedScriptVO contextualizedScriptVO = createContext(pointContext, Collections.emptyList(), script);
         ContextualizedScriptRT contextualizedScriptRT = new ContextualizedScriptRT(contextualizedScriptVO);
         DataPointRT pointToRead = createDataPointRT(pointToReadId, mangoValue);
 

@@ -81,15 +81,23 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
         public boolean validate(Object value) {
             if (value instanceof Double) {
                 double value1 = (double) value;
-                return value1 >= 0 && value1 <= 1;
+                return value1 == 0 || value1 == 1;
             }
             if (value instanceof Float) {
                 float value1 = (float) value;
-                return value1 >= 0 && value1 <= 1;
+                return value1 == 0 || value1 == 1;
+            }
+            if (value instanceof Long) {
+                long value1 = (long) value;
+                return value1 == 0 || value1 == 1;
             }
             if (value instanceof Integer) {
                 int value1 = (int) value;
-                return value1 >= 0 && value1 <= 1;
+                return value1 == 0 || value1 == 1;
+            }
+            if (value instanceof Short) {
+                short value1 = (short) value;
+                return value1 == 0 || value1 == 1;
             }
             if (value instanceof String) {
                 String value1 = (String) value;

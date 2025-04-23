@@ -42,7 +42,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 
-import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.PathSecureUtils.*;
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.*;
 import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ZIPProjectManager {
@@ -95,11 +96,11 @@ public class ZIPProjectManager {
 
 		List<FileToPack> filesToZip = new ArrayList<>();
 		if (includeUploadsFolder) {
-			for(Path path: UploadFileUtils.getUploadsSystemFilePaths())
+			for(Path path: getUploadsSystemFilePaths())
 				filesToZip.addAll(getUploadsFolderFiles(path));
 		}
 		if (includeGraphicsFolder) {
-			for(Path path: UploadFileUtils.getGraphicsSystemFilePaths())
+			for(Path path: getGraphicsSystemFilePaths())
 				filesToZip.addAll(getGraphicsFolderFiles(path));
 		}
 		filesToZip.addAll(tempFiles);
@@ -163,10 +164,10 @@ public class ZIPProjectManager {
 	public void importProject() throws Exception {
 
 		List<ZipEntry> graphicsFiles = getGraphicsFiles(graphicsFolder);
-		restoreFiles(graphicsFiles, getGraphicsBaseSystemFilePath(getGraphicsSystemFileToWritePath()));
+		restoreFiles(graphicsFiles, getGraphicsBaseSystemFilePath());
 
 		List<ZipEntry> uploadFiles = getUploadFiles(uploadsFolder);
-		restoreFiles(uploadFiles, getUploadsBaseSystemFilePath(getUploadsSystemFileToWritePath()));
+		restoreFiles(uploadFiles, getUploadsBaseSystemFilePath());
 
 		String jsonContent = getJsonContent();
 

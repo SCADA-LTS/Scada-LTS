@@ -50,7 +50,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
         if (!messagingService.isOpen(dataPoint)) {
             LOG.warn("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source));
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    getExceptionMessage(new RuntimeException("Error Publish: " + dataSourcePointSetPointSourceInfo(vo, dataPointVO, source) + ", Message: Connection Closed. ")),
+                    getExceptionMessage(new RuntimeException("Error Publish: " + dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", Message: Connection Closed. ")),
                     dataPoint);
             return;
         }
@@ -62,7 +62,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             LOG.error(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", "
                     + exceptionInfo(e));
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()), dataPoint);
+                    new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName(), message), dataPoint);
         }
     }
 
