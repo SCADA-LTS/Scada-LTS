@@ -768,6 +768,154 @@
       </tr>
     </table>
   </div>
+
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.otherSettings"/></span>
+          <tag:help id="otherSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+    <table id="settingsMisc">
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.uiPerformance"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
+          <select id="uiPerformanceId" onchange="toUiPerformanceId()">
+            <option value=""></option>
+            <option value="1000"><spring:message code="systemSettings.uiPerformance.veryHigh"/></option>
+            <option value="2000"><spring:message code="systemSettings.uiPerformance.high"/></option>
+            <option value="5000"><spring:message code="systemSettings.uiPerformance.med"/></option>
+            <option value="10000"><spring:message code="systemSettings.uiPerformance.low"/></option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
+            <option value="NONE"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
+            <option value="PARTIAL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
+            <option value="ALL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.view.forceFullScreen"/></td>
+        <td class="formField">
+          <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.view.hideShortcutDisableFullScreen"/></td>
+        <td class="formField">
+          <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingCacheEnabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingLimit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingEnabledChange()"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingItemsPerSecondEnabledChange()"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.threads.name.additional.length"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 250px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 250px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.reports.dataPointExtendedNameLengthLimit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <!-- SMS Domain -->
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.smsDomain.defaultGateway"/>
+        </td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formShort" style="width: 250px;"/>
+        </td>
+      </tr>
+      <!-- Default Data Point Logging Type -->
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.defaultDataPointLoggingType"/>
+        </td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>">
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_CHANGE %>"/>">
+              <spring:message code="pointEdit.logging.type.change"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ALL %>"/>">
+              <spring:message code="pointEdit.logging.type.all"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.NONE %>"/>">
+              <spring:message code="pointEdit.logging.type.never"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.INTERVAL %>"/>">
+              <spring:message code="pointEdit.logging.type.interval"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_TS_CHANGE %>"/>">
+              <spring:message code="pointEdit.logging.type.tsChange"/>
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="miscMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
   
   <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
@@ -789,33 +937,8 @@
       </tr>
     </table>
   </div>
-  
-  <div class="borderDivPadded marB marR" style="float:left">
-    <table width="100%">
-      <tr>
-        <td>
-          <span class="smallTitle"><spring:message code="systemSettings.languageSettings"/></span>
-          <tag:help id="languageSettings"/>
-        </td>
-        <td align="right">
-          <tag:img id="saveLangSettingsImg" png="save" onclick="saveLangSettings();" title="common.save"/>
-        </td>
-      </tr>
-    </table>
 
-    <table>
-      <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.systemLanguage"/></td>
-        <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" id="langMessage" class="formError"></td>
-      </tr>
-    </table>
-  </div>
-  <div class="borderDivPadded marB marR" style="clear:left;float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -873,14 +996,14 @@
           </select>
         </td>
       </tr>
-      
+
       <tr>
         <td colspan="2" id="emailMessage" class="formError"></td>
       </tr>
     </table>
   </div>
   
-  <div class="borderDivPadded marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
         <td>
@@ -1005,154 +1128,6 @@
     </table>
   </div>
 
-    <div class="borderDivPadded marB marR" style="float:left">
-      <table width="100%">
-        <tr>
-          <td>
-            <span class="smallTitle"><spring:message code="systemSettings.otherSettings"/></span>
-            <tag:help id="otherSettings"/>
-          </td>
-          <td align="right">
-            <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
-          </td>
-        </tr>
-      </table>
-      <table id="settingsMisc">
-        <tr>
-          <td class="formLabelRequired"><spring:message code="systemSettings.uiPerformance"/></td>
-          <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
-            <select id="uiPerformanceId" onchange="toUiPerformanceId()">
-              <option value=""></option>
-              <option value="1000"><spring:message code="systemSettings.uiPerformance.veryHigh"/></option>
-              <option value="2000"><spring:message code="systemSettings.uiPerformance.high"/></option>
-              <option value="5000"><spring:message code="systemSettings.uiPerformance.med"/></option>
-              <option value="10000"><spring:message code="systemSettings.uiPerformance.low"/></option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
-         <td class="formField">
-           <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
-             <option value="NONE"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
-             <option value="PARTIAL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
-             <option value="ALL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
-           </select>
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.view.forceFullScreen"/></td>
-         <td class="formField">
-           <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>" />
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.view.hideShortcutDisableFullScreen"/></td>
-         <td class="formField">
-           <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingCacheEnabled"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>" type="checkbox" />
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingLimit"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.enabled"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingEnabledChange()"/>
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingItemsPerSecondEnabledChange()"/>
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>" type="number" class="formShort"/>
-         </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="systemsettings.threads.name.additional.length"/></td>
-         <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>" type="number" class="formShort"/>
-         </td>
-        </tr>
-        <tr>
-          <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
-          <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
-          </td>
-        </tr>
-        <tr>
-          <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
-          <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 300px;"/>
-          </td>
-        </tr>
-        <tr>
-         <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
-          <td class="formField">
-           <input id="<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>" type="checkbox" />
-          </td>
-        </tr>
-        <tr>
-          <td class="formLabelRequired"><spring:message code="systemsettings.reports.dataPointExtendedNameLengthLimit"/></td>
-          <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>" type="number" class="formShort"/>
-          </td>
-        </tr>
-        <!-- SMS Domain -->
-        <tr>
-          <td class="formLabelRequired">
-            <spring:message code="systemSettings.smsDomain.defaultGateway"/>
-          </td>
-          <td class="formField">
-            <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formShort" style="width: 300px;"/>
-          </td>
-        </tr>
-        <!-- Default Data Point Logging Type -->
-        <tr>
-          <td class="formLabelRequired">
-            <spring:message code="systemSettings.defaultDataPointLoggingType"/>
-          </td>
-          <td class="formField">
-            <select id="<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>">
-              <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_CHANGE %>"/>">
-                <spring:message code="pointEdit.logging.type.change"/>
-              </option>
-              <option value="<c:out value="<%= DataPointVO.LoggingTypes.ALL %>"/>">
-                <spring:message code="pointEdit.logging.type.all"/>
-              </option>
-              <option value="<c:out value="<%= DataPointVO.LoggingTypes.NONE %>"/>">
-                <spring:message code="pointEdit.logging.type.never"/>
-              </option>
-              <option value="<c:out value="<%= DataPointVO.LoggingTypes.INTERVAL %>"/>">
-                <spring:message code="pointEdit.logging.type.interval"/>
-              </option>
-              <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_TS_CHANGE %>"/>">
-                <spring:message code="pointEdit.logging.type.tsChange"/>
-              </option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" id="miscMessage" class="formError"></td>
-        </tr>
-      </table>
-    </div>
-
   <!-- amCharts Settings -->
   <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
@@ -1194,6 +1169,31 @@
       </tr>
       <tr>
         <td colspan="2" id="amChartsMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.languageSettings"/></span>
+          <tag:help id="languageSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveLangSettingsImg" png="save" onclick="saveLangSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.systemLanguage"/></td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="langMessage" class="formError"></td>
       </tr>
     </table>
   </div>
