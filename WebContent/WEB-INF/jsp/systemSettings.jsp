@@ -125,7 +125,7 @@
           $set("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>);
-          $set("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>", settings.<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>", settings["<c:out value='<%= SystemSettingsDAO.SMS_DOMAIN %>'/>"]);
           $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>);
