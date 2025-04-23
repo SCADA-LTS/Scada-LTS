@@ -115,7 +115,7 @@ public class SystemSettingsDAO {
 	public static final String DATABASE_INFO_SCHEMA_VERSION = "version";
 
 	// SMS domain
-	public static final String SMS_DOMAIN = "smsDomain";
+	public static final String SMS_DOMAIN = "sms.domain";
 
 	// Purge with values limit
 	public static final String VALUES_LIMIT_FOR_PURGE = "valuesLimitForPurge";
