@@ -39,7 +39,7 @@
 
     <style>
     .notification-alert {
-	display: flex;
+	display: none !important;
 	position: fixed;
 	background: #d6d5d5;
 	bottom: 3vh;
