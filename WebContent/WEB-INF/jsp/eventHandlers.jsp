@@ -24,12 +24,26 @@
 
 <tag:page dwr="EventHandlersDwr,ScriptsDwr" js="emailRecipients" onload="init">
   <script>
+    jQuery(document).ready(function(){
+      (function($) {
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+    });
+
     function init() {
     	ScriptsDwr.getScripts(getScriptsCB);
         EventHandlersDwr.getInitData(initCB);
         
         var tree = dojo.widget.manager.getWidgetById('eventTypeTree');
         dojo.event.topic.subscribe("eventTypeTree/titleClick", new TreeClickHandler(), 'handle');
+
+      jQuery("#targetPointSelect, #activePointId, #inactivePointId").chosen({
+        allow_single_deselect: true,
+        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+        search_contains: true,
+        width: "400px"
+      });
     }
 
 	function getScriptsCB(scripts) {
@@ -260,7 +274,10 @@
             if (dp.settable)
                 pointSelect.options[pointSelect.options.length] = new Option(dp.name, dp.id);
         }
-        if (selectedHandlerNode) {
+      jQuery("#targetPointSelect").trigger("chosen:updated");
+      jQuery("#activePointId").trigger("chosen:updated");
+      jQuery("#inactivePointId").trigger("chosen:updated");
+      if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
 
@@ -273,6 +290,7 @@
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
                 $set("targetPointSelect", handler.targetPointId);
+                jQuery("#targetPointSelect").trigger("chosen:updated");
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
             }
@@ -385,13 +403,16 @@
             dp = allPoints[i];
             if (dp.id != targetPointId && dp.dataType == targetDataTypeId) {
                 activeSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
-                inactiveSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
+                inactiveSourceSelect.options[inactiveSourceSelect.options.length] = new Option(dp.name, dp.id);
             }
         }
+
         if (selectedHandlerNode) {
             $set(activeSourceSelect, selectedHandlerNode.object.activePointId);
             $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
         }
+        jQuery("#activePointId").trigger("chosen:updated");
+        jQuery("#inactivePointId").trigger("chosen:updated");
     }
 
     function activeActionChanged() {
@@ -638,7 +659,11 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="eventHandlers.target"/></td>
               <td class="formField">
-                <select id="targetPointSelect" onchange="targetPointSelectChanged()"></select>
+                <select id="targetPointSelect"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
+                        onchange="targetPointSelectChanged()">
+                </select>
               </td>
             </tr>
 
@@ -655,7 +680,12 @@
 
             <tr id="activePointIdRow">
               <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="activePointId"></select></td>
+              <td class="formField">
+                <select id="activePointId"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                </select>
+              </td>
             </tr>
 
             <tr id="activeValueToSetRow">
@@ -676,7 +706,12 @@
 
             <tr id="inactivePointIdRow">
               <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="inactivePointId"></select></td>
+              <td class="formField">
+                <select id="inactivePointId"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                </select>
+              </td>
             </tr>
 
             <tr id="inactiveValueToSetRow">

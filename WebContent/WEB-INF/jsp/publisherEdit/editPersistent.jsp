@@ -34,6 +34,12 @@
           for (i=0; i<list.length; i++)
               addToSelectedArray(list[i].dataPointId);
           refreshSelectedPoints();
+          jQuery("#availablePoints").chosen({
+              allow_single_deselect: true,
+              placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+              search_contains: true,
+              width: "100%"
+          });
       });
   });
   
@@ -111,6 +117,7 @@
               availPoints[availPoints.length] = allPoints[i];
       }
       dwr.util.addOptions("availablePoints", availPoints, "id", "name");
+      jQuery("#availablePoints").trigger("chosen:updated");
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -128,6 +135,13 @@
               $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,
               snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
+
+  jQuery(document).ready(function(){
+    (function($) {
+      loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+      loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+    })(jQuery);
+  });
 </script>
 
 <table cellpadding="0" cellspacing="0">

@@ -40,6 +40,8 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
+
 /**
  * 
  * TODO datatype NUMERIC_INT is missing TODO Starttime for timpepoints ???
@@ -107,28 +109,36 @@ public class OpenV4JDataSourceRT extends PollingDataSource {
                         else if (decodedValue instanceof Number) {
                             if (decodedValue instanceof Double) {
                                 point.updatePointValue(new PointValueTime((Double) decodedValue, time));
+                                resetUnreliableDataPoint(point);
                             }
                             else if (decodedValue instanceof Byte) {
                                 point.updatePointValue(new PointValueTime(((Byte) decodedValue).doubleValue(), time));
+                                resetUnreliableDataPoint(point);
                             }
                             else if (decodedValue instanceof Short) {
                                 point.updatePointValue(new PointValueTime(((Short) decodedValue).doubleValue(), time));
+                                resetUnreliableDataPoint(point);
                             }
                             else if (decodedValue instanceof Integer) {
                                 point.updatePointValue(new PointValueTime(((Integer) decodedValue).doubleValue(), time));
+                                resetUnreliableDataPoint(point);
                             }
                         }
                         else if (decodedValue instanceof Boolean) {
                             point.updatePointValue(new PointValueTime((Boolean) decodedValue, time));
+                            resetUnreliableDataPoint(point);
                         }
                         else if (decodedValue instanceof CycleTimes) {
                             point.updatePointValue(new PointValueTime(decodedValue.toString(), time));
+                            resetUnreliableDataPoint(point);
                         }
                         else if (decodedValue instanceof ErrorListEntry) {
                             point.updatePointValue(new PointValueTime(decodedValue.toString(), time));
+                            resetUnreliableDataPoint(point);
                         }
                         else if (decodedValue instanceof Date) {
                             point.updatePointValue(new PointValueTime(decodedValue.toString(), time));
+                            resetUnreliableDataPoint(point);
                         }
 
                     }

@@ -17,6 +17,7 @@
  */
 package org.scada_lts.service.pointhierarchy;
 
+import com.serotonin.ShouldNeverHappenException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
@@ -26,9 +27,12 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchy;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchyType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -48,22 +52,24 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return getPointHierarchyDAO().getFolders();
     }
 
-    public boolean movePoint(String xidPoint, String xidFolder) {
+    @Deprecated(since = "2.8.0")
+    public boolean movePoint(String pointXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = getPointHierarchyDAO().updateParentPoint(xidPoint, xidFolder);
+            res = getPointHierarchyDAO().updateParentPoint(pointXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
         }
         return res;
     }
 
-    public boolean moveFolder(String xidFolder, String newParentXidFolder) {
+    @Deprecated(since = "2.8.0")
+    public boolean moveFolder(String folderXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = getPointHierarchyDAO().updateFolder(xidFolder, newParentXidFolder);
+            res = getPointHierarchyDAO().updateFolder(folderXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
         }
@@ -125,4 +131,17 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
+    public void deleteFolder(String folderXid, List<ObjectHierarchy> moveObjects) {
+        if(moveObjects != null) {
+            for (ObjectHierarchy object : moveObjects) {
+                moveObject(object, "_");
+            }
+        }
+        getPointHierarchyDAO().deleteFolderXid(folderXid);
+    }
+
+
+    public boolean moveObject(ObjectHierarchy objectHierarchy, String destinationFolderXid) {
+        return objectHierarchy.getType().move(objectHierarchy.getXid(), destinationFolderXid, getPointHierarchyDAO());
+    }
 }

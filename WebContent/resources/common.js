@@ -76,8 +76,15 @@ function defaultIfBlank(str, defaultStr) {
 //
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
-mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
+mango.longPoll.pollSessionId = generateSessionId();
 mango.longPoll.intervalId = null;
+
+function generateSessionId() {
+    let randomArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomArray);
+    let result = randomArray[0] % 1000000000;
+    return result;
+}
 
 window.addEventListener('beforeunload', (event) => {
   if(mango.longPoll.intervalId) {
@@ -763,13 +770,13 @@ function getNodeIfString(node) {
 function escapeQuotes(str) {
     if (!str)
         return "";
-    return str.replace(/\'/g,"\\'");
+    return str.replace(/\\/g, "\\\\").replace(/\'/g, "\\'");
 }
 
 function escapeDQuotes(str) {
     if (!str)
         return "";
-    return str.replace(/\"/g,"\\\"");
+    return str.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
 }
 
 function encodeQuotes(str) {
@@ -781,8 +788,9 @@ function encodeQuotes(str) {
 function encodeHtml(str) {
     if (!str)
         return "";
-    str = str.replace(/&/g,"&amp;");
-    return str.replace(/</g,"&lt;");
+    str = str.replace(/\\/g, "\\\\");
+    str = str.replace(/&/g, "&amp;");
+    return str.replace(/</g, "&lt;");
 }
 
 function appendNewElement(/*string*/type, /*node*/parent) {

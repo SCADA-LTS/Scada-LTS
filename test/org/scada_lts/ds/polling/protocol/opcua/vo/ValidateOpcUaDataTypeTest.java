@@ -1,11 +1,8 @@
 package org.scada_lts.ds.polling.protocol.opcua.vo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.rt.dataSource.vmstat.VMStatDataSourceRT;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;

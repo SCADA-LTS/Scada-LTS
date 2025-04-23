@@ -25,11 +25,6 @@
 <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
 
-<link
-	href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
-    rel="stylesheet" type="text/css">
-
-
 <style type="text/css">
 
 /* correcting jsoneditor */
@@ -419,7 +414,7 @@ thead th {
              			<span class="glyphicon glyphicon-resize-small"></span>
              	</button>
              </div>
-                <div id=export-import-ph></div>
+                <div id="export-import-ph"></div>
             </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -433,6 +428,8 @@ thead th {
 		</table>
 	</div>
 	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
+
+    <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
@@ -451,7 +448,7 @@ thead th {
 <script src="resources/vue-components/export-import/export-import.js"></script>-->
 
 <script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+<link href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="resources/dojo/dojo.js"></script>
 <script type="text/javascript" src="dwr/engine.js"></script>
@@ -631,6 +628,7 @@ var messages = {
 
     var pageGlobal=1;
     var pageStart=0;
+	var draggedNodes = [];
 
 
     function pages(page) {
@@ -696,7 +694,7 @@ var messages = {
     	$("#tree").fancytree({
     	      extensions: ["dnd","glyph"],
     	      debugLevel: 0,
-    	      checkbox: false,
+    	      checkbox: true,
     	      autoScroll: false,
     	      autoActivate: true,
     	      activeVisible: false,
@@ -715,8 +713,13 @@ var messages = {
   	            preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
   	            preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
     	        dragStart: function(node, data) {
-      			    nodeDragAndDrop = data.node;
-    	        	return true;
+					var tree = data.tree;
+					var selectedNodes = tree.getSelectedNodes();
+					if ($.inArray(node, selectedNodes) < 0) {
+						selectedNodes = [node];
+					}
+					draggedNodes = selectedNodes;
+					return true;
     	        },
     	        dragEnter: function(node, data) {
     	        	if( data.node.isFolder() ) {
@@ -725,63 +728,47 @@ var messages = {
     	    	      return false;
     	    	    }
     	        },
-    	        dragDrop: function(node, data) {
-    	        	BootstrapDialog.show({
-    	 		       title: messages.move +':'+ nodeDragAndDrop.title,
-    	 		       message: function(dialog) {
-    	 		    	 var newNode = data.node;
-    	 		    	 toMove.key = nodeDragAndDrop.key;
-    	 		    	 toMove.oldParentId = getParentId(nodeDragAndDrop);
-    	 		    	 toMove.newParentId = newNode.key;
-					     var $content = $('<div><h3 id="title">'+messages.folder+':</h3>'+
-					    		 '<ul><li>'+messages.key+':'+nodeDragAndDrop.key+'</li><li>'+messages.title+':<b>'+nodeDragAndDrop.title+'</b></li><li>'+ messages.keyParent + ':'+nodeDragAndDrop.parent.key+'</li><li>'+messages.parent+':<b>'+nodeDragAndDrop.parent.title+'</b></li></ul>'+
-					    		 '<ul><li>'+messages.key+':'+newNode.key+'</li><li>'+messages.title+':<b>'+newNode.title+'</b></li><li>'+messages.keyParent+':'+newNode.parent.key+'</li><li>'+messages.parent+':<b>'+newNode.parent.title+'</b></li></ul>'
-					     );
-
-    	 		         dialog.setType(BootstrapDialog.TYPE_WARNING);
-    	 		         return $content;
-    	 		       },
-    	 		       buttons: [{
-    	 		         id: 'btn-Yes',
-    	 		         label: messages.yes,
-    	 		         cssClass: 'btn-warning',
-    	 		         action: function(dialog) {
-    	 		           dialog.getButton('btn-Close').disable();
-    	 		           var $button = this;
-    	 		           $button.disable();
-    	 		           $button.spin();
-    	 		           dialog.setClosable(false);
-                           $.ajax({
-    	 			            type: "POST",
-    	 			        	dataType: "json",
-    	 			        	url:myLocation+'pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
-    	 			        	success: function(msg){
-    	 			        	  $button.hide();
-    	 			 		      $button.stopSpin();
-    	 			 		      dialog.setClosable(true);
-    	 			 		      dialog.getButton('btn-Close').enable();
-    	 			 		      dialog.close();
-    	 			 		      reload();
-    	 			        	},
-    	 			        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-    	 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotMove+'</h3><p>'+pointHierarchySLTS.errorThrown+':'+errorThrown+'</p></div>');
-    	 			        	    $button.hide();
-    	 				 		    $button.stopSpin();
-    	 				 		    dialog.setClosable(true);
-    	 				 		    dialog.getButton('btn-Close').enable();
-    	 			        	  }
-    	 			       });
-    	 		         }
-    	 		       },
-    	 		       {
-    	 		         id: 'btn-Close',
-    	 		         label:'Close',
-    	 		         action: function(dialog) {
-    	 		           dialog.close();
-    	 		         }
-    	 		       }]
-    	 		     });
-
+    	        dragDrop: function (targetNode, data) {
+    	        	var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
+    	        	if (!targetNode.folder) {
+    	        		return;
+    	        	}
+    	        	BootstrapDialog.confirm({
+    	        		title: "Moving elements",
+    	        		message: function (dialog) {
+    	        			var list = $('<ul></ul>');
+    	        			nodesToMove.forEach(function (n) {
+    	        				list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+    	        			});
+    	        			return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
+    	        			},
+    	        		callback: function (result) {
+    	        			if (result) {
+    	        				var moveObjects = nodesToMove.map(function (n) {
+                                    return createObjectHierarchy(n.data);
+    	        			    });
+    	        				$.ajax({
+    	        					type: "PUT",
+    	        					url: myLocation + 'api/pointHierarchy/pointsMoveTo/',
+    	        					data: JSON.stringify({
+    	        						moveObjects: moveObjects,
+    	        						destinationFolderXid: targetNode.data.xid,
+    	        					}),
+    	        					contentType: "application/json; charset=utf-8",
+    	        					dataType: "json",
+    	        					success: function (msg) {
+    	        						BootstrapDialog.alert("Elements moved succesfully.");
+    	        						var tree = $("#tree").fancytree("getTree");
+    	        						tree.reload();
+    	        						refreshCache();
+    	        						},
+    	        					error: function (xhr, textStatus, errorThrown) {
+    	        						BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
+    	        					}
+    	        				});
+    	        			}
+    	        		}
+    	        	});
     	        }
     	      },
     	      glyph: glyph_opts,
@@ -863,136 +850,73 @@ var messages = {
  		      }]
  		    });
     	});
-    	$("button#deleteNode").click(()=>{
-    		if (nodeActivate != undefined) {
-    			if ( (getParentId(nodeActivate)==0) && (nodeActivate.isFolder()==false) ) {
+    	$("button#deleteNode").click(function(){
+    		var tree = $("#tree").fancytree("getTree");
+    		var selectedNodes = tree.getSelectedNodes();
+    			if(selectedNodes.length === 0) {
     				BootstrapDialog.show({
                         type: BootstrapDialog.TYPE_WARNING,
                         title: messages.warning,
-                        message: messages.warningDontRemoveDataPointInRoot,
+                        message: messages.pleaseSelectElement,
                         buttons: [{
-                            label: messages.close,
-           		           action: function(dialog) {
-           		             dialog.close();
+							label: messages.close,
+							action: function(dialog) {
+								dialog.close();
            		           }
                         }]
                     });
     				return;
-    			} else {
-    				if ( (nodeActivate != undefined) && (nodeActivate.isFolder()) ) {
-		 		      BootstrapDialog.show({
-				       title: messages.removeFolder +':'+nodeActivate.title,
-				       message: function(dialog) {
-				         var $content = $('<div><h3>'+ messages.confirmDelete+'</h3></div>');
-				         dialog.setType(BootstrapDialog.TYPE_DANGER);
-				         return $content;
-				       },
-				       buttons: [{
-				         id: 'btn-Yes',
-				         label: messages.yes,
-				         cssClass: 'btn-danger',
-				         action: function(dialog) {
-				           dialog.getButton('btn-Close').disable();
-				           var $button = this;
-				           $button.disable();
-				           $button.spin();
-				           dialog.setClosable(false);
-				           $.ajax({
-				        	   type: "POST",
-				        	   dataType: "json",
-				        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
-				        	   success: function(msg){
-				        		   dialog.getModalBody().html('<div><h3>'+messages.folderRemoved+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
-						           $button.hide();
-						           $button.stopSpin();
-						           dialog.setClosable(true);
-						           dialog.getButton('btn-Close').enable();
-						           dialog.close();
-						           reload();
-				        	   },
-				        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
-				        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
-					        	   $button.hide();
-						 		   $button.stopSpin();
-						 		   dialog.setClosable(true);
-						 		   dialog.getButton('btn-Close').enable();
-				        	   }
-				        	});
-				         }
-				       },
-				       {
-				         id: 'btn-Close',
-				         label:messages.close,
-				         action: function(dialog) {
-				           dialog.close();
-				         }
-				       }]
-				     });
-    				} else {
-    					// is not folder
-    					BootstrapDialog.show({
-    					       title: messages.moveDataPointToRoot +':'+nodeActivate.title,
-    					       message: function(dialog) {
-    					         var $content = $('<div><h3>'+ messages.areYouSureToMoveElement+'</h3></div>');
-    					         dialog.setType(BootstrapDialog.TYPE_DANGER);
-    					         return $content;
-    					       },
-    					       buttons: [{
-    					         id: 'btn-Yes',
-    					         label: messages.yes,
-    					         cssClass: 'btn-danger',
-    					         action: function(dialog) {
-    					           dialog.getButton('btn-Close').disable();
-    					           var $button = this;
-    					           $button.disable();
-    					           $button.spin();
-    					           dialog.setClosable(false);
-    					           $.ajax({
-    					        	   type: "POST",
-    					        	   dataType: "json",
-    					        	   url:myLocation+"pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
-    					        	   success: function(msg){
-    					        		   dialog.getModalBody().html('<div><h3>'+messages.movedElement+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
-    							           $button.hide();
-    							           $button.stopSpin();
-    							           dialog.setClosable(true);
-    							           dialog.getButton('btn-Close').enable();
-    							           dialog.close();
-    							           reload();
-    					        	   },
-    					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
-    					        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
-    						        	   $button.hide();
-    							 		   $button.stopSpin();
-    							 		   dialog.setClosable(true);
-    							 		   dialog.getButton('btn-Close').enable();
-    					        	   }
-    					        	});
-    					         }
-    					       },
-    					       {
-    					         id: 'btn-Close',
-    					         label:messages.close,
-    					         action: function(dialog) {
-    					           dialog.close();
-    					         }
-    					       }]
-    					     });
+    			}
+
+    		var moveObjects = [];
+
+    		var deleteObjects = selectedNodes.map(function(n) {
+    			return createObjectHierarchy(n.data);
+    		});
+
+    		selectedNodes.forEach(function(n) {
+    			if (n.children && n.children.length > 0) {
+    				n.children.forEach(function(child) {
+                        if (child.data && child.data.xid) {
+							moveObjects.push(createObjectHierarchy(child.data));
+                        }
+    				});
+    			}
+    		});
+
+    		BootstrapDialog.confirm({
+    			title: "Delete Folder / Move to Root",
+    			message: function(dialog) {
+    				var list = $('<ul></ul>');
+    				selectedNodes.forEach(function(n) {
+                        list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+    				});
+    				return $('<div><h3>Delete folder // move points to root folder?</h3></div>').append(list);
+    			},
+    			callback: function(result) {
+    				if(result) {
+                        $.ajax({
+                        	type: "DELETE",
+							url: myLocation + "api/pointHierarchy/deleteFolders",
+                        	data: JSON.stringify({
+                        		deleteObjects: deleteObjects,
+                        		moveObjects: moveObjects
+                        	}),
+
+                        	contentType: "application/json; charset=utf-8",
+                        	dataType: "json",
+                        	success: function(response) {
+                        		BootstrapDialog.alert("Operation successful.");
+                        		tree.reload();
+                        		refreshCache();
+                        	},
+                        	error: function(xhr, textStatus, errorThrown) {
+                        		BootstrapDialog.alert("Error occured: " + errorThrown);
+                        	}
+                        });
     				}
     			}
-    	   } else {
-    		   BootstrapDialog.show({
-                   type: BootstrapDialog.TYPE_WARNING,
-                   title: messages.warning,
-                   message: messages.pleaseSelectElement,
-                   buttons: [{
-                       label: messages.close,
-      		           action: function(dialog) {
-      		             dialog.close();
-      		           }
-                   }]
-               });
-    	   }
+    		});
 		});
     	$("button#editNode").click(()=>{
     		if ( (nodeActivate != undefined) && (!nodeActivate.isFolder())) {
@@ -1300,6 +1224,10 @@ var messages = {
 
     });
     $('.jsoneditor-menu').prop('hidden', true);
+
+    function createObjectHierarchy(data) {
+        return {xid:data.xid, type:(data.pointHierarchyDataSource ? 'POINT': 'FOLDER')}
+    }
     </script>
 
 </html>

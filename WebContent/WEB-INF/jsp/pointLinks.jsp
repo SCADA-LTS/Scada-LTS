@@ -32,9 +32,21 @@
             
             // Add points to source and target selects
             dwr.util.addOptions("sourcePointId", response.sourcePoints, "key", "value");
+            jQuery("#sourcePointId").chosen({
+                allow_single_deselect: true,
+                placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+                search_contains: true,
+                width: "100%"
+            });
             dwr.util.addOptions("targetPointId", response.targetPoints, "key", "value");
-            
-            // Create the list of existing links
+            jQuery("#targetPointId").chosen({
+              allow_single_deselect: true,
+              placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+              search_contains: true,
+              width: "100%"
+            });
+
+          // Create the list of existing links
             for (var i=0; i<response.pointLinks.length; i++) {
                 appendPointLink(response.pointLinks[i].id);
                 updatePointLink(response.pointLinks[i]);
@@ -60,8 +72,11 @@
             $set("script", pl.script);
             $set("event", pl.event);
             $set("disabled", pl.disabled);
-            
-            setUserMessage();
+
+          jQuery("#sourcePointId").trigger("chosen:updated");
+          jQuery("#targetPointId").trigger("chosen:updated");
+
+          setUserMessage();
         });
         startImageFader($("pl"+ plId +"Img"));
         display("deletePointLinkImg", plId != ${NEW_ID});
@@ -131,6 +146,12 @@
             showDwrMessages(response.messages);
         });
     }
+    jQuery(document).ready(function(){
+        (function($) {
+            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+        })(jQuery);
+    });
   </script>
   
   <table class="subPageHeader">

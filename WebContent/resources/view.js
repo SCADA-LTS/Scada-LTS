@@ -100,10 +100,10 @@ mango.view.setContent = function(state) {
 };
 
 function extractSrcAttribute(string) {
-	string = string.replace("<img ","");
-	string = string.replace(string.match("alt=.*"),"");
-	string = string.replace("src=\"","");
-	return string.replace("\"","");
+	string = string.replaceAll("<img ","");
+	string = string.replaceAll(string.match("alt=.*"),"");
+	string = string.replaceAll("src=\"","");
+	return string.replaceAll("\"","");
 }
 
 mango.view.runScripts = function(node) { 
