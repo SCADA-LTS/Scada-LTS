@@ -78,7 +78,7 @@ public class DAO {
 	 * @return
 	 */
 	public static boolean charToBool(String s) {
-        return "Y".equals(s) || "true".equals(s);
+		return "Y".equals(s) || "true".equals(s);
 	}
 	
 	/**
