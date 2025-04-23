@@ -27,6 +27,7 @@ import org.scada_lts.ds.polling.service.DataPointReadResponse;
 import org.scada_lts.ds.polling.protocol.opcua.vo.*;
 import org.scada_lts.recursive.SearchOpcUaNodesAction;
 
+import java.lang.reflect.Array;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -284,10 +285,18 @@ public class OpcUaService implements IOpcUaService {
         return MessageFormat.format("Failed {0} message: {1}", operation, message);
     }
 
-    private static PointValueTime convertToPointValueTime(long time, OpcUaPointLocatorVO pointLocator, DataValue value) {
+    private static PointValueTime convertToPointValueTime(long time, OpcUaPointLocatorVO pointLocator, DataValue dataValue) {
+
         MangoValue mangoValue = null;
         try {
-            mangoValue = pointLocator.getOpcDataType().convertToRead(value.getValue().getValue());
+            Variant variant = dataValue.getValue();
+            Object valueRaw = variant.getValue();
+            if(valueRaw.getClass().isArray()) {
+                Object value = Array.get(valueRaw, 0);
+                mangoValue = pointLocator.getOpcDataType().convertToRead(value);
+            } else {
+                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
