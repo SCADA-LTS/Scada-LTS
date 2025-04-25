@@ -139,9 +139,10 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formShort {
 	width: 50px;
 }
-.formMedium {
+.formMediumFieldSizing {
 	min-width: 150px;
-	max-width: 350px;
+	max-width: 250px;
+	field-sizing: content;
 }
 .formLong {
 	width: 250px;

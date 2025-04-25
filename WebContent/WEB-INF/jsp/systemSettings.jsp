@@ -856,13 +856,13 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formLong"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formMediumFieldSizing"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formLong"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formMediumFieldSizing"/>
         </td>
       </tr>
       <tr>
@@ -883,7 +883,7 @@
           <spring:message code="systemSettings.smsDomain.defaultGateway"/>
         </td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formLong"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formMediumFieldSizing"/>
         </td>
       </tr>
       <!-- Default Data Point Logging Type -->
