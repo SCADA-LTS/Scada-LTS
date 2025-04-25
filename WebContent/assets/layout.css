@@ -140,7 +140,8 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 	width: 50px;
 }
 .formMedium {
-	width: 150px;
+	min-width: 150px;
+	max-width: 350px;
 }
 .formLong {
 	width: 250px;
