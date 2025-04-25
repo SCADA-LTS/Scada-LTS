@@ -139,6 +139,9 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formShort {
 	width: 50px;
 }
+.formMedium {
+	width: 150px;
+}
 .formLong {
 	width: 250px;
 }

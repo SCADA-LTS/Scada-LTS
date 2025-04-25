@@ -687,7 +687,7 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.instanceDescription"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text" class="formMedium"/>
         </td>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.databaseSize"/></td>
@@ -720,13 +720,13 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.top.description.prefix"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formShort" style="width: 150px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formMedium"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.top.description"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formShort" style="width: 150px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formMedium"/>
         </td>
       </tr>
       <!-- Scada Configuration Component -->
@@ -856,13 +856,13 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formShort" style="width: 250px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formLong"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formShort" style="width: 250px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formLong"/>
         </td>
       </tr>
       <tr>
@@ -883,7 +883,7 @@
           <spring:message code="systemSettings.smsDomain.defaultGateway"/>
         </td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formShort" style="width: 250px;"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formLong"/>
         </td>
       </tr>
       <!-- Default Data Point Logging Type -->
@@ -1109,7 +1109,7 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="text" class="formShort" style="width: 100px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="number" class="formMedium"/>
         </td>
       </tr>
       <tr>
@@ -1156,7 +1156,7 @@
           <spring:message code="systemSettings.amChart.valuesLimit"/>
         </td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>" type="text" class="formShort" style="width:150px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>" type="number" class="formMedium"/>
         </td>
       </tr>
       <tr>
@@ -1164,7 +1164,7 @@
           <spring:message code="systemSettings.amChart.limitFactor"/>
         </td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>" type="text" class="formShort" style="width:150px"/>
+          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>" type="number" class="formMedium"/>
         </td>
       </tr>
       <tr>
