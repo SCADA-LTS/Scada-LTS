@@ -1680,3 +1680,45 @@ function ReportPointsContext(startContext, points) {
 
     this.initContextArray(startContext, points);
 }
+
+function sizingField(lengthLimit, target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!target.style.width) {
+        initSizeField(target, initWidth);
+    }
+    if(target.value.length > lengthLimit) {
+        if(target.style.width) {
+            var step = Math.floor(Math.random() * 10);
+            var temp = Number.parseInt((target.style.width + "").replace('px', '')) + step;
+            target.style.width = temp + "px";
+        }
+    }
+    return true;
+}
+
+function initSizeField(target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!initWidth) {
+        initWidth = target.value.length * 6;
+    }
+    target.style.width = initWidth + "px";
+}
+
+function isSupportedFieldSizing() {
+    return isSupported("Chrome", 123) || isSupported("Edg", 123) || isSupported("Opera", 109);
+}
+
+function isSupported(browser, minVersion) {
+    let userAgent = window.navigator.userAgent;
+    if(userAgent.includes(browser)) {
+        let version = userAgent.split(browser + "/")[1].split(" ")[0];
+        let major = version.split(".")[0];
+        console.log('major: ', major);
+        return major >= minVersion;
+    }
+    return false;
+}

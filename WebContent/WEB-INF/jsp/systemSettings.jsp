@@ -651,7 +651,17 @@
         }
       });
     }
-
+    dojo.addOnLoad(function() {
+      let webResourceGraphicsPath = document.getElementById("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>");
+      let webGraphicsUploadsPath = document.getElementById("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>");
+      let smsDomain = document.getElementById("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>");
+      webResourceGraphicsPath.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      webGraphicsUploadsPath.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      smsDomain.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      initSizeField(webResourceGraphicsPath);
+      initSizeField(webGraphicsUploadsPath);
+      initSizeField(smsDomain);
+    });
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">

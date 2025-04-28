@@ -23,6 +23,9 @@
   dojo.addOnLoad(function() {
       if (dataTypeId == <%= DataTypes.NUMERIC %>)
           show("engineeringUnitsSection");
+      let dataPointNameInput = document.getElementById("dataPointNameInput");
+      dataPointNameInput.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      initSizeField(dataPointNameInput);
   });
 </script>
 
@@ -50,7 +53,7 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
         <div>
-        <td class="formField"><input type="text" class="formLongFieldSizing" name="name" value="<c:out value="${status.value}"/>" title="<c:out value="${status.value}"/>"/></td>
+        <td class="formField"><input type="text" id="dataPointNameInput" class="formLongFieldSizing" name="name" value="<c:out value="${status.value}"/>" title="<c:out value="${status.value}"/>"/></td>
         </div>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
