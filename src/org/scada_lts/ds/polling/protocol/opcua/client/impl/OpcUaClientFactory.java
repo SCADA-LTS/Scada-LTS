@@ -18,7 +18,9 @@ import org.scada_lts.utils.security.KeyStoreLoader;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -27,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 
 public final class OpcUaClientFactory {
 
@@ -110,7 +113,8 @@ public final class OpcUaClientFactory {
                                                          OpcUaTrustListManager trustListManager) throws Exception {
         KeyStoreLoader keyStore;
         try {
-            keyStore = new KeyStoreLoader("Scada-LTS [OPC UA]", dataSourceVO.getKeyStoreFile(), dataSourceVO.getKeyStoreType(),
+            File file = toSecurePath(Path.of(dataSourceVO.getKeyStoreFile())).orElseThrow(() -> new IllegalArgumentException("The path is invalid."));
+            keyStore = new KeyStoreLoader("Scada-LTS [OPC UA]", file.getAbsolutePath(), dataSourceVO.getKeyStoreType(),
                     dataSourceVO.getKeyStorePassword(), dataSourceVO.getServerHost());
         } catch (Exception ex) {
             throw new Exception(LoggingUtils.exceptionInfo(ex), ex);

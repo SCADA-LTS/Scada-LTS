@@ -21,12 +21,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
-import org.scada_lts.ds.polling.exception.MasterException;
-import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaMaster;
+import org.scada_lts.ds.polling.exception.PollingServiceException;
+import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaService;
 import org.scada_lts.ds.polling.service.DataPointReadResponse;
 import org.scada_lts.ds.polling.protocol.opcua.vo.*;
 import org.scada_lts.recursive.SearchOpcUaNodesAction;
 
+import java.lang.reflect.Array;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -34,20 +35,20 @@ import java.util.concurrent.*;
 import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils.createLocator;
 import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils.sendReadServerStateAndTime;
 
-public class OpcUaMaster implements IOpcUaMaster {
+public class OpcUaService implements IOpcUaService {
 
-    private static final Logger LOG = LogManager.getLogger(OpcUaMaster.class);
+    private static final Logger LOG = LogManager.getLogger(OpcUaService.class);
 
     private final OpcUaDataSourceVO dataSource;
     private UaClient client;
     private DataTypeTree dataTypeTree;
 
-    public OpcUaMaster(OpcUaDataSourceVO dataSource) {
+    public OpcUaService(OpcUaDataSourceVO dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public void init() throws MasterException {
+    public void initialize() throws PollingServiceException {
         this.terminate();
         try {
             OpcUaClient opcUaClient = OpcUaClientFactory.createClient(dataSource);
@@ -56,12 +57,12 @@ public class OpcUaMaster implements IOpcUaMaster {
         } catch (Exception ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             this.terminate();
-            throw new MasterException(ex.getMessage(), ex);
+            throw new PollingServiceException(ex.getMessage(), ex);
         }
     }
 
     @Override
-    public DataPointReadResponse read(List<DataPointVO> dataPoints, long time) throws MasterException {
+    public DataPointReadResponse read(List<DataPointVO> dataPoints, long time) throws PollingServiceException {
         DataPointReadResponse response = new DataPointReadResponse();
 
         List<NodeId> nodeIds = new ArrayList<>();
@@ -76,14 +77,27 @@ public class OpcUaMaster implements IOpcUaMaster {
                 response.add(dataPointVO.getXid(), throwable);
             }
         }
+        if(nodeIds.size() != dataPointReadable.size()) {
+            for(DataPointVO dataPointVO: dataPointReadable) {
+                response.add(dataPointVO.getXid(), new PollingServiceException(getMessage("Read", dataPointVO.getPointLocator(), "null", "The node ids number is different than the number of points for which we want to retrieve the value.")));
+            }
+            return response;
+        }
         ReadResponse readResponse = null;
         try {
             UaClient client = getClient();
             readResponse = OpcUaUtils.sendRead(client, nodeIds);
         } catch (Exception ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
-            throw new MasterException(ex.getMessage(), ex);
+            throw new PollingServiceException(ex.getMessage(), ex);
         } finally {}
+
+        if(readResponse.getResults().length != dataPointReadable.size()) {
+            for(DataPointVO dataPointVO: dataPointReadable) {
+                response.add(dataPointVO.getXid(), new PollingServiceException(getMessage("Read", dataPointVO.getPointLocator(), "null", "The number of results returned is different from the number of points for which a value was retrieved.")));
+            }
+            return response;
+        }
 
         for(int i = 0; i < readResponse.getResults().length; i++) {
             DataValue dataValue = readResponse.getResults()[i];
@@ -95,10 +109,10 @@ public class OpcUaMaster implements IOpcUaMaster {
 
             if (statusCode == null) {
                 Variant variant = dataValue.getValue();
-                response.add(dataPointXid, new MasterException(getMessage("Read", pointLocator, variant.getValue(), "statusCode is null")));
+                response.add(dataPointXid, new PollingServiceException(getMessage("Read", pointLocator, variant.getValue(), "statusCode is null")));
             } else if(!statusCode.isGood()) {
                 Variant variant = dataValue.getValue();
-                response.add(dataPointXid, new MasterException(getMessage("Read", pointLocator, variant.getValue(), statusCode.toString())));
+                response.add(dataPointXid, new PollingServiceException(getMessage("Read", pointLocator, variant.getValue(), statusCode.toString())));
             } else {
                 try {
                     PointValueTime pointValueTime = convertToPointValueTime(time, pointLocator, dataValue);
@@ -113,22 +127,22 @@ public class OpcUaMaster implements IOpcUaMaster {
     }
 
     @Override
-    public void write(DataPointVO dataPoint, Object value) throws MasterException {
+    public void write(DataPointVO dataPoint, Object value) throws PollingServiceException {
         OpcUaPointLocatorVO pointLocator = dataPoint.getPointLocator();
         if(value == null) {
-            throw new MasterException(getMessage("Write", pointLocator, null, "Value is null!"));
+            throw new PollingServiceException(getMessage("Write", pointLocator, null, "Value is null!"));
         }
         if(value instanceof ImageValue) {
-            throw new MasterException(getMessage("Write",pointLocator, value, value.getClass().getName() + " is not supported!"));
+            throw new PollingServiceException(getMessage("Write",pointLocator, value, value.getClass().getName() + " is not supported!"));
         }
         if(!pointLocator.getOpcDataType().validate(value)) {
-            throw new MasterException(getMessage("Write",pointLocator, value, value + " value is invalid!"));
+            throw new PollingServiceException(getMessage("Write",pointLocator, value, value + " value is invalid!"));
         }
         Object valueToSend = null;
         try {
             valueToSend = pointLocator.getOpcDataType().convertToWrite(value);
         } catch (Exception e) {
-            throw new MasterException(e.getMessage(), e);
+            throw new PollingServiceException(e.getMessage(), e);
         }
         try {
             UaClient client = getClient();
@@ -137,25 +151,25 @@ public class OpcUaMaster implements IOpcUaMaster {
             StatusCode responseCode = writeResponse.getResponseHeader().getServiceResult();
 
             if (!responseCode.isGood()) {
-                throw new MasterException(getMessage("Write",pointLocator, valueToSend, responseCode.toString()));
+                throw new PollingServiceException(getMessage("Write",pointLocator, valueToSend, responseCode.toString()));
             }
 
             if(writeResponse.getResults() != null && writeResponse.getResults().length > 0) {
                 StatusCode statusCode = writeResponse.getResults()[0];
                 if (!statusCode.isGood()) {
-                    throw new MasterException(getMessage("Write",pointLocator, valueToSend, statusCode.toString()));
+                    throw new PollingServiceException(getMessage("Write",pointLocator, valueToSend, statusCode.toString()));
                 }
             }
 
         } catch (Exception ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
-            throw new MasterException(ex.getMessage(), ex);
+            throw new PollingServiceException(ex.getMessage(), ex);
         } finally {
         }
     }
 
     @Override
-    public void ping() throws MasterException {
+    public void ping() throws PollingServiceException {
         try {
             UaClient client = getClient();
             if (client == null) {
@@ -164,7 +178,7 @@ public class OpcUaMaster implements IOpcUaMaster {
             List<DataValue> result = sendReadServerStateAndTime(client);
         } catch (Exception ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
-            throw new MasterException(ex.getMessage(), ex);
+            throw new PollingServiceException(ex.getMessage(), ex);
         } finally {
         }
     }
@@ -209,17 +223,12 @@ public class OpcUaMaster implements IOpcUaMaster {
     }
 
     @Override
-    public void terminate() throws MasterException {
+    public void terminate() throws PollingServiceException {
         try {
             this.doClose(client);
         } catch (Throwable e) {
-            throw new MasterException(e.getMessage(), e);
+            throw new PollingServiceException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-        terminate();
     }
 
     @Override
@@ -248,7 +257,7 @@ public class OpcUaMaster implements IOpcUaMaster {
         return "[OPC UA] ";
     }
 
-    private void doClose(UaClient client) throws MasterException {
+    private void doClose(UaClient client) throws PollingServiceException {
         if(client != null) {
             UaClient client1 = this.client;
             WorkItem workItem = new ClosingWorkItem(new AutoCloseable() {
@@ -276,10 +285,18 @@ public class OpcUaMaster implements IOpcUaMaster {
         return MessageFormat.format("Failed {0} message: {1}", operation, message);
     }
 
-    private static PointValueTime convertToPointValueTime(long time, OpcUaPointLocatorVO pointLocator, DataValue value) {
+    private static PointValueTime convertToPointValueTime(long time, OpcUaPointLocatorVO pointLocator, DataValue dataValue) {
+
         MangoValue mangoValue = null;
         try {
-            mangoValue = pointLocator.getOpcDataType().convertToRead(value.getValue().getValue());
+            Variant variant = dataValue.getValue();
+            Object valueRaw = variant.getValue();
+            if(valueRaw.getClass().isArray()) {
+                Object value = Array.get(valueRaw, 0);
+                mangoValue = pointLocator.getOpcDataType().convertToRead(value);
+            } else {
+                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

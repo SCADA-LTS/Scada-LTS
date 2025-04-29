@@ -80,7 +80,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     @Override
     public int getDuplicateHandling() {
-        return duplicateHandling;
+        return dataSourceEventType.getDuplicateHandling();
     }
 
     @Override

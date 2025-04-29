@@ -100,7 +100,7 @@ import org.scada_lts.ds.messaging.protocol.amqp.ExchangeType;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
-import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaMaster;
+import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaService;
 import org.scada_lts.ds.polling.protocol.opcua.vo.*;
 import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.mango.service.DataPointService;
@@ -223,6 +223,7 @@ import static com.serotonin.mango.rt.dataSource.bacnet.BACnetUtils.checkFreePort
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
@@ -3010,6 +3011,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     public DwrResponseI18n saveOpcUaDataSource(OpcUaDataSourceVO form) {
         Permissions.ensureAdmin();
+        toSecurePath(form.getKeyStoreFile()).ifPresent(keyStoreSecuredPath -> {
+            form.setKeyStoreFile(keyStoreSecuredPath.toString());
+        });
         AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
         DwrResponseI18n response = tryDataSourceSave(form);
         Common.getUser().setEditDataSource(form);
@@ -3028,8 +3032,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         LinkedHashSet<String> serverList = new LinkedHashSet<>();
 
-        try(IOpcUaMaster master = IOpcUaMaster.newMaster(dataSourceVO)) {
-            master.init();
+        try(IOpcUaService service = IOpcUaService.newService(dataSourceVO)) {
+            service.initialize();
             serverList.add(dataSourceVO.getServerAddress());
         } catch (Throwable e) {
             LOG.error(e.getMessage());
@@ -3062,17 +3066,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         List<OpcUaItem> nodes = new ArrayList<>();
 
-        try(IOpcUaMaster master = IOpcUaMaster.newMaster(dataSource)) {
-            master.init();
+        try(IOpcUaService service = IOpcUaService.newService(dataSource)) {
+            service.initialize();
             OpcUaPointLocatorVO root = new OpcUaPointLocatorVO();
             root.setOpcDataType(dataType);
             root.setNamespaceIndex(namespaceIndex);
             root.setIdentifier(identifier);
             root.setIdentifierType(identifierType);
             long time = System.currentTimeMillis();
-            List<OpcUaPointLocatorVO> pointLocators = master.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName).reversed());
+            List<OpcUaPointLocatorVO> pointLocators = service.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName).reversed());
             for(OpcUaPointLocatorVO pointLocator: pointLocators) {
-                boolean validated = master.validate(pointLocator);
+                boolean validated = service.validate(pointLocator);
                 nodes.add(new OpcUaItem(validated, pointLocator));
             }
             response.addMessage("tagsMessage", new LocalizableMessage("common.default",  nodes.size() + " nodes found, in time: " + (System.currentTimeMillis() - time) + " [ms]"));

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static org.scada_lts.utils.PathSecureUtils.*;
+import static org.scada_lts.utils.PathSecureUtils.ValidationPaths.*;
 
 public class SafeFile {
 

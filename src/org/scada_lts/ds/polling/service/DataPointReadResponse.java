@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class DataPointReadResponse {
 
@@ -13,18 +14,18 @@ public class DataPointReadResponse {
         this.values = new HashMap<>();
     }
 
-    public Throwable getError(String xid) {
+    public Optional<Throwable> getError(String xid) {
         Result result = values.get(xid);
         if(result == null)
-            return null;
-        return result.getError();
+            return Optional.empty();
+        return Optional.ofNullable(result.getError());
     }
 
-    public PointValueTime getValue(String xid) {
+    public Optional<PointValueTime> getValue(String xid) {
         Result result = values.get(xid);
         if(result == null)
-            return null;
-        return result.getValue();
+            return Optional.empty();
+        return Optional.ofNullable(result.getValue());
     }
 
     public void add(String xid, Throwable error) {

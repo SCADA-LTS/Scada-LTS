@@ -512,7 +512,7 @@ public class SystemSettingsService {
             String httpResponseHeaders = json.getHttpResponseHeaders();
             if(StringUtils.isEmpty(httpResponseHeaders))
                 return "";
-            Supplier<ObjectMapper> getObjectMapper = () -> ApplicationBeans.getObjectMapper();
+            Supplier<ObjectMapper> getObjectMapper = ObjectMapper::new;
             Map<String, String> headers = SystemSettingsUtils.deserializeMap(httpResponseHeaders, getObjectMapper);
             return serializeMap(headers, getObjectMapper);
         } catch (Exception e) {

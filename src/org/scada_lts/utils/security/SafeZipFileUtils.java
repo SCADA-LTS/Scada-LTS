@@ -2,8 +2,7 @@ package org.scada_lts.utils.security;
 
 import java.io.File;
 
-import static org.scada_lts.utils.PathSecureUtils.validateFilename;
-import static org.scada_lts.utils.PathSecureUtils.validatePath;
+import static org.scada_lts.utils.PathSecureUtils.ValidationPaths.*;
 
 public final class SafeZipFileUtils {
 

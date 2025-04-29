@@ -3,7 +3,6 @@ package org.scada_lts.web.mvc.api.css;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.utils.PathSecureUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +11,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getAppContextSystemFilePath;
 
 public class CustomCssUtils {
 
@@ -36,7 +37,7 @@ public class CustomCssUtils {
 
     private static File getCustomCssFileFromPath() {
         try {
-            Path path = PathSecureUtils.getAppContextSystemFilePath(CSS_FILENAME);
+            Path path = getAppContextSystemFilePath(CSS_FILENAME);
             File cssFile = path.toFile();
             if(Files.exists(path) == Files.notExists(path)) {
                 LOG.warn("Missing file permissions!: " + CSS_FILENAME);

@@ -3,7 +3,7 @@ package org.scada_lts.ds.polling;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.ds.DataSourceUpdatable;
-import org.scada_lts.ds.polling.service.IMaster;
+import org.scada_lts.ds.polling.service.PollingService;
 import org.scada_lts.ds.polling.service.DataPointReadResponse;
 import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
 import com.serotonin.mango.DataTypes;
@@ -31,15 +31,15 @@ public class PollingDataSourceRT extends PollingDataSource {
 	public static final int POINT_READ_ALL_EXCEPTION_EVENT = 5;
 	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 6;
 
-	private final IMaster master;
+	private final PollingService pollingService;
 	private final DataSourceVO<?> vo;
 	private int timeoutCount = 0;
 	private volatile boolean reconnected = false;
 
-	public PollingDataSourceRT(DataSourceUpdatable<?> vo, IMaster master) {
+	public PollingDataSourceRT(DataSourceUpdatable<?> vo, PollingService pollingService) {
 		super(vo.toDataSource());
 		this.vo = vo.toDataSource();
-		this.master = master;
+		this.pollingService = pollingService;
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
 				vo.isQuantize());
 	}
@@ -50,16 +50,16 @@ public class PollingDataSourceRT extends PollingDataSource {
 		List<DataPointRT> dataPoints = new ArrayList<>(getDataPoints());
 
 		if (timeoutCount >= 3) {
-			LOG.warn(master.getName() + "Trying to reconnect ! :" + LoggingUtils.dataSourceInfo(vo));
+			LOG.warn(pollingService.getName() + "Trying to reconnect ! :" + LoggingUtils.dataSourceInfo(vo));
 			timeoutCount = 0;
 			initialize();
 		} else {
 			try {
-				master.ping();
+				pollingService.ping();
 				_returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			} catch (Throwable e) {
 				DataPointUnreliableUtils.setUnreliableDataPoints(dataPoints);
-				String message = master.getName() + "Poll Failed ! :" + LoggingUtils.exceptionInfo(e) + " - "
+				String message = pollingService.getName() + "Poll Failed ! :" + LoggingUtils.exceptionInfo(e) + " - "
 						+ LoggingUtils.dataSourceInfo(vo);
 				LOG.warn(message);
 				_raiseEvent(
@@ -72,21 +72,21 @@ public class PollingDataSourceRT extends PollingDataSource {
 			}
 		}
 
-		if(!reconnected || dataPoints.isEmpty()) {
+		if (!reconnected || dataPoints.isEmpty()) {
 			return;
 		}
 
-		List<DataPointVO> dataPointsVO = dataPoints.stream()
+		List<DataPointVO> points = dataPoints.stream()
 				.map(DataPointRT::getVO)
 				.collect(Collectors.toList());
 
 		DataPointReadResponse response;
 		try {
-			response = master.read(dataPointsVO, time);
+			response = pollingService.read(points, time);
 			_returnToNormal(POINT_READ_ALL_EXCEPTION_EVENT, time);
 		} catch (Throwable throwable) {
 			DataPointUnreliableUtils.setUnreliableDataPoints(dataPoints);
-			String message = master.getName() + "Read All Failed ! :" + LoggingUtils.info(throwable, this) + " - "
+			String message = pollingService.getName() + "Read All Failed ! :" + LoggingUtils.info(throwable, this) + " - "
 					+ LoggingUtils.dataSourceInfo(vo);
 			LOG.warn(message);
 			_raiseEvent(POINT_READ_ALL_EXCEPTION_EVENT, time, true,
@@ -95,49 +95,44 @@ public class PollingDataSourceRT extends PollingDataSource {
 			return;
 		}
 
-		for(DataPointRT dataPoint: dataPoints) {
+		for (DataPointRT dataPoint: dataPoints) {
 			DataPointVO dataPointVO = dataPoint.getVO();
-			Throwable error = response.getError(dataPointVO.getXid());
+			String dataPointXid = dataPointVO.getXid();
 
-			if(error == null) {
-				_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
-			} else {
+			response.getError(dataPointXid).ifPresentOrElse(error -> {
+
 				DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
-				String message = master.getName() + "Read Failed ! :" + LoggingUtils.info(error, this, dataPoint) + " - "
-						+ LoggingUtils.dataSourceInfo(vo);
+				String message = pollingService.getName() + "Read Failed ! :" + LoggingUtils.info(error, this, dataPoint) + " - " + LoggingUtils.dataSourceInfo(vo);
 				LOG.warn(message);
 				_raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
-						new LocalizableMessage("event.exception2",
-								vo.getName(), message), dataPoint.getVO());
-				continue;
-			}
-
-			PointValueTime pointValueTime = response.getValue(dataPointVO.getXid());
-
-			if(pointValueTime == null) {
-				DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
-				String message = master.getName() + "Read Failed ! :" + LoggingUtils.dataPointInfo(dataPoint) + " - "
-						+ LoggingUtils.dataSourceInfo(vo);
-				LOG.warn(message);
-				_raiseEvent(POINT_UPDATE_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2", vo.getName(), message), dataPoint.getVO());
-			} else {
 
-				try {
-					dataPoint.updatePointValue(pointValueTime);
-					_returnToNormal(POINT_UPDATE_EXCEPTION_EVENT, time, dataPoint.getId());
-					DataPointUnreliableUtils.resetUnreliableDataPoint(dataPoint);
-				} catch (Throwable throwable) {
+			}, () -> {
+				_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
+				response.getValue(dataPointXid).ifPresentOrElse(pointValueTime -> {
+					try {
+						dataPoint.updatePointValue(pointValueTime);
+						_returnToNormal(POINT_UPDATE_EXCEPTION_EVENT, time, dataPoint.getId());
+						DataPointUnreliableUtils.resetUnreliableDataPoint(dataPoint);
+					} catch (Throwable throwable) {
+						DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
+						String message = pollingService.getName() + "Update Failed ! :" + LoggingUtils.info(throwable, this, dataPoint) + " - "
+								+ LoggingUtils.dataSourceInfo(vo);
+						LOG.warn(message);
+						_raiseEvent(POINT_UPDATE_EXCEPTION_EVENT, time, true,
+								new LocalizableMessage("event.exception2",
+										vo.getName(), message), dataPoint.getVO());
+					}
+				}, () -> {
 					DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
-					String message = master.getName() + "Update Failed ! :" + LoggingUtils.info(throwable, this, dataPoint) + " - "
+					String message = pollingService.getName() + "Read Failed ! :" + LoggingUtils.dataPointInfo(dataPoint) + " - "
 							+ LoggingUtils.dataSourceInfo(vo);
 					LOG.warn(message);
 					_raiseEvent(POINT_UPDATE_EXCEPTION_EVENT, time, true,
-							new LocalizableMessage("event.exception2",
-									vo.getName(), message), dataPoint.getVO());
-					continue;
-				}
-			}
+							new LocalizableMessage("event.exception2", vo.getName(), message), dataPoint.getVO());
+				});
+			});
+
 		}
 	}
 
@@ -155,12 +150,12 @@ public class PollingDataSourceRT extends PollingDataSource {
 			value = valueTime.getStringValue();
 
 		try {
-			master.write(dataPoint.getVO(), value);
+			pollingService.write(dataPoint.getVO(), value);
 			_returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint.getId());
 			DataPointUnreliableUtils.resetUnreliableDataPoint(dataPoint);
 		} catch (Throwable e) {
 			DataPointUnreliableUtils.setUnreliableDataPoint(dataPoint);
-			String message = master.getName() + "Write Failed ! :" + LoggingUtils.info(e, vo, dataPoint.getVO());
+			String message = pollingService.getName() + "Write Failed ! :" + LoggingUtils.info(e, vo, dataPoint.getVO());
 			LOG.warn(message);
 			_raiseEvent(POINT_WRITE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
@@ -173,19 +168,19 @@ public class PollingDataSourceRT extends PollingDataSource {
 	public void initialize() {
 		this.reconnected = false;
 		try {
-			master.terminate();
+			pollingService.terminate();
 		} catch (Throwable e) {
 			LOG.warn(LoggingUtils.info(e, this));
 		}
 		List<DataPointRT> dataPoints = new ArrayList<>(this.dataPoints);
 		try {
-			this.master.init();
+			this.pollingService.initialize();
 			_returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 			this.reconnected = true;
 			DataPointUnreliableUtils.resetUnreliableDataPoints(dataPoints);
 		} catch (Throwable e) {
 			DataPointUnreliableUtils.setUnreliableDataPoints(dataPoints);
-			String message = master.getName() + "Initialize Failed ! : " + LoggingUtils.exceptionInfo(e) + " - "
+			String message = pollingService.getName() + "Initialize Failed ! : " + LoggingUtils.exceptionInfo(e) + " - "
 					+ LoggingUtils.dataSourceInfo(vo);
 			LOG.warn(message);
 			_raiseEvent(
@@ -202,11 +197,11 @@ public class PollingDataSourceRT extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			if(master != null)
-				master.terminate();
+			if(pollingService != null)
+				pollingService.terminate();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
 		} catch (Throwable e) {
-			String message = master.getName() + "Terminate Failed ! : " + LoggingUtils.exceptionInfo(e) + " - "
+			String message = pollingService.getName() + "Terminate Failed ! : " + LoggingUtils.exceptionInfo(e) + " - "
 					+ LoggingUtils.dataSourceInfo(vo);
 			LOG.error(message);
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT,

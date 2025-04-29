@@ -14,7 +14,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.polling.PollingDataSourceRT;
-import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaMaster;
+import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaService;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaSecurityPolicyType;
 import org.scada_lts.utils.security.KeyStoreType;
@@ -74,7 +74,7 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 
 	@Override
 	public DataSourceRT createDataSourceRT() {
-		return new PollingDataSourceRT(this, IOpcUaMaster.newMaster(this));
+		return new PollingDataSourceRT(this, IOpcUaService.newService(this));
 	}
 
 	@Override
