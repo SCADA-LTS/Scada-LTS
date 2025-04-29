@@ -68,8 +68,14 @@
   }
   
   function editPointCBImpl(locator) {
-      this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
-      
+      if (this.scriptPointsContext) {
+         for (var i = 0; i < locator.context.length; i++) {
+             this.scriptPointsContext.addToContextArray(locator.context[i].key, locator.context[i].value);
+         }
+         this.scriptPointsContext.writeContextArray();
+      } else {
+         this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
+      }
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);

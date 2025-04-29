@@ -1352,6 +1352,7 @@ function ScriptPointsContext(startContext, points) {
 
     this.addPointToContext = function () {
         let pointId = $get(this.allPointsListId);
+        this.removeFromContextArray(pointId);
         let row = this.addToContextArray(pointId, "p"+ pointId);
         this.writeContextArray(row);
     }
@@ -1386,7 +1387,7 @@ function ScriptPointsContext(startContext, points) {
        if (this.contextArray.length == 0) {
           show($(this.contextTableEmptyId));
           hide($(this.contextTableHeadersId));
-       } else {
+       } else if(row) {
           hide($(this.contextTableEmptyId));
           show($(this.contextTableHeadersId));
           dwr.util.addRows(this.contextTableId, [row],
@@ -1396,7 +1397,7 @@ function ScriptPointsContext(startContext, points) {
                   function(data) { return data.pointType; },
                   function(data) {
                           return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
-                                  "onblur='scriptPointsContext.updatePoint("+ data.pointId +",\'scriptVarName\', this.value)'/>";
+                                  "onblur='scriptPointsContext.updatePoint("+ data.pointId +", \"scriptVarName\", this.value)'/>";
                   },
                   function(data) {
                           return "<img src='images/bullet_delete.png' class='ptr' "+
@@ -1529,6 +1530,7 @@ function ReportPointsContext(startContext, points) {
 
     this.addPointToContext = function () {
         let pointId = $get(this.allPointsListId);
+        this.removeFromContextArray(pointId);
         let reportRow = this.addToContextArray(pointId, "", true);
         this.writeContextArray(reportRow);
     }
@@ -1553,7 +1555,7 @@ function ReportPointsContext(startContext, points) {
         if (this.contextArray.length == 0) {
             show($(this.contextTableEmptyId));
             hide($(this.contextTableHeadersId));
-        } else {
+        } else if (row) {
             hide($(this.contextTableEmptyId));
             show($(this.contextTableHeadersId));
             dwr.util.addRows(this.contextTableId, [row],
