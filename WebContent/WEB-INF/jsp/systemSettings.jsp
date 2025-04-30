@@ -130,6 +130,7 @@
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>);
         });
 
 <%--
