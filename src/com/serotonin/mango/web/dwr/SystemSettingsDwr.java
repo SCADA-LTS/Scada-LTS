@@ -19,6 +19,8 @@
 package com.serotonin.mango.web.dwr;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -42,7 +44,9 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
+import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -190,6 +194,24 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(
 				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
 				SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT));
+		settings.put(
+				SystemSettingsDAO.SMS_DOMAIN,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.SMS_DOMAIN));
+		settings.put(
+				SystemSettingsDAO.DEFAULT_LOGGING_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_ENABLED,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.AGGREGATION_ENABLED));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_VALUES_LIMIT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
+		settings.put(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
 		return settings;
 	}
 
@@ -343,7 +365,8 @@ public class SystemSettingsDwr extends BaseDwr {
 											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
 											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
 											String webResourceGraphicsPath, String webResourceUploadsPath,
-											boolean eventAssignEnabled, int pointExtendedNameLengthInReportsLimit) {
+											boolean eventAssignEnabled, int pointExtendedNameLengthInReportsLimit,
+											String smsDomain, int defaultLoggingType) {
 		Permissions.ensureAdmin();
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
         DwrResponseI18n response = new DwrResponseI18n();
@@ -360,6 +383,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsService.saveResourceUploadsPathMisc(webResourceUploadsPath, response);
 		systemSettingsService.saveDataPointExtendedNameLengthInReportsLimitMisc(pointExtendedNameLengthInReportsLimit, response);
 		systemSettingsService.saveEventAssignEnabledMisc(eventAssignEnabled);
+		systemSettingsService.saveSMSDomain(smsDomain);
+		systemSettingsService.saveDefaultLoggingType(defaultLoggingType);
 		return response;
 	}
 
@@ -368,7 +393,7 @@ public class SystemSettingsDwr extends BaseDwr {
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
 								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
-							     int defaultPurgePeriod, int defaultPurgePeriodType) {
+							     int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO
@@ -395,7 +420,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
 				defaultPurgePeriodType);
-
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				valuesLimitForPurge);
 	}
 
 	
@@ -456,6 +483,12 @@ public class SystemSettingsDwr extends BaseDwr {
 				instanceDescription);
 		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, topDescriptionPrefix);
 		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, topDescription);
+	}
+
+	public void saveAmChartsSettings(boolean aggregationEnabled, int aggregationValuesLimit, double aggregationLimitFactor){
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		AggregateSettings aggregateSettings = new AggregateSettings(aggregationEnabled, aggregationValuesLimit, aggregationLimitFactor);
+		systemSettingsService.saveAggregateSettings(aggregateSettings);
 	}
 
 	
@@ -519,5 +552,18 @@ public class SystemSettingsDwr extends BaseDwr {
 	
 	public String getAppServer() {
 		return Common.ctx.getServletContext().getServerInfo();
+	}
+
+	public String getScadaConfig() {
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		JsonSettingsScadaConfig config = systemSettingsService.getScadaConfig();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.writeValueAsString(config);
+		}
+		catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return "{}";
+		}
 	}
 }
