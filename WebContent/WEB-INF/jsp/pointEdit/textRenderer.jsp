@@ -160,6 +160,10 @@
         <td class="formField"><input id="textRendererTimeConversionExponent" type="text" value="<c:catch var="exception"><c:out value="${form.textRenderer.conversionExponent}" /></c:catch>"/></td>
       </tr>
     </tbody>
+    <tbody id="textRendererBinaryNumber" style="display:none;">
+    </tbody>
+    <tbody id="textRendererHexadecimal" style="display:none;">
+    </tbody>
   </table>
 </div>
 
@@ -248,6 +252,10 @@
           } else if (typeName == "textRendererTime")
               DataPointEditDwr.setTimeTextRenderer($get("textRendererTimeFormat"),
                       $get("textRendererTimeConversionExponent"), callback);
+          else if (typeName == "textRendererHexadecimal")
+            DataPointEditDwr.setHexadecimalRenderer(callback);
+          else if (typeName == "textRendererBinaryNumber")
+            DataPointEditDwr.setBinaryRenderer(callback);
           else
               callback();
       };

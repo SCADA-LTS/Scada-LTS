@@ -45,6 +45,8 @@ abstract public class BaseTextRenderer implements TextRenderer, JsonSerializable
             List<ImplDefinition> d = new ArrayList<ImplDefinition>();
             d.add(AnalogRenderer.getDefinition());
             d.add(BinaryTextRenderer.getDefinition());
+            d.add(BinaryRenderer.getDefinition());
+            d.add(HexadecimalRenderer.getDefinition());
             d.add(MultistateRenderer.getDefinition());
             d.add(NoneRenderer.getDefinition());
             d.add(PlainRenderer.getDefinition());
