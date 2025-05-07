@@ -29,17 +29,30 @@ public final class ScadaHeaderWriterLogoutHandler implements LogoutSuccessHandle
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         this.headerWriter.writeHeaders(request, response);
-        resetUser(request);
+        if(authentication == null) {
+            LOG.warn("User is not logged!");
+        } else {
+            resetUser(request);
+        }
         response.sendRedirect("login.htm");
     }
 
     private static void resetUser(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            SystemEventType.returnToNormal(new SystemEventType(
-                    SystemEventType.TYPE_USER_LOGIN, user.getId()), System
-                    .currentTimeMillis());
-            user.cancelTestingUtility();
+
+            if(user != null) {
+
+                SystemEventType.returnToNormal(new SystemEventType(
+                        SystemEventType.TYPE_USER_LOGIN, user.getId()), System
+                        .currentTimeMillis());
+                user.cancelTestingUtility();
+
+            } else {
+
+                LOG.warn("User is not logged!");
+            }
+
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
         }
