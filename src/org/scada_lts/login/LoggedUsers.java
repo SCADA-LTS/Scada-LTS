@@ -121,22 +121,15 @@ public class LoggedUsers implements ILoggedUsers {
     public void loadSessions(Session[] sessions) {
         for(Session session: sessions) {
             HttpSession httpSession = session.getSession();
-            UserService userService = ApplicationBeans.getBean("userService", UserService.class);
-            SecurityContext securityContext = (SecurityContext)httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-            if(securityContext != null) {
-                Authentication authentication = securityContext.getAuthentication();
-                if(authentication != null) {
-                    String username = authentication.getName();
-                    User sessionUser = userService.getUser(username);
-                    if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
-                        int userId = sessionUser.getId();
-                        loggedSessions.putIfAbsent(userId, new ArrayList<>());
-                        loggedSessions.get(userId).add(httpSession);
-                        loggedUsers.put(userId, sessionUser);
-                        LOG.info("Loaded session for user: {}", username);
-                    }
-                }
-            }
+             try {
+                 boolean loadedSession = loadSession(httpSession, loggedUsers, loggedSessions);
+                 if(!loadedSession) {
+                     httpSession.invalidate();
+                 }
+             } catch (Throwable ex) {
+                 LOG.error("Failed Load session: {}", ex.getMessage(), ex);
+                 httpSession.invalidate();
+             }
         }
     }
 
@@ -161,6 +154,34 @@ public class LoggedUsers implements ILoggedUsers {
         for(GrantedAuthority authority: authentication.getAuthorities()) {
             if("ROLE_ADMIN".equals(authority.getAuthority())) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean loadSession(HttpSession httpSession, Map<Integer, User> loggedUsers, Map<Integer, List<HttpSession>> loggedSessions) {
+        SecurityContext securityContext = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+        if(securityContext != null) {
+            Authentication authentication = securityContext.getAuthentication();
+            if(authentication != null) {
+                String username = authentication.getName();
+                User sessionUser = null;
+                try {
+                    UserService userService = ApplicationBeans.getBean("userService", UserService.class);
+                    sessionUser = userService.getUser(username);
+                } catch (Throwable ex) {
+                    LOG.error("Failed load session for user: {}", username, ex);
+                    return false;
+                }
+
+                if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
+                    int userId = sessionUser.getId();
+                    loggedSessions.putIfAbsent(userId, new ArrayList<>());
+                    loggedSessions.get(userId).add(httpSession);
+                    loggedUsers.put(userId, sessionUser);
+                    LOG.info("Loaded session for user: {}", username);
+                    return true;
+                }
             }
         }
         return false;
