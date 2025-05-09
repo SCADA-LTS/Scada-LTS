@@ -225,7 +225,7 @@ public class OpcUaService implements IOpcUaService {
     @Override
     public void terminate() throws PollingServiceException {
         try {
-            this.doClose(client);
+            doClose(client, dataSource);
         } catch (Throwable e) {
             throw new PollingServiceException(e.getMessage(), e);
         }
@@ -257,13 +257,12 @@ public class OpcUaService implements IOpcUaService {
         return "[OPC UA] ";
     }
 
-    private void doClose(UaClient client) throws PollingServiceException {
+    private static void doClose(UaClient client, OpcUaDataSourceVO dataSource) throws PollingServiceException {
         if(client != null) {
-            UaClient client1 = this.client;
             WorkItem workItem = new ClosingWorkItem(new AutoCloseable() {
                 @Override
                 public void close() throws Exception {
-                    client1.disconnect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
+                    client.disconnect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
                 }
             }, "[OPC UA] Closed connection for: " + LoggingUtils.dataSourceInfo(dataSource));
             Common.ctx.getBackgroundProcessing().addWorkItem(workItem);
@@ -291,11 +290,11 @@ public class OpcUaService implements IOpcUaService {
         try {
             Variant variant = dataValue.getValue();
             Object valueRaw = variant.getValue();
-            if(valueRaw.getClass().isArray()) {
+            if(valueRaw == null || !valueRaw.getClass().isArray()) {
+                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
+            } else {
                 Object value = Array.get(valueRaw, 0);
                 mangoValue = pointLocator.getOpcDataType().convertToRead(value);
-            } else {
-                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -6,11 +6,11 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SearchCyclicDependencyAction implements Callable<Void> {
 
@@ -59,7 +59,7 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
                 return null;
             }
             int temp = --depth;
-            List<Callable<Void>> tasks = new ArrayList<>();
+            List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
             for (IntValuePair keyValue : context) {
                 int contextDataPointId = keyValue.getKey();
                 DataPointVO contextDataPoint = dataPoints.get(contextDataPointId);

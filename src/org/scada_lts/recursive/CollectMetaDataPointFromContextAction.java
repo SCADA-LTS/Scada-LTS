@@ -10,10 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.ValidationUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 public class CollectMetaDataPointFromContextAction implements Callable<Void> {
@@ -52,7 +52,7 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                 MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
                 List<IntValuePair> context = metaPointLocator.getContext();
                 if(context != null && !context.isEmpty()) {
-                    List<Callable<Void>> tasks = new ArrayList<>();
+                    List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
                     for(IntValuePair intValuePair : context) {
                         if(intValuePair.getKey() > 0 && isExecute.test(intValuePair.getKey())) {
                             DataPointVO fromContextDataPoint = dataPoints.stream()

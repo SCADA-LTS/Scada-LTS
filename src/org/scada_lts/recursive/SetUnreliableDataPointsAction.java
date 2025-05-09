@@ -6,9 +6,9 @@ import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class SetUnreliableDataPointsAction implements Callable<Void> {
@@ -31,7 +31,7 @@ public class SetUnreliableDataPointsAction implements Callable<Void> {
     public Void call() throws Exception {
         setAttributes(filter(dataPoints, unreliable), unreliable);
         int temp = --depth;
-        List<Callable<Void>> tasks = new ArrayList<>();
+        List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
         for(DataPointRT dataPoint: dataPoints) {
             List<DataPointRT> metaDataPoints = Common.ctx.getRuntimeManager().getRunningMetaDataPoints(dataPoint.getId(), !unreliable);
             if(!metaDataPoints.isEmpty()) {
