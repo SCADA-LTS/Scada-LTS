@@ -42,6 +42,7 @@
         <Property name="detectorRtLoggingLevel">INFO</Property>
         <Property name="opcUaLoggingLevel">INFO</Property>
         <Property name="loggedUsersLoggingLevel">ERROR</Property>
+        <Property name="logoutHandlerLoggingLevel">ERROR</Property>
 
         <!-- Parse log4j2.xml Logging-->
         <Property name="log4jLoggingLevel">ERROR</Property>
@@ -172,6 +173,8 @@
         <Logger name="org.scada_lts.login" level="${startupLoggingLevel}"/>
 
         <Logger name="org.scada_lts.login.LoggedUsers" level="${loggedUsersLoggingLevel}" />
+
+        <Logger name="org.scada_lts.login.ScadaHeaderWriterLogoutHandler" level="${logoutHandlerLoggingLevel}" />
 
         <!-- BackgroundProcessing Logging-->
         <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundProcessingLoggingLevel}"/>
