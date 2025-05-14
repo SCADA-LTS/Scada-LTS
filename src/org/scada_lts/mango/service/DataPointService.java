@@ -392,17 +392,8 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		List<Integer> pointIds = dataPointDAO.getDataPointsIds(dataSourceId);
-		if (pointIds.size() > 0) {
-			StringBuilder idsWithCommaSB = new StringBuilder();
-			Iterator idsIterator = pointIds.iterator();
-			idsWithCommaSB.append(pointIds.get(0));
-			while (idsIterator.hasNext()) {
-				idsWithCommaSB.append(",");
-				idsWithCommaSB.append(idsIterator.next());
-			}
-
-			deleteDataPointImpl(idsWithCommaSB.toString());
-		}
+		String ids = pointIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+		deleteDataPointImpl(ids);
 	}
 
 	private void beforePointDelete(int dpId) {

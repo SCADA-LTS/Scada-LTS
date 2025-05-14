@@ -345,7 +345,7 @@ public class PointHierarchyCache {
 
 		for(Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
 			List<PointHierarchyNode> values = entry.getValue();
-			List<PointHierarchyNode> toDelete = new ArrayList<>();
+			Set<PointHierarchyNode> toDelete = new HashSet<>();
 
 			for(PointHierarchyNode node: values) {
 				if(!node.isFolder() && identifiersToDelete.contains(node.getKey())) {
