@@ -247,6 +247,7 @@ test {
         includeTestsMatching "org.scada_lts.utils.CyclicDependencyValidationUtilsTest"
         includeTestsMatching "org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataTypeTestsSuite"
         includeTestsMatching "com.serotonin.mango.vo.EngineeringUnitsTypesTest"
+        includeTestsMatching "org.scada_lts.cache.PointHierarchyCacheTestsSuite"
     }
 
     failFast = true

@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.scada_lts.cached;
+package org.scada_lts.cache;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 
@@ -33,7 +32,7 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
  * @author grzegorz bylica, Marcin Gołda Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class TestPointHierarchyCache {
+public class PointHierarchyCacheTest {
 
 	private PointHierarchyCache cache;
 	private final PointHierarchyDataSource POINT_HIERARCHY_DS=null;

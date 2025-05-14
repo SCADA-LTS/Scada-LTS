@@ -19,11 +19,8 @@ package org.scada_lts.cache;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -343,18 +340,22 @@ public class PointHierarchyCache {
 		  LOG.trace("delete ids:"+ids);
 		  printTreeInCash("_",0);
 		}
-		
+
+		Set<Integer> identifiersToDelete = Arrays.stream(ids).boxed().collect(Collectors.toCollection(HashSet::new));
+
 		for(Map.Entry<Integer, List<PointHierarchyNode>> entry : cache.entrySet()) {
-			  List<PointHierarchyNode> values = entry.getValue();
-			  for(int i=0; i<values.size(); i++) {
-				  for (int j=0; j<ids.length;j++) {
-				    if ((values.get(i).getKey()==ids[j]) && (values.get(i).isFolder()==false)) {
-				    	values.remove(i);
-				    };
-				  }
-			  }
+			List<PointHierarchyNode> values = entry.getValue();
+			List<PointHierarchyNode> toDelete = new ArrayList<>();
+
+			for(PointHierarchyNode node: values) {
+				if(!node.isFolder() && identifiersToDelete.contains(node.getKey())) {
+					toDelete.add(node);
+				}
+			}
+
+			values.removeAll(toDelete);
 		}
-		
+
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("after - ");
 			printTreeInCash("_",0);
