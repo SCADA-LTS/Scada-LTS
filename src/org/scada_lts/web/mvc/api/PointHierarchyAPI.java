@@ -357,7 +357,11 @@ public class PointHierarchyAPI {
             User user = Common.getUser(request);
             if (user.isAdmin()) {
                 for (ObjectHierarchy objectHierarchy : deleteObjectHierarchyDTO.getDeleteObjects()) {
-                    pointHierarchyXidService.deleteFolder(objectHierarchy.getXid(), deleteObjectHierarchyDTO.getMoveObjects());
+                    if(objectHierarchy.isFolder()) {
+                        pointHierarchyXidService.deleteFolder(objectHierarchy.getXid(), deleteObjectHierarchyDTO.getMoveObjects());
+                    } else {
+                        pointHierarchyXidService.moveToRoot(objectHierarchy);
+                    }
                 }
                 return new ResponseEntity<>(String.valueOf(true), HttpStatus.OK);
             } else {
