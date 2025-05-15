@@ -6,8 +6,8 @@ import com.serotonin.mango.vo.User;
 import org.apache.catalina.Session;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -119,10 +119,11 @@ public class LoggedUsers implements ILoggedUsers {
 
     @Override
     public void loadSessions(Session[] sessions) {
+        MangoUser userService = new UserService();
         for(Session session: sessions) {
             HttpSession httpSession = session.getSession();
              try {
-                 boolean loadedSession = loadSession(httpSession, loggedUsers, loggedSessions);
+                 boolean loadedSession = loadSession(httpSession, loggedUsers, loggedSessions, userService);
                  if(!loadedSession) {
                      httpSession.invalidate();
                  }
@@ -159,7 +160,8 @@ public class LoggedUsers implements ILoggedUsers {
         return false;
     }
 
-    private static boolean loadSession(HttpSession httpSession, Map<Integer, User> loggedUsers, Map<Integer, List<HttpSession>> loggedSessions) {
+    private static boolean loadSession(HttpSession httpSession, Map<Integer, User> loggedUsers,
+                                       Map<Integer, List<HttpSession>> loggedSessions, MangoUser userService) {
         SecurityContext securityContext = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
         if(securityContext != null) {
             Authentication authentication = securityContext.getAuthentication();
@@ -167,7 +169,6 @@ public class LoggedUsers implements ILoggedUsers {
                 String username = authentication.getName();
                 User sessionUser = null;
                 try {
-                    UserService userService = ApplicationBeans.getBean("userService", UserService.class);
                     sessionUser = userService.getUser(username);
                 } catch (Throwable ex) {
                     LOG.error("Failed load session for user: {}", username, ex);
