@@ -27,6 +27,14 @@ public class ObjectHierarchy implements Serializable {
         this.xid = xid;
     }
 
+    public boolean isPoint() {
+        return type == ObjectHierarchyType.POINT;
+    }
+
+    public boolean isFolder() {
+        return type == ObjectHierarchyType.FOLDER;
+    }
+
     @Override
     public String toString() {
         return "type=" + type + ", xid='" + xid;

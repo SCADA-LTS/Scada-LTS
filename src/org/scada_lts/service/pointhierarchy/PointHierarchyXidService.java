@@ -134,14 +134,17 @@ public class PointHierarchyXidService extends PointHierarchyService {
     public void deleteFolder(String folderXid, List<ObjectHierarchy> moveObjects) {
         if(moveObjects != null) {
             for (ObjectHierarchy object : moveObjects) {
-                moveObject(object, "_");
+                moveToRoot(object);
             }
         }
         getPointHierarchyDAO().deleteFolderXid(folderXid);
     }
 
-
     public boolean moveObject(ObjectHierarchy objectHierarchy, String destinationFolderXid) {
         return objectHierarchy.getType().move(objectHierarchy.getXid(), destinationFolderXid, getPointHierarchyDAO());
+    }
+
+    public void moveToRoot(ObjectHierarchy object) {
+        moveObject(object, "_");
     }
 }
