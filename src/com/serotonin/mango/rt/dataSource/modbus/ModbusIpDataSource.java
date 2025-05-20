@@ -180,5 +180,4 @@ public class ModbusIpDataSource extends ModbusDataSource {
 
 		super.initialize(modbusMaster);
 	}
-
 }

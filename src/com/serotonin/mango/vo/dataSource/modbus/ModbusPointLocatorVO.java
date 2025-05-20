@@ -288,7 +288,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		if (!RANGE_CODES.isValidId(range))
 			response.addContextualMessage("range", "validate.invalidValue");
 
-		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType))
+		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType) || modbusDataType == DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED)
 			response.addContextualMessage("modbusDataType",
 					"validate.invalidValue");
 		if (!StringUtils.isBetweenInc(slaveId, 0, 255) && !socketMonitor)
