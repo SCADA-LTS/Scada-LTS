@@ -37,10 +37,12 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.LoggingUtils.dataSourceInfo;
@@ -397,21 +399,29 @@ public class DataSourceDAO {
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[]{
-						dataSource.getXid(),
-						dataSource.getName(),
-						dataSource.getType().getId(),
-						new SerializationData().writeObject(dataSource)
-				}).setValues(preparedStatement);
-				return preparedStatement;
-			}
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+
+			ps.setString(1, dataSource.getXid());
+			ps.setString(2, dataSource.getName());
+			ps.setInt(3, dataSource.getType().getId());
+
+			ByteArrayInputStream bais = new SerializationData().writeObject(dataSource);
+			ps.setBytes(4, bais.readAllBytes());
+
+			return ps;
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		Number id = null;
+		if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
+			id = (Number) keyHolder.getKeyList().get(0).get("id");
+		}
+
+		if (id == null) {
+			throw new IllegalStateException("Could not retrieve generated ID for data source.");
+		}
+
+		return id.intValue();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -444,15 +454,27 @@ public class DataSourceDAO {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
-			new ArgumentPreparedStatementSetter(new Object[]{
-					entity.getXid(),
-					entity.getName(),
-					entity.getType().getId(),
-					new SerializationData().writeObject(entity)
-			}).setValues(ps);
+
+			ps.setString(1, entity.getXid());
+			ps.setString(2, entity.getName());
+			ps.setInt(3, entity.getType().getId());
+
+			ByteArrayInputStream bais = new SerializationData().writeObject(entity);
+			ps.setBytes(4, bais.readAllBytes());
+
 			return ps;
 		}, keyHolder);
-		entity.setId(keyHolder.getKey().intValue());
+
+		Number id = null;
+		if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
+			id = (Number) keyHolder.getKeyList().get(0).get("id");
+		}
+
+		if (id == null) {
+			throw new IllegalStateException("Could not retrieve generated ID for data source.");
+		}
+
+		entity.setId(id.intValue());
 		return entity;
 	}
 

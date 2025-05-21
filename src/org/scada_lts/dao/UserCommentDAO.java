@@ -211,15 +211,20 @@ public class UserCommentDAO implements IUserCommentDAO {
 			LOG.trace("deleteUserCommentPoint(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		ArrayList<String> parameters = new ArrayList<>(Arrays.asList(dataPointIdList.split(",")));
+		String[] idStrings = dataPointIdList.split(",");
+		List<Object> parameters = new ArrayList<>();
+
+		parameters.add(UserComment.TYPE_POINT);
+
+		for (String id : idStrings) {
+			parameters.add(Integer.parseInt(id.trim()));
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(USER_COMMENT_DELETE + " in (?");
-		for (int i = 1; i<parameters.size(); i++) {
+		for (int i = 1; i < idStrings.length; i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
-
-		parameters.add(0, String.valueOf(UserComment.TYPE_POINT));
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}

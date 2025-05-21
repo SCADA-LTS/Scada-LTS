@@ -45,13 +45,18 @@ public class DAO {
 	private JdbcTemplate jdbcTemplate;	
 	private static DAO instance;
 	private boolean test =false;
-	
+	private boolean isPostgres = false;
+
+
 	private DAO() {
 		try {
 			LOG.trace("Create DAO");
 			DataSource ds = ApplicationBeans.getBean("databaseSource", DataSource.class);
 			namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
 			jdbcTemplate = new JdbcTemplate(ds);
+
+			String dbName = ds.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
+			isPostgres = dbName.contains("postgresql");
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
@@ -62,7 +67,11 @@ public class DAO {
 	 * @return Method queryForObject() can also return "null"
 	 */
 	public int getId() {
-		return jdbcTemplate.queryForObject("select @@identity", Integer.class);
+		if (isPostgres) {
+			return jdbcTemplate.queryForObject("SELECT LASTVAL()", Integer.class);
+		} else {
+			return jdbcTemplate.queryForObject("SELECT @@identity", Integer.class);
+		}
 	}
 
 	public static DAO getInstance() {
@@ -169,5 +178,9 @@ public class DAO {
 	public void setTest(boolean test) {
 		this.test = test;
 	}
-	
+
+	public boolean isPostgres() {
+		return isPostgres;
+	}
+
 }

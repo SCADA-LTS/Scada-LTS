@@ -49,15 +49,20 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	
 	
 	// @formatter:off
-		private static final String SQL = "" +
+		private static final String SQL_MYSQL = "" +
 				"call prc_views_hierarchy_select();";
-		
-		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "" +
+		private static final String SQL_PG = "SELECT * FROM func_views_hierarchy_select();";
+
+
+		private static final String SQL_VIEW_IN_VIEW_HIERARCHY_MYSQL = "" +
 				"call prc_views_category_views_hierarchy_select();";
-		
-		private static final String SQL_NODE = "" +
+		private static final String SQL_VIEW_IN_VIEW_HIERARCHY_PG = "SELECT * FROM func_views_category_views_hierarchy_select();";
+
+
+		private static final String SQL_NODE_MYSQL = "" +
 				"call prc_views_hierarchy_select_node(?);";
-		
+		private static final String SQL_NODE_PG = "SELECT * FROM func_views_hierarchy_select_node(?);";
+
 		private static final String SQL_ADD = "" +
 				"select func_views_hierarchy_add(?,?);";
 		
@@ -75,6 +80,10 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		
 		private static final String SQL_DELETE_VIEW = "" +
 				"select func_views_hierarchy_view_delete(?);";
+
+		private static String choose(String mysql, String pg) {
+				return DAO.getInstance().isPostgres() ? pg : mysql;
+		}
 		
 		private class ViewHierarchyRowMapper implements RowMapper<ViewHierarchyNode> {
 
@@ -115,7 +124,8 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		}
 		
 		try {
-			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL, new ViewHierarchyRowMapper());
+			String sql = choose(SQL_MYSQL, SQL_PG);
+			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(sql, new ViewHierarchyRowMapper());
 			return listViewHierarchyNode;
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
@@ -133,7 +143,8 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 		}
 		
 		try {
-			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL_NODE, new Object[]{l}, new ViewHierarchyRowMapper());
+			String sql = choose(SQL_NODE_MYSQL, SQL_NODE_PG);
+			List<ViewHierarchyNode> listViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(sql, new Object[]{l}, new ViewHierarchyRowMapper());
 			return listViewHierarchyNode;
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));
@@ -150,7 +161,8 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 			LOG.trace("SQL ViewHierarchyDAO");
 		}
 		try {
-			List<ViewInViewHierarchyNode> listViewInViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(SQL_VIEW_IN_VIEW_HIERARCHY, new Object[]{}, new ViewInViewHierarchyRowMapper() );
+			String sql = choose(SQL_VIEW_IN_VIEW_HIERARCHY_MYSQL, SQL_VIEW_IN_VIEW_HIERARCHY_PG);
+			List<ViewInViewHierarchyNode> listViewInViewHierarchyNode = DAO.getInstance().getJdbcTemp().query(sql, new Object[]{}, new ViewInViewHierarchyRowMapper() );
 			return listViewInViewHierarchyNode;
 		} catch (Exception e) {
 			LOG.error(new ViewHierarchyDaoException(e));

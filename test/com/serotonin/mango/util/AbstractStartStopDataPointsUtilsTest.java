@@ -4,6 +4,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.TestUtils;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
@@ -12,12 +15,17 @@ import org.junit.Before;
 import org.scada_lts.mango.service.DataPointService;
 import utils.mock.PowerMockUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static utils.mock.MockitoUtils.mockBackgroundProcessing;
 import static utils.mock.MockitoUtils.mockContextWrapper;
 
@@ -89,6 +97,28 @@ public class AbstractStartStopDataPointsUtilsTest {
                 .thenReturn(dataPoints);
 
         dataSourceRtMock = mock(DataSourceRT.class);
+
+        DataSource mockDataSource = mock(DataSource.class);
+        Connection mockConnection = mock(Connection.class);
+        DatabaseMetaData mockMetaData = mock(DatabaseMetaData.class);
+
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.getMetaData()).thenReturn(mockMetaData);
+        when(mockMetaData.getDatabaseProductName()).thenReturn("PostgreSQL");
+
+        mockStatic(ApplicationBeans.class);
+        when(ApplicationBeans.getBean(eq("databaseSource"), eq(DataSource.class)))
+                .thenReturn(mockDataSource);
+
+        java.lang.reflect.Field instanceField = DAO.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, null);
+
+        PointValueDAO pointValueDAOMock = mock(PointValueDAO.class);
+        when(pointValueDAOMock.getLatestPointValue(anyInt())).thenReturn(System.currentTimeMillis());
+
+        mockStatic(PointValueDAO.class);
+        when(PointValueDAO.getInstance()).thenReturn(pointValueDAOMock);
 
     }
 

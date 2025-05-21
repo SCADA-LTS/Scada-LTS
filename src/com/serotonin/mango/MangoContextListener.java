@@ -67,6 +67,7 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
@@ -476,6 +477,9 @@ public class MangoContextListener implements ServletContextListener {
 				.getBean("databaseAccess", DatabaseAccess.class);
 		ctx.setAttribute(Common.ContextKeys.DATABASE_ACCESS, databaseAccess);
 		databaseAccess.initialize(ctx);
+		if (DAO.getInstance().isPostgres()) {
+			SystemSettingsDAO.initializeDefaults();
+		}
 	}
 
 	private void databaseTerminate(ContextWrapper ctx) {

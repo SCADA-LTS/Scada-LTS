@@ -493,4 +493,26 @@ public class SystemSettingsDAO {
 	public static <R> R getObject(String key, Function<String, R> convert) {
 		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
 	}
+
+	public static void initializeDefaults() {
+		for (Map.Entry<String, Object> entry : DEFAULT_VALUES.entrySet()) {
+			String key = entry.getKey();
+			String defaultValue = String.valueOf(entry.getValue());
+
+			try {
+				String dbValue = DAO.getInstance().getJdbcTemp().queryForObject(
+						SELECT_SETTING_VALUE_WHERE,
+						new Object[]{key},
+						String.class
+				);
+			} catch (EmptyResultDataAccessException e) {
+				DAO.getInstance().getJdbcTemp().update(
+						INSERT_SYSTEM_SETTING,
+						new Object[]{key, defaultValue}
+				);
+			} catch (Exception ex) {
+				LOG.warn("Could not initialize system setting for key: " + key, ex);
+			}
+		}
+	}
 }

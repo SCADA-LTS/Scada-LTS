@@ -18,6 +18,7 @@
 package org.scada_lts.dao.watchlist;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -445,15 +446,20 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 	
 	public void deleteWatchListPoints(String dataPointIds) {
-		String[] parameters = dataPointIds.split(",");
+		String[] idStrings = dataPointIds.split(",");
+		List<Object> parameters = new ArrayList<>();
+
+		for (String id : idStrings) {
+			parameters.add(Integer.parseInt(id.trim()));
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(WATCH_LIST_DELETE_POINT_WHERE_DATA_POINT + "(?");
-		for (int i = 1; i<parameters.length; i++) {
+		for (int i = 1; i<parameters.size(); i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
 	public List<WatchList> selectWatchListsWithAccess(int userId, int profileId) {

@@ -17,6 +17,8 @@
  */
 package org.scada_lts.dao.pointhierarchy;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -171,9 +173,9 @@ public class PointHierarchyDAO {
                 public PointHierarchyNode mapRow(ResultSet rs, int rownumber) throws SQLException {
                     PointHierarchyNode phn = null;
                     try {
-                        DataPointVO dp = new DataPointVO();
                         SerializationData sd = new SerializationData();
-                        dp = (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+                        DataPointVO dp = (DataPointVO) sd.readObject(getBinaryStream(rs, COLUMN_NAME_DATA));
+
                         PointHierarchyDataSource phds = new PointHierarchyDataSource();
                         phds.setId(rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
                         phds.setName(rs.getString(COLUMN_NAME_DATA_SOURCE_NAME));
@@ -219,7 +221,7 @@ public class PointHierarchyDAO {
             public DataPointVO mapRow(ResultSet rs, int rownumber) throws SQLException {
                 try {
                     SerializationData sd = new SerializationData();
-                    return (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+                    return (DataPointVO) sd.readObject(getBinaryStream(rs, COLUMN_NAME_DATA));
                 } catch (Exception e) {
                     LOG.error(new PointHierarchyDaoException(e));
                 }
@@ -227,7 +229,7 @@ public class PointHierarchyDAO {
             }
         }, new Object[]{id});
 
-        return lstDataPointVO.get(0);
+        return lstDataPointVO.isEmpty() ? null : lstDataPointVO.get(0);
     }
 
     public Map<Integer, List<PointFolder>> getFolderList() {
@@ -281,7 +283,15 @@ public class PointHierarchyDAO {
     public boolean updateParentIdDataPoint(int id, int parentId) {
         DataPointVO dp = getPointsHierarchy(id);
         dp.setPointFolderId(parentId);
-        int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdPointSQL, new Object[]{dp, id});
+
+        SerializationData sd = new SerializationData();
+        ByteArrayInputStream bais = sd.writeObject(dp);
+        byte[] serialized = bais.readAllBytes();
+
+        int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdPointSQL, ps -> {
+            ps.setBytes(1, serialized);
+            ps.setInt(2, id);
+        });
         PointHierarchyDAO.cachedPointHierarchy = null;
         return rows > 0;
     }
@@ -318,7 +328,7 @@ public class PointHierarchyDAO {
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     public int insert(int id, int parentId, String name) {
-        DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{parentId, name.trim()});
+        DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{id, parentId, name.trim()});
         PointHierarchyDAO.cachedPointHierarchy = null;
         return DAO.getInstance().getId();
     }
@@ -350,6 +360,15 @@ public class PointHierarchyDAO {
 
         PointHierarchyDAO.cachedPointHierarchy = null;
         return rows > 0;
+    }
+
+    private InputStream getBinaryStream(ResultSet rs, String columnName) throws SQLException {
+        try {
+            return rs.getBlob(columnName).getBinaryStream();
+        } catch (Exception ex) {
+            byte[] bytes = rs.getBytes(columnName);
+            return bytes != null ? new ByteArrayInputStream(bytes) : null;
+        }
     }
 
 

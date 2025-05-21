@@ -18,10 +18,7 @@
  */
 package com.serotonin.mango.db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -131,5 +128,13 @@ public class PostgreSQLAccess extends BasePooledAccess {
     @Override
     public void executeCompress(ExtendedJdbcTemplate ejt) {
         // no op
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(Connection connection, String sql, String generatedKey) throws SQLException {
+        if (!sql.toLowerCase().contains("returning")) {
+            sql += " RETURNING " + generatedKey;
+        }
+        return connection.prepareStatement(sql);
     }
 }

@@ -12,6 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.DataPointService;
@@ -19,10 +23,12 @@ import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.EventDAOMemory;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 import utils.ScheduledExecuteInactiveEventDAOMemory;
+import utils.mock.PowerMockUtils;
 
 import java.util.*;
 
@@ -36,7 +42,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static utils.MailingListTestUtils.createAddressEntry;
 
-@RunWith(Parameterized.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(Parameterized.class)
+@PrepareForTest({DAO.class, ApplicationBeans.class})
 public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
     @Parameterized.Parameters(name= "{index}: dailyLimitSentEmailsNumber: {0}, " +
@@ -116,7 +124,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     }
 
     @Before
-    public void init() {
+    public void init() throws Exception {
+        PowerMockUtils.configDaoMock();
 
         this.channelTypeMock = mock(CommunicationChannelTypable.class);
         when(channelTypeMock.getEventHandlerType()).thenReturn(channelType.getEventHandlerType());

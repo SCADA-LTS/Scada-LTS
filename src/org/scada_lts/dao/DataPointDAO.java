@@ -17,9 +17,11 @@
  */
 package org.scada_lts.dao;
 
+import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
@@ -175,9 +177,11 @@ public class DataPointDAO {
 		
 		@Override
 		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-			
-			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
-			
+
+			byte[] dataBytes = resultSet.getBytes(COLUMN_NAME_DATA);
+			ByteArrayInputStream bais = new ByteArrayInputStream(dataBytes);
+			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(bais);
+
 			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
 			dataPoint.setDataSourceId(resultSet.getInt(COLUMN_NAME_DATA_SOURCE_ID));
@@ -195,7 +199,9 @@ public class DataPointDAO {
 		@Override
 		public DataPointVO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 
-			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(resultSet.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+			byte[] dataBytes = resultSet.getBytes(COLUMN_NAME_DATA);
+			ByteArrayInputStream bais = new ByteArrayInputStream(dataBytes);
+			DataPointVO dataPoint = (DataPointVO) new SerializationData().readObject(bais);
 
 			dataPoint.setId(resultSet.getInt(COLUMN_NAME_ID));
 			dataPoint.setXid(resultSet.getString(COLUMN_NAME_XID));
@@ -316,18 +322,21 @@ public class DataPointDAO {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[] {
-						dataPoint.getXid(),
-						dataPoint.getName(),
-						dataPoint.getDataSourceId(),
-						new SerializationData().writeObject(dataPoint),
-						PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint)
-				}).setValues(ps);
+				ps.setString(1, dataPoint.getXid());
+				ps.setString(2, dataPoint.getName());
+				ps.setInt(3, dataPoint.getDataSourceId());
+
+				ByteArrayInputStream bais = new SerializationData().writeObject(dataPoint);
+				ps.setBytes(4, bais.readAllBytes());
+
+				ps.setInt(5, PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint));
 				return ps;
 			}
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> keys = keyHolder.getKeys();
+		return ((Number) keys.get("id")).intValue();
 	}
 
 	/**
@@ -343,16 +352,22 @@ public class DataPointDAO {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
-			new ArgumentPreparedStatementSetter(new Object[]{
-					entity.getXid(),
-					entity.getName(),
-					entity.getDataSourceId(),
-					new SerializationData().writeObject(entity),
-					PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(entity.getName())
-			}).setValues(ps);
+
+			ps.setString(1, entity.getXid());
+			ps.setString(2, entity.getName());
+			ps.setInt(3, entity.getDataSourceId());
+
+			ByteArrayInputStream bais = new SerializationData().writeObject(entity);
+			ps.setBytes(4, bais.readAllBytes());
+
+			ps.setInt(5, PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(entity.getName()));
+
 			return ps;
 		}, keyHolder);
-		entity.setId(keyHolder.getKey().intValue());
+
+		Map<String, Object> keys = keyHolder.getKeys();
+		entity.setId(((Number) keys.get("id")).intValue());
+
 		return entity;
 	}
 
@@ -410,15 +425,20 @@ public class DataPointDAO {
 			LOG.trace("delete(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		String[] parameters = dataPointIdList.split(",");
+		String[] idStrings  = dataPointIdList.split(",");
+		List<Object> parameters = new ArrayList<>();
+
+		for (String id : idStrings) {
+			parameters.add(Integer.parseInt(id.trim()));
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(DATA_POINT_DELETE + " in (?");
-		for (int i = 1; i<parameters.length; i++) {
+		for (int i = 1; i < parameters.size(); i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -428,15 +448,19 @@ public class DataPointDAO {
 			LOG.trace("deleteEventHandler(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		String[] parameters = dataPointIdList.split(",");
+		String[] stringIds = dataPointIdList.split(",");
+		Integer[] intIds = new Integer[stringIds.length];
+		for (int i = 0; i < stringIds.length; i++) {
+			intIds[i] = Integer.valueOf(stringIds[i].trim());
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(DELETE_EVENT_HANDLER_WHERE + " in (?");
-		for (int i = 1; i<parameters.length; i++) {
+		for (int i = 1; i < intIds.length; i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) intIds);
 	}
 
 	@Deprecated
