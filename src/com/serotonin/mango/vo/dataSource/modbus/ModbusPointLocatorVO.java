@@ -290,7 +290,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 
 		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType) || modbusDataType == DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED)
 			response.addContextualMessage("modbusDataType",
-					"validate.invalidValue");
+					"validate.unsupportedDataType", modbusDataType);
 		if (!StringUtils.isBetweenInc(slaveId, 0, 255) && !socketMonitor)
 			response.addContextualMessage("slaveId", "validate.0to255");
 
