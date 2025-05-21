@@ -156,7 +156,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	@Override
 	protected void doPoll(long time) {
 		try {
-			checkInitialized( this, 1);
+			checkInitialized(this);
 			_returnToNormal(INITIALIZATION_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, time, true,
@@ -387,7 +387,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 		synchronized (pointListChangeLock) {
 			try {
-				checkInitialized(this, 1);
+				checkInitialized(this);
 				Object value = modbusMaster.getValue(ml);
 				updatePointValue(dataPoint, pl, value, time);
 				_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
@@ -442,7 +442,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		BaseLocator<?> ml = createModbusLocator(pl.getVO());
 
 		try {
-			checkInitialized( this, 1);
+			checkInitialized( this);
 			// See if this is a numeric value that needs to be converted.
 			if (dataPoint.getDataTypeId() == DataTypes.NUMERIC) {
 				double convertedValue = valueTime.getDoubleValue();

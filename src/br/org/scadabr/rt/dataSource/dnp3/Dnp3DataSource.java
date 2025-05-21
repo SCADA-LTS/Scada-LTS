@@ -47,7 +47,7 @@ public class Dnp3DataSource extends PollingDataSource {
 	protected void doPoll(long time) {
 
 		try {
-			checkInitialized(this, 1);
+			checkInitialized(this);
 			dnp3Master.doPoll();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
@@ -104,7 +104,7 @@ public class Dnp3DataSource extends PollingDataSource {
 		int index = pointLocator.getIndex();
 
 		try {
-			checkInitialized(this, 1);
+			checkInitialized(this);
 			if (dataType == 0x10) {
 				dnp3Master.controlCommand(valueTime.getValue().toString(),
 						index, pointLocator.getControlCommand(), pointLocator

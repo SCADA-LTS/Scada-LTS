@@ -162,12 +162,10 @@ public class DataSourceUtils {
 		return null;
 	}
 
-	public static void checkInitialized(DataSourceRT dataSource, int tryInitializeCount) {
-		int temp = tryInitializeCount;
+	public static void checkInitialized(DataSourceRT dataSource) {
 
-		while(!dataSource.isInitialized() && temp > 0 ) {
+		if(!dataSource.isInitialized()) {
 			dataSource.initialize();
-			--temp;
 		}
 
 		if(!dataSource.isInitialized()) {
