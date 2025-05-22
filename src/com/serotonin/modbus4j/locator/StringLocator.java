@@ -5,10 +5,18 @@
 
 package com.serotonin.modbus4j.locator;
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.modbus4j.exception.IllegalDataTypeException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 public class StringLocator extends BaseLocator<String> {
+
+    private static final Logger LOG = LogManager.getLogger(StringLocator.class);
+
     public static final Charset ASCII = Charset.forName("ASCII");
     private final int dataType;
     private final int registerCount;
@@ -55,7 +63,8 @@ public class StringLocator extends BaseLocator<String> {
         if (this.dataType == 18) {
             return new String(data, offset, length, this.charset);
         } else if (this.dataType != 19) {
-            throw new RuntimeException("Unsupported data type: " + this.dataType);
+            LOG.error("Unsupported data type: {}", this.dataType);
+            return null;
         } else {
             int nullPos = -1;
 
@@ -66,7 +75,12 @@ public class StringLocator extends BaseLocator<String> {
                 }
             }
 
-            return nullPos == -1 ? new String(data, offset, length, this.charset) : new String(data, nullPos, length, this.charset);
+            try {
+                return nullPos == -1 ? new String(data, offset, length, this.charset) : new String(data, nullPos, length, this.charset);
+            } catch (Throwable throwable) {
+                LOG.error("Problem with: dataType: {}, data: {}, offset: {}, length: {}, nullPos: {}, charset: {}, exception: {}", this.dataType, Arrays.toString(data), offset, length, nullPos, charset.toString(), LoggingUtils.exceptionInfo(throwable));
+                return null;
+            }
         }
     }
 
