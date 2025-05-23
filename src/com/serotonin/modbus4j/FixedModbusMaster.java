@@ -1,5 +1,8 @@
 package com.serotonin.modbus4j;
 
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.modbus4j.base.KeyedModbusLocator;
+import com.serotonin.modbus4j.base.ReadFunctionGroup;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
@@ -9,14 +12,19 @@ import com.serotonin.modbus4j.sero.epoll.InputStreamEPollWrapper;
 import com.serotonin.modbus4j.sero.log.BaseIOLog;
 import com.serotonin.modbus4j.sero.messaging.MessageControl;
 import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
+import com.serotonin.modbus4j.sero.util.ArrayUtils;
 import com.serotonin.modbus4j.sero.util.ProgressiveTask;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class SlaveIdLimit255ModbusMaster extends ModbusMaster implements IModbusMaster {
+public class FixedModbusMaster extends ModbusMaster implements IModbusMaster {
+
+    private final Log LOG = LogFactory.getLog(FixedModbusMaster.class);
     private final ModbusMaster modbusMaster;
 
-    public SlaveIdLimit255ModbusMaster(ModbusMaster modbusMaster) {
+    public FixedModbusMaster(ModbusMaster modbusMaster) {
         this.modbusMaster = modbusMaster;
     }
 
@@ -164,7 +172,39 @@ public class SlaveIdLimit255ModbusMaster extends ModbusMaster implements IModbus
 
     @Override
     public <K> BatchResults<K> send(BatchRead<K> batch) throws ModbusTransportException, ErrorResponseException {
-        return modbusMaster.send(batch);
+        if (!modbusMaster.isInitialized()) {
+            throw new ModbusTransportException("not initialized");
+        } else {
+            BatchResults<K> results = new BatchResults<>();
+            List<ReadFunctionGroup<K>> functionGroups = batch.getReadFunctionGroups(modbusMaster);
+            Iterator<ReadFunctionGroup<K>> functionGroupsIterator = functionGroups.iterator();
+
+            while(functionGroupsIterator.hasNext()) {
+                ReadFunctionGroup<K> functionGroup = functionGroupsIterator.next();
+                try {
+                    this.sendFunctionGroupFixed(functionGroup, results, batch.isErrorsInResults(), batch.isExceptionsInResults());
+                } catch (Throwable throwable) {
+                    LOG.error(LoggingUtils.exceptionInfo(throwable), throwable);
+                    if (!batch.isExceptionsInResults()) {
+                        throw throwable;
+                    } else {
+                        Iterator<KeyedModbusLocator<K>> locators = functionGroup.getLocators().iterator();
+                        KeyedModbusLocator<K> locator;
+
+                        while(locators.hasNext()) {
+                            locator = locators.next();
+                            results.addResult(locator.getKey(), throwable);
+                        }
+                        return results;
+                    }
+                }
+                if (batch.isCancel()) {
+                    break;
+                }
+            }
+
+            return results;
+        }
     }
 
     @Override
@@ -230,5 +270,92 @@ public class SlaveIdLimit255ModbusMaster extends ModbusMaster implements IModbus
     @Override
     public void setMaxWriteRegisterCount(int maxWriteRegisterCount) {
         modbusMaster.setMaxWriteRegisterCount(maxWriteRegisterCount);
+    }
+
+    private <K> void sendFunctionGroupFixed(ReadFunctionGroup<K> functionGroup, BatchResults<K> results, boolean errorsInResults, boolean exceptionsInResults) throws ModbusTransportException, ErrorResponseException {
+        int slaveId = functionGroup.getSlaveAndRange().getSlaveId();
+        int startOffset = functionGroup.getStartOffset();
+        int length = functionGroup.getLength();
+        Object request;
+        if (functionGroup.getFunctionCode() == 1) {
+            request = new ReadCoilsRequest(slaveId, startOffset, length);
+        } else if (functionGroup.getFunctionCode() == 2) {
+            request = new ReadDiscreteInputsRequest(slaveId, startOffset, length);
+        } else if (functionGroup.getFunctionCode() == 3) {
+            request = new ReadHoldingRegistersRequest(slaveId, startOffset, length);
+        } else {
+            if (functionGroup.getFunctionCode() != 4) {
+                RuntimeException unsupportedFunction = new RuntimeException("Unsupported function");
+                if (!exceptionsInResults) {
+                    throw unsupportedFunction;
+                } else {
+                    Iterator<KeyedModbusLocator<K>> locators = functionGroup.getLocators().iterator();
+                    KeyedModbusLocator<K> locator;
+
+                    while(locators.hasNext()) {
+                        locator = locators.next();
+                        results.addResult(locator.getKey(), unsupportedFunction);
+                    }
+
+                    return;
+                }
+            }
+
+            request = new ReadInputRegistersRequest(slaveId, startOffset, length);
+        }
+
+        ReadResponse response;
+        Iterator<KeyedModbusLocator<K>> locators;
+        KeyedModbusLocator<K> locator;
+        try {
+            response = (ReadResponse)this.send((ModbusRequest)request);
+        } catch (ModbusTransportException modbusTransportException) {
+            if (!exceptionsInResults) {
+                throw modbusTransportException;
+            }
+
+            locators = functionGroup.getLocators().iterator();
+
+            while(locators.hasNext()) {
+                locator = locators.next();
+                results.addResult(locator.getKey(), modbusTransportException);
+            }
+
+            return;
+        }
+
+        byte[] data = null;
+        if (!errorsInResults && response.isException()) {
+            throw new ErrorResponseException((ModbusRequest)request, response);
+        } else {
+            if (!response.isException()) {
+                data = response.getData();
+            }
+
+            locators = functionGroup.getLocators().iterator();
+
+            while(true) {
+                while(locators.hasNext()) {
+                    locator = locators.next();
+                    if (errorsInResults && response.isException()) {
+                        results.addResult(locator.getKey(), new ExceptionResult(response.getExceptionCode()));
+                    } else {
+                        try {
+                            results.addResult(locator.getKey(), locator.bytesToValue(data, startOffset));
+                        } catch (RuntimeException convertException) {
+                            String error = "Result conversion exception. data=" + ArrayUtils.toHexString(data) + ", startOffset=" + startOffset + ", locator=" + locator + ", functionGroup.functionCode=" + functionGroup.getFunctionCode() + ", functionGroup.startOffset=" + startOffset + ", functionGroup.length=" + length;
+                            RuntimeException convertExceptionWithMessage = new RuntimeException(error, convertException);
+                            if(!exceptionsInResults) {
+                                throw convertExceptionWithMessage;
+                            } else {
+                                results.addResult(locator.getKey(), convertExceptionWithMessage);
+                            }
+                        }
+                    }
+                }
+
+                return;
+            }
+        }
     }
 }

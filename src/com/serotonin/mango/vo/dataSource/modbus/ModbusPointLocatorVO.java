@@ -522,4 +522,22 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		map.put("modbusDataType",
 				MODBUS_DATA_TYPE_CODES.getCode(modbusDataType));
 	}
+
+	@Override
+	public String toString() {
+		return "ModbusPointLocatorVO{" +
+				"range=" + range +
+				", modbusDataType=" + modbusDataType +
+				", slaveId=" + slaveId +
+				", slaveMonitor=" + slaveMonitor +
+				", socketMonitor=" + socketMonitor +
+				", offset=" + offset +
+				", bit=" + bit +
+				", registerCount=" + registerCount +
+				", charset='" + charset + '\'' +
+				", settableOverride=" + settableOverride +
+				", multiplier=" + multiplier +
+				", additive=" + additive +
+				'}';
+	}
 }
