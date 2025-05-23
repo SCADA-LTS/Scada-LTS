@@ -162,8 +162,13 @@ public class DataSourceUtils {
 		return null;
 	}
 
-	public static <T> void checkInitialized(T master, DataSourceRT dataSource) {
-		if(master == null || !dataSource.isInitialized()) {
+	public static void checkInitialized(DataSourceRT dataSource) {
+
+		if(!dataSource.isInitialized()) {
+			dataSource.initialize();
+		}
+
+		if(!dataSource.isInitialized()) {
 			throw new IllegalStateException("Data Source not initialized!");
 		}
   }
