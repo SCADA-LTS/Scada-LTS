@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.modbus4j.ScadaExceptionResult;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
@@ -77,6 +78,13 @@ public final class LoggingUtils {
             return "";
         String info = "exception: {0} (msg: {1})";
         return MessageFormat.format(info, ex.getClass().getSimpleName(), ex.getMessage());
+    }
+
+    public static String exceptionInfo(ScadaExceptionResult ex) {
+        if(ex == null)
+            return "";
+        String info = "exception: {0} (msg: {1})";
+        return MessageFormat.format(info, ex.getClass().getSimpleName(), ex.getExceptionMessage());
     }
 
     public static String scriptComponentInfo(ScriptComponent pointComponent) {
