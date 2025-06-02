@@ -109,9 +109,9 @@ public class PollingDataSourceRT extends PollingDataSource {
 
 			}, () -> {
 				_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
-				response.getValue(dataPointXid).ifPresentOrElse(pointValueTime -> {
+				response.getValue(dataPointXid).ifPresentOrElse(valueTime -> {
 					try {
-						dataPoint.updatePointValue(pointValueTime);
+						dataPoint.updatePointValue(valueTime);
 						_returnToNormal(POINT_UPDATE_EXCEPTION_EVENT, time, dataPoint.getId());
 						DataPointUnreliableUtils.resetUnreliableDataPoint(dataPoint);
 					} catch (Throwable throwable) {
@@ -139,18 +139,9 @@ public class PollingDataSourceRT extends PollingDataSource {
 	@Override
 	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
 			SetPointSource source) {
-		Object value;
-		if (dataPoint.getDataTypeId() == DataTypes.NUMERIC)
-			value = valueTime.getDoubleValue();
-		else if (dataPoint.getDataTypeId() == DataTypes.BINARY)
-			value = valueTime.getBooleanValue();
-		else if (dataPoint.getDataTypeId() == DataTypes.MULTISTATE)
-			value = valueTime.getIntegerValue();
-		else
-			value = valueTime.getStringValue();
 
 		try {
-			pollingService.write(dataPoint.getVO(), value);
+			pollingService.write(dataPoint.getVO(), valueTime);
 			_returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint.getId());
 			DataPointUnreliableUtils.resetUnreliableDataPoint(dataPoint);
 		} catch (Throwable e) {
