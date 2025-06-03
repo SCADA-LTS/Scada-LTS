@@ -68,6 +68,9 @@ public class PointPropertiesAPI {
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(id);
 
+                if(dpvo == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
                         dpvo.getDescription(),
                         dpvo.getLoggingType(),
@@ -307,6 +310,8 @@ public class PointPropertiesAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 DataPointVO point = dataPointService.getDataPoint(id);
+                if(point == null)
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 DataPointRT rt = Common.ctx.getRuntimeManager().getDataPoint(point.getId());
                 if(rt != null) {
                     rt.resetValues();
@@ -329,6 +334,8 @@ public class PointPropertiesAPI {
             if(user != null) {
                 Map<String, String> response = new HashMap<>();
                 DataPointVO point = dataPointService.getDataPoint(id);
+                if(point == null)
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 RuntimeManager rm = Common.ctx.getRuntimeManager();
                 point.setEnabled(!point.isEnabled());
                 rm.saveDataPoint(point);

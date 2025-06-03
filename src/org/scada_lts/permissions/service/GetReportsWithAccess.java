@@ -1,5 +1,6 @@
 package org.scada_lts.permissions.service;
 
+import com.serotonin.mango.vo.GetExtendedNameComparator;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.report.ReportVO;
@@ -11,6 +12,8 @@ import org.scada_lts.dao.report.ReportDAO;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
 
 public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User> {
 
@@ -28,11 +31,11 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return reportDAO.getReports();
-        return reportDAO.getReports().stream()
-                .filter(a -> hasReportReadPermission(user, a))
-                .collect(Collectors.toList());
+        return getAndSort(user, reportDAO::getReports,
+                (a, b) -> reportDAO.getReports().stream()
+                        .filter(reportInstance -> hasReportReadPermission(user, reportInstance))
+                        .collect(Collectors.toList()),
+                GetExtendedNameComparator.instance);
     }
 
     @Override

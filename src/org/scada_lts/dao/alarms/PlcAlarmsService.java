@@ -58,7 +58,10 @@ class PlcAlarmsService implements AlarmsService {
         List<LiveAlarm> liveAlarms = alarmsDAO.getLiveAlarms(offset, limit);
         for (int i=0; i< liveAlarms.size(); i++) {
             try {
-                DataPointVO dataPointVO = dataPointService.getDataPoint(liveAlarms.get(i).getDataPointId());
+                int id = liveAlarms.get(i).getDataPointId();
+                DataPointVO dataPointVO = dataPointService.getDataPoint(id);
+                if(dataPointVO == null)
+                    throw new IllegalArgumentException("Data point does not exist for id: " + id);
                 liveAlarms.get(i).setDescription(dataPointVO.getDescription());
                 boolean value = (liveAlarms.get(i).getInactivationTime().trim().equals(""));
                 String eventTextRender = dataPointVO.getEventTextRenderer().getText(value);

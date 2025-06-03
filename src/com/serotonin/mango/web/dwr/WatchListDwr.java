@@ -22,6 +22,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.*;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -36,10 +37,6 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.view.ShareUser;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.DataExportDefinition;
@@ -385,6 +382,7 @@ public class WatchListDwr extends BaseDwr {
 			return data;
 
 		List<DataPointVO> points = watchList.getPointList();
+		points.sort(GetExtendedNameComparator.instance);
 		List<Integer> pointIds = new ArrayList<Integer>(points.size());
 		for (DataPointVO point : points) {
 			if (Permissions.hasDataPointReadPermission(user, point))

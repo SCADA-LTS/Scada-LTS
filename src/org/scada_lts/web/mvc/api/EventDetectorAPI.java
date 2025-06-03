@@ -47,6 +47,9 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                DataPointVO dataPoint = dataPointService.getDataPoint(datapointId);
+                if(dataPoint == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 return new ResponseEntity<>(dataPointService.getEventDetectors(dataPointService.getDataPoint(datapointId)), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -88,6 +91,8 @@ public class EventDetectorAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
+                if(dataPointVO == null)
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
                 PointEventDetectorVO pointEventDetectorVO = peds.stream().filter(a -> a.getId() == id).findAny().orElse(null);
                 if (!peds.isEmpty())  {

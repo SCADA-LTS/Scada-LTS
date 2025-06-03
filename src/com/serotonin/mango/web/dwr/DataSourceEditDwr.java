@@ -46,6 +46,7 @@ import javax.script.ScriptException;
 
 import com.serotonin.bacnet4j.type.enumerated.ObjectType;
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.vo.*;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.FixedModbusMaster;
 import net.sf.mbus4j.Connection;
@@ -131,9 +132,6 @@ import com.serotonin.mango.rt.dataSource.snmp.Version;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntMessagePair;
-import com.serotonin.mango.vo.DataPointNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
@@ -211,6 +209,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
@@ -286,9 +285,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
                 DataPointNameComparator.instance);
-        for (DataPointVO dataPointVO : points) {
+        List<DataPointVO> filteredList = GetDataPointsWithAccess.filteringBySetAccess(user, points);
+        for (DataPointVO dataPointVO : filteredList) {
             if (!dataPointVO.isEnabled()) {
-                Permissions.ensureDataSourcePermission(Common.getUser(),
+                Permissions.ensureDataSourcePermission(user,
                         dataPointVO.getDataSourceId());
 
                 RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
@@ -296,7 +296,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 runtimeManager.saveDataPoint(dataPointVO);
             }
         }
-        return points;
+        return filteredList;
     }
 
     //
@@ -310,10 +310,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (ds.getId() == Common.NEW_ID)
             return null;
 
-        List<DataPointVO> points = super.getPoints();
-        return points.stream()
-                .filter(a -> a.getDataSourceId() == ds.getId())
-                .collect(Collectors.toList());
+        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(), DataPointNameComparator.instance);
+        return GetDataPointsWithAccess.filteringByAccess(user, points);
     }
 
     //
@@ -2995,13 +2993,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         DataPointService dataPointService = new DataPointService();
         DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
-
-        DataPointVO dataPointCopy = copyAndSaveDataPoint(dataSource, dataPoint, new DataPointService());
         DwrResponseI18n response = new DwrResponseI18n();
-
+        if(dataPoint != null) {
+            DataPointVO dataPointCopy = copyAndSaveDataPoint(dataSource, dataPoint, new DataPointService());
+            response.addData("id", dataPointCopy.getId());
+        } else {
+            response.addData("id", -1);
+        }
         response.addData("points", getPoints());
-        response.addData("id", dataPointCopy.getId());
-
         return response;
     }
     public String getObjectTypeName(int objectTypeId) {
