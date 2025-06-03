@@ -17,25 +17,26 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     NUMBER ("Number", DataTypes.NUMERIC, -4, Number.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toNumber(value);
         }
 
         @Override
-        public boolean validate(Object value) {
-            return value instanceof Number;
+        public boolean validate(MangoValue value) {
+            return value.toValue() instanceof Number;
         }
     },
 
     UNUMBER ("UNumber", DataTypes.NUMERIC, -3, ScadaUNumber.getType()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toUNumber(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 double value1 = (double) value;
                 return value1 >= 0;
@@ -47,25 +48,20 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     UNKNOWN ("Unknown", DataTypes.ALPHANUMERIC, -2, Object.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toStringType(value);
-        }
-
-        @Override
-        public boolean validate(Object value) {
-            return value instanceof String;
         }
     },
 
     ALL ("ALL", DataTypes.UNKNOWN, -1, Objects.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
-            return value;
+        public Object convertToWrite(MangoValue value) throws Exception {
+            return value.toValue();
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue value) {
             return false;
         }
     },
@@ -73,36 +69,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     BOOLEAN ("Boolean", DataTypes.BINARY, 1, Boolean.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
-            return toBoolean(value);
+        public Object convertToWrite(MangoValue value) throws Exception {
+            return value.getBooleanValue();
         }
 
         @Override
-        public boolean validate(Object value) {
-            if (value instanceof Double) {
-                double value1 = (double) value;
-                return value1 == 0 || value1 == 1;
-            }
-            if (value instanceof Float) {
-                float value1 = (float) value;
-                return value1 == 0 || value1 == 1;
-            }
-            if (value instanceof Long) {
-                long value1 = (long) value;
-                return value1 == 0 || value1 == 1;
-            }
-            if (value instanceof Integer) {
-                int value1 = (int) value;
-                return value1 == 0 || value1 == 1;
-            }
-            if (value instanceof Short) {
-                short value1 = (short) value;
-                return value1 == 0 || value1 == 1;
-            }
-            if (value instanceof String) {
-                String value1 = (String) value;
-                return "true".equalsIgnoreCase(value1) || "false".equalsIgnoreCase(value1);
-            }
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             return value instanceof Boolean;
         }
     },
@@ -110,12 +83,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     SBYTE ("SByte", DataTypes.NUMERIC, 2, Byte.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toByte(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 byte min = Byte.MIN_VALUE;
                 byte max = Byte.MAX_VALUE;
@@ -128,12 +102,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     BYTE ("Byte", DataTypes.NUMERIC, 3, new UByteWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toUByte(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 short min = UByteWrapper.MIN_VALUE;
                 short max = UByteWrapper.MAX_VALUE;
@@ -146,12 +121,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     INT16 ("Int16", DataTypes.NUMERIC, 4, Short.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toShort(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 short min = Short.MIN_VALUE;
                 short max = Short.MAX_VALUE;
@@ -164,12 +140,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     UINT16 ("UInt16", DataTypes.NUMERIC, 5, new UShortWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toUShort(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 int min = UShortWrapper.MIN_VALUE;
                 int max = UShortWrapper.MAX_VALUE;
@@ -182,12 +159,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     INT32 ("Int32", DataTypes.NUMERIC, 6, Integer.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toInt(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 int min = Integer.MIN_VALUE;
                 int max = Integer.MAX_VALUE;
@@ -200,12 +178,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     UINT32 ("UInt32", DataTypes.NUMERIC, 7, new UIntegerWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toUInteger(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 long min = UIntegerWrapper.MIN_VALUE;
                 long max = UIntegerWrapper.MAX_VALUE;
@@ -218,12 +197,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     INT64 ("Int64", DataTypes.NUMERIC, 8, Long.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toLong(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 long min = Long.MIN_VALUE;
                 long max = Long.MAX_VALUE;
@@ -236,12 +216,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     UINT64 ("UInt64", DataTypes.NUMERIC, 9, new ULongWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toULong(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 BigInteger min = ULongWrapper.MIN_VALUE;
                 BigInteger max = ULongWrapper.MAX_VALUE;
@@ -254,12 +235,13 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     FLOAT ("Float", DataTypes.NUMERIC, 10, Float.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
-            return toFloat(value);
+        public Object convertToWrite(MangoValue value) throws Exception {
+            return toFloatFromString(value);
         }
 
         @Override
-        public boolean validate(Object value) {
+        public boolean validate(MangoValue object) {
+            Object value = object.toValue();
             if (value instanceof Double) {
                 float min = Float.MIN_VALUE;
                 float max = Float.MAX_VALUE;
@@ -272,20 +254,20 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     DOUBLE ("Double", DataTypes.NUMERIC, 11, Double.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
-            return toDouble(value);
+        public Object convertToWrite(MangoValue value) throws Exception {
+            return toDoubleFromString(value);
         }
 
         @Override
-        public boolean validate(Object value) {
-            return value instanceof Double;
+        public boolean validate(MangoValue value) {
+            return value.toValue() instanceof Double;
         }
     },
 
     STRING ("String", DataTypes.ALPHANUMERIC, 12, String.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toStringType(value);
         }
     },
@@ -293,7 +275,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     DATE_TIME ("DateTime", DataTypes.ALPHANUMERIC, 13, new DateTimeWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toDateTime(value);
         }
     },
@@ -301,7 +283,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     GUID ("Guid", DataTypes.ALPHANUMERIC, 14, UUID.class) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toUuid(value);
         }
     },
@@ -309,7 +291,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     BYTE_STRING ("ByteString", DataTypes.ALPHANUMERIC, 15, new ByteStringWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toByteString(value);
         }
     },
@@ -317,7 +299,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     XML_ELEMENT ("XmlElement", DataTypes.ALPHANUMERIC, 16, new XmlElementWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toXmlElement(value);
         }
     },
@@ -325,7 +307,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     NODE_ID ("NodeId", DataTypes.ALPHANUMERIC, 17, new NodeIdWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toNodeId(value);
         }
     },
@@ -333,7 +315,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     EXPANDED_NODE_ID ("ExpandedNodeId", DataTypes.ALPHANUMERIC, 18, new ExpandedNodeIdWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toExpandedNodeId(value);
         }
     },
@@ -341,7 +323,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     STATUS_CODE ("StatusCode", DataTypes.ALPHANUMERIC, 19, new StatusCodeWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toStatusCode(value);
         }
     },
@@ -349,7 +331,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     QUALIFIED_NAME ("QualifiedName", DataTypes.ALPHANUMERIC, 20, new QualifiedNameWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toQualifiedName(value);
         }
     },
@@ -357,7 +339,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     LOCALIZED_TEXT ("LocalizedText", DataTypes.ALPHANUMERIC, 21, new LocalizedTextWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toLocalizedText(value);
         }
     },
@@ -365,7 +347,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     EXTENSION_OBJECT ("ExtensionObject", DataTypes.ALPHANUMERIC, 22, new ExtensionObjectWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toExtensionObject(value);
         }
     },
@@ -373,7 +355,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     DATA_VALUE ("DataValue", DataTypes.ALPHANUMERIC, 23, new DataValueWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toDataValue(value);
         }
     },
@@ -381,7 +363,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     VARIANT ("Variant", DataTypes.ALPHANUMERIC, 24, new VariantWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toVariant(value);
         }
     },
@@ -389,7 +371,7 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     DIAGNOSTIC_INFO ("DiagnosticInfo", DataTypes.ALPHANUMERIC, 25, new DiagnosticInfoWrapper()) {
 
         @Override
-        public Object convertToWrite(Object value) throws Exception {
+        public Object convertToWrite(MangoValue value) throws Exception {
             return toStringType(value);
         }
     };
@@ -445,8 +427,8 @@ public enum OpcUaBaseDataType implements OpcUaDataType {
     }
 
     @Override
-    public boolean validate(Object value) {
-        return value instanceof String;
+    public boolean validate(MangoValue value) {
+        return value.toValue() instanceof String;
     }
 
     @Override

@@ -84,4 +84,17 @@ abstract public class MangoValue {
     }
 
     abstract public <T extends MangoValue> int compareTo(T that);
+
+    public Object toValue() {
+        Object value;
+        if (this instanceof NumericValue)
+            value = this.getDoubleValue();
+        else if (this instanceof BinaryValue)
+            value = this.getBooleanValue();
+        else if (this instanceof MultistateValue)
+            value = this.getIntegerValue();
+        else
+            value = this.getStringValue();
+        return value;
+    }
 }

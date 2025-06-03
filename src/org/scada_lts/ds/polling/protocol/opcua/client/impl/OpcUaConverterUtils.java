@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.*;
-import org.scada_lts.ds.polling.protocol.opcua.client.impl.type.ScadaNumber;
 import org.scada_lts.ds.polling.protocol.opcua.client.impl.type.ScadaUNumber;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -24,39 +23,39 @@ public final class OpcUaConverterUtils {
     private OpcUaConverterUtils() {
     }
 
-    public static boolean toBoolean(Object value) {
-        return Boolean.parseBoolean(String.valueOf(value));
+    public static boolean toBooleanFromString(MangoValue value) {
+        return Boolean.parseBoolean(String.valueOf(value.toValue()));
     }
 
-    public static byte toByte(Object value) {
-        return (byte) toStringToLong(value);
+    public static byte toByte(MangoValue value) {
+        return toByteFromDouble(value);
     }
 
-    public static short toShort(Object value) {
-        return (short) toStringToLong(value);
+    public static short toShort(MangoValue value) {
+        return toShortFromDouble(value);
     }
 
-    public static int toInt(Object value) {
-        return (int) toStringToLong(value);
+    public static int toInt(MangoValue value) {
+        return toIntFromDouble(value);
     }
 
-    public static long toLong(Object value) {
-        return toStringToLong(value);
+    public static long toLong(MangoValue value) {
+        return toLongFromDouble(value);
     }
 
-    public static double toDouble(Object value) {
-        return Double.parseDouble(String.valueOf(value));
+    public static double toDoubleFromString(MangoValue value) {
+        return Double.parseDouble(String.valueOf(value.toValue()));
     }
 
-    public static float toFloat(Object value) {
-        return Float.parseFloat(String.valueOf(value));
+    public static float toFloatFromString(MangoValue value) {
+        return Float.parseFloat(String.valueOf(value.toValue()));
     }
 
-    public static Number toNumber(Object value) {
-        return new ScadaNumber(value).toNumber();
+    public static Number toNumber(MangoValue value) {
+        return value.numberValue();
     }
 
-    public static UNumber toUNumber(Object value) {
+    public static UNumber toUNumber(MangoValue value) {
         return new ScadaUNumber(value).toUNumber();
     }
 
@@ -74,84 +73,99 @@ public final class OpcUaConverterUtils {
         return MangoValue.stringToValue(stringToSave, dataType.getDataTypeId());
     }
 
-    public static long toStringToLong(Object value) {
-        BigDecimal result = BigDecimal.valueOf(toDouble(value));
+    public static long toLongFromDouble(MangoValue value) {
+        BigDecimal result = BigDecimal.valueOf(toDoubleFromString(value));
         return result.longValue();
     }
 
-    public static String toStringType(Object value) {
+    public static short toShortFromDouble(MangoValue value) {
+        BigDecimal result = BigDecimal.valueOf(toDoubleFromString(value));
+        return result.shortValue();
+    }
+
+    public static byte toByteFromDouble(MangoValue value) {
+        BigDecimal result = BigDecimal.valueOf(toDoubleFromString(value));
+        return result.byteValue();
+    }
+
+    public static int toIntFromDouble(MangoValue value) {
+        BigDecimal result = BigDecimal.valueOf(toDoubleFromString(value));
+        return result.intValue();
+    }
+
+    public static String toStringType(MangoValue value) {
         return String.valueOf(value);
     }
 
-    public static UUID toUuid(Object value) {
+    public static UUID toUuid(MangoValue value) {
         return UUID.fromString(String.valueOf(value));
     }
 
-    public static DateTime toDateTime(Object value) {
+    public static DateTime toDateTime(MangoValue value) {
         return getObject(value, DateTime.class);
     }
 
-    public static XmlElement toXmlElement(Object value) {
+    public static XmlElement toXmlElement(MangoValue value) {
         return getObject(value, XmlElement.class);
     }
 
-    public static NodeId toNodeId(Object value) {
+    public static NodeId toNodeId(MangoValue value) {
         return getObject(value, NodeId.class);
     }
 
-    public static ExpandedNodeId toExpandedNodeId(Object value) {
+    public static ExpandedNodeId toExpandedNodeId(MangoValue value) {
         return getObject(value, ExpandedNodeId.class);
     }
 
-    public static StatusCode toStatusCode(Object value) {
+    public static StatusCode toStatusCode(MangoValue value) {
         return getObject(value, StatusCode.class);
     }
 
-    public static Variant toVariant(Object value) {
+    public static Variant toVariant(MangoValue value) {
         VariantConv variantConv = getObject(value, VariantConv.class);
         return variantConv.toVariant();
     }
 
-    public static QualifiedName toQualifiedName(Object value) {
+    public static QualifiedName toQualifiedName(MangoValue value) {
         return getObject(value, QualifiedName.class);
     }
 
-    public static LocalizedText toLocalizedText(Object value) {
+    public static LocalizedText toLocalizedText(MangoValue value) {
         return getObject(value, LocalizedText.class);
     }
 
-    public static DataValue toDataValue(Object value) {
+    public static DataValue toDataValue(MangoValue value) {
         return getObject(value, DataValue.class);
     }
 
-    public static ExtensionObject toExtensionObject(Object value) {
+    public static ExtensionObject toExtensionObject(MangoValue value) {
         return getObject(value, ExtensionObject.class);
     }
 
-    public static UInteger toUInteger(Object value) {
-        return UInteger.valueOf(toStringToLong(value));
+    public static UInteger toUInteger(MangoValue value) {
+        return UInteger.valueOf(toLongFromDouble(value));
     }
 
-    public static ULong toULong(Object value) {
-        return ULong.valueOf(toStringToLong(value));
+    public static ULong toULong(MangoValue value) {
+        return ULong.valueOf(toLongFromDouble(value));
     }
 
-    public static UShort toUShort(Object value) {
-        return UShort.valueOf(String.valueOf(toStringToLong(value)));
+    public static UShort toUShort(MangoValue value) {
+        return UShort.valueOf(String.valueOf(toLongFromDouble(value)));
     }
 
-    public static UByte toUByte(Object value) {
-        return UByte.valueOf(toStringToLong(value));
+    public static UByte toUByte(MangoValue value) {
+        return UByte.valueOf(toLongFromDouble(value));
     }
 
-    public static ByteString toByteString(Object value) {
+    public static ByteString toByteString(MangoValue value) {
         return getObject(value, ByteString.class);
     }
 
-    private static <T> T getObject(Object value, Class<T> clazz) {
+    private static <T> T getObject(MangoValue value, Class<T> clazz) {
         ObjectMapper objectMapper = ApplicationBeans.getBean("objectMapper", ObjectMapper.class);
         try {
-            return objectMapper.readValue(String.valueOf(value), clazz);
+            return objectMapper.readValue(String.valueOf(value.toValue()), clazz);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
