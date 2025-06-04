@@ -18,6 +18,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xsi:schemaLocation="
@@ -25,6 +26,8 @@
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
         http://www.springframework.org/schema/cache
         http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd
 ">
 
   <!-- DWR -->
@@ -65,6 +68,7 @@
   </bean>
 
   <cache:annotation-driven cache-manager="ehCacheManager" />
+  <context:annotation-config/>
 
   <bean id="ehCacheManager" class="org.springframework.cache.jcache.JCacheCacheManager">
     <property name="cacheManager" ref="ehcache"/>
@@ -80,7 +84,7 @@
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
   <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
   <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
-  <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO"/>
+  <bean class="org.scada_lts.dao.DaoConfiguration"/>
   <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">

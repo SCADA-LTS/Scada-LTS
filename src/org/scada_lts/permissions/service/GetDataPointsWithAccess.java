@@ -7,6 +7,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Collections;
@@ -17,9 +18,9 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
 
     private static final Log LOG = LogFactory.getLog(GetDataPointsWithAccess.class);
 
-    private final DataPointDAO dataPointDAO;
+    private final IDataPointDAO dataPointDAO;
 
-    public GetDataPointsWithAccess(DataPointDAO dataPointDAO) {
+    public GetDataPointsWithAccess(IDataPointDAO dataPointDAO) {
         this.dataPointDAO = dataPointDAO;
     }
 

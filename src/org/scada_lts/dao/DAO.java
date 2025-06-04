@@ -23,6 +23,7 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
+import com.serotonin.mango.db.DatabaseAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -45,7 +46,7 @@ public class DAO {
 	private JdbcTemplate jdbcTemplate;	
 	private static DAO instance;
 	private boolean test =false;
-	private boolean isPostgres = false;
+	private static DatabaseAccess.DatabaseType databaseType;
 
 
 	private DAO() {
@@ -55,8 +56,8 @@ public class DAO {
 			namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
 			jdbcTemplate = new JdbcTemplate(ds);
 
-			String dbName = ds.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
-			isPostgres = dbName.contains("postgresql");
+			DatabaseAccess databaseAccess = ApplicationBeans.getBean("databaseAccess", DatabaseAccess.class);
+			databaseType = databaseAccess.getType();
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		}
@@ -67,11 +68,7 @@ public class DAO {
 	 * @return Method queryForObject() can also return "null"
 	 */
 	public int getId() {
-		if (isPostgres) {
-			return jdbcTemplate.queryForObject("SELECT LASTVAL()", Integer.class);
-		} else {
-			return jdbcTemplate.queryForObject("SELECT @@identity", Integer.class);
-		}
+		return jdbcTemplate.queryForObject(databaseType.getIdQuery(), Integer.class);
 	}
 
 	public static DAO getInstance() {
@@ -179,8 +176,8 @@ public class DAO {
 		this.test = test;
 	}
 
-	public boolean isPostgres() {
-		return isPostgres;
+	public static DatabaseAccess.DatabaseType getType() {
+		return databaseType;
 	}
 
 }

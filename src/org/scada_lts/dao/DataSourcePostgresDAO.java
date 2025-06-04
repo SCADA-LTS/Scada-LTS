@@ -27,9 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -37,6 +35,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,9 +49,9 @@ import static com.serotonin.mango.util.LoggingUtils.dataSourceInfo;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataSourceDAO implements IDataSourceDAO {
+public class DataSourcePostgresDAO implements IDataSourceDAO {
 
-	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
+	private static final Log LOG = LogFactory.getLog(DataSourcePostgresDAO.class);
 
 	private static final String TABLE_NAME = "dataSources";
 
@@ -303,21 +302,18 @@ public class DataSourceDAO implements IDataSourceDAO {
 		return objList;
 	}
 
-	@Override
 	public List<ScadaObjectIdentifier> getAllDataSources() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 		return DAO.getInstance().getJdbcTemp()
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
-	@Override
 	public List<DataSourceVO<?>> getDataSourcesPlc() {
 		List<DataSourceVO<?>> list = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_PLC_SELECT, new DataSourceRowMapper());
 		return list;
 	}
 
-	@Override
-	public List<DataSourceVO<?>> getDataSourceBaseOfName(String partOfNameDS) {
+	public List<DataSourceVO<?>> getDataSourceBaseOfName( String partOfNameDS) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataSources()");
 		}
@@ -330,7 +326,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		return objList;
 	}
 
-	@Override
 	public List<Integer> getDataSourceUsersId(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -340,7 +335,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		return DAO.getInstance().getJdbcTemp().queryForList(DATA_SOURCE_USER_SELECT_WHERE_DS_ID, new Object[]{id}, Integer.class);
 	}
 
-	@Override
 	public List<Integer> getDataSourceIdFromDsUsers(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -351,7 +345,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public void batchInsert(final List<Integer> userIds, final int toDataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -372,7 +365,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		});
 	}
 
-	@Override
 	public DataSourceVO<?> getDataSource(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -384,7 +376,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		
 	}
 
-	@Override
 	public DataSourceVO<?> getDataSource(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -399,7 +390,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public int insert(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
@@ -407,25 +397,32 @@ public class DataSourceDAO implements IDataSourceDAO {
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[]{
-						dataSource.getXid(),
-						dataSource.getName(),
-						dataSource.getType().getId(),
-						new SerializationData().writeObject(dataSource)
-				}).setValues(preparedStatement);
-				return preparedStatement;
-			}
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+
+			ps.setString(1, dataSource.getXid());
+			ps.setString(2, dataSource.getName());
+			ps.setInt(3, dataSource.getType().getId());
+
+			ByteArrayInputStream bais = new SerializationData().writeObject(dataSource);
+			ps.setBytes(4, bais.readAllBytes());
+
+			return ps;
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		Number id = null;
+		if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
+			id = (Number) keyHolder.getKeyList().get(0).get("id");
+		}
+
+		if (id == null) {
+			throw new IllegalStateException("Could not retrieve generated ID for data source.");
+		}
+
+		return id.intValue();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public void insertPermissions(final User user) {
 
 		if (LOG.isTraceEnabled()) {
@@ -447,7 +444,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 
 	}
 
-	@Override
 	public DataSourceVO<?> create(DataSourceVO<?> entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(entity));
@@ -456,20 +452,31 @@ public class DataSourceDAO implements IDataSourceDAO {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
-			new ArgumentPreparedStatementSetter(new Object[]{
-					entity.getXid(),
-					entity.getName(),
-					entity.getType().getId(),
-					new SerializationData().writeObject(entity)
-			}).setValues(ps);
+
+			ps.setString(1, entity.getXid());
+			ps.setString(2, entity.getName());
+			ps.setInt(3, entity.getType().getId());
+
+			ByteArrayInputStream bais = new SerializationData().writeObject(entity);
+			ps.setBytes(4, bais.readAllBytes());
+
 			return ps;
 		}, keyHolder);
-		entity.setId(keyHolder.getKey().intValue());
+
+		Number id = null;
+		if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
+			id = (Number) keyHolder.getKeyList().get(0).get("id");
+		}
+
+		if (id == null) {
+			throw new IllegalStateException("Could not retrieve generated ID for data source.");
+		}
+
+		entity.setId(id.intValue());
 		return entity;
 	}
 
 	@Deprecated
-	@Override
 	public List<ScadaObjectIdentifier> getSimpleList() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 
@@ -477,18 +484,15 @@ public class DataSourceDAO implements IDataSourceDAO {
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
-	@Override
 	public List<DataSourceVO<?>> getAll() {
 		return getDataSources();
 	}
 
-	@Override
 	public DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException {
 		return getDataSource(id);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
@@ -511,7 +515,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public int delete(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -531,7 +534,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public void deleteDataSourceUser(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -541,7 +543,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_USER_ID, new Object[]{userId});
 	}
 
-	@Override
 	public List<Integer> selectDataSourcePermissions(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -552,7 +553,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 				new Object[]{userId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DS_USER_ID));
 	}
 
-	@Override
 	public int[] insertPermissions(int userId, List<Integer> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(int userId, List<WatchListAccess> toInsert) user:" + userId + "");
@@ -568,7 +568,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 				.batchUpdate(DATA_SOURCE_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
 	}
 
-	@Override
 	public int[] deletePermissions(int userId, List<Integer> toDelete) {
 
 		if (LOG.isTraceEnabled()) {
@@ -585,7 +584,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 				.batchUpdate(DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID, batchArgs, argTypes);
 	}
 
-	@Override
 	public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
 		if (LOG.isTraceEnabled())
 			LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
@@ -601,7 +599,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		}
 	}
 
-	@Override
 	public List<DataSourceVO<?>> getDataSources(int type) {
 
 		if (LOG.isTraceEnabled()) {
@@ -611,14 +608,12 @@ public class DataSourceDAO implements IDataSourceDAO {
 				new Object[]{type}, new DataSourceRowMapper());
 	}
 
-	@Override
 	public List<DataSourceVO<?>> selectDataSourcesWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
 				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
-				new DataSourceDAO.DataSourceRowMapper());
+				new DataSourcePostgresDAO.DataSourceRowMapper());
 	}
 
-	@Override
 	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP_IDENTIFIER + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
 				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
@@ -629,7 +624,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 						.build());
 	}
 
-	@Override
 	public List<ScadaObjectIdentifier> findIdentifiers() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 		return DAO.getInstance().getJdbcTemp()

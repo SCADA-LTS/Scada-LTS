@@ -67,6 +67,11 @@ abstract public class DatabaseAccess {
 			DatabaseAccess getImpl() {
 				return new PostgreSQLAccess();
 			}
+
+			@Override
+			public String getIdQuery() {
+				return "SELECT LASTVAL()";
+			}
 		},
 		ORACLE11G {
 			@Override
@@ -76,6 +81,10 @@ abstract public class DatabaseAccess {
 		};
 
 		abstract DatabaseAccess getImpl();
+
+		public String getIdQuery() {
+			return "SELECT @@identity";
+		}
 	}
 
 	public static DatabaseAccess createDatabaseAccess() {

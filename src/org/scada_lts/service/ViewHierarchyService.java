@@ -21,11 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.serotonin.mango.db.DatabaseAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.GenericHierarchyDAO;
-import org.scada_lts.dao.IViewDAO;
-import org.scada_lts.dao.ViewHierarchyDAO;
+import org.scada_lts.dao.*;
+import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.EventPostgresDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.service.model.ViewHierarchyJSON;
@@ -52,7 +53,7 @@ public class ViewHierarchyService {
 	public static final int ROOT_ID = -1;
 	
 	
-	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+	private IViewHierarchyDAO vhDAO;
 	
 	private final IViewDAO viewDAO;
 	
@@ -60,7 +61,7 @@ public class ViewHierarchyService {
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 	
-	public ViewHierarchyService(ViewHierarchyDAO vhDAO, IViewDAO viewDAO){
+	public ViewHierarchyService(IViewHierarchyDAO vhDAO, IViewDAO viewDAO){
 		this.vhDAO = vhDAO;
 		this.viewDAO = viewDAO;
 	}

@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.IDataPointDAO;
+import org.scada_lts.dao.IDataSourceDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Collections;
@@ -16,10 +18,10 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
 
     private static final Log LOG = LogFactory.getLog(GetDataSourcesWithAccess.class);
 
-    private final DataSourceDAO dataSourceDAO;
-    private final DataPointDAO dataPointDAO;
+    private final IDataSourceDAO dataSourceDAO;
+    private final IDataPointDAO dataPointDAO;
 
-    public GetDataSourcesWithAccess(DataSourceDAO dataSourceDAO, DataPointDAO dataPointDAO) {
+    public GetDataSourcesWithAccess(IDataSourceDAO dataSourceDAO, IDataPointDAO dataPointDAO) {
         this.dataSourceDAO = dataSourceDAO;
         this.dataPointDAO = dataPointDAO;
     }
@@ -61,7 +63,7 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
         return user.isAdmin();
     }
 
-    public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource, DataPointDAO dataPointDAO) {
+    public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource, IDataPointDAO dataPointDAO) {
         if(user == null) {
             LOG.warn("user is null");
             return false;

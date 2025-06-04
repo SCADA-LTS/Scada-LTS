@@ -3,10 +3,7 @@ package org.scada_lts.service;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.scada_lts.dao.TestDAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.ViewDAO;
-import org.scada_lts.dao.ViewHierarchyDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 
 import com.serotonin.mango.view.View;
@@ -17,7 +14,7 @@ public class ViewHierarchyServiceMoveFolderTest extends TestDAO {
 	@Test
 	public void checkViewHierarchyDAOToMoveFolder() {
 		
-		ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+		IViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
 		ViewDAO vDAO = new ViewDAO();
 		
 		ViewHierarchyNode vhn1 = new ViewHierarchyNode();
@@ -72,7 +69,7 @@ public class ViewHierarchyServiceMoveFolderTest extends TestDAO {
 	@Test
 	public void checkViewHierarchyDAOToMoveView() {
 		
-		ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+		IViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
 		ViewDAO vDAO = new ViewDAO();
 		
 		ViewHierarchyNode vhn1 = new ViewHierarchyNode();

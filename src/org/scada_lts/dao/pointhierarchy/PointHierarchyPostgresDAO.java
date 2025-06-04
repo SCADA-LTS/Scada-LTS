@@ -17,13 +17,7 @@
  */
 package org.scada_lts.dao.pointhierarchy;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import org.apache.commons.logging.Log;
@@ -38,7 +32,14 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.vo.DataPointVO;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for point hierarchy (data points).
@@ -47,9 +48,9 @@ import com.serotonin.mango.vo.DataPointVO;
  * person supporting and coreecting translation Jerzy Piejko
  */
 
-public class PointHierarchyDAO implements IPointHierarchyDAO {
+public class PointHierarchyPostgresDAO implements IPointHierarchyDAO {
 
-    private static final Log LOG = LogFactory.getLog(PointHierarchyDAO.class);
+    private static final Log LOG = LogFactory.getLog(PointHierarchyPostgresDAO.class);
     private final static String COLUMN_NAME_ID = "id";
     private final static String COLUMN_NAME_XID = "xid";
     private final static String COLUMN_NAME_DATA = "data";
@@ -83,49 +84,49 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
 	            	+ "dataPoints dp "
 	            + "where "
 	            	+ "id=?";
-		
-	
+
+
 		private static final String deleteSQL = ""
 				+ "delete "
 				+ "from "
 					+ "pointHierarchy "
 				+ "where "
 					+ "id=?";
-		
+
 		private static final String updateTitleSQL = ""
 				+ "update "
 					+ "pointHierarchy "
 				+ "set "
 					+ "name=? "
-				+ "where " 
+				+ "where "
 					+ "id=?";
-		
+
 		private static final String updateParentIdSQL = ""
 				+ "update "
 					+ "pointHierarchy "
 				+ "set "
 					+ "parentId=? "
-				+ "where " 
+				+ "where "
 					+ "id=?";
-		
+
 		private static final String updateParentIdsSQL = ""
 				+ "update "
 					+ "pointHierarchy "
 				+ "set "
 					+ "parentId=? "
-				+ "where " 
+				+ "where "
 					+ "parentId=?";
-		
+
 		private static final String updateParentIdPointSQL = ""
 				+ "update "
 					+ "dataPoints "
-				+ "set " 
+				+ "set "
 					+ "data=? "
 				+ "where "
 					+ "id=?";
-		
+
 		protected static final String insertSQL = ""
-				+ "insert into " 
+				+ "insert into "
 				    + "pointHierarchy (parentId, name) "
 				+ "values (?,?)";
 
@@ -144,12 +145,12 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
 				+ "values (?,?,?)";
 		private static final String DELETE_POINT_HIERARCHY = "delete from pointHierarchy";
 
-					
+
 	// @formatter:on
 
     public static PointHierarchy cachedPointHierarchy;
 
-    public PointHierarchyDAO() {
+    public PointHierarchyPostgresDAO() {
         //
     }
 
@@ -158,7 +159,6 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      *
      * @return
      */
-    @Override
     public List<PointHierarchyNode> getPointsHierarchy() {
         if (LOG.isTraceEnabled()) {
             LOG.trace("SQL PointsDAO");
@@ -172,9 +172,9 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
                 public PointHierarchyNode mapRow(ResultSet rs, int rownumber) throws SQLException {
                     PointHierarchyNode phn = null;
                     try {
-                        DataPointVO dp = new DataPointVO();
                         SerializationData sd = new SerializationData();
-                        dp = (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+                        DataPointVO dp = (DataPointVO) sd.readObject(getBinaryStream(rs, COLUMN_NAME_DATA));
+
                         PointHierarchyDataSource phds = new PointHierarchyDataSource();
                         phds.setId(rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
                         phds.setName(rs.getString(COLUMN_NAME_DATA_SOURCE_NAME));
@@ -210,7 +210,6 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @param id
      * @return
      */
-    @Override
     public DataPointVO getPointsHierarchy(int id) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("SQL Point");
@@ -221,7 +220,7 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
             public DataPointVO mapRow(ResultSet rs, int rownumber) throws SQLException {
                 try {
                     SerializationData sd = new SerializationData();
-                    return (DataPointVO) sd.readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+                    return (DataPointVO) sd.readObject(getBinaryStream(rs, COLUMN_NAME_DATA));
                 } catch (Exception e) {
                     LOG.error(new PointHierarchyDaoException(e));
                 }
@@ -229,10 +228,9 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
             }
         }, new Object[]{id});
 
-        return lstDataPointVO.get(0);
+        return lstDataPointVO.isEmpty() ? null : lstDataPointVO.get(0);
     }
 
-    @Override
     public Map<Integer, List<PointFolder>> getFolderList() {
 
         if (LOG.isTraceEnabled()) {
@@ -267,10 +265,9 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public boolean updateTitle(int id, String title) {
         int rows = DAO.getInstance().getJdbcTemp().update(updateTitleSQL, new Object[]{title, id});
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return rows > 0;
     }
 
@@ -282,12 +279,19 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public boolean updateParentIdDataPoint(int id, int parentId) {
         DataPointVO dp = getPointsHierarchy(id);
         dp.setPointFolderId(parentId);
-        int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdPointSQL, new Object[]{dp, id});
-        PointHierarchyDAO.cachedPointHierarchy = null;
+
+        SerializationData sd = new SerializationData();
+        ByteArrayInputStream bais = sd.writeObject(dp);
+        byte[] serialized = bais.readAllBytes();
+
+        int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdPointSQL, ps -> {
+            ps.setBytes(1, serialized);
+            ps.setInt(2, id);
+        });
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return rows > 0;
     }
 
@@ -299,10 +303,9 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public boolean updateParentId(int id, int parentId) {
         int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdSQL, new Object[]{parentId, id});
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return rows > 0;
     }
 
@@ -314,25 +317,22 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public int insert(int parentId, String name) {
         DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, name.trim()});
         int folderId = DAO.getInstance().getId();
         DAO.getInstance().getJdbcTemp().update(UPDATE_FOLDER_XID, new Object[] {folderId});
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return DAO.getInstance().getId();
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public int insert(int id, int parentId, String name) {
-        DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{parentId, name.trim()});
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{id, parentId, name.trim()});
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return DAO.getInstance().getId();
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public void delete() {
         if (LOG.isTraceEnabled()) {
             LOG.info("delete()");
@@ -347,7 +347,6 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
     public boolean deleteFolder(int key, int parentId) {
         if (LOG.isTraceEnabled()) {
             LOG.info("delete key:" + key);
@@ -358,8 +357,17 @@ public class PointHierarchyDAO implements IPointHierarchyDAO {
         int updates = DAO.getInstance().getJdbcTemp().update(updateParentIdsSQL, new Object[]{0, key});
         LOG.trace("update rows:" + updates);
 
-        PointHierarchyDAO.cachedPointHierarchy = null;
+        PointHierarchyPostgresDAO.cachedPointHierarchy = null;
         return rows > 0;
+    }
+
+    private InputStream getBinaryStream(ResultSet rs, String columnName) throws SQLException {
+        try {
+            return rs.getBlob(columnName).getBinaryStream();
+        } catch (Exception ex) {
+            byte[] bytes = rs.getBytes(columnName);
+            return bytes != null ? new ByteArrayInputStream(bytes) : null;
+        }
     }
 
 

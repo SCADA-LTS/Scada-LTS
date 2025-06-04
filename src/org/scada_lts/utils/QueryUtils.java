@@ -15,7 +15,4 @@ public final class QueryUtils {
         return args.toString();
     }
 
-    public static String wrapTable(String tableName) {
-        return DAO.getInstance().isPostgres() ? "\"" + tableName + "\"" : tableName;
-    }
 }

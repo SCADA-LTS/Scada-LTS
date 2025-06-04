@@ -17,7 +17,6 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.Statement;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
@@ -30,12 +29,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,9 +38,9 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserCommentDAO implements IUserCommentDAO {
+public class UserCommentPostgresDAO implements IUserCommentDAO {
 
-	private static final Log LOG = LogFactory.getLog(UserCommentDAO.class);
+	private static final Log LOG = LogFactory.getLog(UserCommentPostgresDAO.class);
 
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_COMMENT_TYPE = "commentType";
@@ -211,15 +206,20 @@ public class UserCommentDAO implements IUserCommentDAO {
 			LOG.trace("deleteUserCommentPoint(String dataPointIdList) dataPointIdList:" + dataPointIdList);
 		}
 
-		ArrayList<String> parameters = new ArrayList<>(Arrays.asList(dataPointIdList.split(",")));
+		String[] idStrings = dataPointIdList.split(",");
+		List<Object> parameters = new ArrayList<>();
+
+		parameters.add(UserComment.TYPE_POINT);
+
+		for (String id : idStrings) {
+			parameters.add(Integer.parseInt(id.trim()));
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(USER_COMMENT_DELETE + " in (?");
-		for (int i = 1; i<parameters.size(); i++) {
+		for (int i = 1; i < idStrings.length; i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
-
-		parameters.add(0, String.valueOf(UserComment.TYPE_POINT));
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}

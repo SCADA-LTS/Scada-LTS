@@ -17,14 +17,10 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -39,19 +35,19 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Statement;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DAO for PointEventDetector
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class PointEventDetectorDAO implements IPointEventDetectorDAO {
+public class PointEventDetectorPostgresDAO implements IPointEventDetectorDAO {
 
-	private static final Log LOG = LogFactory.getLog(PointEventDetectorDAO.class);
+	private static final Log LOG = LogFactory.getLog(PointEventDetectorPostgresDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -418,15 +414,20 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 			LOG.trace("deleteWithId(String dataPointIds) dataPointIds:" + dataPointIds);
 		}
 
-		String[] parameters = dataPointIds.split(",");
+		String[] stringIds  = dataPointIds.split(",");
+		List<Object> parameters = new ArrayList<>();
+
+		for (String id : stringIds) {
+			parameters.add(Integer.parseInt(id.trim()));
+		}
 
 		StringBuilder queryBuilder = new StringBuilder(POINT_EVENT_DETECTOR_DELETE + COLUMN_NAME_DATA_POINT_ID + " in (?");
-		for (int i = 1; i<parameters.length; i++) {
+		for (int i = 1; i<parameters.size(); i++) {
 			queryBuilder.append(",?");
 		}
 		queryBuilder.append(")");
 
-		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
 	@Override

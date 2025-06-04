@@ -18,16 +18,23 @@
 
 package org.scada_lts.dao.event;
 
-import java.sql.*;
-import java.util.*;
-import java.util.Date;
-
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.UserComment;
+import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.web.dwr.EventsDwr;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
+import com.serotonin.web.i18n.LocalizableMessageParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.*;
-import com.serotonin.mango.rt.event.type.AuditEventUtils;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.IUserCommentDAO;
+import org.scada_lts.dao.SerializationData;
 import org.scada_lts.utils.EventTypeUtil;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.utils.SQLPageWithTotal;
@@ -48,24 +55,18 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.vo.UserComment;
-import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.mango.web.dwr.EventsDwr;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.i18n.LocalizableMessage;
-import com.serotonin.web.i18n.LocalizableMessageParseException;
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
 
 /**
  * Event DAO base on before version EventDao 
  *
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public class EventDAO implements IEventDAO {
+public class EventPostgresDAO implements IEventDAO {
 
-	private static final Log LOG = LogFactory.getLog(EventDAO.class);
+	private static final Log LOG = LogFactory.getLog(EventPostgresDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_TYPE_ID = "typeId";
@@ -120,6 +121,7 @@ public class EventDAO implements IEventDAO {
 	//------------- User events
 	//TODO rewrite to another class
 	private static final String COLUMN_NAME_USER_EVENTS_ID="id";
+	private static final String EVENTS_TABLE = "\"events\"";
 
 	private static final String EVENT_FIELDS = "e." + COLUMN_NAME_ID + ", " +
 			"e." + COLUMN_NAME_TYPE_ID + ", " +
@@ -160,7 +162,7 @@ public class EventDAO implements IEventDAO {
 				+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
 				+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
-				+ "events e " 
+				+ EVENTS_TABLE + " e "
 			    + "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id ";
 
 	private static final String BASIC_EVENT_SELECT_WHERE_ID_IN = ""
@@ -183,7 +185,8 @@ public class EventDAO implements IEventDAO {
 			+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
 			+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
-			+ "events e where "
+			+ EVENTS_TABLE
+			+ " e where "
 			+ COLUMN_NAME_ID + " "
 			+ "in (?)";
 
@@ -198,28 +201,32 @@ public class EventDAO implements IEventDAO {
             + COLUMN_NAME_EVENT_HANDLER_ID + " "
             + "in (?)";
 
+
 	private static final String EVENT_INSERT = ""
-			+ "insert events ("
-				+ COLUMN_NAME_TYPE_ID + "," 
-				+ COLUMN_NAME_TYPE_REF_1 + "," 
-				+ COLUMN_NAME_TYPE_REF_2 + ","
-				+ COLUMN_NAME_TYPE_REF_3 + ","
-				+ COLUMN_NAME_ACTIVE_TS + ","
-				+ COLUMN_NAME_RTN_APPLICABLE + ","
-				+ COLUMN_NAME_RTN_TS + ","
-				+ COLUMN_NAME_RTN_CAUSE + ","
-				+ COLUMN_NAME_ALARM_LEVEL + ","
-				+ COLUMN_NAME_MESSAGE + ","
-				+ COLUMN_NAME_SHORT_MESSAGE + ","
-				+ COLUMN_NAME_ACT_TS 
-				// userId ?
-				// ack_source ?
+			+ "insert into "
+			+ EVENTS_TABLE
+			+ " ("
+			+ COLUMN_NAME_TYPE_ID + ","
+			+ COLUMN_NAME_TYPE_REF_1 + ","
+			+ COLUMN_NAME_TYPE_REF_2 + ","
+			+ COLUMN_NAME_TYPE_REF_3 + ","
+			+ COLUMN_NAME_ACTIVE_TS + ","
+			+ COLUMN_NAME_RTN_APPLICABLE + ","
+			+ COLUMN_NAME_RTN_TS + ","
+			+ COLUMN_NAME_RTN_CAUSE + ","
+			+ COLUMN_NAME_ALARM_LEVEL + ","
+			+ COLUMN_NAME_MESSAGE + ","
+			+ COLUMN_NAME_SHORT_MESSAGE + ","
+			+ COLUMN_NAME_ACT_TS
+			// userId ?
+			// ack_source ?
 			+") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?,?)";
+			+ "values (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id";
 	
 	private static final String EVENT_UPDATE = ""
 			+ "update "
-				+ "events e set "
+				+ EVENTS_TABLE
+				+" e set "
 				+ "e."+COLUMN_NAME_RTN_TS+"=?,"
 				+ "e."+COLUMN_NAME_RTN_CAUSE+"=? "
 			+ "where "
@@ -233,7 +240,8 @@ public class EventDAO implements IEventDAO {
 	
 	private static final String EVENT_ACT ="" +
 			"update "
-				+"events e set "
+				+ EVENTS_TABLE
+				+ " e set "
 				+ "e."+COLUMN_NAME_ACT_TS+"=?, "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
 				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
@@ -243,7 +251,8 @@ public class EventDAO implements IEventDAO {
 
 	private static final String EVENT_ASSIGN_EVENT ="" +
 			"update "
-			+"events e set "
+			+ EVENTS_TABLE
+			+ " e set "
 			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=?, "
 			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
 			+ "where "
@@ -252,7 +261,8 @@ public class EventDAO implements IEventDAO {
 
 	private static final String EVENT_UNASSIGN_EVENT ="" +
 			"update "
-			+"events e set "
+			+ EVENTS_TABLE
+			+ " e set "
 			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=null, "
 			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
 			+ "where "
@@ -260,7 +270,8 @@ public class EventDAO implements IEventDAO {
 
 	private static final String EVENT_ACT_ALL ="" +
 			"update "
-			+" events e set "
+			+ EVENTS_TABLE
+			+ " e set "
 			+ "e."+COLUMN_NAME_ACT_TS+"=?, "
 			+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
 			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
@@ -273,16 +284,17 @@ public class EventDAO implements IEventDAO {
 			+ "ue."+COLUMN_NAME_ALARM_SILENCED+"='Y' "
 			+ "WHERE ue." + COLUMN_NAME_USER_ID + "=? ";
 
-	private static final String EVENT_ACT_IDS ="" +
-			"update "
-			+"events e set "
-			+ "e."+COLUMN_NAME_ACT_TS+"=?, "
-			+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
-			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+	private static final String EVENT_ACT_IDS = ""
+			+ "update "
+			+ EVENTS_TABLE
+			+ " e set "
+			+ "e." + COLUMN_NAME_ACT_TS + "=?, "
+			+ "e." + COLUMN_NAME_ACT_USER_ID + "=?, "
+			+ "e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + "=? "
 			+ "where "
-			+ "e."+COLUMN_NAME_ID+" rlike ? and "
-			+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
-	
+			+ "e." + COLUMN_NAME_ID + "::text ~ ? and "
+			+ "(e." + COLUMN_NAME_ACT_TS + " is null or e." + COLUMN_NAME_ACT_TS + " = 0)";
+
 	public static final String EVENT_FILTER_ACTIVE=" "
 			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
 	
@@ -308,7 +320,8 @@ public class EventDAO implements IEventDAO {
 				+ "e."+ COLUMN_NAME_ASSIGNEE_TS +", "
 				+ "e."+ COLUMN_NAME_ASSIGNEE_USERNAME +" "
 			+ "from "
-				+ "events e " 
+				+ EVENTS_TABLE
+				+ " e "
 				+ "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id "
 				+ "left join userEvents ue on e."+COLUMN_NAME_ID+"=ue."+COLUMN_NAME_EVENT_ID;
 				
@@ -356,7 +369,9 @@ public class EventDAO implements IEventDAO {
 		    +"order by uc."+COLUMN_NAME_TIME_STAMP;
 	
 	private static final String EVENT_DELETE_BEFORE= ""
-			+"delete from events e "
+			+"delete from "
+			+ EVENTS_TABLE
+			+ " e "
 			+ "where "+"e."+COLUMN_NAME_ACTIVE_TS+"<? "
 			+ "  and "+"e."+COLUMN_NAME_ACT_TS+" is not null "
 			+ "  and ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? or ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? and "+"e."+COLUMN_NAME_ACT_TS+" is not null))";
@@ -365,7 +380,7 @@ public class EventDAO implements IEventDAO {
 			+"select "
 				+ "count(*) "
 			+ "from "
-				+ "events";
+				+ EVENTS_TABLE;
 	
 	private static final String EVENT_HANDLER_TYPE = ""
 			+ "select "
@@ -458,9 +473,10 @@ public class EventDAO implements IEventDAO {
 	
 	private static final String SILENCED_SELECT=" "
 			+ "select "
-				+ "ue."+COLUMN_NAME_ALARM_SILENCED+" "
+			+ "ue."+COLUMN_NAME_ALARM_SILENCED+" "
 			+ "from "
-				+ "events e join userEvents ue on e."+COLUMN_NAME_ALARM_ID+"=ue."+COLUMN_NAME_ALARM_EVENT_ID +" "
+			+ EVENTS_TABLE
+			+ " e join userEvents ue on e."+COLUMN_NAME_ALARM_ID+"=ue."+COLUMN_NAME_ALARM_EVENT_ID +" "
 			+ "where "
 				+ "e."+COLUMN_NAME_ALARM_ID+"=? and "
 				+ "ue."+COLUMN_NAME_ALARM_USER_ID+"=? and "
@@ -477,11 +493,15 @@ public class EventDAO implements IEventDAO {
 			+"select "
 				+ "max(e."+COLUMN_NAME_ALARM_LEVEL+") "
 			+ "from userEvents u "
-				+ "join events e on u."+COLUMN_NAME_EVENT_ID+"=e."+COLUMN_NAME_USER_EVENTS_ID+" "
+				+ "join "
+			+ EVENTS_TABLE
+			+ " e on u."+COLUMN_NAME_EVENT_ID+"=e."+COLUMN_NAME_USER_EVENTS_ID+" "
 			+ "where u."+COLUMN_NAME_SILENCED+"=? and u."+COLUMN_NAME_USER_ID+"=?";
 
 	private static final String EVENT_UPDATE_WHERE_ACK_USER_ID = ""
-			+ "update events set "
+			+ "update "
+			+ EVENTS_TABLE
+			+ " set "
 				+ COLUMN_NAME_ACT_USER_ID + "=null, "
 				+ COLUMN_NAME_ALTERNATE_ACK_SOURCE + "="
 				+ EventInstance.AlternateAcknowledgementSources.DELETED_USER + " "
@@ -505,7 +525,9 @@ public class EventDAO implements IEventDAO {
 			"u." + COLUMN_NAME_USER_NAME + ", " +
 			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE+", " +
 			"e."+ COLUMN_NAME_ASSIGNEE_TS +" "+
-			"FROM events e " +
+			"FROM "
+			+ EVENTS_TABLE
+			+ " e " +
 				"LEFT JOIN users u ON u.id=e.ackUserId " +
 			"WHERE typeId=? AND typeRef1=? " +
 			"ORDER BY activeTs DESC " +
@@ -528,7 +550,9 @@ public class EventDAO implements IEventDAO {
 			"u." + COLUMN_NAME_USER_NAME + ", " +
 			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
 			"e." + COLUMN_NAME_ASSIGNEE_TS + " " +
-			"FROM events e " +
+			"FROM "
+			+ EVENTS_TABLE
+			+ " e " +
 			"LEFT JOIN users u ON u.id=e.ackUserId " +
 			"WHERE typeId=? AND typeRef1=? " +
 			"ORDER BY activeTs DESC " +
@@ -540,8 +564,10 @@ public class EventDAO implements IEventDAO {
 			"uc." + COLUMN_NAME_TIME_STAMP + ", " +
 			"uc." + COLUMN_NAME_USER_ID + ", " +
 			"u." + COLUMN_NAME_USER_NAME + " " +
-			"FROM events e " +
-				"LEFT JOIN userComments uc ON uc.typeKey=e.id " +
+			"FROM "
+			+ EVENTS_TABLE
+			+ " e "
+			+ "LEFT JOIN userComments uc ON uc.typeKey=e.id " +
 				"LEFT JOIN users u ON uc.userId=u.id " +
 			"WHERE e.id=? AND uc.commentType=1";
 
@@ -554,7 +580,8 @@ public class EventDAO implements IEventDAO {
 
 	private static final String UNASSIGN_EVENT_ALL ="" +
 			"update "
-			+"events e set "
+			+ EVENTS_TABLE
+			+ " e set "
 			+ "e." + COLUMN_NAME_ASSIGNEE_TS +"=null, "
 			+ "e." + COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
 			+ "where "
@@ -819,7 +846,6 @@ public class EventDAO implements IEventDAO {
 	 *
 	 * @return List of Events
 	 */
-	@Override
 	public List<EventDTO> findEventsWithLimit(int typeId, int typeRef, int limit, int offset) {
 		return (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
 	}
@@ -832,7 +858,6 @@ public class EventDAO implements IEventDAO {
 	 *
 	 * @return List of Events
 	 */
-	@Override
 	public SQLPageWithTotal<EventDTO> findEvents(
 			JsonEventSearch query,
 			User user) {
@@ -840,7 +865,7 @@ public class EventDAO implements IEventDAO {
 		StringBuilder sql = new StringBuilder();
 
 		StringBuilder from = new StringBuilder();
-		from.append(" FROM events e ");
+		from.append(" FROM ").append(EVENTS_TABLE).append(" e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
 		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
 
@@ -849,12 +874,12 @@ public class EventDAO implements IEventDAO {
 		params.add(user.getId());
 
 		if (!"".equals(query.getStartDate())) {
-			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
+			filterCondtions.add("e.activeTs >= (EXTRACT(EPOCH FROM ?)::bigint * 1000)");
 			String start = query.getStartDate()+' '+query.getStartTime();
 			params.add(start);
 		}
 		if (!"".equals(query.getEndDate())) {
-			filterCondtions.add("e.activeTs <= ((UNIX_TIMESTAMP(?)+60)*1000)");
+			filterCondtions.add("e.activeTs >= (EXTRACT(EPOCH FROM ?)::bigint * 1000)");
 			String end = query.getEndDate()+' '+query.getEndTime();
 			params.add(end);
 		}
@@ -910,7 +935,7 @@ public class EventDAO implements IEventDAO {
 			filterCondtions.add(joinOr(keywordConditions));
 		}
 
-		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
+		sql.append("SELECT " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
 		sql.append(from.toString());
 		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
 		sql.append(" WHERE "+joinAnd(filterCondtions));
@@ -941,7 +966,10 @@ public class EventDAO implements IEventDAO {
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
 				, params.toArray(), new EventDTOSearchRowMapper());
-		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
+		int total;
+		String countQuery = "SELECT COUNT(DISTINCT e.id) FROM " + EVENTS_TABLE + " e " + from.toString() + " WHERE " + joinAnd(filterCondtions);
+		total = DAO.getInstance().getJdbcTemp().queryForObject(countQuery, params.toArray(), Integer.class);
+
 		return new SQLPageWithTotal<>(page, total);
 	}
 
@@ -973,7 +1001,7 @@ public class EventDAO implements IEventDAO {
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(BASIC_EVENT_SELECT+" where "+ filter + myLimit, args, new EventRowMapper());
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
 	public Object[] create(final EventInstance entity) {
 		if (LOG.isTraceEnabled()) {
@@ -987,7 +1015,7 @@ public class EventDAO implements IEventDAO {
 			DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 				 			@Override
 				 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				 				PreparedStatement ps = connection.prepareStatement(EVENT_INSERT, Statement.RETURN_GENERATED_KEYS);
+								PreparedStatement ps = connection.prepareStatement(EVENT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				 				new ArgumentPreparedStatementSetter( new Object[] { 
 				 						type.getEventSourceId(),
 				 						type.getReferenceId1(),
@@ -1014,13 +1042,11 @@ public class EventDAO implements IEventDAO {
 		return null;
 	}
 
-	@Override
 	public List<EventHandlerPlcDTO> getEventHandlersByDatapointId(int datapointId) {
 		return (List<EventHandlerPlcDTO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PLC_BY_DPID, new Object[]{datapointId}, new PlcEventHandlerRowMapper());
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void updateEvent(EventInstance event) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -1031,8 +1057,7 @@ public class EventDAO implements IEventDAO {
 		
 	}
 	
-	@Override
-	public void updateAck(long actTS, long userId, int alternateAckSource, long eventId) {
+	public void updateAck(long actTS, long userId, int alternateAckSource, long eventId ) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource+" eventId:"+eventId);
@@ -1042,7 +1067,6 @@ public class EventDAO implements IEventDAO {
 
 	}
 
-	@Override
 	public void ackEvents(long actTS, long userId, int alternateAckSource) {
 
 		if (LOG.isTraceEnabled()) {
@@ -1051,7 +1075,6 @@ public class EventDAO implements IEventDAO {
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL + "and " + STATUS_NO_ACTIVE_CONDITION_SQL, new Object[]  { actTS, userId, alternateAckSource } );
 	}
 
-	@Override
 	public void silenceEvents(long userId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(" userId:"+userId);
@@ -1059,7 +1082,6 @@ public class EventDAO implements IEventDAO {
 		DAO.getInstance().getJdbcTemp().update( EVENT_SILENCE_ALL, new Object[]  { userId } );
 	}
 
-	@Override
 	public void unassignEvents() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(" unassignEvents");
@@ -1067,7 +1089,6 @@ public class EventDAO implements IEventDAO {
 		DAO.getInstance().getJdbcTemp().update(UNASSIGN_EVENT_ALL, new Object[]  {} );
 	}
 
-	@Override
 	public void ackAllPendingSelected(long actTS, long userId, int alternateAckSource, List<Integer> ids) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
@@ -1078,28 +1099,24 @@ public class EventDAO implements IEventDAO {
 			joiner.add((String.valueOf(id)));
 		}
 
-		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_IDS, new Object[]  { actTS, userId, alternateAckSource, joiner.toString() } );
+		DAO.getInstance().getJdbcTemp().update(EVENT_ACT_IDS, new Object[] { actTS, userId, alternateAckSource, joiner.toString() });
 	}
 
 	@Deprecated
-	@Override
-	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
+	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {	
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT, new Object[]{dataPointId, userId}, new UserEventRowMapper());
 	}
 
 	@Deprecated
-	@Override
 	public List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER, new Object[]{typeId, typeRef1, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
 	}
 
 	@Deprecated
-	@Override
 	public List<EventInstance> getPendingEvents(int typeId, int userId) {
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER, new Object[]{typeId, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
 	}
 	
-	@Override
 	public List<EventInstance> getPendingEventsLimit(int userId, int limit) {
 		
 		Object[] args = new Object[] {userId, limit};
@@ -1109,37 +1126,31 @@ public class EventDAO implements IEventDAO {
 		
 	}
 
-	@Override
 	public List<EventInstance> getPendingEventsLimitAlarmLevelMin(int userId, int alarmLevelMin, int limit) {
 		return DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_USER_ALARM_LEVEL_MIN + LIMIT+" ? ", new Object[]{userId, alarmLevelMin, limit}, new UserEventRowMapper() );
 
 	}
 
-	@Override
 	public List<EventInstance> getEventsForDataPointLimit(int dataPointId, int userId, int limit) {
 		return DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT + LIMIT+" ? ", new Object[]{dataPointId, userId, limit}, new UserEventRowMapper());
 	}
 
-	@Override
 	public List<EventInstance> getPendingEventsLimit(int typeId, int typeRef1, int userId, int limit) {
 		return DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER + LIMIT+" ? ", new Object[]{typeId, typeRef1, userId, DAO.boolToChar(true), limit}, new UserEventRowMapper() );
 	}
 
-	@Override
 	public List<EventInstance> getPendingEventsLimit(int typeId, int userId, int limit) {
 		return DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER + LIMIT+" ? ", new Object[]{typeId, userId, DAO.boolToChar(true), limit}, new UserEventRowMapper() );
 	}
 
 	@Deprecated
-	@Override
 	public void attachRelationalInfo(EventInstance event) {
 		List<UserComment> lstUserComments = (List<UserComment>) DAO.getInstance().getJdbcTemp().query(EVENT_COMMENT_SELECT, new Object[] { event.getId() }, new UserCommentRowMapper() );
 		event.setEventComments(lstUserComments); 
 	}
 	
 	@Deprecated
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int purgeEventsBefore(long time) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -1155,15 +1166,13 @@ public class EventDAO implements IEventDAO {
 		
 	}
 
-	@Override
 	public int getEventCount() {
 		return DAO.getInstance().getJdbcTemp().queryForObject(COUNT_EVENT, Integer.class);
 	}
 	
 	//TODO rewrite
-	@Override
 	public List<EventInstance> searchOld(int eventId, int eventSourceType, String status, int alarmLevel, final String[] keywords,
-										 final int maxResults, int userId, final ResourceBundle bundle) {
+			final int maxResults, int userId, final ResourceBundle bundle) {
 		List<String> where = new ArrayList<String>();
 		List<Object> params = new ArrayList<Object>();
 
@@ -1257,22 +1266,19 @@ public class EventDAO implements IEventDAO {
 	private int searchRowCount;
 	private int startRow;
 
-	@Override
 	public int getSearchRowCount() {
 		return searchRowCount;
 	}
 
-	@Override
 	public int getStartRow() {
 		return startRow;
 	}
 	
-	@Override
 	public List<EventInstance> search(int eventId, int eventSourceType,
-									  String status, int alarmLevel, final String[] keywords,
-									  long dateFrom, long dateTo, int userId,
-									  final ResourceBundle bundle, final int from, final int to,
-									  final Date date) {
+			String status, int alarmLevel, final String[] keywords,
+			long dateFrom, long dateTo, int userId,
+			final ResourceBundle bundle, final int from, final int to,
+			final Date date) {
 		List<String> where = new ArrayList<String>();
 		List<Object> params = new ArrayList<Object>();
 
@@ -1398,29 +1404,24 @@ public class EventDAO implements IEventDAO {
 		return results;
 	}
 	
-	@Override
 	public EventType getEventHandlerType(int handlerId) {
 		return (EventType) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_TYPE,new Object[] { handlerId }, new EventHandlerTypeRowMapper() );
 	}
 	
-	@Override
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
 		if(ref2 > 0 && (typeId == EventType.EventSources.DATA_POINT || typeId == EventType.EventSources.DATA_SOURCE))
 			return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_REF2, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_N, new Object[] {typeId, ref1}, new EventHandlerRowMapper());
 	}
 	
-	@Override
 	public List<EventHandlerVO> getEventHandlers() {
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT, new Object[] {}, new EventHandlerRowMapper());
 	}
 
-	@Override
 	public List<EventHandlerPlcDTO> getPlcEventHandlers() {
 		return (List<EventHandlerPlcDTO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PLC, new Object[] {}, new PlcEventHandlerRowMapper());
 	}
 
-	@Override
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
 		try {
 			return (EventHandlerVO) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_SELECT+" where " + EVENT_HANDLER_FILTER_ID, new Object[] {eventHandlerId}, new EventHandlerRowMapper());
@@ -1429,7 +1430,6 @@ public class EventDAO implements IEventDAO {
 		} 
 	}
 	
-	@Override
 	public EventHandlerVO getEventHandler(String xid) {
 		try {
 			return (EventHandlerVO) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_SELECT+" where " + EVENT_HANDLER_FILTER_XID, new Object[] {xid}, new EventHandlerRowMapper());
@@ -1438,9 +1438,8 @@ public class EventDAO implements IEventDAO {
 		}
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
-	public int insertEventHandler(final int typeId, final int typeRef1, final int typeRef2, final EventHandlerVO handler) {
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public int insertEventHandler(final int typeId,final int typeRef1,final int typeRef2, final	EventHandlerVO handler) {
 		
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(handler);
@@ -1468,8 +1467,7 @@ public class EventDAO implements IEventDAO {
 		
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void updateEventHandler(EventHandlerVO handler) {
 
 		if (LOG.isTraceEnabled()) {
@@ -1490,7 +1488,6 @@ public class EventDAO implements IEventDAO {
 	}
 	
 	//TODO rewrite because insert does not requires select
-	@Override
 	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
@@ -1502,8 +1499,7 @@ public class EventDAO implements IEventDAO {
 		}
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(final int id) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -1514,8 +1510,7 @@ public class EventDAO implements IEventDAO {
 		
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public boolean toggleSilence(int eventId, int userId, Boolean updated) {
 		String result = null;
 		try {
@@ -1532,13 +1527,11 @@ public class EventDAO implements IEventDAO {
 		}
 	}
 
-	@Override
 	public int getHighestUnsilencedAlarmLevel(int userId) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { DAO.boolToChar(false), userId },Integer.class);
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void updateEventAckUserId(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -1549,7 +1542,6 @@ public class EventDAO implements IEventDAO {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
 	public List<EventInstance> getAllStatusEvents(Set<Integer> ids) {
 		if(ids.isEmpty())
 			return Collections.emptyList();
@@ -1559,7 +1551,6 @@ public class EventDAO implements IEventDAO {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
 	public List<EventHandlerVO> getEventHandlers(Set<Integer> ids) {
 		if(ids.isEmpty())
 			return Collections.emptyList();
@@ -1569,7 +1560,6 @@ public class EventDAO implements IEventDAO {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
 	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
@@ -1581,7 +1571,6 @@ public class EventDAO implements IEventDAO {
 		return (List<EventCommentDTO>) result ;
 	}
 
-	@Override
 	public String joinAnd(List<String> conditions) {
 		StringBuilder result = new StringBuilder();
 		result.append(" 1 ");
@@ -1593,7 +1582,6 @@ public class EventDAO implements IEventDAO {
 		return result.toString();
 	}
 
-	@Override
 	public String joinOr(List<String> conditions) {
 		StringBuilder result = new StringBuilder();
 		result.append(" 0 ");
@@ -1605,7 +1593,6 @@ public class EventDAO implements IEventDAO {
 		return result.toString();
 	}
 
-	@Override
 	public boolean isSilence(int eventId, int userId) {
 		String result = null;
 		try {
@@ -1620,7 +1607,6 @@ public class EventDAO implements IEventDAO {
 		}
 	}
 
-	@Override
 	public boolean assign(long eventId, long acceptTs, User user) {
 
 		if (LOG.isTraceEnabled()) {
@@ -1631,7 +1617,6 @@ public class EventDAO implements IEventDAO {
 		return updates > 0;
 	}
 
-	@Override
 	public boolean unassign(long eventId) {
 
 		if (LOG.isTraceEnabled()) {

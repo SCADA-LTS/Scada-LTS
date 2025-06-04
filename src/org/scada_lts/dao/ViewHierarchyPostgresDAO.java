@@ -17,10 +17,6 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
@@ -29,15 +25,19 @@ import org.scada_lts.exception.ViewHierarchyDaoException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  * DAO for Hierarchy View
  *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
 @Repository
-public class ViewHierarchyDAO implements IViewHierarchyDAO {
+public class ViewHierarchyPostgresDAO implements IViewHierarchyDAO {
 	
-	private static final Log LOG = LogFactory.getLog(ViewHierarchyDAO.class);
+	private static final Log LOG = LogFactory.getLog(ViewHierarchyPostgresDAO.class);
 	
 	private final static int COLUMN_INDEX_ID = 1;
 	private final static int COLUMN_INDEX_PARENT_ID = 2;
@@ -49,15 +49,13 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	
 	
 	// @formatter:off
-		private static final String SQL = "" +
-				"call prc_views_hierarchy_select();";
-		
-		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "" +
-				"call prc_views_category_views_hierarchy_select();";
-		
-		private static final String SQL_NODE = "" +
-				"call prc_views_hierarchy_select_node(?);";
-		
+
+		private static final String SQL = "SELECT * FROM func_views_hierarchy_select();";
+
+		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "SELECT * FROM func_views_category_views_hierarchy_select();";
+
+		private static final String SQL_NODE = "SELECT * FROM func_views_hierarchy_select_node(?);";
+
 		private static final String SQL_ADD = "" +
 				"select func_views_hierarchy_add(?,?);";
 		
@@ -109,7 +107,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * 	Return nodes for hierarchy views
 	 * @return
 	 */
-	@Override
 	public List<ViewHierarchyNode> getAll() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -128,7 +125,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * 	Return one node for hierarchy views
 	 * @return
 	 */
-	@Override
 	public List<ViewHierarchyNode> getNode(long l) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -147,7 +143,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * 
 	 * @return
 	 */
-	@Override
 	public List<ViewInViewHierarchyNode> getViewInHierarchyNode() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -164,7 +159,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	/**
 	 * 	Add node for hierarchy views  
 	 */
-	@Override
 	public int add(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -179,7 +173,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * @return 
 	 * @return
 	 */
-	@Override
 	public int update(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -199,7 +192,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * @return 
 	 * @return
 	 */
-	@Override
 	public int moveFolder(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -218,7 +210,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * @return 
 	 * @return
 	 */
-	@Override
 	public int moveView(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -237,7 +228,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * @return 
 	 * @return
 	 */
-	@Override
 	public int delView(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -256,7 +246,6 @@ public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	 * @return 
 	 * @return
 	 */
-	@Override
 	public int delFolder(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
