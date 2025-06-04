@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSortByUser;
 
 public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User> {
 
@@ -31,9 +31,9 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        return getAndSort(user, reportDAO::getReports,
-                (a, b) -> reportDAO.getReports().stream()
-                        .filter(reportInstance -> hasReportReadPermission(user, reportInstance))
+        return getAndSortByUser(user, reportDAO::getReports,
+                usr -> reportDAO.getReports().stream()
+                        .filter(reportInstance -> hasReportReadPermission(usr, reportInstance))
                         .collect(Collectors.toList()),
                 GetExtendedNameComparator.instance);
     }

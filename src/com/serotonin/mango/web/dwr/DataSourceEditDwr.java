@@ -285,10 +285,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
                 DataPointNameComparator.instance);
-        List<DataPointVO> filteredList = GetDataPointsWithAccess.filteringBySetAccess(user, points);
-        for (DataPointVO dataPointVO : filteredList) {
+        for (DataPointVO dataPointVO : points) {
             if (!dataPointVO.isEnabled()) {
-                Permissions.ensureDataSourcePermission(user,
+                Permissions.ensureDataSourcePermission(Common.getUser(),
                         dataPointVO.getDataSourceId());
 
                 RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
@@ -296,7 +295,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 runtimeManager.saveDataPoint(dataPointVO);
             }
         }
-        return filteredList;
+        return points;
     }
 
     //
@@ -309,8 +308,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataSourceVO<?> ds = user.getEditDataSource();
         if (ds.getId() == Common.NEW_ID)
             return null;
-
-        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(), DataPointNameComparator.instance);
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> points = dataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance);
         return GetDataPointsWithAccess.filteringByAccess(user, points);
     }
 
