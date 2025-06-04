@@ -92,7 +92,7 @@ public class EventDetectorAPI {
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 if(dataPointVO == null)
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
                 PointEventDetectorVO pointEventDetectorVO = peds.stream().filter(a -> a.getId() == id).findAny().orElse(null);
                 if (!peds.isEmpty())  {

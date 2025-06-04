@@ -311,7 +311,7 @@ public class PointPropertiesAPI {
             if(user != null) {
                 DataPointVO point = dataPointService.getDataPoint(id);
                 if(point == null)
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 DataPointRT rt = Common.ctx.getRuntimeManager().getDataPoint(point.getId());
                 if(rt != null) {
                     rt.resetValues();
@@ -335,7 +335,7 @@ public class PointPropertiesAPI {
                 Map<String, String> response = new HashMap<>();
                 DataPointVO point = dataPointService.getDataPoint(id);
                 if(point == null)
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 RuntimeManager rm = Common.ctx.getRuntimeManager();
                 point.setEnabled(!point.isEnabled());
                 rm.saveDataPoint(point);

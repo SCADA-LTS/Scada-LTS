@@ -363,6 +363,8 @@ public class PointValueAPI {
 
             if (user != null) {
                 DataPointVO dpvo = dataPointService.getDataPoint(xid);
+                if(dpvo == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 PointValueTime pvt = pointValueService.getLatestPointValue(dpvo.getId());
 
                 // API should show datapoint is disabled if datasource is disabled
@@ -536,6 +538,8 @@ public class PointValueAPI {
         try {
             User user = Common.getUser(request);
             DataPointVO dpvo = dataPointService.getDataPoint(xid);
+            if(dpvo == null)
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             if (user != null) {
                 long to = System.currentTimeMillis();
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
@@ -571,7 +575,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             DataPointVO dpvo = dataPointService.getDataPoint(id);
             if(dpvo == null)
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             if (user != null) {
                 long to = System.currentTimeMillis();
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), ts, to);
@@ -607,6 +611,8 @@ public class PointValueAPI {
         try {
             User user = Common.getUser(request);
             DataPointVO dpvo = dataPointService.getDataPoint(xid);
+            if(dpvo == null)
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             if (user != null) {
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), sts, ets);
                 List<ValueTime> values = new ArrayList<ValueTime>();
@@ -647,7 +653,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             DataPointVO dpvo = dataPointService.getDataPoint(id);
             if(dpvo == null)
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             if (user != null) {
                 List<PointValueTime> pvts = pointValueService.getPointValuesBetween(dpvo.getId(), sts, ets);
                 List<ValueTime> values = new ArrayList<ValueTime>();
