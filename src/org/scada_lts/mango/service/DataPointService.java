@@ -134,6 +134,9 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public DataPointVO getDataPoint(String xId) {
 		DataPointVO dp = dataPointDAO.getDataPoint(xId);
+		if (dp == null) {
+			return null;
+		}
 		setRelationalData(dp);
 		return dp;
 	}
@@ -145,6 +148,9 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public DataPointVO getDataPoint(int id) {
 		DataPointVO dp = dataPointDAO.getDataPoint(id);
+		if (dp == null) {
+			return null;
+		}
 		setRelationalData(dp);
 		return dp;
 	}
@@ -299,6 +305,8 @@ public class DataPointService implements MangoDataPoint {
 	public void updateDataPointConfiguration(DataPointVO dp) {
 		if(dp.getId() != Common.NEW_ID) {
 			DataPointVO existingDataPoint = getDataPoint(dp.getId());
+			if(existingDataPoint == null)
+				throw new IllegalArgumentException("Data point does not exist for id: " + dp.getId());
 			existingDataPoint.setName(dp.getName());
 			existingDataPoint.setXid(dp.getXid());
 			existingDataPoint.setDescription(dp.getDescription());

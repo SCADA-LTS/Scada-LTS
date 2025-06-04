@@ -1,5 +1,6 @@
 package org.scada_lts.permissions.service;
 
+import com.serotonin.mango.vo.GetExtendedNameComparator;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -11,6 +12,8 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
 
 public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSourceVO<?>, User> {
 
@@ -30,9 +33,9 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return dataSourceDAO.getDataSources();
-        return dataSourceDAO.selectDataSourcesWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, dataSourceDAO::getDataSources,
+                dataSourceDAO::selectDataSourcesWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override
@@ -41,9 +44,9 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return dataSourceDAO.findIdentifiers();
-        return dataSourceDAO.selectDataSourceIdentifiersWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, dataSourceDAO::findIdentifiers,
+                dataSourceDAO::selectDataSourceIdentifiersWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override

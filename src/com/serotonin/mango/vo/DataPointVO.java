@@ -62,7 +62,7 @@ import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
 public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO>,
-        ScadaValidation {
+        ScadaValidation, GetExtendedName {
     private static final long serialVersionUID = -1;
     public static final String XID_PREFIX = "DP_";
 
@@ -257,6 +257,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         lastValue = pvt;
     }
 
+    @Override
     public String getExtendedName() {
         if (description != null) {
             if (!description.isEmpty())

@@ -1016,7 +1016,7 @@ public class ViewDwr extends BaseDwr {
 			DataPointService dataPointService = new DataPointService();
 			for (Integer dpId : dataPoints) {
 				DataPointVO dp = dataPointService.getDataPoint(dpId);
-				if(GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
+				if(dp != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
 					dps.add(dp);
 			}
 

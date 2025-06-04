@@ -189,6 +189,11 @@ public class AsyncImageChartServlet extends BaseInfoServlet {
         @Override
         public void run() {
             DataPointVO dp = dataPointService.getDataPoint(dataPointId);
+
+            if(dp == null) {
+                return;
+            }
+
             try {
                 if (colour == null && !StringUtils.isEmpty(dp.getChartColour()))
                     colour = ColorUtils.toColor(dp.getChartColour());

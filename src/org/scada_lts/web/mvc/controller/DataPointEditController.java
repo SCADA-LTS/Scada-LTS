@@ -114,6 +114,8 @@ public class DataPointEditController {
             id = Integer.parseInt(idStr);
 
         DataPointVO dataPoint = dataPointService.getDataPoint(id);
+        if(dataPoint == null)
+            throw new IllegalArgumentException("Data point does not exist for id: " + id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());

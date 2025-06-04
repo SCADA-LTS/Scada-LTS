@@ -99,7 +99,7 @@
     }
 
     function appendScript(seId) {
-        createFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
+        updateFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
     }
 
     function updateScript(se) {
@@ -172,7 +172,9 @@
 		                	});
 		                }
 		                setUserMessage("<spring:message code="scripts.saved"/>");
-		                ScriptsDwr.getScript(editingScript.id, updateScript);
+		                ScriptsDwr.getScripts(function(scripts) {
+		                    init(scripts);
+		                });
 		            }
         		}
         );

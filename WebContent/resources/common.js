@@ -518,6 +518,19 @@ function createFromTemplate(templateId, id, parentId) {
     return content;
 }
 
+function updateFromTemplate(templateId, id, parentId) {
+    var content = $(templateId).cloneNode(true);
+    updateTemplateNode(content, id);
+    content.mangoId = id;
+    let child = $(parentId).children[content.id];
+    if(child) {
+        $(parentId).removeChild(child);
+    }
+    $(parentId).appendChild(content);
+    show(content);
+    return content;
+}
+
 function getMangoId(node) {
     while (!(node.mangoId))
         node = node.parentNode;

@@ -28,6 +28,7 @@ import br.org.scadabr.vo.dataSource.iec101.IEC101EthernetDataSourceVO;
 import br.org.scadabr.vo.dataSource.iec101.IEC101SerialDataSourceVO;
 import br.org.scadabr.vo.dataSource.nodaves7.NodaveS7DataSourceVO;
 import br.org.scadabr.vo.dataSource.opc.OPCDataSourceVO;
+import com.serotonin.mango.vo.GetExtendedName;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
@@ -88,7 +89,7 @@ import java.util.*;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation, GetExtendedName {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -455,6 +456,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
