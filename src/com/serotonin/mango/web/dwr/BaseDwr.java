@@ -259,9 +259,7 @@ abstract public class BaseDwr {
     protected List<DataPointVO> getPoints() {
         User user = Common.getUser();
         DataPointService dataPointService = new DataPointService();
-        List<DataPointVO> result = dataPointService.getDataPointsWithAccess(user);
-        result.sort(GetExtendedNameComparator.instance);
-        return result;
+        return dataPointService.getDataPointsWithAccess(user);
     }
 
     public Map<String, Object> getDateRangeDefaults(int periodType, int period) {
