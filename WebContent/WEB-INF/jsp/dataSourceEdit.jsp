@@ -218,8 +218,8 @@
         display("pointDeleteImg", point.id != <c:out value="<%=Common.NEW_ID%>"/>);
         var locator = currentPoint.pointLocator;
 
-        $set("name", currentPoint.name);
-        $set("xid", currentPoint.xid);
+        $set("name", unescapeHtml(currentPoint.name));
+        $set("xid", unescapeHtml(currentPoint.xid));
         var cancel;
         if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator);
         if (!cancel) {
