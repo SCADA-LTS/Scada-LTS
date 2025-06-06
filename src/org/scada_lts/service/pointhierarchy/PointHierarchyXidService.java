@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
@@ -44,7 +45,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);
 
-    public PointHierarchyXidService(PointHierarchyXidDAO pointHierarchyXidDAO, DataPointDAO dataPointDAO, HierarchyDAO hierarchyDAO) {
+    public PointHierarchyXidService(PointHierarchyXidDAO pointHierarchyXidDAO, IDataPointDAO dataPointDAO, HierarchyDAO hierarchyDAO) {
         super(pointHierarchyXidDAO, dataPointDAO, hierarchyDAO);
     }
 

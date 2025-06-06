@@ -1,11 +1,10 @@
 package org.scada_lts.dao.cache;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.IPointEventDetectorDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,13 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
     @Override
     public void init() {
-        List<DataPointVO> dataPoints = new DataPointDAO().getDataPoints();
+        IDataPointDAO dao = null;
+        if (DAO.getType() == DatabaseAccess.DatabaseType.POSTGRES) {
+            dao = new PostgresDataPointDAO();
+        } else {
+            dao = new DataPointDAO();
+        }
+        List<DataPointVO> dataPoints = dao.getDataPoints();
         Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = new PointEventDetectorDAO()
                 .getPointEventDetectors(Integer.MAX_VALUE, 0)
                 .stream()

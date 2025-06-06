@@ -2,15 +2,16 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.List;
 
 public class WatchListUserPermissionsService implements PermissionsService<WatchListAccess, User> {
 
-    private final WatchListDAO watchListDAO;
+    private final IWatchListDAO watchListDAO;
 
-    public WatchListUserPermissionsService(WatchListDAO watchListDAO) {
+    public WatchListUserPermissionsService(IWatchListDAO watchListDAO) {
         this.watchListDAO = watchListDAO;
     }
 

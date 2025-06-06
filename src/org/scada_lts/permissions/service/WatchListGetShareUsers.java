@@ -2,6 +2,7 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.WatchList;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.List;
@@ -10,9 +11,9 @@ import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 
 public class WatchListGetShareUsers implements GetShareUsers<WatchList> {
 
-    private final WatchListDAO watchListDAO;
+    private final IWatchListDAO watchListDAO;
 
-    public WatchListGetShareUsers(WatchListDAO watchListDAO) {
+    public WatchListGetShareUsers(IWatchListDAO watchListDAO) {
         this.watchListDAO = watchListDAO;
     }
 

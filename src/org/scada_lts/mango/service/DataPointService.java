@@ -45,10 +45,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -76,21 +78,21 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
-	private final DataPointDAO dataPointDAO;
+	private final IDataPointDAO dataPointDAO;
 
-	private final DataSourceDAO dataSourceDAO;
+	private final IDataSourceDAO dataSourceDAO;
 
 	private final IUserCommentDAO userCommentDAO;
 
 	private final IPointEventDetectorDAO pointEventDetectorDAO;
 
-	private final PointHierarchyDAO pointHierarchyDAO;
+	private final IPointHierarchyDAO pointHierarchyDAO;
 
 	private final DataPointUserDAO dataPointUserDAO ;
 
 	private static final PointValueDAO pointValueDAO = new PointValueDAO();
 
-	private final WatchListDAO watchListDAO;
+	private final IWatchListDAO watchListDAO;
 
 	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
@@ -101,11 +103,11 @@ public class DataPointService implements MangoDataPoint {
 	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
 
 	public DataPointService() {
-		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
-		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
-		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", PointHierarchyDAO.class);
+		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
+		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", IPointHierarchyDAO.class);
 		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
-		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", IWatchListDAO.class);
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
 		this.userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);

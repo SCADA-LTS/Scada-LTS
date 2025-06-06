@@ -21,6 +21,7 @@ package org.scada_lts.permissions.migration.dao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.IDataSourceDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoDataSource;
 
@@ -29,9 +30,9 @@ import java.util.ResourceBundle;
 
 public final class OnlyMigrationDataSourceService implements MangoDataSource {
 
-	private DataSourceDAO dataSourceDAO;
+	private IDataSourceDAO dataSourceDAO;
 
-	public OnlyMigrationDataSourceService(DataSourceDAO dataSourceDAO) {
+	public OnlyMigrationDataSourceService(IDataSourceDAO dataSourceDAO) {
 		this.dataSourceDAO = dataSourceDAO;
 	}
 

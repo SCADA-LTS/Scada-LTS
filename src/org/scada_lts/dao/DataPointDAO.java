@@ -46,7 +46,7 @@ import com.serotonin.mango.vo.DataPointVO;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataPointDAO {
+public class DataPointDAO implements IDataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
 
@@ -206,6 +206,7 @@ public class DataPointDAO {
 		}
 	}
 
+	@Override
 	public DataPointVO getDataPoint(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -222,6 +223,7 @@ public class DataPointDAO {
 		}
 	}
 
+	@Override
 	public DataPointVO getDataPoint(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -238,6 +240,7 @@ public class DataPointDAO {
 		
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints() {
 
 		if (LOG.isTraceEnabled()) {
@@ -251,6 +254,7 @@ public class DataPointDAO {
 		}
 	}
 		
+	@Override
 	public List<DataPointVO> filtered(String filter, Object[] argsFilter, long limit) {
 		String myLimit="";
 		Object[] args;
@@ -265,6 +269,7 @@ public class DataPointDAO {
 	
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -277,6 +282,7 @@ public class DataPointDAO {
 		return dataPointList;
 	}
 
+	@Override
 	public List<DataPointVO> getDataPointByKeyword(String[] keywords) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointByKeyword(String search) search:" + keywords.toString());
@@ -290,6 +296,7 @@ public class DataPointDAO {
 		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch, new DataPointRowMapper(), args.toArray());
 	}
 
+	@Override
 	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
 
 		String templateSelectPlcWhereId = DATA_POINT_SELECT_PLC + " where (dp." + COLUMN_NAME_DATA_SOURCE_ID + "=? AND dp.plcAlarmLevel>0)";
@@ -298,6 +305,7 @@ public class DataPointDAO {
 
 	}
 
+	@Override
 	public List<Integer> getDataPointsIds(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -307,7 +315,8 @@ public class DataPointDAO {
 		return DAO.getInstance().getJdbcTemp().queryForList(DATA_POINT_SELECT_ID, new Object[] {dataSourceId}, Integer.class);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -343,6 +352,7 @@ public class DataPointDAO {
 	 * @param entity Object to create
 	 * @return DataPointVO entity with unique ID number
 	 */
+	@Override
 	public DataPointVO create(DataPointVO entity) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(connection -> {
@@ -360,11 +370,13 @@ public class DataPointDAO {
 		return entity;
 	}
 
+	@Override
 	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
 		return getDataPoint(id);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int update(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -387,7 +399,8 @@ public class DataPointDAO {
 		}
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -407,7 +420,8 @@ public class DataPointDAO {
 		}
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void deleteWithIn(String dataPointIdList) {
 
 		if (LOG.isTraceEnabled()) {
@@ -425,7 +439,8 @@ public class DataPointDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void deleteEventHandler(String dataPointIdList) {
 
 		if (LOG.isTraceEnabled()) {
@@ -444,11 +459,13 @@ public class DataPointDAO {
 	}
 
 	@Deprecated
+	@Override
 	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
 		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
 	}
 
 	@Deprecated
+	@Override
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
 		new Object[] { userId },
@@ -459,12 +476,14 @@ public class DataPointDAO {
 			.build());
 	}
 
+	@Override
 	public List<DataPointVO> selectDataPointsWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME,
 				new Object[] { userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE, userId, profileId },
 				new DataPointRowMapper());
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME,
 				new Object[] { userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE, userId, profileId },
@@ -475,6 +494,7 @@ public class DataPointDAO {
 						.build());
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> findIdentifiers() {
 		ScadaObjectIdentifierRowMapper mapper = new ScadaObjectIdentifierRowMapper.Builder()
 				.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
@@ -485,6 +505,7 @@ public class DataPointDAO {
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> findIdentifiers(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -499,6 +520,7 @@ public class DataPointDAO {
 						.build());
 	}
 
+	@Override
 	public List<DataPointVO> getDataPoints(String dataSourceXid) {
 
 		if (LOG.isTraceEnabled()) {

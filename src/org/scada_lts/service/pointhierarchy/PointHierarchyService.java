@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
@@ -54,11 +55,11 @@ public class PointHierarchyService {
 	private static final Log LOG = LogFactory.getLog(PointHierarchyService.class);
 
 	private final PointHierarchyXidDAO pointHierarchyXidDAO;
-	private final DataPointDAO dataPointDAO;
+	private final IDataPointDAO dataPointDAO;
 	private final HierarchyDAO hierarchyDAO;
 
 	public PointHierarchyService(PointHierarchyXidDAO pointHierarchyXidDAO,
-								 DataPointDAO dataPointDAO,
+								 IDataPointDAO dataPointDAO,
 								 HierarchyDAO hierarchyDAO) {
 		this.pointHierarchyXidDAO = pointHierarchyXidDAO;
 		this.dataPointDAO = dataPointDAO;
@@ -244,19 +245,19 @@ public class PointHierarchyService {
 	}
 
 	public PointHierarchyNode getPointHierarchyRoot(User user)  {
-		return PointHierarchyUtils.getPointHierarchyRoot(user, hierarchyDAO, dataPointDAO);
+		return PointHierarchyUtils.getPointHierarchyRoot(user, hierarchyDAO, (DataPointDAO) dataPointDAO);
 	}
 
 	public List<PointHierarchyNode> getPointHierarchyByKey(User user, int key)  {
-		return PointHierarchyUtils.getPointHierarchyByKey(user, hierarchyDAO, dataPointDAO, key);
+		return PointHierarchyUtils.getPointHierarchyByKey(user, hierarchyDAO, (DataPointDAO) dataPointDAO, key);
 	}
 
 	public PointHierarchyNode getPointHierarchyWithEmptyRoot(User user)  {
-		return PointHierarchyUtils.getPointHierarchyWithEmptyRoot(user, hierarchyDAO, dataPointDAO);
+		return PointHierarchyUtils.getPointHierarchyWithEmptyRoot(user, hierarchyDAO, (DataPointDAO) dataPointDAO);
 	}
 
 	public List<PointHierarchyNode> getPointHierarchyWithEmptyByKey(User user, int key)  {
-		return PointHierarchyUtils.getPointHierarchyWithEmptyByKey(user, hierarchyDAO, dataPointDAO, key);
+		return PointHierarchyUtils.getPointHierarchyWithEmptyByKey(user, hierarchyDAO, (DataPointDAO) dataPointDAO, key);
 	}
 
 	protected PointHierarchyXidDAO getPointHierarchyDAO() {

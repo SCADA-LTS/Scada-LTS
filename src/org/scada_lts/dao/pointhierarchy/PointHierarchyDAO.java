@@ -47,7 +47,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * person supporting and coreecting translation Jerzy Piejko
  */
 
-public class PointHierarchyDAO {
+public class PointHierarchyDAO implements IPointHierarchyDAO {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyDAO.class);
     private final static String COLUMN_NAME_ID = "id";
@@ -158,6 +158,7 @@ public class PointHierarchyDAO {
      *
      * @return
      */
+    @Override
     public List<PointHierarchyNode> getPointsHierarchy() {
         if (LOG.isTraceEnabled()) {
             LOG.trace("SQL PointsDAO");
@@ -209,6 +210,7 @@ public class PointHierarchyDAO {
      * @param id
      * @return
      */
+    @Override
     public DataPointVO getPointsHierarchy(int id) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("SQL Point");
@@ -230,6 +232,7 @@ public class PointHierarchyDAO {
         return lstDataPointVO.get(0);
     }
 
+    @Override
     public Map<Integer, List<PointFolder>> getFolderList() {
 
         if (LOG.isTraceEnabled()) {
@@ -264,6 +267,7 @@ public class PointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public boolean updateTitle(int id, String title) {
         int rows = DAO.getInstance().getJdbcTemp().update(updateTitleSQL, new Object[]{title, id});
         PointHierarchyDAO.cachedPointHierarchy = null;
@@ -278,6 +282,7 @@ public class PointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public boolean updateParentIdDataPoint(int id, int parentId) {
         DataPointVO dp = getPointsHierarchy(id);
         dp.setPointFolderId(parentId);
@@ -294,6 +299,7 @@ public class PointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public boolean updateParentId(int id, int parentId) {
         int rows = DAO.getInstance().getJdbcTemp().update(updateParentIdSQL, new Object[]{parentId, id});
         PointHierarchyDAO.cachedPointHierarchy = null;
@@ -308,6 +314,7 @@ public class PointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public int insert(int parentId, String name) {
         DAO.getInstance().getJdbcTemp().update(insertSQL, new Object[]{parentId, name.trim()});
         int folderId = DAO.getInstance().getId();
@@ -317,6 +324,7 @@ public class PointHierarchyDAO {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public int insert(int id, int parentId, String name) {
         DAO.getInstance().getJdbcTemp().update(INSERT_POINT_HIERARCHY, new Object[]{parentId, name.trim()});
         PointHierarchyDAO.cachedPointHierarchy = null;
@@ -324,6 +332,7 @@ public class PointHierarchyDAO {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public void delete() {
         if (LOG.isTraceEnabled()) {
             LOG.info("delete()");
@@ -338,6 +347,7 @@ public class PointHierarchyDAO {
      * @return
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+    @Override
     public boolean deleteFolder(int key, int parentId) {
         if (LOG.isTraceEnabled()) {
             LOG.info("delete key:" + key);

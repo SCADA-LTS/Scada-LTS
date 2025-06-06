@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 public class UserCommentDaoWithCache implements IUserCommentDAO {
 
     public final UserCommentCacheable cache;
-    public final UserCommentDAO userCommentDAO;
+    public final IUserCommentDAO userCommentDAO;
 
-    public UserCommentDaoWithCache(UserCommentCacheable cache, UserCommentDAO userCommentDAO) {
+    public UserCommentDaoWithCache(UserCommentCacheable cache, IUserCommentDAO userCommentDAO) {
         this.cache = cache;
         this.userCommentDAO = userCommentDAO;
     }

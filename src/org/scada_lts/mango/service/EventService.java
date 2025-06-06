@@ -39,6 +39,7 @@ import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.IEventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.utils.SQLPageWithTotal;
@@ -66,7 +67,7 @@ public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
 	
-	private final EventDAO eventDAO;
+	private final IEventDAO eventDAO;
 	private final UserEventDAO userEventDAO;
 	private final IUserCommentDAO userCommentDAO;
 	private final SystemSettingsService systemSettingsService;

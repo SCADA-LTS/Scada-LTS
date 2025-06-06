@@ -1,10 +1,14 @@
 package org.scada_lts.cache;
 
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.PostgresDataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.beans.ApplicationBeans;
 
@@ -69,8 +73,15 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 
 	@Override
 	public void cacheInitialize() {
+
+		IDataPointDAO dao = null;
+		if (DAO.getType() == DatabaseAccess.DatabaseType.POSTGRES) {
+			dao = new PostgresDataPointDAO();
+		} else {
+			dao = new DataPointDAO();
+		}
 		
-		List<DataPointVO> dps = new DataPointDAO().getDataPoints();
+		List<DataPointVO> dps = dao.getDataPoints();
 		
 		dss = composeCashData(dps);
 		

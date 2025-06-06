@@ -79,8 +79,6 @@
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
   <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
-  <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
-  <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO"/>
   <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
@@ -168,10 +166,8 @@
   <!-- -->
 
   <!-- Point Hierarchy -->
-  <bean id="dataPointDAO" class="org.scada_lts.dao.DataPointDAO"/>
   <bean id="hierarchyDAO" class="org.scada_lts.dao.HierarchyDAO"/>
   <bean id="pointHierarchyXidDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO" />
-  <bean id="pointHierarchyDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyDAO" />
 
   <bean id="pointHierarchyXidService" class="org.scada_lts.service.pointhierarchy.PointHierarchyXidService" >
     <constructor-arg ref="pointHierarchyXidDAO"/>
@@ -187,8 +183,6 @@
   <!-- -->
 
   <!-- UserComment Cachable -->
-  <bean id="userCommentDAO" class="org.scada_lts.dao.UserCommentDAO" />
-
   <bean id="userCommentCache" class="org.scada_lts.dao.cache.UserCommentCache">
     <constructor-arg ref="userCommentDAO"/>
   </bean>
@@ -211,6 +205,54 @@
     <property name="locations" value="classpath:env.properties"/>
   </bean>
 
+  <bean id="dataSourceDaoFactory" class="org.scada_lts.factory.DataSourceDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="dataSourceDAO" factory-bean="dataSourceDaoFactory" factory-method="newInstance"/>
+
+  <bean id="dataPointDaoFactory" class="org.scada_lts.factory.DataPointDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="dataPointDAO" factory-bean="dataPointDaoFactory" factory-method="newInstance"/>
+
+  <bean id="eventDaoFactory" class="org.scada_lts.factory.EventDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="eventDAO" factory-bean="eventDaoFactory" factory-method="newInstance"/>
+
+  <bean id="pointHierarchyDaoFactory" class="org.scada_lts.factory.PointHierarchyDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="pointHierarchyDAO" factory-bean="pointHierarchyDaoFactory" factory-method="newInstance"/>
+
+  <bean id="pointEventDetectorDaoFactory" class="org.scada_lts.factory.PointEventDetectorDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="pointEventDetectorDAO" factory-bean="pointEventDetectorDaoFactory" factory-method="newInstance"/>
+
+  <bean id="userCommentDaoFactory" class="org.scada_lts.factory.UserCommentDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="userCommentDAO" factory-bean="userCommentDaoFactory" factory-method="newInstance"/>
+
+  <bean id="viewHierarchyDaoFactory" class="org.scada_lts.factory.ViewHierarchyDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="viewHierarchyDAO" factory-bean="viewHierarchyDaoFactory" factory-method="newInstance"/>
+
+  <bean id="watchListDaoFactory" class="org.scada_lts.factory.WatchListDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="watchListDAO" factory-bean="watchListDaoFactory" factory-method="newInstance"/>
+
   <bean id="databaseAccess" class="com.serotonin.mango.db.DatabaseAccess" factory-method="createDatabaseAccess" />
 
   <bean id="databaseSource" factory-bean="databaseAccess" factory-method="getDataSource" />
@@ -220,7 +262,6 @@
   <bean id="alarmsDAO" class="org.scada_lts.dao.alarms.PlcAlarmsDAO" />
 
   <!-- Point Event Detectors Cache -->
-  <bean id="pointEventDetectorDAO" class="org.scada_lts.dao.PointEventDetectorDAO" />
 
   <bean id="pointEventDetectorCache" class="org.scada_lts.dao.cache.PointEventDetectorCache">
     <constructor-arg ref="pointEventDetectorDAO"/>
