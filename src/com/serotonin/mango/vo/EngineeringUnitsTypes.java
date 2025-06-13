@@ -509,8 +509,8 @@ public enum EngineeringUnitsTypes implements EngineeringUnit {
         CENTIMETERS(118, "centimeters", "cm"),
         METERS(31, "meters", "m"),
         INCHES(32, "inches", "in"),
-        FEET(33, "feet", "ft"),
-        KILOMETERS(190, "kilometers", "km");
+        FEET(33, "feet", "ft");
+        //KILOMETERS(190, "kilometers", "km");
 
         private final int value;
         private final String name;
