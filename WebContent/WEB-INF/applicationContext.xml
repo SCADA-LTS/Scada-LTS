@@ -78,7 +78,6 @@
 
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
-  <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
   <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
@@ -86,6 +85,11 @@
   </bean>
 
   <bean id="viewGetShareUsers" class="org.scada_lts.permissions.service.ViewGetShareUsers">
+    <constructor-arg ref="viewDAO"/>
+  </bean>
+
+  <bean id="viewHierarchyService" class="org.scada_lts.service.ViewHierarchyService">
+    <constructor-arg ref="viewHierarchyDAO"/>
     <constructor-arg ref="viewDAO"/>
   </bean>
 
@@ -252,6 +256,24 @@
   </bean>
 
   <bean id="watchListDAO" factory-bean="watchListDaoFactory" factory-method="newInstance"/>
+
+  <bean id="viewDaoFactory" class="org.scada_lts.factory.ViewDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="viewDAO" factory-bean="viewDaoFactory" factory-method="newInstance"/>
+
+  <bean id="reportDaoFactory" class="org.scada_lts.factory.ReportDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="reportDAO" factory-bean="reportDaoFactory" factory-method="newInstance"/>
+
+  <bean id="pointValueDaoFactory" class="org.scada_lts.factory.PointValueDaoFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="pointValueDAO" factory-bean="pointValueDaoFactory" factory-method="newInstance"/>
 
   <bean id="databaseAccess" class="com.serotonin.mango.db.DatabaseAccess" factory-method="createDatabaseAccess" />
 

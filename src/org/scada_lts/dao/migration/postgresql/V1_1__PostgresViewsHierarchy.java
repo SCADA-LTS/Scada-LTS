@@ -33,9 +33,9 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 		final String folderViewsHierarchySQL = ""
 				+ "create table IF NOT EXISTS category_views_hierarchy ("
 				+ "id  SERIAL NOT NULL,"
-				+ "parentId INTEGER,"
+				+ "parentid INTEGER,"
 				+ "name varchar(100) not null unique,"
-				+ "primary key (id, parentId)"
+				+ "primary key (id, parentid)"
 				+ ")";
 
 		final String viewsHierarchySQL = ""
@@ -47,11 +47,11 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 
 		String fAdd =
 				"CREATE OR REPLACE FUNCTION func_views_hierarchy_add("
-						+ "a_parentId INTEGER, a_name VARCHAR(100)) "
+						+ "a_parentid INTEGER, a_name VARCHAR(100)) "
 						+ "RETURNS INTEGER AS $$ "
 						+ "BEGIN "
 						+ "IF (CHAR_LENGTH(a_name) > 2 AND CHAR_LENGTH(a_name) < 100) THEN "
-						+ "INSERT INTO \"category_views_hierarchy\"(\"parentId\", \"name\") VALUES (a_parentId, a_name); "
+						+ "INSERT INTO \"category_views_hierarchy\"(\"parentid\", \"name\") VALUES (a_parentid, a_name); "
 						+ "RETURN currval('category_views_hierarchy_id_seq'); "
 						+ "ELSE "
 						+ "RAISE EXCEPTION '#error.view_hierarchy.add.error1#'; "
@@ -62,11 +62,11 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 
 		String fUpdate =
 				"CREATE OR REPLACE FUNCTION func_views_hierarchy_update("
-						+ "a_id INTEGER, a_parentId INTEGER, a_name VARCHAR(100)) "
+						+ "a_id INTEGER, a_parentid INTEGER, a_name VARCHAR(100)) "
 						+ "RETURNS INTEGER AS $$ "
 						+ "BEGIN "
 						+ "UPDATE \"category_views_hierarchy\" "
-						+ "SET \"parentId\" = a_parentId, \"name\" = a_name "
+						+ "SET \"parentid\" = a_parentid, \"name\" = a_name "
 						+ "WHERE \"id\" = a_id; "
 						+ "RETURN a_id; "
 						+ "END; "
@@ -77,7 +77,7 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 						+ "RETURNS INTEGER AS $$ "
 						+ "BEGIN "
 						+ "DELETE FROM \"category_views_hierarchy\" WHERE \"id\" = a_id; "
-						+ "UPDATE \"category_views_hierarchy\" SET \"parentId\" = -1 WHERE \"parentId\" = a_id; "
+						+ "UPDATE \"category_views_hierarchy\" SET \"parentid\" = -1 WHERE \"parentid\" = a_id; "
 						+ "RETURN a_id; "
 						+ "END; "
 						+ "$$ LANGUAGE plpgsql;";
@@ -96,7 +96,7 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 				"CREATE OR REPLACE FUNCTION func_views_hierarchy_move_folder(a_id INTEGER, a_new_parent_id INTEGER) "
 						+ "RETURNS INTEGER AS $$ "
 						+ "BEGIN "
-						+ "UPDATE \"category_views_hierarchy\" SET \"parentId\" = a_new_parent_id WHERE \"id\" = a_id; "
+						+ "UPDATE \"category_views_hierarchy\" SET \"parentid\" = a_new_parent_id WHERE \"id\" = a_id; "
 						+ "RETURN a_id; "
 						+ "END; "
 						+ "$$ LANGUAGE plpgsql;";
@@ -121,17 +121,17 @@ public class V1_1__PostgresViewsHierarchy extends BaseJavaMigration {
 
 		String pSelect =
 				"CREATE OR REPLACE FUNCTION prc_views_hierarchy_select() "
-						+ "RETURNS TABLE (id INTEGER, parentId INTEGER, name VARCHAR) AS $$ "
+						+ "RETURNS TABLE (id INTEGER, parentid INTEGER, name VARCHAR) AS $$ "
 						+ "BEGIN "
-						+ "RETURN QUERY SELECT * FROM \"category_views_hierarchy\" ORDER BY \"parentId\" ASC; "
+						+ "RETURN QUERY SELECT * FROM \"category_views_hierarchy\" ORDER BY \"parentid\" ASC; "
 						+ "END; "
 						+ "$$ LANGUAGE plpgsql;";
 
 		String pSelectNode =
 				"CREATE OR REPLACE FUNCTION prc_views_hierarchy_select_node(a_parent_id INTEGER) "
-						+ "RETURNS TABLE (id INTEGER, parentId INTEGER, name VARCHAR) AS $$ "
+						+ "RETURNS TABLE (id INTEGER, parentid INTEGER, name VARCHAR) AS $$ "
 						+ "BEGIN "
-						+ "RETURN QUERY SELECT * FROM \"category_views_hierarchy\" WHERE \"parentId\" = a_parent_id; "
+						+ "RETURN QUERY SELECT * FROM category_views_hierarchy AS c WHERE c.parentid = a_parent_id; "
 						+ "END; "
 						+ "$$ LANGUAGE plpgsql;";
 

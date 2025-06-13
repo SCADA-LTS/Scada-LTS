@@ -29,11 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * DAO for Hierarchy View
- *
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
- */
 @Repository
 public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 	
@@ -50,11 +45,11 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 	
 	// @formatter:off
 
-		private static final String SQL = "SELECT * FROM func_views_hierarchy_select();";
+		private static final String SQL = "SELECT * FROM prc_views_hierarchy_select();";
 
-		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "SELECT * FROM func_views_category_views_hierarchy_select();";
+		private static final String SQL_VIEW_IN_VIEW_HIERARCHY = "SELECT * FROM prc_views_category_views_hierarchy_select();";
 
-		private static final String SQL_NODE = "SELECT * FROM func_views_hierarchy_select_node(?);";
+		private static final String SQL_NODE = "SELECT * FROM prc_views_hierarchy_select_node(CAST(? AS INTEGER));";
 
 		private static final String SQL_ADD = "" +
 				"select func_views_hierarchy_add(?,?);";
@@ -99,17 +94,10 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 			}
 		}
 
-	// @formatter:on
-		
-	public static final byte ROOT_ID = -1;
-		
-	/**
-	 * 	Return nodes for hierarchy views
-	 * @return
-	 */
+
 	public List<ViewHierarchyNode> getAll() {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("SQL ViewHierarchyDAO");
+			LOG.trace("SQL PostgresViewHierarchyDAO");
 		}
 		
 		try {
@@ -120,11 +108,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		}
 		return null;
     }
-	
-	/**
-	 * 	Return one node for hierarchy views
-	 * @return
-	 */
+
 	public List<ViewHierarchyNode> getNode(long l) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -139,10 +123,6 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		return null;
     }
 
-	/**
-	 * 
-	 * @return
-	 */
 	public List<ViewInViewHierarchyNode> getViewInHierarchyNode() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -156,9 +136,6 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		return null;
 	}
 
-	/**
-	 * 	Add node for hierarchy views  
-	 */
 	public int add(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -167,12 +144,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		return DAO.getInstance().getJdbcTemp().queryForObject(SQL_ADD, new Object[]{node.getParentId(), node.getName()}, Integer.class);
 		
     }
-	
-	/**
-	 * 	Update node for hierarchy views
-	 * @return 
-	 * @return
-	 */
+
 	public int update(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -186,12 +158,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		return ERROR;
 
     }
-	
-	/**
-	 * 	Move node for hierarchy views
-	 * @return 
-	 * @return
-	 */
+
 	public int moveFolder(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -204,12 +171,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		}
 		return ERROR;
     }
-	
-	/**
-	 * 	Move node for hierarchy views
-	 * @return 
-	 * @return
-	 */
+
 	public int moveView(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -222,12 +184,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		}
 		return ERROR;
     }
-	
-	/**
-	 * 	Delete view from hierarchy views
-	 * @return 
-	 * @return
-	 */
+
 	public int delView(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -240,12 +197,7 @@ public class PostgresViewHierarchyDAO implements IViewHierarchyDAO {
 		}
 		return ERROR;
     }
-	
-	/**
-	 * 	Delete folder from hierarchy views
-	 * @return 
-	 * @return
-	 */
+
 	public int delFolder(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");

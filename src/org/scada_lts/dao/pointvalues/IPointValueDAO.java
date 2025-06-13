@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import org.scada_lts.dao.model.point.PointValue;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

@@ -34,6 +34,7 @@ import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ import java.util.ResourceBundle;
 @Service
 public class ReportService implements MangoReport {
 
-	private ReportDAO reportDAO;
+	private IReportDAO reportDAO;
 	private ReportInstanceDAO reportInstanceDAO;
 	private ReportInstanceDataDAO reportInstanceDataDAO;
 	private ReportInstancePointDAO reportInstancePointDAO;
@@ -61,7 +62,7 @@ public class ReportService implements MangoReport {
 	private GetReportInstancesWithAccess getReportInstancesWithAccess;
 
 	public ReportService() {
-		this.reportDAO = new ReportDAO();
+		this.reportDAO = ApplicationBeans.getBean("reportDAO", IReportDAO.class);
 		this.reportInstanceDAO = new ReportInstanceDAO();
 		this.reportInstanceDataDAO = new ReportInstanceDataDAO();
 		this.reportInstancePointDAO = new ReportInstancePointDAO();

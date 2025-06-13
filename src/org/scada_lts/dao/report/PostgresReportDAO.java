@@ -1,23 +1,5 @@
-/*
- * (c) 2016 Abil'I.T. http://abilit.eu/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package org.scada_lts.dao.report;
 
-import java.sql.Statement;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.logging.Log;
@@ -35,23 +17,17 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.ByteArrayInputStream;
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
 import static org.scada_lts.utils.ReportDaoUtils.searchQuery;
 
-/**
- * DAO for Report
- *
- * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
- */
-public class ReportDAO implements IReportDAO {
 
-	private static final Log LOG = LogFactory.getLog(ReportDAO.class);
+public class PostgresReportDAO implements IReportDAO {
+
+	private static final Log LOG = LogFactory.getLog(PostgresReportDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -112,7 +88,8 @@ public class ReportDAO implements IReportDAO {
 
 		@Override
 		public ReportVO mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ReportVO report = (ReportVO) new SerializationData().readObject(rs.getBlob(COLUMN_NAME_DATA).getBinaryStream());
+			byte[] dataBytes = rs.getBytes(COLUMN_NAME_DATA);
+			ReportVO report = (ReportVO) new SerializationData().readObject(new ByteArrayInputStream(dataBytes));
 			report.setId(rs.getInt(COLUMN_NAME_ID));
 			report.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			report.setName(rs.getString(COLUMN_NAME_NAME));
@@ -121,7 +98,6 @@ public class ReportDAO implements IReportDAO {
 		}
 	}
 
-	@Override
 	public ReportVO getReport(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -137,7 +113,6 @@ public class ReportDAO implements IReportDAO {
 		return reportVO;
 	}
 
-	@Override
 	public ReportVO getReport(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -153,7 +128,6 @@ public class ReportDAO implements IReportDAO {
 		return reportVO;
 	}
 
-	@Override
 	public List<ReportVO> getReports() {
 
 		if (LOG.isTraceEnabled()) {
@@ -163,12 +137,10 @@ public class ReportDAO implements IReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT, new ReportRowMapper());
 	}
 
-	@Override
 	public List<ReportVO> search(Map<String, String> query) {
 		return search(Common.NEW_ID, query);
 	}
 
-	@Override
 	public List<ReportVO> search(int userId, Map<String, String> query) {
 
 		if (LOG.isTraceEnabled()) {
@@ -178,7 +150,6 @@ public class ReportDAO implements IReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(sql.getQuery(), sql.getArgs(), new ReportRowMapper());
 	}
 
-	@Override
 	public List<ReportVO> getReports(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -189,48 +160,42 @@ public class ReportDAO implements IReportDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public int insert(final ReportVO report) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final ReportVO report) report:" + report.toString());
-		}
+		if (LOG.isTraceEnabled())
+			LOG.trace("insert(report): " + report);
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[]{
-						report.getXid(),
-						report.getUserId(),
-						report.getName(),
-						new SerializationData().writeObject(report)}
-				).setValues(preparedStatement);
-				return preparedStatement;
-			}
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(REPORT_INSERT + " RETURNING id");
+			ps.setString(1, report.getXid());
+			ps.setInt(2, report.getUserId());
+			ps.setString(3, report.getName());
+			ByteArrayInputStream bais = new SerializationData().writeObject(report);
+			ps.setBytes(4, bais.readAllBytes());
+			return ps;
 		}, keyHolder);
-		return keyHolder.getKey().intValue();
+
+		return ((Number) keyHolder.getKeys().get("id")).intValue();
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void update(final ReportVO report) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(final ReportVO report) report:" + report.toString());
 		}
 
-		DAO.getInstance().getJdbcTemp().update(REPORT_UPDATE, new Object[]{
-				report.getUserId(),
-				report.getName(),
-				new SerializationData().writeObject(report),
-				report.getId()}
-		);
+		DAO.getInstance().getJdbcTemp().update(REPORT_UPDATE, ps -> {
+			ps.setInt(1, report.getUserId());
+			ps.setString(2, report.getName());
+			ByteArrayInputStream bais = new SerializationData().writeObject(report);
+			ps.setBytes(3, bais.readAllBytes());
+			ps.setInt(4, report.getId());
+		});
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {

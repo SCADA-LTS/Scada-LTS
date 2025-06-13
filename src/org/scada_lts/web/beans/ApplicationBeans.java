@@ -20,6 +20,7 @@ import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.service.ViewHierarchyService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -202,5 +203,9 @@ public class ApplicationBeans {
 
     private static ApplicationContext getBeansApplication() {
         return GetApplicationBeans.context() == null ? null : GetApplicationBeans.context();
+    }
+
+    public static ViewHierarchyService getViewHierarchyService() {
+        return getBean("viewHierarchyService", ViewHierarchyService.class);
     }
 }

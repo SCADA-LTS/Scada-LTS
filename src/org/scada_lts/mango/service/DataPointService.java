@@ -47,6 +47,7 @@ import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.IPointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
@@ -90,7 +91,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final DataPointUserDAO dataPointUserDAO ;
 
-	private static final PointValueDAO pointValueDAO = new PointValueDAO();
+	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class);
 
 	private final IWatchListDAO watchListDAO;
 

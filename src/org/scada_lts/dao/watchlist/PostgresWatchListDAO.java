@@ -130,7 +130,7 @@ public class PostgresWatchListDAO implements IWatchListDAO {
 				+ "watchLists ";
 	
 	private static final String WATCH_LIST_INSERT = ""
-			+ "insert watchLists ("
+			+ "insert into watchLists ("
 				+ COLUMN_NAME_XID+", "
 				+ COLUMN_NAME_USER_ID+", "
 				+ COLUMN_NAME_NAME+") "
@@ -189,7 +189,7 @@ public class PostgresWatchListDAO implements IWatchListDAO {
 				+ COLUMN_NAME_WLP_WATCHLIST_ID+"=?";
 	
 	private static final String WATCH_LIST_POINTS_INSERT=""
-			+ "insert watchListPoints ("
+			+ "insert into watchListPoints ("
 				+ COLUMN_NAME_WLP_WATCHLIST_ID+","
 				+ COLUMN_NAME_WLP_DATA_POINT_ID+","
 				+ COLUMN_NAME_WLP_SORT_ORDER+") "
@@ -203,7 +203,7 @@ public class PostgresWatchListDAO implements IWatchListDAO {
 				+ COLUMN_NAME_WLP_WATCHLIST_ID+"=?";
 	
 	private static final String WATCH_LIST_USERS_INSERT=""
-			+"insert watchListUsers ("
+			+"insert into watchListUsers ("
 				+COLUMN_NAME_WLU_WATCHLIST_ID+","
 				+COLUMN_NAME_WLU_USER_ID+","
 				+COLUMN_NAME_WLU_ACCESS_TYPE+")"
@@ -239,8 +239,7 @@ public class PostgresWatchListDAO implements IWatchListDAO {
 			+ COLUMN_NAME_WLU_USER_ID+"=?";
 
 	private static final String WATCHLIST_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE = ""
-			+"insert "
-			+ "watchListUsers ("
+			+ "insert into watchListUsers ("
 			+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
 			+ COLUMN_NAME_WLU_USER_ID+", "
 			+ COLUMN_NAME_USER_ACCESS_TYPE+") "
@@ -368,9 +367,13 @@ public class PostgresWatchListDAO implements IWatchListDAO {
 					 				return ps;
 					 			}
 				}, keyHolder);
-				
-				
-		return new Object[] {keyHolder.getKey().intValue()};
+
+		Map<String, Object> keys = keyHolder.getKeys();
+		if (keys != null && keys.containsKey("id")) {
+			return new Object[]{((Number) keys.get("id")).intValue()};
+		} else {
+			throw new IllegalStateException("Missing 'id' key returned after inserting WatchList");
+		}
 	}
 	
 	public List<ShareUser> getWatchListUsers(int watchListId) {
