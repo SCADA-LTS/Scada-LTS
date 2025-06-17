@@ -12,7 +12,6 @@ import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.quartz.CronTriggerScheduler;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.model.WsAlarmLevelMessage;
 
 import java.util.List;
@@ -112,10 +111,8 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         } finally {
             this.lock.writeLock().unlock();
         }
-        ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> {
-            for(User user: loggedUsers.getUsers())
-                doSend(user, send);
-        });
+        for(User user: userService.getActiveUsers())
+            doSend(user, send);
     }
 
     private boolean doSend(User user, BiConsumer<User, WsAlarmLevelMessage> send) {
