@@ -86,7 +86,7 @@
             <none/>
         </expiry>
         <resources>
-            <heap unit="MB">100</heap>
+            <heap unit="MB">500</heap>
         </resources>
     </cache-template>
 
@@ -97,7 +97,7 @@
             <none/>
         </expiry>
         <resources>
-            <heap unit="MB">100</heap>
+            <heap unit="MB">500</heap>
         </resources>
     </cache-template>
 
@@ -108,7 +108,7 @@
             <none/>
         </expiry>
         <resources>
-            <heap unit="MB">100</heap>
+            <heap unit="MB">500</heap>
         </resources>
     </cache-template>
 
@@ -119,7 +119,7 @@
             <none/>
         </expiry>
         <resources>
-            <heap unit="MB">100</heap>
+            <heap unit="MB">500</heap>
         </resources>
     </cache-template>
 
@@ -130,7 +130,7 @@
             <none/>
         </expiry>
         <resources>
-            <heap unit="MB">100</heap>
+            <heap unit="MB">500</heap>
         </resources>
     </cache-template>
 

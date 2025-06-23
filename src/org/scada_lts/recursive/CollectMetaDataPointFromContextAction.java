@@ -8,13 +8,15 @@ import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.utils.ValidationUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
+
+import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
 
 public class CollectMetaDataPointFromContextAction implements Callable<Void> {
 
@@ -25,11 +27,11 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
     private final List<DataPointVO> toRunning;
     private final DataPointVO startDataPoint;
     private int depth;
-    private final List<DataPointVO> dataPoints;
+    private final Map<Integer, DataPointVO> dataPoints;
     private final  Predicate<Integer> isExecute;
 
     public CollectMetaDataPointFromContextAction(Set<Integer> toCheck, List<DataPointVO> toRunning,
-                                                 DataPointVO startDataPoint, int depth, List<DataPointVO> dataPoints,
+                                                 DataPointVO startDataPoint, int depth, Map<Integer, DataPointVO> dataPoints,
                                                  Predicate<Integer> isExecute) {
         this.startDataPoint = startDataPoint;
         this.toCheck = toCheck;
@@ -55,18 +57,27 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                     List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
                     for(IntValuePair intValuePair : context) {
                         if(intValuePair.getKey() > 0 && isExecute.test(intValuePair.getKey())) {
-                            DataPointVO fromContextDataPoint = dataPoints.stream()
-                                    .filter(point -> point.getId() == intValuePair.getKey())
-                                    .findAny()
-                                    .orElse(null);
+                            DataPointVO fromContextDataPoint = dataPoints.get(intValuePair.getKey());
                             if (fromContextDataPoint != null
                                     && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)
-                            && !ValidationUtils.isCyclicDependency(startDataPoint.getId(), fromContextDataPoint.getId(), 10)) {
+                            && !isCyclicDependency(startDataPoint.getId(), fromContextDataPoint.getId(), 10, dataPoints)) {
                                 tasks.add(new CollectMetaDataPointFromContextAction(toCheck, toRunning, fromContextDataPoint, temp, dataPoints, isExecute));
                             }
                         }
                     }
 
+                    /*List<Callable<Void>> tasks2 = new ArrayList<>();
+                    for(Callable<Void> task: tasks) {
+                        tasks2.add(() -> {
+                            try {
+                                task.call();
+                            } catch (Throwable e) {
+                                LOG.error(LoggingUtils.exceptionInfo(e), e);
+                            }
+                            return null;
+                        });
+                    }
+                    Common.ctx.getBackgroundProcessing().getCommonPool().invokeAll(tasks2);*/
                     for(Callable<Void> task: tasks) {
                         try {
                             task.call();
