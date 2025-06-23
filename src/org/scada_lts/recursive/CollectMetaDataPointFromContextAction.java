@@ -69,8 +69,8 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                     for(Callable<Void> task: tasks) {
                         try {
                             task.call();
-                        } catch (Exception e) {
-                            LOG.error(e.getMessage());
+                        } catch (Throwable e) {
+                            LOG.error(LoggingUtils.exceptionInfo(e), e);
                             break;
                         }
 
