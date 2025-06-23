@@ -55,7 +55,7 @@ public final class RuntimeMockUtils {
         whenNew(DataSourceService.class).withNoArguments().thenReturn(dataSourceService);
 
         DataPointService dataPointService = PowerMockito.mock(DataPointService.class);
-        when(dataPointService.getDataPoints(ArgumentMatchers.isNull(), eq(true))).thenReturn(dataPoints);
+        when(dataPointService.getDataPoints(ArgumentMatchers.isNull(), eq(false))).thenReturn(dataPoints);
         whenNew(DataPointService.class).withNoArguments().thenReturn(dataPointService);
 
         SystemSettingsService systemSettingsService = PowerMockito.mock(SystemSettingsService.class);
