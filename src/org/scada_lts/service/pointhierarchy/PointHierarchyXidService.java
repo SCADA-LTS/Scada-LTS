@@ -17,11 +17,9 @@
  */
 package org.scada_lts.service.pointhierarchy;
 
-import com.serotonin.ShouldNeverHappenException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
@@ -29,11 +27,9 @@ import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
 import org.scada_lts.web.mvc.api.dto.ObjectHierarchy;
-import org.scada_lts.web.mvc.api.dto.ObjectHierarchyType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

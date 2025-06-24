@@ -2,7 +2,6 @@ package org.scada_lts.permissions.service;
 
 
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.IDataSourceDAO;
 
 import java.util.List;

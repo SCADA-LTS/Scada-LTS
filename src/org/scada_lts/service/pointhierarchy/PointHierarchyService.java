@@ -27,7 +27,6 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
@@ -245,19 +244,19 @@ public class PointHierarchyService {
 	}
 
 	public PointHierarchyNode getPointHierarchyRoot(User user)  {
-		return PointHierarchyUtils.getPointHierarchyRoot(user, hierarchyDAO, (DataPointDAO) dataPointDAO);
+		return PointHierarchyUtils.getPointHierarchyRoot(user, hierarchyDAO, dataPointDAO);
 	}
 
 	public List<PointHierarchyNode> getPointHierarchyByKey(User user, int key)  {
-		return PointHierarchyUtils.getPointHierarchyByKey(user, hierarchyDAO, (DataPointDAO) dataPointDAO, key);
+		return PointHierarchyUtils.getPointHierarchyByKey(user, hierarchyDAO, dataPointDAO, key);
 	}
 
 	public PointHierarchyNode getPointHierarchyWithEmptyRoot(User user)  {
-		return PointHierarchyUtils.getPointHierarchyWithEmptyRoot(user, hierarchyDAO, (DataPointDAO) dataPointDAO);
+		return PointHierarchyUtils.getPointHierarchyWithEmptyRoot(user, hierarchyDAO, dataPointDAO);
 	}
 
 	public List<PointHierarchyNode> getPointHierarchyWithEmptyByKey(User user, int key)  {
-		return PointHierarchyUtils.getPointHierarchyWithEmptyByKey(user, hierarchyDAO, (DataPointDAO) dataPointDAO, key);
+		return PointHierarchyUtils.getPointHierarchyWithEmptyByKey(user, hierarchyDAO, dataPointDAO, key);
 	}
 
 	protected PointHierarchyXidDAO getPointHierarchyDAO() {

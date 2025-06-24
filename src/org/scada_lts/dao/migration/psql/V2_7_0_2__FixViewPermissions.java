@@ -1,4 +1,4 @@
-package org.scada_lts.dao.migration.mysql;
+package org.scada_lts.dao.migration.psql;
 
 
 import br.org.scadabr.vo.permission.ViewAccess;
@@ -86,7 +86,7 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
             MigrationPermissionsService migrationPermissionsService = new MigrationPermissionsService(dataPointUserPermissionsService,
                     dataSourceUserPermissionsService, watchListUserPermissionsService, viewUserPermissionsService);
 
-            Map<Integer, DataPointVO>  dataPoints = dataPointDAO.getDataPoints().stream().collect(Collectors.toMap(DataPointVO::getId, a -> a));
+            Map<Integer, DataPointVO> dataPoints = dataPointDAO.getDataPoints().stream().collect(Collectors.toMap(DataPointVO::getId, a -> a));
             Map<Integer, DataSourceVO<?>> dataSources = dataSourceDAO.getDataSources().stream().collect(Collectors.toMap(DataSourceVO::getId, a -> a));
             Map<Integer, View> views = viewDAO.findAll().stream().collect(Collectors.toMap(View::getId, a -> a));
             Map<Integer, WatchList> watchLists = watchListDAO.findAll().stream().collect(Collectors.toMap(WatchList::getId, a -> a));

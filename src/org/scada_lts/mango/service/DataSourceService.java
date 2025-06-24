@@ -64,7 +64,7 @@ public class DataSourceService implements MangoDataSource {
 	public DataSourceService() {
 		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
 		this.dataPointService = new DataPointService();
-		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class));
 	}
 
 	public DataSourceService(IDataSourceDAO dataSourceDAO, DataPointService dataPointService, IDataPointDAO dataPointDAO) {

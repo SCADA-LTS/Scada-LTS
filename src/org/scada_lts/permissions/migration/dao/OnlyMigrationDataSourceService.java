@@ -20,7 +20,6 @@ package org.scada_lts.permissions.migration.dao;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.IDataSourceDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoDataSource;

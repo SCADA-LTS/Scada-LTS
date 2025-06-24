@@ -10,9 +10,10 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.quartz.utils.Key;
-import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.IDataSourceDAO;
 import org.scada_lts.ds.StartStopDsRT;
 import org.scada_lts.ds.state.StartSleepStateDs;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class ReactivationConnectHttpRetriever implements StatefulJob {
         int id = (int) entry.getValue();
         String name = (String) entry.getKey();
 
-        DataSourceDAO dao = new DataSourceDAO();
+        IDataSourceDAO dao = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
         DataSourceVO<?> ds = dao.getDataSource(id);
 
         HttpRetrieverDataSourceVO hrds = (HttpRetrieverDataSourceVO) ds;

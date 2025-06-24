@@ -77,4 +77,12 @@ public interface IPointValueDAO {
     PointValueTime getPointValueBefore(int dataPointId, long time);
 
     PointValueTime getPointValueAt(int dataPointId, long time);
+
+    List<PointValue> getPointValuesSince(int dataPointId, long since);
+
+    List<PointValue> getPointValuesBetween(int dataPointId, long from, long to);
+
+    List<PointValue> getLatestPointValues(int dataPointId, int limit);
+
+    List<PointValue> getLatestPointValuesBefore(int dataPointId, int limit, long before);
 }

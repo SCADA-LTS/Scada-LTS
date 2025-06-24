@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.PostgresDataPointDAO;
 import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.quartz.CronTriggerScheduler;
@@ -74,13 +73,8 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	@Override
 	public void cacheInitialize() {
 
-		IDataPointDAO dao = null;
-		if (DAO.getType() == DatabaseAccess.DatabaseType.POSTGRES) {
-			dao = new PostgresDataPointDAO();
-		} else {
-			dao = new DataPointDAO();
-		}
-		
+		IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+
 		List<DataPointVO> dps = dao.getDataPoints();
 		
 		dss = composeCashData(dps);

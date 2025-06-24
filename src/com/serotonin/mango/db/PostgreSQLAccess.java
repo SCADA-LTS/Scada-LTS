@@ -100,7 +100,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
                     flyway = Flyway.configure()
                             .baselineOnMigrate(true)
                             .dataSource(getDataSource())
-                            .locations("org.scada_lts.dao.migration.postgresql")
+                            .locations("org.scada_lts.dao.migration.psql")
                             .table("schema_version")
                             .load();
 
@@ -112,7 +112,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
                     flyway = Flyway.configure()
                             .baselineOnMigrate(true)
                             .dataSource(getDataSource())
-                            .locations("org.scada_lts.dao.migration.postgresql")
+                            .locations("org.scada_lts.dao.migration.psql")
                             .table("schema_version")
                             .load();
 
@@ -123,7 +123,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
             if (flyway == null) {
                 flyway = Flyway.configure()
                         .dataSource(getDataSource())
-                        .locations("org.scada_lts.dao.migration.postgresql")
+                        .locations("org.scada_lts.dao.migration.psql")
                         .table("schema_version")
                         .load();
             }

@@ -176,7 +176,7 @@ public class DAO {
 		this.test = test;
 	}
 
-	public static DatabaseAccess.DatabaseType getType() {
+	public DatabaseAccess.DatabaseType getType() {
 		return databaseType;
 	}
 

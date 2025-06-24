@@ -8,10 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.PostgresDataPointDAO;
 import org.scada_lts.dao.IDataPointDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.List;
 import java.util.Map;
@@ -24,13 +22,8 @@ public class UpdateDataSourcesPoints implements StatefulJob{
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         try {
-            IDataPointDAO dao = null;
             LOG.trace("UpdateEventDetectors");
-            if (DAO.getType() == DatabaseAccess.DatabaseType.POSTGRES) {
-                dao = new PostgresDataPointDAO();
-            } else {
-                dao = new DataPointDAO();
-            }
+            IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
             List<DataPointVO> dps = dao.getDataPoints();
             Map<Long, List<DataPointVO>> dss = DataSourcePointsCache.getInstance().composeCashData(dps);
             DataSourcePointsCache.getInstance().setData(dss);

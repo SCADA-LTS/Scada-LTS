@@ -10,6 +10,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.util.PropertiesUtils;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
+import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -19,15 +21,19 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
+import java.util.Collections;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createForkJoinPool;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 public class PowerMockUtils {
+
+    private static IPointValueDAO pointValueDAOMock;
 
     public static void configMock(RuntimeManager runtimeManager, User user) throws Exception {
         configMockContextWrapper(runtimeManager);
@@ -102,5 +108,22 @@ public class PowerMockUtils {
         }).when(backgroundProcessing)
                 .terminate();
         return backgroundProcessing;
+    }
+
+    public static void mockPointValueDAOBean() throws Exception {
+
+        IPointValueDAO dao = mock(IPointValueDAO.class);
+        when(dao.getLatestPointValue(anyInt())).thenReturn(null);
+        when(dao.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
+
+        mockStatic(ApplicationBeans.class);
+        when(ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+                .thenReturn(dao);
+
+        PointValueService pvs = mock(PointValueService.class);
+        when(pvs.getLatestPointValue(anyInt())).thenReturn(null);
+        when(pvs.getLatestPointValues(anyInt(), anyInt())).thenReturn(Collections.emptyList());
+
+        whenNew(PointValueService.class).withNoArguments().thenReturn(pvs);
     }
 }
