@@ -50,8 +50,10 @@ public class LinkComponent extends HtmlComponent {
 
 	public String createLinkContent() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<a href='" + escapeHtml(link) + "'>");
-		sb.append(escapeHtml(text));
+		sb.append("<a href='")
+				.append(escapeHtml(link))
+				.append("'>");
+		sb.append(text);
 		sb.append("</a>");
 		return sb.toString();
 	}
