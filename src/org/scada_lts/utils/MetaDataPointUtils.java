@@ -18,9 +18,10 @@ public final class MetaDataPointUtils {
             if(metaPointLocatorRT != null) {
                 MetaPointLocatorVO metaPointLocatorVO = metaPointLocatorRT.getPointLocatorVO();
                 if(metaPointLocatorVO != null && metaPointLocatorVO.getContext() != null) {
-                    return metaPointLocatorVO.getContext().stream()
-                            .map(IntValuePair::getKey)
-                            .anyMatch(a -> a == dataPointInContextId);
+                    for(IntValuePair intValuePair: metaPointLocatorVO.getContext()) {
+                        if(intValuePair.getKey() == dataPointInContextId)
+                            return true;
+                    }
                 }
             }
         }

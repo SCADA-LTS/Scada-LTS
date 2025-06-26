@@ -273,6 +273,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 						slaveStatuses.put(locator.getVO().getSlaveId(), false);
 
 					dataSourceExceptions = true;
+					break;
 				} else if (result instanceof Throwable) {
 					Throwable exceptionResult = (Throwable) result;
 					LOG.warn("Point: " + LoggingUtils.dataPointInfo(dataPoint)
