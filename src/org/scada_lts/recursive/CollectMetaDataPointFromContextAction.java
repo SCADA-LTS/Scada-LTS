@@ -16,8 +16,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
-import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
-
 public class CollectMetaDataPointFromContextAction implements Callable<Void> {
 
     private static final Log LOG = LogFactory.getLog(CollectMetaDataPointFromContextAction.class);
@@ -58,9 +56,7 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                     for(IntValuePair intValuePair : context) {
                         if(intValuePair.getKey() > 0 && isExecute.test(intValuePair.getKey())) {
                             DataPointVO fromContextDataPoint = dataPoints.get(intValuePair.getKey());
-                            if (fromContextDataPoint != null
-                                    && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)
-                            && !isCyclicDependency(startDataPoint.getId(), fromContextDataPoint.getId(), 10, dataPoints)) {
+                            if (fromContextDataPoint != null && (fromContextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)) {
                                 tasks.add(new CollectMetaDataPointFromContextAction(toCheck, toRunning, fromContextDataPoint, temp, dataPoints, isExecute));
                             }
                         }
@@ -70,7 +66,11 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                         try {
                             task.call();
                         } catch (Throwable e) {
-                            LOG.error(LoggingUtils.exceptionInfo(e), e);
+                            if(e.getMessage() != null && e.getMessage().contains("Recursion level exceeded")) {
+                                LOG.error(LoggingUtils.exceptionInfo(e));
+                            } else {
+                                LOG.error(LoggingUtils.exceptionInfo(e), e);
+                            }
                             break;
                         }
 
