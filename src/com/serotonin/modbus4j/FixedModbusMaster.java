@@ -328,7 +328,7 @@ public class FixedModbusMaster extends ModbusMaster implements IModbusMaster {
         if (!errorsInResults && response.isException()) {
             throw new ErrorResponseException((ModbusRequest)request, response);
         } else {
-            if (!response.isException()) {
+            if (response != null && !response.isException()) {
                 data = response.getData();
             }
 
@@ -337,7 +337,21 @@ public class FixedModbusMaster extends ModbusMaster implements IModbusMaster {
             while(true) {
                 while(locators.hasNext()) {
                     locator = locators.next();
-                    if (errorsInResults && response.isException()) {
+                    if(response == null) {
+                        RuntimeException exception = new RuntimeException("Response is null for: " + locator.getKey());
+                        if(!exceptionsInResults) {
+                            throw exception;
+                        } else {
+                            results.addResult(locator.getKey(), exception);
+                        }
+                    } else if(data == null) {
+                        RuntimeException exception = new RuntimeException("Data is null for: " + locator.getKey());
+                        if(!exceptionsInResults) {
+                            throw exception;
+                        } else {
+                            results.addResult(locator.getKey(), exception);
+                        }
+                    } else if (errorsInResults && response.isException()) {
                         results.addResult(locator.getKey(), new ExceptionResult(response.getExceptionCode()));
                     } else {
                         try {

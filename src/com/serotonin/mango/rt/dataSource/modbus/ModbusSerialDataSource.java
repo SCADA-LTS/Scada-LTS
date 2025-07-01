@@ -24,7 +24,6 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO.EncodingType;
 import com.serotonin.modbus4j.ModbusFactory;
-import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -37,7 +36,6 @@ import javax.comm.NoSuchPortException;
 public class ModbusSerialDataSource extends ModbusDataSource {
 
 	private final ModbusSerialDataSourceVO configuration;
-	private ModbusMaster modbusMaster;
 	private final SerialPortService serialPortService;
 	private boolean connProblem = false;
 	private boolean firstTime = true;
@@ -47,7 +45,7 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 		this.configuration = configuration;
 		this.serialPortService = SerialPortService
 				.newService(SerialPortParameters
-						.newParameters("Modbus Serial Data Source", configuration));
+						.newParameters("Modbus Serial Data Source: " + configuration.getXid(), configuration));
 	}
 
 	//
@@ -58,11 +56,9 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 	@Override
 	public void initialize() {
 		if (configuration.getEncoding() == EncodingType.ASCII)
-			modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(this.serialPortService));
+			super.initialize(new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(this.serialPortService)));
 		else
-			modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(this.serialPortService));
-
-		super.initialize(modbusMaster);
+			super.initialize(new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(this.serialPortService)));
 	}
 
 	@Override
@@ -71,7 +67,7 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 		if (!serialPortService.isOpen()) {
 
 			if (firstTime) {
-				modbusMaster.destroy();
+				getModbusMaster().destroy();
 				firstTime = false;
 			}
 
@@ -87,28 +83,6 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 
 		super.doPoll(time);
 
-	}
-
-	@Deprecated
-	public SerialPort getPort(String port) {
-		SerialPort[] portList = SerialPort.getCommPorts();
-		for(SerialPort serialPort: portList) {
-			String portName = serialPort.getSystemPortName();
-			if(portName.equals(port))
-				return serialPort;
-		}
-		return null;
-	}
-
-	@Deprecated
-	public boolean verifyPort(String port) {
-		SerialPort[] portList = SerialPort.getCommPorts();
-		for(SerialPort serialPort: portList) {
-			String portName = serialPort.getSystemPortName();
-			if(portName.equals(port))
-				return true;
-		}
-		return false;
 	}
 
 	@Override
