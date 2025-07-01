@@ -29,7 +29,6 @@ import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO.TransportTy
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.modbus4j.ModbusFactory;
-import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.ip.IpParameters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +39,7 @@ import java.util.List;
 
 public class ModbusIpDataSource extends ModbusDataSource {
 	private final ModbusIpDataSourceVO configuration;
-	private ModbusMaster modbusMaster;
+
 	public static final Log LOG = LogFactory.getLog(ModbusIpDataSource.class);
 	private DataPointRT socketMonitor;
 
@@ -113,7 +112,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 	protected void doPoll(long time) {
 		// TODO: Update Socket Monitor
 		LOG.trace("Polling...");
-		if (!modbusMaster.isInitialized()) {
+		if (!getModbusMaster().isInitialized()) {
 			if (configuration.isCreateSocketMonitorPoint()) {
 				// Set the socket monitor to offline
 				if (socketMonitor != null) {
@@ -129,10 +128,10 @@ public class ModbusIpDataSource extends ModbusDataSource {
 				LOG.trace("Socket Monitor!");
 				if (socketMonitor != null) {
 					LOG.trace("socketMonitor value: "
-							+ modbusMaster.isConnected());
+							+ getModbusMaster().isConnected());
 					socketMonitor
 							.setPointValue(
-									new PointValueTime(modbusMaster
+									new PointValueTime(getModbusMaster()
 											.isConnected(), time), null);
 				}
 			}
@@ -169,16 +168,14 @@ public class ModbusIpDataSource extends ModbusDataSource {
 
 		if (configuration.getTransportType() == TransportType.TCP_LISTENER) {
 			LOG.trace(toString() + " Create ModbusMaster - TCP_Listener!");
-			modbusMaster = new ModbusFactory().createTcpListener(params);
+			super.initialize(new ModbusFactory().createTcpListener(params));
 		} else if (configuration.getTransportType() == TransportType.UDP)
-			modbusMaster = new ModbusFactory().createUdpMaster(params);
+			super.initialize(new ModbusFactory().createUdpMaster(params));
 		else
-			modbusMaster = new ModbusFactory()
+			super.initialize(new ModbusFactory()
 					.createTcpMaster(
 							params,
-							configuration.getTransportType() == TransportType.TCP_KEEP_ALIVE);
-
-		super.initialize(modbusMaster);
+							configuration.getTransportType() == TransportType.TCP_KEEP_ALIVE));
 	}
 
 }
