@@ -21,8 +21,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.PublisherDAO;
+import org.scada_lts.dao.IPublisherDAO;
 import org.scada_lts.mango.adapter.MangoPublisher;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class PublisherService implements MangoPublisher {
 
-	private PublisherDAO publisherDAO = new PublisherDAO();
+	private final IPublisherDAO publisherDAO = ApplicationBeans.getBean("publisherDAO", IPublisherDAO.class);
 
 	@Override
 	public String generateUniqueXid() {

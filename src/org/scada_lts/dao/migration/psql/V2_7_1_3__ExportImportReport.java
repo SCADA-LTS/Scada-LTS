@@ -46,15 +46,7 @@ public class V2_7_1_3__ExportImportReport extends BaseJavaMigration {
     }
 
     private static void createXidColumn(JdbcTemplate jdbcTemplate) {
-        String checkAndAddXidToReports =
-                "DO $$ BEGIN " +
-                        "IF NOT EXISTS (" +
-                        "  SELECT 1 FROM information_schema.columns " +
-                        "  WHERE table_name='reports' AND column_name='xid'" +
-                        ") THEN " +
-                        "  EXECUTE 'ALTER TABLE reports ADD COLUMN xid VARCHAR(50) DEFAULT NULL'; " +
-                        "END IF; " +
-                        "END $$;";
+        String checkAndAddXidToReports = "ALTER TABLE reports ADD COLUMN IF NOT EXISTS xid VARCHAR(50)";
 
         jdbcTemplate.execute(checkAndAddXidToReports);
     }

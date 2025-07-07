@@ -41,10 +41,8 @@ import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointvalues.IPointValueDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
@@ -322,7 +320,7 @@ public class PointValueService implements MangoPointValues {
 
 
     public List<PointValueTime> getPointValues(int dataPointId, long since) {
-        List<PointValue> lst = pointValueDAO.getPointValuesSince(dataPointId, since);
+        List<PointValue> lst = pointValueDAO.getPointValues(dataPointId, since);
         return getLstPointValueTime(lst);
     }
 
@@ -339,7 +337,7 @@ public class PointValueService implements MangoPointValues {
 
     public List<PointValueTime> getLatestPointValues(int dataPointId,
                                                      int limit, long before) {
-        List<PointValue> lst = pointValueDAO.getLatestPointValuesBefore(dataPointId, limit, before);
+        List<PointValue> lst = pointValueDAO.getLatestPointValues(dataPointId, limit, before);
         return getLstPointValueTime(lst);
     }
 
@@ -494,6 +492,10 @@ public class PointValueService implements MangoPointValues {
         }
     }
 
+    public static void configureBatchWriteBehind(IPointValueDAO dao) {
+        BatchWriteBehind.setPointValueDAO(dao);
+    }
+
     //TODO (gb) In my opinion it must rewrite
     static class BatchWriteBehind extends AbstractBeforeAfterWorkItem {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
@@ -506,6 +508,7 @@ public class PointValueService implements MangoPointValues {
                 "BatchWriteBehind.ENTRIES_MONITOR", null);
         private static final IntegerMonitor INSTANCES_MONITOR = new IntegerMonitor(
                 "BatchWriteBehind.INSTANCES_MONITOR", null);
+        private static IPointValueDAO pointValueDAO;
 
         static {
 
@@ -543,7 +546,9 @@ public class PointValueService implements MangoPointValues {
         private int instancesSize;
         private int entriesSize;
 
-        public BatchWriteBehind() {}
+        public static void setPointValueDAO(IPointValueDAO dao) {
+            pointValueDAO = dao;
+        }
 
         @Override
         public void work() {
@@ -574,7 +579,6 @@ public class PointValueService implements MangoPointValues {
                     int retries = 10;
                     while (true) {
                         try {
-                            IPointValueDAO pointValueDAO = ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class);
                             pointValueDAO.executeBatchUpdateInsert(params);
 
                             break;

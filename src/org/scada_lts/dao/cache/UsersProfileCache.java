@@ -4,15 +4,15 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
 
 import java.util.List;
 
 public class UsersProfileCache implements UsersProfileCacheable {
 
-    private final UsersProfileDAO usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public UsersProfileCache(UsersProfileDAO usersProfileDAO) {
+    public UsersProfileCache(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
     }
 

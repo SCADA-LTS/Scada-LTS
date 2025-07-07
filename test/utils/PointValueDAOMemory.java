@@ -234,7 +234,7 @@ public class PointValueDAOMemory implements IPointValueDAO {
     }
 
     @Override
-    public List<PointValue> getPointValuesSince(int dataPointId, long since) {
+    public List<PointValue> getPointValues(int dataPointId, long since) {
         throw new UnsupportedOperationException();
     }
 
@@ -249,7 +249,7 @@ public class PointValueDAOMemory implements IPointValueDAO {
     }
 
     @Override
-    public List<PointValue> getLatestPointValuesBefore(int dataPointId, int limit, long before) {
+    public List<PointValue> getLatestPointValues(int dataPointId, int limit, long before) {
         throw new UnsupportedOperationException();
     }
 }

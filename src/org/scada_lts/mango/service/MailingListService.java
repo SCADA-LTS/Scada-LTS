@@ -26,12 +26,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.mailingList.IMailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoMailingList;
 import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public class MailingListService implements MangoMailingList {
 
 	//TODO
 //	@Resource
-	private static final MailingListDAO mailingListDAO = new MailingListDAO();
+	private static final IMailingListDAO mailingListDAO = ApplicationBeans.getBean("mailingListDAO", IMailingListDAO.class);
 
 	//TODO
 //	@Resource

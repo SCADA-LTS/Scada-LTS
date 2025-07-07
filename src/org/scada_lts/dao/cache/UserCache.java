@@ -1,15 +1,16 @@
 package org.scada_lts.dao.cache;
 
 import com.serotonin.mango.vo.User;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.UserDAO;
 
 import java.util.List;
 
 public class UserCache implements UserCacheable {
 
-    private final UserDAO userDAO;
+    private final IUserDAO userDAO;
 
-    public UserCache(UserDAO userDAO) {
+    public UserCache(IUserDAO userDAO) {
         this.userDAO = userDAO;
     }
 

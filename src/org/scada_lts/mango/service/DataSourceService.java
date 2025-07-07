@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import org.openjdk.jmh.Main;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
@@ -172,7 +173,8 @@ public class DataSourceService implements MangoDataSource {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void deleteInTransaction(final int dataSourceId) {
-		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
+		IMaintenanceEventDAO meDAO = ApplicationBeans.getBean("maintenanceEventDAO", IMaintenanceEventDAO.class);
+		meDAO.deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updatePermissions();

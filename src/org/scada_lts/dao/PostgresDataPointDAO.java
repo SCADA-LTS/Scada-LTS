@@ -380,15 +380,20 @@ public class PostgresDataPointDAO implements IDataPointDAO {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
 		try {
+			ByteArrayInputStream bais = new SerializationData().writeObject(dataPoint);
+			byte[] bytes = bais.readAllBytes();
+
 			return DAO.getInstance().getJdbcTemp().update(
 					DATA_POINT_UPDATE,
 					PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
 					dataPoint.getXid(),
 					dataPoint.getName(),
-					new SerializationData().writeObject(dataPoint),
-					dataPoint.getId());
+					bytes,
+					dataPoint.getId()
+			);
+
 		} catch (EmptyResultDataAccessException e) {
-			LOG.error("Data Point entity with id= " + dataPoint.getId() + " does not exists!");
+			LOG.error("Data Point entity with id= " + dataPoint.getId() + " does not exist!");
 			return 0;
 		} catch (Exception e) {
 			LOG.error(e);

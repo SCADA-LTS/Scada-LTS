@@ -29,6 +29,7 @@ import com.serotonin.mango.web.dwr.EventsDwr;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -54,6 +55,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
@@ -225,11 +228,11 @@ public class PostgresEventDAO implements IEventDAO {
 	private static final String EVENT_UPDATE = ""
 			+ "update "
 				+ EVENTS_TABLE
-				+" e set "
-				+ "e."+COLUMN_NAME_RTN_TS+"=?,"
-				+ "e."+COLUMN_NAME_RTN_CAUSE+"=? "
+			+ " set "
+				+ COLUMN_NAME_RTN_TS + "=?, "
+				+ COLUMN_NAME_RTN_CAUSE + "=? "
 			+ "where "
-				+ "e."+COLUMN_NAME_ID+"=?";
+				+ COLUMN_NAME_ID + "=?";
 	
 	
 	private static final String EVENT_SELECT_BASE_ON_ID = ""+
@@ -448,7 +451,7 @@ public class PostgresEventDAO implements IEventDAO {
 			+ COLUMN_NAME_EVENT_HANDLER_XID+"=?";
 	
 	private static final String EVENT_HANDLER_INSERT=" "+
-			"insert eventHandlers ("
+			"insert into eventHandlers ("
 				+ COLUMN_NAME_EVENT_HANDLER_XID+", "
 				+ COLUMN_NAME_EVENT_HANDLER_ALIAS+", "
 				+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+", "
@@ -456,7 +459,7 @@ public class PostgresEventDAO implements IEventDAO {
 				+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+", "
 				+ COLUMN_NAME_EVENT_HANDLER_DATA+" "
 			+ ") "
-			+ "values (?,?,?,?,?,?)";
+			+ "values (?,?,?,?,?,?) RETURNING id";
 	
 	private static final String EVENT_HANDLER_UPDATE=" "
 			+ "update eventHandlers set "
@@ -711,8 +714,8 @@ public class PostgresEventDAO implements IEventDAO {
 	//TODO rewrite
 	private class EventHandlerRowMapper implements RowMapper<EventHandlerVO> {
 		public EventHandlerVO mapRow(ResultSet rs, int rowNum)	throws SQLException {
-			EventHandlerVO h;
-			h = (EventHandlerVO) new SerializationData().readObject(rs.getBlob(4).getBinaryStream());
+			byte[] bytes = rs.getBytes(4);
+			EventHandlerVO h = (EventHandlerVO) new SerializationData().readObject(new ByteArrayInputStream(bytes));
 			h.setId(rs.getInt(1));
 			h.setXid(rs.getString(2));
 			h.setAlias(rs.getString(3));
@@ -1449,16 +1452,20 @@ public class PostgresEventDAO implements IEventDAO {
 		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 			 			@Override
 			 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-			 				PreparedStatement ps = connection.prepareStatement(EVENT_HANDLER_INSERT, Statement.RETURN_GENERATED_KEYS);
-			 				new ArgumentPreparedStatementSetter( new Object[] { 
-			 						handler.getXid(),
-			 						handler.getAlias(),
-			 						typeId,
-			 						typeRef1,
-			 						typeRef2,
-			 						new SerializationData().writeObject(handler),
-			 				}).setValues(ps);
-			 				return ps;
+			 				PreparedStatement ps = connection.prepareStatement(EVENT_HANDLER_INSERT, new String[] { "id" });
+                            try {
+                                new ArgumentPreparedStatementSetter( new Object[] {
+                                        handler.getXid(),
+                                        handler.getAlias(),
+                                        typeId,
+                                        typeRef1,
+                                        typeRef2,
+                                       IOUtils.toByteArray(new SerializationData().writeObject(handler))
+                                }).setValues(ps);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            return ps;
 			 			}
 		}, keyHolder);
 		

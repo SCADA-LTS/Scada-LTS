@@ -135,7 +135,7 @@ public class PostgresPointValueDAO implements IPointValueDAO {
 
 
     private static final String POINT_VALUE_INSERT = ""
-            + "insert pointValues ("
+            + "insert into pointvalues ("
             + COLUMN_NAME_DATA_POINT_ID + ","
             + COLUMN_NAME_DATA_TYPE + ","
             + COLUMN_NAME_POINT_VALUE + ","
@@ -603,7 +603,7 @@ public class PostgresPointValueDAO implements IPointValueDAO {
     }
 
     private static final String POINT_VALUE_ADNNOTATIONS_INSERT = ""
-            + "insert pointValueAnnotations  ("
+            + "insert into pointValueAnnotations  ("
             + COLUMN_NAME_POINT_VALUE_ID + ","
             + COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ","
             + COLUMN_NAME_TEXT_POINT_VALUE_LONG + ","
@@ -680,7 +680,7 @@ public class PostgresPointValueDAO implements IPointValueDAO {
     }
 
     @Override
-    public List<PointValue> getPointValuesSince(int dataPointId, long since) {
+    public List<PointValue> getPointValues(int dataPointId, long since) {
         return filtered(
                 POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
                 new Object[]{dataPointId, since},
@@ -707,9 +707,9 @@ public class PostgresPointValueDAO implements IPointValueDAO {
     }
 
     @Override
-    public List<PointValue> getLatestPointValuesBefore(int dataPointId, int limit, long before) {
+    public List<PointValue> getLatestPointValues(int dataPointId, int limit, long before) {
         return filtered(
-                POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+                POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, before},
                 limit
         );

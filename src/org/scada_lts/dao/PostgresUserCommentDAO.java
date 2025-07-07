@@ -38,9 +38,9 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserCommentPostgresDAO implements IUserCommentDAO {
+public class PostgresUserCommentDAO implements IUserCommentDAO {
 
-	private static final Log LOG = LogFactory.getLog(UserCommentPostgresDAO.class);
+	private static final Log LOG = LogFactory.getLog(PostgresUserCommentDAO.class);
 
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_COMMENT_TYPE = "commentType";

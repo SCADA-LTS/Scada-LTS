@@ -17,13 +17,14 @@ import java.util.Map;
 public class UpdateDataSourcesPoints implements StatefulJob{
 
     private static final Log LOG = LogFactory.getLog(UpdateDataSourcesPoints.class);
+    private final IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         try {
             LOG.trace("UpdateEventDetectors");
-            IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
             List<DataPointVO> dps = dao.getDataPoints();
             Map<Long, List<DataPointVO>> dss = DataSourcePointsCache.getInstance().composeCashData(dps);
             DataSourcePointsCache.getInstance().setData(dss);

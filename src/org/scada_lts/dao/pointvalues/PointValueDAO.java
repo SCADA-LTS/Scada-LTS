@@ -63,7 +63,6 @@ import com.serotonin.mango.vo.bean.PointHistoryCount;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-@Repository
 public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointValueDAO.class);
@@ -743,7 +742,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 	}
 
 	@Override
-	public List<PointValue> getPointValuesSince(int dataPointId, long since) {
+	public List<PointValue> getPointValues(int dataPointId, long since) {
 		return filtered(
 				POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
 				new Object[]{dataPointId, since},
@@ -770,9 +769,9 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 	}
 
 	@Override
-	public List<PointValue> getLatestPointValuesBefore(int dataPointId, int limit, long before) {
+	public List<PointValue> getLatestPointValues(int dataPointId, int limit, long before) {
 		return filtered(
-				POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+				POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID,
 				new Object[]{dataPointId, before},
 				limit
 		);

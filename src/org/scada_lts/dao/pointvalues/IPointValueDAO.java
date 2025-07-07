@@ -4,7 +4,6 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import org.scada_lts.dao.model.point.PointValue;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,11 +77,11 @@ public interface IPointValueDAO {
 
     PointValueTime getPointValueAt(int dataPointId, long time);
 
-    List<PointValue> getPointValuesSince(int dataPointId, long since);
+    List<PointValue> getPointValues(int dataPointId, long since);
 
     List<PointValue> getPointValuesBetween(int dataPointId, long from, long to);
 
     List<PointValue> getLatestPointValues(int dataPointId, int limit);
 
-    List<PointValue> getLatestPointValuesBefore(int dataPointId, int limit, long before);
+    List<PointValue> getLatestPointValues(int dataPointId, int limit, long before);
 }

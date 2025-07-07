@@ -44,7 +44,7 @@ import com.serotonin.mango.vo.event.MaintenanceEventVO;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class MaintenanceEventDAO {
+public class MaintenanceEventDAO implements IMaintenanceEventDAO {
 
 	private static final Log LOG = LogFactory.getLog(MaintenanceEventDAO.class);
 
@@ -207,6 +207,7 @@ public class MaintenanceEventDAO {
 		}
 	}
 
+	@Override
 	public MaintenanceEventVO getMaintenanceEvent(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -219,6 +220,7 @@ public class MaintenanceEventDAO {
 		
 	}
 
+	@Override
 	public MaintenanceEventVO getMaintenanceEvent(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -236,6 +238,7 @@ public class MaintenanceEventDAO {
 		return maintenanceEvent;
 	}
 
+	@Override
 	public List<MaintenanceEventVO> getMaintenanceEvents() {
 
 		if (LOG.isTraceEnabled()) {
@@ -245,7 +248,8 @@ public class MaintenanceEventDAO {
 		return DAO.getInstance().getJdbcTemp().query(MAINTENANCE_EVENT_SELECT, new MaintenanceEventRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final MaintenanceEventVO maintenanceEvent) {
 
 		if (LOG.isTraceEnabled()) {
@@ -258,7 +262,7 @@ public class MaintenanceEventDAO {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(MAINTENANCE_EVENT_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[] {
+				new ArgumentPreparedStatementSetter(new Object[]{
 						maintenanceEvent.getXid(),
 						maintenanceEvent.getDataSourceId(),
 						maintenanceEvent.getAlias(),
@@ -279,7 +283,6 @@ public class MaintenanceEventDAO {
 						maintenanceEvent.getInactiveMinute(),
 						maintenanceEvent.getInactiveSecond(),
 						maintenanceEvent.getInactiveCron()
-
 				}).setValues(ps);
 				return ps;
 			}
@@ -288,7 +291,8 @@ public class MaintenanceEventDAO {
 		return keyHolder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(MaintenanceEventVO maintenanceEvent) {
 
 		if (LOG.isTraceEnabled()) {
@@ -322,7 +326,8 @@ public class MaintenanceEventDAO {
 		);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -336,7 +341,8 @@ public class MaintenanceEventDAO {
 		}
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void deleteMaintenanceEventsForDataSource(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {

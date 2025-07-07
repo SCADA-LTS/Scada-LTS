@@ -54,18 +54,18 @@ import java.util.ResourceBundle;
 public class ReportService implements MangoReport {
 
 	private IReportDAO reportDAO;
-	private ReportInstanceDAO reportInstanceDAO;
-	private ReportInstanceDataDAO reportInstanceDataDAO;
-	private ReportInstancePointDAO reportInstancePointDAO;
+	private IReportInstanceDAO reportInstanceDAO;
+	private IReportInstanceDataDAO reportInstanceDataDAO;
+	private IReportInstancePointDAO reportInstancePointDAO;
 	private ReportInstanceUserCommentDAO reportInstanceUserCommentDAO;
 	private GetReportsWithAccess getReportsWithAccess;
 	private GetReportInstancesWithAccess getReportInstancesWithAccess;
 
 	public ReportService() {
 		this.reportDAO = ApplicationBeans.getBean("reportDAO", IReportDAO.class);
-		this.reportInstanceDAO = new ReportInstanceDAO();
-		this.reportInstanceDataDAO = new ReportInstanceDataDAO();
-		this.reportInstancePointDAO = new ReportInstancePointDAO();
+		this.reportInstanceDAO = ApplicationBeans.getBean("reportInstanceDAO", IReportInstanceDAO.class);
+		this.reportInstanceDataDAO = ApplicationBeans.getBean("reportInstanceDataDAO", IReportInstanceDataDAO.class);
+		this.reportInstancePointDAO = ApplicationBeans.getBean("reportInstancePointDAO", IReportInstancePointDAO.class);
 		this.reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
 		this.getReportsWithAccess = new GetReportsWithAccess(reportDAO);
 		this.getReportInstancesWithAccess = new GetReportInstancesWithAccess(reportInstanceDAO);
@@ -185,7 +185,7 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
-	public int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
+	public int runReport(final ReportInstance instance, List<IReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
 		PointValueService pointValueService = new PointValueService();
 		int count = 0;
 
@@ -216,7 +216,7 @@ public class ReportService implements MangoReport {
 		}
 
 		// For each point.
-		for (ReportInstancePointDAO.PointInfo pointInfo : points) {
+		for (IReportInstancePointDAO.PointInfo pointInfo : points) {
 			DataPointVO point = pointInfo.getPoint();
 			int dataType = point.getPointLocator().getDataTypeId();
 

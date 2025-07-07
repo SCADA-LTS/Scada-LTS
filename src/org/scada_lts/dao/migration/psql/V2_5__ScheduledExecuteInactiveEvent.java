@@ -30,15 +30,7 @@ public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {
 
 // 2) collectInactiveEmails
         jdbcTemplate.execute(
-                "DO $$ " +
-                        "BEGIN " +
-                        "IF NOT EXISTS ( " +
-                        "  SELECT 1 FROM information_schema.columns " +
-                        "  WHERE table_name = 'mailinglists' AND column_name = 'collectinactiveemails' " +
-                        ") THEN " +
-                        "  ALTER TABLE mailingLists ADD COLUMN collectInactiveEmails BOOLEAN NOT NULL DEFAULT FALSE; " +
-                        "END IF; " +
-                        "END $$;"
+                "ALTER TABLE mailingLists ADD COLUMN IF NOT EXISTS collectInactiveEmails BOOLEAN NOT NULL DEFAULT FALSE"
         );
         jdbcTemplate.execute(
                 "COMMENT ON COLUMN mailingLists.collectInactiveEmails IS 'Collect inactive emails and send when activated';"
@@ -46,18 +38,10 @@ public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {
 
 // 3) dailyLimitSentEmails
         jdbcTemplate.execute(
-                "DO $$ " +
-                        "BEGIN " +
-                        "IF NOT EXISTS ( " +
-                        "  SELECT 1 FROM information_schema.columns " +
-                        "  WHERE table_name = 'mailinglists' AND column_name = 'dailylimitsentemails' " +
-                        ") THEN " +
-                        "  ALTER TABLE mailingLists ADD COLUMN dailyLimitSentEmails BOOLEAN NOT NULL DEFAULT FALSE; " +
-                        "END IF; " +
-                        "END $$;"
+                "ALTER TABLE mailinglists ADD COLUMN IF NOT EXISTS dailylimitsentemails BOOLEAN NOT NULL DEFAULT FALSE"
         );
         jdbcTemplate.execute(
-                "COMMENT ON COLUMN mailingLists.dailyLimitSentEmails IS 'Daily limit sent emails';"
+                "COMMENT ON COLUMN mailingLists.dailylimitSentEmails IS 'Daily limit sent emails';"
         );
 
 // 4) dailyLimitSentEmailsNumber

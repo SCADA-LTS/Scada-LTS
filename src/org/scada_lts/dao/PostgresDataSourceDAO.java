@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.Collections;
 import java.util.Comparator;
@@ -271,7 +271,16 @@ public class PostgresDataSourceDAO implements IDataSourceDAO {
 
 		@Override
 		public DataSourceVO<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
-			DataSourceVO dataSourceVO = (DataSourceVO) new SerializationData().readObject(rs.getBinaryStream(COLUMN_NAME_DATA));
+			byte[] dataBytes = rs.getBytes(COLUMN_NAME_DATA);
+			if (dataBytes == null || dataBytes.length == 0)
+				throw new SQLException("No BYTEA in column data!");
+
+			DataSourceVO dataSourceVO = null;
+			try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(dataBytes))) {
+				dataSourceVO = (DataSourceVO) ois.readObject();
+			} catch (Exception e) {
+				throw new SQLException("Deserialization error of DataSourceVO from BYTEA data!", e);
+			}
 			dataSourceVO.setId(rs.getInt(COLUMN_NAME_ID));
 			dataSourceVO.setXid(rs.getString(COLUMN_NAME_XID));
 			dataSourceVO.setName(rs.getString(COLUMN_NAME_NAME));
@@ -450,31 +459,45 @@ public class PostgresDataSourceDAO implements IDataSourceDAO {
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(connection -> {
-			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+		try {
+			DAO.getInstance().getJdbcTemp().update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
 
-			ps.setString(1, entity.getXid());
-			ps.setString(2, entity.getName());
-			ps.setInt(3, entity.getType().getId());
+				ps.setString(1, entity.getXid());
+				ps.setString(2, entity.getName());
+				ps.setInt(3, entity.getType().getId());
 
-			ByteArrayInputStream bais = new SerializationData().writeObject(entity);
-			ps.setBytes(4, bais.readAllBytes());
+				byte[] bytes;
+				try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					 ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+					oos.writeObject(entity);
+					bytes = baos.toByteArray();
+				} catch (IOException e) {
+					throw new RuntimeException("Serialization failed", e);
+				}
+				ps.setBytes(4, bytes);
 
-			return ps;
-		}, keyHolder);
+				return ps;
+			}, keyHolder);
 
-		Number id = null;
-		if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
-			id = (Number) keyHolder.getKeyList().get(0).get("id");
+			Number id = null;
+			if (!keyHolder.getKeyList().isEmpty() && keyHolder.getKeyList().get(0).containsKey("id")) {
+				id = (Number) keyHolder.getKeyList().get(0).get("id");
+			}
+
+			if (id == null) {
+				throw new IllegalStateException("Could not retrieve generated ID for data source.");
+			}
+
+			entity.setId(id.intValue());
+			return entity;
+
+		} catch (Exception e) {
+			LOG.error("Error during dataSource create: ", e);
+			throw new RuntimeException("Could not create DataSourceVO", e);
 		}
-
-		if (id == null) {
-			throw new IllegalStateException("Could not retrieve generated ID for data source.");
-		}
-
-		entity.setId(id.intValue());
-		return entity;
 	}
+
 
 	@Deprecated
 	public List<ScadaObjectIdentifier> getSimpleList() {
@@ -500,16 +523,23 @@ public class PostgresDataSourceDAO implements IDataSourceDAO {
 		}
 
 		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(dataSource);
+			oos.close();
+			byte[] bytes = baos.toByteArray();
+
 			return DAO.getInstance().getJdbcTemp().update(
 					DATA_SOURCE_UPDATE,
 					dataSource.getXid(),
 					dataSource.getName(),
-					new SerializationData().writeObject(dataSource),
+					bytes,
 					dataSource.getId());
 		} catch (EmptyResultDataAccessException e) {
 			LOG.error("DataSource entity with id= " + dataSource.getId() + " does not exists!");
 			return 0;
 		} catch (Exception e) {
+			LOG.error("Error during dataSource update: ", e);
 			return -1;
 		}
 	}

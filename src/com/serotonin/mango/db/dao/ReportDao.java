@@ -21,7 +21,7 @@ package com.serotonin.mango.db.dao;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.dao.report.IReportInstancePointDAO;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.ReportService;
 
@@ -101,7 +101,7 @@ public class ReportDao {
 	 * This method should only be called by the ReportWorkItem.
 	 */
 
-	public int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
+	public int runReport(final ReportInstance instance, List<IReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
 		return reportService.runReport(instance, points, bundle);
 	}
 

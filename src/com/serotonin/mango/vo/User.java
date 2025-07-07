@@ -50,6 +50,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -589,7 +590,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				}
 			}
 
-			UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
+			IUsersProfileDAO usersProfileDAO = ApplicationBeans.getBean("usersProfileDAO", IUsersProfileDAO.class);
 			String userProfileXid = json.getString("userProfileXid");
 			Integer userProfileId = json.getInt("userProfile");
 			if (userProfileXid != null && !userProfileXid.isEmpty()) {

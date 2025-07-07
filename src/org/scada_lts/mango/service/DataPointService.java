@@ -95,7 +95,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final IWatchListDAO watchListDAO;
 
-	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
+	private static final IPointLinkDAO pointLinkDAO = ApplicationBeans.getBean("pointLinkDAO", IPointLinkDAO.class);
 
 	private final PointHierarchyService pointHierarchyService;
 

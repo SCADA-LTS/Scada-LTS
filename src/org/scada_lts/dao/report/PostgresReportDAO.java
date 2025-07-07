@@ -165,17 +165,17 @@ public class PostgresReportDAO implements IReportDAO {
 			LOG.trace("insert(report): " + report);
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		DAO.getInstance().getJdbcTemp().update(connection -> {
-			PreparedStatement ps = connection.prepareStatement(REPORT_INSERT + " RETURNING id");
+		DAO.getInstance().getJdbcTemp().update(con -> {
+			PreparedStatement ps = con.prepareStatement(REPORT_INSERT, new String[]{"id"});
 			ps.setString(1, report.getXid());
 			ps.setInt(2, report.getUserId());
 			ps.setString(3, report.getName());
-			ByteArrayInputStream bais = new SerializationData().writeObject(report);
-			ps.setBytes(4, bais.readAllBytes());
+			byte[] bytes = new SerializationData().writeObject(report).readAllBytes();
+			ps.setBytes(4, bytes);
 			return ps;
 		}, keyHolder);
 
-		return ((Number) keyHolder.getKeys().get("id")).intValue();
+        return ((Number) keyHolder.getKeys().get("id")).intValue();
 	}
 
 

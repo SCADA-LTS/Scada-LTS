@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.report.ReportDataStreamHandler;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportUserComment;
 import com.serotonin.mango.vo.report.ReportVO;
+import org.scada_lts.dao.report.IReportInstancePointDAO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public interface MangoReport {
 
     void saveReportInstance(ReportInstance instance);
 
-	int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle);
+	int runReport(final ReportInstance instance, List<IReportInstancePointDAO.PointInfo> points, ResourceBundle bundle);
 
 	void reportInstanceData(int instanceId, final ReportDataStreamHandler handler);
 

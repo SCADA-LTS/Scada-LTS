@@ -95,8 +95,6 @@ abstract public class DatabaseAccess {
 
 		if (dt == null)
 			throw new IllegalArgumentException("Unknown database type: " + type);
-		System.out.println("Creating database access for " + dt);
-		System.out.println("dt.getImpl() " + dt.getImpl());
 
 		return dt.getImpl();
 	}
