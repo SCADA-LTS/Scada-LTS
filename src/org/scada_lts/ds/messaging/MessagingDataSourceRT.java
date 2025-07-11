@@ -11,11 +11,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.messaging.service.MessagingService;
+import org.scada_lts.utils.TimeLocker;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static com.serotonin.mango.util.LoggingUtils.*;
 
 
@@ -32,8 +33,10 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     private final DataSourceVO<?> vo;
     private final MessagingService messagingService;
-    private final Map<Integer, AtomicInteger> updateAttemptsCounters;
+    private final Map<Integer, TimeLocker> updateAttemptsCounters;
+    private final int waitSeconds = 10;
     private final int updateAttempts;
+
 
     public MessagingDataSourceRT(DataSourceUpdatable<?> vo, MessagingService messagingService) {
         super(vo.toDataSource());
@@ -69,6 +72,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         try {
+            updateAttemptsCounters.values().forEach(TimeLocker::reset);
             updateAttemptsCounters.clear();
             messagingService.open();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
@@ -93,14 +97,15 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e));
         } finally {
-            updateAttemptsCounters.values().stream().peek(a -> a.set(0)).close();
+            updateAttemptsCounters.values().forEach(TimeLocker::reset);
+            updateAttemptsCounters.clear();
         }
     }
 
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
         try {
-            updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
+            updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new TimeLocker(updateAttempts, waitSeconds));
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
         } catch (Throwable e) {
@@ -121,7 +126,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         } finally {
-            updateAttemptsCounters.get(dataPoint.getId()).set(0);
+            updateAttemptsCounters.get(dataPoint.getId()).reset();
         }
         super.removeDataPoint(dataPoint);
     }
@@ -131,19 +136,17 @@ public class MessagingDataSourceRT extends PollingDataSource {
         for (DataPointRT dataPoint : dataPoints) {
             try {
                 if(!messagingService.isOpen(dataPoint)) {
-                    updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
-                    if (updateAttemptsCounters.get(dataPoint.getId()).get() < updateAttempts) {
+                    updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new TimeLocker(updateAttempts, waitSeconds));
+                    if (updateAttemptsCounters.get(dataPoint.getId()).remainingSeconds() == 0) {
                         messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
-                        updateAttemptsCounters.get(dataPoint.getId()).set(0);
                         returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+                        resetUnreliableDataPoint(dataPoint);
                     }
                 } else {
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
                 }
             } catch (Throwable e) {
                 LOG.error(info(e, this));
-                int dataPointId = dataPoint.getId();
-                updateAttemptsCounters.computeIfPresent(dataPointId, (a,b) -> {b.incrementAndGet(); return b;});
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                         true, getExceptionMessage(e), dataPoint);
             }
