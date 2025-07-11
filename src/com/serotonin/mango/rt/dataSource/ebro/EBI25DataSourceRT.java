@@ -41,8 +41,6 @@ import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
 import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -148,7 +146,6 @@ public class EBI25DataSourceRT extends PollingDataSource implements
 						double dvalue = locator.translateFromRawValue(value);
 						valuePoint.updatePointValue(new PointValueTime(dvalue,
 								valueTime));
-						resetUnreliableDataPoint(valuePoint);
 
 						// Add the sample rate onto the value time.
 						valueTime += sampleRateSeconds * 1000;
@@ -163,7 +160,6 @@ public class EBI25DataSourceRT extends PollingDataSource implements
 						batteryPoint.updatePointValue(new PointValueTime(
 								EBI25Constants.getDoubleResult(results,
 										"battery"), valueTime));
-						resetUnreliableDataPoint(batteryPoint);
 					}
 
 					if (signalPoint != null) {
@@ -171,7 +167,6 @@ public class EBI25DataSourceRT extends PollingDataSource implements
 						signalPoint.updatePointValue(new PointValueTime(
 								EBI25Constants.getDoubleResult(results,
 										"signal"), valueTime));
-						resetUnreliableDataPoint(signalPoint);
 					}
 				}
 			}

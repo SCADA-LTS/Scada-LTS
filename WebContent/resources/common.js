@@ -144,7 +144,7 @@ mango.longPoll.pollCB = function(response, stopIntervalTimeoutId, pollStartTime,
     if(stopIntervalTimeoutId != -1) {
         clearTimeout(stopIntervalTimeoutId);
     }
-    let intervalTime = response.intervalTime < 300 ? 1000 : response.intervalTime;
+    let intervalTime = response.intervalTime < 100 ? 100 : response.intervalTime;
     let duration = new Date().getTime() - pollStartTime;
     if(duration > intervalTime) {
         if(from === 'fromPollCB' || from === 'start') {

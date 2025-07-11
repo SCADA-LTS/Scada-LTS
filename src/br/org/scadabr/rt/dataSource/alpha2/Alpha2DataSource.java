@@ -139,6 +139,7 @@ public class Alpha2DataSource extends PollingDataSource {
 					master.stopController();
 			} else {
 				master.write(devices);
+				dataPoint.setPointValue(valueTime, source);
 				returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 			}
 		} catch (Throwable e) {
