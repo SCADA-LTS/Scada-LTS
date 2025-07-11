@@ -156,7 +156,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	protected void doPoll(long time) {
 		try {
 			checkInitialized(this);
-			_returnToNormal(INITIALIZATION_EXCEPTION_EVENT, time);
+			returnToNormal(INITIALIZATION_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, time, true,
 					getLocalExceptionMessage(e));
@@ -297,13 +297,12 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					 * it´s effective. TODO: Treat this type of exception
 					 * only... but how?!
 					 */
-					LOG.warn("Point: " + LoggingUtils.dataPointInfo(dataPoint)
+					LOG.debug("Point: " + LoggingUtils.dataPointInfo(dataPoint)
 							+ " eventRaised: " + eventRaised);
 					if (!eventRaised) {
 						updatePointValue(dataPoint, locator, result, time);
 						slaveStatuses.put(locator.getVO().getSlaveId(), true);
-						_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
-						resetUnreliableDataPoint(dataPoint);
+						returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 					}
 				}
 			}
@@ -334,8 +333,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 							try {
 								monitor.setPointValue(new PointValueTime(newOnline,
 										time), null);
-								_returnToNormal(MONITOR_WRITE_EXCEPTION_EVENT, time, monitor.getId());
-								resetUnreliableDataPoint(monitor);
+								returnToNormal(MONITOR_WRITE_EXCEPTION_EVENT, time, monitor);
 							} catch (Exception e) {
 								raiseEvent(MONITOR_WRITE_EXCEPTION_EVENT, time, true,
 										getLocalExceptionMessage(e), monitor);
@@ -347,7 +345,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 			if (!dataSourceExceptions)
 				// Deactivate any existing event.
-				_returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
+				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 		} catch (Throwable e) {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, time, true,
 					getLocalExceptionMessage(e));
@@ -370,7 +368,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			modbusMaster.init();
 
 			// Deactivate any existing event.
-			_returnToNormal(INITIALIZATION_EXCEPTION_EVENT,
+			returnToNormal(INITIALIZATION_EXCEPTION_EVENT,
 					System.currentTimeMillis());
 		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(),
@@ -397,8 +395,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 				checkInitialized(this);
 				Object value = modbusMaster.getValue(ml);
 				updatePointValue(dataPoint, pl, value, time);
-				_returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint.getId());
-				resetUnreliableDataPoint(dataPoint);
+				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 			} catch (ErrorResponseException e) {
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2", dataPoint
@@ -467,8 +464,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 			dataPoint.setPointValue(valueTime, source);
 
 			// Deactivate any existing event.
-			_returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), dataPoint.getId());
-			resetUnreliableDataPoint(dataPoint);
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, valueTime.getTime(), dataPoint);
 		} catch (ModbusTransportException e) {
 			if (e.getMessage().contains("no active connection")) {
 				// Raise an event.

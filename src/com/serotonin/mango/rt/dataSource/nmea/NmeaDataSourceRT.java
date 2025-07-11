@@ -36,8 +36,6 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -166,7 +164,6 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
 
                 // Save the new value
                 dp.updatePointValue(new PointValueTime(value, time));
-                resetUnreliableDataPoint(dp);
             }
             else
                 throw new Exception("Field index " + locator.getFieldIndex()
