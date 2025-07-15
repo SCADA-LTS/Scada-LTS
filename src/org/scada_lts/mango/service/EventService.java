@@ -400,22 +400,36 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public EventHandlerVO saveEventHandler(final EventType type, final EventHandlerVO handler) {
+		EventHandlerVO eventHandlerVO;
 		if (type == null) {
-			return eventDAO.saveEventHandler(0, 0, 0, handler);
+			eventHandlerVO = eventDAO.saveEventHandler(0, 0, 0, handler);
 		} else {
-			return eventDAO.saveEventHandler(type.getEventSourceId(),
+			eventHandlerVO = eventDAO.saveEventHandler(type.getEventSourceId(),
 				type.getReferenceId1(), type.getReferenceId2(), handler);
 		}
+
+		if(eventHandlerVO.isDisabled()) {
+			Common.ctx.getEventManager().cancelEventsForHandler(eventHandlerVO.getId());
+		}
+
+		return eventHandlerVO;
 	}
 	
 	@Override
 	public EventHandlerVO saveEventHandler(EventTypeVO type, EventHandlerVO handler) {
+		EventHandlerVO eventHandlerVO;
 		if (type == null) {
-			return eventDAO.saveEventHandler(0, 0, 0, handler);
+			eventHandlerVO = eventDAO.saveEventHandler(0, 0, 0, handler);
 		} else {
-			return eventDAO.saveEventHandler(type.getTypeId(),
+			eventHandlerVO = eventDAO.saveEventHandler(type.getTypeId(),
 				type.getTypeRef1(), type.getTypeRef2(), handler);
 		}
+
+		if(eventHandlerVO.isDisabled()) {
+			Common.ctx.getEventManager().cancelEventsForHandler(eventHandlerVO.getId());
+		}
+
+		return eventHandlerVO;
 	}
 	
 	@Override

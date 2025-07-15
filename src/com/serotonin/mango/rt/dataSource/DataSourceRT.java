@@ -154,7 +154,7 @@ abstract public class DataSourceRT implements ILifecycle {
         context.put("dataSource", vo);
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
         DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
-        if(dataSourceRT != null) {
+        if(dataSourceRT != null && dataSourceRT.doSetUnreliableDataPoint(dset.getDataSourceEventTypeId())) {
             setUnreliableDataPoints(dataSourceRT.getDataPoints());
         }
     }
@@ -167,12 +167,14 @@ abstract public class DataSourceRT implements ILifecycle {
 
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
 
-        if(dataPointId == -1) {
-            setUnreliableDataPoints(getDataPoints());
-        } else {
-            for(DataPointRT dataPoint: getDataPoints()) {
-                if(dataPoint.getId() == dataPointId) {
-                    setUnreliableDataPoint(dataPoint);
+        if(doSetUnreliableDataPoint(eventId)) {
+            if (dataPointId == -1) {
+                setUnreliableDataPoints(getDataPoints());
+            } else {
+                for (DataPointRT dataPoint : getDataPoints()) {
+                    if (dataPoint.getId() == dataPointId) {
+                        setUnreliableDataPoint(dataPoint);
+                    }
                 }
             }
         }
@@ -254,5 +256,9 @@ abstract public class DataSourceRT implements ILifecycle {
     // Additional lifecycle.
     public void beginPolling() {
         // no op
+    }
+
+    public boolean doSetUnreliableDataPoint(int eventId) {
+        return true;
     }
 }

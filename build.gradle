@@ -248,6 +248,7 @@ test {
         includeTestsMatching "org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataTypeTestsSuite"
         includeTestsMatching "com.serotonin.mango.vo.EngineeringUnitsTypesTest"
         includeTestsMatching "org.scada_lts.cache.PointHierarchyCacheTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.types.BinaryValueTestsSuite"
     }
 
     failFast = true
