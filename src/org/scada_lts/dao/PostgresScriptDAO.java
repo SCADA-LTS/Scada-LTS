@@ -13,8 +13,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.List;
 
@@ -139,13 +138,25 @@ public class PostgresScriptDAO implements IScriptDAO {
             LOG.trace(vo);
         }
 
-        DAO.getInstance().getJdbcTemp().update(SCRIPT_UPDATE, new Object[]{
-                vo.getXid(),
-                vo.getName(),
-                vo.getScript(),
-                vo.getUserId(),
-                new SerializationData().writeObject(vo),
-                vo.getId()});
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(vo);
+        } catch (IOException e) {
+            throw new RuntimeException("Serialization error", e);
+        }
+        byte[] bytes = baos.toByteArray();
+
+        DAO.getInstance().getJdbcTemp().update(
+                SCRIPT_UPDATE,
+                new Object[]{
+                        vo.getXid(),
+                        vo.getName(),
+                        vo.getScript(),
+                        vo.getUserId(),
+                        bytes,
+                        vo.getId()
+                }
+        );
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

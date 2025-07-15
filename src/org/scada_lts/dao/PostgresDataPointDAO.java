@@ -54,20 +54,20 @@ public class PostgresDataPointDAO implements IDataPointDAO {
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
-	private static final String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
+	private static final String COLUMN_NAME_DATA_SOURCE_ID = "datasourceid";
 	private static final String COLUMN_NAME_DATA = "data";
-	private static final String COLUMN_NAME_PLC_ALARM_LEVEL = "plcAlarmLevel";
+	private static final String COLUMN_NAME_PLC_ALARM_LEVEL = "plcalarmlevel";
 
 	private static final String COLUMN_NAME_DS_NAME = "name";
-	private static final String COLUMN_NAME_DATAPOINT_NAME = "pointName";
+	private static final String COLUMN_NAME_DATAPOINT_NAME = "pointname";
 	private static final String COLUMN_NAME_DS_ID = "id";
 	private static final String COLUMN_NAME_DS_XID = "xid";
-	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "dataSourceType";
+	private static final String COLUMN_NAME_DS_DATA_SOURCE_TYPE = "datasourcetype";
 
-	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
-	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
+	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventtypeid";
+	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventtyperef1";
 
-	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_DATA_POINT_ID = "datapointid";
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 
@@ -77,8 +77,8 @@ public class PostgresDataPointDAO implements IDataPointDAO {
 	private static final String COLUMN_NAME_DPU_DATA_POINT_ID = "dataPointId";
 
 	//userProfile
-	private static final String COLUMN_NAME_UP_DATA_POINT_ID = "dataPointId";
-	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
+	private static final String COLUMN_NAME_UP_DATA_POINT_ID = "dataoointid";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userprofileid";
 	private static final String COLUMN_NAME_UP_PERMISSION = "permission";
 
 	// @formatter:off
@@ -91,7 +91,7 @@ public class PostgresDataPointDAO implements IDataPointDAO {
 				+ "ds." + COLUMN_NAME_DS_NAME + ", "
 				+ "ds." + COLUMN_NAME_DS_XID + " as dsxid, "
 				+ "ds." + COLUMN_NAME_DS_DATA_SOURCE_TYPE + " "
-			+ "from dataPoints dp join dataSources ds on "
+			+ "from datapoints dp join datasources ds on "
 				+ "ds." + COLUMN_NAME_DS_ID + "="
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 

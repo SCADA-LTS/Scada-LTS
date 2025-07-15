@@ -243,59 +243,57 @@ public class PostgresEventDAO implements IEventDAO {
 	private static final String EVENT_ACT ="" +
 			"update "
 				+ EVENTS_TABLE
-				+ " e set "
-				+ "e."+COLUMN_NAME_ACT_TS+"=?, "
-				+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
-				+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+				+ " set "
+				+ COLUMN_NAME_ACT_TS+"=?, "
+				+ COLUMN_NAME_ACT_USER_ID+"=?, "
+				+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
 		  + "where "
-				+ "e."+COLUMN_NAME_ID+"=? and "
-				+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
+				+ COLUMN_NAME_ID+"=? and "
+				+ "(" + COLUMN_NAME_ACT_TS+" is null or " + COLUMN_NAME_ACT_TS + " = 0) ";
 
 	private static final String EVENT_ASSIGN_EVENT ="" +
 			"update "
 			+ EVENTS_TABLE
-			+ " e set "
-			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=?, "
-			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
+			+ " set "
+			+ COLUMN_NAME_ASSIGNEE_TS +"=?, "
+			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=? "
 			+ "where "
-			+ "e."+COLUMN_NAME_ID+"=? and "
-			+ "("+ "e."+COLUMN_NAME_ASSIGNEE_TS +" is null or "+ "e."+COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
+			+ COLUMN_NAME_ID+"=? and "
+			+ "(" + COLUMN_NAME_ASSIGNEE_TS +" is null or " + COLUMN_NAME_ASSIGNEE_TS +" = 0) ";
 
 	private static final String EVENT_UNASSIGN_EVENT ="" +
 			"update "
 			+ EVENTS_TABLE
-			+ " e set "
-			+ "e."+COLUMN_NAME_ASSIGNEE_TS +"=null, "
-			+ "e."+COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
+			+ " set "
+			+ COLUMN_NAME_ASSIGNEE_TS +"=null, "
+			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
 			+ "where "
-			+ "e."+COLUMN_NAME_ID+"=? ";
+			+ COLUMN_NAME_ID+"=? ";
 
 	private static final String EVENT_ACT_ALL ="" +
 			"update "
 			+ EVENTS_TABLE
-			+ " e set "
-			+ "e."+COLUMN_NAME_ACT_TS+"=?, "
-			+ "e."+COLUMN_NAME_ACT_USER_ID+"=?, "
-			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
-			+ "where "
-			+ "("+"e."+COLUMN_NAME_ACT_TS+" is null or "+"e."+COLUMN_NAME_ACT_TS+" = 0) ";
+			+ " set "
+			+ COLUMN_NAME_ACT_TS+"=?, "
+			+ COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+ "where (" + COLUMN_NAME_ACT_TS + " is null or " + COLUMN_NAME_ACT_TS + " = 0) ";
 
 	private static final String EVENT_SILENCE_ALL ="" +
-			"UPDATE "
-			+ "userEvents ue SET "
-			+ "ue."+COLUMN_NAME_ALARM_SILENCED+"='Y' "
-			+ "WHERE ue." + COLUMN_NAME_USER_ID + "=? ";
+			"UPDATE userEvents SET "
+			+ COLUMN_NAME_ALARM_SILENCED + "='Y' "
+			+ "WHERE " + COLUMN_NAME_USER_ID + "=? ";
 
 	private static final String EVENT_ACT_IDS = ""
 			+ "update "
 			+ EVENTS_TABLE
-			+ " e set "
-			+ "e." + COLUMN_NAME_ACT_TS + "=?, "
-			+ "e." + COLUMN_NAME_ACT_USER_ID + "=?, "
-			+ "e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + "=? "
+			+ " set "
+			+ COLUMN_NAME_ACT_TS + "=?, "
+			+ COLUMN_NAME_ACT_USER_ID + "=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE + "=? "
 			+ "where "
-			+ "e." + COLUMN_NAME_ID + "::text ~ ? and "
-			+ "(e." + COLUMN_NAME_ACT_TS + " is null or e." + COLUMN_NAME_ACT_TS + " = 0)";
+			+ COLUMN_NAME_ID + "::text ~ ? and "
+			+ COLUMN_NAME_ACT_TS + " is null or " + COLUMN_NAME_ACT_TS + " = 0)";
 
 	public static final String EVENT_FILTER_ACTIVE=" "
 			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
@@ -373,10 +371,9 @@ public class PostgresEventDAO implements IEventDAO {
 	private static final String EVENT_DELETE_BEFORE= ""
 			+"delete from "
 			+ EVENTS_TABLE
-			+ " e "
-			+ "where "+"e."+COLUMN_NAME_ACTIVE_TS+"<? "
-			+ "  and "+"e."+COLUMN_NAME_ACT_TS+" is not null "
-			+ "  and ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? or ("+"e."+COLUMN_NAME_RTN_APPLICABLE+"=? and "+"e."+COLUMN_NAME_ACT_TS+" is not null))";
+			+ "where "+COLUMN_NAME_ACTIVE_TS+"<? "
+			+ "  and "+COLUMN_NAME_ACT_TS+" is not null "
+			+ "  and ("+COLUMN_NAME_RTN_APPLICABLE+"=? or ("+COLUMN_NAME_RTN_APPLICABLE+"=? and "+COLUMN_NAME_ACT_TS+" is not null))";
 	
 	private static final String COUNT_EVENT=""
 			+"select "
@@ -573,19 +570,19 @@ public class PostgresEventDAO implements IEventDAO {
 				"LEFT JOIN users u ON uc.userId=u.id " +
 			"WHERE e.id=? AND uc.commentType=1";
 
-	private static final String STATUS_ACTIVE_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is null or e.rtnTs = 0)";
-	private static final String STATUS_RTN_CONDITION_SQL = "e.rtnApplicable='Y' and (e.rtnTs is not null and e.rtnTs <> 0)";
-	private static final String STATUS_NORTN_CONDITION_SQL = "e.rtnApplicable='N'";
-	private static final String STATUS_ASSIGNEE_CONDITION_SQL = "(e."+ COLUMN_NAME_ASSIGNEE_TS+" is not null and e."+COLUMN_NAME_ASSIGNEE_TS+" <> 0)";
+	private static final String STATUS_ACTIVE_CONDITION_SQL = "rtnApplicable='Y' and (rtnTs is null or rtnTs = 0)";
+	private static final String STATUS_RTN_CONDITION_SQL = "rtnApplicable='Y' and (rtnTs is not null and rtnTs <> 0)";
+	private static final String STATUS_NORTN_CONDITION_SQL = "rtnApplicable='N'";
+	private static final String STATUS_ASSIGNEE_CONDITION_SQL = "("+ COLUMN_NAME_ASSIGNEE_TS+" is not null and e."+COLUMN_NAME_ASSIGNEE_TS+" <> 0)";
 
-	private static final String STATUS_NO_ACTIVE_CONDITION_SQL = "(e.rtnApplicable='N' or (e.rtnTs is not null and e.rtnTs <> 0))";
+	private static final String STATUS_NO_ACTIVE_CONDITION_SQL = "(rtnApplicable='N' or (rtnTs is not null and rtnTs <> 0))";
 
 	private static final String UNASSIGN_EVENT_ALL ="" +
 			"update "
 			+ EVENTS_TABLE
-			+ " e set "
-			+ "e." + COLUMN_NAME_ASSIGNEE_TS +"=null, "
-			+ "e." + COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
+			+ "set "
+			+ COLUMN_NAME_ASSIGNEE_TS +"=null, "
+			+ COLUMN_NAME_ASSIGNEE_USERNAME +"=null "
 			+ "where "
 			+ STATUS_ACTIVE_CONDITION_SQL;
 

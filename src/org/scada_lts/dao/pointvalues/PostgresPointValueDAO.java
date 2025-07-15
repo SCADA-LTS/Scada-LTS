@@ -368,11 +368,12 @@ public class PostgresPointValueDAO implements IPointValueDAO {
 
     @Override
     public List<PointValue> filtered(String filter, Object[] argsFilter, long limit) {
-        String myLimit = "";
+        String limitClause = "";
         if (limit != NO_LIMIT) {
-            myLimit = String.valueOf(LIMIT + limit);
+            limitClause = " limit " + (LIMIT + limit);
         }
-        return DAO.getInstance().getJdbcTemp().query(POINT_VALUE_SELECT + " where " + filter + myLimit, argsFilter, new PointValueRowMapper());
+        String query = POINT_VALUE_SELECT + " where " + filter + limitClause;
+        return DAO.getInstance().getJdbcTemp().query(query, argsFilter, new PointValueRowMapper());
     }
 
     @Override
