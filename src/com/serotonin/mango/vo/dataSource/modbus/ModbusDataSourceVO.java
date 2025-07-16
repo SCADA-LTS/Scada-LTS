@@ -197,8 +197,8 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 					"validate.greaterThanZero");
 		if (timeout <= 0)
 			response.addContextualMessage("timeout", "validate.greaterThanZero");
-		if (timeout > 30000)
-			response.addContextualMessage("timeout", "validate.0toArg", 30000);
+		if (timeout > 180000)
+			response.addContextualMessage("timeout", "validate.0toArg", 180000);
 		if (retries < 0)
 			response.addContextualMessage("retries",
 					"validate.cannotBeNegative");
