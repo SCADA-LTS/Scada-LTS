@@ -2,49 +2,39 @@ package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.util.LoggingUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.recursive.SetUnreliableDataPointsAction;
-import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.Collections;
 import java.util.List;
 
 public final class DataPointUnreliableUtils {
 
-    private static final Logger LOG = LogManager.getLogger(DataPointUnreliableUtils.class);
-    private static final int DEPTH = SystemSettingsUtils.getDataPointUnreliableDepthNumber();
-    private static final int EXECUTE_IN_POOL_IF_EXCEEDS_NUMBER = SystemSettingsUtils.getDataPointUnreliableExecuteInPoolIfTasksExceedsNumber();
+    private static final Log LOG = LogFactory.getLog(DataPointUnreliableUtils.class);
+    private static final int SAFE = 10;
 
     private DataPointUnreliableUtils() {}
 
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            setUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints, true, SAFE);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
-        if(!dataPoint.isUnreliable()) {
-            unreliable(Collections.singletonList(dataPoint), true);
-        }
+        unreliable(Collections.singletonList(dataPoint), true, SAFE);
     }
 
     public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            resetUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints, false, SAFE);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
-        if(dataPoint.isUnreliable()) {
-            unreliable(Collections.singletonList(dataPoint), false);
-        }
+        unreliable(Collections.singletonList(dataPoint), false, SAFE);
     }
 
-    private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable) {
-        SetUnreliableDataPointsAction setUnreliableDataPointsAction = new SetUnreliableDataPointsAction(dataPoints, unreliable, DEPTH, EXECUTE_IN_POOL_IF_EXCEEDS_NUMBER);
+    private static void unreliable(List<DataPointRT> dataPoints, boolean unreliable, int depth) {
+        SetUnreliableDataPointsAction setUnreliableDataPointsAction = new SetUnreliableDataPointsAction(dataPoints, unreliable, depth);
         try {
             setUnreliableDataPointsAction.call();
         } catch (Exception e) {

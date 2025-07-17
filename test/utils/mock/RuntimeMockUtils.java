@@ -6,7 +6,6 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.web.ContextWrapper;
 import org.mockito.ArgumentMatchers;
 import org.powermock.api.mockito.PowerMockito;
@@ -18,8 +17,10 @@ import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 
+import java.util.Comparator;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -49,13 +50,12 @@ public final class RuntimeMockUtils {
         Common.timer.init();
     }
 
-    public static void mockingServices(List<DataPointVO> dataPoints, List<DataSourceVO<?>> dataSources) throws Exception {
+    public static void mockingServices(List<DataPointVO> dataPoints) throws Exception {
         DataSourceService dataSourceService = PowerMockito.mock(DataSourceService.class);
-        when(dataSourceService.getDataSources()).thenReturn(dataSources);
         whenNew(DataSourceService.class).withNoArguments().thenReturn(dataSourceService);
 
         DataPointService dataPointService = PowerMockito.mock(DataPointService.class);
-        when(dataPointService.getDataPoints(ArgumentMatchers.isNull(), anyBoolean())).thenReturn(dataPoints);
+        when(dataPointService.getDataPoints(ArgumentMatchers.isNull(), eq(false))).thenReturn(dataPoints);
         whenNew(DataPointService.class).withNoArguments().thenReturn(dataPointService);
 
         SystemSettingsService systemSettingsService = PowerMockito.mock(SystemSettingsService.class);

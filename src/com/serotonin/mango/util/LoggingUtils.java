@@ -57,13 +57,6 @@ public final class LoggingUtils {
         return MessageFormat.format(info, dataSource.getName(), String.valueOf(dataSource.getId()), dataSource.getXid(), dataSource.getType());
     }
 
-    public static String dataSourceInfo(DataPointVO dataPoint) {
-        if(dataPoint == null)
-            return "";
-        String info = "datasource: {0} (id: {1}, xid: {2}, type: {3})";
-        return MessageFormat.format(info, dataPoint.getDeviceName(), String.valueOf(dataPoint.getDataSourceId()), dataPoint.getDataSourceXid(), dataPoint.getDataSourceTypeId());
-    }
-
     public static String pointLinkInfo(PointLinkVO pointLink) {
         if(pointLink == null)
             return "";

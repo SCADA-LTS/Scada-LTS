@@ -131,6 +131,7 @@ public class MetaDataSourceRT extends DataSourceRT {
 
     public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
             return;
         }
         returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
@@ -138,6 +139,7 @@ public class MetaDataSourceRT extends DataSourceRT {
 
     public void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
             return;
         }
         returnToNormal(EVENT_TYPE_RECURSIVE_ERROR, runtime, dataPoint);
@@ -145,6 +147,7 @@ public class MetaDataSourceRT extends DataSourceRT {
 
     public void returnToNormalContext(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
+            resetUnreliableDataPoint(dataPoint);
             return;
         }
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
@@ -161,6 +164,7 @@ public class MetaDataSourceRT extends DataSourceRT {
 
     public void returnToNormalType(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
+            resetUnreliableDataPoint(dataPoint);
             return;
         }
         returnToNormal(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, dataPoint);

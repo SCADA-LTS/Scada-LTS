@@ -27,6 +27,8 @@ import com.serotonin.mango.vo.dataSource.internal.InternalDataSourceVO;
 import com.serotonin.mango.vo.dataSource.internal.InternalPointLocatorVO;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -49,6 +51,7 @@ public class InternalDataSourceRT extends PollingDataSource {
             IntegerMonitor m = (IntegerMonitor) Common.MONITORED_VALUES.getValueMonitor(monitorId);
             if (m != null) {
                 dataPoint.updatePointValue(new PointValueTime((double) m.getValue(), time));
+                resetUnreliableDataPoint(dataPoint);
             }
         }
     }

@@ -186,7 +186,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             if(dataPointListener != null && dataPointListener != this) {
                 if(dataPointListener instanceof MetaPointLocatorRT) {
                     MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
-                    checkCyclicDependencyThenRunAction(dataPoint, fromContext, dataSource, fromContext::pointInitialized, dataPointsMap);
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointInitialized, dataPointsMap);
                 }
 
             }
@@ -207,7 +207,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             if(dataPointListener != null && dataPointListener != this) {
                 if(dataPointListener instanceof MetaPointLocatorRT) {
                     MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
-                    checkCyclicDependencyThenRunAction(dataPoint, fromContext, dataSource, fromContext::pointTerminated, dataPointsMap);
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointTerminated, dataPointsMap);
                 }
             }
         }
@@ -282,14 +282,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode, DataPointRT dataPoint) {
         this.context = createContext(dataPoint);
         if(context == null) {
-            LOG.info("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
+            LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
         }
 
         // Check if we've reached the maximum number of recursions for this point
         int count = 0;
         for (Integer id : sourceIds) {
-            if (id == dataPoint.getId())
+            if (id.intValue() == dataPoint.getId())
                 count++;
         }
 
@@ -414,8 +414,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 || (previousValueTime == null || !ObjectUtils.isEqual(valueTime.getValue(), previousValueTime.getValue()));
     }
 
-    private static void checkCyclicDependencyThenRunAction(DataPointRT dataPointStart, MetaPointLocatorRT fromContext, MetaDataSourceRT dataSource,
-                                                           Runnable action, Map<Integer, DataPointVO> dataPointsMap) {
+    private static void execute(DataPointRT dataPointStart, MetaPointLocatorRT fromContext, MetaDataSourceRT dataSource,
+                                Runnable execute, Map<Integer, DataPointVO> dataPointsMap) {
         DataPointRT dataPointRtFromContext = fromContext.getDataPoint();
         DataPointVO dataPointVoFromContext = dataPointRtFromContext.getVO();
 
@@ -423,7 +423,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             dataSource.raiseRecursiveError(System.currentTimeMillis(), dataPointStart,
                     new LocalizableMessage("validate.cyclicDependency", dataPointVoFromContext.getName()));
         } else {
-            action.run();
+            execute.run();
         }
     }
 }

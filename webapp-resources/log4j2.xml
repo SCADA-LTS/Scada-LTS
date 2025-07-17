@@ -32,7 +32,6 @@
         <Property name="quartzLoggingLevel">INFO</Property>
         <Property name="log4j.logger.org.apache.jsp">INFO</Property>
         <Property name="catalinaLoggingLevel">INFO</Property>
-        <Property name="recursiveLoggingLevel">INFO</Property>
 
         <!-- Functional Logging-->
         <Property name="scriptLoggingLevel">ERROR</Property>
@@ -354,8 +353,6 @@
         <!-- Java Bean Validation Logging -->
         <Logger name="javax.validation" level="${validationLoggingLevel}" />
         <Logger name="org.scada_lts.web.beans.validation" level="${validationLoggingLevel}" />
-
-        <Logger name="org.scada_lts.recursive" level="${recursiveLoggingLevel}"/>
 
         <Root level="${rootLoggingLevel}">
             <AppenderRef ref="STDOUT"/>

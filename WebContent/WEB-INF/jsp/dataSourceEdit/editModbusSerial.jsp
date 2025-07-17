@@ -47,48 +47,6 @@
               $get("flowControlOut"), $get("dataBits"), $get("stopBits"), $get("parity"), $get("encoding"),
               $get("echo"), $get("concurrency"), saveDataSourceCB);
   }
-
-  function createModbusConfigTemp() {
-      let modbus = {};
-      modbus.dataSourceName = $get("dataSourceName");
-      modbus.dataSourceXid = $get("dataSourceXid");
-      modbus.updatePeriods = $get("updatePeriods");
-      modbus.updatePeriodType = $get("updatePeriodType");
-      modbus.quantize = $get("quantize");
-      modbus.timeout = $get("timeout");
-      modbus.retries = $get("retries");
-      modbus.contiguousBatches = $get("contiguousBatches");
-      modbus.createSlaveMonitorPoints = $get("createSlaveMonitorPoints");
-      modbus.maxReadBitCount = $get("maxReadBitCount");
-      modbus.maxReadRegisterCount = $get("maxReadRegisterCount");
-      modbus.maxWriteRegisterCount = $get("maxWriteRegisterCount");
-      modbus.commPortId = $get("commPortId");
-      modbus.baudRate = $get("baudRate");
-      modbus.flowControlIn = $get("flowControlIn");
-      modbus.flowControlOut = $get("flowControlOut");
-      modbus.dataBits = $get("dataBits");
-      modbus.stopBits = $get("stopBits");
-      modbus.parity = $get("parity");
-      modbus.encoding = $get("encoding");
-      modbus.echo = $get("echo");
-      modbus.concurrency = $get("concurrency");
-      return modbus;
-  }
-
-  function validateModbusConfig(temp) {
-      let messages = [];
-      validateValue("updatePeriods", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
-      validateValue("updatePeriodType", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
-      validateValue("timeout", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
-      validateValue("retries", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
-      validateValue("maxReadBitCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
-      validateValue("maxReadRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
-      validateValue("maxWriteRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
-      validateValue("dataBits", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.dataBits, messages);
-      validateValue("stopBits", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.stopBits, messages);
-      validateValue("parity", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.parity, messages);
-      return messages;
-  }
 </script>
 
 <tr>

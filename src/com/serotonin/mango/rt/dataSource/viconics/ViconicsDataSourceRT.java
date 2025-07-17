@@ -458,6 +458,7 @@ public class ViconicsDataSourceRT extends EventDataSource implements
 					+ point.getClass());
 
 		rt.updatePointValue(new PointValueTime(mangoValue, time));
+		resetUnreliableDataPoint(rt);
 	}
 
 	public void viconicsDuplicateCommAddressDetected(int commAddress) {

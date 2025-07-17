@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
+import com.serotonin.mango.vo.DataPointVO;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -146,57 +147,39 @@ abstract public class DataSourceRT implements ILifecycle {
         // No op by default. Override as required.
     }
 
-    public static void raiseEvent(String describe, DataSourceVO<?> vo) {
+    public static void raiseEvent(String describe, DataSourceVO vo) {
         LocalizableMessage message = new LocalizableMessage("event.ds.describe", "", describe);
         int urgentAlarmLevel = 2;
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
-        DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
-        if(dataSourceRT != null) {
-            setUnreliableDataPoints(dataSourceRT.getDataPoints());
-        }
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
-        raiseEvent(eventId, time, rtn, message, -1);
+        _raiseEvent(eventId, time, rtn, message, -1);
     }
 
-    protected void returnToNormal(int eventId, long time) {
-        returnToNormal(eventId, time, -1);
+    protected void _returnToNormal(int eventId, long time) {
+        _returnToNormal(eventId, time, -1);
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
-        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
-        raiseEvent(eventId, time, rtn, message, dataPoint.getId());
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointVO dataPoint) {
+        message = new LocalizableMessage("event.ds", dataPoint.getExtendedName(), message);
+        _raiseEvent(eventId, time, rtn, message, dataPoint.getId());
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+    protected void _raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
 
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
-
-        if(dataPointId == -1) {
-            setUnreliableDataPoints(getDataPoints());
-        } else {
-            for(DataPointRT dataPoint: getDataPoints()) {
-                if(dataPoint.getId() == dataPointId) {
-                    setUnreliableDataPoint(dataPoint);
-                }
-            }
-        }
     }
 
-    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
-        returnToNormal(eventId, time, dataPoint.getId());
-    }
-
-    protected void returnToNormal(int eventId, long time, int dataPointId) {
+    protected void _returnToNormal(int eventId, long time, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
         Common.ctx.getEventManager().returnToNormal(type, time);
     }
@@ -208,6 +191,28 @@ abstract public class DataSourceRT implements ILifecycle {
         if(dataPointId == Common.NEW_ID)
             return eventType;
         return new DataSourcePointEventType(eventType, dataPointId);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+        _raiseEvent(eventId, time, rtn, message);
+        List<DataPointRT> dataPoints = getDataPoints();
+        setUnreliableDataPoints(dataPoints);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+        _raiseEvent(eventId, time, rtn, message, dataPoint.getVO());
+        setUnreliableDataPoint(dataPoint);
+    }
+
+    protected void returnToNormal(int eventId, long time) {
+        _returnToNormal(eventId, time);
+        List<DataPointRT> dataPoints = getDataPoints();
+        resetUnreliableDataPoints(dataPoints);
+    }
+
+    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
+        _returnToNormal(eventId, time, dataPoint.getId());
+        resetUnreliableDataPoint(dataPoint);
     }
 
     protected DataSourceEventType getEventType(int eventId) {
