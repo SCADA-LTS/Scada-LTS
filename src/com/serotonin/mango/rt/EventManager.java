@@ -457,7 +457,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void notifyEventReset() {
-		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket, userService);
+		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket);
 	}
 
 	public int getHighestAlarmLevel(int userId) {

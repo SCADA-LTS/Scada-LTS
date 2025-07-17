@@ -3,8 +3,8 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.model.WsEventMessage;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
@@ -12,12 +12,12 @@ public final class NotifyEventUtils {
 
     private NotifyEventUtils() {}
 
-    public static void notifyEventReset(IHighestAlarmLevelService highestAlarmLevelService,
-                                        UserEventServiceWebSocket userEventService, MangoUser userService) {
+    public static void notifyEventReset(IHighestAlarmLevelService highestAlarmLevelService, UserEventServiceWebSocket userEventService) {
         highestAlarmLevelService.doResetAlarmLevels(userEventService::sendAlarmLevel);
-        for(User user: userService.getActiveUsers()) {
-            notifyEventUpdate(user, WsEventMessage.reset(), userEventService);
-        }
+        ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> {
+            for(User user: loggedUsers.getUsers())
+                notifyEventUpdate(user, WsEventMessage.reset(), userEventService);
+        });
     }
 
     public static void notifyEventRaise(IHighestAlarmLevelService highestAlarmLevelService, EventInstance evt, User user, UserEventServiceWebSocket userEventService) {
