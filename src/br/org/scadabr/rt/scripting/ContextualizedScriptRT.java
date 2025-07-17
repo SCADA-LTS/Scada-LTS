@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.script.ScriptException;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -25,6 +24,7 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataSource.meta.AlphanumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.BinaryPointWrapper;
+import com.serotonin.mango.rt.dataSource.meta.DataPointStateException;
 import com.serotonin.mango.rt.dataSource.meta.MultistatePointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.NumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
@@ -81,12 +81,12 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			try {
 				context = new ScriptExecutor().convertContext(((ContextualizedScriptVO) vo).getPointsOnContext());
-			} catch (Throwable e1) {
-				LOG.error("Data Point State Exception: " + LoggingUtils.exceptionInfo(e1) + ", " + LoggingUtils.scriptInfo(vo));
+			} catch (Exception e1) {
+				LOG.error("Data Point State Exception " + e1.getMessage());
 				if (vo != null) {
-					throw new ScriptException("vo: " + LoggingUtils.scriptInfo(vo) + ", error: " + LoggingUtils.exceptionInfo(e1));
+					throw new ScriptException("xid:"+vo.getXid() +" script:"+vo.getScript()+" error:" + e1.getMessage());
 				} else {
-					throw new ScriptException("vo: null, "+ LoggingUtils.exceptionInfo(e1));
+					throw new ScriptException("vo: null,"+e1.getMessage());
 				}
 			}
 

@@ -108,7 +108,7 @@ public class DataSourcePointEventType extends DataSourceEventType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataSourceEventType, dataPointId, getClass());
+        return Objects.hash(dataSourceEventType, dataPointId);
     }
 
     //

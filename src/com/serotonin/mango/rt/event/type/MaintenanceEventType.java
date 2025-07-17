@@ -1,7 +1,6 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
-import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -56,7 +55,10 @@ public class MaintenanceEventType extends EventType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(maintenanceId, getClass());
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + maintenanceId;
+        return result;
     }
 
     @Override

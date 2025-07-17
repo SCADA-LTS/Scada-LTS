@@ -374,10 +374,10 @@
 
   <!-- Quartz -->
 
-  <bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory" scope="prototype"/>
-  <bean id="scheduler" class="org.quartz.Scheduler" factory-method="getScheduler" factory-bean="schedulerFactory" scope="prototype"/>
+  <bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory"/>
+  <bean id="scheduler" class="org.quartz.Scheduler" factory-method="getScheduler" factory-bean="schedulerFactory"/>
 
-  <bean id="scadaScheduler" class="org.scada_lts.quartz.ScadaScheduler" destroy-method="destroy" init-method="init" scope="prototype">
+  <bean id="scadaScheduler" class="org.scada_lts.quartz.ScadaScheduler" destroy-method="destroy" init-method="init">
     <constructor-arg ref="scheduler"/>
   </bean>
 

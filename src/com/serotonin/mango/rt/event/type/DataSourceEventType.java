@@ -94,24 +94,16 @@ public class DataSourceEventType extends EventType {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(dataSourceId, dataSourceEventTypeId, getClass());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataSourceEventType)) return false;
+        DataSourceEventType that = (DataSourceEventType) o;
+        return getDataSourceId() == that.getDataSourceId() && getDataSourceEventTypeId() == that.getDataSourceEventTypeId() && getAlarmLevel() == that.getAlarmLevel() && getDuplicateHandling() == that.getDuplicateHandling();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DataSourceEventType other = (DataSourceEventType) obj;
-        if (dataSourceEventTypeId != other.dataSourceEventTypeId)
-            return false;
-        if (dataSourceId != other.dataSourceId)
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(getDataSourceId(), getDataSourceEventTypeId(), getAlarmLevel(), getDuplicateHandling());
     }
 
     //

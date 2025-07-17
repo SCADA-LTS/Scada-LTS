@@ -19,7 +19,6 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
-import java.util.Objects;
 
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
@@ -102,7 +101,10 @@ public class DataPointEventType extends EventType {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(pointEventDetectorId, getClass());
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + pointEventDetectorId;
+		return result;
 	}
 
 	@Override

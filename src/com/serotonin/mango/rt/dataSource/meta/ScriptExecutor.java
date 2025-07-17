@@ -105,7 +105,7 @@ public class ScriptExecutor {
 			for(DataPointStateException exception: exceptions) {
 				LocalizableMessage localizableMessage = exception.getLocalizableMessage();
 				String message = localizableMessage.getLocalizedMessage(Common.getBundle());
-				messages.append(message).append(" ; ");
+				messages.append(message).append(";");
 			}
 			throw new Exception(messages.toString());
 		}

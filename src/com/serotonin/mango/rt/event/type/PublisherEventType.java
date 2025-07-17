@@ -19,7 +19,6 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
-import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -85,7 +84,11 @@ public class PublisherEventType extends EventType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(publisherId, publisherEventTypeId, getClass());
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + publisherEventTypeId;
+        result = prime * result + publisherId;
+        return result;
     }
 
     @Override
