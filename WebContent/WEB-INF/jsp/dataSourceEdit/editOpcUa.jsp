@@ -130,10 +130,10 @@
 
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
-        $set("nodeName", unescapeHtml(locator.nodeName));
-        $set("identifier", unescapeHtml(locator.identifier));
+        $set("nodeName", locator.nodeName);
+        $set("identifier", locator.identifier);
         $set("namespaceIndex", locator.namespaceIndex);
-        $set("attributes", unescapeHtml(locator.attributes));
+        $set("attributes", locator.attributes);
 
         let identifierType = document.getElementById("identifierType");
         for (let i = 0; i < identifierType.options.length; i++) {
