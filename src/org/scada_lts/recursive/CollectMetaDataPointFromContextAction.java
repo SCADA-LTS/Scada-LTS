@@ -66,6 +66,18 @@ public class CollectMetaDataPointFromContextAction implements Callable<Void> {
                         }
                     }
 
+                    /*List<Callable<Void>> tasks2 = new ArrayList<>();
+                    for(Callable<Void> task: tasks) {
+                        tasks2.add(() -> {
+                            try {
+                                task.call();
+                            } catch (Throwable e) {
+                                LOG.error(LoggingUtils.exceptionInfo(e), e);
+                            }
+                            return null;
+                        });
+                    }
+                    Common.ctx.getBackgroundProcessing().getCommonPool().invokeAll(tasks2);*/
                     for(Callable<Void> task: tasks) {
                         try {
                             task.call();
