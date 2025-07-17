@@ -1533,7 +1533,7 @@ function ReportPointsContext(startContext, points) {
        for (let i = 0; i < this.contextArray.length; i++) {
           context[context.length] = {
                 pointId: this.contextArray[i].pointId,
-                pointXid: this.contextArray[i].xid,
+                pointXid: this.contextArray[i].pointXid,
                 colour: this.contextArray[i].colour,
                 consolidatedChart: this.contextArray[i].consolidatedChart
           };

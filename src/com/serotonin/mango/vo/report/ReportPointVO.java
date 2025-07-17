@@ -23,6 +23,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class ReportPointVO implements Serializable, JsonSerializable {
 
     private int pointId;
+    @JsonRemoteProperty
     private String pointXid;
     @JsonRemoteProperty
     private String colour;
@@ -34,6 +35,7 @@ public class ReportPointVO implements Serializable, JsonSerializable {
         reportPointVO.setPointId((Integer) dp.get("pointId"));
         reportPointVO.setColour((String) dp.get("colour"));
         reportPointVO.setConsolidatedChart((Boolean) dp.get("consolidatedChart"));
+        reportPointVO.setPointXid((String) dp.get("pointXid"));
         return reportPointVO;
     }
 

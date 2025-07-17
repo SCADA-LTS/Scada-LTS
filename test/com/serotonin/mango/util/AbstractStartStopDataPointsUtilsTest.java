@@ -4,6 +4,13 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
+import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.TestUtils;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
@@ -13,14 +20,17 @@ import org.scada_lts.mango.service.DataPointService;
 import utils.mock.PowerMockUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static utils.mock.MockitoUtils.mockBackgroundProcessing;
 import static utils.mock.MockitoUtils.mockContextWrapper;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ApplicationBeans.class, PointValueService.class})
 public class AbstractStartStopDataPointsUtilsTest {
 
     private DataPointVO dataPoint1;
@@ -58,6 +68,21 @@ public class AbstractStartStopDataPointsUtilsTest {
     public void config() throws Exception {
 
         PowerMockUtils.configDaoMock();
+
+        IPointValueDAO dao = mock(IPointValueDAO.class);
+        PowerMockito.when(ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+                .thenReturn(dao);
+        when(dao.getLatestPointValue(anyInt())).thenReturn(null);
+        when(dao.findByIdAndTs(anyInt(), anyLong())).thenReturn(Collections.emptyList());
+        when(dao.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
+        when(dao.create(anyInt(), anyInt(), anyDouble(), anyLong())).thenReturn(new Object[]{1L});
+
+        PointValueService pvs = mock(PointValueService.class);
+        when(pvs.getLatestPointValue(anyInt())).thenReturn(null);
+        when(pvs.getLatestPointValues(anyInt(), anyInt())).thenReturn(Collections.emptyList());
+
+        PowerMockito.whenNew(PointValueService.class).withNoArguments().thenReturn(pvs);
+
 
         dataPoint1 = TestUtils.newPointSettable(1, -1);
         dataPoint2 = TestUtils.newPointSettable(2, -1);

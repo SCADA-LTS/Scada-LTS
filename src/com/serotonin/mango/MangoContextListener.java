@@ -68,7 +68,9 @@ import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
+import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.quartz.EverySecond;
 import org.scada_lts.quartz.EverySecondTool;
 import org.scada_lts.scripting.SandboxContextFactory;
@@ -141,6 +143,10 @@ public class MangoContextListener implements ServletContextListener {
 		freemarkerInitialize(ctx);
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
+
+		PointValueService.configureBatchWriteBehind(
+				ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class));
+
 		highestAlarmLevelServiceInitialize();
 		dataPointsNameToIdMapping(ctx);
 

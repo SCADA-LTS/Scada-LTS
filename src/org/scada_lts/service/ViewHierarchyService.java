@@ -23,9 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.GenericHierarchyDAO;
-import org.scada_lts.dao.IViewDAO;
-import org.scada_lts.dao.ViewHierarchyDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.service.model.ViewHierarchyJSON;
@@ -41,7 +39,6 @@ import com.serotonin.mango.view.View;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-@Service
 public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);
@@ -52,15 +49,12 @@ public class ViewHierarchyService {
 	public static final int ROOT_ID = -1;
 	
 	
-	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
+	private IViewHierarchyDAO vhDAO;
 	
 	private final IViewDAO viewDAO;
+
 	
-	public ViewHierarchyService(){
-		this.viewDAO = ApplicationBeans.getViewDaoBean();
-	}
-	
-	public ViewHierarchyService(ViewHierarchyDAO vhDAO, IViewDAO viewDAO){
+	public ViewHierarchyService(IViewHierarchyDAO vhDAO, IViewDAO viewDAO){
 		this.vhDAO = vhDAO;
 		this.viewDAO = viewDAO;
 	}
@@ -169,7 +163,7 @@ public class ViewHierarchyService {
 	public List<ViewHierarchyJSON> getAll(){
 		profiler.start("correctChildrenViewHierarchyFolderJSON");
 		
-		List<ViewHierarchyNode> lstNodeDb = vhDAO.getNode(ViewHierarchyDAO.ROOT_ID);
+		List<ViewHierarchyNode> lstNodeDb = vhDAO.getNode(-1);
 		List<ViewHierarchyJSON> lst = new ArrayList<ViewHierarchyJSON>();
 		
 		for (ViewHierarchyNode vhNode: lstNodeDb) {

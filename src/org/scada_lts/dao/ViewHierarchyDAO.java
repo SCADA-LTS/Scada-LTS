@@ -35,7 +35,7 @@ import org.springframework.stereotype.Repository;
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
 @Repository
-public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> {
+public class ViewHierarchyDAO implements IViewHierarchyDAO {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyDAO.class);
 	
@@ -109,6 +109,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * 	Return nodes for hierarchy views
 	 * @return
 	 */
+	@Override
 	public List<ViewHierarchyNode> getAll() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -127,6 +128,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * 	Return one node for hierarchy views
 	 * @return
 	 */
+	@Override
 	public List<ViewHierarchyNode> getNode(long l) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -145,6 +147,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * 
 	 * @return
 	 */
+	@Override
 	public List<ViewInViewHierarchyNode> getViewInHierarchyNode() {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -161,6 +164,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	/**
 	 * 	Add node for hierarchy views  
 	 */
+	@Override
 	public int add(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -175,6 +179,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
+	@Override
 	public int update(ViewHierarchyNode node) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -194,6 +199,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
+	@Override
 	public int moveFolder(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -212,6 +218,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
+	@Override
 	public int moveView(int id, int newParentId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -230,6 +237,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
+	@Override
 	public int delView(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");
@@ -248,6 +256,7 @@ public class ViewHierarchyDAO implements GenericHierarchyDAO<ViewHierarchyNode> 
 	 * @return 
 	 * @return
 	 */
+	@Override
 	public int delFolder(int id) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("SQL ViewHierarchyDAO");

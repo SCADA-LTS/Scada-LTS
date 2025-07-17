@@ -41,13 +41,13 @@ import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.monitor.type.IntegerMonitor;
 
 import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -75,14 +75,14 @@ public class PointValueService implements MangoPointValues {
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
-    private PointValueDAO pointValueDAO = new PointValueDAO();
+    private IPointValueDAO pointValueDAO;
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
 
     private static final Log LOG = LogFactory.getLog(PointValueService.class);
 
     public PointValueService() {
-
+        pointValueDAO = ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class);
     }
 
     /**
@@ -220,7 +220,7 @@ public class PointValueService implements MangoPointValues {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     long savePointValueInTrasaction(final int pointId, final int dataType, double dvalue, final long time, final String svalue, final SetPointSource source, boolean async) {
         // Apply database specific bounds on double values.
-        dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
+        dvalue = pointValueDAO.applyBounds(dvalue);
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
@@ -249,7 +249,7 @@ public class PointValueService implements MangoPointValues {
                                final long time, final String svalue, final SetPointSource source,
                                boolean async) {
         // Apply database specific bounds on double values.
-        dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
+        dvalue = pointValueDAO.applyBounds(dvalue);
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
@@ -276,7 +276,7 @@ public class PointValueService implements MangoPointValues {
 
     private long savePointValueImpl(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source) {
 
-        long id = (Long) PointValueDAO.getInstance().create(pointId, dataType, dvalue, time)[0];
+        long id = (Long) pointValueDAO.create(pointId, dataType, dvalue, time)[0];
 
 
         if (svalue == null && dataType == DataTypes.IMAGE) {
@@ -302,7 +302,7 @@ public class PointValueService implements MangoPointValues {
                 else
                     shortString = svalue;
             }
-            PointValueDAO.getInstance().createAnnotation(id, shortString, longString, sourceType, sourceId);
+            pointValueDAO.createAnnotation(id, shortString, longString, sourceType, sourceId);
 
         }
 
@@ -320,41 +320,33 @@ public class PointValueService implements MangoPointValues {
 
 
     public List<PointValueTime> getPointValues(int dataPointId, long since) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
-                new Object[]{dataPointId, since}, GenericDaoCR.NO_LIMIT);
+        List<PointValue> lst = pointValueDAO.getPointValues(dataPointId, since);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getPointValuesBetween(int dataPointId,
                                                       long from, long to) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
-                new Object[]{dataPointId, from, to}, GenericDaoCR.NO_LIMIT);
+        List<PointValue> lst = pointValueDAO.getPointValuesBetween(dataPointId, from, to);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getLatestPointValues(int dataPointId, int limit) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId}, limit);
+        List<PointValue> lst = pointValueDAO.getLatestPointValues(dataPointId, limit);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getLatestPointValues(int dataPointId,
                                                      int limit, long before) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, before}, limit);
+        List<PointValue> lst = pointValueDAO.getLatestPointValues(dataPointId, limit, before);
         return getLstPointValueTime(lst);
     }
 
     public PointValueTime getLatestPointValue(int dataPointId) {
-        Long maxTs = PointValueDAO.getInstance().getLatestPointValue(dataPointId);
+        Long maxTs = pointValueDAO.getLatestPointValue(dataPointId);
         if (maxTs == null || maxTs == 0)
             return null;
 
-        List<PointValue> lstValues = PointValueDAO.getInstance().findByIdAndTs(dataPointId, maxTs);
+        List<PointValue> lstValues = pointValueDAO.findByIdAndTs(dataPointId, maxTs);
 
         if (lstValues.isEmpty())
             return null;
@@ -369,12 +361,12 @@ public class PointValueService implements MangoPointValues {
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
-        return PointValueDAO.getInstance().getPointValueBefore(dataPointId, time);
+        return pointValueDAO.getPointValueBefore(dataPointId, time);
     }
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
         try {
-            return PointValueDAO.getInstance().getPointValueAt(dataPointId, time);
+            return pointValueDAO.getPointValueAt(dataPointId, time);
         } catch (Exception ex) {
             return null;
         }
@@ -382,42 +374,42 @@ public class PointValueService implements MangoPointValues {
 
     @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
+        return pointValueDAO.deletePointValuesBeforeWithOutLast(dataPointId, time);
     }
 
     @Override
     public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
+        return pointValueDAO.deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
     public long dateRangeCount(int dataPointId, long from, long to) {
-        return PointValueDAO.getInstance().dateRangeCount(dataPointId, from, to);
+        return pointValueDAO.dateRangeCount(dataPointId, from, to);
     }
 
     @Override
     public long getInceptionDate(int dataPointId) {
-        return PointValueDAO.getInstance().getInceptionDate(dataPointId);
+        return pointValueDAO.getInceptionDate(dataPointId);
     }
 
     @Override
     public long getStartTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getStartTime(dataPointIds);
+        return pointValueDAO.getStartTime(dataPointIds);
     }
 
     @Override
     public long getEndTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getEndTime(dataPointIds);
+        return pointValueDAO.getEndTime(dataPointIds);
     }
 
     @Override
     public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getStartAndEndTime(dataPointIds);
+        return pointValueDAO.getStartAndEndTime(dataPointIds);
     }
 
     @Override
     public List<Long> getFiledataIds() {
-        return PointValueDAO.getInstance().getFiledataIds();
+        return pointValueDAO.getFiledataIds();
     }
 
     /**
@@ -500,6 +492,10 @@ public class PointValueService implements MangoPointValues {
         }
     }
 
+    public static void configureBatchWriteBehind(IPointValueDAO dao) {
+        BatchWriteBehind.setPointValueDAO(dao);
+    }
+
     //TODO (gb) In my opinion it must rewrite
     static class BatchWriteBehind extends AbstractBeforeAfterWorkItem {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
@@ -512,6 +508,7 @@ public class PointValueService implements MangoPointValues {
                 "BatchWriteBehind.ENTRIES_MONITOR", null);
         private static final IntegerMonitor INSTANCES_MONITOR = new IntegerMonitor(
                 "BatchWriteBehind.INSTANCES_MONITOR", null);
+        private static IPointValueDAO pointValueDAO;
 
         static {
 
@@ -549,7 +546,9 @@ public class PointValueService implements MangoPointValues {
         private int instancesSize;
         private int entriesSize;
 
-        public BatchWriteBehind() {}
+        public static void setPointValueDAO(IPointValueDAO dao) {
+            pointValueDAO = dao;
+        }
 
         @Override
         public void work() {
@@ -580,7 +579,7 @@ public class PointValueService implements MangoPointValues {
                     int retries = 10;
                     while (true) {
                         try {
-                            PointValueDAO.getInstance().executeBatchUpdateInsert(params);
+                            pointValueDAO.executeBatchUpdateInsert(params);
 
                             break;
                         } catch (ConcurrencyFailureException e) {
@@ -633,7 +632,7 @@ public class PointValueService implements MangoPointValues {
     }
 
     public PointValueTime getPointValue(long id) {
-        PointValueTime pointValueTime = PointValueDAO.getInstance().getPointValue(id);
+        PointValueTime pointValueTime = pointValueDAO.getPointValue(id);
         /*if(pointValueTime instanceof AnnotatedPointValueTime) {
             updateAnnotation((AnnotatedPointValueTime) pointValueTime);
         }*/
@@ -646,22 +645,22 @@ public class PointValueService implements MangoPointValues {
 
     @Override
     public long deletePointValues(int dataPointId) {
-        return PointValueDAO.getInstance().deletePointValue(dataPointId);
+        return pointValueDAO.deletePointValue(dataPointId);
     }
 
     @Override
     public long deleteAllPointValue() {
-        return PointValueDAO.getInstance().deleteAllPointData();
+        return pointValueDAO.deleteAllPointData();
     }
 
     @Override
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
-        return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
+        return pointValueDAO.deletePointValuesWithMismatchedType(dataPointId, dataType);
     }
 
     @Override
     public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
-        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
+        return pointValueDAO.deletePointValuesWithValueLimit(dataPointId, limit);
     }
 
     public void updateMetaDataPointByScript(User user, String xid) {

@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyComparator;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
@@ -104,7 +105,8 @@ public class PointHierarchyCache {
 		for (PointHierarchyNode ph : lstHierarchy) {
 			addFolder(ph);
 		}
-		List<PointHierarchyNode> lstPointHierarchy = new PointHierarchyDAO().getPointsHierarchy();
+		IPointHierarchyDAO pointHierarchyDAO = ApplicationBeans.getBean("pointHierarchyDAO", IPointHierarchyDAO.class);
+		List<PointHierarchyNode> lstPointHierarchy = pointHierarchyDAO.getPointsHierarchy();
 		Collections.sort(lstPointHierarchy, PointHierarchyComparator.getInst());
 		
 		for (PointHierarchyNode ph : lstPointHierarchy) {

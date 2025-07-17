@@ -18,9 +18,10 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
-import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
@@ -67,7 +68,8 @@ public class ChartComparatorComponent extends HtmlComponent {
 		// sb.append("<div style='width:" + width + "px; height:" + height
 		// + "px; border: 1px solid black;'>");
 		sb.append("<div>");
-		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(new DataPointDAO());
+		IDataPointDAO dataPointDAO = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
 		User user = Common.getUser();
 		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);
 		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", dataPoints));

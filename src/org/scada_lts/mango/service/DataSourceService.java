@@ -24,10 +24,8 @@ import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.MaintenanceEventDAO;
+import org.openjdk.jmh.Main;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
@@ -60,17 +58,17 @@ import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filterin
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
-	private final DataSourceDAO dataSourceDAO;
+	private final IDataSourceDAO dataSourceDAO;
 	private final DataPointService dataPointService;
 	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
 	public DataSourceService() {
-		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
 		this.dataPointService = new DataPointService();
-		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class));
 	}
 
-	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService, DataPointDAO dataPointDAO) {
+	public DataSourceService(IDataSourceDAO dataSourceDAO, DataPointService dataPointService, IDataPointDAO dataPointDAO) {
 		this.dataSourceDAO = dataSourceDAO;
 		this.dataPointService = dataPointService;
 		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, dataPointDAO);
@@ -175,7 +173,8 @@ public class DataSourceService implements MangoDataSource {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void deleteInTransaction(final int dataSourceId) {
-		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
+		IMaintenanceEventDAO meDAO = ApplicationBeans.getBean("maintenanceEventDAO", IMaintenanceEventDAO.class);
+		meDAO.deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updatePermissions();

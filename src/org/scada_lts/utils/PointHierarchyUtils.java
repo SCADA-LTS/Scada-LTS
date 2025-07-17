@@ -3,8 +3,8 @@ package org.scada_lts.utils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.recursive.CreatePointHierarchyTree;
 
@@ -22,7 +22,7 @@ public final class PointHierarchyUtils {
 
     public static List<PointHierarchyNode> getPointHierarchyWithEmptyByKey(User user,
                                                                            HierarchyDAO hierarchyDAO,
-                                                                           DataPointDAO dataPointDAO,
+                                                                           IDataPointDAO dataPointDAO,
                                                                            int key)  {
         List<PointHierarchyNode> pointNodes = getPointNodesWithAccess(user, dataPointDAO);
         List<PointHierarchyNode> folderNodes = getFolderNodes(hierarchyDAO);
@@ -31,24 +31,24 @@ public final class PointHierarchyUtils {
 
     public static List<PointHierarchyNode> getPointHierarchyByKey(User user,
                                                                   HierarchyDAO hierarchyDAO,
-                                                                  DataPointDAO dataPointDAO,
+                                                                  IDataPointDAO dataPointDAO,
                                                                   int key)  {
         List<PointHierarchyNode> pointNodes = getPointNodesWithAccess(user, dataPointDAO);
         List<PointHierarchyNode> folderNodes = getFolderNodes(hierarchyDAO);
         return getPointHierarchyNodes(key, pointNodes, folderNodes, false);
     }
 
-    public static PointHierarchyNode getPointHierarchyWithEmptyRoot(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO)  {
+    public static PointHierarchyNode getPointHierarchyWithEmptyRoot(User user, HierarchyDAO hierarchyDAO, IDataPointDAO dataPointDAO)  {
         return getRootNode(user, hierarchyDAO, dataPointDAO);
     }
 
-    public static PointHierarchyNode getPointHierarchyRoot(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO)  {
+    public static PointHierarchyNode getPointHierarchyRoot(User user, HierarchyDAO hierarchyDAO, IDataPointDAO dataPointDAO)  {
         PointHierarchyNode root = getRootNode(user, hierarchyDAO, dataPointDAO);
         cleanTree(root);
         return root;
     }
 
-    public static List<PointHierarchyNode> getPointNodesWithAccess(User user, DataPointDAO dataPointDAO) {
+    public static List<PointHierarchyNode> getPointNodesWithAccess(User user, IDataPointDAO dataPointDAO) {
         List<DataPointVO> dataPoints = dataPointDAO.getDataPoints();
         List<PointHierarchyNode> pointNodes = new ArrayList<>();
         for (DataPointVO point : dataPoints) {
@@ -156,7 +156,7 @@ public final class PointHierarchyUtils {
         return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, TREE_DEPTH);
     }
 
-    private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO) {
+    private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, IDataPointDAO dataPointDAO) {
         List<PointHierarchyNode> folderNodes = getFolderNodes(hierarchyDAO);
         List<PointHierarchyNode> pointNodes = getPointNodesWithAccess(user, dataPointDAO);
         List<PointHierarchyNode> pointAndFolderNodes = new ArrayList<>();

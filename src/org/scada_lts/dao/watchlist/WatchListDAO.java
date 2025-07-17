@@ -51,7 +51,7 @@ import com.serotonin.mango.vo.WatchList;
  *
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public class WatchListDAO implements GenericDaoCR<WatchList> {
+public class WatchListDAO implements IWatchListDAO {
 	
 	private static final Log LOG = LogFactory.getLog(WatchListDAO.class);
 
@@ -324,6 +324,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		}
 	}
 	
+	@Override
 	public WatchList findByXId(String xid) {
 		try {
 			return (WatchList) DAO.getInstance().getJdbcTemp().queryForObject(WATCH_LIST_SELECT_BASE_ON_XID, new Object[] {xid}, new WatchListRowMapper());
@@ -347,7 +348,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	@Override
 	public Object[] create(final WatchList entity) {
 		
@@ -374,37 +375,45 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		return new Object[] {keyHolder.getKey().intValue()};
 	}
 	
+	@Override
 	public List<ShareUser> getWatchListUsers(int watchListId) {
 		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(WATCH_LIST_USERS_SELECT_BASE_ON_WATCH_LIST_ID, new Object[] {watchListId}, new WatchListUserRowMapper());
 	}
 
+	@Override
 	public List<Integer> getPointsWatchList(int watchListId) {
 		return (List<Integer>) DAO.getInstance().getJdbcTemp().queryForList(WATCH_LIST_POINTS_SELECT_BASE_ON_WATCH_LIST_ID, new Object[] { watchListId }, Integer.class );
 	}
 	
+	@Override
 	public void updateUsers(int userId, int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_FOR_USER_UPDATE, new Object[] {watchListId, userId});
 	}
 	
+	@Override
 	public void update(WatchList watchList) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_UPDATE, new Object[] {watchList.getXid(), watchList.getName(), watchList.getId()});
 	}
 	
 	//TODO rewrite because update is not delete All and add all.
+	@Override
 	public void deleteWatchListPoints(int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_POINTS_DELETE, new Object[] {watchListId});
 	}
 	
 	//TODO rewrite
+	@Override
 	public void deleteWatchListUsers(int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_USERS_DELETE, new Object[] {watchListId});
 	}
 
+	@Override
 	public void deleteWatchList(int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_BASE_ON_ID, new Object[] {watchListId});
 	}
 	
 	//TODO rewrite
+	@Override
 	public void addPointsForWatchList(final WatchList watchList) {
 		
 		DAO.getInstance().getJdbcTemp().batchUpdate(
@@ -423,6 +432,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 	
 	//TODO rewrite
+	@Override
 	public void addWatchListUsers(final WatchList watchList) {
 		
 		DAO.getInstance().getJdbcTemp().batchUpdate(
@@ -440,10 +450,12 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				});
 	}
 	
+	@Override
 	public void deleteUserFromWatchList(int watchListId, int userId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_USER_FROM_WATCH_LIST, new Object[] {watchListId, userId});
 	}
 	
+	@Override
 	public void deleteWatchListPoints(String dataPointIds) {
 		String[] parameters = dataPointIds.split(",");
 
@@ -456,13 +468,15 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
+	@Override
 	public List<WatchList> selectWatchListsWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ID_PERMISSION_ORDER_BY_NAME,
 				new Object[] { userId, profileId, ShareUser.ACCESS_NONE, userId, ShareUser.ACCESS_NONE },
 				new WatchListRowMapper());
 	}
 
-    public List<ScadaObjectIdentifier> selectWatchListIdentifiersWithAccess(int userId, int profileId) {
+    @Override
+	public List<ScadaObjectIdentifier> selectWatchListIdentifiersWithAccess(int userId, int profileId) {
         return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ID_PERMISSION_ORDER_BY_NAME,
 				new Object[] { userId, profileId, ShareUser.ACCESS_NONE, userId, ShareUser.ACCESS_NONE },
 				new ScadaObjectIdentifierRowMapper.Builder()
@@ -472,6 +486,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 						.build());
     }
 
+	@Override
 	public List<WatchListAccess> selectWatchListPermissions(final int userId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("selectViewPermissions(final int userId) userId:" + userId);
@@ -486,6 +501,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 	}
 
+	@Override
 	public int[] insertPermissions(final int userId, final List<WatchListAccess> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(final User user, final List<WatchListAccess> toInsert) user:" + userId + "");
@@ -501,6 +517,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				.batchUpdate(WATCHLIST_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
 	}
 
+	@Override
 	public int[] deletePermissions(final int userId, final List<WatchListAccess> toDelete) {
 
 		if (LOG.isTraceEnabled()) {
@@ -517,6 +534,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				.batchUpdate(WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID, batchArgs, argTypes);
 	}
 
+	@Override
 	public List<ShareUser> selectWatchListShareUsers(int watchListId) {
 		if (LOG.isTraceEnabled())
 			LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
@@ -533,6 +551,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
   
 	@Deprecated
+	@Override
 	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
 		if(LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointOrder()");
@@ -548,6 +567,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 
 	@Deprecated
+	@Override
 	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
 
 		//Delete all order
@@ -562,6 +582,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
     
   	}
 
+	@Override
 	public List<ScadaObjectIdentifier> findIdentifiers() {
 		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()

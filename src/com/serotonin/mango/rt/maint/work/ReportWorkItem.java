@@ -53,7 +53,7 @@ import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.dao.report.IReportInstancePointDAO;
 import org.scada_lts.mango.service.SystemSettingsService;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
@@ -116,7 +116,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 
 		// Create a list of DataPointVOs to which the user has permission.
 		DataPointDao dataPointDao = new DataPointDao();
-		List<ReportInstancePointDAO.PointInfo> points = new ArrayList<ReportInstancePointDAO.PointInfo>(
+		List<IReportInstancePointDAO.PointInfo> points = new ArrayList<IReportInstancePointDAO.PointInfo>(
 				reportConfig.getPoints().size());
 		for (ReportPointVO reportPoint : reportConfig.getPoints()) {
 			DataPointVO point = dataPointDao.getDataPoint(reportPoint
@@ -134,7 +134,7 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 					// validated on save, so just let it go
 					// as null.
 				}
-				points.add(new ReportInstancePointDAO.PointInfo(point, colour, reportPoint
+				points.add(new IReportInstancePointDAO.PointInfo(point, colour, reportPoint
 						.isConsolidatedChart()));
 			}
 		}

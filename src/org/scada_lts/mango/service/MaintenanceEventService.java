@@ -22,8 +22,10 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.IMaintenanceEventDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.mango.adapter.MangoMaintenanceEvent;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.List;
  */
 public class MaintenanceEventService implements MangoMaintenanceEvent {
 
-	private MaintenanceEventDAO maintenanceEventDAO = new MaintenanceEventDAO();
+	private final IMaintenanceEventDAO maintenanceEventDAO = ApplicationBeans.getBean("maintenanceEventDAO", IMaintenanceEventDAO.class);
 
 	@Override
 	public String generateUniqueXid() {

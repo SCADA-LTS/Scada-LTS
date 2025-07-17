@@ -45,7 +45,7 @@ import java.sql.SQLException;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportInstanceDataDAO {
+public class ReportInstanceDataDAO implements IReportInstanceDataDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportInstanceDataDAO.class);
 
@@ -151,7 +151,8 @@ public class ReportInstanceDataDAO {
 				+ "rp." + COLUMN_NAME_ID + "=?";
 	// @formatter:on
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final Object[] params, final int reportPointId, final String timestampSql) {
 
 		if (LOG.isTraceEnabled()) {
@@ -170,7 +171,8 @@ public class ReportInstanceDataDAO {
 		return value;
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insertReportInstanceDataAnnotations(String annotationCase, final int reportPointId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -192,6 +194,7 @@ public class ReportInstanceDataDAO {
 		return reportPointId;
 	}
 
+	@Override
 	public void setReportValue(final ReportPointInfo point, final ReportDataValue rdv, final ReportDataStreamHandler handler) {
 
 		if (LOG.isTraceEnabled()) {
