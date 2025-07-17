@@ -159,10 +159,24 @@ abstract public class DataSourceRT implements ILifecycle {
         }
     }
 
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+        message = new LocalizableMessage("event.ds", vo.getName(), message);
+        raiseEvent(eventId, time, rtn, message, -1);
+    }
+
+    protected void returnToNormal(int eventId, long time) {
+        returnToNormal(eventId, time, -1);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
+        raiseEvent(eventId, time, rtn, message, dataPoint.getId());
+    }
+
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
-        Map<String, Object> context = new HashMap<>();
+        Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
 
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
@@ -178,27 +192,13 @@ abstract public class DataSourceRT implements ILifecycle {
         }
     }
 
+    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
+        returnToNormal(eventId, time, dataPoint.getId());
+    }
+
     protected void returnToNormal(int eventId, long time, int dataPointId) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
         Common.ctx.getEventManager().returnToNormal(type, time);
-    }
-
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
-        message = new LocalizableMessage("event.ds", vo.getName(), message);
-        raiseEvent(eventId, time, rtn, message, -1);
-    }
-
-    protected void returnToNormal(int eventId, long time) {
-        returnToNormal(eventId, time, -1);
-    }
-
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
-        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
-        raiseEvent(eventId, time, rtn, message, dataPoint.getId());
-    }
-
-    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
-        returnToNormal(eventId, time, dataPoint.getId());
     }
 
     private DataSourceEventType getDataSourceEventType(int eventId, int dataPointId) {
