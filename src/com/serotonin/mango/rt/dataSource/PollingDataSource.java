@@ -211,9 +211,4 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
             returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
         }
     }
-
-    @Override
-    public boolean doSetUnreliableDataPoint(int eventId) {
-        return eventId != getUpdateTimeExceededUpdatePeriodEventId();
-    }
 }
