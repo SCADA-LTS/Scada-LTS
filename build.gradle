@@ -235,7 +235,7 @@ test {
         includeTestsMatching "com.serotonin.mango.vo.report.ImageChartUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.serorepl.utils.StringUtilsTestsSuite"
         includeTestsMatching "org.scada_lts.monitor.ConcurrentMonitoredValuesTest"
-        includeTestsMatching "com.serotonin.mango.rt.dataSource.DataPointUnreliableUtilsTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.DataPointUnreliableUtilsTestsSuite"
         includeTestsMatching "com.serotonin.mango.rt.dataSource.InitializeDataSourceRtTestsSuite"
         includeTestsMatching "com.serotonin.mango.util.AddLimitIfWithoutSqlDataSourceUtilsTest"
         includeTestsMatching "com.serotonin.mango.util.StartStopDataPointsUtilsTestsSuite"
@@ -248,6 +248,7 @@ test {
         includeTestsMatching "org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataTypeTestsSuite"
         includeTestsMatching "com.serotonin.mango.vo.EngineeringUnitsTypesTest"
         includeTestsMatching "org.scada_lts.cache.PointHierarchyCacheTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.types.BinaryValueTestsSuite"
     }
 
     failFast = true

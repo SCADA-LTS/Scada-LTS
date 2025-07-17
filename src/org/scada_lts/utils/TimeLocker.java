@@ -11,61 +11,59 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TimeLocker {
+public class TimeLocker implements Job {
 
-    private final AtomicInteger attempsCounter = new AtomicInteger(0);
+    private final UUID serial = UUID.randomUUID();
+    private final AtomicInteger attemptsCounter = new AtomicInteger(0);
     private final AtomicInteger timer = new AtomicInteger(0);
-    private final int numberOfAttemps;
+    private final int numberOfAttempts;
     private final int waitSeconds;
 
-    public TimeLocker(int numberOfAttemps, int waitSeconds) {
-        this.numberOfAttemps = numberOfAttemps;
+    public TimeLocker(int numberOfAttempts, int waitSeconds) {
+        this.numberOfAttempts = numberOfAttempts;
         this.waitSeconds = waitSeconds;
     }
 
     public int remainingSeconds() {
         if(timer.get() <= 0) {
-            if (attempsCounter.getAndIncrement() == this.numberOfAttemps) {
-                attempsCounter.set(0);
+            if (attemptsCounter.getAndIncrement() >= this.numberOfAttempts) {
+                attemptsCounter.getAndSet(0);
                 timer.set(waitSeconds);
-                EverySecondTool.schedule(new TimerLockerJob(timer));
+                EverySecondTool.schedule(this);
                 return waitSeconds;
             }
         }
         return timer.get();
     }
 
+    public void reset() {
+        EverySecondTool.unschedule(this);
+        attemptsCounter.getAndSet(0);
+        timer.getAndSet(0);
+    }
+
     public String getDetails() {
-        return new LocalizableMessage("dsEdit.opcua.numberAttemptsExceeded", numberOfAttemps, timer.get()).getLocalizedMessage(Common.getBundle());
+        return new LocalizableMessage("dsEdit.opcua.numberAttemptsExceeded", numberOfAttempts, timer.get()).getLocalizedMessage(Common.getBundle());
     }
 
-    static class TimerLockerJob implements Job {
-
-        private final UUID serial = UUID.randomUUID();
-        private final AtomicInteger timer;
-
-        public TimerLockerJob(AtomicInteger timer) {
-            this.timer = timer;
-        }
-
-        @Override
-        public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-            if (timer.getAndDecrement() < 0) {
-                EverySecondTool.unschedule(this);
-                timer.set(0);
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            TimerLockerJob that = (TimerLockerJob) o;
-            return Objects.equals(serial, that.serial);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(serial);
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        if (timer.getAndDecrement() < 0) {
+            EverySecondTool.unschedule(this);
+            timer.getAndSet(0);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeLocker that = (TimeLocker) o;
+        return Objects.equals(serial, that.serial);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(serial);
+    }
+
 }

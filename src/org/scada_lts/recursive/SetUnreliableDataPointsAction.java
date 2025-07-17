@@ -1,52 +1,61 @@
 package org.scada_lts.recursive;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.util.LoggingUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class SetUnreliableDataPointsAction implements Callable<Void> {
 
-    private static final Log LOG = LogFactory.getLog(SetUnreliableDataPointsAction.class);
+    private static final Logger LOG = LogManager.getLogger(SetUnreliableDataPointsAction.class);
 
     private static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
 
     private final List<DataPointRT> dataPoints;
     private final boolean unreliable;
+    private final int executeInPoolIfExceeds;
     private int depth;
 
-    public SetUnreliableDataPointsAction(List<DataPointRT> dataPoints, boolean unreliable, int depth) {
+    public SetUnreliableDataPointsAction(List<DataPointRT> dataPoints, boolean unreliable, int depth, int executeInPoolIfExceeds) {
         this.dataPoints = dataPoints;
         this.unreliable = unreliable;
         this.depth = depth;
+        this.executeInPoolIfExceeds = executeInPoolIfExceeds;
     }
 
     @Override
     public Void call() throws Exception {
         setAttributes(filter(dataPoints, unreliable), unreliable);
         int temp = --depth;
-        List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
+        if(temp < 0) {
+            LOG.warn("The safe counter has been exceeded!: {}", dataPoints.toString());
+            return null;
+        }
+        Map<Set<String>, Callable<Void>> tasks = new ConcurrentHashMap<>();
         for(DataPointRT dataPoint: dataPoints) {
-            List<DataPointRT> metaDataPoints = Common.ctx.getRuntimeManager().getRunningMetaDataPoints(dataPoint.getId(), !unreliable);
+            RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
+            List<DataPointRT> metaDataPoints = unreliable ? runtimeManager.getRunningMetaDataPointsToSet(dataPoint.getId()) : runtimeManager.getRunningMetaDataPointsToReset(dataPoint.getId());
             if(!metaDataPoints.isEmpty()) {
-                if(temp > -1) {
-                    tasks.add(new SetUnreliableDataPointsAction(metaDataPoints, unreliable, temp));
-                } else {
-                    LOG.warn("The safe counter has been exceeded!: " + LoggingUtils.dataPointInfo(dataPoint));
-                    setAttributes(filter(metaDataPoints, unreliable), unreliable);
-                    return null;
-                }
+                Set<String> key = metaDataPoints.stream().map(point -> point.getVO().getXid()).collect(Collectors.toSet());
+                tasks.put(key, new SetUnreliableDataPointsAction(metaDataPoints, unreliable, temp, executeInPoolIfExceeds));
             }
         }
-        if(!tasks.isEmpty())
-            Common.ctx.getBackgroundProcessing().getCommonPool().invokeAll(tasks);
-
+        if(!tasks.isEmpty()) {
+            LOG.info("invoke for: {}", tasks.keySet());
+            if(tasks.size() <= executeInPoolIfExceeds) {
+                for(Callable<?> task: tasks.values()) {
+                    task.call();
+                }
+            } else {
+                Common.ctx.getBackgroundProcessing().getCommonPool().invokeAll(tasks.values());
+            }
+        }
         return null;
     }
 

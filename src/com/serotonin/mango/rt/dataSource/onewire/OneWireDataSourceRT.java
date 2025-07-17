@@ -52,8 +52,6 @@ import com.serotonin.mango.vo.dataSource.onewire.OneWirePointLocatorVO;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -303,7 +301,6 @@ public class OneWireDataSourceRT extends PollingDataSource {
 
                     // Update the data image with the new value.
                     point.updatePointValue(new PointValueTime(result, time));
-                    resetUnreliableDataPoint(point);
                     // Remove this point from the list.
                     iter.remove();
                 }

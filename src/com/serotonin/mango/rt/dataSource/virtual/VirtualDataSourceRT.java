@@ -24,8 +24,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 public class VirtualDataSourceRT extends PollingDataSource {
 
     public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
@@ -45,7 +43,6 @@ public class VirtualDataSourceRT extends PollingDataSource {
 
             // Update the data image with the new value.
             dataPoint.updatePointValue(new PointValueTime(locator.getCurrentValue(), time));
-            resetUnreliableDataPoint(dataPoint);
         }
     }
 

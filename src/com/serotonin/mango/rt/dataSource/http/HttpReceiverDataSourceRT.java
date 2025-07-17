@@ -34,8 +34,6 @@ import com.serotonin.mango.vo.dataSource.http.HttpReceiverDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpReceiverPointLocatorVO;
 import com.serotonin.util.StringUtils;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -127,7 +125,6 @@ public class HttpReceiverDataSourceRT extends EventDataSource implements HttpMul
                             value = MangoValue.stringToValue(valueStr, locator.getDataTypeId());
 
                         dp.updatePointValue(new PointValueTime(value, time));
-                        resetUnreliableDataPoint(dp);
                     }
                 }
             }
