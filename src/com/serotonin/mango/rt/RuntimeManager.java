@@ -366,8 +366,6 @@ public class RuntimeManager {
 			if (isDataSourceRunning(vo.getId()))
 				return false;
 
-			LOG.info("Data source '" + vo.getName() + "' initializing...");
-
 			// Ensure that the data source is enabled.
 			// Assert.isTrue(vo.isEnabled());
 
@@ -403,7 +401,6 @@ public class RuntimeManager {
 			DataSourceRT dataSource = getRunningDataSource(id);
 			if (dataSource == null)
 				return;
-			LOG.info("Data source '" + dataSource.getName() + "' stopping...");
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -483,9 +480,6 @@ public class RuntimeManager {
 			// Only add the data point if its data source is enabled.
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
-
-				LOG.info("Data point '" + vo.getExtendedName() + "' initializing...");
-
 				// Change the VO into a data point implementation.
 				DataPointRT dataPoint = createDataPointRT(vo);
 
@@ -535,9 +529,6 @@ public class RuntimeManager {
 
 			// Remove it from the data source, and terminate it.
 			if (p != null) {
-
-				LOG.info("Data point '" + p.getVO().getExtendedName() + "' stopping...");
-
 				getRunningDataSource(p.getDataSourceId()).removeDataPoint(p);
 				DataPointListener l = getDataPointListeners(dataPointId);
 				if (l != null)

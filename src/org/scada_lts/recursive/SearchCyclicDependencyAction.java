@@ -63,7 +63,7 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
             for (IntValuePair keyValue : context) {
                 int contextDataPointId = keyValue.getKey();
                 DataPointVO contextDataPoint = dataPoints.get(contextDataPointId);
-                if(contextDataPoint != null && (contextDataPoint.getPointLocator() instanceof MetaPointLocatorVO)) {
+                if(contextDataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
                     if (contextDataPointId == findDataPointId) {
                         result.add(true);
                         return null;

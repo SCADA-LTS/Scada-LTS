@@ -21,8 +21,6 @@ package com.serotonin.mango.rt.dataSource.meta;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.script.ScriptException;
 
@@ -46,7 +44,6 @@ import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ValidationUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.generateContext;
@@ -176,17 +173,12 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             return;
         }
 
-        DataPointService dataPointService = new DataPointService();
-        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
-        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
-                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
-
         if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
             DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
             if(dataPointListener != null && dataPointListener != this) {
                 if(dataPointListener instanceof MetaPointLocatorRT) {
                     MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
-                    execute(dataPoint, fromContext, dataSource, fromContext::pointInitialized, dataPointsMap);
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointInitialized);
                 }
 
             }
@@ -197,17 +189,12 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         context = createContext(dataPoint);
 
-        DataPointService dataPointService = new DataPointService();
-        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
-        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
-                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
-
         if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
             DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
             if(dataPointListener != null && dataPointListener != this) {
                 if(dataPointListener instanceof MetaPointLocatorRT) {
                     MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
-                    execute(dataPoint, fromContext, dataSource, fromContext::pointTerminated, dataPointsMap);
+                    execute(dataPoint, fromContext, dataSource, fromContext::pointTerminated);
                 }
             }
         }
@@ -415,11 +402,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     }
 
     private static void execute(DataPointRT dataPointStart, MetaPointLocatorRT fromContext, MetaDataSourceRT dataSource,
-                                Runnable execute, Map<Integer, DataPointVO> dataPointsMap) {
+                                Runnable execute) {
         DataPointRT dataPointRtFromContext = fromContext.getDataPoint();
         DataPointVO dataPointVoFromContext = dataPointRtFromContext.getVO();
 
-        if(ValidationUtils.isCyclicDependency(dataPointStart.getId(), dataPointRtFromContext.getId(), dataPointsMap)) {
+        if(ValidationUtils.isCyclicDependency(dataPointStart.getId(), dataPointRtFromContext.getId())) {
             dataSource.raiseRecursiveError(System.currentTimeMillis(), dataPointStart,
                     new LocalizableMessage("validate.cyclicDependency", dataPointVoFromContext.getName()));
         } else {

@@ -134,13 +134,21 @@ public final class ValidationUtils {
         }
     }
 
-    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints) {
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId) {
         int validationSearchCyclicDepth = SystemSettingsUtils.getValidationSearchCyclicDepth();
-        return isCyclicDependency(starDataPointId, findDataPointId, validationSearchCyclicDepth, dataPoints);
+        return isCyclicDependency(starDataPointId, findDataPointId, validationSearchCyclicDepth);
     }
 
-    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, int validationSearchCyclicDepth, Map<Integer, DataPointVO> dataPoints) {
-        return isCyclicDependency(starDataPointId, findDataPointId, dataPoints, validationSearchCyclicDepth);
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, int validationSearchCyclicDepth) {
+        DataPointService dataPointService = new DataPointService();
+        Map<Integer, DataPointVO> dataPoints = dataPointService.getDataPoints(null, true)
+                .stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+        try {
+            return isCyclicDependency(starDataPointId, findDataPointId, dataPoints, validationSearchCyclicDepth);
+        } finally {
+            dataPoints.clear();
+        }
     }
 
     public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int searchDepth) {

@@ -98,14 +98,13 @@ public final class StartStopDataPointsUtils {
     private static void collectMetaDataPointsFromContext(Set<Integer> toCheck, List<DataPointVO> toRunning,
                                                          DataPointVO dataPoint, int depth, List<DataPointVO> dataPoints,
                                                          Predicate<Integer> isExecute) {
-        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
-                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+
         CollectMetaDataPointFromContextAction metaDataPointCollector =
-                new CollectMetaDataPointFromContextAction(toCheck, toRunning, dataPoint, depth, dataPointsMap, isExecute);
+                new CollectMetaDataPointFromContextAction(toCheck, toRunning, dataPoint, depth, dataPoints, isExecute);
         try {
             metaDataPointCollector.call();
         } catch (Exception e) {
-            LOG.error(LoggingUtils.exceptionInfo(e), e);
+            LOG.error(LoggingUtils.exceptionInfo(e));
         }
     }
 }
