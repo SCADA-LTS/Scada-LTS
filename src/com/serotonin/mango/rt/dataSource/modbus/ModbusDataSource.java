@@ -541,8 +541,4 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	public boolean isInitialized() {
 		return modbusMaster != null && super.isInitialized();
 	}
-
-	protected ModbusMaster getModbusMaster() {
-		return modbusMaster;
-	}
 }
