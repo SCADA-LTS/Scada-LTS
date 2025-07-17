@@ -66,7 +66,7 @@ public final class StartStopDataPointsUtils {
     private static List<DataPointVO> getSequenceMetaDataPoints(Predicate<Integer> isExecute, List<DataPointVO> metaDataPoints) {
         List<DataPointVO> sequenceDataPoints = new CopyOnWriteArrayList<>();
         Set<Integer> toCheck = new CopyOnWriteArraySet<>();
-        int depth = 10;
+        int depth = 15;
         for(DataPointVO dataPoint: metaDataPoints) {
             collectMetaDataPointsFromContext(toCheck, sequenceDataPoints, dataPoint, depth, metaDataPoints, isExecute);
         }
