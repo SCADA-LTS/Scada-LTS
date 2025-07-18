@@ -82,6 +82,7 @@
   <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
   <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO"/>
   <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
+  <bean id="systemSettingsDAO" class="org.scada_lts.dao.SystemSettingsDAO"/>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
     <constructor-arg ref="watchListDAO"/>
@@ -356,6 +357,25 @@
     <constructor-arg ref="scadaScheduler"/>
     <constructor-arg ref="updatePendingEventsTrigger"/>
     <constructor-arg ref="updatePendingEventsJobDetail"/>
+  </bean>
+
+  <!-- Quartz Archiver -->
+
+  <bean id="archivingTrigger" class="org.quartz.CronTrigger">
+    <constructor-arg value="Quartz - trigger-Archiving"/>
+    <constructor-arg value="DEFAULT"/>
+  </bean>
+
+  <bean id="archivingJobDetail" class="org.quartz.JobDetail">
+    <constructor-arg value="Quartz - job-Archiving"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="org.scada_lts.archiving.ArchiverJob" type="java.lang.Class"/>
+  </bean>
+
+  <bean id="archivingScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
+    <constructor-arg ref="scadaScheduler"/>
+    <constructor-arg ref="archivingTrigger"/>
+    <constructor-arg ref="archivingJobDetail"/>
   </bean>
 
   <bean id="opcUaTrustListManager" class="org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaTrustListManager"

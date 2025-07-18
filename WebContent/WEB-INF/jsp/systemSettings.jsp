@@ -131,6 +131,24 @@
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>);
+
+          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>);
+
+          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>", settings.<c:out value="<%= SystemSettingsDAO.BATCH_SIZE %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>);
+
+          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>").checked = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>"/>;
+          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>").checked = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>"/>;
+
+          var archivingEnabled = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>;
+          toggleArchiveFields(archivingEnabled);
+
+          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>").onchange = function() {
+            toggleArchiveFields(this.checked);
+          };
         });
 
 <%--
@@ -663,6 +681,55 @@
       initSizeField(webGraphicsUploadsPath);
       initSizeField(smsDomain);
     });
+
+    function saveDataArchivingSettings() {
+      var archiveEnabled = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>");
+      var archiveDbUrl = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>");
+      var batchSize = $get("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>");
+      var ageValue = $get("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>");
+      var ageUnit = $get("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>");
+      var archiveCron = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>");
+      var archivePointValues = document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>").checked;
+      var archiveEvents = document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>").checked;
+
+      setUserMessage("dataArchivingMessage");
+      startImageFader("saveDataArchivingSettingsImg");
+
+      SystemSettingsDwr.saveDataArchivingSettings(
+              archiveEnabled,
+              archiveDbUrl,
+              archivePointValues,
+              archiveEvents,
+              ageValue,
+              ageUnit,
+              batchSize,
+              archiveCron,
+              function(response) {
+                stopImageFader("saveDataArchivingSettingsImg");
+                if (response.hasMessages) {
+                  showDwrMessages(response.messages);
+                } else {
+                  setUserMessage("dataArchivingMessage", "<spring:message code='systemSettings.archiving.settingsSuccess'/>");
+                }
+              }
+      );
+    }
+
+    function toggleArchiveFields(enabled) {
+      var fields = [
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>"
+      ];
+      for (var i = 0; i < fields.length; i++) {
+        var el = document.getElementById(fields[i]);
+        if (el) el.disabled = !enabled;
+      }
+    }
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
@@ -1138,6 +1205,76 @@
       </tr>
     </table>
   </div>
+
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.dataArchivingSettings"/></span>
+          <tag:help id="dataArchivingSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveDataArchivingSettingsImg" png="save" onclick="saveDataArchivingSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.archiveEnabled"/>
+        </td>
+        <td class="formField">
+          <input
+                  type="checkbox"
+                  id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>"
+                  onchange="toggleArchiveFields(this.checked)"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrl"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL %>"/>" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.tablesToArchive"/></td>
+        <td class="formField">
+          <input type="checkbox" id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>" value="pointValues" checked />
+          <spring:message code="systemSettings.table.pointValues"/>
+          <br/>
+          <input type="checkbox" id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>" value="events" checked />
+          <spring:message code="systemSettings.table.events"/>
+          <div id="tablesToArchiveMessage" class="formError"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.dataOlderThan"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>"/>" type="number" min="1" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>"/>">
+            <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.batchSize"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.BATCH_SIZE %>"/>" type="number" min="1" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveFrequency"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="dataArchivingMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+
 
   <!-- amCharts Settings -->
   <div class="borderDivPadded marB marR" style="float:left">

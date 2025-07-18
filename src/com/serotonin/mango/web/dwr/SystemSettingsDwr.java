@@ -26,6 +26,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import org.quartz.SchedulerException;
+import org.scada_lts.archiving.ArchiveUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -49,7 +51,9 @@ import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
 import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,6 +216,30 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(
 				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
 				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_ENABLED,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_DB_URL,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_TABLE_EVENTS,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_EVENTS));
+		settings.put(
+				SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE));
+		settings.put(
+				SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT));
+		settings.put(
+				SystemSettingsDAO.BATCH_SIZE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.BATCH_SIZE));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_CRON,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CRON));
 		return settings;
 	}
 
@@ -566,4 +594,59 @@ public class SystemSettingsDwr extends BaseDwr {
 			return "{}";
 		}
 	}
+
+	public DwrResponseI18n saveDataArchivingSettings(
+			boolean archiveEnabled,
+			String archiveDbUrl,
+			boolean archivePointValues,
+			boolean archiveEvents,
+			int dataArchiveAgeValue,
+			int dataArchiveAgeUnit,
+			int batchSize,
+			String archiveCron
+	) {
+		Permissions.ensureAdmin();
+		DwrResponseI18n response = new DwrResponseI18n();
+
+		if (archiveEnabled) {
+			if (archiveDbUrl == null || archiveDbUrl.trim().isEmpty()) {
+				response.addContextualMessage(SystemSettingsDAO.ARCHIVE_DB_URL, "systemSettings.archiving.missingFields");
+			}
+			if (!archivePointValues && !archiveEvents) {
+				response.addContextualMessage("tablesToArchiveMessage", "systemSettings.archiving.noTablesSelected");
+			}
+			if (dataArchiveAgeValue <= 0) {
+				response.addContextualMessage(SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE, "systemSettings.archiving.invalidAge");
+			}
+			if (batchSize <= 0) {
+				response.addContextualMessage(SystemSettingsDAO.BATCH_SIZE, "systemSettings.archiving.invalidBatchSize");
+			}
+			if (archiveCron == null || archiveCron.trim().isEmpty()) {
+				response.addContextualMessage(SystemSettingsDAO.ARCHIVE_CRON, "systemSettings.archiving.invalidCron");
+			}
+		}
+
+		if (response.getHasMessages()) {
+			return response;
+		}
+
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED, archiveEnabled);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_DB_URL, archiveDbUrl);
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES, archivePointValues);
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_EVENTS, archiveEvents);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE, dataArchiveAgeValue);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT, dataArchiveAgeUnit);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.BATCH_SIZE, batchSize);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CRON, archiveCron);
+
+		try {
+			ArchiveUtils.init();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+
 }

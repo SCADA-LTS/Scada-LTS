@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.cache.*;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
@@ -172,6 +173,21 @@ public class SystemSettingsDAO {
 	public static final String TOP_DESCRIPTION = "topDescription";
 	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
 	public static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "dataPointExtendedNameLengthInReportsLimit";
+
+	//Data archiving
+	public static final String ARCHIVE_ENABLED = "archiveEnabled";
+
+	public static final String ARCHIVE_DB_URL = "archiveDbUrl";
+
+	public static final String ARCHIVE_TABLE_POINT_VALUES = "archiveTablePointValues";
+	public static final String ARCHIVE_TABLE_EVENTS = "archiveTableEvents";
+
+	public static final String DATA_ARCHIVE_AGE_VALUE = "dataArchiveAgeValue";
+	public static final String DATA_ARCHIVE_AGE_UNIT = "dataArchiveAgeUnit";
+
+	public static final String BATCH_SIZE = "dataArchiveBatchSize";
+
+	public static final String ARCHIVE_CRON = "dataArchiveCron";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -428,6 +444,14 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+		DEFAULT_VALUES.put(ARCHIVE_ENABLED, SystemSettingsUtils.getArchiveEnabled());
+		DEFAULT_VALUES.put(ARCHIVE_DB_URL, SystemSettingsUtils.getArchiveDbUrl());
+		DEFAULT_VALUES.put(ARCHIVE_TABLE_POINT_VALUES, SystemSettingsUtils.getArchiveTablePointValues());
+		DEFAULT_VALUES.put(ARCHIVE_TABLE_EVENTS, SystemSettingsUtils.getArchiveTableEvents());
+		DEFAULT_VALUES.put(DATA_ARCHIVE_AGE_VALUE, SystemSettingsUtils.getDataArchiveAgeValue());
+		DEFAULT_VALUES.put(DATA_ARCHIVE_AGE_UNIT, SystemSettingsUtils.getDataArchiveAgeUnit());
+		DEFAULT_VALUES.put(BATCH_SIZE, SystemSettingsUtils.getBatchSize());
+		DEFAULT_VALUES.put(ARCHIVE_CRON, SystemSettingsUtils.getArchiveCron());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

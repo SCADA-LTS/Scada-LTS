@@ -142,6 +142,8 @@ public class ScadaConfig {
 
 	private Optional<Boolean> doNotCreateEventsForEmailError = Optional.empty();
 
+	public static final String ARCHIVE_CRON = "systemsettings.archive.cron";
+
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
 	private static final String FILE_NAME_LOGO="logo.png";

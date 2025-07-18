@@ -92,6 +92,16 @@ public final class SystemSettingsUtils {
     private static final String DATA_POINT_UNRELIABLE_DEPTH_KEY = "scadalts.datapoint.unreliable.depth";
     private static final String DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY = "scadalts.datapoint.unreliable.execute-in-pool-if-tasks-exceeds";
 
+    private static final String ARCHIVE_ENABLED_KEY                = "systemsettings.archive.enabled";
+    private static final String ARCHIVE_DB_URL_KEY                 = "systemsettings.archive.db-url";
+    private static final String ARCHIVE_TABLE_POINT_VALUES_KEY     = "systemsettings.archive.table.point-values";
+    private static final String ARCHIVE_TABLE_EVENTS_KEY           = "systemsettings.archive.table.events";
+    private static final String DATA_ARCHIVE_AGE_VALUE_KEY         = "systemsettings.archive.data-age.value";
+    private static final String DATA_ARCHIVE_AGE_UNIT_KEY          = "systemsettings.archive.data-age.unit";
+    private static final String BATCH_SIZE_KEY                     = "systemsettings.archive.batch-size";
+    private static final String ARCHIVE_CRON_KEY                   = "systemsettings.archive.cron";
+
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -814,4 +824,89 @@ public final class SystemSettingsUtils {
             return defaultValue;
         }
     }
+
+    public static boolean getArchiveEnabled() {
+        boolean defaultValue = false;
+        try {
+            String val = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(val);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.enabled", e);
+            return defaultValue;
+        }
+    }
+
+    public static String getArchiveDbUrl() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_DB_URL_KEY, "");
+        } catch (Exception e) {
+            LOG.error("Error reading archive.db-url", e);
+            return "";
+        }
+    }
+
+    public static boolean getArchiveTablePointValues() {
+        boolean defaultValue = true;
+        try {
+            String val = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_TABLE_POINT_VALUES_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(val);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.table.point-values", e);
+            return defaultValue;
+        }
+    }
+
+    public static boolean getArchiveTableEvents() {
+        boolean defaultValue = false;
+        try {
+            String val = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_TABLE_EVENTS_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(val);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.table.events", e);
+            return defaultValue;
+        }
+    }
+
+    public static int getDataArchiveAgeValue() {
+        int defaultValue = 6;
+        try {
+            String val = ScadaConfig.getInstance().getConf().getProperty(DATA_ARCHIVE_AGE_VALUE_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(val);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.data-age.value", e);
+            return defaultValue;
+        }
+    }
+
+    public static String getDataArchiveAgeUnit() {
+        String defaultValue = "MONTHS";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(DATA_ARCHIVE_AGE_UNIT_KEY, defaultValue);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.data-age.unit", e);
+            return defaultValue;
+        }
+    }
+
+    public static int getBatchSize() {
+        int defaultValue = 1000;
+        try {
+            String val = ScadaConfig.getInstance().getConf().getProperty(BATCH_SIZE_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(val);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.batch-size", e);
+            return defaultValue;
+        }
+    }
+
+    public static String getArchiveCron() {
+        String defaultValue = "0 0 2 * * ?";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_CRON_KEY, defaultValue);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.cron", e);
+            return defaultValue;
+        }
+    }
+
 }
