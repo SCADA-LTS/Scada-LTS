@@ -339,9 +339,6 @@
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
 
-        <!-- OPC UA Logging -->
-        <Logger name="org.apache.plc4x.java.opcua.protocol.OpcuaProtocolLogic" level="${opcUaLoggingLevel}" />
-
         <!-- Parse log4j2.xml Logging-->
         <Logger name="org.apache.log4j.xml" level="${log4jLoggingLevel}">
             <AppenderRef ref="ASYNC"/>

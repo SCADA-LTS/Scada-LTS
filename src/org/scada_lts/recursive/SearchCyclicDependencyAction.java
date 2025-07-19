@@ -32,20 +32,17 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
     @Override
     public Void call() {
 
-        if(result.size() > 1) {
-            return null;
-        }
-
         if(starDataPointId == findDataPointId) {
             result.add(true);
             return null;
         }
-        if(depth < 0) {
-            result.add(false);
+
+        if(result.size() > 1 || result.contains(true)) {
             return null;
         }
 
-        if(result.stream().anyMatch(a -> a)) {
+        if(depth < 0) {
+            result.add(false);
             return null;
         }
 
