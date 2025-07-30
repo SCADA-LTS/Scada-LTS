@@ -94,12 +94,11 @@ public final class SystemSettingsUtils {
 
     private static final String ARCHIVE_ENABLED_KEY                = "systemsettings.archive.enabled";
     private static final String ARCHIVE_DB_URL_KEY                 = "systemsettings.archive.db-url";
-    private static final String ARCHIVE_TABLE_POINT_VALUES_KEY     = "systemsettings.archive.table.point-values";
-    private static final String ARCHIVE_TABLE_EVENTS_KEY           = "systemsettings.archive.table.events";
-    private static final String DATA_ARCHIVE_AGE_VALUE_KEY         = "systemsettings.archive.data-age.value";
-    private static final String DATA_ARCHIVE_AGE_UNIT_KEY          = "systemsettings.archive.data-age.unit";
+    private static final String ARCHIVE_DB_URL_KEY_USERNAME        = "systemsettings.archive.db-username";
+    private static final String ARCHIVE_DB_URL_KEY_PASSWORD        = "systemsettings.archive.db-password";
     private static final String BATCH_SIZE_KEY                     = "systemsettings.archive.batch-size";
     private static final String ARCHIVE_CRON_KEY                   = "systemsettings.archive.cron";
+    private static final String DATA_ARCHIVING                     = "systemsettings.archive.config";
 
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
@@ -837,54 +836,32 @@ public final class SystemSettingsUtils {
     }
 
     public static String getArchiveDbUrl() {
+        String defaultValue = "jdbc:mysql://localhost:3308/scadalts";
         try {
-            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_DB_URL_KEY, "");
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_DB_URL_KEY, defaultValue);
         } catch (Exception e) {
             LOG.error("Error reading archive.db-url", e);
             return "";
         }
     }
 
-    public static boolean getArchiveTablePointValues() {
-        boolean defaultValue = true;
+    public static String getArchiveDbUsername() {
+        String defaultValue = "root";
         try {
-            String val = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_TABLE_POINT_VALUES_KEY, String.valueOf(defaultValue));
-            return Boolean.parseBoolean(val);
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_DB_URL_KEY_USERNAME, defaultValue);
         } catch (Exception e) {
-            LOG.error("Error reading archive.table.point-values", e);
-            return defaultValue;
+            LOG.error("Error reading archive.db-username", e);
+            return "";
         }
     }
 
-    public static boolean getArchiveTableEvents() {
-        boolean defaultValue = false;
+    public static String getArchiveDbPassword() {
+        String defaultValue = "root";
         try {
-            String val = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_TABLE_EVENTS_KEY, String.valueOf(defaultValue));
-            return Boolean.parseBoolean(val);
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_DB_URL_KEY_PASSWORD, defaultValue);
         } catch (Exception e) {
-            LOG.error("Error reading archive.table.events", e);
-            return defaultValue;
-        }
-    }
-
-    public static int getDataArchiveAgeValue() {
-        int defaultValue = 6;
-        try {
-            String val = ScadaConfig.getInstance().getConf().getProperty(DATA_ARCHIVE_AGE_VALUE_KEY, String.valueOf(defaultValue));
-            return Integer.parseInt(val);
-        } catch (Exception e) {
-            LOG.error("Error reading archive.data-age.value", e);
-            return defaultValue;
-        }
-    }
-
-    public static String getDataArchiveAgeUnit() {
-        String defaultValue = "MONTHS";
-        try {
-            return ScadaConfig.getInstance().getConf().getProperty(DATA_ARCHIVE_AGE_UNIT_KEY, defaultValue);
-        } catch (Exception e) {
-            LOG.error("Error reading archive.data-age.unit", e);
-            return defaultValue;
+            LOG.error("Error reading archive.db-password", e);
+            return "";
         }
     }
 
@@ -905,6 +882,16 @@ public final class SystemSettingsUtils {
             return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_CRON_KEY, defaultValue);
         } catch (Exception e) {
             LOG.error("Error reading archive.cron", e);
+            return defaultValue;
+        }
+    }
+
+    public static String getArchivingConfig() {
+        String defaultValue = "{}";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(DATA_ARCHIVING, defaultValue);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.config", e);
             return defaultValue;
         }
     }

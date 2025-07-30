@@ -135,13 +135,11 @@
           $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>);
 
           $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>"/>);
+          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>"/>);
           $set("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>", settings.<c:out value="<%= SystemSettingsDAO.BATCH_SIZE %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>"/>);
           $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>);
-
-          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>").checked = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>"/>;
-          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>").checked = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>"/>;
+          loadArchivingRules(settings.<c:out value="<%= SystemSettingsDAO.ARCHIVING_CONFIG %>"/>)
 
           var archivingEnabled = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>;
           toggleArchiveFields(archivingEnabled);
@@ -683,31 +681,28 @@
     });
 
     function saveDataArchivingSettings() {
+      const rules = getArchivingRulesFromTable();
+      const configJson = JSON.stringify({ tasks: rules });
+
       var archiveEnabled = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>");
       var archiveDbUrl = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>");
+      var archiveDbUrlUsername = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>");
+      var archiveDbUrlPassword = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>");
       var batchSize = $get("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>");
-      var ageValue = $get("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>");
-      var ageUnit = $get("<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>");
       var archiveCron = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>");
-      var archivePointValues = document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>").checked;
-      var archiveEvents = document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>").checked;
 
-      setUserMessage("dataArchivingMessage");
-      startImageFader("saveDataArchivingSettingsImg");
-
-      SystemSettingsDwr.saveDataArchivingSettings(
+      SystemSettingsDwr.saveArchivingConfig(
               archiveEnabled,
               archiveDbUrl,
-              archivePointValues,
-              archiveEvents,
-              ageValue,
-              ageUnit,
+              archiveDbUrlUsername,
+              archiveDbUrlPassword,
               batchSize,
               archiveCron,
+              configJson,
               function(response) {
                 stopImageFader("saveDataArchivingSettingsImg");
                 if (response.hasMessages) {
-                  showDwrMessages(response.messages);
+                  setUserMessage("dataArchivingMessage", response.messages);
                 } else {
                   setUserMessage("dataArchivingMessage", "<spring:message code='systemSettings.archiving.settingsSuccess'/>");
                 }
@@ -718,17 +713,39 @@
     function toggleArchiveFields(enabled) {
       var fields = [
         "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>",
+        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>",
         "<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>'/>",
         "<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>"
       ];
       for (var i = 0; i < fields.length; i++) {
         var el = document.getElementById(fields[i]);
         if (el) el.disabled = !enabled;
       }
+
+      const buttons = [
+        { id: "addArchivingRuleImg", handler: addArchivingRuleRow },
+        { id: "removeArchivingRuleRowImg", handler: removeArchivingRuleRow }
+      ];
+
+      buttons.forEach(({ id, handler }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.style.pointerEvents = enabled ? "" : "none";
+        el.style.opacity = enabled ? "" : "0.5";
+        el.onclick = enabled ? handler : null;
+      });
+    }
+
+    function loadArchivingRules(json) {
+      let rules = [];
+      try {
+        if (json) rules = JSON.parse(json).tasks || [];
+      } catch (e) {
+        console.warn("[ARCHIVER]Invalid archiving config JSON:", e);
+      }
+      renderArchivingRules(rules);
     }
   </script>
   
@@ -1238,23 +1255,15 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.tablesToArchive"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlUsername"/></td>
         <td class="formField">
-          <input type="checkbox" id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES %>'/>" value="pointValues" checked />
-          <spring:message code="systemSettings.table.pointValues"/>
-          <br/>
-          <input type="checkbox" id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_TABLE_EVENTS %>'/>" value="events" checked />
-          <spring:message code="systemSettings.table.events"/>
-          <div id="tablesToArchiveMessage" class="formError"></div>
+          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>"/>" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.dataOlderThan"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlPassword"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE %>"/>" type="number" min="1" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT %>"/>">
-            <tag:timePeriodOptions min="true" h="true" d="true" w="true" mon="true" y="true"/>
-          </select>
+          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>"/>" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
@@ -1267,6 +1276,35 @@
         <td class="formLabelRequired"><spring:message code="systemSettings.archiveFrequency"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.archiving.rules"/>
+        </td>
+        <td class="formField">
+          <table id="archivingRulesTable" style="border-collapse: collapse;">
+            <thead>
+            <tr>
+              <th><spring:message code="systemSettings.archiving.ageValue"/></th>
+              <th><spring:message code="systemSettings.archiving.ageUnit"/></th>
+              <th><spring:message code="systemSettings.archiving.action"/></th>
+              <th><spring:message code="systemSettings.archiving.table"/></th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody id="archivingRulesTbody">
+            <!-- Rendered by JS -->
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="5" align="right">
+                <img id="addArchivingRuleImg" src="images/add.png" title="Add" onclick="addArchivingRuleRow()"border="0"/>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+          <input type="hidden" id="archivingRulesJson" value="" />
         </td>
       </tr>
       <tr>

@@ -6,177 +6,215 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ArchiveService {
 
+    private static final int CHUNK_SIZE = 500;
+
     public void runArchiving() {
-        // 1. Check if archiving is enabled
-        boolean archivingEnabled = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED);
-        if (!archivingEnabled) {
-            System.out.println("[ARCHIVER] Archiving is disabled via settings.");
-            return;
-        }
-
-        // 2. Check which table to archive
-        boolean archivePointValues = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_POINT_VALUES, true);
-        boolean archiveEvents = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_TABLE_EVENTS, false);
-
-        if (!archivePointValues && !archiveEvents) {
-            System.out.println("[ARCHIVER] No tables selected for archiving, exiting.");
-            return;
-        }
-
-        int totalArchived = 0;
-        int totalDeleted = 0;
-
-        // 3. Fetch all archiving parameters from system settings
+        ArchivalConfig config = SystemSettingsDAO.getArchivingConfig();
         String archiveDbUrl = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL);
+        String archiveDbUrlUsername = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME);
+        String archiveDbUrlPassword = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD);
         int batchSize = SystemSettingsDAO.getIntValue(SystemSettingsDAO.BATCH_SIZE, 1000);
 
-        String dataAgeValueStr = SystemSettingsDAO.getValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_VALUE, "30");
-        String dataAgeUnit = SystemSettingsDAO.getValue(SystemSettingsDAO.DATA_ARCHIVE_AGE_UNIT, "DAYS");
-
-        int dataAgeValue;
-        try {
-            dataAgeValue = Integer.parseInt(dataAgeValueStr);
-        } catch (NumberFormatException e) {
-            System.out.println("[ARCHIVER] Invalid value for dataAgeValue. Defaulting to 30.");
-            dataAgeValue = 30;
+        if (config.getTasks() == null || config.getTasks().isEmpty()) {
+            System.out.println("[ARCHIVER] No tasks defined.");
+            return;
         }
-
-        // 4. Calculate the date threshold
-        Instant archiveBefore = Instant.now();
-        switch (dataAgeUnit.toUpperCase()) {
-            case "SECONDS":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.SECONDS);
-                break;
-            case "MINUTES":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.MINUTES);
-                break;
-            case "HOURS":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.HOURS);
-                break;
-            case "DAYS":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.DAYS);
-                break;
-            case "MONTHS":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.MONTHS);
-                break;
-            case "YEARS":
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.YEARS);
-                break;
-            default:
-                archiveBefore = archiveBefore.minus(dataAgeValue, ChronoUnit.DAYS);
-        }
-        Timestamp archiveBeforeTs = Timestamp.from(archiveBefore);
-
-        // 5. Connect to the archive database
-        DataSource archiveDataSource = new DriverManagerDataSource(archiveDbUrl);
-        JdbcTemplate archiveJdbc = new JdbcTemplate(archiveDataSource);
-
-        System.out.println("[ARCHIVER] Starting archiving to: " + archiveDbUrl +
-                ", batch size: " + batchSize +
-                ", records older than: " + archiveBeforeTs);
 
         JdbcTemplate jdbc = DAO.getInstance().getJdbcTemp();
+        DriverManagerDataSource archiveDataSource = new DriverManagerDataSource();
+        archiveDataSource.setUrl(archiveDbUrl);
+        archiveDataSource.setUsername(archiveDbUrlUsername);
+        archiveDataSource.setPassword(archiveDbUrlPassword);
+        JdbcTemplate archiveJdbc = new JdbcTemplate(archiveDataSource);
 
-        // 6.pointValues archiving
-        if (archivePointValues) {
-            totalArchived += archiveTable(
-                    "pointValues",
-                    "id, dataPointId, ts, value, annotation, sourceType, sourceId",
-                    "dataPointId, ts, value, annotation, sourceType, sourceId",
-                    "ts",
-                    archiveBeforeTs,
-                    jdbc, archiveJdbc, batchSize
-            );
-            totalDeleted += totalArchived;
+        for (ArchivalTask task : config.getTasks()) {
+            System.out.println("[ARCHIVER] Running task: " + task.getFunction() + ", olderThan: " + task.getAgeValue() + " " + task.getAgeUnit());
+            Timestamp beforeTs = Timestamp.from(Instant.now().minus(task.getAgeValue(), task.getAgeUnit()));
+            String tableName = task.getTable();
+            String columns;
+
+            columns = getColumnList(jdbc, tableName);
+            if (columns == null) {
+                System.out.println("[ARCHIVER] Skipping task for table with unknown columns: " + tableName);
+                continue;
+            }
+
+            ensureTableExistsByCopy(jdbc, archiveJdbc, task.getTable());
+
+            switch (task.getFunction()) {
+                case COPY_TO_ARCHIVE:
+                    archiveTable(tableName, columns, beforeTs, jdbc, archiveJdbc, batchSize);
+                    break;
+                case DELETE_IF_IN_ARCHIVE:
+                    deleteFromSourceIfInArchive(tableName, columns, beforeTs, jdbc, archiveJdbc, batchSize);
+                    break;
+            }
         }
-
-        // 7. events archiving
-        if (archiveEvents) {
-            totalArchived += archiveTable(
-                    "events",
-                    "id, typeName, typeRef1, typeRef2, typeRef3, activeTs, rtnApplicable, rtnTs, rtnCause, alarmLevel, message, ackTs, ackUserId, alternateAckSource, suppressed, comments, eventType, assigneeUserId, assigneeTs",
-                    "typeName, typeRef1, typeRef2, typeRef3, activeTs, rtnApplicable, rtnTs, rtnCause, alarmLevel, message, ackTs, ackUserId, alternateAckSource, suppressed, comments, eventType, assigneeUserId, assigneeTs",
-                    "activeTs",
-                    archiveBeforeTs,
-                    jdbc, archiveJdbc, batchSize
-            );
-            totalDeleted += totalArchived;
-        }
-
-        System.out.println("[ARCHIVER] Archiving finished. Total archived: " + totalArchived + ", total deleted: " + totalDeleted);
     }
 
-    /**
-     * Helper method to archive one table.
-     */
-    private int archiveTable(
+    private void archiveTable(
             String tableName,
             String selectColumns,
-            String insertColumns,
-            String timeColumn,
-            Timestamp archiveBeforeTs,
-            JdbcTemplate jdbc, JdbcTemplate archiveJdbc, int batchSize
+            Timestamp beforeTs,
+            JdbcTemplate jdbc,
+            JdbcTemplate archiveJdbc,
+            int batchSize
     ) {
-        int totalArchived = 0;
-
         while (true) {
-            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, timeColumn);
-            List<Map<String, Object>> rows = jdbc.queryForList(selectSql, archiveBeforeTs, batchSize);
+            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, getTimestampColumnName(tableName));
+            List<Map<String, Object>> rows = jdbc.queryForList(selectSql, beforeTs.getTime(), batchSize);
 
-            if (rows.isEmpty()) {
-                System.out.println("[ARCHIVER] [" + tableName + "] No more data to archive. Total archived: " + totalArchived);
+            if (rows.isEmpty()) break;
+
+            List<Integer> idList = rows.stream()
+                    .map(r -> (Integer) r.get("id"))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            Set<Integer> existingIds = new HashSet<>();
+            for (int i = 0; i < idList.size(); i += CHUNK_SIZE) {
+                List<Integer> chunk = idList.subList(i, Math.min(i + CHUNK_SIZE, idList.size()));
+                String verifySql = "SELECT id FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
+                existingIds.addAll(archiveJdbc.queryForList(verifySql, chunk.toArray(), Integer.class));
+            }
+
+            List<Map<String, Object>> filteredRows = rows.stream()
+                    .filter(r -> !existingIds.contains((Integer) r.get("id")))
+                    .collect(Collectors.toList());
+
+            if (filteredRows.isEmpty()) {
+                System.out.println("[ARCHIVER] [" + tableName + "] All rows already exist in archive, skipping insert.");
                 break;
             }
 
-            System.out.println("[ARCHIVER] [" + tableName + "] Found " + rows.size() + " records to archive...");
-
-            String[] insertColsArr = insertColumns.split(",");
+            String[] colsArr = selectColumns.split("\\s*,\\s*");
             String insertSql = String.format(
                     "INSERT INTO %s (%s) VALUES (%s)",
                     tableName,
-                    insertColumns,
-                    String.join(",", java.util.Collections.nCopies(insertColsArr.length, "?"))
+                    selectColumns,
+                    String.join(",", Collections.nCopies(colsArr.length, "?"))
             );
 
-            archiveJdbc.batchUpdate(insertSql, rows, batchSize, (ps, row) -> {
-                for (int i = 0; i < insertColsArr.length; i++) {
-                    Object val = row.get(insertColsArr[i].trim());
-                    ps.setObject(i + 1, val);
+            archiveJdbc.batchUpdate(insertSql, filteredRows, batchSize, (ps, row) -> {
+                for (int i = 0; i < colsArr.length; i++) {
+                    ps.setObject(i + 1, row.get(colsArr[i].trim()));
                 }
             });
 
-            totalArchived += rows.size();
-
-            // Collect IDs for deletion
-            List<Integer> idList = rows.stream()
-                    .map(r -> (Integer) r.get("id"))
-                    .collect(Collectors.toList());
-
-            int deletedBatch = 0;
-            for (int i = 0; i < idList.size(); i += batchSize) {
-                List<Integer> subList = idList.subList(i, Math.min(i + batchSize, idList.size()));
-                String inSql = "DELETE FROM " + tableName + " WHERE id IN (" +
-                        subList.stream().map(x -> "?").reduce((a, b) -> a + "," + b).orElse("") + ")";
-                int deleted = jdbc.update(inSql, subList.toArray());
-                deletedBatch += deleted;
-            }
-
-            System.out.println("[ARCHIVER] [" + tableName + "] Archived batch: " + rows.size() + ", deleted: " + deletedBatch);
+            System.out.println("[ARCHIVER] [" + tableName + "] Inserted batch: " + filteredRows.size());
 
             if (rows.size() < batchSize) break;
         }
+    }
 
-        return totalArchived;
+    private void deleteFromSourceIfInArchive(
+            String tableName,
+            String selectColumns,
+            Timestamp beforeTs,
+            JdbcTemplate jdbc,
+            JdbcTemplate archiveJdbc,
+            int batchSize
+    ) {
+        while (true) {
+            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, getTimestampColumnName(tableName));
+            List<Map<String, Object>> rows = jdbc.queryForList(selectSql, beforeTs.getTime(), batchSize);
+
+            List<Integer> idList = rows.stream()
+                    .map(r -> (Integer) r.get("id"))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            if (idList.isEmpty()) break;
+
+            List<Integer> verifiedIds = new ArrayList<>();
+            for (int i = 0; i < idList.size(); i += CHUNK_SIZE) {
+                List<Integer> chunk = idList.subList(i, Math.min(i + CHUNK_SIZE, idList.size()));
+                String verifySql = "SELECT id FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
+                verifiedIds.addAll(archiveJdbc.queryForList(verifySql, chunk.toArray(), Integer.class));
+            }
+            System.out.println("[ARCHIVER] [" + tableName + "] Found in archive: " + verifiedIds.size());
+
+            if (!verifiedIds.isEmpty()) {
+                int deleted = 0;
+                for (int i = 0; i < verifiedIds.size(); i += CHUNK_SIZE) {
+                    List<Integer> chunk = verifiedIds.subList(i, Math.min(i + CHUNK_SIZE, verifiedIds.size()));
+                    String inSql = "DELETE FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
+                    deleted += jdbc.update(inSql, chunk.toArray());
+                }
+                System.out.println("[ARCHIVER] [" + tableName + "] Deleted from source: " + deleted);
+            }
+            if (rows.size() < batchSize) break;
+        }
+    }
+
+    private void ensureTableExistsByCopy(JdbcTemplate sourceJdbc, JdbcTemplate targetJdbc, String tableName) {
+        if (!tableExists(targetJdbc, tableName)) {
+            System.out.println("[ARCHIVER] Table '" + tableName + "' does not exist in archive DB. Copying structure from primary...");
+            try {
+                String ddl = sourceJdbc.queryForObject(
+                        "SHOW CREATE TABLE " + tableName,
+                        (rs, rowNum) -> rs.getString(2)
+                );
+                ddl = sanitizeDDL(ddl);
+                targetJdbc.execute(ddl);
+                System.out.println("[ARCHIVER] Table '" + tableName + "' created in archive DB from source.");
+            } catch (Exception e) {
+                System.err.println("[ARCHIVER] Failed to copy structure for table '" + tableName + "': " + e.getMessage());
+            }
+        }
+    }
+
+    private boolean tableExists(JdbcTemplate jdbc, String tableName) {
+        String sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, tableName);
+        return count != null && count > 0;
+    }
+
+
+    /**
+     * Sanitizes the raw DDL statement obtained from SHOW CREATE TABLE.
+     * Removes engine-specific options, auto-increment markers, foreign key constraints,
+     * and indexes to make the statement safe for creating simplified archive tables.
+     * This avoids issues like duplicate primary keys, missing referenced tables,
+     * or MySQL-specific options when executing in a different context (e.g., archive DB).
+     */
+    private String sanitizeDDL(String ddl) {
+        ddl = ddl.replaceAll("AUTO_INCREMENT=\\d+\\s*", "");
+        ddl = ddl.replaceAll("AUTO_INCREMENT", "");
+        ddl = ddl.replaceAll(",\\s*CONSTRAINT `[^`]+` FOREIGN KEY \\([^\\)]+\\) REFERENCES `[^`]+` \\(`[^`]+`\\)", "");
+        ddl = ddl.replaceAll(",\\s*KEY `[^`]+` \\(`[^`]+`\\)", "");
+        ddl = ddl.replaceAll("ENGINE=\\w+\\s*", "");
+        ddl = ddl.replaceAll("DEFAULT CHARSET=\\w+\\s*", "");
+        return ddl;
+    }
+
+    private String getColumnList(JdbcTemplate jdbc, String tableName) {
+        try {
+            List<String> columnNames = jdbc.query(
+                    "SHOW COLUMNS FROM " + tableName,
+                    (rs, rowNum) -> rs.getString("Field")
+            );
+            return String.join(", ", columnNames);
+        } catch (Exception ex) {
+            System.err.println("[ARCHIVER] Failed to get columns for table: " + tableName + " — " + ex.getMessage());
+            return null;
+        }
+    }
+
+    private String getTimestampColumnName(String tableName) {
+        String timestamp = "";
+        switch (tableName) {
+            case "pointValues":  timestamp = "ts"; break;
+            case "events":  timestamp = "activeTs"; break;
+        }
+        return timestamp;
     }
 }

@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ArchiveUtils {
     public static void init() throws IOException {
-        String cronExpression = ScadaConfig.getInstance().getProperty(ScadaConfig.ARCHIVE_CRON);
+        String cronExpression = ScadaConfig.getInstance().getArchiveCron();
         ApplicationBeans.getBean("archivingScheduler", CronTriggerScheduler.class).schedule(cronExpression);
     }
 }

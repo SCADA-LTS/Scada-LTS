@@ -1737,3 +1737,93 @@ function isSupported(browser, minVersion) {
     }
     return false;
 }
+
+const archivingUnits = [
+    //{ value: "MINUTES", labelKey: "MINUTES"}, //TO REMOVE!! ONLY FOR TESTING
+    { value: "HOURS",   labelKey: "HOURS" },
+    { value: "DAYS",    labelKey: "DAYS"  },
+    { value: "WEEKS",   labelKey: "WEEKS" },
+    { value: "MONTHS",  labelKey: "MONTHS"},
+    { value: "YEARS",   labelKey: "YEARS" }
+];
+const archivingActions = [
+    { value: "COPY_TO_ARCHIVE", labelKey: "Archive" },
+    { value: "DELETE_IF_IN_ARCHIVE",  labelKey: "Delete" }
+];
+const archivingTables = [
+    { value: "pointValues", labelKey: "Point values" },
+    { value: "events",      labelKey: "events" }
+];
+
+function renderArchivingRules(rules) {
+    const tbody = document.getElementById('archivingRulesTbody');
+    tbody.innerHTML = '';
+    (rules || []).forEach((rule, i) => {
+        tbody.appendChild(archivingRuleRow(i, rule));
+    });
+}
+
+function archivingRuleRow(idx, rule) {
+    const tr = document.createElement('tr');
+    tr.appendChild(tdInput('number', 'ageValue', rule.ageValue || 30, 'min="1" class="formShort"'));
+    tr.appendChild(tdSelect('ageUnit', archivingUnits, rule.ageUnit));
+    tr.appendChild(tdSelect('action', archivingActions, rule.action));
+    tr.appendChild(tdSelect('table', archivingTables, rule.table));
+    const tdDel = document.createElement('td');
+    tdDel.innerHTML = `<img id="removeArchivingRuleRowImg" src="images/delete.png" alt="Remove" title="Remove" onclick="removeArchivingRuleRow(${idx})"border="0"/>`;
+    tr.appendChild(tdDel);
+    return tr;
+}
+
+function tdInput(type, name, value, extra = "") {
+    const td = document.createElement('td');
+    td.innerHTML = `<input type="${type}" name="${name}" value="${value}" ${extra}/>`;
+    return td;
+}
+
+function tdSelect(name, options, selected) {
+    const td = document.createElement('td');
+    let html = `<select name="${name}">`;
+    options.forEach(opt =>
+        html += `<option value="${opt.value}" ${opt.value === selected ? 'selected' : ''}>${opt.labelKey}</option>`
+    );
+    html += `</select>`;
+    td.innerHTML = html;
+    return td;
+}
+
+// Add rule row
+function addArchivingRuleRow() {
+    const rules = getArchivingRulesFromTable();
+    rules.push({ageValue: 30, ageUnit: "DAYS", action: "ARCHIVE", table: "pointValues"});
+    renderArchivingRules(rules);
+}
+
+// Remove rule row
+function removeArchivingRuleRow(idx) {
+    const rules = getArchivingRulesFromTable();
+    rules.splice(idx, 1);
+    renderArchivingRules(rules);
+}
+
+// Get all rules from table
+function getArchivingRulesFromTable() {
+    const rules = [];
+    const rows = document.querySelectorAll("#archivingRulesTbody tr");
+
+    rows.forEach(row => {
+        const ageValue = parseInt(row.querySelector('input[name="ageValue"]').value);
+        const ageUnit = row.querySelector('select[name="ageUnit"]').value;
+        const func = row.querySelector('select[name="action"]').value;
+        const table = row.querySelector('select[name="table"]').value;
+
+        rules.push({
+            ageValue,
+            ageUnit,
+            function: func,
+            table
+        });
+    });
+
+    return rules;
+}
