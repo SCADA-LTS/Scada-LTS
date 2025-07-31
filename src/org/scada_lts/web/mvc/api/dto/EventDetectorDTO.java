@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import javax.validation.Valid;
 
@@ -9,9 +10,9 @@ import static org.scada_lts.utils.EventDetectorApiUtils.updateValueEventDetector
 
 public class EventDetectorDTO {
 
-    @Valid
+    @XssProtect
     private String xid;
-    @Valid
+    @XssProtect
     private String alias;
     private Integer alarmLevel;
     private Integer detectorType;
@@ -21,7 +22,7 @@ public class EventDetectorDTO {
     private Boolean binaryState;
     private Integer multistateState;
     private Integer changeCount;
-    @Valid
+    @XssProtect
     private String alphanumericState;
     private Double weight;
 
