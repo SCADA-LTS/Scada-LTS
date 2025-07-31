@@ -27,8 +27,9 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.quartz.CronExpression;
-import org.scada_lts.archiving.ArchivalConfig;
-import org.scada_lts.archiving.ArchivalTask;
+import org.scada_lts.archiving.ArchiveConfig;
+import org.scada_lts.archiving.ArchiveFunction;
+import org.scada_lts.archiving.ArchiveTask;
 import org.scada_lts.archiving.ArchiveUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -48,6 +49,7 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
 import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
@@ -55,10 +57,8 @@ import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
@@ -218,26 +218,8 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
 				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
 		settings.put(
-				SystemSettingsDAO.ARCHIVE_ENABLED,
-				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED));
-		settings.put(
-				SystemSettingsDAO.ARCHIVE_DB_URL,
-				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL));
-		settings.put(
-				SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME,
-				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME));
-		settings.put(
-				SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD,
-				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD));
-		settings.put(
-				SystemSettingsDAO.BATCH_SIZE,
-				SystemSettingsDAO.getIntValue(SystemSettingsDAO.BATCH_SIZE));
-		settings.put(
-				SystemSettingsDAO.ARCHIVE_CRON,
-				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CRON));
-		settings.put(
-				SystemSettingsDAO.ARCHIVING_CONFIG,
-				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVING_CONFIG));
+				SystemSettingsDAO.ARCHIVE_CONFIG,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CONFIG));
 		return settings;
 	}
 
@@ -593,62 +575,21 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 	}
 
-	public DwrResponseI18n saveArchivingConfig(
-			boolean archiveEnabled,
-			String archiveDbUrl,
-			String archiveDbUser,
-			String archiveDbPassword,
-			int batchSize,
-			String archiveCron,
-			String configJson
-	) {
+	public DwrResponseI18n saveArchiveConfig(String configJson) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 
-		if (archiveDbUrl == null || archiveDbUrl.trim().isEmpty()) {
-			response.addContextualMessage(SystemSettingsDAO.ARCHIVE_DB_URL, "systemSettings.archiving.missingFields");
-		}
-		if (archiveDbUser == null || archiveDbUser.trim().isEmpty()) {
-			response.addContextualMessage(SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME, "systemSettings.archiving.missingFields");
-		}
-		if (archiveDbPassword == null || archiveDbPassword.trim().isEmpty()) {
-			response.addContextualMessage(SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD, "systemSettings.archiving.missingFields");
-		}
-		if (batchSize <= 0) {
-			response.addContextualMessage(SystemSettingsDAO.BATCH_SIZE, "systemSettings.archiving.invalidBatchSize");
-		}
-		if (archiveCron == null || archiveCron.trim().isEmpty() || !CronExpression.isValidExpression(archiveCron)) {
-			response.addContextualMessage(SystemSettingsDAO.ARCHIVE_CRON, "systemSettings.archiving.invalidCron");
-		}
-
-		ObjectMapper mapper = new ObjectMapper();
-		ArchivalConfig config;
 		try {
-			config = mapper.readValue(configJson, ArchivalConfig.class);
+			response = SystemSettingsUtils.validateArchiveConfig(configJson);
 		} catch (Exception ex) {
 			response.addContextualMessage("dataArchivingMessage", "emport.parseError");
 			return response;
 		}
-		if (config == null || config.getTasks() == null || config.getTasks().isEmpty()) {
-			response.addContextualMessage("dataArchivingMessage", "systemSettings.archiving.noTasksDefined");
-		} else {
-			for (int i = 0; i < config.getTasks().size(); i++) {
-				ArchivalTask task = config.getTasks().get(i);
-				if (task.getAgeValue() <= 0) {
-					response.addContextualMessage("dataArchivingMessage", "systemSettings.archiving.invalidAge");
-				}
-			}
-		}
-		if (response.getHasMessages()) return response;
+
 
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
-		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED, archiveEnabled);
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_DB_URL, archiveDbUrl);
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME, archiveDbUser);
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD, archiveDbPassword);
-		systemSettingsDAO.setIntValue(SystemSettingsDAO.BATCH_SIZE, batchSize);
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CRON, archiveCron);
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVING_CONFIG, configJson);
+		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
+
 
 		try {
 			ArchiveUtils.init();
@@ -656,6 +597,33 @@ public class SystemSettingsDwr extends BaseDwr {
 			throw new RuntimeException(e);
 		}
 		return response;
+	}
+
+	public Map<String, List<Map<String, String>>> getArchiveOptions() {
+		List<Map<String, String>> actions = Arrays.stream(ArchiveFunction.values())
+				.map(f -> {
+					Map<String, String> m = new HashMap<>();
+					m.put("value", f.name());
+					m.put("labelKey", f.getLabelKey());
+					return m;
+				})
+				.collect(Collectors.toList());
+
+		List<Map<String, String>> table = new ArrayList<>();
+		Map<String, String> pv = new HashMap<>();
+		pv.put("value", "pointValues");
+		pv.put("labelKey", "Point values");
+		table.add(pv);
+
+		Map<String, String> events = new HashMap<>();
+		events.put("value", "events");
+		events.put("labelKey", "Events");
+		table.add(events);
+
+		Map<String, List<Map<String, String>>> result = new HashMap<>();
+		result.put("actions", actions);
+		result.put("table", table);
+		return result;
 	}
 
 }

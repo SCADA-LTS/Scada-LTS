@@ -34,6 +34,8 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
+    let archiveActions = [];
+    let archiveTables = [];
 
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
@@ -132,21 +134,14 @@
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>);
 
-          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>);
+          SystemSettingsDwr.getArchiveOptions(function(options) {
+            archiveActions = options.actions || [];
+            archiveTables = options.table || [];
 
-          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>", settings.<c:out value="<%= SystemSettingsDAO.BATCH_SIZE %>"/>);
-          $set("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>);
-          loadArchivingRules(settings.<c:out value="<%= SystemSettingsDAO.ARCHIVING_CONFIG %>"/>)
 
-          var archivingEnabled = !!settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>;
-          toggleArchiveFields(archivingEnabled);
+            loadArchiveConfig(settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_CONFIG %>"/>)
+          });
 
-          document.getElementById("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>").onchange = function() {
-            toggleArchiveFields(this.checked);
-          };
         });
 
 <%--
@@ -680,43 +675,35 @@
       initSizeField(smsDomain);
     });
 
-    function saveDataArchivingSettings() {
-      const rules = getArchivingRulesFromTable();
-      const configJson = JSON.stringify({ tasks: rules });
+    function saveDataArchiveSettings() {
+      const configJson = JSON.stringify({
+        enabled: document.getElementById("archiveEnabled").checked,
+        dbUrl: $get("archiveDbUrl"),
+        dbUsername: $get("archiveDbUsername"),
+        dbPassword: $get("archiveDbPassword"),
+        batchSize: parseInt($get("archiveBatchSize")),
+        cron: $get("archiveCron"),
+        tasks: getArchiveRulesFromTable()
+      });
 
-      var archiveEnabled = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>");
-      var archiveDbUrl = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>");
-      var archiveDbUrlUsername = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>");
-      var archiveDbUrlPassword = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>");
-      var batchSize = $get("<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>");
-      var archiveCron = $get("<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>");
-
-      SystemSettingsDwr.saveArchivingConfig(
-              archiveEnabled,
-              archiveDbUrl,
-              archiveDbUrlUsername,
-              archiveDbUrlPassword,
-              batchSize,
-              archiveCron,
-              configJson,
-              function(response) {
-                stopImageFader("saveDataArchivingSettingsImg");
-                if (response.hasMessages) {
-                  setUserMessage("dataArchivingMessage", response.messages);
-                } else {
-                  setUserMessage("dataArchivingMessage", "<spring:message code='systemSettings.archiving.settingsSuccess'/>");
-                }
-              }
-      );
+      SystemSettingsDwr.saveArchiveConfig(configJson, function(response) {
+        stopImageFader("saveDataArchivingSettingsImg");
+        if (response.hasMessages) {
+          const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
+          setUserMessage("dataArchivingMessage", messages);
+        } else {
+          setUserMessage("dataArchivingMessage", "<spring:message code='systemSettings.archiving.settingsSuccess'/>");
+        }
+      });
     }
 
     function toggleArchiveFields(enabled) {
       var fields = [
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.BATCH_SIZE %>'/>",
-        "<c:out value='<%= SystemSettingsDAO.ARCHIVE_CRON %>'/>",
+        "archiveDbUrl",
+        "archiveDbUsername",
+        "archiveDbPassword",
+        "archiveBatchSize",
+        "archiveCron"
       ];
       for (var i = 0; i < fields.length; i++) {
         var el = document.getElementById(fields[i]);
@@ -724,8 +711,8 @@
       }
 
       const buttons = [
-        { id: "addArchivingRuleImg", handler: addArchivingRuleRow },
-        { id: "removeArchivingRuleRowImg", handler: removeArchivingRuleRow }
+        { id: "addArchivingRuleImg", handler: addArchiveRuleRow },
+        { id: "removeArchivingRuleRowImg", handler: removeArchiveRuleRow }
       ];
 
       buttons.forEach(({ id, handler }) => {
@@ -738,15 +725,123 @@
       });
     }
 
-    function loadArchivingRules(json) {
-      let rules = [];
+    function loadArchiveConfig(json) {
       try {
-        if (json) rules = JSON.parse(json).tasks || [];
+        const cfg = JSON.parse(json);
+
+        const checkbox = document.getElementById("archiveEnabled");
+        checkbox.checked = cfg.enabled;
+        toggleArchiveFields(cfg.enabled);
+
+        checkbox.onchange = function () {
+          toggleArchiveFields(this.checked);
+        };
+
+        document.getElementById("archiveEnabled").checked = cfg.enabled;
+        $set("archiveDbUrl", cfg.dbUrl);
+        $set("archiveDbUsername", cfg.dbUsername);
+        $set("archiveDbPassword", cfg.dbPassword);
+        $set("archiveBatchSize", cfg.batchSize);
+        $set("archiveCron", cfg.cron);
+
+        renderArchiveRules(cfg.tasks || []);
       } catch (e) {
-        console.warn("[ARCHIVER]Invalid archiving config JSON:", e);
+        console.error("Invalid archive config JSON", e);
       }
-      renderArchivingRules(rules);
     }
+
+  function renderArchiveRules(rules) {
+    const tbody = document.getElementById('archivingRulesTbody');
+    tbody.innerHTML = '';
+    (rules || []).forEach((rule, i) => {
+      tbody.appendChild(archiveRuleRow(i, rule));
+    });
+  }
+
+  function archiveRuleRow(idx, rule) {
+    const tr = document.createElement('tr');
+
+    const tdAge = document.createElement('td');
+    const tpl = document.getElementById('archiveAgeFieldTemplate');
+    tdAge.innerHTML = tpl.innerHTML;
+
+    const input = tdAge.querySelector('input[name="ageValue"]');
+    const select = tdAge.querySelector('select[name="ageUnit"]');
+
+
+    input.value = rule.ageValue || 30;
+    select.value = rule.ageUnit || "4";
+
+    tr.appendChild(tdAge);
+    tr.appendChild(tdSelect('action', archiveActions, rule.action));
+    tr.appendChild(tdSelect('table', archiveTables, rule.table));
+
+    const tdDel = document.createElement('td');
+    tdDel.innerHTML = `<img id="removeArchivingRuleRowImg" src="images/delete.png" alt="Remove" title="Remove" onclick="removeArchiveRuleRow(${idx})" border="0"/>`;
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function tdInput(type, name, value, extra = "") {
+    const td = document.createElement('td');
+    td.innerHTML = `<input type="${type}" name="${name}" value="${value}" ${extra}/>`;
+    return td;
+  }
+
+    function tdSelect(name, options, selected) {
+      const td = document.createElement('td');
+      const select = document.createElement('select');
+      select.name = name;
+
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.labelKey;
+        if (opt.value === selected) option.selected = true;
+        select.appendChild(option);
+      });
+
+      td.appendChild(select);
+      return td;
+    }
+
+  // Add rule row
+  function addArchiveRuleRow() {
+    const rules = getArchiveRulesFromTable();
+    rules.push({ageValue: 30, ageUnit: "4", action: "COPY_TO_ARCHIVE", table: "pointValues"});
+    renderArchiveRules(rules);
+  }
+
+  // Remove rule row
+  function removeArchiveRuleRow(idx) {
+    const rules = getArchiveRulesFromTable();
+    rules.splice(idx, 1);
+    renderArchiveRules(rules);
+  }
+
+  // Get all rules from table
+  function getArchiveRulesFromTable() {
+    const rules = [];
+    const rows = document.querySelectorAll("#archivingRulesTbody tr");
+
+    rows.forEach(row => {
+      const ageValue = parseInt(row.querySelector('input[name="ageValue"]').value);
+      const ageUnit = row.querySelector('select[name="ageUnit"]').value;
+      const func = row.querySelector('select[name="action"]').value;
+      const table = row.querySelector('select[name="table"]').value;
+
+      rules.push({
+        ageValue,
+        ageUnit,
+        function: func,
+        table
+      });
+    });
+
+    return rules;
+  }
+
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
@@ -1231,7 +1326,7 @@
           <tag:help id="dataArchivingSettings"/>
         </td>
         <td align="right">
-          <tag:img id="saveDataArchivingSettingsImg" png="save" onclick="saveDataArchivingSettings();" title="common.save"/>
+          <tag:img id="saveDataArchivingSettingsImg" png="save" onclick="saveDataArchiveSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
@@ -1243,7 +1338,7 @@
         <td class="formField">
           <input
                   type="checkbox"
-                  id="<c:out value='<%= SystemSettingsDAO.ARCHIVE_ENABLED %>'/>"
+                  id="archiveEnabled"
                   onchange="toggleArchiveFields(this.checked)"
           />
         </td>
@@ -1251,31 +1346,31 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrl"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL %>"/>" type="text" class="formWide"/>
+          <input id="archiveDbUrl" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlUsername"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME %>"/>" type="text" class="formWide"/>
+          <input id="archiveDbUsername" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlPassword"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD %>"/>" type="text" class="formWide"/>
+          <input id="archiveDbPassword" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.batchSize"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.BATCH_SIZE %>"/>" type="number" min="1" class="formMedium"/>
+          <input id="archiveBatchSize" type="number" min="1" class="formMedium"/>
         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.archiveFrequency"/></td>
         <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_CRON %>"/>" type="text" class="formWide"/>
+          <input id="archiveCron" type="text" class="formWide"/>
         </td>
       </tr>
       <tr>
@@ -1287,7 +1382,6 @@
             <thead>
             <tr>
               <th><spring:message code="systemSettings.archiving.ageValue"/></th>
-              <th><spring:message code="systemSettings.archiving.ageUnit"/></th>
               <th><spring:message code="systemSettings.archiving.action"/></th>
               <th><spring:message code="systemSettings.archiving.table"/></th>
               <th></th>
@@ -1299,7 +1393,7 @@
             <tfoot>
             <tr>
               <td colspan="5" align="right">
-                <img id="addArchivingRuleImg" src="images/add.png" title="Add" onclick="addArchivingRuleRow()"border="0"/>
+                <img id="addArchivingRuleImg" src="images/add.png" title="Add" onclick="addArchiveRuleRow()" border="0"/>
               </td>
             </tr>
             </tfoot>
@@ -1311,6 +1405,12 @@
         <td colspan="2" id="dataArchivingMessage" class="formError"></td>
       </tr>
     </table>
+    <div id="archiveAgeFieldTemplate" style="display:none">
+      <input type="number" name="ageValue" value="30" min="1" class="formShort" />
+      <select name="ageUnit">
+        <tag:timePeriodOptions h="true" d="true" w="true" mon="true" y="true"/>
+      </select>
+    </div>
   </div>
 
 
@@ -1556,7 +1656,6 @@
       }
 
       </style>
-  
-  
+
 </tag:page>
 <tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>

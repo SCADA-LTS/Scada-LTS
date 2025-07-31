@@ -20,6 +20,7 @@ package org.scada_lts.config;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.archiving.ArchiveConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 
 import java.io.File;
@@ -429,10 +430,12 @@ public class ScadaConfig {
 		
 	}
 
-	public String getArchiveCron(){
-		if (SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CRON) == null) {
-			return conf.getProperty(ARCHIVE_CRON);
+	public String getArchiveCron() {
+		ArchiveConfig config = SystemSettingsDAO.getArchiveConfig();
+
+		if (config != null && config.getCron() != null && !config.getCron().isEmpty()) {
+			return config.getCron();
 		}
-		return SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CRON);
+		return conf.getProperty(ARCHIVE_CRON);
 	}
 }

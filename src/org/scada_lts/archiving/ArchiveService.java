@@ -14,14 +14,13 @@ import java.util.stream.Collectors;
 @Service
 public class ArchiveService {
 
-    private static final int CHUNK_SIZE = 500;
+    public void runArchive() {
+        ArchiveConfig config = SystemSettingsDAO.getArchiveConfig();
 
-    public void runArchiving() {
-        ArchivalConfig config = SystemSettingsDAO.getArchivingConfig();
-        String archiveDbUrl = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL);
-        String archiveDbUrlUsername = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_USERNAME);
-        String archiveDbUrlPassword = SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_DB_URL_PASSWORD);
-        int batchSize = SystemSettingsDAO.getIntValue(SystemSettingsDAO.BATCH_SIZE, 1000);
+        String archiveDbUrl = config.getDbUrl();
+        String archiveDbUrlUsername = config.getDbUsername();
+        String archiveDbUrlPassword = config.getDbPassword();
+        int batchSize = config.getBatchSize();
 
         if (config.getTasks() == null || config.getTasks().isEmpty()) {
             System.out.println("[ARCHIVER] No tasks defined.");
@@ -35,7 +34,7 @@ public class ArchiveService {
         archiveDataSource.setPassword(archiveDbUrlPassword);
         JdbcTemplate archiveJdbc = new JdbcTemplate(archiveDataSource);
 
-        for (ArchivalTask task : config.getTasks()) {
+        for (ArchiveTask task : config.getTasks()) {
             System.out.println("[ARCHIVER] Running task: " + task.getFunction() + ", olderThan: " + task.getAgeValue() + " " + task.getAgeUnit());
             Timestamp beforeTs = Timestamp.from(Instant.now().minus(task.getAgeValue(), task.getAgeUnit()));
             String tableName = task.getTable();
@@ -80,8 +79,8 @@ public class ArchiveService {
                     .collect(Collectors.toList());
 
             Set<Integer> existingIds = new HashSet<>();
-            for (int i = 0; i < idList.size(); i += CHUNK_SIZE) {
-                List<Integer> chunk = idList.subList(i, Math.min(i + CHUNK_SIZE, idList.size()));
+            for (int i = 0; i < idList.size(); i += batchSize) {
+                List<Integer> chunk = idList.subList(i, Math.min(i + batchSize, idList.size()));
                 String verifySql = "SELECT id FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
                 existingIds.addAll(archiveJdbc.queryForList(verifySql, chunk.toArray(), Integer.class));
             }
@@ -135,8 +134,8 @@ public class ArchiveService {
             if (idList.isEmpty()) break;
 
             List<Integer> verifiedIds = new ArrayList<>();
-            for (int i = 0; i < idList.size(); i += CHUNK_SIZE) {
-                List<Integer> chunk = idList.subList(i, Math.min(i + CHUNK_SIZE, idList.size()));
+            for (int i = 0; i < idList.size(); i += batchSize) {
+                List<Integer> chunk = idList.subList(i, Math.min(i + batchSize, idList.size()));
                 String verifySql = "SELECT id FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
                 verifiedIds.addAll(archiveJdbc.queryForList(verifySql, chunk.toArray(), Integer.class));
             }
@@ -144,8 +143,8 @@ public class ArchiveService {
 
             if (!verifiedIds.isEmpty()) {
                 int deleted = 0;
-                for (int i = 0; i < verifiedIds.size(); i += CHUNK_SIZE) {
-                    List<Integer> chunk = verifiedIds.subList(i, Math.min(i + CHUNK_SIZE, verifiedIds.size()));
+                for (int i = 0; i < verifiedIds.size(); i += batchSize) {
+                    List<Integer> chunk = verifiedIds.subList(i, Math.min(i + batchSize, verifiedIds.size()));
                     String inSql = "DELETE FROM " + tableName + " WHERE id IN (" + chunk.stream().map(x -> "?").collect(Collectors.joining(",")) + ")";
                     deleted += jdbc.update(inSql, chunk.toArray());
                 }

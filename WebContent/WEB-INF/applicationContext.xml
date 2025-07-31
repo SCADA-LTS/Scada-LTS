@@ -369,7 +369,7 @@
   <bean id="archivingJobDetail" class="org.quartz.JobDetail">
     <constructor-arg value="Quartz - job-Archiving"/>
     <constructor-arg value="DEFAULT"/>
-    <constructor-arg value="org.scada_lts.archiving.ArchiverJob" type="java.lang.Class"/>
+    <constructor-arg value="org.scada_lts.archiving.ArchiveJob" type="java.lang.Class"/>
   </bean>
 
   <bean id="archivingScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">

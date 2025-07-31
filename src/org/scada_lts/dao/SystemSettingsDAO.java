@@ -24,7 +24,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.archiving.ArchivalConfig;
+import org.scada_lts.archiving.ArchiveConfig;
 import org.scada_lts.dao.cache.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
@@ -176,17 +176,7 @@ public class SystemSettingsDAO {
 	public static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "dataPointExtendedNameLengthInReportsLimit";
 
 	//Data archiving
-	public static final String ARCHIVE_ENABLED = "archiveEnabled";
-
-	public static final String ARCHIVE_DB_URL = "archiveDbUrl";
-	public static final String ARCHIVE_DB_URL_USERNAME= "archiveDbUrlUsername";
-	public static final String ARCHIVE_DB_URL_PASSWORD = "archiveDbUrlPassword";
-
-	public static final String BATCH_SIZE = "dataArchiveBatchSize";
-
-	public static final String ARCHIVE_CRON = "dataArchiveCron";
-
-	public static final String ARCHIVING_CONFIG = "archiveConfig";
+	public static final String ARCHIVE_CONFIG = "archiveConfig";
 
 
 	// @formatter:off
@@ -444,13 +434,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
-		DEFAULT_VALUES.put(ARCHIVE_ENABLED, SystemSettingsUtils.getArchiveEnabled());
-		DEFAULT_VALUES.put(ARCHIVE_DB_URL, SystemSettingsUtils.getArchiveDbUrl());
-		DEFAULT_VALUES.put(ARCHIVE_DB_URL_USERNAME, SystemSettingsUtils.getArchiveDbUsername());
-		DEFAULT_VALUES.put(ARCHIVE_DB_URL_PASSWORD, SystemSettingsUtils.getArchiveDbPassword());
-		DEFAULT_VALUES.put(BATCH_SIZE, SystemSettingsUtils.getBatchSize());
-		DEFAULT_VALUES.put(ARCHIVE_CRON, SystemSettingsUtils.getArchiveCron());
-		DEFAULT_VALUES.put(ARCHIVING_CONFIG, SystemSettingsUtils.getArchivingConfig());
+		DEFAULT_VALUES.put(ARCHIVE_CONFIG, SystemSettingsUtils.getArchivingConfig());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -517,23 +501,14 @@ public class SystemSettingsDAO {
 		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
 	}
 
-	public static ArchivalConfig getArchivingConfig() {
-		String json = getValue(ARCHIVING_CONFIG, null);
+	public static ArchiveConfig getArchiveConfig() {
+		String json = getValue(ARCHIVE_CONFIG, null);
 		if (json == null || json.trim().isEmpty())
-			return new ArchivalConfig();
+			return new ArchiveConfig();
 		try {
-			return new ObjectMapper().readValue(json, ArchivalConfig.class);
+			return new ObjectMapper().readValue(json, ArchiveConfig.class);
 		} catch (Exception e) {
-			throw new RuntimeException("Cannot parse ARCHIVAL_CONFIG JSON: " + e.getMessage(), e);
-		}
-	}
-
-	public void setArchivalConfig(ArchivalConfig config) {
-		try {
-			String json = new ObjectMapper().writeValueAsString(config);
-			setValue(ARCHIVING_CONFIG, json);
-		} catch (Exception e) {
-			throw new RuntimeException("Cannot save ARCHIVAL_CONFIG JSON: " + e.getMessage(), e);
+			throw new RuntimeException("Cannot parse ARCHIVE_CONFIG JSON: " + e.getMessage(), e);
 		}
 	}
 }

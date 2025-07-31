@@ -1,0 +1,61 @@
+<!--
+Scada-LTS
+Data Archiving Help
+@author PatrykB
+-->
+<h1>Overview</h1>
+<p>
+  The Data Archiving module allows you to automatically copy and/or delete old data from selected database tables
+  to an external archival database. This helps reduce the size of the primary database while keeping historical data accessible.
+</p>
+
+<p>
+  Archiving is configured using flexible rules which define how old the data must be to be archived or deleted, which tables to process,
+  and what action to take (copy or delete). You can also define the destination archive database and how frequently the archiving process runs.
+</p>
+
+<h2>Settings</h2>
+<p>The configuration consists of the following options:</p>
+<ul>
+  <li><b>Enable data archiving:</b> Activates or deactivates the archiving mechanism.</li>
+  <li><b>Archive database URL:</b> JDBC URL of the target archive database (e.g., <code>jdbc:mysql://localhost:3308/scadalts_archive</code>).</li>
+  <li><b>Archive database username:</b> Username for the archive database.</li>
+  <li><b>Archive database password:</b> Password for the archive database user.</li>
+  <li><b>Batch size:</b> Number of records processed in each step during archiving. Helps manage memory and performance.</li>
+  <li><b>Archive frequency (cron):</b> Cron expression that determines how often the archiving task is run (e.g., <code>0 0 1 * * ?</code> for daily at 1:00 AM).</li>
+  <li><b>Archiving Rules:</b> List of individual tasks that define what data should be archived or deleted.</li>
+</ul>
+
+<h2>Archiving Rules</h2>
+<p>Each archiving rule specifies:</p>
+<ul>
+  <li><b>Older than:</b> How old the data must be to qualify (e.g., 30 days).</li>
+  <li><b>Action:</b> Whether to <b>Archive</b> (copy to archive DB) or <b>Delete</b> (from main DB if already archived).</li>
+  <li><b>Table:</b> Which data table to apply the rule to (e.g., <code>pointValues</code>, <code>events</code>).</li>
+</ul>
+
+<h2>Usage Example</h2>
+<p>Archive historical point values older than 30 days to a secondary MySQL database.</p>
+<ol>
+  <li>Enable the "Enable data archiving" checkbox.</li>
+  <li>Set the Archive database URL to: <code>jdbc:mysql://localhost:3308/scadalts_archive</code></li>
+  <li>Set username and password for the archive database.</li>
+  <li>Set Batch size to <code>1000</code> (default).</li>
+  <li>Set Archive frequency to <code>0 0 1 * * ?</code> (every day at 1:00 AM).</li>
+  <li>In Archiving Rules, add a new rule:</li>
+  <ul>
+    <li><b>Older than:</b> 30 day(s)</li>
+    <li><b>Action:</b> Archive</li>
+    <li><b>Table:</b> pointValues</li>
+  </ul>
+  <li>Save configuration.</li>
+  <li>At 1:00 AM each day, Scada-LTS will move records from <code>pointValues</code> older than 30 days to the archive database.</li>
+</ol>
+
+<h2>Additional Notes</h2>
+<ul>
+  <li>Ensure that the archive database has the same schema structure as the source tables.</li>
+  <li>The archiving engine will automatically copy table structure if the archive table doesn't exist.</li>
+  <li>Deleted data cannot be recovered unless previously archived.</li>
+  <li>It is recommended to regularly back up both your main and archive databases.</li>
+</ul>

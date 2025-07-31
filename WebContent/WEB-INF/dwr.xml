@@ -247,9 +247,9 @@
     </convert>
 
     <!-- Archiving config -->
-    <convert converter="bean" match="org.scada_lts.archiving.ArchivalConfig"/>
-    <convert converter="bean" match="org.scada_lts.archiving.ArchivalTask"/>
-    <convert converter="enum" match="org.scada_lts.archiving.ArchivalFunction"/>
+    <convert converter="bean" match="org.scada_lts.archiving.ArchiveConfig"/>
+    <convert converter="bean" match="org.scada_lts.archiving.ArchiveTask"/>
+    <convert converter="enum" match="org.scada_lts.archiving.ArchiveFunction"/>
     <convert converter="enum" match="java.time.temporal.ChronoUnit"/>
   </allow>
   <signatures>

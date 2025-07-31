@@ -712,7 +712,7 @@ public class MangoContextListener implements ServletContextListener {
 
 		try {
 			ArchiveUtils.init();
-			log.info("Quartz ArchiverJob initialized");
+			log.info("Quartz ArchiveJob initialized");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

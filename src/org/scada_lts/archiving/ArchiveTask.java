@@ -5,18 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.temporal.ChronoUnit;
 
-public class ArchivalTask {
+public class ArchiveTask {
 
     private int ageValue;
     private ChronoUnit ageUnit;
-    private ArchivalFunction function;
+    private ArchiveFunction function;
     private String table;
 
     @JsonCreator
-    public ArchivalTask(
+    public ArchiveTask(
             @JsonProperty("ageValue") int ageValue,
             @JsonProperty("ageUnit") ChronoUnit ageUnit,
-            @JsonProperty("function") ArchivalFunction function,
+            @JsonProperty("function") ArchiveFunction function,
             @JsonProperty("table") String table) {
         this.ageValue = ageValue;
         this.ageUnit = ageUnit;
@@ -24,7 +24,7 @@ public class ArchivalTask {
         this.table = table;
     }
 
-    public ArchivalTask() {}
+    public ArchiveTask() {}
 
     public int getAgeValue() {
         return ageValue;
@@ -42,11 +42,11 @@ public class ArchivalTask {
         this.ageUnit = ageUnit;
     }
 
-    public ArchivalFunction getFunction() {
+    public ArchiveFunction getFunction() {
         return function;
     }
 
-    public void setFunction(ArchivalFunction function) {
+    public void setFunction(ArchiveFunction function) {
         this.function = function;
     }
 
