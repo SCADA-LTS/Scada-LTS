@@ -1,9 +1,11 @@
 package org.scada_lts.web.mvc.api.json;
 
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class JsonSettingsEventLevels extends IntegerPair {
 
+    @XssProtect
     private String translation;
 
     public JsonSettingsEventLevels() {}

@@ -1,8 +1,7 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 public class JsonSettingsEmail implements Serializable {
@@ -11,10 +10,15 @@ public class JsonSettingsEmail implements Serializable {
     private boolean tls;
     private int contentType;
     private int port;
+    @XssProtect
     private String from;
+    @XssProtect
     private String host;
+    @XssProtect
     private String name;
+    @XssProtect
     private String username;
+    @XssProtect
     private String password;
 
     public JsonSettingsEmail() {}

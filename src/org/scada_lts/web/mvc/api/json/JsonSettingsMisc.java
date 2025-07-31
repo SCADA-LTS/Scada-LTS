@@ -1,10 +1,13 @@
 package org.scada_lts.web.mvc.api.json;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.io.Serializable;
 
 public class JsonSettingsMisc implements Serializable {
 
     private int uiPerformance;
+    @XssProtect
     private String dataPointRuntimeValueSynchronized;
     public boolean viewForceFullScreenEnabled;
     public boolean viewHideShortcutDisableFullScreenEnabled;
@@ -14,7 +17,9 @@ public class JsonSettingsMisc implements Serializable {
     public boolean workItemsReportingItemsPerSecondEnabled;
     public int workItemsReportingItemsPerSecondLimit;
     public int threadsNameAdditionalLength;
+    @XssProtect
     public String webResourceGraphicsPath;
+    @XssProtect
     public String webResourceUploadsPath;
     public boolean eventAssignEnabled;
     public int pointExtendedNameLengthInReportsLimit;

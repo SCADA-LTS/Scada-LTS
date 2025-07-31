@@ -3,10 +3,15 @@ package org.scada_lts.web.mvc.api.dto;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
+import javax.validation.Valid;
+
 import static org.scada_lts.utils.EventDetectorApiUtils.updateValueEventDetector;
 
 public class EventDetectorDTO {
+
+    @Valid
     private String xid;
+    @Valid
     private String alias;
     private Integer alarmLevel;
     private Integer detectorType;
@@ -16,6 +21,7 @@ public class EventDetectorDTO {
     private Boolean binaryState;
     private Integer multistateState;
     private Integer changeCount;
+    @Valid
     private String alphanumericState;
     private Double weight;
 

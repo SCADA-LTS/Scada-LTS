@@ -1,7 +1,11 @@
 package org.scada_lts.web.mvc.api.json;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 public class ScriptPoint {
+    @XssProtect
     private String varName;
+    @XssProtect
     private String dataPointXid;
 
     public ScriptPoint() {

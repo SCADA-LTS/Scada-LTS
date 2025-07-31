@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.EmailRecipientDeserializer;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 import java.util.Set;
@@ -10,11 +11,14 @@ import java.util.Set;
 public class UpdateMailingList {
 
     private Integer id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
     private List<EmailRecipient> entries;
 
+    @XssProtect
     private String cronPattern;
     private Boolean collectInactiveEmails;
 

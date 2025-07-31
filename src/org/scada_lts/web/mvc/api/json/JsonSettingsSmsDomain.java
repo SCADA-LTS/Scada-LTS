@@ -1,8 +1,10 @@
 package org.scada_lts.web.mvc.api.json;
 
-public class JsonSettingsSmsDomain {
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
-    String domainName;
+public class JsonSettingsSmsDomain {
+    @XssProtect
+    private String domainName;
 
     public JsonSettingsSmsDomain() {
     }
