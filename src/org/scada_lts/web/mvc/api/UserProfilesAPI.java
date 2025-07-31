@@ -43,14 +43,14 @@ public class UserProfilesAPI {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UsersProfileVO> getUserProfile(
+    public ResponseEntity<UserProfile> getUserProfile(
             @PathVariable("id") Integer profileId,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
-                return new ResponseEntity<>(usersProfileService.getUserProfileById(profileId), HttpStatus.OK);
+                return new ResponseEntity<>(new UserProfile(usersProfileService.getUserProfileById(profileId)), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

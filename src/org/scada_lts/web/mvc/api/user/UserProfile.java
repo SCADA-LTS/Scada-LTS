@@ -3,7 +3,6 @@ package org.scada_lts.web.mvc.api.user;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
@@ -11,27 +10,26 @@ import java.util.List;
 
 public class UserProfile {
 
-    @XssProtect
-    private String name;
-
-    private List<Integer> dataSourcePermissions;
-
-    private List<DataPointAccess> dataPointPermissions;
-
-    private List<WatchListAccess> watchlistPermissions;
-
-    private List<ViewAccess> viewPermissions;
-
+    private int id;
     @XssProtect
     private String xid;
+    @XssProtect
+    private String name;
+    private List<Integer> dataSourcePermissions;
+    private List<DataPointAccess> dataPointPermissions;
+    private List<WatchListAccess> watchlistPermissions;
+    private List<ViewAccess> viewPermissions;
 
-    public UserProfile(String name, List<Integer> dataSourcePermissions, List<DataPointAccess> dataPointPermissions, List<WatchListAccess> watchlistPermissions, List<ViewAccess> viewPermissions, String xid) {
-        this.name = name;
-        this.dataSourcePermissions = dataSourcePermissions;
-        this.dataPointPermissions = dataPointPermissions;
-        this.watchlistPermissions = watchlistPermissions;
-        this.viewPermissions = viewPermissions;
-        this.xid = xid;
+    public UserProfile() {}
+
+    public UserProfile(UsersProfileVO profile) {
+        this.id = profile.getId();
+        this.xid = profile.getXid();
+        this.name = profile.getName();
+        this.dataSourcePermissions = profile.getDataSourcePermissions();
+        this.dataPointPermissions = profile.getDataPointPermissions();
+        this.watchlistPermissions = profile.getWatchlistPermissions();
+        this.viewPermissions = profile.getViewPermissions();
     }
 
     public String getName() {
@@ -82,15 +80,23 @@ public class UserProfile {
         this.xid = xid;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public UsersProfileVO toVo() {
         UsersProfileVO usersProfileVO = new UsersProfileVO();
-        usersProfileVO.setId(Common.NEW_ID);
-        usersProfileVO.setName(name);
+        usersProfileVO.setId(id);
         usersProfileVO.setXid(xid);
+        usersProfileVO.setName(name);
         usersProfileVO.setViewPermissions(viewPermissions);
         usersProfileVO.setWatchlistPermissions(watchlistPermissions);
         usersProfileVO.setDataPointPermissions(dataPointPermissions);
         usersProfileVO.setDataSourcePermissions(dataSourcePermissions);
-        return new UsersProfileVO();
+        return usersProfileVO;
     }
 }
