@@ -14,6 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class ArchiveService {
 
+    private final IArchiveQueryProvider provider;
+
+    public ArchiveService(ArchiveQueryProviderFactory archiveQueryProviderFactory) {
+        this.provider = archiveQueryProviderFactory.newInstance();
+    }
+
     public void runArchive() {
         ArchiveConfig config = SystemSettingsDAO.getArchiveConfig();
 
@@ -36,7 +42,9 @@ public class ArchiveService {
 
         for (ArchiveTask task : config.getTasks()) {
             System.out.println("[ARCHIVER] Running task: " + task.getFunction() + ", olderThan: " + task.getAgeValue() + " " + task.getAgeUnit());
-            Timestamp beforeTs = Timestamp.from(Instant.now().minus(task.getAgeValue(), task.getAgeUnit()));
+            long now = System.currentTimeMillis();
+            long deltaMs = task.getAgeUnit().toMs(task.getAgeValue());
+            Timestamp beforeTs = new Timestamp(now - deltaMs);
             String tableName = task.getTable();
             String columns;
 
@@ -67,8 +75,9 @@ public class ArchiveService {
             JdbcTemplate archiveJdbc,
             int batchSize
     ) {
+        String tsColumn = provider.getTimestampColumnName(tableName);
         while (true) {
-            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, getTimestampColumnName(tableName));
+            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, tsColumn);
             List<Map<String, Object>> rows = jdbc.queryForList(selectSql, beforeTs.getTime(), batchSize);
 
             if (rows.isEmpty()) break;
@@ -122,8 +131,9 @@ public class ArchiveService {
             JdbcTemplate archiveJdbc,
             int batchSize
     ) {
+        String tsColumn = provider.getTimestampColumnName(tableName);
         while (true) {
-            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, getTimestampColumnName(tableName));
+            String selectSql = String.format("SELECT %s FROM %s WHERE %s < ? LIMIT ?", selectColumns, tableName, tsColumn);
             List<Map<String, Object>> rows = jdbc.queryForList(selectSql, beforeTs.getTime(), batchSize);
 
             List<Integer> idList = rows.stream()
@@ -155,11 +165,11 @@ public class ArchiveService {
     }
 
     private void ensureTableExistsByCopy(JdbcTemplate sourceJdbc, JdbcTemplate targetJdbc, String tableName) {
-        if (!tableExists(targetJdbc, tableName)) {
+        if (!provider.tableExists(targetJdbc, tableName)) {
             System.out.println("[ARCHIVER] Table '" + tableName + "' does not exist in archive DB. Copying structure from primary...");
             try {
                 String ddl = sourceJdbc.queryForObject(
-                        "SHOW CREATE TABLE " + tableName,
+                        provider.showCreateTable(tableName),
                         (rs, rowNum) -> rs.getString(2)
                 );
                 ddl = sanitizeDDL(ddl);
@@ -169,12 +179,6 @@ public class ArchiveService {
                 System.err.println("[ARCHIVER] Failed to copy structure for table '" + tableName + "': " + e.getMessage());
             }
         }
-    }
-
-    private boolean tableExists(JdbcTemplate jdbc, String tableName) {
-        String sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?";
-        Integer count = jdbc.queryForObject(sql, Integer.class, tableName);
-        return count != null && count > 0;
     }
 
 
@@ -198,7 +202,7 @@ public class ArchiveService {
     private String getColumnList(JdbcTemplate jdbc, String tableName) {
         try {
             List<String> columnNames = jdbc.query(
-                    "SHOW COLUMNS FROM " + tableName,
+                    provider.showColumns(tableName),
                     (rs, rowNum) -> rs.getString("Field")
             );
             return String.join(", ", columnNames);
@@ -206,14 +210,5 @@ public class ArchiveService {
             System.err.println("[ARCHIVER] Failed to get columns for table: " + tableName + " — " + ex.getMessage());
             return null;
         }
-    }
-
-    private String getTimestampColumnName(String tableName) {
-        String timestamp = "";
-        switch (tableName) {
-            case "pointValues":  timestamp = "ts"; break;
-            case "events":  timestamp = "activeTs"; break;
-        }
-        return timestamp;
     }
 }

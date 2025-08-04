@@ -378,6 +378,14 @@
     <constructor-arg ref="archivingJobDetail"/>
   </bean>
 
+  <bean id="archiveQueryProviderFactory" class="org.scada_lts.archiving.ArchiveQueryProviderFactory">
+    <constructor-arg ref="databaseAccess"/>
+  </bean>
+
+  <bean id="archiveService" class="org.scada_lts.archiving.ArchiveService">
+    <constructor-arg ref="archiveQueryProviderFactory"/>
+  </bean>
+
   <bean id="opcUaTrustListManager" class="org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaTrustListManager"
         destroy-method="close" lazy-init="true"/>
 </beans>
