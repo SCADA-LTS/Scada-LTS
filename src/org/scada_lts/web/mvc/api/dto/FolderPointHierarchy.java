@@ -37,6 +37,7 @@ public class FolderPointHierarchy {
     @XssProtect
     private String parentXid;
     private int parentId;
+    @XssProtect
     private List<String> pointXids;
 
     public FolderPointHierarchy() {

@@ -16,6 +16,7 @@ public class CompoundComponentDTO extends GraphicalViewComponentDTO {
 
     @XssProtect
     private String name;
+    @XssProtect
     private Map<String, String> children;
 
     @JsonIgnore
