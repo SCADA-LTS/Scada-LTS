@@ -23,6 +23,7 @@ public class JsonEventSearch {
     private String datapoint;
     private int limit;
     private int offset;
+    @XssProtect
     private String[] sortBy;
     private boolean[] sortDesc;
     private long lastLogin;
