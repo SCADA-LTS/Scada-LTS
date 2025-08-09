@@ -19,7 +19,8 @@ jobs:
           java-version: |
             11
             17
-          distribution: 'temurin'
+          distribution: 'adopt'
+          cache: 'gradle'
       - name: Cache Tomcat
         uses: actions/cache@v3
         with:
