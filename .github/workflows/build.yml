@@ -14,13 +14,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v2
         with:
-          java-version: |
-            11
-            17
+          java-version: '11'
           distribution: 'adopt'
-          cache: 'gradle'
       - name: Cache Tomcat
         uses: actions/cache@v3
         with:
@@ -32,8 +29,10 @@ jobs:
         run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz; tar xvzf apache-tomcat-9.0.86.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
-      - name: Gradle wrapped
-        run: gradle wrapper --gradle-version=8.14.3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
