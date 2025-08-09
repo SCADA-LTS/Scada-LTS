@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,6 +49,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
@@ -67,7 +69,10 @@ public class UsersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Users
 			initData.put("admin", true);
-			initData.put("users", new UserDao().getUsers());
+			List<UserIdentifier> users = new UserService().getUsers().stream()
+					.map(UserIdentifier::new)
+					.collect(Collectors.toList());
+			initData.put("users", users);
 			initData.put("usersProfiles",
 					new UsersProfileService().getUsersProfiles());
 

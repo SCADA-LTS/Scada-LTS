@@ -23,6 +23,7 @@ import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportJob;
@@ -31,13 +32,16 @@ import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
 
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * @author Matthew Lohbihler
@@ -45,13 +49,19 @@ import java.util.ResourceBundle;
 public class ReportsDwr extends BaseDwr {
     public DwrResponseI18n init() {
         DwrResponseI18n response = new DwrResponseI18n();
-        MangoReport reportDao = new ReportService();
+        MangoReport reportService = new ReportService();
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        response.addData("mailingLists", new MailingListService().getMailingLists());
-        response.addData("users", new UserService().getUsers());
-        response.addData("reports", reportDao.getReports(user.getId()));
+        List<EmailRecipientJson> mailingLists = new MailingListService().getMailingLists().stream()
+                .map(MailingList::to)
+                .collect(Collectors.toList());
+        response.addData("mailingLists", mailingLists);
+        List<UserIdentifier> users = new UserService().getUsers().stream()
+                .map(UserIdentifier::new)
+                .collect(Collectors.toList());
+        response.addData("users", users);
+        response.addData("reports", reportService.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
         return response;

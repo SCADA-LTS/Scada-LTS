@@ -16,7 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.vo.mailingList;
+package org.scada_lts.web.mvc.api.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.serotonin.json.JsonObject;
+import com.serotonin.json.JsonReader;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
+import com.serotonin.mango.vo.mailingList.EmailRecipientDeserializer;
+import com.serotonin.mango.vo.mailingList.MailingList;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 import java.util.Map;
@@ -24,56 +33,38 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.util.IntervalUtil;
-import com.serotonin.timer.CronExpression;
-import org.joda.time.DateTime;
-
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.Common;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.utils.XidUtils;
-import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
-import org.scada_lts.web.mvc.api.dto.MailingListJson;
-
-@JsonRemoteEntity
-public class MailingList extends EmailRecipient {
+public class MailingListJson extends EmailRecipientJson {
     public static final String XID_PREFIX = "ML_";
 
     private int id = Common.NEW_ID;
-    @JsonRemoteProperty
+
+    @XssProtect
     private String xid;
-    @JsonRemoteProperty
+    @XssProtect
     private String name;
-    @JsonRemoteProperty(innerType = EmailRecipient.class)
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
-    private List<EmailRecipient> entries;
-    @JsonRemoteProperty
+    private List<EmailRecipientJson> entries;
+    @XssProtect
     private String cronPattern;
-    @JsonRemoteProperty
     private boolean collectInactiveEmails;
-    @JsonRemoteProperty
     private int dailyLimitSentEmailsNumber;
-    @JsonRemoteProperty
     private boolean dailyLimitSentEmails;
-
-    /**
-     * Integers that are present in the inactive intervals set are times at which the mailing list schedule is not to be
-     * sent to. Intervals are split into 15 minutes, starting at [00:00 to 00:15) on Monday. Thus, there are 4 * 24 * 7
-     * = 672 individual periods.
-     */
-
-
-
-    @JsonRemoteProperty(innerType = Integer.class)
     private Set<Integer> inactiveIntervals = new TreeSet<Integer>();
+
+    public MailingListJson() {
+    }
+
+    public MailingListJson(MailingList mailingList) {
+        this.id = mailingList.getId();
+        this.xid = mailingList.getXid();
+        this.name = mailingList.getName();
+        this.entries = mailingList.getEntries().stream().map(EmailRecipient::to).collect(Collectors.toList());
+        this.cronPattern = mailingList.getCronPattern();
+        this.collectInactiveEmails = mailingList.isCollectInactiveEmails();
+        this.dailyLimitSentEmailsNumber = mailingList.getDailyLimitSentEmailsNumber();
+        this.dailyLimitSentEmails = mailingList.isDailyLimitSentEmails();
+        this.inactiveIntervals = mailingList.getInactiveIntervals();
+    }
 
     @Override
     public int getRecipientType() {
@@ -114,11 +105,11 @@ public class MailingList extends EmailRecipient {
         this.name = name;
     }
 
-    public List<EmailRecipient> getEntries() {
+    public List<EmailRecipientJson> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<EmailRecipient> entries) {
+    public void setEntries(List<EmailRecipientJson> entries) {
         this.entries = entries;
     }
 
@@ -128,58 +119,6 @@ public class MailingList extends EmailRecipient {
 
     public void setInactiveIntervals(Set<Integer> inactiveIntervals) {
         this.inactiveIntervals = inactiveIntervals;
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime) {
-        if (sendTime != null && !isActive(sendTime))
-            return;
-        appendAllAddresses(addresses);
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses) {
-        for (EmailRecipient e : entries)
-            e.appendAddresses(addresses, null);
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
-        if (sendTime != null && !isActive(sendTime))
-            return;
-        appendAllAddresses(addresses, type);
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type) {
-        for (EmailRecipient e : entries)
-            e.appendAddresses(addresses, null, type);
-    }
-
-    public void validate(DwrResponseI18n response) {
-
-        MailingListService mailingListService = new MailingListService();
-        XidUtils.validateXid(response, mailingListService::isXidUnique, xid, id);
-
-        // Check that required fields are present.
-        if (StringUtils.isEmpty(name))
-            response.addContextualMessage("name", "mailingLists.validate.nameRequired");
-
-        // Check field lengths
-        if (StringUtils.isLengthGreaterThan(name, 40))
-            response.addContextualMessage("name", "mailingLists.validate.nameGreaterThan40");
-
-        // Check for entries.
-        if (entries.size() == 0)
-            response.addGenericMessage("mailingLists.validate.entries");
-
-        if(isCollectInactiveEmails()) {
-            try {
-                new CronExpression(cronPattern);
-            } catch (Exception e) {
-                response.addContextualMessage("cronPattern", "mailingLists.validate.correctCron", e.getMessage());
-            }
-        }
     }
 
     @Override
@@ -230,22 +169,14 @@ public class MailingList extends EmailRecipient {
         this.dailyLimitSentEmails = dailyLimitSentEmails;
     }
 
-    public boolean isActive(DateTime sendTime) {
-        return IntervalUtil.isActiveByInterval(this, sendTime);
-    }
-
-    public boolean isActive(EventInstance sendTime) {
-        return IntervalUtil.isActiveByInterval(this, sendTime);
-    }
-
     @Override
-    public EmailRecipientJson to() {
-        MailingListJson mailingList = new MailingListJson();
+    public EmailRecipient to() {
+        MailingList mailingList = new MailingList();
         mailingList.setId(id);
         mailingList.setXid(xid);
         mailingList.setName(name);
         mailingList.setCronPattern(cronPattern);
-        mailingList.setEntries(entries.stream().map(EmailRecipient::to).collect(Collectors.toList()));
+        mailingList.setEntries(entries.stream().map(EmailRecipientJson::to).collect(Collectors.toList()));
         mailingList.setDailyLimitSentEmails(dailyLimitSentEmails);
         mailingList.setCollectInactiveEmails(collectInactiveEmails);
         mailingList.setDailyLimitSentEmailsNumber(dailyLimitSentEmailsNumber);
