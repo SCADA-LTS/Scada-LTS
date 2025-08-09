@@ -31,8 +31,8 @@ jobs:
         run: ls $CATALINA_HOME
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: Gradle wrapped
-        run: ./gradlew wrapper --gradle-version=8.14.3
+      #- name: Gradle wrapped
+      #  run: ./gradlew wrapper --gradle-version=8.14.3
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
