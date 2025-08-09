@@ -29,10 +29,8 @@ jobs:
         run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz; tar xvzf apache-tomcat-9.0.86.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
       - name: Gradle wrapped
-        run: bash ./gradlew wrapper --gradle-version=8.14.3
+        run: gradle wrapper --gradle-version=8.14.3
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
