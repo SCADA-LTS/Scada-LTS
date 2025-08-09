@@ -43,7 +43,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 public class PendingEventsCache {
 	
 	private static final Log LOG = LogFactory.getLog(PendingEventsCache.class);
-	private static PendingEventsCache instance = null;
+	private static PendingEventsCache instance = new PendingEventsCache();
 	private int countBuffer;
 	private Map<Integer, List<EventInstance>> mapPendingEvents;
 	private final PendingEventService eventService;
@@ -51,12 +51,7 @@ public class PendingEventsCache {
 	private final SystemSettingsService systemSettingsService;
 
 	public static PendingEventsCache getInstance() throws IOException {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("Get PendingEventsCache instance ");
-		}
-		if (instance == null) {
-			instance = new PendingEventsCache();
-		}
+		if (LOG.isTraceEnabled()) LOG.trace("Get PendingEventsCache instance ");
 		return instance;
 	}
 	
