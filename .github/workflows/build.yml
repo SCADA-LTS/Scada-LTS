@@ -152,9 +152,9 @@ jobs:
         working-directory: ./WebContent/resources
         run: npm install
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Gradle wrapped
-        run: ./gradlew wrapper --gradle-version=8.14.3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
