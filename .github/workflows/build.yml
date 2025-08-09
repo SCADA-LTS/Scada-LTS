@@ -30,7 +30,7 @@ jobs:
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Gradle wrapped
-        run: gradlew wrapper --gradle-version=8.14.3
+        run: ./gradlew wrapper --gradle-version=8.14.3
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Show JUnit Test Results
@@ -150,7 +150,7 @@ jobs:
         working-directory: ./WebContent/resources
         run: npm install
       - name: Gradle wrapped
-        run: gradlew wrapper --gradle-version=8.14.3
+        run: ./gradlew wrapper --gradle-version=8.14.3
       - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
