@@ -17,7 +17,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	
 	private boolean cacheEnabled = false;
 	
-	private static DataSourcePointsCache instance = null;
+	private static DataSourcePointsCache instance = new DataSourcePointsCache() ;
 	
 	private Map<Long, List<DataPointVO>> dss = new TreeMap<>();
 	
@@ -26,9 +26,6 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	}
 	
 	public static DataSourcePointsCache getInstance() {
-		if (instance==null) {
-			instance = new DataSourcePointsCache();
-		}
 		return instance;
 	}
 
