@@ -70,15 +70,17 @@ public class MailingListsDwr extends BaseDwr {
 		return response;
 	}
 
-	public MailingList getMailingList(int id) {
+	public MailingListJson getMailingList(int id) {
 		if (id == Common.NEW_ID) {
-			MailingList ml = new MailingList();
+			MailingListJson ml = new MailingListJson();
 			ml.setId(Common.NEW_ID);
 			ml.setXid(new MailingListDao().generateUniqueXid());
-			ml.setEntries(new LinkedList<EmailRecipient>());
+			ml.setEntries(new LinkedList<>());
 			return ml;
 		}
-		return new MailingListDao().getMailingList(id);
+		MailingListService mailingListService = new MailingListService();
+		MailingList mailingList = mailingListService.getMailingList(id);
+		return new MailingListJson(mailingList);
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,

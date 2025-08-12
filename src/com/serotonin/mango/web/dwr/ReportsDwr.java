@@ -37,7 +37,7 @@ import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
-import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -53,11 +53,14 @@ public class ReportsDwr extends BaseDwr {
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        List<EmailRecipientJson> mailingLists = new MailingListService().getMailingLists().stream()
-                .map(MailingList::to)
+        MailingListService mailingListService = new MailingListService();
+        List<MailingList> mailingListFromDatabase = mailingListService.getMailingLists();
+        List<MailingListJson> mailingLists = mailingListFromDatabase.stream()
+                .map(MailingListJson::new)
                 .collect(Collectors.toList());
         response.addData("mailingLists", mailingLists);
-        List<UserIdentifier> users = new UserService().getUsers().stream()
+        UserService userService = new UserService();
+        List<UserIdentifier> users = userService.getUsers().stream()
                 .map(UserIdentifier::new)
                 .collect(Collectors.toList());
         response.addData("users", users);
