@@ -91,7 +91,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final DataPointUserDAO dataPointUserDAO ;
 
-	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class);
+	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getPointValueDAOBean();
 
 	private final IWatchListDAO watchListDAO;
 
@@ -104,7 +104,7 @@ public class DataPointService implements MangoDataPoint {
 	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
 
 	public DataPointService() {
-		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+		this.dataPointDAO = ApplicationBeans.getDataPointDAOBean();
 		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
 		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", IPointHierarchyDAO.class);
 		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);

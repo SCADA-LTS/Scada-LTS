@@ -70,7 +70,7 @@ public class AbstractStartStopDataPointsUtilsTest {
         PowerMockUtils.configDaoMock();
 
         IPointValueDAO dao = mock(IPointValueDAO.class);
-        PowerMockito.when(ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+        PowerMockito.when(ApplicationBeans.getPointValueDAOBean())
                 .thenReturn(dao);
         when(dao.getLatestPointValue(anyInt())).thenReturn(null);
         when(dao.findByIdAndTs(anyInt(), anyLong())).thenReturn(Collections.emptyList());

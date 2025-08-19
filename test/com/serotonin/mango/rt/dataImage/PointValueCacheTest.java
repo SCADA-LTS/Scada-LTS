@@ -67,7 +67,7 @@ public class PointValueCacheTest {
         PointValueDAOMemory memoryDao = new PointValueDAOMemory(userDAO);
 
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
-        when(ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class))
+        when(ApplicationBeans.getPointValueDAOBean())
                 .thenReturn(memoryDao);
 
         SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);

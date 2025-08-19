@@ -17,7 +17,7 @@ import java.util.Map;
 public class UpdateDataSourcesPoints implements StatefulJob{
 
     private static final Log LOG = LogFactory.getLog(UpdateDataSourcesPoints.class);
-    private final IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+    private final IDataPointDAO dao = ApplicationBeans.getDataPointDAOBean();
 
 
     @Override

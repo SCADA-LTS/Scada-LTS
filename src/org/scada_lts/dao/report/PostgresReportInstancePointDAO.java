@@ -82,13 +82,6 @@ public class PostgresReportInstancePointDAO implements IReportInstancePointDAO {
         return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_POINT_SELECT_WHERE, new Object[]{instanceId}, new PostgresReportInstancePointDAO.ReportPointInfoRowMapper());
     }
 
-    @Deprecated(since = "2.7.7")
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
-    public int insert(final ReportInstance reportInstance, final DataPointVO point, final String name, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {
-        return insert(reportInstance, dataType, startValue, pointInfo);
-    }
-
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     @Override
     public int insert(final ReportInstance reportInstance, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {

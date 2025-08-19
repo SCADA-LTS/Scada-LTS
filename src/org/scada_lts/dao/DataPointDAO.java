@@ -459,13 +459,11 @@ public class DataPointDAO implements IDataPointDAO {
 	}
 
 	@Deprecated
-	@Override
 	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
 		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
 	}
 
 	@Deprecated
-	@Override
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
 		new Object[] { userId },

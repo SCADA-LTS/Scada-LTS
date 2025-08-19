@@ -10,10 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 
 public interface IReportInstanceDataDAO {
-    @Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor= SQLException.class)
     int insert(Object[] params, int reportPointId, String timestampSql);
 
-    @Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
     int insertReportInstanceDataAnnotations(String annotationCase, int reportPointId);
 
     void setReportValue(ReportPointInfo point, ReportDataValue rdv, ReportDataStreamHandler handler);

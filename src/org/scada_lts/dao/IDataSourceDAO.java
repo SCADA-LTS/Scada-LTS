@@ -40,9 +40,6 @@ public interface IDataSourceDAO {
 
     DataSourceVO<?> create(DataSourceVO<?> entity);
 
-    @Deprecated
-    List<ScadaObjectIdentifier> getSimpleList();
-
     List<DataSourceVO<?>> getAll();
 
     DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException;

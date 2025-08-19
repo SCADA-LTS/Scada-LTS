@@ -1080,24 +1080,6 @@ public class EventDAO implements IEventDAO {
 
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_IDS, new Object[]  { actTS, userId, alternateAckSource, joiner.toString() } );
 	}
-
-	@Deprecated
-	@Override
-	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
-		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT, new Object[]{dataPointId, userId}, new UserEventRowMapper());
-	}
-
-	@Deprecated
-	@Override
-	public List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId) {
-		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER, new Object[]{typeId, typeRef1, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
-	}
-
-	@Deprecated
-	@Override
-	public List<EventInstance> getPendingEvents(int typeId, int userId) {
-		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER, new Object[]{typeId, userId, DAO.boolToChar(true)}, new UserEventRowMapper() );	
-	}
 	
 	@Override
 	public List<EventInstance> getPendingEventsLimit(int userId, int limit) {
@@ -1129,17 +1111,9 @@ public class EventDAO implements IEventDAO {
 	public List<EventInstance> getPendingEventsLimit(int typeId, int userId, int limit) {
 		return DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER + LIMIT+" ? ", new Object[]{typeId, userId, DAO.boolToChar(true), limit}, new UserEventRowMapper() );
 	}
-
-	@Deprecated
-	@Override
-	public void attachRelationalInfo(EventInstance event) {
-		List<UserComment> lstUserComments = (List<UserComment>) DAO.getInstance().getJdbcTemp().query(EVENT_COMMENT_SELECT, new Object[] { event.getId() }, new UserCommentRowMapper() );
-		event.setEventComments(lstUserComments); 
-	}
 	
 	@Deprecated
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	@Override
 	public int purgeEventsBefore(long time) {
 		
 		if (LOG.isTraceEnabled()) {

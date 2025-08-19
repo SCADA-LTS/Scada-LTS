@@ -14,20 +14,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IWatchListDAO extends GenericDaoCR<WatchList> {
-    @Override
-    List<WatchList> findAll();
-
-    @Override
-    WatchList findById(Object[] pk);
 
     WatchList findByXId(String xid);
-
-    @Override
-    List<WatchList> filtered(String filter, Object[] argsFilter, long limit);
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
-    Object[] create(WatchList entity);
 
     List<ShareUser> getWatchListUsers(int watchListId);
 
@@ -37,18 +25,14 @@ public interface IWatchListDAO extends GenericDaoCR<WatchList> {
 
     void update(WatchList watchList);
 
-    //TODO rewrite because update is not delete All and add all.
     void deleteWatchListPoints(int watchListId);
 
-    //TODO rewrite
     void deleteWatchListUsers(int watchListId);
 
     void deleteWatchList(int watchListId);
 
-    //TODO rewrite
     void addPointsForWatchList(WatchList watchList);
 
-    //TODO rewrite
     void addWatchListUsers(WatchList watchList);
 
     void deleteUserFromWatchList(int watchListId, int userId);

@@ -27,22 +27,8 @@ public interface IEventDAO extends GenericDaoCR<EventInstance> {
             JsonEventSearch query,
             User user);
 
-    @Override
-    List<EventInstance> findAll();
-
-    @Override
-    EventInstance findById(Object[] pk);
-
-    @Override
-    List<EventInstance> filtered(String filter, Object[] argsFilter, long limit);
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
-    Object[] create(EventInstance entity);
-
     List<EventHandlerPlcDTO> getEventHandlersByDatapointId(int datapointId);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updateEvent(EventInstance event);
 
     void updateAck(long actTS, long userId, int alternateAckSource, long eventId);
@@ -55,15 +41,6 @@ public interface IEventDAO extends GenericDaoCR<EventInstance> {
 
     void ackAllPendingSelected(long actTS, long userId, int alternateAckSource, List<Integer> ids);
 
-    @Deprecated
-    List<EventInstance> getEventsForDataPoint(int dataPointId, int userId);
-
-    @Deprecated
-    List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId);
-
-    @Deprecated
-    List<EventInstance> getPendingEvents(int typeId, int userId);
-
     List<EventInstance> getPendingEventsLimit(int userId, int limit);
 
     List<EventInstance> getPendingEventsLimitAlarmLevelMin(int userId, int alarmLevelMin, int limit);
@@ -75,15 +52,10 @@ public interface IEventDAO extends GenericDaoCR<EventInstance> {
     List<EventInstance> getPendingEventsLimit(int typeId, int userId, int limit);
 
     @Deprecated
-    void attachRelationalInfo(EventInstance event);
-
-    @Deprecated
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int purgeEventsBefore(long time);
 
     int getEventCount();
 
-    //TODO rewrite
     List<EventInstance> searchOld(int eventId, int eventSourceType, String status, int alarmLevel, String[] keywords,
                                   int maxResults, int userId, ResourceBundle bundle);
 
@@ -109,33 +81,24 @@ public interface IEventDAO extends GenericDaoCR<EventInstance> {
 
     EventHandlerVO getEventHandler(String xid);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int insertEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updateEventHandler(EventHandlerVO handler);
 
-    //TODO rewrite because insert does not requires select
     EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void delete(int id);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     boolean toggleSilence(int eventId, int userId, Boolean updated);
 
     int getHighestUnsilencedAlarmLevel(int userId);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updateEventAckUserId(int userId);
 
-    @Transactional(readOnly = true)
     List<EventInstance> getAllStatusEvents(Set<Integer> ids);
 
-    @Transactional(readOnly = true)
     List<EventHandlerVO> getEventHandlers(Set<Integer> ids);
 
-    @Transactional(readOnly = true)
     List<EventCommentDTO> findCommentsByEventId(int eventId);
 
     String joinAnd(List<String> conditions);

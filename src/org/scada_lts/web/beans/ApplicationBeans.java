@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.login.ILoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -205,7 +206,17 @@ public class ApplicationBeans {
         return GetApplicationBeans.context() == null ? null : GetApplicationBeans.context();
     }
 
-    public static ViewHierarchyService getViewHierarchyService() {
+    public static ViewHierarchyService getViewHierarchyServiceBean() {
         return getBean("viewHierarchyService", ViewHierarchyService.class);
     }
+
+    public static IDataPointDAO getDataPointDAOBean(){
+        return getBean("dataPointDAO", IDataPointDAO.class);
+    }
+
+    public static IPointValueDAO getPointValueDAOBean(){
+        return getBean("pointValueDAO", IPointValueDAO.class);
+    }
+
+
 }

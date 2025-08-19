@@ -117,7 +117,7 @@ public class PowerMockUtils {
         when(dao.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
 
         mockStatic(ApplicationBeans.class);
-        when(ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+        when(ApplicationBeans.getPointValueDAOBean())
                 .thenReturn(dao);
 
         PointValueService pvs = mock(PointValueService.class);

@@ -22,7 +22,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
     @Override
     public void init() {
-        IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+        IDataPointDAO dao = ApplicationBeans.getDataPointDAOBean();
         List<DataPointVO> dataPoints = dao.getDataPoints();
         Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = new PointEventDetectorDAO()
                 .getPointEventDetectors(Integer.MAX_VALUE, 0)

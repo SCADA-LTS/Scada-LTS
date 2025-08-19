@@ -22,26 +22,20 @@ public interface IReportInstanceDAO {
 
     List<ReportInstance> getReportInstances(int userId);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int insert(ReportInstance reportInstance);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updateTime(ReportInstance reportInstance);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updatePreventPurge(int id, boolean preventPurge, int userId);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void delete(int id, int userId);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int deleteReportBefore(long time);
 
     List<EventInstance> getReportInstanceEvents(int instanceId);
 
     List<ReportInstance> getReportInstances();
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void updatePreventPurge(int id, boolean preventPurge);
 
 }

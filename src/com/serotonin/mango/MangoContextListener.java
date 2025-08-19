@@ -144,9 +144,6 @@ public class MangoContextListener implements ServletContextListener {
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
 
-		PointValueService.configureBatchWriteBehind(
-				ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class));
-
 		highestAlarmLevelServiceInitialize();
 		dataPointsNameToIdMapping(ctx);
 

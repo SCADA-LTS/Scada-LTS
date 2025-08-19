@@ -50,7 +50,7 @@ public class RuntimeManagerCreateDataPointRtTest {
                 .thenReturn(new ArrayList<>());
 
         mockStatic(org.scada_lts.web.beans.ApplicationBeans.class);
-        when(org.scada_lts.web.beans.ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+        when(org.scada_lts.web.beans.ApplicationBeans.getPointValueDAOBean())
                 .thenReturn(pointValueDAOMock);
 
         DAO dao = mock(DAO.class);

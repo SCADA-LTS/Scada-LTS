@@ -19,15 +19,11 @@ public interface IMailingListDAO {
 
     List<ScadaObjectIdentifier> getSimpleMailingLists();
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int insert(MailingList mailingList);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void update(MailingList mailingList);
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void delete(int id);
 
-    @Transactional(readOnly = true)
     List<MailingList> getMailingLists(Set<Integer> ids);
 }

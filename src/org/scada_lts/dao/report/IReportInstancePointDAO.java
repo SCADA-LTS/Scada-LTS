@@ -16,11 +16,6 @@ import java.util.List;
 public interface IReportInstancePointDAO {
     List<ReportPointInfo> getPointInfos(int instanceId);
 
-    @Deprecated(since = "2.7.7")
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    int insert(ReportInstance reportInstance, DataPointVO point, String name, int dataType, MangoValue startValue, PointInfo pointInfo);
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     int insert(ReportInstance reportInstance, int dataType, MangoValue startValue, PointInfo pointInfo);
 
     /*

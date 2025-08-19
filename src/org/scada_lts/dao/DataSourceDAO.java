@@ -468,15 +468,6 @@ public class DataSourceDAO implements IDataSourceDAO {
 		return entity;
 	}
 
-	@Deprecated
-	@Override
-	public List<ScadaObjectIdentifier> getSimpleList() {
-		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
-
-		return DAO.getInstance().getJdbcTemp()
-				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
-	}
-
 	@Override
 	public List<DataSourceVO<?>> getAll() {
 		return getDataSources();

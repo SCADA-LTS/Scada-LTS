@@ -68,7 +68,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 		// sb.append("<div style='width:" + width + "px; height:" + height
 		// + "px; border: 1px solid black;'>");
 		sb.append("<div>");
-		IDataPointDAO dataPointDAO = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+		IDataPointDAO dataPointDAO = ApplicationBeans.getDataPointDAOBean();
 		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
 		User user = Common.getUser();
 		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);

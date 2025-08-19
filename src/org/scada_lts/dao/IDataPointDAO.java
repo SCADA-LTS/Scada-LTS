@@ -46,12 +46,6 @@ public interface IDataPointDAO {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     void deleteEventHandler(String dataPointIdList);
 
-    @Deprecated
-    List<DataPointVO> selectDataPointsWithAccess(int userId);
-
-    @Deprecated
-    List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId);
-
     List<DataPointVO> selectDataPointsWithAccess(int userId, int profileId);
 
     List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId, int profileId);

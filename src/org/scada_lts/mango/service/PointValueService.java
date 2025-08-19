@@ -82,7 +82,7 @@ public class PointValueService implements MangoPointValues {
     private static final Log LOG = LogFactory.getLog(PointValueService.class);
 
     public PointValueService() {
-        pointValueDAO = ApplicationBeans.getBean("pointValueDAO", IPointValueDAO.class);
+        pointValueDAO = ApplicationBeans.getPointValueDAOBean();
     }
 
     /**
@@ -492,10 +492,6 @@ public class PointValueService implements MangoPointValues {
         }
     }
 
-    public static void configureBatchWriteBehind(IPointValueDAO dao) {
-        BatchWriteBehind.setPointValueDAO(dao);
-    }
-
     //TODO (gb) In my opinion it must rewrite
     static class BatchWriteBehind extends AbstractBeforeAfterWorkItem {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
@@ -519,6 +515,10 @@ public class PointValueService implements MangoPointValues {
 
             Common.MONITORED_VALUES.addIfMissingStatMonitor(ENTRIES_MONITOR);
             Common.MONITORED_VALUES.addIfMissingStatMonitor(INSTANCES_MONITOR);
+        }
+
+        public BatchWriteBehind() {
+            pointValueDAO = ApplicationBeans.getPointValueDAOBean();
         }
 
         static void add(BatchWriteBehindEntry e) {

@@ -73,7 +73,7 @@ public class ScriptTestUtils {
         DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
         IPointValueDAO pointValueDaoMock = mock(IPointValueDAO.class);
-        when(ApplicationBeans.getBean(eq("pointValueDAO"), eq(IPointValueDAO.class)))
+        when(ApplicationBeans.getPointValueDAOBean())
                 .thenReturn(pointValueDaoMock);
 
         when(pointValueDaoMock.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
