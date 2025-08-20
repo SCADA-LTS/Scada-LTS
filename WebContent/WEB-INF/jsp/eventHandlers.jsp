@@ -228,7 +228,7 @@
             img = "images/cog_process.png";
 
         var node = dojo.widget.createWidget("TreeNode", {
-                title: "<img src='"+ img +"'/> <span id='"+ handler.id +"Msg'>"+ handler.message +"</span>",
+                title: "<img src='"+ img +"'/> <span id='"+ handler.id +"Msg'>"+ escapeHtml(handler.message) +"</span>",
                 widgetId: "h"+ handler.id,
                 object: handler
         });

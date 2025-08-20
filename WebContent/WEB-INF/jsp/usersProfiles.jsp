@@ -288,7 +288,7 @@
     }
     
     function updateUserProfile(userProfile) {
-        $("u"+ userProfile.id +"UserProfileName").innerHTML = userProfile.name;
+        $("u"+ userProfile.id +"UserProfileName").textContent = userProfile.name;
         setUserImg(true, userProfile.disabled, $("u"+ userProfile.id +"Img"));
         console.log("u"+ editingUserProfileId +"Img")
     }

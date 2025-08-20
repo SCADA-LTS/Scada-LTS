@@ -164,7 +164,7 @@
     }
 
     function updateMailingList(ml) {
-        $set("ml"+ ml.id +"Name", ml.name);
+        $set("ml"+ ml.id +"Name", escapeHtml(ml.name));
     }
 
     function createUserEntry() {
@@ -232,7 +232,7 @@
 
     function appendAddressEntry(addressEntry) {
         var content = createFromTemplate("mleAddress_TEMPLATE_", addressEntry.referenceId, "mailingListEntriesTable");
-        $("mle"+ addressEntry.referenceId +"Address").innerHTML = addressEntry.referenceAddress;
+        $("mle"+ addressEntry.referenceId +"Address").textContent = addressEntry.referenceAddress;
     }
 
     function deleteAddressEntry(entryId) {

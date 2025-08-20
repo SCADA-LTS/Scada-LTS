@@ -817,12 +817,13 @@ var messages = {
  		          $button.disable();
  		          $button.spin();
  		          dialog.setClosable(false);
- 		          $.ajax({
+ 		          const rawInput = dialog.getModalBody().find('input').val();
+					$.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
+		        	url:myLocation+"pointHierarchy/new/0/"+encodeURIComponent(rawInput),
 		        	success: function(msg){
-		        	  var titleNewNode = dialog.getModalBody().find('input').val();
+		        	  var titleNewNode = escapeHtml(rawInput);
 		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
 		        	  $button.hide();
 		 		      $button.stopSpin();

@@ -53,7 +53,7 @@
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
         <div>
-        <td class="formField"><input type="text" id="dataPointNameInput" class="formLongFieldSizing" name="name" value="<c:out value="${status.value}"/>" title="<c:out value="${status.value}"/>"/></td>
+        <td class="formField"><input type="text" id="dataPointNameInput" class="formLongFieldSizing" name="name" value="${status.value}" title="${status.value}"/></td>
         </div>
         <c:if test="${error.name != null}"><td class="formError"><spring:message code="${error.name}"/></td></c:if>
       </tr>
@@ -62,7 +62,7 @@
     <spring:bind path="form.description">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.description"/></td>
-        <td class="formField"><input type="text" class="formLong" name="description" value="<c:out value="${status.value}"/>"/></td>
+        <td class="formField"><input type="text" class="formLong" name="description" value="${status.value}"/></td>
         <c:if test="${error.description != null}"><td class="formError"><spring:message code="${error.description}"/></td></c:if>
       </tr>
     </spring:bind>

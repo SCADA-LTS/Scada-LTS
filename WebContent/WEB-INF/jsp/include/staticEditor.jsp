@@ -228,7 +228,7 @@
               break;
             case 'link':
               ViewDwr.saveLinkComponent(staticEditor.componentId,
-                $get("linkText"), $get("linkLink"),
+                escapeHtml($get("linkText")), $get("linkLink"),
                 posX, posY, viewId,
                 function(response) {
 	                if (response.hasMessages)

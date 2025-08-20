@@ -180,7 +180,7 @@ mango.erecip.EmailRecipients = function(prefix, testEmailMessage, mailingLists, 
                 else if (id.startsWith("A"))
                     list[list.length] = {
                             recipientType: 3, // EmailRecipient.TYPE_ADDRESS
-                            referenceAddress: $(this.prefix + id +"Description").innerHTML};
+                            referenceAddress: $(this.prefix + id +"Description").textContent};
                 else
                     dojo.debug("Unknown recipient mango id: "+ id);
             }
@@ -215,7 +215,7 @@ mango.erecip.EmailRecipients = function(prefix, testEmailMessage, mailingLists, 
     this.addListEntry = function(id, imgName, description) {
         createFromTemplate(this.prefix +"_TEMPLATE_", id, this.prefix +"List");
         $(this.prefix + id +"Img").src = imgName;
-        $(this.prefix + id +"Description").innerHTML = description;
+        $(this.prefix + id +"Description").textContent = description;
     }
     
     this.getMailingList = function(id) {

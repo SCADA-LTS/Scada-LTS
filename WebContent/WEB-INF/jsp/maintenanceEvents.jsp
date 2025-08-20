@@ -156,7 +156,7 @@
     }
     
     function updateMaintenanceEvent(me) {
-        $("me"+ me.id +"Name").innerHTML = me.description;
+        $("me"+ me.id +"Name").textContent = me.description;
         if (me.disabled)
             updateImg("me"+ me.id +"Img", "images/hammer_disabled.png", "<sst:i18n key="maintenanceEvents.meDisabled" escapeDQuotes="true"/>", true);
         else

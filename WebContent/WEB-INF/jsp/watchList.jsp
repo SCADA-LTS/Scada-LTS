@@ -127,7 +127,7 @@
 
       function addFolder(folder, parent) {
           var folderNode = dojo.widget.createWidget("TreeNode", {
-                  title: "<img src='images/folder_brick.png'/> "+ folder.name,
+                  title: "<img src='images/folder_brick.png'/> "+ escapeHtml(folder.name),
                   isFolder: "true",
                   lazyLoadData: folder
           });
@@ -658,10 +658,10 @@
             <tr>
               <td class="smallTitle"><spring:message code="watchlist.watchlist"/> <tag:help id="watchList"/></td>
               <td align="right">
-                <sst:select id="watchListSelect" value="${selectedWatchList}" onchange="watchListChanged()"
+                <sst:select id="watchListSelect" value="<c:out value='${selectedWatchList}'/>" onchange="watchListChanged()"
                         onmouseover="closeLayers();">
                   <c:forEach items="${watchLists}" var="wl">
-                    <sst:option value="${wl.key}">${sst:escapeLessThan(wl.value)}</sst:option>
+                    <sst:option value="<c:out value='${wl.key}'/>">${sst:escapeLessThan(wl.value)}</sst:option>
                   </c:forEach>
                 </sst:select>
 
