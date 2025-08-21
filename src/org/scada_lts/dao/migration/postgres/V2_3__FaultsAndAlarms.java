@@ -67,11 +67,8 @@ public class V2_3__FaultsAndAlarms extends BaseJavaMigration {
         //(5)
         jdbcTemplate.execute( "DELETE FROM schema_version WHERE version = '2.2.1';");
 
-        try {
-            jdbcTemplate.execute("ALTER TABLE dataPoints DROP COLUMN pointName;");
-        } catch (Exception e) {
-            LOG.warn(String.valueOf(e));
-        }
+        jdbcTemplate.execute("ALTER TABLE dataPoints DROP COLUMN IF EXISTS pointName;");
+
         //(6)
         jdbcTemplate.execute( "DELETE FROM schema_version WHERE version = '2.2.0.2';");
 
@@ -82,11 +79,8 @@ public class V2_3__FaultsAndAlarms extends BaseJavaMigration {
         //(8)
         jdbcTemplate.execute( "DELETE FROM schema_version WHERE version = '2.2.0.0.1';");
 
-        try {
-            jdbcTemplate.execute("ALTER TABLE dataPoints DROP COLUMN plcAlarmLevel;");
-        } catch (Exception e) {
-            LOG.warn(String.valueOf(e));
-        }
+        jdbcTemplate.execute("ALTER TABLE dataPoints DROP COLUMN IF EXISTS plcAlarmLevel;");
+
         //(9)
         jdbcTemplate.execute( "DELETE FROM schema_version WHERE version = '2.2.0';");
 
