@@ -14,7 +14,7 @@ public class ArchiveQueryProviderFactory {
         DatabaseAccess.DatabaseType databaseType = databaseAccess.getType();
         switch (databaseType) {
             case POSTGRES:
-                return null; //TODO: CHANGE IT ON POSTGRES BRANCH + MAKE POSTGRES PROVIDER CLASS
+                throw new UnsupportedOperationException("Postgres provider not implemented yet"); //TODO: CHANGE IT ON POSTGRES BRANCH + MAKE POSTGRES PROVIDER CLASS
             case MYSQL:
             default:
                 return new MySQLArchiveQueryProvider();

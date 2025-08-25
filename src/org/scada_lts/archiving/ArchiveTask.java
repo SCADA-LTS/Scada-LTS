@@ -2,20 +2,21 @@ package org.scada_lts.archiving;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.TimePeriodType;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.serotonin.mango.vo.TimePeriod;
 
 public class ArchiveTask {
 
     private int ageValue;
-    private TimePeriodType ageUnit;
+    @JsonDeserialize(using = com.serotonin.mango.vo.TimePeriodDeserializer.class)
+    private TimePeriod ageUnit;
     private ArchiveFunction function;
     private String table;
 
     @JsonCreator
     public ArchiveTask(
             @JsonProperty("ageValue") int ageValue,
-            @JsonProperty("ageUnit") TimePeriodType ageUnit,
+            @JsonProperty("ageUnit") TimePeriod ageUnit,
             @JsonProperty("function") ArchiveFunction function,
             @JsonProperty("table") String table) {
         this.ageValue = ageValue;
@@ -34,11 +35,11 @@ public class ArchiveTask {
         this.ageValue = ageValue;
     }
 
-    public TimePeriodType getAgeUnit() {
+    public TimePeriod getAgeUnit() {
         return ageUnit;
     }
 
-    public void setAgeUnit(TimePeriodType ageUnit) {
+    public void setAgeUnit(TimePeriod ageUnit) {
         this.ageUnit = ageUnit;
     }
 

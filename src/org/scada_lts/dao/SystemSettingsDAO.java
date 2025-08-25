@@ -177,6 +177,7 @@ public class SystemSettingsDAO {
 
 	//Data archiving
 	public static final String ARCHIVE_CONFIG = "archiveConfig";
+	public static final String ARCHIVE_ENABLED = "archiveEnabled";
 
 
 	// @formatter:off
@@ -434,6 +435,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+		DEFAULT_VALUES.put(ARCHIVE_ENABLED, SystemSettingsUtils.getArchiveEnabled());
 		DEFAULT_VALUES.put(ARCHIVE_CONFIG, SystemSettingsUtils.getArchivingConfig());
     }
 

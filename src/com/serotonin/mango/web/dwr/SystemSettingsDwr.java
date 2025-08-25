@@ -26,10 +26,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
-import org.quartz.CronExpression;
-import org.scada_lts.archiving.ArchiveConfig;
 import org.scada_lts.archiving.ArchiveFunction;
-import org.scada_lts.archiving.ArchiveTask;
 import org.scada_lts.archiving.ArchiveUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -218,6 +215,9 @@ public class SystemSettingsDwr extends BaseDwr {
 				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
 				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
 		settings.put(
+				SystemSettingsDAO.ARCHIVE_ENABLED,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED));
+		settings.put(
 				SystemSettingsDAO.ARCHIVE_CONFIG,
 				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CONFIG));
 		return settings;
@@ -396,7 +396,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	
+	@Deprecated(since = "2.8.0")
 	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
@@ -575,9 +575,48 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 	}
 
-	public DwrResponseI18n saveArchiveConfig(String configJson) {
+	public DwrResponseI18n saveDataRetentionAndArchiveConfig(boolean archiveEnabled, String configJson, int eventPurgePeriodType,
+															 int eventPurgePeriods, int reportPurgePeriodType,
+															 int reportPurgePeriods, boolean groveLogging,
+															 int futureDateLimitPeriodType, int futureDateLimitPeriods,
+															 int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED,
+				archiveEnabled);
+
+		if (!archiveEnabled) {
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
+					eventPurgePeriodType);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
+					eventPurgePeriods);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE,
+					reportPurgePeriodType);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
+					reportPurgePeriods);
+			systemSettingsDAO.setIntValue(
+					SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+					valuesLimitForPurge);
+		}
+
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
+				groveLogging);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE,
+				futureDateLimitPeriodType);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
+				futureDateLimitPeriods);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT,
+				defaultPurgePeriod);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
+				defaultPurgePeriodType);
+
 
 		try {
 			response = SystemSettingsUtils.validateArchiveConfig(configJson);
@@ -586,10 +625,13 @@ public class SystemSettingsDwr extends BaseDwr {
 			return response;
 		}
 
-
-		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
-		systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
-
+		if(!response.getHasMessages()) {
+			systemSettingsDAO = new SystemSettingsDAO();
+			systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
+		}
+		else {
+			return response;
+		}
 
 		try {
 			ArchiveUtils.init();
@@ -600,7 +642,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	public Map<String, List<Map<String, String>>> getArchiveOptions() {
-		List<Map<String, String>> actions = Arrays.stream(ArchiveFunction.values())
+		List<Map<String, String>> function = Arrays.stream(ArchiveFunction.values())
 				.map(f -> {
 					Map<String, String> m = new HashMap<>();
 					m.put("value", f.name());
@@ -620,8 +662,13 @@ public class SystemSettingsDwr extends BaseDwr {
 		events.put("labelKey", "Events");
 		table.add(events);
 
+		Map<String, String> reportInstances = new HashMap<>();
+		reportInstances.put("value", "reportInstances");
+		reportInstances.put("labelKey", "Report instances");
+		table.add(reportInstances);
+
 		Map<String, List<Map<String, String>>> result = new HashMap<>();
-		result.put("actions", actions);
+		result.put("function", function);
 		result.put("table", table);
 		return result;
 	}

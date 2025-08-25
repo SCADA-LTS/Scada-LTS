@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
+import static org.scada_lts.dao.SystemSettingsDAO.ARCHIVE_ENABLED;
 import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
 
 import org.scada_lts.config.ThreadPoolExecutorConfig;
@@ -851,7 +852,7 @@ public final class SystemSettingsUtils {
             response.addContextualMessage("archiveBatchSize", "systemSettings.archiving.invalidBatchSize");
         }
         if (isEmpty(config.getCron()) || !CronExpression.isValidExpression(config.getCron())) {
-            response.addContextualMessage("archiveCron", "systemSettings.archiving.invalidCron");
+            response.addContextualMessage("archiveCron", "reports.validate.cron", config.getCron());
         }
 
         List<ArchiveTask> tasks = config.getTasks();
@@ -889,6 +890,17 @@ public final class SystemSettingsUtils {
         String defaultValue = "{}";
         try {
             return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_CONFIG, defaultValue);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.config", e);
+            return defaultValue;
+        }
+    }
+
+    public static boolean getArchiveEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_ENABLED, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
         } catch (Exception e) {
             LOG.error("Error reading archive.config", e);
             return defaultValue;
