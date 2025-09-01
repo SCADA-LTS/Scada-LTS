@@ -679,24 +679,20 @@
     });
 
     function saveDataRetentionAndArchiveConfig() {
+      const configJson = JSON.stringify({
+        dbUrl: $get("archiveDbUrl"),
+        dbUsername: $get("archiveDbUsername"),
+        dbPassword: $get("archiveDbPassword"),
+        batchSize: parseInt($get("archiveBatchSize")),
+        cron: $get("archiveCron"),
+        tasks: getArchiveRulesFromTable()
+      });
+
       const groveLogging = true;
 
-      const dbUrl = $get("archiveDbUrl");
-      const dbUsername = $get("archiveDbUsername");
-      const dbPassword = $get("archiveDbPassword");
-      const batchSize = parseInt($get("archiveBatchSize"));
-      const cron = $get("archiveCron");
-      const tasksJson = JSON.stringify(getArchiveRulesFromTable());
-
-      SystemSettingsDwr.saveDataRetentionAndArchiveConfigV2(
-              dbUrl,
-              dbUsername,
-              dbPassword,
-              batchSize,
-              cron,
-              tasksJson,
-
+      SystemSettingsDwr.saveDataRetentionAndArchiveConfig(
               $get("<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>"),
+              configJson,
               $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
@@ -708,17 +704,15 @@
               $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>"),
               function(response) {
-                stopImageFader("saveDataArchiveSettingsImg");
-                if (response.hasMessages) {
-                  const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
-                  setUserMessage("dataArchiveMessage", messages);
-                } else {
-                  setUserMessage("dataArchiveMessage", "<spring:message code='systemSettings.archive.settingsSuccess'/>");
-                }
-              }
-      );
+        stopImageFader("saveDataArchiveSettingsImg");
+        if (response.hasMessages) {
+          const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
+          setUserMessage("dataArchiveMessage", messages);
+        } else {
+          setUserMessage("dataArchiveMessage", "<spring:message code='systemSettings.archive.settingsSuccess'/>");
+        }
+      });
     }
-
 
     function toggleArchiveFields(enabled) {
       const archiveBody = document.getElementById("archiveBody");
