@@ -91,7 +91,7 @@
   </item>
 
   <item id="emailSettings"/>
-  
+
   <item id="galilDS">
     <relation id="galilPP"/>
   </item>
@@ -439,4 +439,6 @@
   <item id="internalDS">
     <relation id="internalPP"/>
   </item>
+
+  <item id ="dataArchiveSettings"/>
 </doxManifest>

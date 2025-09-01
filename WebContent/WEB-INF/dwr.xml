@@ -245,6 +245,12 @@
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>
     </convert>
+
+    <!-- Archiving config -->
+    <convert converter="bean" match="org.scada_lts.archive.ArchiveConfig"/>
+    <convert converter="bean" match="org.scada_lts.archive.ArchiveTask"/>
+    <convert converter="enum" match="org.scada_lts.archive.ArchiveFunction"/>
+    <convert converter="enum" match="java.time.temporal.ChronoUnit"/>
   </allow>
   <signatures>
     <![CDATA[

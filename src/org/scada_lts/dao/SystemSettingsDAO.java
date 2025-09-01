@@ -17,12 +17,14 @@
  */
 package org.scada_lts.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.archive.ArchiveConfig;
 import org.scada_lts.dao.cache.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
@@ -172,6 +174,11 @@ public class SystemSettingsDAO {
 	public static final String TOP_DESCRIPTION = "topDescription";
 	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
 	public static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "dataPointExtendedNameLengthInReportsLimit";
+
+	//Data archiving
+	public static final String ARCHIVE_CONFIG = "archiveConfig";
+	public static final String ARCHIVE_ENABLED = "archiveEnabled";
+
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -428,6 +435,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+		DEFAULT_VALUES.put(ARCHIVE_ENABLED, SystemSettingsUtils.getArchiveEnabled());
+		DEFAULT_VALUES.put(ARCHIVE_CONFIG, SystemSettingsUtils.getArchiveConfig());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -492,5 +501,16 @@ public class SystemSettingsDAO {
 
 	public static <R> R getObject(String key, Function<String, R> convert) {
 		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
+	}
+
+	public static ArchiveConfig getArchiveConfig() {
+		String json = getValue(ARCHIVE_CONFIG, null);
+		if (json == null || json.trim().isEmpty())
+			return new ArchiveConfig();
+		try {
+			return new ObjectMapper().readValue(json, ArchiveConfig.class);
+		} catch (Exception e) {
+			throw new RuntimeException("Cannot parse ARCHIVE_CONFIG JSON: " + e.getMessage(), e);
+		}
 	}
 }

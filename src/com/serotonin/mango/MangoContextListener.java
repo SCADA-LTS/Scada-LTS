@@ -63,6 +63,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
+import org.scada_lts.archive.ArchiveUtils;
 import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
@@ -705,6 +706,13 @@ public class MangoContextListener implements ServletContextListener {
 		try {
 			EverySecondTool.init();
 			log.info("Quartz EverySecondTool initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+			ArchiveUtils.init();
+			log.info("Quartz ArchiveJob initialized");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

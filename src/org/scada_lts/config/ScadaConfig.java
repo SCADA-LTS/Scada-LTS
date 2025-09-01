@@ -20,6 +20,8 @@ package org.scada_lts.config;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.archive.ArchiveConfig;
+import org.scada_lts.dao.SystemSettingsDAO;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -141,6 +143,8 @@ public class ScadaConfig {
 	public static final String DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR = "abilit.DO_NOT_CREATE_EVENTS_FOR_EMAIL_ERROR";
 
 	private Optional<Boolean> doNotCreateEventsForEmailError = Optional.empty();
+
+	public static final String ARCHIVE_CRON = "systemsettings.archive.cron";
 
 
 	private static final Log LOG = LogFactory.getLog(ScadaConfig.class);
@@ -425,5 +429,13 @@ public class ScadaConfig {
 		return path;
 		
 	}
-	
+
+	public String getArchiveCron() {
+		ArchiveConfig config = SystemSettingsDAO.getArchiveConfig();
+
+		if (config != null && config.getCron() != null && !config.getCron().isEmpty()) {
+			return config.getCron();
+		}
+		return conf.getProperty(ARCHIVE_CRON);
+	}
 }

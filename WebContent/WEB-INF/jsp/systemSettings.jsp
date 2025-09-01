@@ -34,6 +34,8 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
+    let archiveFunctions = [];
+    let archiveTables = [];
 
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
@@ -131,6 +133,18 @@
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>);
           $set("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>);
+
+          SystemSettingsDwr.getArchiveOptions(function(options) {
+            archiveFunctions = options.function || [];
+            archiveTables = options.table || [];
+
+
+            loadArchiveConfig(settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_CONFIG %>"/>)
+          });
+
+          toggleArchiveFields(settings.<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>);
+
         });
 
 <%--
@@ -663,6 +677,160 @@
       initSizeField(webGraphicsUploadsPath);
       initSizeField(smsDomain);
     });
+
+    function saveDataRetentionAndArchiveConfig() {
+      const configJson = JSON.stringify({
+        dbUrl: $get("archiveDbUrl"),
+        dbUsername: $get("archiveDbUsername"),
+        dbPassword: $get("archiveDbPassword"),
+        batchSize: parseInt($get("archiveBatchSize")),
+        cron: $get("archiveCron"),
+        tasks: getArchiveRulesFromTable()
+      });
+
+      const groveLogging = true;
+
+      SystemSettingsDwr.saveDataRetentionAndArchiveConfig(
+              $get("<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>"),
+              configJson,
+              $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
+              groveLogging,
+              $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>"),
+              function(response) {
+        stopImageFader("saveDataArchiveSettingsImg");
+        if (response.hasMessages) {
+          const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
+          setUserMessage("dataArchiveMessage", messages);
+        } else {
+          setUserMessage("dataArchiveMessage", "<spring:message code='systemSettings.archive.settingsSuccess'/>");
+        }
+      });
+    }
+
+    function toggleArchiveFields(enabled) {
+      const archiveBody = document.getElementById("archiveBody");
+      const retentionBody = document.getElementById("BasicRetentionBody");
+      if (!archiveBody || !retentionBody) return;
+      archiveBody.style.display = enabled ? "" : "none";
+      retentionBody.style.display = !enabled ? "" : "none";
+    }
+
+    function loadArchiveConfig(json) {
+      try {
+        console.log("Inside: loadArchiveConfig");
+        const cfg = JSON.parse(json);
+
+        $set("archiveDbUrl", cfg.dbUrl);
+        $set("archiveDbUsername", cfg.dbUsername);
+        $set("archiveDbPassword", cfg.dbPassword);
+        $set("archiveBatchSize", cfg.batchSize);
+        $set("archiveCron", cfg.cron);
+
+        renderArchiveRules(cfg.tasks || []);
+      } catch (e) {
+        console.error("Invalid archive config JSON", e);
+      }
+    }
+
+  function renderArchiveRules(rules) {
+    const tbody = document.getElementById('archiveRulesTbody');
+    tbody.innerHTML = '';
+    (rules || []).forEach((rule, i) => {
+      tbody.appendChild(archiveRuleRow(i, rule));
+    });
+  }
+
+  function archiveRuleRow(idx, rule) {
+    const tr = document.createElement('tr');
+
+    const tdAge = document.createElement('td');
+    const tpl = document.getElementById('archiveAgeFieldTemplate');
+    tdAge.innerHTML = tpl.innerHTML;
+
+    const input = tdAge.querySelector('input[name="ageValue"]');
+    const select = tdAge.querySelector('select[name="ageUnit"]');
+
+
+    input.value = rule.ageValue || 30;
+    select.value = rule.ageUnit || "4";
+
+    tr.appendChild(tdAge);
+    tr.appendChild(tdSelect('function', archiveFunctions, rule.function));
+    tr.appendChild(tdSelect('table', archiveTables, rule.table));
+
+    const tdDel = document.createElement('td');
+    tdDel.innerHTML = `<img id="removeArchiveRuleRowImg" src="images/delete.png" alt="Remove" title="Remove" onclick="removeArchiveRuleRow(${idx})" border="0"/>`;
+    tr.appendChild(tdDel);
+
+    return tr;
+  }
+
+  function tdInput(type, name, value, extra = "") {
+    const td = document.createElement('td');
+    td.innerHTML = `<input type="${type}" name="${name}" value="${value}" ${extra}/>`;
+    return td;
+  }
+
+    function tdSelect(name, options, selected) {
+      const td = document.createElement('td');
+      const select = document.createElement('select');
+      select.name = name;
+
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.labelKey;
+        if (opt.value === selected) option.selected = true;
+        select.appendChild(option);
+      });
+
+      td.appendChild(select);
+      return td;
+    }
+
+  // Add rule row
+  function addArchiveRuleRow() {
+    const rules = getArchiveRulesFromTable();
+    rules.push({ageValue: 30, ageUnit: "4", function: "COPY_TO_ARCHIVE", table: "pointValues"});
+    renderArchiveRules(rules);
+  }
+
+  // Remove rule row
+  function removeArchiveRuleRow(idx) {
+    const rules = getArchiveRulesFromTable();
+    rules.splice(idx, 1);
+    renderArchiveRules(rules);
+  }
+
+  // Get all rules from table
+  function getArchiveRulesFromTable() {
+    const rules = [];
+    const rows = document.querySelectorAll("#archiveRulesTbody tr");
+
+    rows.forEach(row => {
+      const ageValue = parseInt(row.querySelector('input[name="ageValue"]').value);
+      const ageUnit = row.querySelector('select[name="ageUnit"]').value;
+      const func = row.querySelector('select[name="function"]').value;
+      const table = row.querySelector('select[name="table"]').value;
+
+      rules.push({
+        ageValue,
+        ageUnit,
+        function: func,
+        table
+      });
+    });
+
+    return rules;
+  }
+
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
@@ -1061,7 +1229,7 @@
       </tr>
     </table>
   </div>
-  
+  <!--
   <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -1082,6 +1250,62 @@
       </tr>
       --%>
       <tr>
+        <td colspan="2" id="dataRetentionMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+-->
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.dataRetentionAndArchiveSettings"/></span>
+          <tag:help id="dataArchiveSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveDataArchiveSettingsImg" png="save" onclick="saveDataRetentionAndArchiveConfig();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.archiveEnabled"/>
+        </td>
+        <td class="formField">
+          <input
+                  type="checkbox"
+                  id="<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>"
+                  onchange="toggleArchiveFields(this.checked)"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgePointValuesPeriodDefault"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>">
+            <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.futureDateLimit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
+            <tag:timePeriodOptions min="true" h="true"/>
+          </select>
+        </td>
+      </tr>
+      <tbody id="BasicRetentionBody">
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="number" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
         <td class="formLabelRequired"><spring:message code="systemSettings.purgeEvents"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
@@ -1100,30 +1324,6 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.futureDateLimit"/></td>
-        <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
-            <tag:timePeriodOptions min="true" h="true"/>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.purgePointValuesPeriodDefault"/></td>
-        <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>" type="text" class="formShort"/>
-          <select id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>">
-            <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
-        <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="number" class="formMedium"/>
-        </td>
-      </tr>
-      <tr>
         <td colspan="2" align="center">
           <input type="button" value="<spring:message code="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
         </td>
@@ -1133,11 +1333,79 @@
           <input type="button" value="<spring:message code="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
         </td>
       </tr>
+      </tbody>
+    <tbody id="archiveBody">
       <tr>
-        <td colspan="2" id="dataRetentionMessage" class="formError"></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrl"/></td>
+        <td class="formField">
+          <input id="archiveDbUrl" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlUsername"/></td>
+        <td class="formField">
+          <input id="archiveDbUsername" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveDbUrlPassword"/></td>
+        <td class="formField">
+          <input id="archiveDbPassword" type="password" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.batchSize"/></td>
+        <td class="formField">
+          <input id="archiveBatchSize" type="number" min="1" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.archiveFrequency"/></td>
+        <td class="formField">
+          <input id="archiveCron" type="text" class="formWide"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.archive.rules"/>
+        </td>
+        <td class="formField">
+          <table id="archiveRulesTable" style="border-collapse: collapse;">
+            <thead>
+            <tr>
+              <th><spring:message code="systemSettings.archive.ageValue"/></th>
+              <th><spring:message code="systemSettings.archive.function"/></th>
+              <th><spring:message code="systemSettings.archive.table"/></th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody id="archiveRulesTbody">
+            <!-- Rendered by JS -->
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="5" align="right">
+                <img id="addArchiveRuleImg" src="images/add.png" title="Add" onclick="addArchiveRuleRow()" border="0"/>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+          <input type="hidden" id="archiveRulesJson" value="" />
+        </td>
+      </tr>
+      <div id="archiveAgeFieldTemplate" style="display:none">
+        <input type="number" name="ageValue" value="30" min="1" class="formShort" />
+        <select name="ageUnit">
+          <tag:timePeriodOptions h="true" d="true" w="true" mon="true" y="true"/>
+        </select>
+      </div>
+    </tbody>
+      <tr>
+        <td colspan="2" id="dataArchiveMessage" class="formError"></td>
       </tr>
     </table>
   </div>
+
 
   <!-- amCharts Settings -->
   <div class="borderDivPadded marB marR" style="float:left">
@@ -1381,7 +1649,6 @@
       }
 
       </style>
-  
-  
+
 </tag:page>
 <tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>

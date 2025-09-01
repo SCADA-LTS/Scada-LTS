@@ -33,6 +33,8 @@ public enum TimeLongPeriodType implements TimePeriod {
         }
     };
 
+    public static final TimeLongPeriodType DEFAULT = TimeLongPeriodType.DAYS;
+
     private final int code;
     private final String key;
 

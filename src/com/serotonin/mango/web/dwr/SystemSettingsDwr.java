@@ -26,6 +26,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import org.scada_lts.archive.ArchiveFunction;
+import org.scada_lts.archive.ArchiveUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -44,19 +46,20 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
 import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
+import static org.scada_lts.utils.SystemSettingsUtils.validateNonNegative;
 
 
 public class SystemSettingsDwr extends BaseDwr {
@@ -212,6 +215,12 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(
 				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
 				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_ENABLED,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED));
+		settings.put(
+				SystemSettingsDAO.ARCHIVE_CONFIG,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.ARCHIVE_CONFIG));
 		return settings;
 	}
 
@@ -388,7 +397,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	
+	@Deprecated(since = "2.8.0")
 	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
 								 int reportPurgePeriods, boolean groveLogging,
@@ -566,4 +575,115 @@ public class SystemSettingsDwr extends BaseDwr {
 			return "{}";
 		}
 	}
+
+	public DwrResponseI18n saveDataRetentionAndArchiveConfig(boolean archiveEnabled, String configJson, int eventPurgePeriodType,
+															 int eventPurgePeriods, int reportPurgePeriodType,
+															 int reportPurgePeriods, boolean groveLogging,
+															 int futureDateLimitPeriodType, int futureDateLimitPeriods,
+															 int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
+		Permissions.ensureAdmin();
+		DwrResponseI18n response = new DwrResponseI18n();
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED,
+				archiveEnabled);
+
+		validateNonNegative(response, SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT, defaultPurgePeriod);
+		validateNonNegative(response, SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, defaultPurgePeriodType);
+		validateNonNegative(response, SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, futureDateLimitPeriods);
+		validateNonNegative(response, SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, futureDateLimitPeriodType);
+
+		if (!archiveEnabled) {
+			validateNonNegative(response, SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, eventPurgePeriodType);
+			validateNonNegative(response, SystemSettingsDAO.EVENT_PURGE_PERIODS, eventPurgePeriods);
+			validateNonNegative(response, SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, reportPurgePeriodType);
+			validateNonNegative(response, SystemSettingsDAO.REPORT_PURGE_PERIODS, reportPurgePeriods);
+			validateNonNegative(response, SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, valuesLimitForPurge);
+		}
+
+		try {
+			response = SystemSettingsUtils.validateArchiveConfig(configJson, response);
+		} catch (Exception ex) {
+			response.addContextualMessage("dataArchiveMessage", "emport.parseError");
+			return response;
+		}
+
+		if(!response.getHasMessages()) {
+			systemSettingsDAO = new SystemSettingsDAO();
+			systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
+		}
+		else {
+			return response;
+		}
+
+		if (!archiveEnabled) {
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
+					eventPurgePeriodType);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
+					eventPurgePeriods);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE,
+					reportPurgePeriodType);
+			systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
+					reportPurgePeriods);
+			systemSettingsDAO.setIntValue(
+					SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+					valuesLimitForPurge);
+		}
+
+
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
+				groveLogging);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE,
+				futureDateLimitPeriodType);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
+				futureDateLimitPeriods);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT,
+				defaultPurgePeriod);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
+				defaultPurgePeriodType);
+
+		try {
+			ArchiveUtils.init();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+
+	public Map<String, List<Map<String, String>>> getArchiveOptions() {
+		List<Map<String, String>> function = Arrays.stream(ArchiveFunction.values())
+				.map(f -> {
+					Map<String, String> m = new HashMap<>();
+					m.put("value", f.name());
+					m.put("labelKey", f.getLabelKey());
+					return m;
+				})
+				.collect(Collectors.toList());
+
+		List<Map<String, String>> table = new ArrayList<>();
+		Map<String, String> pv = new HashMap<>();
+		pv.put("value", "pointValues");
+		pv.put("labelKey", "Point values");
+		table.add(pv);
+
+		Map<String, String> events = new HashMap<>();
+		events.put("value", "events");
+		events.put("labelKey", "Events");
+		table.add(events);
+
+		Map<String, String> reportInstances = new HashMap<>();
+		reportInstances.put("value", "reportInstances");
+		reportInstances.put("labelKey", "Report instances");
+		table.add(reportInstances);
+
+		Map<String, List<Map<String, String>>> result = new HashMap<>();
+		result.put("function", function);
+		result.put("table", table);
+		return result;
+	}
+
 }

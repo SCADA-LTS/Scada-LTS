@@ -5,19 +5,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.CronExpression;
+import org.scada_lts.archive.ArchiveConfig;
+import org.scada_lts.archive.ArchiveTask;
 import org.scada_lts.config.ForkJoinConfig;
 import org.scada_lts.config.ScadaConfig;
 
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
+import static org.scada_lts.dao.SystemSettingsDAO.ARCHIVE_ENABLED;
 import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
 
 import org.scada_lts.config.ThreadPoolExecutorConfig;
@@ -91,6 +95,9 @@ public final class SystemSettingsUtils {
 
     private static final String DATA_POINT_UNRELIABLE_DEPTH_KEY = "scadalts.datapoint.unreliable.depth";
     private static final String DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY = "scadalts.datapoint.unreliable.execute-in-pool-if-tasks-exceeds";
+
+    private static final String ARCHIVE_CONFIG = "systemsettings.archive.config";
+
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -814,4 +821,95 @@ public final class SystemSettingsUtils {
             return defaultValue;
         }
     }
+
+    public static DwrResponseI18n validateArchiveConfig(String configJson, DwrResponseI18n response) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ArchiveConfig config;
+        try {
+            config = mapper.readValue(configJson, ArchiveConfig.class);
+        } catch (Exception ex) {
+            response.addContextualMessage("dataArchiveMessage", "emport.parseError");
+            return response;
+        }
+
+        if (config == null) {
+            response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.invalidConfig");
+            return response;
+        }
+
+        if (isEmpty(config.getDbUrl())) {
+            response.addContextualMessage("archiveDbUrl", "systemSettings.archive.missingFields");
+        }
+        if (isEmpty(config.getDbUsername())) {
+            response.addContextualMessage("archiveDbUsername", "systemSettings.archive.missingFields");
+        }
+        if (isEmpty(config.getDbPassword())) {
+            response.addContextualMessage("archiveDbPassword", "systemSettings.archive.missingFields");
+        }
+        if (config.getBatchSize() <= 0 || config.getBatchSize() >= 32767) {
+            response.addContextualMessage("archiveBatchSize", "systemSettings.archive.invalidBatchSize");
+        }
+        if (isEmpty(config.getCron()) || !CronExpression.isValidExpression(config.getCron())) {
+            response.addContextualMessage("archiveCron", "reports.validate.cron", config.getCron());
+        }
+
+        List<ArchiveTask> tasks = config.getTasks();
+        if (tasks == null || tasks.isEmpty()) {
+            response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.noTasksDefined");
+        } else {
+            Set<String> uniqueKeys = new HashSet<>();
+            for (int i = 0; i < tasks.size(); i++) {
+                ArchiveTask task = tasks.get(i);
+                if (task.getAgeValue() <= 0) {
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
+                }
+                if (task.getAgeUnit() == null) {
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
+                }
+                if (task.getFunction() == null) {
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
+                }
+                if (isEmpty(task.getTable())) {
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
+                }
+
+                String key = task.getTable() + "::" + task.getFunction();
+                if (!uniqueKeys.add(key)) {
+                    response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.duplicateTask");
+                }
+            }
+        }
+
+        return response;
+    }
+
+
+    public static String getArchiveConfig() {
+        String defaultValue = "{}";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_CONFIG, defaultValue);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.config", e);
+            return defaultValue;
+        }
+    }
+
+    public static boolean getArchiveEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_ENABLED, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error("Error reading archive.config", e);
+            return defaultValue;
+        }
+    }
+
+    public static void validateNonNegative(DwrResponseI18n resp, String fieldKey, int value) {
+        if (value < 0) {
+            resp.addContextualMessage(fieldKey, "validate.cannotBeNegative", 0);
+        }
+    }
+
 }
