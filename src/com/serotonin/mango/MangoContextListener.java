@@ -63,7 +63,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
-import org.scada_lts.archiving.ArchiveUtils;
+import org.scada_lts.archive.ArchiveUtils;
 import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;

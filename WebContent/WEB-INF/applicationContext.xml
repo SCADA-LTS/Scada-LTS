@@ -361,29 +361,34 @@
 
   <!-- Quartz Archiver -->
 
-  <bean id="archivingTrigger" class="org.quartz.CronTrigger">
+  <bean id="archiveTrigger" class="org.quartz.CronTrigger">
     <constructor-arg value="Quartz - trigger-Archiving"/>
     <constructor-arg value="DEFAULT"/>
   </bean>
 
-  <bean id="archivingJobDetail" class="org.quartz.JobDetail">
+  <bean id="archiveJobDetail" class="org.quartz.JobDetail">
     <constructor-arg value="Quartz - job-Archiving"/>
     <constructor-arg value="DEFAULT"/>
-    <constructor-arg value="org.scada_lts.archiving.ArchiveJob" type="java.lang.Class"/>
+    <constructor-arg value="org.scada_lts.archive.ArchiveJob" type="java.lang.Class"/>
   </bean>
 
-  <bean id="archivingScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
+  <bean id="archiveScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
     <constructor-arg ref="scadaScheduler"/>
-    <constructor-arg ref="archivingTrigger"/>
-    <constructor-arg ref="archivingJobDetail"/>
+    <constructor-arg ref="archiveTrigger"/>
+    <constructor-arg ref="archiveJobDetail"/>
   </bean>
 
-  <bean id="archiveQueryProviderFactory" class="org.scada_lts.archiving.ArchiveQueryProviderFactory">
+  <bean id="archiveQueryProviderFactory"
+        class="org.scada_lts.archive.ArchiveQueryProviderFactory">
     <constructor-arg ref="databaseAccess"/>
   </bean>
 
-  <bean id="archiveService" class="org.scada_lts.archiving.ArchiveService">
-    <constructor-arg ref="archiveQueryProviderFactory"/>
+  <bean id="archiveQueryProvider"
+        factory-bean="archiveQueryProviderFactory"
+        factory-method="get"/>
+
+  <bean id="archiveService" class="org.scada_lts.archive.ArchiveService">
+    <constructor-arg ref="archiveQueryProvider"/>
   </bean>
 
   <bean id="opcUaTrustListManager" class="org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaTrustListManager"

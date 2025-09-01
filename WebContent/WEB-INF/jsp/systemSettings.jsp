@@ -678,21 +678,25 @@
       initSizeField(smsDomain);
     });
 
-    function saveDataArchiveSettings() {
-      const configJson = JSON.stringify({
-        dbUrl: $get("archiveDbUrl"),
-        dbUsername: $get("archiveDbUsername"),
-        dbPassword: $get("archiveDbPassword"),
-        batchSize: parseInt($get("archiveBatchSize")),
-        cron: $get("archiveCron"),
-        tasks: getArchiveRulesFromTable()
-      });
-
+    function saveDataRetentionAndArchiveConfig() {
       const groveLogging = true;
 
-      SystemSettingsDwr.saveDataRetentionAndArchiveConfig(
+      const dbUrl = $get("archiveDbUrl");
+      const dbUsername = $get("archiveDbUsername");
+      const dbPassword = $get("archiveDbPassword");
+      const batchSize = parseInt($get("archiveBatchSize"));
+      const cron = $get("archiveCron");
+      const tasksJson = JSON.stringify(getArchiveRulesFromTable());
+
+      SystemSettingsDwr.saveDataRetentionAndArchiveConfigV2(
+              dbUrl,
+              dbUsername,
+              dbPassword,
+              batchSize,
+              cron,
+              tasksJson,
+
               $get("<c:out value="<%= SystemSettingsDAO.ARCHIVE_ENABLED %>"/>"),
-              configJson,
               $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
@@ -704,15 +708,17 @@
               $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
               $get("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>"),
               function(response) {
-        stopImageFader("saveDataArchivingSettingsImg");
-        if (response.hasMessages) {
-          const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
-          setUserMessage("dataArchivingMessage", messages);
-        } else {
-          setUserMessage("dataArchivingMessage", "<spring:message code='systemSettings.archiving.settingsSuccess'/>");
-        }
-      });
+                stopImageFader("saveDataArchiveSettingsImg");
+                if (response.hasMessages) {
+                  const messages = response.messages.map(m => m.contextualMessage || m.genericMessage || JSON.stringify(m)).join("<br/>");
+                  setUserMessage("dataArchiveMessage", messages);
+                } else {
+                  setUserMessage("dataArchiveMessage", "<spring:message code='systemSettings.archive.settingsSuccess'/>");
+                }
+              }
+      );
     }
+
 
     function toggleArchiveFields(enabled) {
       const archiveBody = document.getElementById("archiveBody");
@@ -740,7 +746,7 @@
     }
 
   function renderArchiveRules(rules) {
-    const tbody = document.getElementById('archivingRulesTbody');
+    const tbody = document.getElementById('archiveRulesTbody');
     tbody.innerHTML = '';
     (rules || []).forEach((rule, i) => {
       tbody.appendChild(archiveRuleRow(i, rule));
@@ -766,7 +772,7 @@
     tr.appendChild(tdSelect('table', archiveTables, rule.table));
 
     const tdDel = document.createElement('td');
-    tdDel.innerHTML = `<img id="removeArchivingRuleRowImg" src="images/delete.png" alt="Remove" title="Remove" onclick="removeArchiveRuleRow(${idx})" border="0"/>`;
+    tdDel.innerHTML = `<img id="removeArchiveRuleRowImg" src="images/delete.png" alt="Remove" title="Remove" onclick="removeArchiveRuleRow(${idx})" border="0"/>`;
     tr.appendChild(tdDel);
 
     return tr;
@@ -812,7 +818,7 @@
   // Get all rules from table
   function getArchiveRulesFromTable() {
     const rules = [];
-    const rows = document.querySelectorAll("#archivingRulesTbody tr");
+    const rows = document.querySelectorAll("#archiveRulesTbody tr");
 
     rows.forEach(row => {
       const ageValue = parseInt(row.querySelector('input[name="ageValue"]').value);
@@ -1259,11 +1265,11 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><spring:message code="systemSettings.dataRetentionAndArchivingSettings"/></span>
-          <tag:help id="dataArchivingSettings"/>
+          <span class="smallTitle"><spring:message code="systemSettings.dataRetentionAndArchiveSettings"/></span>
+          <tag:help id="dataArchiveSettings"/>
         </td>
         <td align="right">
-          <tag:img id="saveDataArchivingSettingsImg" png="save" onclick="saveDataArchiveSettings();" title="common.save"/>
+          <tag:img id="saveDataArchiveSettingsImg" png="save" onclick="saveDataRetentionAndArchiveConfig();" title="common.save"/>
         </td>
       </tr>
     </table>
@@ -1367,34 +1373,31 @@
       </tr>
       <tr>
         <td class="formLabelRequired">
-          <spring:message code="systemSettings.archiving.rules"/>
+          <spring:message code="systemSettings.archive.rules"/>
         </td>
         <td class="formField">
-          <table id="archivingRulesTable" style="border-collapse: collapse;">
+          <table id="archiveRulesTable" style="border-collapse: collapse;">
             <thead>
             <tr>
-              <th><spring:message code="systemSettings.archiving.ageValue"/></th>
-              <th><spring:message code="systemSettings.archiving.function"/></th>
-              <th><spring:message code="systemSettings.archiving.table"/></th>
+              <th><spring:message code="systemSettings.archive.ageValue"/></th>
+              <th><spring:message code="systemSettings.archive.function"/></th>
+              <th><spring:message code="systemSettings.archive.table"/></th>
               <th></th>
             </tr>
             </thead>
-            <tbody id="archivingRulesTbody">
+            <tbody id="archiveRulesTbody">
             <!-- Rendered by JS -->
             </tbody>
             <tfoot>
             <tr>
               <td colspan="5" align="right">
-                <img id="addArchivingRuleImg" src="images/add.png" title="Add" onclick="addArchiveRuleRow()" border="0"/>
+                <img id="addArchiveRuleImg" src="images/add.png" title="Add" onclick="addArchiveRuleRow()" border="0"/>
               </td>
             </tr>
             </tfoot>
           </table>
-          <input type="hidden" id="archivingRulesJson" value="" />
+          <input type="hidden" id="archiveRulesJson" value="" />
         </td>
-      </tr>
-      <tr>
-        <td colspan="2" id="dataArchivingMessage" class="formError"></td>
       </tr>
       <div id="archiveAgeFieldTemplate" style="display:none">
         <input type="number" name="ageValue" value="30" min="1" class="formShort" />
@@ -1403,6 +1406,9 @@
         </select>
       </div>
     </tbody>
+      <tr>
+        <td colspan="2" id="dataArchiveMessage" class="formError"></td>
+      </tr>
     </table>
   </div>
 

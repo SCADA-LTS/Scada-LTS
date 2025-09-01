@@ -8,8 +8,8 @@ import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.CronExpression;
-import org.scada_lts.archiving.ArchiveConfig;
-import org.scada_lts.archiving.ArchiveTask;
+import org.scada_lts.archive.ArchiveConfig;
+import org.scada_lts.archive.ArchiveTask;
 import org.scada_lts.config.ForkJoinConfig;
 import org.scada_lts.config.ScadaConfig;
 
@@ -822,34 +822,33 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static DwrResponseI18n validateArchiveConfig(String configJson) {
-        DwrResponseI18n response = new DwrResponseI18n();
+    public static DwrResponseI18n validateArchiveConfig(String configJson, DwrResponseI18n response) {
 
         ObjectMapper mapper = new ObjectMapper();
         ArchiveConfig config;
         try {
             config = mapper.readValue(configJson, ArchiveConfig.class);
         } catch (Exception ex) {
-            response.addContextualMessage("dataArchivingMessage", "emport.parseError");
+            response.addContextualMessage("dataArchiveMessage", "emport.parseError");
             return response;
         }
 
         if (config == null) {
-            response.addContextualMessage("dataArchivingMessage", "systemSettings.archiving.invalidConfig");
+            response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.invalidConfig");
             return response;
         }
 
         if (isEmpty(config.getDbUrl())) {
-            response.addContextualMessage("archiveDbUrl", "systemSettings.archiving.missingFields");
+            response.addContextualMessage("archiveDbUrl", "systemSettings.archive.missingFields");
         }
         if (isEmpty(config.getDbUsername())) {
-            response.addContextualMessage("archiveDbUsername", "systemSettings.archiving.missingFields");
+            response.addContextualMessage("archiveDbUsername", "systemSettings.archive.missingFields");
         }
         if (isEmpty(config.getDbPassword())) {
-            response.addContextualMessage("archiveDbPassword", "systemSettings.archiving.missingFields");
+            response.addContextualMessage("archiveDbPassword", "systemSettings.archive.missingFields");
         }
         if (config.getBatchSize() <= 0 || config.getBatchSize() >= 32767) {
-            response.addContextualMessage("archiveBatchSize", "systemSettings.archiving.invalidBatchSize");
+            response.addContextualMessage("archiveBatchSize", "systemSettings.archive.invalidBatchSize");
         }
         if (isEmpty(config.getCron()) || !CronExpression.isValidExpression(config.getCron())) {
             response.addContextualMessage("archiveCron", "reports.validate.cron", config.getCron());
@@ -857,27 +856,27 @@ public final class SystemSettingsUtils {
 
         List<ArchiveTask> tasks = config.getTasks();
         if (tasks == null || tasks.isEmpty()) {
-            response.addContextualMessage("dataArchivingMessage", "systemSettings.archiving.noTasksDefined");
+            response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.noTasksDefined");
         } else {
             Set<String> uniqueKeys = new HashSet<>();
             for (int i = 0; i < tasks.size(); i++) {
                 ArchiveTask task = tasks.get(i);
                 if (task.getAgeValue() <= 0) {
-                    response.addContextualMessage("dataArchivingMessage", "validate.invalidValue");
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
                 }
                 if (task.getAgeUnit() == null) {
-                    response.addContextualMessage("dataArchivingMessage", "validate.invalidValue");
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
                 }
                 if (task.getFunction() == null) {
-                    response.addContextualMessage("dataArchivingMessage", "validate.invalidValue");
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
                 }
                 if (isEmpty(task.getTable())) {
-                    response.addContextualMessage("dataArchivingMessage", "validate.invalidValue");
+                    response.addContextualMessage("dataArchiveMessage", "validate.invalidValue");
                 }
 
                 String key = task.getTable() + "::" + task.getFunction();
                 if (!uniqueKeys.add(key)) {
-                    response.addContextualMessage("dataArchivingMessage", "systemSettings.archiving.duplicateTask");
+                    response.addContextualMessage("dataArchiveMessage", "systemSettings.archive.duplicateTask");
                 }
             }
         }
@@ -886,7 +885,7 @@ public final class SystemSettingsUtils {
     }
 
 
-    public static String getArchivingConfig() {
+    public static String getArchiveConfig() {
         String defaultValue = "{}";
         try {
             return ScadaConfig.getInstance().getConf().getProperty(ARCHIVE_CONFIG, defaultValue);
@@ -904,6 +903,12 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error("Error reading archive.config", e);
             return defaultValue;
+        }
+    }
+
+    public static void validateNonNegative(DwrResponseI18n resp, String fieldKey, int value) {
+        if (value < 0) {
+            resp.addContextualMessage(fieldKey, "validate.cannotBeNegative", 0);
         }
     }
 

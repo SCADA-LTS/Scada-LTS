@@ -20,7 +20,7 @@ package org.scada_lts.config;
 import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.archiving.ArchiveConfig;
+import org.scada_lts.archive.ArchiveConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 
 import java.io.File;

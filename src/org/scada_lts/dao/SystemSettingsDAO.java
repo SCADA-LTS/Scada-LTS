@@ -24,7 +24,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.archiving.ArchiveConfig;
+import org.scada_lts.archive.ArchiveConfig;
 import org.scada_lts.dao.cache.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
@@ -436,7 +436,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
 		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
 		DEFAULT_VALUES.put(ARCHIVE_ENABLED, SystemSettingsUtils.getArchiveEnabled());
-		DEFAULT_VALUES.put(ARCHIVE_CONFIG, SystemSettingsUtils.getArchivingConfig());
+		DEFAULT_VALUES.put(ARCHIVE_CONFIG, SystemSettingsUtils.getArchiveConfig());
     }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

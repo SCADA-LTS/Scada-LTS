@@ -26,8 +26,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
-import org.scada_lts.archiving.ArchiveFunction;
-import org.scada_lts.archiving.ArchiveUtils;
+import org.scada_lts.archive.ArchiveFunction;
+import org.scada_lts.archive.ArchiveUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -59,6 +59,7 @@ import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
 import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
+import static org.scada_lts.utils.SystemSettingsUtils.validateNonNegative;
 
 
 public class SystemSettingsDwr extends BaseDwr {
@@ -587,6 +588,34 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.ARCHIVE_ENABLED,
 				archiveEnabled);
 
+		validateNonNegative(response, SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT, defaultPurgePeriod);
+		validateNonNegative(response, SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, defaultPurgePeriodType);
+		validateNonNegative(response, SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, futureDateLimitPeriods);
+		validateNonNegative(response, SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, futureDateLimitPeriodType);
+
+		if (!archiveEnabled) {
+			validateNonNegative(response, SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, eventPurgePeriodType);
+			validateNonNegative(response, SystemSettingsDAO.EVENT_PURGE_PERIODS, eventPurgePeriods);
+			validateNonNegative(response, SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, reportPurgePeriodType);
+			validateNonNegative(response, SystemSettingsDAO.REPORT_PURGE_PERIODS, reportPurgePeriods);
+			validateNonNegative(response, SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, valuesLimitForPurge);
+		}
+
+		try {
+			response = SystemSettingsUtils.validateArchiveConfig(configJson, response);
+		} catch (Exception ex) {
+			response.addContextualMessage("dataArchiveMessage", "emport.parseError");
+			return response;
+		}
+
+		if(!response.getHasMessages()) {
+			systemSettingsDAO = new SystemSettingsDAO();
+			systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
+		}
+		else {
+			return response;
+		}
+
 		if (!archiveEnabled) {
 			systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
 					eventPurgePeriodType);
@@ -616,22 +645,6 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
 				defaultPurgePeriodType);
-
-
-		try {
-			response = SystemSettingsUtils.validateArchiveConfig(configJson);
-		} catch (Exception ex) {
-			response.addContextualMessage("dataArchivingMessage", "emport.parseError");
-			return response;
-		}
-
-		if(!response.getHasMessages()) {
-			systemSettingsDAO = new SystemSettingsDAO();
-			systemSettingsDAO.setValue(SystemSettingsDAO.ARCHIVE_CONFIG, configJson);
-		}
-		else {
-			return response;
-		}
 
 		try {
 			ArchiveUtils.init();

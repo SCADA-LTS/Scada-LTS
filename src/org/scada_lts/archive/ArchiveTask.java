@@ -1,4 +1,4 @@
-package org.scada_lts.archiving;
+package org.scada_lts.archive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

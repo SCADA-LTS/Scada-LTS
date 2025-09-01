@@ -1,4 +1,4 @@
-package org.scada_lts.archiving;
+package org.scada_lts.archive;
 
 public enum ArchiveFunction {
     COPY_TO_ARCHIVE("Archive"),

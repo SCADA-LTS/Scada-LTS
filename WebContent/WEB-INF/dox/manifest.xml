@@ -440,5 +440,5 @@
     <relation id="internalPP"/>
   </item>
 
-  <item id ="dataArchivingSettings"/>
+  <item id ="dataArchiveSettings"/>
 </doxManifest>
