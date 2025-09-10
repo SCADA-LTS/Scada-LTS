@@ -62,8 +62,12 @@
             setDataPointStatusImg(enabled, imgNode);
     }
     
-    function deleteDataSource(dataSourceId) {
-        if (confirm("<spring:message code="dsList.dsDeleteConfirm"/>")) {
+    function deleteDataSource(el, dataSourceId) {
+      var name = el.getAttribute("data-name") || "";
+      var xid  = el.getAttribute("data-xid")  || "";
+      var template = "<spring:message code='dsList.dsDeleteConfirmNamed'/>";
+      var msg = template.replace("{0}", name).replace("{1}", xid);
+        if (confirm(msg)) {
             startImageFader("deleteDataSourceImg"+ dataSourceId);
             DataSourceListDwr.deleteDataSource(dataSourceId, function(dataSourceId) {
                 stopImageFader("deleteDataSourceImg"+ dataSourceId);
@@ -152,8 +156,12 @@
                       <a href="data_source_edit.shtm?dsid=${listParent.parent.id}"><tag:img png="icon_ds_edit"
                               title="common.edit"/></a>
                       <tag:img png="arrow_out" title="dsList.show" onclick="togglePanelVisibility2(this, 'points${listParent.parent.id}', '${hideText}', '${showText}');"/>
-                      <tag:img png="icon_ds_delete" title="common.delete" id="deleteDataSourceImg${listParent.parent.id}" 
-                              onclick="deleteDataSource(${listParent.parent.id})"/>
+                      <tag:img png="icon_ds_delete"
+                               title="common.delete"
+                               id="deleteDataSourceImg${listParent.parent.id}"
+                               dataName="${listParent.parent.name}"
+                               dataXid="${listParent.parent.xid}"
+                               onclick="deleteDataSource(this, ${listParent.parent.id})"/>
                       <tag:img png="icon_ds_add" title="common.copy" id="copyDataSourceImg${listParent.parent.id}" 
                               onclick="copyDataSource(${listParent.parent.id})"/>
                     </td>

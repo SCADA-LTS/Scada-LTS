@@ -25,6 +25,8 @@
 --%><%@attribute name="onmouseover"%><%--
 --%><%@attribute name="onmouseout"%><%--
 --%><%@attribute name="style"%><%--
+--%><%@attribute name="dataName" rtexprvalue="true"%><%--
+--%><%@attribute name="dataXid"  rtexprvalue="true"%><%--
 --%><img class="ptr" <c:if test="${!empty id}"> id="${id}"</c:if><%--
 --%><c:if test="${!empty src}"> src="${src}"</c:if><%--
 --%><c:if test="${!empty png && empty src}"> src="images/${png}.png"</c:if><%--
@@ -33,4 +35,6 @@
 --%><c:if test="${!empty onmouseover}"> onmouseover="${onmouseover}"</c:if><%--
 --%><c:if test="${!empty onmouseout}"> onmouseout="${onmouseout}"</c:if><%--
 --%><c:if test="${!empty style}"> style="${style}"</c:if><%--
+--%><c:if test="${!empty dataName}"> data-name="<c:out value='${dataName}'/>"</c:if><%--
+--%><c:if test="${!empty dataXid}">  data-xid="<c:out value='${dataXid}'/>"</c:if><%--
 --%> border="0"/>
