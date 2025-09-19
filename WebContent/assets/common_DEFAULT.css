@@ -259,8 +259,21 @@ html > body .dojoTreeNodeLabelTitle {
 	padding-top: 10px;
 }
 
-#sltsFooter {
-	text-align:center;
+#sltsFooter{
+	text-align: center;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 8px;
+	background: #fff;
+	border-top: 1px solid #e5e5e5;
+	pointer-events: none;
 }
 
 #viewContent button {
