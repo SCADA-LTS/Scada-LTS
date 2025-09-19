@@ -150,7 +150,7 @@
     }
     
     function updateScheduledEvent(se) {
-        $("se"+ se.id +"Name").textContent = se.description;
+        $("se"+ se.id +"Name").innerHTML = se.description;
         setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
     
