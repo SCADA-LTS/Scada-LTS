@@ -1320,6 +1320,7 @@ function unescapeHtml(value) {
 function escapeHtml(value) {
    let div = document.createElement("div");
    div.textContent = value;
+   div.innerText = value;
    return div.innerHTML;
 }
 

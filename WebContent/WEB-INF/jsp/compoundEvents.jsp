@@ -38,7 +38,7 @@
             var pointRoot = dojo.widget.manager.getWidgetById('rootPoint');
             for (i=0; i<data.dataPoints.length; i++) {
                 dp = data.dataPoints[i];
-                pointNode = dojo.widget.createWidget("TreeNode", {title: "<img src='images/icon_comp.png'/> "+ escapeHtml(dp.name)});
+                pointNode = dojo.widget.createWidget("TreeNode", {title: "<img src='images/icon_comp.png'/> "+ dp.name});
                 pointRoot.addChild(pointNode);
                 
                 for (j=0; j<dp.eventTypes.length; j++) {
@@ -68,7 +68,7 @@
     
     function createEventTypeNode(widgetId, eventType, parent) {
         var node = dojo.widget.createWidget("TreeNode", {
-                title: "<img id='"+ widgetId +"Img'/> " + escapeHtml(eventType.description) + " (" + escapeHtml(eventType.eventDetectorKey) + ")",
+                title: "<img id='"+ widgetId +"Img'/> "+ eventType.description +" ("+ eventType.eventDetectorKey +")",
                 widgetId: widgetId,
                 object: eventType.eventDetectorKey
         });
@@ -157,7 +157,7 @@
     }
     
     function updateCompoundEvent(ced) {
-        $("ced"+ ced.id +"Name").textContent = ced.name;
+        $("ced"+ ced.id +"Name").innerHTML = ced.name;
         setCompoundEventImg(ced.disabled, $("ced"+ ced.id +"Img"));
     }
     
