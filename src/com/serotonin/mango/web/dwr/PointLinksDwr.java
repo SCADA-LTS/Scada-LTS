@@ -40,6 +40,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.dwr.security.XssSanitizer;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -64,10 +65,11 @@ public class PointLinksDwr extends BaseDwr {
         List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
         List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();
         for (DataPointVO point : allPoints) {
+            String safeName = XssSanitizer.escape(point.getExtendedName());
             if (Permissions.hasDataPointReadPermission(user, point))
-                sourcePoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+                sourcePoints.add(new IntValuePair(point.getId(), safeName));
             if (point.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, point))
-                targetPoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
+                targetPoints.add(new IntValuePair(point.getId(), safeName));
         }
 
         data.put("sourcePoints", sourcePoints);

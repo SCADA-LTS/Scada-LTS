@@ -153,15 +153,15 @@
         
         this.updatePointList = function(dataTypes) {
             dwr.util.removeAllOptions("settingsPointList");
-            		
-            for (i=0; i<settingsEditor.pointList.length; i++) {
-				if (contains(dataTypes, settingsEditor.pointList[i].dataType)) {
-				jQuery("#settingsPointList").append( new Option(
-							settingsEditor.pointList[i].name,
-							settingsEditor.pointList[i].id) );
-				}
-			}
-            jQuery("#settingsPointList").append( new Option('',-1) );
+
+        for (let i = 0; i < settingsEditor.pointList.length; i++) {
+            const p = settingsEditor.pointList[i];
+            if (contains(dataTypes, p.dataType)) {
+                const label = unescapeHtml(p.name);
+                jQuery("#settingsPointList").append(new Option(label, p.id));
+            }
+        }
+        jQuery("#settingsPointList").append( new Option('',-1) );
         };
     }
     var settingsEditor = new SettingsEditor();

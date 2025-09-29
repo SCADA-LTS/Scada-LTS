@@ -32,6 +32,7 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.dwr.security.AllowHtml;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -75,7 +76,7 @@ public class ReportVO implements Serializable, JsonSerializable, GetExtendedName
 
     private int userId;
     private String username;
-    @JsonRemoteProperty
+    @JsonRemoteProperty @AllowHtml
     private String name;
 
     private List<ReportPointVO> points = new ArrayList<ReportPointVO>();

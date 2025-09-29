@@ -47,7 +47,7 @@
             editingMailingList = ml;
             
             $set("xid", ml.xid);
-            $set("name", ml.name);
+            $set("name", unescapeHtml(ml.name));
             $set("dailyLimitSentEmailsNumber", ml.dailyLimitSentEmailsNumber);
             $set("cronPattern", ml.cronPattern);
             $set("collectInactiveEmails", ml.collectInactiveEmails);

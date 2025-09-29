@@ -34,7 +34,11 @@
         dwr.util.removeAllRows("publisherList");
         dwr.util.addRows("publisherList", publishers,
             [
-                function(p) { return "<b>"+ p.name +"</b>"; },
+                function(p) {
+                  let b = document.createElement("b");
+                  b.appendChild(document.createTextNode(p.name));
+                  return b;
+                },
                 function(p) { return p.typeMessage; },
                 function(p) { return p.configDescription; },
                 function(p) {

@@ -815,22 +815,33 @@ var messages = {
  		          dialog.getButton('btn-Close').disable();
  		          var $button = this;
  		          $button.disable();
- 		          $button.spin();
- 		          dialog.setClosable(false);
- 		          const rawInput = dialog.getModalBody().find('input').val();
+					$button.spin();
+					dialog.setClosable(false);
+					let inputs = dialog.getModalBody().find('input');
+					let titleNewNode;
+					if(inputs.length == 1) {
+						let inputNode = inputs[0];
+						titleNewNode = inputNode.value ? inputNode.value.replaceAll('\\','').replaceAll('\/','') : '';
+					}
+
+					if(!titleNewNode) {
+						dialog.getModalBody().html('<div><h3>'+messages.folderNotAdd+'</h3><p>'+ messages.errorThrown +':'+errorThrown+'</p></div>');
+						dialog.setClosable(true);
+						dialog.getButton('btn-Close').enable();
+						return;
+					}
+
 					$.ajax({
-		            type: "POST",
-		        	dataType: "json",
-		        	url:myLocation+"pointHierarchy/new/0/"+encodeURIComponent(rawInput),
-		        	success: function(msg){
-		        	  var titleNewNode = escapeHtml(rawInput);
-		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
-		        	  $button.hide();
-		 		      $button.stopSpin();
-		 		      dialog.setClosable(true);
-		 		      dialog.getButton('btn-Close').enable();
-		 		       dialog.close();
-		 		       reload();
+						type: "POST",
+						dataType: "json",
+						url:myLocation+"pointHierarchy/new/0/"+titleNewNode,
+						success: function(msg){
+							$button.hide();
+							$button.stopSpin();
+							dialog.setClosable(true);
+							dialog.getButton('btn-Close').enable();
+							dialog.close();
+							reload();
 		        	  },
 		        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
 		        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotAdd+'</h3><p>'+ messages.errorThrown +':'+errorThrown+'</p></div>');
