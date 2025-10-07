@@ -33,9 +33,28 @@
       	<c:if test="${!hideIdColumn}"><td align="center">${event.id}</td></c:if>
       	<c:if test="${!hideAlarmLevelColumn}"><td align="center"><tag:eventIcon event="${event}"/></td></c:if>
         <c:if test="${!hideTimestampColumn}"><td align="center">${sst:time(event.activeTimestamp)}</td></c:if>
-        <td onmouseover="this.style.whiteSpace='normal'" onmouseout="this.style.whiteSpace='nowrap'" style=" white-space: nowrap; max-width:100vh;">
-        <p style="margin:auto; overflow: hidden; text-overflow: ellipsis; font-weight: bold;"><sst:i18n message="${event.message}"/></p>
-        </td>
+          <td>
+              <table cellspacing="0" cellpadding="0" width="100%">
+                  <colgroup>
+                      <col />
+                      <col />
+                      <col style="width:1%" />
+                  </colgroup>
+
+                  <tr>
+                      <td colspan="2"><b><sst:i18n message="${event.message}"/></b></td>
+                      <td align="right">
+                          <tag:img png="comment_add" title="notes.addNote"
+                                   onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_EVENT']}, ${event.id})"/>
+                      </td>
+                  </tr>
+
+                  <tbody id="eventComments${event.id}">
+                  <tag:comments comments="${event.eventComments}"/>
+                  </tbody>
+              </table>
+          </td>
+
         <c:if test="${!hideInactivityColumn}">
 	        <td>
 	          <c:choose>
