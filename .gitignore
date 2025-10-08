@@ -95,12 +95,16 @@ ${sys:catalina.base}/
 catalina-jrebel.bat
 # Ignore Gradle project-specific cache directory
 .gradle
-gradle/
-!gradle/gradle-wrapper.properties
+
+gradle/*
+gradle/wrapper/*
+!gradle/
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
 # Ignore Gradle build output directory
 WebContent/resources/node_modules/
 build
 databases
 TEST*.xml
-gradlew
-gradlew.bat

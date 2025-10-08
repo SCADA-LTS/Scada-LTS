@@ -311,7 +311,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         synchronized (pointListChangeLock) {
             for (DataPointRT dp : dataPoints) {
                 BACnetIPPointLocatorRT locator = dp.getPointLocator();
-                if (locator.isUseCovSubscription() && dp.getPointValue() != null)
+                if (locator.isUseCovSubscription() && dp.getPointValue() != null && !dp.isUnreliable())
                     continue;
 
                 List<DataPointRT> points = devicePoints.get(locator.getRemoteDevice());
