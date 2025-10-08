@@ -763,7 +763,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return "User{" +
 				"id=" + id +
 				", username='" + username + '\'' +
-				", password='" + password + '\'' +
+				", password='*****'" +
 				", firstName='" + firstName + '\'' +
 				", lastName='" + lastName + '\'' +
 				", email='" + email + '\'' +

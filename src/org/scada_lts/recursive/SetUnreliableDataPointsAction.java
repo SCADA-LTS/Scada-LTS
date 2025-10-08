@@ -47,7 +47,7 @@ public class SetUnreliableDataPointsAction implements Callable<Void> {
             }
         }
         if(!tasks.isEmpty()) {
-            LOG.info("invoke for: {}", tasks.keySet());
+            LOG.warn("invoke for: {}", tasks.keySet());
             if(tasks.size() <= executeInPoolIfExceeds) {
                 for(Callable<?> task: tasks.values()) {
                     task.call();

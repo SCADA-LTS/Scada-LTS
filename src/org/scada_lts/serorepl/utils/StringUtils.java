@@ -175,4 +175,20 @@ public final class StringUtils {
             return name + suffix;
         }
     }
+
+    public static String toDouble(String value) {
+        return replace(value, ".", ",");
+    }
+
+    public static String toInt(String value) {
+        return replace(value, "", ".0", ".00", ",0", ",00");
+    }
+
+    public static String replace(String value, String replacement, String... toReplace) {
+        String result = value;
+        for(String remove: toReplace) {
+            result = result.replace(remove, replacement);
+        }
+        return result;
+    }
 }

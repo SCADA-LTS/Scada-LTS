@@ -49,7 +49,7 @@ public class UsersProfileImporter {
 				response.addGenericMessage("emport.profilePermission.prefix", newProfile.getXid(), bundle.getString( "emport.added"));
 			}
 
-			List<User> usersOnProfile = getUsersOnProfile(task.getUsers(), newProfile, userService, response);
+			List<User> usersOnProfile = getUsersOnProfile(task._getUsers(), newProfile, userService, response);
 			for (User user : usersOnProfile) {
 				usersProfileService.updateUsersProfile(user, newProfile);
 				response.addGenericMessage("emport.profilePermission.prefix",  newProfile.getXid() + ", user: " + user.getUsername(), bundle.getString("emport.saved"));
