@@ -191,6 +191,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeStrategy;
     @JsonRemoteProperty
     private int purgeValuesLimit;
+    @JsonRemoteProperty
+    private boolean toleranceAsPercentage;
 
     public DataPointVO(){
         this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE),
@@ -205,6 +207,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.intervalLoggingPeriod = 15;
         this.intervalLoggingType = IntervalLoggingTypes.INSTANT;
         this.tolerance = 0;
+        this.toleranceAsPercentage = false;
         this.purgeType = purgeValuesPeriodType;
         this.purgePeriod = purgeValuesPeriod;
         this.defaultCacheSize = 1;
@@ -318,6 +321,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         AuditEventType.addPropertyMessage(list, "pointEdit.props.chartColour", chartColour);
         AuditEventType.addExportCodeMessage(list, "pointEdit.logging.purgeStrategy", PURGE_STRATEGY_CODES, purgeType);
         AuditEventType.addPropertyMessage(list, "pointEdit.logging.purgeValuesLimit", purgeValuesLimit);
+        AuditEventType.addPropertyMessage(list, "pointEdit.logging.toleranceAsPercentage", toleranceAsPercentage);
 
         pointLocator.addProperties(list);
     }
@@ -352,6 +356,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 from.purgeStrategy, purgeStrategy);
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.logging.purgeValuesLimit", from.purgeValuesLimit,
                 purgeValuesLimit);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.logging.toleranceAsPercentage",
+                from.toleranceAsPercentage, toleranceAsPercentage);
 
         pointLocator.addPropertyChanges(list, from.pointLocator);
     }
@@ -615,6 +621,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.purgeValuesLimit = purgeValuesLimit;
     }
 
+    public boolean isToleranceAsPercentage() { return toleranceAsPercentage; }
+
+    public void setToleranceAsPercentage(boolean toleranceAsPercentage) { this.toleranceAsPercentage = toleranceAsPercentage; }
+
     public DataPointVO copy() {
         try {
             return (DataPointVO) super.clone();
@@ -663,8 +673,12 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         if (!LOGGING_TYPE_CODES.isValidId(loggingType))
             response.addContextualMessage("loggingType", "validate.invalidValue");
         if (loggingType == DataPointVO.LoggingTypes.ON_CHANGE && pointLocator.getDataTypeId() == DataTypes.NUMERIC) {
-            if (tolerance < 0)
+            if (toleranceAsPercentage) {
+                if (tolerance < 0)       response.addContextualMessage("tolerance", "validate.cannotBeNegative");
+                else if (tolerance > 100)response.addContextualMessage("tolerance", "validate.lessThanEqualTo100");
+            } else if (tolerance < 0) {
                 response.addContextualMessage("tolerance", "validate.cannotBeNegative");
+            }
         }
 
         if (!Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType))
@@ -737,7 +751,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     //
     // Serialization
     //
-    private static final int version = 10;
+    private static final int version = 11;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -765,6 +779,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeObject(eventTextRenderer);
         out.writeInt(purgeStrategy);
         out.writeInt(purgeValuesLimit);
+        out.writeBoolean(toleranceAsPercentage);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -1009,6 +1024,33 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             purgeStrategy = in.readInt();
             purgeValuesLimit = in.readInt();
         }
+        else if (ver == 11) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
+            eventTextRenderer = (EventTextRenderer) in.readObject();
+            purgeStrategy = in.readInt();
+            purgeValuesLimit = in.readInt();
+            toleranceAsPercentage = in.readBoolean();
+        }
 
         // Check the purge type. Weird how this could have been set to 0.
         if (purgeType == 0)
@@ -1029,6 +1071,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         map.put("eventDetectors", eventDetectors);
         map.put("engineeringUnits", ENGINEERING_UNITS_CODES.getCode(engineeringUnits));
         map.put("purgeStrategy", PURGE_STRATEGY_CODES.getCode(purgeStrategy));
+        map.put("toleranceAsPercentage", toleranceAsPercentage);
     }
 
     @Override
@@ -1114,6 +1157,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 throw new LocalizableJsonException("emport.error.invalid", "purgeStrategy", text,
                         PURGE_STRATEGY_CODES.getCodeList());
         }
+
+        Boolean tap = json.getBoolean("toleranceAsPercentage");
+        if (tap != null) toleranceAsPercentage = tap;
     }
 
     public static boolean validLoggingType(int loggingType) {

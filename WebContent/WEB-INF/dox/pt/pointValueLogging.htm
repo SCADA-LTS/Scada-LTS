@@ -36,7 +36,13 @@ hist&oacute;rica vs efici&ecirc;ncia de espa&ccedil;o de armazenamento.
 Para pontos Num&eacute;ricos, uma <b>Toler&acirc;ncia</b> ou "banda
 morta", pode tamb&eacute;m ser definida; o valor ser&aacute; registrado
 se o valor absoluto da diferen&ccedil;a entre o valor atual e o valor
-anterior for igual ou maior que a toler&acirc;ncia definida.</p>
+anterior for igual ou maior que a toler&acirc;ncia definida.
+<b>Percentage tolerance</b> grava apenas quando a variação relativa
+entre o valor atual e o último registrado for maior ou igual ao percentual configurado.
+Por exemplo, defina 5 para gravar quando a mudança for de pelo menos 5% do valor anterior.
+A base é o valor absoluto da última amostra registrada; o sinal é ignorado. Se o valor anterior for 0 (ou inexistente),
+o próximo valor é gravado e passa a ser a nova base.
+</p>
 
 <!--<p>The <b>All data</b> setting causes every point update to be saved-->
 <!--to the database. Only use this setting if knowledge of every update is-->

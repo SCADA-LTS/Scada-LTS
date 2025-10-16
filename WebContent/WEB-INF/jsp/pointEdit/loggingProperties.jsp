@@ -21,19 +21,30 @@
 <%@page import="com.serotonin.mango.DataTypes"%>
 
 <script type="text/javascript">
+  function toggleToleranceUnit() {
+    var isPct = document.getElementById("toleranceAsPercentage")?.checked;
+    var hint  = document.getElementById("tolUnitHint");
+    if (hint) hint.innerHTML = isPct ? "%" : "";
+  }
+
   function changeLoggingType() {
       var loggingType = $get("loggingType");
       var tolerance = $("tolerance");
+      var tolerancePct = $("toleranceAsPercentage");
       var purgePeriod = $("purgePeriod");
       var purgeType = $("purgeType");
       var purgeStrategy = $("purgeStrategy");
       var purgeValuesLimit = $("purgeValuesLimit");
       
-      if ($("toleranceSection") && loggingType == <%= DataPointVO.LoggingTypes.ON_CHANGE %>)
+      if ($("toleranceSection") && loggingType == <%= DataPointVO.LoggingTypes.ON_CHANGE %>) {
           // On change logging for a numeric requires a tolerance setting.
           tolerance.disabled = false;
-      else
+          if (tolerancePct) tolerancePct.disabled = false;
+      }
+      else {
           tolerance.disabled = true;
+          if (tolerancePct) tolerancePct.disabled = true;
+      }
       
       if (loggingType == <%= DataPointVO.LoggingTypes.NONE %>) {
           purgePeriod.disabled = true;
@@ -108,6 +119,7 @@
           $("intervalLoggingType").disabled = true;
           $set("intervalLoggingType", <%= DataPointVO.IntervalLoggingTypes.INSTANT %>);
       }
+      toggleToleranceUnit();
       changeLoggingType();
       changeDiscard();
       changePurgeStrategy();
@@ -174,7 +186,15 @@
           <td class="formLabelRequired"><spring:message code="pointEdit.logging.tolerance"/></td>
           <td class="formField">
             <input id="tolerance" type="text" name="tolerance" value="${status.value}" class="formShort"/>
-          </td>
+            <span id="tolUnitHint" style="margin-left:6px;"></span>
+              <spring:bind path="form.toleranceAsPercentage">
+                  <label>
+                    <sst:checkbox id="toleranceAsPercentage" name="toleranceAsPercentage" selectedValue="${status.value}"
+                                  onclick="toggleToleranceUnit()"/>
+                    <spring:message code="pointEdit.logging.tolerance.percent" text="Percentage value"/>
+                  </label>
+                  <c:if test="${error.toleranceAsPercentage != null}"><td class="formError"><spring:message code="${error.toleranceAsPercentage}"/></td></c:if>
+              </spring:bind>
           <c:if test="${error.tolerance != null}"><td class="formError"><spring:message code="${error.tolerance}"/></td></c:if>
         </tr>
       </spring:bind>

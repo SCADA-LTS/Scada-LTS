@@ -216,8 +216,13 @@ public class DataPointEditController {
 
         if (point.getLoggingType() == DataPointVO.LoggingTypes.ON_CHANGE
                 && point.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
-            if (point.getTolerance() < 0)
-            	errors.put("tolerance", "validate.cannotBeNegative");
+
+            if (point.isToleranceAsPercentage()) {
+                if (point.getTolerance() < 0)          errors.put("tolerance", "validate.cannotBeNegative");
+                else if (point.getTolerance() > 100)   errors.put("tolerance", "validate.lessThanEqualTo100");
+            } else {
+                if (point.getTolerance() < 0)          errors.put("tolerance", "validate.cannotBeNegative");
+            }
         }
 
         if (point.isDiscardExtremeValues() && point.getDiscardHighLimit() <= point.getDiscardLowLimit())

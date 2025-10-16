@@ -10,7 +10,7 @@
  -->
 <p>Scada-LTS soporta cuatro tipos de registro de valor puntual</p>
 
-<p><b>Cuando el valor cambia</b> que es el ajuste por defecto. El valor y su ocurrencia temporal se almacenan en la base de datos sólo si el valor del punto cambia. Este escenario ofrece la mejor relación calidad/espacio de almacenamiento (histórico). Para los valores numéricos, también se puede establecer una <b>Tolerancia</b>, o "zona muerta"; el valor se almacenará si la diferencia entre el valor actual y el anterior es mayor o igual a la tolerancia establecida.</p>
+<p><b>Cuando el valor cambia</b> que es el ajuste por defecto. El valor y su ocurrencia temporal se almacenan en la base de datos sólo si el valor del punto cambia. Este escenario ofrece la mejor relación calidad/espacio de almacenamiento (histórico). Para los valores numéricos, también se puede establecer una <b>Tolerancia</b>, o "zona muerta"; el valor se almacenará si la diferencia entre el valor actual y el anterior es mayor o igual a la tolerancia establecida.<b>Percentage tolerance</b> registra únicamente cuando el cambio relativo entre el valor actual y el último registrado es mayor o igual al porcentaje configurado. Por ejemplo, use 5 para registrar cuando el cambio sea al menos del 5 % del valor anterior. La referencia es el valor absoluto del último dato guardado; el signo se ignora. Si el valor previo es 0 (o no existe), el siguiente valor se registra y pasa a ser la nueva referencia.</p>
 
 <p>El parámetro <b>Todos los datos</b> hace que todas las actualizaciones de datos se almacenen en la base de datos. Utilice este ajuste sólo cuando sus limitaciones lo requieran, ya que causará rápidamente una gran acumulación de datos y ralentizará seriamente el rendimiento.</p>
 

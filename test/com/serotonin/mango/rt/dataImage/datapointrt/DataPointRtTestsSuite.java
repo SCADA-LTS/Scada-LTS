@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         PointValueStateTest.class,
         DataPointRtOneThreadTestsSuite.class,
-        DataPointRtMultiThreadTestsSuite.class
+        DataPointRtMultiThreadTestsSuite.class,
+        DataPointRtToleranceTestsSuite.class
 })
 public class DataPointRtTestsSuite {}

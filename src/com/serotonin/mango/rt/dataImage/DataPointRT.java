@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.PointValueService;
+import org.scada_lts.utils.PointValueStateUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
@@ -246,17 +247,21 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 				if (newValue.getValue() instanceof NumericValue) {
 					// Get the new double
 					double newd = newValue.getDoubleValue();
-
-					// See if the new value is outside of the tolerance.
-					double diff = toleranceOrigin - newd;
-					if (diff < 0)
-						diff = -diff;
-
-					if (diff > vo.getTolerance()) {
-						toleranceOrigin = newd;
-						logValue = true;
-					} else
-						logValue = false;
+					if (vo.isToleranceAsPercentage()) {
+						double p = Math.max(0.0, vo.getTolerance()) / 100.0;
+						boolean hit = PointValueStateUtils.exceedsTolerance(vo, toleranceOrigin, newd);
+						logValue = hit;
+						if (hit) toleranceOrigin = newd;
+					} else {
+						double diff = toleranceOrigin - newd;
+						if (diff < 0) diff = -diff;
+						if (diff > vo.getTolerance()) {
+							toleranceOrigin = newd;
+							logValue = true;
+						} else {
+							logValue = false;
+						}
+					}
 				} else
 					logValue = !ObjectUtils.isEqual(newValue.getValue(),
 							pointValue.getValue());

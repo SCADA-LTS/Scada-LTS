@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.ObjectUtils;
 
 public final class PointValueStateUtils {
+    private static final double EPS = 1e-9;
 
     private PointValueStateUtils() {}
 
@@ -31,7 +32,13 @@ public final class PointValueStateUtils {
                 DataPointVO.LoggingTypes.ON_TS_CHANGE)) {
             switch (vo.getLoggingType()) {
                 case DataPointVO.LoggingTypes.ON_CHANGE:
-                    return isChange(newValue, oldState, toleranceOrigin, vo.getTolerance(), source);
+                    if (newValue.getValue() instanceof NumericValue && vo.isToleranceAsPercentage()) {
+                        double p = Math.max(0.0, vo.getTolerance()) / 100.0;
+                        double cur = newValue.getDoubleValue();
+                        return exceedsPercentSymmetric(toleranceOrigin, cur, p);
+                    } else {
+                        return isChange(newValue, oldState, toleranceOrigin, vo.getTolerance(), source);
+                    }
                 case DataPointVO.LoggingTypes.ALL:
                     return true;
                 case DataPointVO.LoggingTypes.ON_TS_CHANGE:
@@ -88,6 +95,28 @@ public final class PointValueStateUtils {
                 return diff > tolerance;
             }
             return !ObjectUtils.isEqual(newValue.getValue(), oldState.getNewValue().getValue());
+        }
+    }
+
+    private static boolean exceedsPercentSymmetric(double last, double cur, double p) {
+        if (p <= 0) {
+            return Math.abs(cur - last) > 0.0;
+        }
+        if (Math.abs(last) < EPS || Math.abs(cur) < EPS) {
+            return Math.abs(cur - last) > 0.0;
+        }
+        double ratio = Math.abs(cur / last);
+        double up   = 1.0 + p;
+        double down = 1.0 / (1.0 + p);
+        return ratio > up || ratio < down;
+    }
+
+    public static boolean exceedsTolerance(DataPointVO vo, double last, double cur) {
+        if (vo.isToleranceAsPercentage()) {
+            double p = Math.max(0.0, vo.getTolerance()) / 100.0;
+            return exceedsPercentSymmetric(last, cur, p);
+        } else {
+            return Math.abs(cur - last) > Math.max(0.0, vo.getTolerance());
         }
     }
 }
