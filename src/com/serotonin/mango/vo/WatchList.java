@@ -34,18 +34,21 @@ import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.WatchListService;
+
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-public class WatchList implements JsonSerializable {
+public class WatchList implements JsonSerializable, GetExtendedName {
     public static final String XID_PREFIX = "WL_";
 
     private int id = Common.NEW_ID;
@@ -83,6 +86,7 @@ public class WatchList implements JsonSerializable {
         this.xid = xid;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -96,6 +100,10 @@ public class WatchList implements JsonSerializable {
 
     public List<DataPointVO> getPointList() {
         return pointList;
+    }
+
+    public void setPointList(List<DataPointVO> pointList) {
+        this.pointList.addAll(pointList);
     }
 
     public int getUserId() {
@@ -120,12 +128,8 @@ public class WatchList implements JsonSerializable {
         else if (StringUtils.isLengthGreaterThan(name, 50))
             response.addMessage("name", new LocalizableMessage("validate.notLongerThan", 50));
 
-        if (StringUtils.isEmpty(xid))
-            response.addMessage("xid", new LocalizableMessage("validate.required"));
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new WatchListDao().isXidUnique(xid, id))
-            response.addMessage("xid", new LocalizableMessage("validate.xidUsed"));
+        WatchListService watchListService = new WatchListService();
+        validateXid(response, watchListService::isXidUnique, xid, id);
 
         for (DataPointVO dpVO : pointList)
             dpVO.validate(response);
@@ -182,5 +186,20 @@ public class WatchList implements JsonSerializable {
                     watchListUsers.add(shareUser);
             }
         }
+    }
+
+    public ScadaObjectIdentifier toIdentifier() {
+        return new ScadaObjectIdentifier(getId(), getXid(), getName());
+    }
+
+    public WatchList copy() {
+        WatchList watchList = new WatchList();
+        watchList.setId(id);
+        watchList.setXid(xid);
+        watchList.setUserId(userId);
+        watchList.setName(name);
+        watchList.setPointList(new ArrayList<>(pointList));
+        watchList.setWatchListUsers(new ArrayList<>(watchListUsers));
+        return watchList;
     }
 }

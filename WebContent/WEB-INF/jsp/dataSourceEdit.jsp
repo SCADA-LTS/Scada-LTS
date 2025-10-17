@@ -28,34 +28,32 @@
     function init() {
         var pointListColumnHeaders = new Array();
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.name"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.name"/>");
         pointListColumnFunctions.push(function(p) { return "<b>"+ p.name +"</b>"; });
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.pointDataType"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.pointDataType"/>");
         pointListColumnFunctions.push(function(p) { return p.dataTypeMessage; });
         
-        pointListColumnHeaders.push("<fmt:message key="dsEdit.status"/>");
+        pointListColumnHeaders.push("<spring:message code="dsEdit.status"/>");
         pointListColumnFunctions.push(function(p) {
                 var id = "toggleImg"+ p.id;
                 var onclick = "togglePoint("+ p.id +")";
                 if (p.enabled)
-                    return writeImage(id, null, "brick_go", "<fmt:message key="common.enabledToggle"/>", onclick);
-                return writeImage(id, null, "brick_stop", "<fmt:message key="common.disabledToggle"/>", onclick);
+                    return writeImage(id, null, "brick_go", "<spring:message code="common.enabledToggle"/>", onclick);
+                return writeImage(id, null, "brick_stop", "<spring:message code="common.disabledToggle"/>", onclick);
         });
         
         if (typeof appendPointListColumnFunctions == 'function')
             appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions);
         
-        pointListColumnHeaders.push("");
+        pointListColumnHeaders.push(function(td) {
+			td.width = "10%";
+		});
         
         pointListColumnFunctions.push(function(p) {
-                return writeImage("editImg"+ p.id, null, "icon_ds_edit", "<fmt:message key="pointDetails.editPoint"/>", "editPoint("+ p.id +")");
-        });
-
-        pointListColumnHeaders.push("");
-
-        pointListColumnFunctions.push(function(p) {
-        		return writeImage("editImg"+ p.id, null, "icon_comp_edit", "<fmt:message key="pointEdit.props.props"/>", "window.location='data_point_edit.shtm?dpid="+ p.id +"'");
+			return	writeImage("editImg" + p.id, null, "icon_ds_edit", "<spring:message code='pointDetails.editPoint'/>", "editPoint(" + p.id + ")") +
+					writeImage("editImg" + p.id, null, "icon_comp_edit", "<spring:message code='pointEdit.props.props'/>", "window.location='data_point_edit.shtm?dpid=" + p.id + "'") +
+					writeImage("editImg" + p.id, null, "icon_ds_add", "<spring:message code='common.copy'/>", "copyDataPoint(" + ${dataSource.id} + ", " + p.id + ");");
         });
 
         var headers = $("pointListHeaders");
@@ -73,7 +71,7 @@
                 rowCreator: function(options) {
                     var tr = document.createElement("tr");
                     tr.mangoId = "p"+ options.rowData.id;
-                    tr.className = ""+ (options.rowIndex % 2 == 0 ? "" : "rowAlt");
+                    tr.className = (options.rowIndex % 2 == 0 ? "" : "rowAlt");
                     return tr;
                 },
                 cellCreator: function(options) {
@@ -117,8 +115,12 @@
         if (response.hasMessages)
             showDwrMessages(response.messages, "dataSourceGenericMessages");
         else {
-            showMessage("dataSourceMessage", "<fmt:message key="dsEdit.saved"/>");
-            DataSourceEditDwr.getPoints(writePointList);
+			if (window.location.href.includes("typeId")) {
+				window.location = "data_source_edit.shtm?dsid=" + response.data.id;
+			} else {
+				showMessage("dataSourceMessage", "<spring:message code="dsEdit.saved"/>");
+				DataSourceEditDwr.getPoints(writePointList);
+			}
         }
         getAlarms();
   	  console.log("dataSourceEdit.jsp::saveDataSourceCB - done");
@@ -139,6 +141,11 @@
     function toggleDataSourceCB(result) {
         var imgNode = $("dsStatusImg");
         stopImageFader(imgNode);
+
+        if (result.error) {
+        	return;
+        }
+
         setDataSourceStatusImg(result.enabled, imgNode);
         getAlarms();
     }
@@ -154,7 +161,7 @@
     }
 
     function deletePoint() {
-        if (confirm("<fmt:message key="dsEdit.deleteConfirm"/>")) {
+        if (confirm("<spring:message code="dsEdit.deleteConfirm"/>")) {
             DataSourceEditDwr.deletePoint(currentPoint.id, deletePointCB);
             startImageFader("pointDeleteImg", true);
         }
@@ -183,7 +190,7 @@
 
     function addPoint(ref) {
         if (!dojo.html.isShowing("pointProperties")) {
-            alert("<fmt:message key="dsEdit.saveWarning"/>");
+            alert("<spring:message code="dsEdit.saveWarning"/>");
             return;
         }
 
@@ -211,8 +218,8 @@
         display("pointDeleteImg", point.id != <c:out value="<%=Common.NEW_ID%>"/>);
         var locator = currentPoint.pointLocator;
 
-        $set("name", currentPoint.name);
-        $set("xid", currentPoint.xid);
+        $set("name", unescapeHtml(currentPoint.name));
+        $set("xid", unescapeHtml(currentPoint.xid));
         var cancel;
         if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator);
         if (!cancel) {
@@ -265,7 +272,7 @@
         else {
             writePointList(response.data.points);
             editPoint(response.data.id);
-            showMessage("pointMessage", "<fmt:message key="dsEdit.pointSaved"/>");
+            showMessage("pointMessage", "<spring:message code="dsEdit.pointSaved"/>");
         }
     }
 
@@ -328,6 +335,21 @@
     	stopImageFader($("enableAllImg"));
     	writePointList(points);
     }
+
+    function escapePoints(points) {
+        for(var i=0; i < points.length; i++) {
+            var point = points[i];
+            point.name = escapeHtml(point.name);
+            point.xid = escapeHtml(point.xid);
+        }
+    }
+    
+    function copyDataPoint(fromDataSourceId, dataPointId) {
+        return DataSourceEditDwr.copyDataPoint(fromDataSourceId, dataPointId, function(response) {
+            writePointList(response.data.points);
+            editPoint(response.data.id);
+        });
+    }
   </script>
 
 	<table class="borderDiv marB subPageHeader" id="alarmsTable" style="display: block; max-height: 300px; overflow-y: auto; width: 59%;">
@@ -335,8 +357,8 @@
 			<td>
 				<table width="100%">
 					<tr>
-						<td class="smallTitle"><fmt:message
-								key="dsEdit.currentAlarms" />
+						<td class="smallTitle"><spring:message
+								code="dsEdit.currentAlarms" />
 						</td>
 						<td align="right"><tag:img png="control_repeat_blue"
 								title="common.refresh" onclick="getAlarms()" />
@@ -345,7 +367,7 @@
 				</table>
 				<table>
 					<tr id="noAlarmsMsg">
-						<td><b><fmt:message key="dsEdit.noAlarms" />
+						<td><b><spring:message code="dsEdit.noAlarms" />
 						</b>
 						</td>
 					</tr>
@@ -360,6 +382,10 @@
 			<jsp:include page="dataSourceEdit/editVirtual.jsp" />
 		</c:when>
 		<c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.AMQP']}">
+            <jsp:include page="dataSourceEdit/editAmqp.jsp"/>
+        </c:when>
+		<c:when
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_SERIAL']}">
 			<jsp:include page="dataSourceEdit/editModbus.jsp" />
 		</c:when>
@@ -367,6 +393,10 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_IP']}">
 			<jsp:include page="dataSourceEdit/editModbus.jsp" />
 		</c:when>
+        <c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MQTT']}">
+            <jsp:include page="dataSourceEdit/editMqtt.jsp"/>
+        </c:when>
 		<c:when
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.SNMP']}">
 			<jsp:include page="dataSourceEdit/editSnmp.jsp" />
@@ -494,5 +524,9 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.RADIUINO']}">
 			<jsp:include page="dataSourceEdit/editRadiuino.jsp" />
 		</c:when>
+        <c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.OPC_UA']}">
+            <jsp:include page="dataSourceEdit/editOpcUa.jsp" />
+        </c:when>
 	</c:choose>
 </tag:page>

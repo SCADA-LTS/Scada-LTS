@@ -45,18 +45,21 @@
     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
-	
+
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {
-	    closeFullScreen();
+	    var forceFullScreenMode = ${forceFullScreenMode};
+	    var isAdmin = ${isAdmin};
+	    if(!forceFullScreenMode || isAdmin)
+	        closeFullScreen();
 	});
 	
 	//check replace alert
 	jQuery.ajax({
         type: "GET",
         dataType: "json",
-        url:'/ScadaBR/api/config/replacealert',
+        url:'api/config/replacealert',
             success: function(data){
               if (data==true) {
             	  window.alert =  function(message) {
@@ -75,7 +78,7 @@
     });
 	
 	<c:if test="${!empty currentView}">
-      mango.view.initNormalView();
+      mango.view.initNormalView(${currentView.id});
     </c:if>
     
     var nVer = navigator.appVersion;
@@ -84,6 +87,7 @@
     var fullVersion  = ''+parseFloat(navigator.appVersion); 
     var majorVersion = parseInt(navigator.appVersion,10);
     var nameOffset,verOffset,ix;
+    var viewId = ${currentView.id};
 
     // In Opera, the true version is after "Opera" or after "Version"
     if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
@@ -137,7 +141,7 @@
     }
     
     function unshare() {
-        ViewDwr.deleteViewShare(function() { window.location = 'views.shtm'; });
+        ViewDwr.deleteViewShare(viewId, function() { window.location = 'views.shtm'; });
     }
     
     function setCookie(c_name,value)
@@ -181,6 +185,9 @@
 
 	function checkFullScreen(){
 		var check = getCookie("fullScreen");
+		var forceFullScreenMode = ${forceFullScreenMode};
+        var enableFullScreenMode = ${enableFullScreenMode};
+        check = forceFullScreenMode || enableFullScreenMode ? 'yes' : check;
 		if(check!=null && check!=""){
 			if(check=="yes"){
 				openFullScreen();
@@ -193,11 +200,19 @@
 
 	function openFullScreen() {
 		setCookie("fullScreen","yes");
-		document.getElementById('fsOut').style.display = "block";
+		var hideShortcutDisableFullScreenFromSystemSettings = ${hideShortcutDisableFullScreenFromSystemSettings};
+		var hideShortcutDisableFullScreenFromUser = ${hideShortcutDisableFullScreenFromUser};
+		if(hideShortcutDisableFullScreenFromSystemSettings || hideShortcutDisableFullScreenFromUser) {
+            document.getElementById('fsOut').style.display = "none";
+		} else {
+		    document.getElementById('fsOut').style.display = "block";
+            jQuery('#fsOut').fadeOut(5000, function(){});
+		}
 		document.getElementById('mainHeader').style.display = "none";
 		document.getElementById('subHeader').style.display = "none";
 		document.getElementById('graphical').style.display = "none";
-		jQuery('#fsOut').fadeOut(5000, function(){});
+		document.getElementById('sltsContent').style = "padding-top: 0px !important;";
+		document.getElementById('fullScreenOut').style = "padding: 0px !important;";
 	}
 
 	function closeFullScreen() {
@@ -205,6 +220,8 @@
 		document.getElementById('mainHeader').style.display = "flex";
 		document.getElementById('subHeader').style.display = "flex";
 		document.getElementById('graphical').style.display = "table";
+		document.getElementById('sltsContent').style = "";
+		document.getElementById('fullScreenOut').style = "";
 	}
 		
 	function keyListen(e) {
@@ -221,18 +238,30 @@
    		keyListen(evnt);
 	}
 
-	
+	function copyCurrentView(viewId) {
+		ViewDwr.copyView(viewId, function(response) {
+			if (response.hasMessages) {
+				alert(response.messages.join("\n"));
+			} else {
+				var newView = response.data["viewCopy"];
+				if (newView && newView.id) {
+					window.location = 'view_edit.shtm?viewId=' + newView.id;
+				} else {
+					alert("Error: cannot copy current view");
+				}
+			}
+		});
+	}
 </script>
 
 	<table class="subPageHeader" id="graphical">
 		<tr>
-			<td class="smallTitle"><fmt:message key="views.title" /> <tag:help
+			<td class="smallTitle"><spring:message code="views.title" /> <tag:help
 					id="graphicalViews" /></td>
 			<td width="50"></td>
 			<c:if test="${fn:length(views) != 0}">
 				<td>
 					<tag:img png="arrow_out" title="viewEdit.fullScreen" onclick="fullScreen()" />
-					<!-- <input type="button" name="buttonFull" value="Full Screen" onClick="fullScreen();" /> -->
 				</td>
 			</c:if>
 			<td align="right"><sst:select value="${currentView.id}"
@@ -245,6 +274,7 @@
 						<c:when test="${owner}">
 							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
+							<a><tag:img png="icon_view_copy" title="viewEdit.copyView" onclick="copyCurrentView(${currentView.id})"/></a>
 						</c:when>
 						<c:otherwise>
 							<!-- Apenas Admin pode remover compartilhamento
@@ -258,10 +288,10 @@
 		
 	</table>
 	
-	<table>
+	<table id="fullScreenOut">
 		<tr>
 			<td class="smallTitle" id="fsOut">
-				<fmt:message key="fullScreenOut"/>
+				<spring:message code="fullScreenOut"/>
 			</td>
 		</tr>
 	</table>
@@ -281,4 +311,3 @@
 </tag:page>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-charts.js.jsp"%>

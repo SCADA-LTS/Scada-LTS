@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -41,12 +42,24 @@ public class ThumbnailComponent extends PointComponent {
     @JsonRemoteProperty
     private int scalePercent;
 
+    public ThumbnailComponent() {}
+
+    public ThumbnailComponent(ThumbnailComponent thumbnailComponent) {
+        super(thumbnailComponent);
+        this.scalePercent = thumbnailComponent.getScalePercent();
+    }
+
     public int getScalePercent() {
         return scalePercent;
     }
 
     public void setScalePercent(int scalePercent) {
         this.scalePercent = scalePercent;
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new ThumbnailComponent(this);
     }
 
     @Override
@@ -96,5 +109,26 @@ public class ThumbnailComponent extends PointComponent {
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1)
             scalePercent = in.readInt();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ThumbnailComponent)) return false;
+        if (!super.equals(o)) return false;
+        ThumbnailComponent that = (ThumbnailComponent) o;
+        return getScalePercent() == that.getScalePercent();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getScalePercent());
+    }
+
+    @Override
+    public String toString() {
+        return "ThumbnailComponent{" +
+                "scalePercent=" + scalePercent +
+                "} " + super.toString();
     }
 }

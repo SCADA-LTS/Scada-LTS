@@ -21,6 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -44,6 +45,14 @@ public class BinaryGraphicComponent extends ImageSetComponent {
     @JsonRemoteProperty(alias = "oneImageIndex")
     private int oneImage;
 
+    public BinaryGraphicComponent() {}
+
+    private BinaryGraphicComponent(BinaryGraphicComponent binaryGraphicComponent) {
+        super(binaryGraphicComponent);
+        this.zeroImage = binaryGraphicComponent.getZeroImage();
+        this.oneImage = binaryGraphicComponent.getOneImage();
+    }
+
     public int getZeroImage() {
         return zeroImage;
     }
@@ -61,12 +70,23 @@ public class BinaryGraphicComponent extends ImageSetComponent {
     }
 
     @Override
+    public ViewComponent copy() {
+        return new BinaryGraphicComponent(this);
+    }
+
+    @Override
     public ImplDefinition definition() {
         return DEFINITION;
     }
 
     @Override
     public String getImage(PointValueTime pointValue) {
+        if(imageSet == null)
+            return "imageSetNotLoaded";
+
+        if(!imageSet.isAvailable())
+            return imageSet.getImageFilename(0);
+
         boolean bvalue = false;
         if (pointValue != null && pointValue.getValue() instanceof BinaryValue)
             bvalue = pointValue.getBooleanValue();
@@ -82,7 +102,7 @@ public class BinaryGraphicComponent extends ImageSetComponent {
         if (oneImage < 0)
             response.addMessage("oneImageIndex", new LocalizableMessage("validate.cannotBeNegative"));
 
-        if (imageSet != null) {
+        if (imageSet != null && imageSet.isAvailable()) {
             if (zeroImage >= imageSet.getImageCount())
                 response.addMessage("zeroImageIndex", new LocalizableMessage("emport.error.component.imageIndex",
                         zeroImage, imageSet.getId(), imageSet.getImageCount() - 1));
@@ -114,5 +134,27 @@ public class BinaryGraphicComponent extends ImageSetComponent {
             zeroImage = in.readInt();
             oneImage = in.readInt();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BinaryGraphicComponent)) return false;
+        if (!super.equals(o)) return false;
+        BinaryGraphicComponent that = (BinaryGraphicComponent) o;
+        return getZeroImage() == that.getZeroImage() && getOneImage() == that.getOneImage();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getZeroImage(), getOneImage());
+    }
+
+    @Override
+    public String toString() {
+        return "BinaryGraphicComponent{" +
+                "zeroImage=" + zeroImage +
+                ", oneImage=" + oneImage +
+                "} " + super.toString();
     }
 }

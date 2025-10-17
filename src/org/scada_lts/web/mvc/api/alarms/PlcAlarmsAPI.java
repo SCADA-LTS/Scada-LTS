@@ -51,11 +51,7 @@ import static org.scada_lts.web.mvc.api.alarms.Validation.validateNumberFormat;
 public class PlcAlarmsAPI {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsAPI.class);
-    private AlarmsService alarmsService;
-
-    public PlcAlarmsAPI() {
-        this.alarmsService = AlarmsService.plcAlarmsService();
-    }
+    private final AlarmsService alarmsService;
 
     public PlcAlarmsAPI(AlarmsService alarmsService) {
         this.alarmsService = alarmsService;
@@ -121,7 +117,7 @@ public class PlcAlarmsAPI {
         LOG.info(request.getRequestURL());
 
         User user = Common.getUser(request);
-        if (user != null && user.isAdmin()) {
+        if (user != null) {
             String value = validateBetweenZeroTo9999("limit", limit);
             if (!value.isEmpty()) {
                 return new ResponseEntity<>(value, HttpStatus.BAD_REQUEST);
@@ -166,7 +162,7 @@ public class PlcAlarmsAPI {
         LOG.info(request.getRequestURL());
 
         User user = Common.getUser(request);
-        if (user != null && user.isAdmin()) {
+        if (user != null) {
             String value = validateDateFormat(dayDate) +
                     validateNumberFormat("offset", offset) +
                     validateBetweenZeroTo9999("limit", limit);

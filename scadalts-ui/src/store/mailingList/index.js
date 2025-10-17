@@ -1,9 +1,9 @@
-import mailingListTemplate from "./templates";
+import mailingListTemplate from './templates';
 
 const storeMailingList = {
 	state: {
 		mailingListTemplate: mailingListTemplate,
-		defaultCronPattern: "1 */15 * * * ?",
+		defaultCronPattern: '1 */15 * * * ?',
 	},
 
 	mutations: {},
@@ -17,38 +17,38 @@ const storeMailingList = {
 			return dispatch('requestGet', `/mailingList/get/id/${mailingListId}`);
 		},
 
-		getUniqueMailingListXid({dispatch}) {
+		getUniqueMailingListXid({ dispatch }) {
 			return dispatch('requestGet', '/mailingList/generateUniqueXid');
 		},
+		
 
-		deleteMailingList({dispatch}, mailingListId) {
+		deleteMailingList({ dispatch }, mailingListId) {
 			return dispatch('requestDelete', `/mailingList/${mailingListId}`);
 		},
 
 		createMailingList({ state, dispatch }, mailingList) {
-			if(!mailingList.cronPattern) {
+			if (!mailingList.cronPattern) {
 				mailingList.cronPattern = state.defaultCronPattern;
 			}
 			return dispatch('requestPost', {
 				url: `/mailingList/`,
-				data: mailingList
-			})
+				data: mailingList,
+			});
 		},
 
 		updateMailingList({ state, dispatch }, mailingList) {
 			let requestPayload = Object.assign({}, mailingList);
-			if(!requestPayload.cronPattern) {
+			if (!requestPayload.cronPattern) {
 				requestPayload.cronPattern = state.defaultCronPattern;
 			}
-			requestPayload.entries.forEach(e => {
-				delete e.user
+			requestPayload.entries.forEach((e) => {
+				delete e.user;
 			});
 			return dispatch('requestPut', {
 				url: `/mailingList/`,
-				data: requestPayload
-			})
+				data: requestPayload,
+			});
 		},
-
 	},
 
 	getters: {},

@@ -18,7 +18,7 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
-<tag:page dwr="DataPointEditDwr">
+<tag:page dwr="DataPointEditDwr" onload="init">
 
      <link href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
      <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
@@ -69,20 +69,28 @@
     <input type="hidden" id="taskName" name="asdf" value=""/>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td valign="top">
+        <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
         </td>
-        <td valign="top">
+        <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
         </td>
       </tr>
       <tr>
         <td>
             <script>
+                    function init() {
+                        jQuery("#selected_base_on_existing_point_chooser").chosen({
+                            allow_single_deselect: true,
+                            placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+                            search_contains: true,
+                            width: "400px"
+                        });
+                    }
 
                    function checkGetAlertError() {
                      return jQuery("#checkGetAlertError").prop('checked');
@@ -164,6 +172,10 @@
                        jQuery("#purgeType").val(prop.purgeType);
                        jQuery("#defaultCacheSize").val(prop.defaultCacheSize);
 
+                       jQuery("#purgeStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeNowStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeValuesLimit").val(prop.purgeValuesLimit);
+
                    }
 
                    function setConfig(properties) {
@@ -177,7 +189,7 @@
                            $(currentEventTextRenderer)
                        );
 
-                       jQuery("#eventTextRendererSelect").val(properties.def.name);
+                       jQuery("#eventTextRendererSelect").val(properties.eventTextRenderer.def.name);
 
                        currentEventTextRenderer = $("eventTextRendererSelect").value;
 
@@ -199,8 +211,8 @@
                                    }
                                    for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                        eventTextRendererEditor.addMultistateEventValue(
-                                           String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                           String( properties.eventTextRenderer.multistateValues[multistate].text ));
+                                           String( properties.eventTextRenderer.multistateEventValues[multistate].key ),
+                                           String( properties.eventTextRenderer.multistateEventValues[multistate].text ));
                                    }
                                } catch (err) {
                                    console.log(err);
@@ -210,8 +222,8 @@
                            } else {
                                for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                    eventTextRendererEditor.addMultistateEventValue(
-                                       String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                       String( properties.eventTextRenderer.multistateValues[multistate].text ));
+                                       String( properties.eventTextRenderer.multistateEventValues[multistate].key ),
+                                       String( properties.eventTextRenderer.multistateEventValues[multistate].text ));
                                }
                            }
                        }
@@ -219,12 +231,22 @@
                        if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
 
                            if (checkGetAlertError()) {
+                               let thisEventRangeValues = this.eventTextRendererEditor.getRangeEventValues();
                                try {
                                    var alert_old = alert;
                                    alert = function (message) {
                                        console.log(message);
                                    }
                                    for (var range in properties.eventTextRenderer.rangeEventValues) {
+                                       for (let i = 0; i < thisEventRangeValues.length; i++){
+                                            if(
+                                                parseFloat(thisEventRangeValues[i].from) === parseFloat(properties.eventTextRenderer.rangeEventValues[range].from) &&
+                                                parseFloat(thisEventRangeValues[i].to) === parseFloat(properties.eventTextRenderer.rangeEventValues[range].to))
+                                           {
+                                               eventTextRendererEditor.removeRangeEventValue(parseFloat(properties.eventTextRenderer.rangeEventValues[range].from),
+                                                   parseFloat(properties.eventTextRenderer.rangeEventValues[range].to))
+                                           }
+                                       }
                                        eventTextRendererEditor.addRangeEventValue(
                                            String( properties.eventTextRenderer.rangeEventValues[range].from ),
                                            String( properties.eventTextRenderer.rangeEventValues[range].to ),
@@ -315,11 +337,20 @@
 
                         if (checkGetAlertError()) {
                             try {
+                                let thisRangeValues = this.textRendererEditor.getRangeValues();
                                 var alert_old = alert;
                                 alert = function (message) {
                                     console.log(message);
                                 }
                                 for (var range in properties.textRenderer.rangeValues) {
+                                    for (let i = 0; i < thisRangeValues.length; i++) {
+                                        if (
+                                            parseFloat(thisRangeValues[i].from) === parseFloat(properties.textRenderer.rangeValues[range].from) &&
+                                            parseFloat(thisRangeValues[i].to) === parseFloat(properties.textRenderer.rangeValues[range].to))
+                                        {
+                                            textRendererEditor.removeRangeValue(parseFloat(properties.textRenderer.rangeValues[range].from), parseFloat(properties.textRenderer.rangeValues[range].to));
+                                        }
+                                    }
                                     textRendererEditor.addRangeValue(
                                         String( properties.textRenderer.rangeValues[range].from ),
                                         String( properties.textRenderer.rangeValues[range].to ),
@@ -373,13 +404,9 @@
                       }
                   }
                   // const
-                  var pathArray = location.href.split( '/' );
-                  var protocol = pathArray[0];
-                  var host = pathArray[2];
-                  var appScada = pathArray[3];
                   var myLocation;
                   if (!myLocation) {
-                    myLocation = protocol + "//" + host + "/" + appScada + "/";
+                    myLocation = getAppLocation();
                    }
 
                    var arrDictLoggingType = ["", "When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
@@ -632,7 +659,7 @@
 
                       let eventTextRenderer = "";
 
-                      if (properties.def.name == "eventTextRendererBinary") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererBinary") {
                           eventTextRenderer = ""
                               + "<li>Event text renderer properties: Binary"
                               + "<ul class='scada-swal-ul2'>"
@@ -640,21 +667,21 @@
                               + "<li>one: " +  properties.eventTextRenderer.oneLabel + "</li></ul></li>";
                       }
 
-                      if (properties.def.name == "eventTextRendererMultistate") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererMultistate") {
 
                           eventTextRenderer = ""
                               + "<li>Event text renderer properties: Multistate "
                               + "<ul class='scada-swal-ul2'>";
 
-                          for (var multistate in properties.eventTextRenderer.multistateValues) {
-                              eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateValues[multistate].key
-                                  + " text: " + properties.eventTextRenderer.multistateValues[multistate].text + "</li>";
+                          for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                              eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateEventValues[multistate].key
+                                  + " text: " + properties.eventTextRenderer.multistateEventValues[multistate].text + "</li>";
                           }
 
                           eventTextRenderer = eventTextRenderer + "</ul></li>";
                       }
 
-                      if (properties.def.name == "eventTextRendererRange") {
+                      if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
 
                           eventTextRenderer = ""
                               + "<li>Text renderer properties: Range "
@@ -790,7 +817,7 @@
                     jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                                                            success: function(properties){
                                                                 setConfig(properties);
                                                            },
@@ -813,7 +840,7 @@
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
                                                                     let bCheckedType = checkType(properties.dataTypeId);
@@ -864,6 +891,39 @@
                            					        	   }
                            					        	});
                   }
+
+                    jQuery(document).ready(function(){
+                        (function($) {
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+                        })(jQuery);
+                    });
+
+                   jQuery(document).ready(function() {
+                       function updateSuffixForEngineeringUnits() {
+                           let value = jQuery("select[name='engineeringUnits']").val();
+                           let unitValue = parseInt(value);
+                           let units = ${unitsListJson};
+                           units.forEach(unit => {
+                                if(unit.value === unitValue) {
+                                    jQuery("#textRendererAnalogFormat").val('#.#');
+                                    jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                    jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                }
+                           });
+                       }
+
+                       jQuery("select[name='engineeringUnits']").on("change", function() {
+                           updateSuffixForEngineeringUnits();
+                       });
+
+                       let suffix = jQuery("#textRendererAnalogSuffix").val();
+
+                       if(!suffix){
+                           updateSuffixForEngineeringUnits();
+                       }
+                   });
+
             </script>
 
         </td>
@@ -878,26 +938,26 @@
                 <div class="borderDiv marB marR" style="margin:20px; padding:10px; border-color:blue; max-width: 800px;">
                     <table width="100%" cellpadding="0" cellspacing="0">
                         <tr><td colspan="4">
-                            <span class="smallTitle"> <fmt:message key="pointEdit.basing_on.title"/></span>
+                            <span class="smallTitle"> <spring:message code="pointEdit.basing_on.title"/></span>
                         </td></tr>
 
                         <tr>
-                            <td class="formLabelRequired"><fmt:message key="pointEdit.basing_on.select"/></td>
+                            <td class="formLabelRequired"><spring:message code="pointEdit.basing_on.select"/></td>
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
                                     <c:forEach items="${userPoints}" var="point">
-                                        <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                        <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
                                     </c:forEach>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input id="baseOnExistingPointBtn" type="button" value="<fmt:message key="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
+                                <input id="baseOnExistingPointBtn" type="button" value="<spring:message code="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
                             </td>
                             <td colspan="3">
                                 <input type="checkbox" id="checkGetAlertError" value="true" checked>
-                                <label for="checkGetAlertError"><fmt:message key="pointEdit.basing_on.warning_on"/></label>
+                                <label for="checkGetAlertError"><spring:message code="pointEdit.basing_on.warning_on"/></label>
                             </td>
                         </tr>
                     </table>

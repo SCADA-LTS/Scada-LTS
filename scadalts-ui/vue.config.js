@@ -1,6 +1,7 @@
 const { secureCookieProxy } = require('http-proxy-middleware-secure-cookies');
 var webpack = require('webpack');
 const fs = require('fs');
+const path = require('path');
 const packageJson = JSON.parse(fs.readFileSync('./package.json'));
 const tag = packageJson.tag || 0;
 const version = packageJson.version || 0;
@@ -11,8 +12,9 @@ const commit = packageJson.commit || 'N/A';
 const pullRequestNumber = packageJson.pullRequestNumber || 'false';
 const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
-	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/Scada-LTS/' : '/',
 	filenameHashing: false,
+	productionSourceMap: true,
 	configureWebpack: {
 		devtool: 'source-map',
 		plugins: [
@@ -29,6 +31,16 @@ module.exports = {
 				},
 			}),
 		],
+		resolve: {
+			alias: {
+				'@s': path.resolve(__dirname, 'src/store/'),
+				'@c': path.resolve(__dirname, 'src/components/'),
+				'@layout': path.resolve(__dirname, 'src/layout/'),
+				'@dialogs': path.resolve(__dirname, 'src/layout/dialogs/'),
+				'@models': path.resolve(__dirname, 'src/models/'),
+			},
+			extensions: ['.js', '.vue', '.json']
+		},
 	},
 	pluginOptions: {
 		i18n: {
@@ -41,7 +53,16 @@ module.exports = {
 	transpileDependencies: ['vuetify'],
 	devServer: {
 		proxy: {
-			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
+			'^/graphics/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/uploads/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/images/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/api/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/Scada-LTS'),
+			'^/ws-scada/*': {
+				target: 'http://localhost:8080/Scada-LTS',
+				ws: true,
+				changeOrigin: true,
+			}
 		},
 	},
 };

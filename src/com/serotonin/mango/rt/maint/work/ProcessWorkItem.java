@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,46 +39,61 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-public class ProcessWorkItem implements WorkItem {
+public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     static final Log LOG = LogFactory.getLog(ProcessWorkItem.class);
     private static final int TIMEOUT = 15000; // 15 seconds
+    private final EventType eventType;
 
-    public static void queueProcess(String command) {
-        ProcessWorkItem item = new ProcessWorkItem(command);
+    public static void queueProcess(String command, EventHandlerVO handler, EventType eventType) {
+        ProcessWorkItem item = new ProcessWorkItem(command, LoggingUtils.eventHandlerInfo(handler), eventType);
         Common.ctx.getBackgroundProcessing().addWorkItem(item);
     }
 
     final String command;
+    final String details;
 
-    public ProcessWorkItem(String command) {
+    public ProcessWorkItem(String command, String details, EventType eventType) {
         this.command = command;
+        this.details = details;
+        this.eventType = eventType;
     }
 
     @Override
-    public void execute() {
+    public void work() {
         try {
-            executeProcessCommand(command);
-        }
-        catch (IOException e) {
-            SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
-                    System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.process.failure", command, e.getMessage()));
+            executeProcessCommand(command, details);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void executeProcessCommand(String command) throws IOException {
+    @Override
+    public void workSuccess() {
+        SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
+    }
+
+    @Override
+    public void workFail(Throwable e) {
+        Throwable throwable = e.getCause() != null ? e.getCause() : e;
+        LOG.error(this + " - " + throwable.getMessage(), throwable);
+        SystemEventType.raiseEvent(eventType,
+                System.currentTimeMillis(), true,
+                new LocalizableMessage("event.process.failure", command, throwable.getMessage()));
+    }
+
+    public static void executeProcessCommand(String command, String details) throws IOException {
         BackgroundProcessing bp = Common.ctx.getBackgroundProcessing();
 
         Process process = Runtime.getRuntime().exec(command);
 
-        InputReader out = new InputReader(process.getInputStream());
-        InputReader err = new InputReader(process.getErrorStream());
+        InputReader out = new InputReader(process.getInputStream(), details);
+        InputReader err = new InputReader(process.getErrorStream(), details);
 
         bp.addWorkItem(out);
         bp.addWorkItem(err);
 
         try {
-            ProcessTimeout timeout = new ProcessTimeout(process, command);
+            ProcessTimeout timeout = new ProcessTimeout(process, command, details);
             bp.addWorkItem(timeout);
 
             process.waitFor();
@@ -100,23 +118,32 @@ public class ProcessWorkItem implements WorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
     }
 
-    static class ProcessTimeout implements WorkItem {
+    static class ProcessTimeout extends AbstractBeforeAfterWorkItem {
         private final Process process;
         private final String command;
         private volatile boolean interrupted;
+        private final String details;
 
+        @Deprecated
         ProcessTimeout(Process process, String command) {
             this.process = process;
             this.command = command;
+            this.details = null;
+        }
+
+        ProcessTimeout(Process process, String command, String details) {
+            this.process = process;
+            this.command = command;
+            this.details = details;
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
         public void interrupt() {
@@ -126,7 +153,8 @@ public class ProcessWorkItem implements WorkItem {
             }
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 synchronized (this) {
                     wait(TIMEOUT);
@@ -141,15 +169,42 @@ public class ProcessWorkItem implements WorkItem {
             catch (InterruptedException e) { /* no op */
             }
         }
+
+        @Override
+        public void workFail(Throwable e) {
+            LOG.error("Error in process timeout: " + this, e);
+        }
+
+        @Override
+        public String toString() {
+            return "ProcessTimeout{" +
+                    "details='" + details + '\'' +
+                    ", command='" + command + '\'' +
+                    ", interrupted=" + interrupted +
+                    "} " + super.toString();
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
     }
 
-    static class InputReader implements WorkItem {
+    static class InputReader extends AbstractBeforeAfterWorkItem {
         private final InputStreamReader reader;
         private final StringWriter writer = new StringWriter();
         private boolean done;
+        private final String details;
 
+        @Deprecated
         InputReader(InputStream is) {
-            reader = new InputStreamReader(is);
+            this.reader = new InputStreamReader(is);
+            this.details = null;
+        }
+
+        InputReader(InputStream is, String details) {
+            this.reader = new InputStreamReader(is);
+            this.details = details;
         }
 
         public String getInput() {
@@ -170,16 +225,17 @@ public class ProcessWorkItem implements WorkItem {
         }
 
         @Override
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 StreamUtils.transfer(reader, writer);
             }
             catch (IOException e) {
-                LOG.error("Error in process input reader", e);
+                throw new RuntimeException(e);
             }
             finally {
                 synchronized (this) {
@@ -188,36 +244,36 @@ public class ProcessWorkItem implements WorkItem {
                 }
             }
         }
+
+        @Override
+        public void workFail(Throwable e) {
+            LOG.error("Error in process input reader: " + this, e);
+        }
+
+        @Override
+        public String toString() {
+            return "InputReader{" +
+                    "details='" + details + '\'' +
+                    ", done=" + done +
+                    "} " + super.toString();
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
     }
-    //    
-    // public static void main(String[] args) throws Exception {
-    // // ServletContext ctx = new DummyServletContext();
-    // BackgroundProcessing bp = new BackgroundProcessing();
-    // bp.initialize();
-    // // ctx.setAttribute(Common.ContextKeys.BACKGROUND_PROCESSING, bp);
-    // // Common.ctx = new ContextWrapper(ctx);
-    // // ProcessWorkItem.queueProcess("");
-    // // bp.terminate();
-    //        
-    // // //ProcessBuilder pb = new ProcessBuilder("cmd /c dir");
-    // // ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "dir");
-    // // pb.redirectErrorStream(true);
-    // // Process process = pb.start();
-    // Process process = Runtime.getRuntime().exec("cmd /c java -version");
-    //        
-    // InputReader out = new InputReader(process.getInputStream());
-    // InputReader err = new InputReader(process.getErrorStream());
-    //        
-    // bp.addWorkItem(out);
-    // bp.addWorkItem(err);
-    //        
-    // process.waitFor();
-    // out.join();
-    // err.join();
-    // process.destroy();
-    // bp.terminate();
-    //        
-    // System.out.println("out: "+ out.getInput());
-    // System.out.println("err: "+ err.getInput());
-    // }
+
+    @Override
+    public String toString() {
+        return "ProcessWorkItem{" +
+                "command='" + command + '\'' +
+                ", details='" + details + '\'' +
+                "}";
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
+    }
 }

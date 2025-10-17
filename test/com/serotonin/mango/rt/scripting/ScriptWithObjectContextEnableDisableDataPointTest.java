@@ -8,6 +8,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.ScriptTestUtils;
 import com.serotonin.mango.rt.dataImage.PointValueCache;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -35,20 +36,23 @@ import static org.mockito.Mockito.mock;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
-        Common.class})
+        Common.class, ApplicationBeans.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class ScriptWithObjectContextEnableDisableDataPointTest {
 
-    private static String pointToChangeXid = "DP_093765";
-    private final List<IntValuePair> objectContext = Arrays.asList(new IntValuePair(2, "dp"));
-    private RuntimeManager runtimeManager = mock(RuntimeManager.class);
-    private DPCommandsScriptContextObject scriptContextObject = mock(DPCommandsScriptContextObject.class);
+    private static final String pointToChangeXid = "DP_093765";
+    private List<IntValuePair> objectContext;
+    private RuntimeManager runtimeManager;
+    private DPCommandsScriptContextObject scriptContextObject;
 
     @Before
     public void config() throws Exception {
-        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+        objectContext = Arrays.asList(new IntValuePair(2, "dp"));
+        runtimeManager = mock(RuntimeManager.class);
+        scriptContextObject = mock(DPCommandsScriptContextObject.class);
+        ScriptTestUtils.configScriptMock(runtimeManager, scriptContextObject);
     }
 
     @After

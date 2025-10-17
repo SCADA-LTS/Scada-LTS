@@ -38,11 +38,9 @@
 -->
 
 <pre>
-    ScadaBR - Sistema de Adquisici&oacute;n de Datos en C&oacute;digo Abierto - <a
-	href="http://www.scadabr.org.br">http://www.scadabr.org.br</a>
-    Copyright (C) 2010 Funda&ccedil;&atilde;o Certi.
-    Versi&oacute;n 1.0.0 impulsado por Mango M2M - <a
-	href="http://mango.serotoninsoftware.com">http://mango.serotoninsoftware.com</a>.
+    Scada-LTS - Open-Source Supervisory Control And Data Acquisition - <a
+        href="http://www.scada-lts.com">http://www.scada-lts.com</a>
+    Copyright (C) 2012 - Scada-LTS All rights reserved.
     
     Este programa es Software Libre: Puede redistribuirlo y/o modificarlo
     bajo los t&eacute;rminos de GNU General Public License y tambi&eacute;n publicado por 
@@ -196,7 +194,7 @@ determina la fuente de datos establece el valor en el equipo.</p>
 </ul>
 
 <h1>Sonido de las Alarmas</h1>
-<p>El ScadaBR puede reproducir sonidos cuando hay alarmas activas. De forma predeterminada, los sonidos son reproducidos 
+<p>El Scada-LTS puede reproducir sonidos cuando hay alarmas activas. De forma predeterminada, los sonidos son reproducidos
 para los niveles: Urgente, Cr&iacute;tico y de riesgo de vida (inicialmente no reproducir&aacute; para las informaciones). Puede configurar 
 o activar para cada tipo de alarma su sonido correspondiente utilizando un archivo en formato mp3 en su ubicaci&oacute;n correspondiente:</p>
 <ul>
@@ -209,7 +207,7 @@ o activar para cada tipo de alarma su sonido correspondiente utilizando un archi
 &lt;mango_home&gt;/audio/lib.</p>
 
 <h1>Gr&aacute;ficos</h1>
-<p>El ScadaBR trae una peque&ntilde;a librer&iacute;a de gr&aacute;ficos que puede encontrar en la carpeta &lt;mango_home&gt;/graphics. Cada
+<p>El Scada-LTS trae una peque&ntilde;a librer&iacute;a de gr&aacute;ficos que puede encontrar en la carpeta &lt;mango_home&gt;/graphics. Cada
 subcarpeta representa un conjunto de im&aacute;genes. El contenido de las subcarpeta incluye todas las im&aacute;genes del conjunto y 
 un archivo de propiedades (opcional) denominado <b>info.txt</b>. (Puede encontrar ejemplos en los directorios mencionados)
 Este archivo de propiedades contiene pares de nombre/valor para los siguientes par&aacute;metros (todos opcionales):</p>
@@ -227,7 +225,7 @@ Este archivo de propiedades contiene pares de nombre/valor para los siguientes p
 </ul>
 <p><b>Una vez que utilice el conjunto de im&aacute;genes en sus vistas de puntos NO cambie el nombre del directorio que la contiene!</b> El nombre del directorio se utiliza internamente como identificador del conjunto de im&aacute;genes.</p>
 <p>Los archivos de las im&aacute;genes se ordenan por su nombre de forma alfab&eacute;tica siendo &eacute;stos sensibles a las may&uacute;sculas. los pares de Nombre/valor son separados con '='. Las l&iacute;neas que comiencen con '#' son consideradas como comentarios. Se ignoran los archivos 'Thumbs.db' y los tipos de archivos como: zip, gz, tar, etc, no pueden ser utilizados desde archivos de im&aacute;genes ya que no ser&aacute;n accesibles desde el servidor web. Los conjuntos de las im&aacute;genes son cargados por el sistema en su inicio, por lo que debe reiniciarlo cuando realice un cambio.</p>
-<p>Puede contribuir con el software de c&oacute;digo abierto compartiendo sus librer&iacute;as gr&aacute;ficas preferidas con Serotonin Software y as&iacute; se adicionar&aacute;n en nuevas versiones del ScadaBR.</p>
+<p>Puede contribuir con el software de c&oacute;digo abierto compartiendo sus librer&iacute;as gr&aacute;ficas preferidas con Serotonin Software y as&iacute; se adicionar&aacute;n en nuevas versiones del Scada-LTS.</p>
 
 <h1>Vistas remotas</h1>
 <p>Vistas p&uacute;blicas del sistema pueden ser accedidas desde otros sitios web simplemente ingresando un iframe en sus p&aacute;ginas. 
@@ -246,7 +244,7 @@ Por ejemplo en la p&aacute;gina principal de Mango se utiliz&oacute; el siguient
 
 <h1>Configuraci&oacute;n de la Base de Datos</h1>
 
-<p>El ScadaBR actualmente soporta dos sistemas manejadores de base de datos: <b>Derby</b> y <b>MySQL</b>. El archivo <b> ScadaBR.war </b> 
+<p>El Scada-LTS actualmente soporta dos sistemas manejadores de base de datos: <b>Derby</b> y <b>MySQL</b>. El archivo <b> Scada-LTS.war </b>
 viene configurado inicialmente con Derby para facilidad del usuario, ya que corre directamente y no requiere instalaci&oacute;n de DBMS embebido o de par&aacute;metros de configuraci&oacute;n particulares, como nombre de usuario y contrase&ntilde;a. </p>
 
 <p>Para cambiar la base de datos selecci&oacute;nela de las la opciones mostradas en <b>Configuraci&oacute;n de la Base de Datos</b> de en la <b>Configuraci&oacute;n del Sistema</b>. 

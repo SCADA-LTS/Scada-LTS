@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
@@ -20,7 +22,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -33,10 +34,13 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 public class UsersProfilesDwr {
 
 	public Map<String, Object> getInitData() {
+		Permissions.ensureAdmin();
 		Map<String, Object> initData = new HashMap<String, Object>();
 
 		initData.put("admin", true);
@@ -76,11 +80,12 @@ public class UsersProfilesDwr {
 		List<WatchList> watchlists = watchlistDao.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getSimpleViews().stream()
+		ViewService viewService = new ViewService();
+		List<View> views = viewService.getSimpleViews().stream()
 				.map(toView())
 				.collect(Collectors.toList());
 		initData.put("views", views);
+		initData.put("keyTranslations", ScadaLocaleUtils.getTranslationsForKey("common.newName"));
 
 		return initData;
 	}
@@ -121,6 +126,7 @@ public class UsersProfilesDwr {
 
 		try {
 			usersProfileService.saveUsersProfile(profile);
+			ApplicationBeans.getLoggedUsersBean().updateUsers(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"userProfiles.validate.nameUnique"));

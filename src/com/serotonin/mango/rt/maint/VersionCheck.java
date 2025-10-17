@@ -52,6 +52,8 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.Common.createPostMethod;
+
 /**
  * @author Matthew Lohbihler
  * 
@@ -59,8 +61,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class VersionCheck extends TimerTask {
 	private static final long TIMEOUT = 1000 * 60 * 60 * 24 * 2; // Run every
 																	// other
-																	// day.
+	@Deprecated																// day.
 	private static final String INSTANCE_ID_FILE = "WEB-INF/instance.txt";
+	private static final Object VERSION_CHECK_LOCK = new Object();
 
 	private static VersionCheck instance;
 	private static String instanceId;
@@ -70,15 +73,18 @@ public class VersionCheck extends TimerTask {
 	 * corresponding system setting for running this job is true.
 	 */
 	public static void start() {
-		synchronized (INSTANCE_ID_FILE) {
-			stop();
+		synchronized (VERSION_CHECK_LOCK) {
+			if (instance != null) {
+				instance.cancel();
+				instance = null;
+			}
 			instance = new VersionCheck();
 			Common.timer.schedule(instance);
 		}
 	}
 
 	public static void stop() {
-		synchronized (INSTANCE_ID_FILE) {
+		synchronized (VERSION_CHECK_LOCK) {
 			if (instance != null) {
 				instance.cancel();
 				instance = null;
@@ -143,7 +149,7 @@ public class VersionCheck extends TimerTask {
 			throws Exception {
 		HttpClient httpClient = Common.getHttpClient();
 
-		PostMethod postMethod = new PostMethod(
+		PostMethod postMethod = createPostMethod(
 				Common.getGroveUrl(Common.GroveServlets.VERSION_CHECK));
 
 		postMethod.addParameter("instanceId", getInstanceId());

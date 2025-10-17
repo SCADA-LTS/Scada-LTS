@@ -1,12 +1,5 @@
 package org.scada_lts.dao;
 
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.view.View;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * @Author Arkadiusz Parafiniuk
  * arkadiusz.parafiniuk@gmail.com

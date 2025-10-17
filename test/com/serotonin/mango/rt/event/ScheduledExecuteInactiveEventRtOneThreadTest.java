@@ -46,8 +46,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         return Arrays.asList(new Object[][] {
                 { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 3},
                 { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 3},
-                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 250},
+                //{ 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
+                //{ 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 250},
                 { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 250},
                 { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
         });

@@ -8,14 +8,22 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
-import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.view.component.ViewComponent;
+import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
+
 
 @JsonRemoteEntity
 public class ChartComparatorComponent extends HtmlComponent {
@@ -29,23 +37,43 @@ public class ChartComparatorComponent extends HtmlComponent {
 	@JsonRemoteProperty
 	private int height = 320;
 
+	public ChartComparatorComponent() {}
+
+	public ChartComparatorComponent(ChartComparatorComponent chartComparatorComponent) {
+		super(chartComparatorComponent);
+		this.width = chartComparatorComponent.getWidth();
+		this.height = chartComparatorComponent.getHeight();
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new ChartComparatorComponent(this);
+	}
+
 	@Override
 	public ImplDefinition definition() {
 		return DEFINITION;
 	}
 
 	private void createContent() {
+		String content = createChartComparatorContent();
+		setContent(content);
+	}
+
+	public String createChartComparatorContent() {
 		String idPrefix = "chartComparator" + getId();
 
 		StringBuilder sb = new StringBuilder();
 		// sb.append("<div style='width:" + width + "px; height:" + height
 		// + "px; border: 1px solid black;'>");
 		sb.append("<div>");
-
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3"));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4"));
+		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(new DataPointDAO());
+		User user = Common.getUser();
+		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", dataPoints));
 		sb.append("<div style='float:right;'><input type='button' style='width: 100%;' value='Atualizar' onclick=\"updateChartComparatorComponent('"
 				+ idPrefix + "'," + width + "," + height + ");\" /> </div>");
 		sb.append("<div style='clear:both;'> </div>");
@@ -76,21 +104,19 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<div style='clear:both;'> </div>");
 
 		sb.append("</div>");
-
-		setContent(sb.toString());
+		return sb.toString();
 	}
 
-	private String createDataPointsSelectComponent(String idPrefix) {
-		List<DataPointVO> dataPoints = new DataPointDao().getDataPoints(null,
-				false);
+	private String createDataPointsSelectComponent(String idPrefix, List<ScadaObjectIdentifier> dataPoints) {
+
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<select style='float:left;'  id='" + idPrefix + "'>");
 
 		sb.append("<option value='0'> &nbsp; </option>");
 
-		for (DataPointVO dp : dataPoints) {
-			sb.append("<option value='" + dp.getId() + "'> " + dp.getName()
+		for (ScadaObjectIdentifier dp : dataPoints) {
+			sb.append("<option value='" + dp.getId() + "'> " + escapeHtml(dp.getName())
 					+ "</option>");
 		}
 		sb.append("</select>");
@@ -112,10 +138,10 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<table>");
 		sb.append("<tr> <td> De </td> <td> A </td> </tr>");
 		sb.append("<tr> <td><input type='text' class='formField' id='"
-				+ fromDateId + "' value='" + defaultFromDateString
+				+ escapeHtml(fromDateId) + "' value='" + escapeHtml(defaultFromDateString)
 				+ "'/> </td> "
-				+ "<td> <input type='text' class='formField' id='" + toDateId
-				+ "' value='" + defaultToDateString + "'/> </td> </tr>");
+				+ "<td> <input type='text' class='formField' id='" + escapeHtml(toDateId)
+				+ "' value='" + escapeHtml(defaultToDateString) + "'/> </td> </tr>");
 		sb.append("</table>");
 		return sb.toString();
 	}
@@ -165,4 +191,25 @@ public class ChartComparatorComponent extends HtmlComponent {
 		this.height = height;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ChartComparatorComponent)) return false;
+		if (!super.equals(o)) return false;
+		ChartComparatorComponent that = (ChartComparatorComponent) o;
+		return getWidth() == that.getWidth() && getHeight() == that.getHeight();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getWidth(), getHeight());
+	}
+
+	@Override
+	public String toString() {
+		return "ChartComparatorComponent{" +
+				"width=" + width +
+				", height=" + height +
+				"} " + super.toString();
+	}
 }

@@ -19,30 +19,34 @@
 package com.serotonin.mango.web.dwr;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.VersionCheck;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.DirectoryInfo;
 import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.mvc.api.AggregateSettings;
+import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
+import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -51,8 +55,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
+
+
 public class SystemSettingsDwr extends BaseDwr {
-	@MethodFilter
+	
 	public Map<String, Object> getSettings() {
 		Permissions.ensureAdmin();
 		Map<String, Object> settings = new HashMap<String, Object>();
@@ -150,10 +158,64 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
+		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, systemSettingsService.getHttpResponseHeaders());
+
+		settings.put(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN,
+				systemSettingsService.getMiscSettings().isViewHideShortcutDisableFullScreenEnabled());
+		settings.put(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE,
+				systemSettingsService.getMiscSettings().isViewForceFullScreenEnabled());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_LIMIT,
+				systemSettingsService.getMiscSettings().getEventPendingLimit());
+		settings.put(SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED,
+				systemSettingsService.getMiscSettings().isEventPendingCacheEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED,
+				systemSettingsService.getMiscSettings().isWorkItemsReportingEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED,
+				systemSettingsService.getMiscSettings().isWorkItemsReportingItemsPerSecondEnabled());
+		settings.put(SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT,
+				systemSettingsService.getMiscSettings().getWorkItemsReportingItemsPerSecondLimit());
+		settings.put(SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH,
+				systemSettingsService.getMiscSettings().getThreadsNameAdditionalLength());
+		settings.put(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH,
+				systemSettingsService.getMiscSettings().getWebResourceGraphicsPath());
+		settings.put(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH,
+				systemSettingsService.getMiscSettings().getWebResourceUploadsPath());
+		settings.put(SystemSettingsDAO.EVENT_ASSIGN_ENABLED,
+				systemSettingsService.getMiscSettings().isEventAssignEnabled());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION,
+				systemSettingsService.getSystemInfoSettings().getTopDescription());
+		settings.put(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX,
+				systemSettingsService.getSystemInfoSettings().getTopDescriptionPrefix());
+		settings.put(SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT,
+				systemSettingsService.getMiscSettings().getDataPointExtendedNameLengthInReportsLimit());
+		settings.put(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT));
+		settings.put(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT));
+		settings.put(
+				SystemSettingsDAO.SMS_DOMAIN,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.SMS_DOMAIN));
+		settings.put(
+				SystemSettingsDAO.DEFAULT_LOGGING_TYPE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_ENABLED,
+				SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.AGGREGATION_ENABLED));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_VALUES_LIMIT,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT));
+		settings.put(
+				SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR,
+				SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
+		settings.put(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
 		return settings;
 	}
 
-	@MethodFilter
+	
 	public Map<String, Object> getDatabaseSize() {
 		Permissions.ensureAdmin();
 
@@ -199,12 +261,13 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		data.put("historyCount", sum);
 		data.put("topPoints", counts);
-		data.put("eventCount", new EventDao().getEventCount());
+		MangoEvent eventService = new EventService();
+		data.put("eventCount", eventService.getEventCount());
 
 		return data;
 	}
 
-	@MethodFilter
+	
 	public void saveEmailSettings(String host, int port, String from,
 			String name, boolean auth, String username, String password,
 			boolean tls, int contentType) {
@@ -225,7 +288,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				contentType);
 	}
 
-	@MethodFilter
+	
 	public Map<String, Object> sendTestEmail(String host, int port,
 			String from, String name, boolean auth, String username,
 			String password, boolean tls, int contentType) {
@@ -244,19 +307,19 @@ public class SystemSettingsDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message", new LocalizableMessage(
 					"systemSettings.testEmail"));
-			MangoEmailContent cnt = new MangoEmailContent("testEmail", model,
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail", model,
 					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
 					Common.UTF8);
-			EmailWorkItem.queueEmail(user.getEmail(), cnt);
-			result.put("message", new LocalizableMessage(
-					"common.testEmailSent", user.getEmail()));
+			sendMsgTestSync(user.getEmail(), cnt, result, () -> "sendTestEmail from: " + this.getClass().getName() +
+					", " + userInfo(user));
+
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());
 		}
 		return result;
 	}
 
-	@MethodFilter
+	
 	public void saveSystemEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -264,7 +327,7 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	@MethodFilter
+	
 	public void saveAuditEventAlarmLevels(List<IntegerPair> eventAlarmLevels) {
 		Permissions.ensureAdmin();
 		for (IntegerPair eventAlarmLevel : eventAlarmLevels)
@@ -272,29 +335,65 @@ public class SystemSettingsDwr extends BaseDwr {
 					eventAlarmLevel.getI2());
 	}
 
-	@MethodFilter
-	public void saveHttpSettings(boolean useProxy, String host, int port,
-			String username, String password) {
+	
+	public DwrResponseI18n saveHttpSettings(boolean useProxy, String host, int port,
+			String username, String password, String httpStaticHeaders) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setBooleanValue(
-				SystemSettingsDAO.HTTP_CLIENT_USE_PROXY, useProxy);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER,
-				host);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT,
-				port);
-		SystemSettingsDAO.setValue(
-				SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME, username);
-		SystemSettingsDAO.setValue(
-				SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD, password);
+
+		JsonSettingsHttp jsonSettingsHttp = new JsonSettingsHttp();
+		jsonSettingsHttp.setUseProxy(useProxy);
+		jsonSettingsHttp.setHost(host);
+		jsonSettingsHttp.setPort(port);
+		jsonSettingsHttp.setUsername(username);
+		jsonSettingsHttp.setPassword(password);
+		jsonSettingsHttp.setHttpResponseHeaders(httpStaticHeaders);
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		DwrResponseI18n response = new DwrResponseI18n();
+		try {
+			systemSettingsService.saveHttpSettings(jsonSettingsHttp);
+		} catch (Exception ex) {
+			response.addContextualMessage("httpMessage", "validate.invalidValue");
+		}
+		return response;
 	}
 
-	@MethodFilter
-	public void saveMiscSettings(int eventPurgePeriodType,
+	
+	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized,
+											boolean viewEnableFullScreen, boolean viewHideShortcutDisableFullScreen,
+											int eventPendingLimit, boolean eventPendingCacheEnabled,
+											boolean workItemsReportingEnabled, boolean workItemsReportingItemsPerSecondEnabled,
+											int workItemsReportingItemsPerSecondLimit, int threadsNameAdditionalLength,
+											String webResourceGraphicsPath, String webResourceUploadsPath,
+											boolean eventAssignEnabled, int pointExtendedNameLengthInReportsLimit,
+											String smsDomain, int defaultLoggingType) {
+		Permissions.ensureAdmin();
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+        DwrResponseI18n response = new DwrResponseI18n();
+		systemSettingsService.saveUiPerformanceMisc(uiPerformance, response);
+		systemSettingsService.saveDataPointRuntimeValueSynchronizedMisc(dataPointRtValueSynchronized);
+		systemSettingsService.saveViewForceFullScreenModeMisc(viewEnableFullScreen);
+		systemSettingsService.saveViewHideShortcutDisableFullScreenMisc(viewHideShortcutDisableFullScreen);
+		systemSettingsService.saveEventPendingCacheEnabledMisc(eventPendingCacheEnabled);
+		systemSettingsService.saveEventPendingLimitMisc(eventPendingLimit, response);
+		systemSettingsService.saveThreadsNameAdditionalLengthMisc(threadsNameAdditionalLength, response);
+		systemSettingsService.saveWorkItemsReportingMisc(workItemsReportingItemsPerSecondEnabled, workItemsReportingItemsPerSecondLimit,
+				workItemsReportingEnabled, response);
+		systemSettingsService.saveResourceGraphicsPathMisc(webResourceGraphicsPath, response);
+		systemSettingsService.saveResourceUploadsPathMisc(webResourceUploadsPath, response);
+		systemSettingsService.saveDataPointExtendedNameLengthInReportsLimitMisc(pointExtendedNameLengthInReportsLimit, response);
+		systemSettingsService.saveEventAssignEnabledMisc(eventAssignEnabled);
+		systemSettingsService.saveSMSDomain(smsDomain);
+		systemSettingsService.saveDefaultLoggingType(defaultLoggingType);
+		return response;
+	}
+
+	
+	public void saveDataRetentionSettings(int eventPurgePeriodType,
 								 int eventPurgePeriods, int reportPurgePeriodType,
-								 int reportPurgePeriods, int uiPerformance, boolean groveLogging,
+								 int reportPurgePeriods, boolean groveLogging,
 								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
-								 String dataPointRtValueSynchronized) {
+							     int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO
@@ -307,8 +406,6 @@ public class SystemSettingsDwr extends BaseDwr {
 				reportPurgePeriodType);
 		systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
 				reportPurgePeriods);
-		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
-				uiPerformance);
 		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
 				groveLogging);
 		systemSettingsDAO.setIntValue(
@@ -317,11 +414,18 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
-		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				DataPointSyncMode.getName(dataPointRtValueSynchronized));
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT,
+				defaultPurgePeriod);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT,
+				defaultPurgePeriodType);
+		systemSettingsDAO.setIntValue(
+				SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE,
+				valuesLimitForPurge);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n saveColourSettings(String chartBackgroundColour,
 			String plotBackgroundColour, String plotGridlineColour) {
 		Permissions.ensureAdmin();
@@ -367,9 +471,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public void saveInfoSettings(String newVersionNotificationLevel,
-			String instanceDescription) {
+			String instanceDescription,String topDescriptionPrefix, String topDescription) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 		systemSettingsDAO.setValue(
@@ -377,9 +481,17 @@ public class SystemSettingsDwr extends BaseDwr {
 				newVersionNotificationLevel);
 		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX, topDescriptionPrefix);
+		systemSettingsDAO.setValue(SystemSettingsDAO.TOP_DESCRIPTION, topDescription);
 	}
 
-	@MethodFilter
+	public void saveAmChartsSettings(boolean aggregationEnabled, int aggregationValuesLimit, double aggregationLimitFactor){
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		AggregateSettings aggregateSettings = new AggregateSettings(aggregationEnabled, aggregationValuesLimit, aggregationLimitFactor);
+		systemSettingsService.saveAggregateSettings(aggregateSettings);
+	}
+
+	
 	public String newVersionCheck(String newVersionNotificationLevel) {
 		Permissions.ensureAdmin();
 		try {
@@ -394,53 +506,64 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 	}
 
-	@MethodFilter
+	
 	public void saveLanguageSettings(String language) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, language);
-		Common.setSystemLanguage(language);
+		ScadaLocaleUtils.setLocale(language);
 	}
 
-	@MethodFilter
+	
 	public void purgeNow() {
 		Permissions.ensureAdmin();
 		DataPurge dataPurge = new DataPurge();
 		dataPurge.execute(System.currentTimeMillis());
 	}
 
-	@MethodFilter
+	
 	public LocalizableMessage purgeAllData() {
 		Permissions.ensureAdmin();
 		long cnt = Common.ctx.getRuntimeManager().purgeDataPointValues();
 		return new LocalizableMessage("systemSettings.purgeDataComplete", cnt);
 	}
 
-	@MethodFilter
+	
 	public void useDerbyDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useDerbyDB();
 	}
 
-	@MethodFilter
+	
 	public void useMysqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMysqlDB();
 	}
 
-	@MethodFilter
+	
 	public void useMssqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMssqlDB();
 	}
 
-	@MethodFilter
+	
 	public String checkTypeDB() {
 		return Common.getEnvironmentProfile().getString("db.type", "derby");
 	}
 
-	@MethodFilter
+	
 	public String getAppServer() {
 		return Common.ctx.getServletContext().getServerInfo();
+	}
+
+	public String getScadaConfig() {
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		JsonSettingsScadaConfig config = systemSettingsService.getScadaConfig();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.writeValueAsString(config);
+		}
+		catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return "{}";
+		}
 	}
 }

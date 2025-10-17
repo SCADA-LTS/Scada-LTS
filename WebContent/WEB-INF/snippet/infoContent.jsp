@@ -24,15 +24,15 @@
   <tag:img png="icon_comp" title="watchlist.pointDetails" style="display:inline"
           onclick="window.location='data_point_details.shtm?dpid=${point.id}'"/>
 </c:if>
-<b>${pointComponent.name}</b><br/>
+<b><c:out value="${pointComponent.name}"/></b><br/>
 
 <c:if test="${!empty point}">
-  &nbsp;&nbsp;&nbsp;<fmt:message key="common.value"/>: 
+  &nbsp;&nbsp;&nbsp;<spring:message code="common.value"/>:
   <c:choose>
     <c:when test="${point.pointLocator.dataTypeId == applicationScope['constants.DataTypes.IMAGE']}">
       <jsp:include page="/WEB-INF/snippet/imageValueThumbnail.jsp"/>
     </c:when>
     <c:otherwise><span class="infoData">${mango:htmlText(point, pointValue)}</span><br/></c:otherwise>
   </c:choose>
-  <c:if test="${!empty pointValue}">&nbsp;&nbsp;&nbsp;<fmt:message key="common.time"/>: <span class="infoData">${mango:pointValueTime(pointValue)}</span><br/></c:if>
+  <c:if test="${!empty pointValue}">&nbsp;&nbsp;&nbsp;<spring:message code="common.time"/>: <span class="infoData">${mango:pointValueTime(pointValue)}</span><br/></c:if>
 </c:if>

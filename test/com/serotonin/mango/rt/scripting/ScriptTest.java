@@ -20,6 +20,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.IntValuePairPrinted;
 import utils.ScriptTestUtils;
 
@@ -39,7 +40,7 @@ import static utils.Scripts.createScriptWithJavaViewDwr;
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
-        Common.class})
+        Common.class, ApplicationBeans.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
@@ -134,20 +135,21 @@ public class ScriptTest {
         this.script = script;
     }
 
-    private RuntimeManager runtimeManager = mock(RuntimeManager.class);
-    private DPCommandsScriptContextObject scriptContextObject = mock(DPCommandsScriptContextObject.class);
+    private RuntimeManager runtimeManager;
+    private DPCommandsScriptContextObject scriptContextObject;
 
     @Before
     public void config() throws Exception {
-        ScriptTestUtils.configMock(runtimeManager, scriptContextObject);
+        runtimeManager = mock(RuntimeManager.class);
+        scriptContextObject = mock(DPCommandsScriptContextObject.class);
+        ScriptTestUtils.configScriptMock(runtimeManager, scriptContextObject);
     }
 
     @Test
     public void test_execute_js_with_object_context_writeDataPoint() throws Exception {
 
         //given:
-        ContextualizedScriptVO contextualizedScriptVO = createContext(pointContext, Collections.emptyList(),
-                script);
+        ContextualizedScriptVO contextualizedScriptVO = createContext(pointContext, Collections.emptyList(), script);
         ContextualizedScriptRT contextualizedScriptRT = new ContextualizedScriptRT(contextualizedScriptVO);
         DataPointRT pointToRead = createDataPointRT(pointToReadId, mangoValue);
 

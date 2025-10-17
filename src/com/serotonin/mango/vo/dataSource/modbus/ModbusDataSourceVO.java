@@ -52,6 +52,12 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 				new LocalizableMessage("event.ds.pointRead")));
 		ets.add(createEventType(ModbusDataSource.POINT_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.pointWrite")));
+		ets.add(createEventType(ModbusDataSource.MONITOR_WRITE_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.monitorWrite")));
+		ets.add(createEventType(ModbusDataSource.INITIALIZATION_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.initialization")));
+		ets.add(createEventType(ModbusDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+				"event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -62,6 +68,12 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 				"POINT_READ_EXCEPTION");
 		EVENT_CODES.addElement(ModbusDataSource.POINT_WRITE_EXCEPTION_EVENT,
 				"POINT_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(ModbusDataSource.MONITOR_WRITE_EXCEPTION_EVENT,
+				"MONITOR_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(ModbusDataSource.INITIALIZATION_EXCEPTION_EVENT,
+				"INITIALIZATION_EXCEPTION");
+		EVENT_CODES.addElement(ModbusDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override
@@ -185,6 +197,8 @@ abstract public class ModbusDataSourceVO<T extends ModbusDataSourceVO<?>>
 					"validate.greaterThanZero");
 		if (timeout <= 0)
 			response.addContextualMessage("timeout", "validate.greaterThanZero");
+		if (timeout > 180000)
+			response.addContextualMessage("timeout", "validate.0toArg", 180000);
 		if (retries < 0)
 			response.addContextualMessage("retries",
 					"validate.cannotBeNegative");

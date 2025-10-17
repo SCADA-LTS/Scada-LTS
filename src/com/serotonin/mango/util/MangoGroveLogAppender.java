@@ -32,7 +32,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.mango.rt.maint.VersionCheck;
+import static com.serotonin.mango.Common.createPostMethod;
 
 /**
  * @author Matthew Lohbihler
@@ -57,7 +57,7 @@ public class MangoGroveLogAppender extends AppenderSkeleton {
         }
 
         HttpClient client = Common.getHttpClient();
-        PostMethod method = new PostMethod(Common.getGroveUrl(Common.GroveServlets.MANGO_LOG));
+        PostMethod method = createPostMethod(Common.getGroveUrl(Common.GroveServlets.MANGO_LOG));
         method.addParameter("productId", "Scada-LTS");
         method.addParameter("productVersion", Common.getVersion());
         method.addParameter("level", event.getLevel().toString());

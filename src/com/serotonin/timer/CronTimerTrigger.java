@@ -32,4 +32,12 @@ public class CronTimerTrigger extends TimerTrigger {
     public long mostRecentExecutionTime() {
         return mostRecent;
     }
+
+    @Override
+    public String toString() {
+        return "CronTimerTrigger{" +
+                "cronExpression=" + cronExpression +
+                ", mostRecent=" + mostRecent +
+                ", " + super.toString() + '}';
+    }
 }

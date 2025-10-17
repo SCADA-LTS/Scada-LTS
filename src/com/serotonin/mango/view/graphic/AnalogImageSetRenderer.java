@@ -60,6 +60,9 @@ public class AnalogImageSetRenderer extends ImageSetRenderer {
             // Image set not loaded?
             return "imageSetNotLoaded";
 
+        if(!imageSet.isAvailable())
+            return imageSet.getImageFilename(0);
+
         if (pointValue == null || pointValue.getValue() == null || imageSet.getImageCount() == 1)
             return imageSet.getImageFilename(0);
 

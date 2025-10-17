@@ -76,66 +76,88 @@ function defaultIfBlank(str, defaultStr) {
 //
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
-mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
+mango.longPoll.pollSessionId = generateSessionId();
+mango.longPoll.intervalId = null;
 
-mango.longPoll.start = function() {
-    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.pollCB);
-    dojo.addOnUnload(function() { MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId); });
-};
-
-mango.longPoll.poll = function() {
-    mango.longPoll.lastPoll = new Date().getTime();
-    MiscDwr.doLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollCB);
+function generateSessionId() {
+    let randomArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomArray);
+    let result = randomArray[0] % 1000000000;
+    return result;
 }
 
-mango.longPoll.pollCB = function(response) {
+window.addEventListener('beforeunload', (event) => {
+  if(mango.longPoll.intervalId) {
+      clearInterval(mango.longPoll.intervalId);
+      mango.longPoll.intervalId = null;
+  }
+  MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+});
+
+mango.longPoll.stopIntervalAndPoll = function(intervalTime) {
+    console.log('stopInterval: ' + mango.longPoll.intervalId);
+    if(mango.longPoll.intervalId) {
+        clearInterval(mango.longPoll.intervalId);
+        mango.longPoll.intervalId = null;
+        mango.longPoll.poll(intervalTime, 'start');
+    }
+}
+
+mango.longPoll.start = function() {
+    //console.log('start');
+    let pollStartTime = new Date().getTime();
+    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, function(response) {mango.longPoll.pollCB(response, -1, pollStartTime, "start")});
+};
+
+mango.longPoll.poll = function(intervalTime, from) {
+    //console.log('poll: ' + from + ", intervalId: " + mango.longPoll.intervalId);
+    let pollStartTime = new Date().getTime();
+    let stopIntervalTimeoutId = -1;
+    if(mango.longPoll.intervalId) {
+        stopIntervalTimeoutId = setTimeout(function() {mango.longPoll.stopIntervalAndPoll(intervalTime)}, intervalTime);
+    }
+    MiscDwr.doLongPoll(mango.longPoll.pollSessionId, function(response) {mango.longPoll.pollCB(response, stopIntervalTimeoutId, pollStartTime, from)});
+}
+
+mango.longPoll.pollCB = function(response, stopIntervalTimeoutId, pollStartTime, from) {
     if (response.terminated)
         return;
-    
-    if (typeof(response.highestUnsilencedAlarmLevel) != "undefined") {
-        if (response.highestUnsilencedAlarmLevel > 0) {
-            setAlarmLevelImg(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelImg"));
-            setAlarmLevelText(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelText"));
-            if (!mango.header.evtVisualizer.started)
-                mango.header.evtVisualizer.start();
-            show("__header__alarmLevelDiv");
-            mango.soundPlayer.play("level"+ response.highestUnsilencedAlarmLevel);
-        }
-        else {
-        	mango.header.evtVisualizer.stop();
-            hide("__header__alarmLevelDiv");
-            mango.soundPlayer.stop();
-        }
-    }
+
     if (response.runtime) {
       lasTimeUpdate = response.runtime;
     }
     if (response.watchListStates)
         mango.view.watchList.setData(response.watchListStates);
-    
+
     if (response.pointDetailsState)
         mango.view.pointDetails.setData(response.pointDetailsState);
-    
+
     if (response.viewStates)
         mango.view.setData(response.viewStates);
-    
+
     if (typeof(response.pendingAlarmsContent) != "undefined")
         updatePendingAlarmsContent(response.pendingAlarmsContent);
-    
+
     if (response.customViewStates)
         mango.view.setData(response.customViewStates);
-    
-    if (mango.longPoll.lastPoll) {
-        var duration = new Date().getTime() - mango.longPoll.lastPoll;
-        if (duration < 300) {
-            // The response happened too quick. This may indicate a problem, 
-            // so just wait a bit before polling again. 
-            setTimeout(mango.longPoll.poll, 1000);
+
+    if(stopIntervalTimeoutId != -1) {
+        clearTimeout(stopIntervalTimeoutId);
+    }
+    let intervalTime = response.intervalTime < 100 ? 100 : response.intervalTime;
+    let duration = new Date().getTime() - pollStartTime;
+    if(duration > intervalTime) {
+        if(from === 'fromPollCB' || from === 'start') {
+            mango.longPoll.poll(intervalTime, 'fromPollCB');
+        }
+    } else {
+        if(mango.longPoll.intervalId) {
             return;
         }
+        mango.longPoll.intervalId = setInterval(function() {mango.longPoll.poll(intervalTime, 'fromInterval')}, intervalTime);
     }
     // Poll again immediately.
-    mango.longPoll.poll();
+    //mango.longPoll.poll();
 }
 
 
@@ -183,8 +205,14 @@ function isMouseLeaveOrEnter(e, handler) {
 function show(node, styleType) {
     if (!styleType)
         styleType = '';
-    if (node != null)
-        getNodeIfString(node).style.display = styleType;
+    if (node != null) {
+        if(styleType !== null && styleType === 'visible') {
+            getNodeIfString(node).style.display = '';
+            getNodeIfString(node).style.visibility = styleType;
+        } else {
+            getNodeIfString(node).style.display = styleType;
+        }
+    }
 }
 
 function hide(node) {
@@ -490,6 +518,19 @@ function createFromTemplate(templateId, id, parentId) {
     return content;
 }
 
+function updateFromTemplate(templateId, id, parentId) {
+    var content = $(templateId).cloneNode(true);
+    updateTemplateNode(content, id);
+    content.mangoId = id;
+    let child = $(parentId).children[content.id];
+    if(child) {
+        $(parentId).removeChild(child);
+    }
+    $(parentId).appendChild(content);
+    show(content);
+    return content;
+}
+
 function getMangoId(node) {
     while (!(node.mangoId))
         node = node.parentNode;
@@ -742,13 +783,13 @@ function getNodeIfString(node) {
 function escapeQuotes(str) {
     if (!str)
         return "";
-    return str.replace(/\'/g,"\\'");
+    return str.replace(/\\/g, "\\\\").replace(/\'/g, "\\'");
 }
 
 function escapeDQuotes(str) {
     if (!str)
         return "";
-    return str.replace(/\"/g,"\\\"");
+    return str.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
 }
 
 function encodeQuotes(str) {
@@ -760,8 +801,9 @@ function encodeQuotes(str) {
 function encodeHtml(str) {
     if (!str)
         return "";
-    str = str.replace(/&/g,"&amp;");
-    return str.replace(/</g,"&lt;");
+    str = str.replace(/\\/g, "\\\\");
+    str = str.replace(/&/g, "&amp;");
+    return str.replace(/</g, "&lt;");
 }
 
 function appendNewElement(/*string*/type, /*node*/parent) {
@@ -1022,8 +1064,6 @@ function createValidationMessage(node, message) {
     return {contextKey:node, contextualMessage:message};
 }
 
-
-
 function updateChartComparatorComponent(idPrefix, width, height) {
 	var fromDate = $get(idPrefix+"_fromDate1");
 	var toDate = $get(idPrefix+"_toDate1");
@@ -1074,4 +1114,626 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
+function isInt32(state) {
+    if(!(/^([+-]?[1-9]\d*|0).[0]$/.test(state))
+        && !(/^([+-]?[1-9]\d*|0)$/.test(state))) {
+        return false;
+    }
+    const view = new DataView(new ArrayBuffer(32));
+    view.setInt32(1, state);
+    return Number.parseInt(state) === view.getInt32(1);
+}
 
+function isValid(value) {
+    let trimValue = trim(value);
+    return trimValue === "" || isPositiveInt(trimValue)
+}
+
+function isPositiveInt(value) {
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0;
+}
+
+function isPositiveByte(value) {
+    let trimValue = trim(value);
+    return isInt32(trimValue) && trimValue >= 0 && trimValue <= 127;
+}
+
+function trim(value) {
+    let result = value;
+    if(typeof value === "string") {
+        result = value.trim();
+    }
+    return result;
+}
+
+const scadalts = {}
+scadalts.websocket = {};
+scadalts.websocket.client = {};
+scadalts.websocket.endpoints = {};
+scadalts.websocket.endpoints.main = 'ws-scada';
+
+function errorCallbackWebsocket(error) {
+    alert("Connect error:" + error);
+}
+
+function connectCallbackWebsocket(frame) {
+    console.log('Connected to WebSocket');
+    let maxAlarmLevel = -1;
+    let stompClient = getStompClient();
+    if(!stompClient) {
+        console.log('Stomp Client is not initialized!');
+        return;
+    }
+    stompClient.subscribe("/app/alarmLevel/register", function(register) {
+        //console.log("/topic/alarmLevel/register register.body: "+register.body);
+        let subscription = stompClient.subscribe("/topic/alarmLevel/"+register.body, function(message) {
+            let response = JSON.parse(message.body);
+            let alarmLevel = parseInt(response.alarmLevel);
+            //console.log("/topic/alarmLevel/ response.alarmLevel: "+response.alarmLevel);
+            if (alarmLevel > 0) {
+                maxAlarmLevel = alarmLevel;
+                document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+                setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+                setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+                document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
+                document.getElementById("__header__alarmLevelImg").style.visibility='visible';
+            } else {
+                document.getElementById("__header__alarmLevelText").innerHTML = "";
+                document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
+                document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
+            }
+        });
+        if(subscription) {
+            setTimeout(function() {stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - /app/alarmLevel")}, 1500);
+        }
+    });
+
+    stompClient.subscribe("/app/event/update/register", function(register) {
+        //console.log("/app/event/update/register register.body: "+register.body);
+        let subscription = stompClient.subscribe("/topic/event/update/"+register.body, function(message) {
+            let response = JSON.parse(message.body);
+            let alarmLevel = parseInt(response.alarmLevel);
+            //console.log("/topic/event/update/ response.alarmLevel: "+response.alarmLevel);
+            if (alarmLevel > 0) {
+                if(!response.silenced && response.action == 'CREATE' && response.active) {
+                    if(alarmLevel >= maxAlarmLevel) {
+                        mango.soundPlayer.playOnce("level"+ alarmLevel);
+                        if(!mango.header.evtVisualizer.started) {
+                            mango.header.evtVisualizer.start();
+                            setTimeout(function() {mango.header.evtVisualizer.stop()}, 5000);
+                        }
+                    }
+                }
+            }
+        });
+        if(subscription) {
+            setTimeout(function() {stompClient.send("/app/event/update", {priority: 1}, "STOMP - /app/event/update")}, 1500);
+        }
+    });
+};
+
+function connectWebsocket(url, headers, errorCallbackWebsocket, connectCallbackWebsocket) {
+    let socket = new SockJS(url);
+    let stompClient = Stomp.over(socket);
+    stompClient.heartbeat.outgoing = 20000;
+    stompClient.heartbeat.incoming = 0;
+    stompClient.reconnect_delay = 5000;
+    stompClient.debug = null;
+    stompClient.connect(headers, connectCallbackWebsocket, errorCallbackWebsocket);
+    return stompClient;
+}
+
+function disconnectWebsocket() {
+    let stompClient = getStompClient();
+    if(stompClient != null) {
+        console.log("Disconnecting...");
+        stompClient.disconnect(function() {
+            console.log("Disconnected");
+            removeStompClient();
+        });
+    }
+}
+
+function onloadHandlerWebsocket() {
+    let location = window.location.href;
+    if(!location.includes('app.shtm')) {
+        let endpoint = scadalts.websocket.endpoints.main;
+        scadalts.websocket.client = connectWebsocket(getAppLocation() + endpoint, {}, errorCallbackWebsocket, connectCallbackWebsocket);
+    }
+}
+
+function getAppLocation() {
+   let location = window.location;
+   let pattern = location.origin + "/(.*?)/";
+   let myLocation = location.origin + "/";
+   let groups = location.href.match(pattern);
+   if(groups && groups.length > 1 && groups[1]) {
+       let appName = groups[1];
+       if(!appName.includes('.html') && !appName.includes('.htm') && !appName.includes('.shtm') && !appName.includes('#'))
+            myLocation = location.origin + "/" + appName+ "/";
+   }
+   return myLocation;
+}
+
+function getStompClient() {
+    return scadalts.websocket.client;
+}
+
+function removeStompClient() {
+    return scadalts.websocket.client = null;
+}
+
+function OnListUserSessions() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/listusers", function(message) {
+		console.log("message[/app/listusers]:\n" + message.body);
+	} );
+}
+
+function OnListSessionsAttributes() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/session", function(message) {
+		console.log("message[/app/session]:\n" + message.body);
+	} );
+}
+
+function OnListWebsocketStats() {
+    let stompClient = getStompClient();
+	stompClient.subscribe("/app/websocketStats", function(message) {
+		console.log("message[/app/websocketStats]:\n" + message.body);
+	} );
+}
+
+function assignEvent(eventId) {
+    MiscDwr.assignEvent(eventId, function(response) {
+        if(response) {
+            hide("assigneeImg"+ eventId);
+            var imgNode = $("assigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_delete.png", mango.i18n["events.unassign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
+function unassignEvent(eventId) {
+    MiscDwr.unassignEvent(eventId, function(response) {
+        if(response) {
+            hide("unassigneeImg"+ eventId);
+            var imgNode = $("unassigneeImg"+ eventId);
+            updateImg(imgNode, "images/user_add.png", mango.i18n["events.assign"], true, "inline");
+            imgNode.onclick = function() {};
+        }
+    });
+}
+
+function isEmpty(value) {
+    return !value || (typeof value === "string" && value.trim() === "");
+}
+
+function unescapeHtml(value) {
+   let div = document.createElement("div");
+   div.innerHTML = value;
+   return div.textContent || div.innerText;
+}
+
+function escapeHtml(value) {
+   let div = document.createElement("div");
+   div.textContent = value;
+   div.innerText = value;
+   return div.innerHTML;
+}
+
+function setValueInNode(id, text) {
+   let node = document.getElementById(id);
+   if(node) {
+       node.value = text;
+   }
+}
+
+function ScriptPointsContext(startContext, points) {
+
+    this.contextArray = new Array();
+    this.pointsArray = new Array();
+    this.contextTableId = "contextTable";
+    this.contextTableEmptyId = "contextTableEmpty";
+    this.contextTableHeadersId = "contextTableHeaders";
+    this.allPointsListId = "allPointsList";
+
+    this.initContextArray = function (context, points) {
+       console.log('initContextArray context: ', context);
+       console.log('initContextArray points: ', points);
+       this.pointsArray = points;
+       dwr.util.removeAllRows(this.contextTableId);
+       for (let i = 0; i < context.length; i++) {
+            let row = this.addToContextArray(context[i].key, context[i].value);
+            this.writeContextArray(row);
+       }
+       this.updatePointsList();
+    }
+
+    this.convertToSave = function () {
+       let context = new Array();
+       for (let i = 0; i < this.contextArray.length; i++) {
+          context[context.length] = {
+              key : this.contextArray[i].pointId,
+              value : this.contextArray[i].scriptVarName
+          };
+       }
+       return context;
+    }
+
+    this.addPointToContext = function () {
+        let pointId = $get(this.allPointsListId);
+        this.removeFromContextArray(pointId);
+        let row = this.addToContextArray(pointId, "p"+ pointId);
+        this.writeContextArray(row);
+    }
+
+    this.addToContextArray = function (pointId, scriptVarName) {
+       let data = getElement(this.pointsArray, pointId);
+       if (data) {
+          this.contextArray[this.contextArray.length] = {
+              pointId : pointId,
+              pointName : data.name,
+              xid : data.xid,
+              pointType : data.type,
+              scriptVarName : scriptVarName
+          };
+          return this.contextArray[this.contextArray.length - 1];
+       }
+       return null;
+    }
+
+    this.removeFromContextArray = function (pointId) {
+       for (let i = 0; i < this.contextArray.length; i++) {
+          let context = this.contextArray[i];
+          if (context.pointId == pointId) {
+              this.removeContextArray(context);
+              this.contextArray.splice(i, 1);
+              this.updatePointsList();
+          }
+       }
+    }
+
+    this.writeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else if(row) {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          dwr.util.addRows(this.contextTableId, [row],
+              [
+                  function(data) { return "<span>" + data.pointName + "</span>" },
+                  function(data) { return "<span>" + data.xid + "</span>"; },
+                  function(data) { return data.pointType; },
+                  function(data) {
+                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                                  "onblur='scriptPointsContext.updatePoint("+ data.pointId +", \"scriptVarName\", this.value)'/>";
+                  },
+                  function(data) {
+                          return "<img src='images/bullet_delete.png' class='ptr' "+
+                                  "onclick='scriptPointsContext.removeFromContextArray("+ data.pointId +")'/>";
+                  }
+              ],
+              {
+                  rowCreator:function(options) {
+                      var tr = document.createElement("tr");
+                      tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                      return tr;
+                  }
+              });
+      }
+      this.updatePointsList();
+    }
+
+    this.removeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          this.removeRow(this.contextTableId, row, [1], ["xid"]);
+       }
+    }
+
+    this.updatePointsList = function () {
+       let availPoints = new Array();
+       for (let i = 0; i < this.pointsArray.length; i++) {
+          let found = false;
+          for (let j = 0; j < this.contextArray.length; j++) {
+              if (this.contextArray[j].pointId == this.pointsArray[i].id) {
+                  found = true;
+                  break;
+              }
+          }
+          if (!found) {
+              availPoints[availPoints.length] = this.pointsArray[i];
+          }
+       }
+       this.addOptions(this.allPointsListId, availPoints, "id", "name");
+       jQuery("#" + this.allPointsListId).trigger('chosen:updated');
+    }
+
+    this.addOptions = function (id, availPoints, key, value) {
+      document.getElementById(id).options.length = 0;
+      let select = document.getElementById(id);
+      for (let i = 0; i < availPoints.length; i++) {
+          let opt = document.createElement('option');
+          opt.value = availPoints[i][key];
+          opt.innerHTML = availPoints[i][value];
+          select.appendChild(opt);
+      }
+    }
+
+    this.removeRow = function (tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+      let table = document.getElementById(tableId);
+      let rows = table.rows;
+      let toDeleteIndexes = new Array();
+      for (let i = 0; i < rows.length; i++) {
+          let row = rows[i];
+          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+              toDeleteIndexes[toDeleteIndexes.length] = i;
+          }
+      }
+
+      for(let i = 0; i < toDeleteIndexes.length; i++) {
+          table.deleteRow(toDeleteIndexes[i]);
+      }
+    }
+
+    this.equalsByOptions = function (row, obj, rowOptions, objOptions) {
+      for (let i = 0; i < objOptions.length; i++) {
+          let cellValue = row.cells[rowOptions[i]].textContent;
+          let objectValue = obj[objOptions[i]];
+          if (!cellValue || !objectValue) {
+              return false;
+          }
+          if (cellValue != objectValue) {
+              return false;
+          }
+      }
+      return true;
+    }
+
+    this.updatePoint = function (pointId, key, value) {
+        var item = getElement(this.contextArray, pointId, "pointId");
+        if (item)
+            item[key] = value;
+    }
+
+    this.initContextArray(startContext, points);
+}
+
+function ReportPointsContext(startContext, points) {
+
+    this.contextArray = new Array();
+    this.pointsArray = new Array();
+    this.contextTableId = "contextTable";
+    this.contextTableEmptyId = "contextTableEmpty";
+    this.contextTableHeadersId = "contextTableHeaders";
+    this.allPointsListId = "allPointsList";
+
+    this.initContextArray = function (context, points) {
+       console.log('initContextArray context: ', context);
+       console.log('initContextArray points: ', points);
+       this.pointsArray = points;
+       dwr.util.removeAllRows(this.contextTableId);
+       for (let i = 0; i < context.length; i++) {
+            let row = this.addToContextArray(context[i].pointId, context[i].colour, context[i].consolidatedChart);
+            this.writeContextArray(row);
+       }
+       this.updatePointsList();
+    }
+
+    this.convertToSave = function () {
+       let context = new Array();
+       for (let i = 0; i < this.contextArray.length; i++) {
+          context[context.length] = {
+                pointId: this.contextArray[i].pointId,
+                pointXid: this.contextArray[i].xid,
+                colour: this.contextArray[i].colour,
+                consolidatedChart: this.contextArray[i].consolidatedChart
+          };
+       }
+       return context;
+    }
+
+    this.addPointToContext = function () {
+        let pointId = $get(this.allPointsListId);
+        this.removeFromContextArray(pointId);
+        let reportRow = this.addToContextArray(pointId, "", true);
+        this.writeContextArray(reportRow);
+    }
+
+    this.addToContextArray = function (pointId, colour, consolidatedChart) {
+       let data = getElement(this.pointsArray, pointId);
+       if (data) {
+          this.contextArray[this.contextArray.length] = {
+                pointId: pointId,
+                pointXid: data.xid,
+                pointName : data.name,
+                pointType : data.dataTypeMessage,
+                colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
+                consolidatedChart : consolidatedChart
+          };
+          return this.contextArray[this.contextArray.length - 1];
+       }
+       return null;
+    }
+
+    this.writeContextArray = function (row) {
+        if (this.contextArray.length == 0) {
+            show($(this.contextTableEmptyId));
+            hide($(this.contextTableHeadersId));
+        } else if (row) {
+            hide($(this.contextTableEmptyId));
+            show($(this.contextTableHeadersId));
+            dwr.util.addRows(this.contextTableId, [row],
+                [
+                    function(data) { return data.pointName; },
+                    function(data) { return data.pointXid; },
+                    function(data) { return data.pointType; },
+                    function(data) {
+                            return "<input type='text' value='"+ data.colour +"' "+
+                                    "onblur='reportPointsContext.updatePoint("+ data.pointId +", \"colour\", this.value)'/>";
+                    },
+                    function(data) {
+                        return "<input type='checkbox'"+ (data.consolidatedChart ? " checked='checked'" : "") +
+                                " onclick='reportPointsContext.updatePoint("+ data.pointId +", \"consolidatedChart\", this.checked)'/>";
+                    },
+                    function(data) {
+                            return "<img src='images/bullet_delete.png' class='ptr' "+
+                                    "onclick='reportPointsContext.removeFromContextArray("+ data.pointId +")'/>";
+                    }
+                ],
+                {
+                    rowCreator:function(options) {
+                        var tr = document.createElement("tr");
+                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                        return tr;
+                    },
+                    cellCreator:function(options) {
+                        var td = document.createElement("td");
+                        if (options.cellNum == 4)
+                            td.align = "center";
+                        return td;
+                    }
+                });
+        }
+        this.updatePointsList();
+    }
+
+    this.removeFromContextArray = function (pointId) {
+       for (let i = 0; i < this.contextArray.length; i++) {
+          let context = this.contextArray[i];
+          if (context.pointId == pointId) {
+              this.removeContextArray(context);
+              this.contextArray.splice(i, 1);
+              this.updatePointsList();
+          }
+       }
+    }
+
+    this.removeContextArray = function (row) {
+       if (this.contextArray.length == 0) {
+          show($(this.contextTableEmptyId));
+          hide($(this.contextTableHeadersId));
+       } else {
+          hide($(this.contextTableEmptyId));
+          show($(this.contextTableHeadersId));
+          this.removeRow(this.contextTableId, row, [1], ["pointXid"]);
+       }
+    }
+
+    this.updatePointsList = function () {
+       let availPoints = new Array();
+       for (let i = 0; i < this.pointsArray.length; i++) {
+          let found = false;
+          for (let j = 0; j < this.contextArray.length; j++) {
+              if (this.contextArray[j].pointId == this.pointsArray[i].id) {
+                  found = true;
+                  break;
+              }
+          }
+          if (!found) {
+              availPoints[availPoints.length] = this.pointsArray[i];
+          }
+       }
+       this.addOptions(this.allPointsListId, availPoints, "id", "name");
+       jQuery("#" + this.allPointsListId).trigger('chosen:updated');
+    }
+
+    this.addOptions = function (id, availPoints, key, value) {
+      document.getElementById(id).options.length = 0;
+      let select = document.getElementById(id);
+      for (let i = 0; i < availPoints.length; i++) {
+          let opt = document.createElement('option');
+          opt.value = availPoints[i][key];
+          opt.innerHTML = availPoints[i][value];
+          select.appendChild(opt);
+      }
+    }
+
+    this.removeRow = function (tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+      let table = document.getElementById(tableId);
+      let rows = table.rows;
+      let toDeleteIndexes = new Array();
+      for (let i = 0; i < rows.length; i++) {
+          let row = rows[i];
+          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+              toDeleteIndexes[toDeleteIndexes.length] = i;
+          }
+      }
+
+      for(let i = 0; i < toDeleteIndexes.length; i++) {
+          table.deleteRow(toDeleteIndexes[i]);
+      }
+    }
+
+    this.equalsByOptions = function (row, obj, rowOptions, objOptions) {
+      for (let i = 0; i < objOptions.length; i++) {
+          let cellValue = row.cells[rowOptions[i]].textContent;
+          let objectValue = obj[objOptions[i]];
+          if (!cellValue || !objectValue) {
+              return false;
+          }
+          if (cellValue != objectValue) {
+              return false;
+          }
+      }
+      return true;
+    }
+
+    this.updatePoint = function (pointId, key, value) {
+        var item = getElement(this.contextArray, pointId, "pointId");
+        if (item)
+            item[key] = value;
+    }
+
+    this.initContextArray(startContext, points);
+}
+
+function sizingField(lengthLimit, target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!target.style.width) {
+        initSizeField(target, initWidth);
+    }
+    if(target.value.length > lengthLimit) {
+        if(target.style.width) {
+            var step = Math.floor(Math.random() * 10);
+            var temp = Number.parseInt((target.style.width + "").replace('px', '')) + step;
+            target.style.width = temp + "px";
+        }
+    }
+    return true;
+}
+
+function initSizeField(target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!initWidth) {
+        initWidth = target.value.length * 6;
+    }
+    target.style.width = initWidth + "px";
+}
+
+function isSupportedFieldSizing() {
+    return isSupported("Chrome", 123) || isSupported("Edg", 123) || isSupported("Opera", 109);
+}
+
+function isSupported(browser, minVersion) {
+    let userAgent = window.navigator.userAgent;
+    if(userAgent.includes(browser)) {
+        let version = userAgent.split(browser + "/")[1].split(" ")[0];
+        let major = version.split(".")[0];
+        console.log('major: ', major);
+        return major >= minVersion;
+    }
+    return false;
+}

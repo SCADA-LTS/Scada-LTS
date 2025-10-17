@@ -18,13 +18,15 @@
  */
 package com.serotonin.mango.rt.publish.httpSender;
 
+import java.io.*;
 import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.*;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.KeyValuePair;
@@ -44,6 +46,10 @@ import com.serotonin.mango.web.servlet.HttpDataSourceServlet;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.ApplicationBeans;
+
+import static com.serotonin.mango.Common.createGetMethod;
+import static com.serotonin.mango.Common.createPostMethod;
 
 /**
  * @author Matthew Lohbihler
@@ -125,15 +131,25 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
 
             HttpMethodBase method;
             if (vo.isUsePost()) {
-                PostMethod post = new PostMethod(vo.getUrl());
-                post.addParameters(params);
+                PostMethod post = createPostMethod(vo.getUrl());
+                if (vo.isUseJSON()) {
+                    try {
+                        post.setRequestEntity(createRequestEntity(params));
+                    } catch (Exception e) {
+                        Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
+                                AlarmLevels.URGENT, new LocalizableMessage("common.default", e.getMessage()), createEventContext());
+                    }
+                }
                 method = post;
             }
             else {
-                GetMethod get = new GetMethod(vo.getUrl());
+                GetMethod get = createGetMethod(vo.getUrl());
                 get.setQueryString(params);
                 method = get;
             }
+
+            if (vo.getStaticHeaders().stream().anyMatch(o -> o.getKey().equals("Authorization")))
+                method.setDoAuthentication(true);
 
             // Add a recognizable header
             method.addRequestHeader("User-Agent", USER_AGENT);
@@ -222,5 +238,11 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         }
 
         return nvps.toArray(new NameValuePair[nvps.size()]);
+    }
+
+    private RequestEntity createRequestEntity(NameValuePair... result) throws JsonProcessingException, UnsupportedEncodingException {
+        ObjectMapper jsonMapper = ApplicationBeans.getObjectMapper();
+        String jsonReq = jsonMapper.writeValueAsString(result);
+        return new StringRequestEntity(jsonReq, "application/json", "utf-8");
     }
 }

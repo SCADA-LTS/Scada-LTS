@@ -22,6 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -37,7 +40,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.vo.dataSource.http.HttpImageDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpImagePointLocatorVO;
 import com.serotonin.util.image.BoxScaledImage;
@@ -47,6 +49,8 @@ import com.serotonin.util.image.PercentScaledImage;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.Common.createGetMethod;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -55,6 +59,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
 
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
     public static final int FILE_SAVE_EXCEPTION_EVENT = 2;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
     public HttpImageDataSourceRT(HttpImageDataSourceVO vo) {
         super(vo);
@@ -88,10 +93,12 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
 
         // Check the results.
-        if (monitor.getRetrievalFailure() != null)
+        if (monitor.getRetrievalFailure() != null) {
             raiseEvent(DATA_RETRIEVAL_FAILURE_EVENT, time, true, monitor.getRetrievalFailure());
-        else
+            return;
+        } else {
             returnToNormal(DATA_RETRIEVAL_FAILURE_EVENT, time);
+        }
 
         if (monitor.getSaveFailure() != null)
             raiseEvent(FILE_SAVE_EXCEPTION_EVENT, time, true, monitor.getSaveFailure());
@@ -138,7 +145,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
     }
 
-    class ImageRetriever implements WorkItem {
+    static class ImageRetriever extends AbstractBeforeAfterWorkItem {
         private final ImageRetrieverMonitor monitor;
         private final DataPointRT dp;
         private final long time;
@@ -151,7 +158,8 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             this.time = time;
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 executeImpl();
             }
@@ -214,9 +222,24 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             return saveFailure;
         }
 
-        public int getPriority() {
-            return WorkItem.PRIORITY_HIGH;
+        @Override
+        public WorkItemPriority getPriorityType() {
+            return WorkItemPriority.HIGH;
         }
+
+        @Override
+        public String toString() {
+            return "ImageRetriever{dp='" + (dp == null ? null : LoggingUtils.dataPointInfo(dp.getVO())) + '\'' +
+                    ", time=" + time +
+                    ", retrievalFailure='" + (retrievalFailure == null ? null : retrievalFailure.getLocalizedMessage(Common.getBundle())) + '\'' +
+                    ", saveFailure='" + (saveFailure == null ? null : saveFailure.getLocalizedMessage(Common.getBundle())) + '\'' +
+                    '}';
+        }
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
+
     }
 
     public static byte[] getData(String url, int timeoutSeconds, int retries, int readLimitKb)
@@ -228,7 +251,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             LocalizableMessage message;
 
             try {
-                method = new GetMethod(url);
+                method = createGetMethod(url);
                 int responseCode = client.executeMethod(method);
 
                 if (responseCode == HttpStatus.SC_OK) {
@@ -261,5 +284,10 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
 
         return data;
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

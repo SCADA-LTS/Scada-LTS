@@ -24,11 +24,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericHierarchyDAO;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.service.model.ViewHierarchyJSON;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.slf4j.profiler.Profiler;
 import org.springframework.stereotype.Service;
 
@@ -53,13 +54,13 @@ public class ViewHierarchyService {
 	
 	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
 	
-	private ViewDAO viewDAO = new ViewDAO();
+	private final IViewDAO viewDAO;
 	
 	public ViewHierarchyService(){
-		
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 	
-	public ViewHierarchyService(ViewHierarchyDAO vhDAO, ViewDAO viewDAO){
+	public ViewHierarchyService(ViewHierarchyDAO vhDAO, IViewDAO viewDAO){
 		this.vhDAO = vhDAO;
 		this.viewDAO = viewDAO;
 	}
@@ -99,7 +100,7 @@ public class ViewHierarchyService {
 					vhJSON.setChildren(null);
 					vhJSON.setFolder(false);
 					profiler.start("Get info view");
-					vhJSON.setTitle(viewDAO.findById(new Object[] { vhJSON.getKey() }).getName());
+					vhJSON.setTitle(viewDAO.findById((int)vhJSON.getKey()).getName());
 					profiler.stop();
 					LOG.info("Started "+getClass().getSimpleName()+" in "+ getClass().getSimpleName() +"ms "+ profiler.elapsedTime() / 1000 / 1000);
 					tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));

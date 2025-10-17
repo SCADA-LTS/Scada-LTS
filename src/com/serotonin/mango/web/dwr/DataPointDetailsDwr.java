@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.util.AnnotatedPointValueUtils;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -46,12 +47,11 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.servlet.ImageValueServlet;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
 public class DataPointDetailsDwr extends BaseDwr {
-	@MethodFilter
+	
 	public WatchListState getPointData() {
 		// Get the point from the user's session. It should have been set by the
 		// controller.
@@ -72,83 +72,45 @@ public class DataPointDetailsDwr extends BaseDwr {
 		PointValueTime pointValue = prepareBasePointState(Integer.toString(pointVO.getId()), state, pointVO, pointRT,
 				model);
 		setPrettyTextWithoutEqual(state, pointVO, model, pointValue);
-		if (state.getValue() != null)
+		if (state.getValue() != null) {
+			model.put("hideClosingHint", true);
 			setChange(pointVO, state, pointRT, request, model, user);
-
+		}
 		setEvents(pointVO, user, model);
 		setMessages(state, request, "watchListMessages", model);
 
 		return state;
 	}
-	public boolean  doThisAnnotationExist(String annotation,PointValueFacade facade,int limit){
-		boolean result=false;
-		List<PointValueTime> pointValueTimes = facade.getLatestPointValues(limit);
-		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(pointValueTimes.size());
-		for (PointValueTime pvt : pointValueTimes) {
-			RenderedPointValueTime rpvt = new RenderedPointValueTime();
-			rpvt.setTime(Functions.getTime(pvt));
-			AnnotatedPointValueTime apvt = new AnnotatedPointValueTime(pvt.getWhoChangedValue(),pvt.getValue(),pvt.getTime(), 2,2);
-			apvt.getSourceDescriptionArgument();
-			result = apvt.getSourceDescriptionArgument().equals(annotation);
-
-			if (result )
-				return result;
-		}
-		return result;
-	}
-	private List<RenderedPointValueTime> renderData(List<PointValueTime> rawData, DataPointVO pointVO){
-
-		List<RenderedPointValueTime> renderedData = new ArrayList<RenderedPointValueTime>(rawData.size());
-
-		for (PointValueTime pvt : rawData) {
-			RenderedPointValueTime rpvt = new RenderedPointValueTime();
-			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
-			rpvt.setTime(Functions.getTime(pvt));
-
-			if (pvt.isAnnotated()) {
-				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
-				rpvt.setAnnotation((apvt.getSourceDescriptionArgument() == null)
-							?apvt.getSourceDescriptionArgument()
-							:apvt.getAnnotation(getResourceBundle()));
-			}
-			renderedData.add(rpvt);
-		}
-
-		return renderedData;
-	}
-	@MethodFilter
+	
 	public DwrResponseI18n getHistoryTableData(int limit) {
 		DataPointVO pointVO = Common.getUser().getEditPoint();
 		PointValueFacade facade = new PointValueFacade(pointVO.getId());
 
 		List<PointValueTime> rawData = facade.getLatestPointValues(limit);
-		List<RenderedPointValueTime> renderedData = renderData(rawData,pointVO);
-		/*
+		List<RenderedPointValueTime> renderedData = new ArrayList<>();
+
 		for (PointValueTime pvt : rawData) {
 			RenderedPointValueTime rpvt = new RenderedPointValueTime();
 			rpvt.setValue(Functions.getHtmlText(pointVO, pvt));
 			rpvt.setTime(formatDateTime(pvt));
 
-			if (pvt.isAnnotated()) {
-				AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
-				if (apvt.getSourceDescriptionArgument() == null) {
-					rpvt.setAnnotation(apvt.getSourceDescriptionArgument());
-				} else {
+			if (pvt != null) {
+				if(pvt.isAnnotated()) {
+					AnnotatedPointValueTime apvt = (AnnotatedPointValueTime) pvt;
 					rpvt.setAnnotation(apvt.getAnnotation(getResourceBundle()));
+				} else {
+					rpvt.setAnnotation("System");
 				}
 			}
 			renderedData.add(rpvt);
 		}
-
-		 */
-
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("history", renderedData);
 		addAsof(response);
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getImageChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute,
 			int fromSecond, boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute,
 			int toSecond, boolean toNone, int width, int height) {
@@ -176,7 +138,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	public void getChartData(int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, int fromSecond,
 			boolean fromNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, int toSecond,
 			boolean toNone) {
@@ -186,7 +148,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 		Common.getUser().setDataExportDefinition(def);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getStatsChartData(int periodType, int period, boolean includeSum) {
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO pointVO = Common.getUser(request).getEditPoint();
@@ -202,12 +164,12 @@ public class DataPointDetailsDwr extends BaseDwr {
 		return response;
 	}
 
-	@MethodFilter
+	
 	private DataPointVO getDataPointVO() {
 		return Common.getUser().getEditPoint();
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n getFlipbookData(int limit) {
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		DataPointVO vo = Common.getUser(request).getEditPoint();

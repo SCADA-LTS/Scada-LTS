@@ -121,4 +121,8 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
     public void pointTerminated() {
         // no op
     }
+
+    protected PointEventDetectorVO getVo() {
+        return vo;
+    }
 }

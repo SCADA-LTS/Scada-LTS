@@ -6,11 +6,9 @@ import org.scada_lts.permissions.service.PermissionsService;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 @CacheConfig(cacheNames = "permission_datasource_list_by_user")
 public class DataSourceUserPermissionsServiceWithCache implements PermissionsService<Integer, User> {
 

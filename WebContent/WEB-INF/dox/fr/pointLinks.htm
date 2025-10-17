@@ -24,13 +24,13 @@
   <li>Les liaisons de point permettent définir des scripts, laissant à l'utilisateur une plus grande liberté</li>
   <li>L'interface de cette fonction est contenue sur une seule page, ce qui la rend plus facile à utiliser</li>
 </ul>
-<p><b>Note:</b> Une liaison de point peut être confiqurée de telle sorte que des boucles infinies peuvent apparaître. ScadaBR détectera le problème,le terminera et informera l'utilisateur.</p>
+<p><b>Note:</b> Une liaison de point peut être confiqurée de telle sorte que des boucles infinies peuvent apparaître. Scada-LTS détectera le problème,le terminera et informera l'utilisateur.</p>
 
 <h1>Liste des liaisons de point</h1>
 <p>Pour ajouter une liaison de point, cliquez sur l'icône <img src="images/link_add.png"/>.Pour modifier une liaison, cliquez sur le lien dans la liste.</p>
 
 <h1>Configurer une liaison de point</h1>
-<p>L'<b>Export ID</b> est la valeur utilisée pour identifier une liaison dans les différentes instances de ScadaBR. Il est utilisé dans le menu Import/Export. Cette valeur, unique est générée aléatoirement, mais elle peut être définie par l'utilisateur pour être plus explicite.</p>
+<p>L'<b>Export ID</b> est la valeur utilisée pour identifier une liaison dans les différentes instances de Scada-LTS. Il est utilisé dans le menu Import/Export. Cette valeur, unique est générée aléatoirement, mais elle peut être définie par l'utilisateur pour être plus explicite.</p>
 <p>Le  <b>point source</b> est le point dont la valeur sera suivie. C'est le point qui définira les valeurs cibles.</p>
 <p>Le <b>point cible </b> est le point dont la valeur sera affectée.</p>
 <p>Le <b>Script</b> est facultatif il transformera les valeurs sources si nécessaire. Des informations supplémentaires sur les scripts sont disponibles dans l'aide des propriétés des points Meta. Le nom de la variable dans le contexte est "source". un script tel que, "return source.value / 2;" attribuera a la valeur cible, la moitié de la valeur source. Notez que l'on peut aussi transformer le type de donnée

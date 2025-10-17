@@ -128,12 +128,19 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 
 .borderDiv, .borderDivPadded {
 	border: 1px solid var(--slts-color-primary);
+	padding: 3px;
 }
 .borderDivPadded {
 	padding: var(--padding-default);
 }
 
 /* --- Form styles --- */
+html > body input,
+html > body textarea,
+html > body select,
+html > body table {
+	font-size: var(--slts-font-size--default);
+}
 .formLabel, .formLabelRequired {
 	padding-right: 10px;
 	padding-top: 5px;
@@ -275,4 +282,15 @@ html > body .dojoTreeNodeLabelTitle {
 		align-self: flex-end;
 	}
 
+}
+
+a img:hover, img.ptr:hover {
+    background: rgba(96, 125, 139, 0.51);
+}
+
+#pointProperties img.ptr {
+  margin: 0;
+  padding: 0.1rem;
+  height: 16px;
+  transition: all 0.3s ease-in-out;
 }

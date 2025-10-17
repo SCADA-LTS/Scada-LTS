@@ -21,10 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
@@ -54,6 +51,14 @@ public class MultistateGraphicComponent extends ImageSetComponent {
     @JsonRemoteProperty
     private int defaultImage;
 
+    public MultistateGraphicComponent() {}
+
+    public MultistateGraphicComponent(MultistateGraphicComponent MultistateGraphicComponent) {
+        super(MultistateGraphicComponent);
+        this.stateImageMap = new HashMap<>(MultistateGraphicComponent.stateImageMap);
+        this.defaultImage = MultistateGraphicComponent.getDefaultImage();
+    }
+
     public int getDefaultImage() {
         return defaultImage;
     }
@@ -63,12 +68,24 @@ public class MultistateGraphicComponent extends ImageSetComponent {
     }
 
     @Override
+    public ViewComponent copy() {
+        return new MultistateGraphicComponent(this);
+    }
+
+    @Override
     public ImplDefinition definition() {
         return DEFINITION;
     }
 
     @Override
     public String getImage(PointValueTime pointValue) {
+
+        if(imageSet == null)
+            return "imageSetNotLoaded";
+
+        if(!imageSet.isAvailable())
+            return imageSet.getImageFilename(0);
+
         Integer state = null;
         if (pointValue != null && pointValue.getValue() instanceof MultistateValue)
             state = pointValue.getIntegerValue();
@@ -140,7 +157,7 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         if (defaultImage < 0)
             response.addMessage("defaultImageIndex", new LocalizableMessage("validate.cannotBeNegative"));
 
-        if (imageSet != null) {
+        if (imageSet != null && imageSet.isAvailable()) {
             for (Integer index : stateImageMap.values()) {
                 if (index >= imageSet.getImageCount())
                     response
@@ -215,5 +232,27 @@ public class MultistateGraphicComponent extends ImageSetComponent {
             jsonMapping.put("imageIndex", mapping.getValue());
             jsonStateList.add(jsonMapping);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MultistateGraphicComponent)) return false;
+        if (!super.equals(o)) return false;
+        MultistateGraphicComponent that = (MultistateGraphicComponent) o;
+        return getDefaultImage() == that.getDefaultImage() && Objects.equals(stateImageMap, that.stateImageMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), stateImageMap, getDefaultImage());
+    }
+
+    @Override
+    public String toString() {
+        return "MultistateGraphicComponent{" +
+                "stateImageMap=" + stateImageMap +
+                ", defaultImage=" + defaultImage +
+                "} " + super.toString();
     }
 }

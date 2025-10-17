@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import com.serotonin.modbus4j.serial.SerialPortWrapper;
 
+@Deprecated
 public class SerialParameters implements SerialPortWrapper {
 
 	private String commPortId;

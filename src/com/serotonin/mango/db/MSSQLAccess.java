@@ -27,9 +27,6 @@ import org.springframework.dao.DataAccessException;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 
 public class MSSQLAccess extends BasePooledAccess {
-    public MSSQLAccess(ServletContext ctx) {
-        super(ctx);
-    }
 
     @Override
     public DatabaseType getType() {
@@ -42,7 +39,7 @@ public class MSSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+    protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
         try {
             ejt.execute("select count(*) from users");
         }
@@ -51,7 +48,7 @@ public class MSSQLAccess extends BasePooledAccess {
                 SQLException se = (SQLException) e.getCause();
                 if ("S0002".equals(se.getSQLState())) {
                     // This state means a missing table. Assume that the schema needs to be created.
-                    createSchema("/WEB-INF/db/createTables-mssql.sql");
+                    createSchema("/WEB-INF/db/createTables-mssql.sql", ctx);
                     return true;
                 }
             }

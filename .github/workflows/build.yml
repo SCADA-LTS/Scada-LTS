@@ -8,33 +8,48 @@ jobs:
     name: Compile and Test Scada-LTS application
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'adopt'
       - name: Cache Tomcat
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
           path: /home/runner/tomcat
           restore-keys: |
             ${{ runner.os }}-tomcat-
       - name: Install Tomcat
-        run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.53/bin/apache-tomcat-9.0.53.tar.gz; tar xvzf apache-tomcat-9.0.53.tar.gz
+        run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz; tar xvzf apache-tomcat-9.0.86.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Test JUnit Scada Application
         run: gradle test
+      - name: Show JUnit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: Java JUnit Test Results
+          files: ./build/test-results/**/*.xml
+      - name: Publish JUnit Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-java-test-results
+          path: ./build/test-reports/
       - name: Build Scada-LTS WAR Application
         run: gradle -PskipUi=true compileJava
       - name: Cache Scada-LTS application
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-slts-${{ github.run_id }}
           path: ./build/
@@ -43,14 +58,14 @@ jobs:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
+          node-version: 22.9.0
       - name: Cache node modules
         id: nodeCache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./scadalts-ui/node_modules
           key: ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
@@ -63,6 +78,17 @@ jobs:
       - name: Run Frontend UnitTests
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
+      - name: Show Mocha Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: Java Script Mocha Unit Test Results
+          files: ./scadalts-ui/test-results.xml
+      - name: Publish Mocha Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: mocha-js-test-results
+          path: ./scadalts-ui/test-results.xml
       - name: Get Scada-LTS latest release version
         id: relver
         uses: pozetroninc/github-action-get-latest-release@master
@@ -76,7 +102,7 @@ jobs:
         working-directory: ./scadalts-ui
         run: npm run-script build
       - name: Cache Frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
@@ -86,30 +112,30 @@ jobs:
     needs: [compile, buildui]
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: 'adopt'
       - name: Load Cached node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./scadalts-ui/node_modules
           key: ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-slts-${{ github.run_id }}
           path: ./build/
       - name: Load Cached Frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
@@ -125,10 +151,14 @@ jobs:
       - name: Install static web-dependencies
         working-directory: ./WebContent/resources
         run: npm install
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
@@ -139,12 +169,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Load WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
       - name: Deploy WAR artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Scada-LTS
           path: ./build/libs/Scada-LTS.war
@@ -154,9 +184,13 @@ jobs:
     needs: [ war ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Load WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
@@ -171,17 +205,19 @@ jobs:
         with:
           images: scadalts/scadalts
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Build and push nightly Docker image
         if: ${{ startsWith(github.base_ref, 'release') || startsWith(github.base_ref, 'preview') }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: scadalts/scadalts:nightly
           labels: ${{ steps.meta.outputs.labels }}

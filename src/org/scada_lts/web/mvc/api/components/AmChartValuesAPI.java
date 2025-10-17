@@ -29,8 +29,13 @@ import java.util.stream.Collectors;
 public class AmChartValuesAPI {
     private static final Log LOG = LogFactory.getLog(AmChartValuesAPI.class);
 
-    private static final DataPointService dpService = new DataPointService();
-    private static final SystemSettingsService systemSettingsService = new SystemSettingsService();
+    private final DataPointService dpService;
+    private final SystemSettingsService systemSettingsService;
+
+    public AmChartValuesAPI(DataPointService dpService, SystemSettingsService systemSettingsService) {
+        this.dpService = dpService;
+        this.systemSettingsService = systemSettingsService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Map<String, Double>>> getValuesFromTimeRange(
@@ -46,7 +51,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                if(ids.isEmpty())
+                if(ids.isEmpty() || startTs > endTs)
                     return ResponseEntity.badRequest().build();
                 if (configFromSystem) {
                     aggregateSettings = systemSettingsService.getAggregateSettings();
@@ -85,7 +90,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(ids.isEmpty()) {
+                if(ids.isEmpty() || startTs > endTs) {
                     return ResponseEntity.badRequest().build();
                 }
                 if(configFromSystem) {
@@ -118,7 +123,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(ids.isEmpty()) {
+                if(ids.isEmpty() || startTs > endTs) {
                     return ResponseEntity.badRequest().build();
                 }
                 if(configFromSystem) {

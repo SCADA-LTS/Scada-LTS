@@ -59,10 +59,20 @@
 </p>
 
 <p>
-  The <b>Purge</b> settings determine how long a point's historical values should be kept in the database. Values can 
+  The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
+  The purge process runs automatically every morning at 3:05am local time.
+</p>
+
+<p>
+  The <b>Period</b> settings determine how long a point's historical values should be kept in the database. Values can
   be practically kept as long as necessary, but note that performance degradation may occur if the history for a given 
-  point becomes too large. (Actually performance of the system depends strongly upon the host hardware.) The purge 
-  process runs automatically every morning at 3:05am local time.
+  point becomes too large. (Actually performance of the system depends strongly upon the host hardware)
+</p>
+
+<p>
+  When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+  <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+  system settings (<b>Values limit for purge</b>).
 </p>
 
 <p>

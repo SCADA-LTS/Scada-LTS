@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.dataSource.onewire;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.dalsemi.onewire.OneWireException;
 import com.dalsemi.onewire.adapter.OneWireIOException;
@@ -72,9 +73,22 @@ public class NetworkPath {
     public boolean isCoupler() {
         return target instanceof OneWireContainer1F;
     }
-
-    public boolean equals(NetworkPath otherPath) {
+    /*
+    public boolean equals(Object otherPath) {
         return toString().equals(otherPath.toString());
+    }*/
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NetworkPath)) return false;
+        NetworkPath that = (NetworkPath) o;
+        return toString().equals(that.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toString());
     }
 
     public NetworkPathElement getTail() {
@@ -86,24 +100,22 @@ public class NetworkPath {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
-        sb.append(network.getAdapterName());
-        try {
-            String portName = network.getPortName();
-            sb.append('_').append(portName);
-        }
-        catch (OneWireException e) {
-            // no op
+        if(network != null) {
+            sb.append(network.getAdapterName());
+            try {
+                String portName = network.getPortName();
+                sb.append('_').append(portName);
+            } catch (OneWireException e) {
+                // no op
+            }
         }
         sb.append('/');
-
         for (NetworkPathElement element : elements) {
             sb.append(((OneWireContainer) element.getContainer()).getAddressAsString());
             sb.append('_');
             sb.append(element.getChannel());
             sb.append('/');
         }
-
         return sb.toString();
     }
 

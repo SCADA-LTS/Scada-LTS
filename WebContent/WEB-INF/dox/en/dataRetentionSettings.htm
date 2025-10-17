@@ -1,0 +1,30 @@
+
+<p>
+    Use the "purge events" settings to set the maximum age of an event before it is purged from the database. Purging
+    permanently deletes the event as well as any user comments associated with it.
+</p>
+
+<p>
+    Use the "purge report instances" settings to set the maximum age of a report instance before it is purged from the
+    database. Purging permanently deletes the report instance. It is best to set this value as low as possible since
+    reports can potentially consume a great deal of available storage space. Purging can be prevented by setting the
+    "prevent purge" attribute on the report instance.
+</p>
+
+<p>
+    Click the <b>Purge all data</b> button to permanently delete all point samples currently in the database. This can be
+    useful for giving a Mango instance a "fresh start", especially if spurious data exists from configuration and set up
+    activities.
+</p>
+
+<p>
+    Use the "Discard point values future dated" settings to set the maximum amount of time into the future for which
+    data points will accept new values. Any values with timestamps that exceed this value will be discarded, and an error
+    message will be written to the log.
+</p>
+
+<p>
+    Option <b>Default values limit for purge</b> is related to property that can be set inside Point properties in Logging properties.
+    It indicates how many values will be left in database after purging data when purge strategy with <b>Values limit</b> is selected for a given datapoint.
+    This default value is used during datapoint creation.
+</p>

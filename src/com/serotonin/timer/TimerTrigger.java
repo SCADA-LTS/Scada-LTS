@@ -77,4 +77,12 @@ abstract public class TimerTrigger {
     abstract protected long calculateNextExecutionTimeImpl();
 
     abstract protected long calculateNextExecutionTimeImpl(long after);
+
+    @Override
+    public String toString() {
+        return "TimerTrigger{" +
+                "timer=" + timer +
+                ", nextExecutionTime=" + nextExecutionTime +
+                '}';
+    }
 }

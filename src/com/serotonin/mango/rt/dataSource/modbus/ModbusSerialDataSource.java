@@ -18,33 +18,34 @@
  */
 package com.serotonin.mango.rt.dataSource.modbus;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
+import com.fazecast.jSerialComm.SerialPort;
 
-import java.util.Enumeration;
-
-import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO.EncodingType;
 import com.serotonin.modbus4j.ModbusFactory;
-import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import org.scada_lts.serial.SerialPortParameters;
+import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
+
+import javax.comm.NoSuchPortException;
 
 public class ModbusSerialDataSource extends ModbusDataSource {
 
 	private final ModbusSerialDataSourceVO configuration;
-	ModbusMaster modbusMaster;
-	private Enumeration portList;
+	private final SerialPortService serialPortService;
 	private boolean connProblem = false;
 	private boolean firstTime = true;
 
 	public ModbusSerialDataSource(ModbusSerialDataSourceVO configuration) {
 		super(configuration);
 		this.configuration = configuration;
-		portList = CommPortIdentifier.getPortIdentifiers();
+		this.serialPortService = SerialPortService
+				.newService(SerialPortParameters
+						.newParameters("Modbus Serial Data Source: " + configuration.getXid(), configuration));
 	}
 
 	//
@@ -54,38 +55,19 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 	//
 	@Override
 	public void initialize() {
-		SerialParameters params = new SerialParameters();
-		params.setCommPortId(configuration.getCommPortId());
-		params.setPortOwnerName("Modbus Serial Data Source");
-		params.setBaudRate(configuration.getBaudRate());
-		params.setFlowControlIn(configuration.getFlowControlIn());
-		params.setFlowControlOut(configuration.getFlowControlOut());
-		params.setDataBits(configuration.getDataBits());
-		params.setStopBits(configuration.getStopBits());
-		params.setParity(configuration.getParity());
-
 		if (configuration.getEncoding() == EncodingType.ASCII)
-			modbusMaster = new ModbusFactory().createAsciiMaster(params);
+			super.initialize(new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(this.serialPortService)));
 		else
-			modbusMaster = new ModbusFactory().createRtuMaster(params);
-
-		super.initialize(modbusMaster);
+			super.initialize(new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(this.serialPortService)));
 	}
 
 	@Override
 	protected void doPoll(long time) {
 
-		portList = CommPortIdentifier.getPortIdentifiers();
-
-		// System.out.println("Configuration Port: "
-		// + configuration.getCommPortId());
-
-		if (!verifyPort(configuration.getCommPortId())) {
-
-			// System.out.println("Porta nao detectada !");
+		if (!serialPortService.isOpen()) {
 
 			if (firstTime) {
-				modbusMaster.destroy();
+				getModbusMaster().destroy();
 				firstTime = false;
 			}
 
@@ -103,51 +85,8 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 
 	}
 
-	public SerialPort getPort(String port) {
-
-		SerialPort serialPort = null;
-
-		while (portList.hasMoreElements()) {
-			CommPortIdentifier portId = (CommPortIdentifier) portList
-					.nextElement();
-			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-				if (portId.getName().equals(port)) {
-					try {
-						serialPort = (SerialPort) portId.open(
-								configuration.getCommPortId(), 10000);
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.out.println("Erro ao abrir a porta !");
-					}
-				}
-			}
-
-		}
-
-		return serialPort;
-	}
-
-	public boolean verifyPort(String port) {
-
-		boolean p = false;
-
-		while (portList.hasMoreElements()) {
-			CommPortIdentifier portId = (CommPortIdentifier) portList
-					.nextElement();
-			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-				// System.out.println(portId.getName());
-				if (portId.getName().equals(port)) {
-					p = true;
-				} else
-					p = false;
-			}
-		}
-
-		return p;
-	}
-
 	@Override
-	protected LocalizableMessage getLocalExceptionMessage(Exception e) {
+	protected LocalizableMessage getLocalExceptionMessage(Throwable e) {
 		if (e instanceof ModbusInitException) {
 			Throwable cause = e.getCause();
 			if (cause instanceof NoSuchPortException)

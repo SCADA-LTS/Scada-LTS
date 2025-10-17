@@ -24,7 +24,6 @@ import com.serotonin.bacnet4j.type.enumerated.EngineeringUnits;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -47,6 +46,9 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.model.DataPointIdentifier;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -56,8 +58,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 @JsonRemoteEntity
-public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO> {
+public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO>,
+        ScadaValidation, GetExtendedName {
     private static final long serialVersionUID = -1;
     public static final String XID_PREFIX = "DP_";
 
@@ -102,6 +107,19 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 "pointEdit.logging.valueType.minimum");
         INTERVAL_LOGGING_TYPE_CODES.addElement(IntervalLoggingTypes.AVERAGE, "AVERAGE",
                 "pointEdit.logging.valueType.average");
+    }
+
+    public interface PurgeStrategy {
+        int PERIOD = 1;
+        int LIMIT = 2;
+        int ALL = 3;
+    }
+
+    private static final ExportCodes PURGE_STRATEGY_CODES = new ExportCodes();
+    static {
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.PERIOD, "PERIOD", "pointEdit.purge.type.period");
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.LIMIT, "LIMIT", "pointEdit.purge.type.limit");
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.ALL, "ALL", "pointEdit.purge.type.all");
     }
 
     public static final int ENGINEERING_UNITS_DEFAULT = 95; // No units
@@ -170,40 +188,33 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int engineeringUnits;
     @JsonRemoteProperty
     private String chartColour;
+    private int purgeStrategy;
+    @JsonRemoteProperty
+    private int purgeValuesLimit;
 
     public DataPointVO(){
-        id = Common.NEW_ID;
-        loggingType = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE);
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
+        this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT));
     }
 
-    public DataPointVO(int loggingType) {
-        id = Common.NEW_ID;
+    public DataPointVO(int loggingType, int purgeValuesPeriodType, int purgeValuesPeriod) {
+        this.id = Common.NEW_ID;
         this.loggingType = loggingType;
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
+        this.intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        this.intervalLoggingPeriod = 15;
+        this.intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        this.tolerance = 0;
+        this.purgeType = purgeValuesPeriodType;
+        this.purgePeriod = purgeValuesPeriod;
+        this.defaultCacheSize = 1;
+        this.discardExtremeValues = false;
+        this.discardLowLimit = -Double.MAX_VALUE;
+        this.discardHighLimit = Double.MAX_VALUE;
+        this.engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        this.eventTextRenderer = new NoneEventRenderer();
+        this.purgeStrategy = PurgeStrategy.PERIOD;
+        this.purgeValuesLimit = 100;
     }
 
 
@@ -246,12 +257,13 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         lastValue = pvt;
     }
 
+    @Override
     public String getExtendedName() {
         if (description != null) {
             if (!description.isEmpty())
-                return deviceName + " - " + name + " - " + description;
+                return dataSourceName + " - " + name + " - " + description;
         }
-        return deviceName + " - " + name;
+        return dataSourceName + " - " + name;
     }
 
     public void defaultTextRenderer() {
@@ -304,6 +316,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         AuditEventType.addPropertyMessage(list, "pointEdit.logging.discardLow", discardLowLimit);
         AuditEventType.addPropertyMessage(list, "pointEdit.logging.engineeringUnits", engineeringUnits);
         AuditEventType.addPropertyMessage(list, "pointEdit.props.chartColour", chartColour);
+        AuditEventType.addExportCodeMessage(list, "pointEdit.logging.purgeStrategy", PURGE_STRATEGY_CODES, purgeType);
+        AuditEventType.addPropertyMessage(list, "pointEdit.logging.purgeValuesLimit", purgeValuesLimit);
 
         pointLocator.addProperties(list);
     }
@@ -334,6 +348,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 engineeringUnits);
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointEdit.props.chartColour", from.chartColour, chartColour);
+        AuditEventType.maybeAddExportCodeChangeMessage(list, "pointEdit.logging.purgeStrategy", PURGE_STRATEGY_CODES,
+                from.purgeStrategy, purgeStrategy);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.logging.purgeValuesLimit", from.purgeValuesLimit,
+                purgeValuesLimit);
 
         pointLocator.addPropertyChanges(list, from.pointLocator);
     }
@@ -581,6 +599,22 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.chartColour = chartColour;
     }
 
+    public int getPurgeStrategy() {
+        return purgeStrategy;
+    }
+
+    public void setPurgeStrategy(int purgeStrategy) {
+        this.purgeStrategy = purgeStrategy;
+    }
+
+    public int getPurgeValuesLimit() {
+        return purgeValuesLimit;
+    }
+
+    public void setPurgeValuesLimit(int purgeValuesLimit) {
+        this.purgeValuesLimit = purgeValuesLimit;
+    }
+
     public DataPointVO copy() {
         try {
             return (DataPointVO) super.clone();
@@ -605,16 +639,23 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", engineeringUnits=" + engineeringUnits + ", chartColour=" + chartColour
                 + ", pointLocator=" + pointLocator + ", dataSourceTypeId=" + dataSourceTypeId
                 + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
-                + ", lastValue=" + lastValue + ", settable=" + settable + "]";
+                + ", lastValue=" + lastValue + ", settable=" + settable
+                + ", purgeStrategy=" + purgeStrategy +  ", purgeValuesLimit=" + purgeValuesLimit + "]";
     }
 
+    @Override
     public void validate(DwrResponseI18n response) {
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addMessage("xid", new LocalizableMessage("validate.notLongerThan", 50));
-        else if (!new DataPointDao().isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
+        validate(response, id);
+    }
+
+    @Override
+    public void validateForCreate(DwrResponseI18n response) {
+        validate(response, -1);
+    }
+
+    private void validate(DwrResponseI18n response, int id) {
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
 
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "validate.required");
@@ -656,7 +697,13 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             }
         }
 
-        pointLocator.validate(response);
+        if (!PURGE_STRATEGY_CODES.isValidId(purgeStrategy))
+            response.addContextualMessage("purgeStrategy", "validate.invalidValue");
+
+        if (purgeValuesLimit <= 1)
+            response.addContextualMessage("purgeValuesLimit", "validate.greaterThanOne");
+
+        pointLocator.validate(response, this.getId());
 
         // Check text renderer type
         if (textRenderer != null && !textRenderer.getDef().supports(pointLocator.getDataTypeId()))
@@ -671,11 +718,26 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             response.addGenericMessage("validate.event.incompatible");
     }
 
+    public void validateIdentifier(DwrResponseI18n response) {
+
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, xid, id);
+
+        if (StringUtils.isEmpty(name))
+            response.addContextualMessage("name", "validate.required");
+
+        if(pointLocator instanceof MqttPointLocatorVO) {
+            MqttPointLocatorVO mqttPointLocatorVO = (MqttPointLocatorVO) pointLocator;
+            if (StringUtils.isEmpty(mqttPointLocatorVO.getDataPointXid()))
+                response.addContextualMessage("dataPointXid", "validate.required");
+        }
+    }
+
     //
     //
     // Serialization
     //
-    private static final int version = 9;
+    private static final int version = 10;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -701,6 +763,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         SerializationHelper.writeSafeUTF(out, chartColour);
         SerializationHelper.writeSafeUTF(out, description);
         out.writeObject(eventTextRenderer);
+        out.writeInt(purgeStrategy);
+        out.writeInt(purgeValuesLimit);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -919,6 +983,32 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             description = SerializationHelper.readSafeUTF(in);
             eventTextRenderer = (EventTextRenderer) in.readObject();
         }
+        else if (ver == 10) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
+            eventTextRenderer = (EventTextRenderer) in.readObject();
+            purgeStrategy = in.readInt();
+            purgeValuesLimit = in.readInt();
+        }
 
         // Check the purge type. Weird how this could have been set to 0.
         if (purgeType == 0)
@@ -938,6 +1028,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         map.put("pointLocator", pointLocator);
         map.put("eventDetectors", eventDetectors);
         map.put("engineeringUnits", ENGINEERING_UNITS_CODES.getCode(engineeringUnits));
+        map.put("purgeStrategy", PURGE_STRATEGY_CODES.getCode(purgeStrategy));
     }
 
     @Override
@@ -1015,6 +1106,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             if (engineeringUnits == -1)
                 engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         }
+
+        text = json.getString("purgeStrategy");
+        if (text != null) {
+            purgeStrategy = PURGE_STRATEGY_CODES.getId(text);
+            if (purgeStrategy == -1)
+                throw new LocalizableJsonException("emport.error.invalid", "purgeStrategy", text,
+                        PURGE_STRATEGY_CODES.getCodeList());
+        }
     }
 
     public static boolean validLoggingType(int loggingType) {
@@ -1043,5 +1142,27 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     public static boolean validIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
         return Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType);
+    }
+
+    public DataPointIdentifier toIdentifier() {
+        if(getPointLocator() == null)
+            return DataPointIdentifier.builder(PointDataType.UNKNOWN)
+                    .id(getId())
+                    .xid(getXid())
+                    .name(getName())
+                    .extendName(getExtendedName())
+                    .enabled(isEnabled())
+                    .description(getDescription())
+                    .dataSourceName(getDataSourceName())
+                    .build();
+        return DataPointIdentifier.builder(PointDataType.byCode(getPointLocator().getDataTypeId()))
+                .id(getId())
+                .xid(getXid())
+                .name(getName())
+                .extendName(getExtendedName())
+                .enabled(isEnabled())
+                .description(getDescription())
+                .dataSourceName(getDataSourceName())
+                .build();
     }
 }

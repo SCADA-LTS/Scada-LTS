@@ -18,7 +18,7 @@ public abstract class AbstractMySQLDependentTest extends
 
 	@Before
 	public void createMySQLAccess() throws SQLException {
-		mysqlAccess = new MySQLAccess(this.getServletContextStub());
+		mysqlAccess = new MySQLAccess();
 		this.putAttributeInServletContext(Common.ContextKeys.DATABASE_ACCESS,
 				mysqlAccess);
 	}
@@ -33,12 +33,12 @@ public abstract class AbstractMySQLDependentTest extends
 	protected final void useScenario(DatabaseScenario scenario) {
 		boolean requireInitializationAfterSetup = scenario instanceof RequireInitializationAfterSetup;
 		if (!requireInitializationAfterSetup) {
-			mysqlAccess.initialize();
+			mysqlAccess.initialize(this.getServletContextStub());
 		}
 		scenario.setupScenario(mysqlAccess);
 
 		if (requireInitializationAfterSetup) {
-			mysqlAccess.initialize();
+			mysqlAccess.initialize(this.getServletContextStub());
 		}
 	}
 

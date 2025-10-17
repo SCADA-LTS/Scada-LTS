@@ -43,7 +43,7 @@ public class ChartExportServlet extends HttpServlet {
         // Stream the content.
         response.setContentType("text/csv");
 
-        final ResourceBundle bundle = Common.getBundle();
+        final ResourceBundle bundle = Common.getBundle(request);
         final ReportCsvStreamer exportCreator = new ReportCsvStreamer(response.getWriter(), bundle);
 
         final ReportDataValue rdv = new ReportDataValue();

@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.link;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.script.ScriptException;
 
@@ -29,6 +30,7 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.maint.work.PointLinkSetPointWorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,16 +56,15 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 	private Log LOG = LogFactory.getLog(PointLinkRT.class);
 
 	// Added to stop excessive point link calls
-	private volatile boolean ready;
-	private final Object lock = new Object();
+	private final AtomicInteger lock;
 
 
 	public PointLinkRT(PointLinkVO vo) {
 		this.vo = vo;
-		eventType = new SystemEventType(
+		this.eventType = new SystemEventType(
 				SystemEventType.TYPE_POINT_LINK_FAILURE, vo.getId(),
-				EventType.DuplicateHandling.IGNORE_SAME_MESSAGE);
-		ready = true;
+				EventType.DuplicateHandling.IGNORE);
+		this.lock = new AtomicInteger(0);
 	}
 
 	public void initialize() {
@@ -108,80 +109,76 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 	}
 	private void execute(PointValueTime newValue) {
 
-		// Bail out if already running a point link operation
-		synchronized (lock) {
-			if (!ready) {
+		try {
+			if(lock.incrementAndGet() == 1) {
+				LOG.trace("PointLinkRT.ready will set to false.Scripts (in meaning source-target) will not work.");
+
+				// Propagate the update to the target point. Validate that the target
+				// point is available.
+				DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
+						vo.getTargetPointId());
+				if (targetPoint == null) {
+					raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+							"event.pointLink.targetUnavailable"));
+					return;
+				}
+
+				if (!targetPoint.getPointLocator().isSettable()) {
+					raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+							"event.pointLink.targetNotSettable"));
+					return;
+				}
+
+				int targetDataType = targetPoint.getVO().getPointLocator()
+						.getDataTypeId();
+
+				if (!StringUtils.isEmpty(vo.getScript())) {
+					ScriptExecutor scriptExecutor = new ScriptExecutor();
+					Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
+					DataPointRT source = Common.ctx.getRuntimeManager().getDataPoint(
+							vo.getSourcePointId());
+					context.put(CONTEXT_VAR_NAME, source);
+
+					try {
+						PointValueTime pvt = scriptExecutor.execute(vo.getScript(),
+								context, newValue.getTime(), targetDataType,
+								newValue.getTime());
+						if (pvt.getValue() == null) {
+							raiseFailureEvent(
+									newValue.getTime(),
+									new LocalizableMessage("event.pointLink.nullResult"));
+							return;
+						}
+						newValue = pvt;
+					} catch (ResultTypeException e) {
+						LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
+						raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
+						return;
+					} catch (Exception e) {
+						LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
+						raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+								"common.default", e.getMessage()));
+						return;
+					}
+				}
+
+				if (DataTypes.getDataType(newValue.getValue()) != targetDataType) {
+					raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
+							"event.pointLink.convertError"));
+					return;
+				}
+				returnToNormal();
+
+				// Queue a work item to perform the update.
+				Common.ctx.getBackgroundProcessing().addWorkItem(
+						new PointLinkSetPointWorkItem(vo.getTargetPointId(), newValue, this, eventType));
+			} else {
 				LOG.trace("PointLinkRT.ready is set to false.Any of scripts (in meaning source-target) will not work.");
 				return;
 			}
-			else {
-				LOG.trace("PointLinkRT.ready will set to false.Scripts (in meaning source-target) will not work.");
-				ready = false; // Stop anyone else from using this
-			}
+		} finally {
+			lock.set(0);
 		}
-
-		// Propagate the update to the target point. Validate that the target
-		// point is available.
-		DataPointRT targetPoint = Common.ctx.getRuntimeManager().getDataPoint(
-				vo.getTargetPointId());
-		if (targetPoint == null) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.targetUnavailable"));
-			return;
-		}
-
-		if (!targetPoint.getPointLocator().isSettable()) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.targetNotSettable"));
-			return;
-		}
-
-		int targetDataType = targetPoint.getVO().getPointLocator()
-				.getDataTypeId();
-
-		if (!StringUtils.isEmpty(vo.getScript())) {
-			ScriptExecutor scriptExecutor = new ScriptExecutor();
-			Map<String, IDataPoint> context = new HashMap<String, IDataPoint>();
-			DataPointRT source = Common.ctx.getRuntimeManager().getDataPoint(
-					vo.getSourcePointId());
-			context.put(CONTEXT_VAR_NAME, source);
-
-			try {
-				PointValueTime pvt = scriptExecutor.execute(vo.getScript(),
-						context, newValue.getTime(), targetDataType,
-						newValue.getTime());
-				if (pvt.getValue() == null) {
-					raiseFailureEvent(
-							newValue.getTime(),
-							new LocalizableMessage("event.pointLink.nullResult"));
-					return;
-				}
-				newValue = pvt;
-			} catch (ScriptException e) {
-				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-						"common.default", e.getMessage()));
-				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
-				return;
-			} catch (ResultTypeException e) {
-				raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
-				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
-				return;
-			} catch (Exception e) {
-				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
-				throw e;
-			}
-		}
-
-		if (DataTypes.getDataType(newValue.getValue()) != targetDataType) {
-			raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
-					"event.pointLink.convertError"));
-			return;
-		}
-
-		// Queue a work item to perform the update.
-		Common.ctx.getBackgroundProcessing().addWorkItem(
-				new PointLinkSetPointWorkItem(vo.getTargetPointId(), newValue, this));
-		returnToNormal();
 	}
 
 	//
@@ -250,7 +247,14 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 	 */
 	@Override
 	public void pointSetComplete() {
-		this.ready = true;
 		LOG.trace("PointLinkRT.pointSetComplete. Ready property is set to true ");
+	}
+
+	@Override
+	public String toString() {
+		return "PointLinkRT{" +
+				"vo=" + LoggingUtils.pointLinkInfo(vo) +
+				", eventType=" + eventType +
+				'}';
 	}
 }

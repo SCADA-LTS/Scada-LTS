@@ -23,13 +23,16 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IViewDAO;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -38,15 +41,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
+import static com.serotonin.mango.util.ViewControllerUtils.*;
 
+@Controller
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
+
+	private final IViewDAO viewDAO;
+
+	public ViewsController() {
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
+	}
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
+		request.getSession().removeAttribute("emptyView");
 		ViewService viewService = new ViewService();
 		User user = Common.getUser(request);
 		List<IntValuePair> views;
@@ -60,24 +71,10 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess();
+		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess(viewDAO);
 			views = service.getObjectIdentifiersWithAccess(user).stream()
 					.map(a -> new IntValuePair(a.getId(), a.getName()))
 					.collect(Collectors.toList());
-
-			/* ** Disable ACL **
-			// ACL start
-			views = viewDao.getAllViewNames();
-			Map<Integer, EntryDto> mapToCheckId = PermissionViewACL.getInstance().filter(user.getId());
-			List<IntValuePair> vviews = new ArrayList<IntValuePair>();
-			for (IntValuePair vp: views) {
-				if (mapToCheckId.get(vp.getKey())!=null) {
-					vviews.add(vp);
-				}
-			}
-			//views.stream().filter(view -> mapToCheckId.get(view.getKey()) != null );
-			// ACL end;
-			*/
 
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
@@ -95,7 +92,7 @@ public class ViewsController extends ParameterizableViewController {
 
 		if (currentView != null) {
 			if (!user.isAdmin())
-				Permissions.ensureViewPermission(user, currentView);
+				GetViewsWithAccess.ensureViewReadPermission(user, currentView);
 
 			// Make sure the owner still has permission to all of the points in
 			// the view, and that components are
@@ -106,9 +103,22 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("currentView", currentView);
 			model.put("owner",
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
-			user.setView(currentView);
+			model.put("forceFullScreenMode",
+					SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE, false));
+			model.put("hideShortcutDisableFullScreenFromSystemSettings",
+					SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, false));
+			model.put("enableFullScreenMode", user.isEnableFullScreen());
+			model.put("hideShortcutDisableFullScreenFromUser", user.isHideShortcutDisableFullScreen());
+			model.put("isAdmin", user.isAdmin());
+		} else {
+			model.put("currentView", new View());
+			model.put("owner", false);
+			model.put("forceFullScreenMode", false);
+			model.put("hideShortcutDisableFullScreenFromSystemSettings", false);
+			model.put("enableFullScreenMode", false);
+			model.put("hideShortcutDisableFullScreenFromUser", false);
+			model.put("isAdmin", user.isAdmin());
 		}
-
 		return new ModelAndView(getViewName(), model);
 	}
 }

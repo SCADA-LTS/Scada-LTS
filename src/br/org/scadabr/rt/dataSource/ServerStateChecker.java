@@ -1,6 +1,7 @@
 package br.org.scadabr.rt.dataSource;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -20,6 +21,7 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 	public static final long CHECK_PERIOD = 5000;
 	private static final long TOLERANCE = (long) (CHECK_PERIOD * 0.05);
 	private static long lastFiredTime = 0;
+	private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -70,8 +72,13 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 
 	}
 
-	public synchronized static void setState(ServerStateCode state) {
-		ServerStateChecker.state = state;
+	public static void setState(ServerStateCode state) {
+		lock.writeLock().lock();
+		try {
+			ServerStateChecker.state = state;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	private static boolean isDatabaseRunning() {
@@ -119,8 +126,16 @@ public class ServerStateChecker implements org.quartz.SchedulerListener, Job {
 			return ServerStateCode.FAILED;
 		if (!isDatabaseRunning())
 			return ServerStateCode.FAILED;
+		return getServerStateCode();
+	}
 
-		return state;
+	private static ServerStateCode getServerStateCode() {
+		lock.readLock().lock();
+		try {
+			return state;
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 }

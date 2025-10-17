@@ -1,9 +1,8 @@
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -15,9 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for SystemSettings page
@@ -31,24 +32,20 @@ public class SystemSettingsAPI {
     private static final Log LOG = LogFactory.getLog(SystemSettingsAPI.class);
 
     private static final String SAVED_MSG = "saved";
+    private final SystemSettingsService systemSettingsService;
 
-    @Resource
-    private SystemSettingsService systemSettingsService;
+    public SystemSettingsAPI(SystemSettingsService systemSettingsService) {
+        this.systemSettingsService = systemSettingsService;
+    }
 
     @RequestMapping(value = "/getSettings", method = RequestMethod.GET)
-    public ResponseEntity<String> getSettings(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getSettings(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getSettings");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getSettings());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
+                Map<String, Object> response = systemSettingsService.getSettings();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -59,19 +56,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDefaultLoggingType", produces = "application/json")
-    public ResponseEntity<String> getLoggingType(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getLoggingType(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDefaultLoggingType");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getDefaultLoggingType());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
+                Map<String, Object> response = systemSettingsService.getDefaultLoggingType();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -189,13 +180,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/sendTestEmail", produces = "application/json")
-    public ResponseEntity<String> sendTestEmail(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> sendTestEmail(HttpServletRequest request) {
         LOG.info("/api/systemSettings/sendTestEmail");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 try {
-                    String response = systemSettingsService.sendTestEmail(user);
+                    Map<String, String> response = systemSettingsService.sendTestEmailMap(user);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } catch (Exception e) {
                     LOG.error(e);
@@ -264,8 +255,63 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                if(jsonSettingsMisc.getEventPendingLimit() < 0)
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 systemSettingsService.saveMiscSettings(jsonSettingsMisc);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/getDataRetention", produces = "application/json")
+    public ResponseEntity<SettingsDataRetention> getDataRetention(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getDataRetention");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(systemSettingsService.getDataRetentionSettings(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/saveDataRetention", consumes = "application/json")
+    public ResponseEntity<String> saveDataRetention(HttpServletRequest request, @RequestBody SettingsDataRetention jsonSettingsDataRetention) {
+        LOG.info("/api/systemSettings/saveDataRetention");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.saveDataRetentionSettings(jsonSettingsDataRetention);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/purgeNow", produces = "application/json")
+    public ResponseEntity<Map<String, String>> purgeNow(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/purgeData");
+        LOG.warn("Purging data!");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                Map<String, String> response = new HashMap<>();
+                systemSettingsService.purgeNow();
+                response.put("status", "done");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -356,7 +402,7 @@ public class SystemSettingsAPI {
     public ResponseEntity<JsonSettingsSystemInfo> getSystemInfo(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
+            if (user != null) {
                 return new ResponseEntity<>(systemSettingsService.getSystemInfoSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -368,12 +414,13 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveSystemInfo", consumes = "application/json")
-    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
+    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
         LOG.info("/api/systemSettings/saveSystemInfo");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 systemSettingsService.saveSystemInfoSettings(jsonSettingsSystemInfo);
+                ScadaLocaleUtils.setLocale(request, response, jsonSettingsSystemInfo.getLanguage());
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -385,13 +432,14 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDatabaseType", produces = "application/json")
-    public ResponseEntity<String> getDatabaseType(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> getDatabaseType(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDatabaseType");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String json = "{\"databaseType\":\"" + systemSettingsService.getDatabaseType() + "\"}";
-                return new ResponseEntity<>(json, HttpStatus.OK);
+                Map<String, String> response = new HashMap<>();
+                response.put("databaseType", systemSettingsService.getDatabaseType());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -419,19 +467,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDatabaseSize", produces = "application/json")
-    public ResponseEntity<String> getDatabaseSize(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getDatabaseSize(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDatabaseSize");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(systemSettingsService.getDatabaseSize());
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                Map<String, Object> response = systemSettingsService.getDatabaseSize();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -442,14 +484,16 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/purgeData", produces = "application/json")
-    public ResponseEntity<String> purgeData(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> purgeData(HttpServletRequest request) {
         LOG.info("/api/systemSettings/purgeData");
         LOG.warn("Purging data!");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                systemSettingsService.purgeData();
-                return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
+                systemSettingsService.purgeAllData();
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "done");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -460,13 +504,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getStartupTime", produces = "application/json")
-    public ResponseEntity<String> getStartupTime(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getStartupTime(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(
-                        "{\"startupTime\": \"" + systemSettingsService.getStartupTime() + "\"}",
-                        HttpStatus.OK);
+                Map<String, Object> response = new HashMap<>();
+                response.put("startupTime", systemSettingsService.getStartupTime());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -477,13 +521,13 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getSchemaVersion", produces = "application/json")
-    public ResponseEntity<String> getSchemaVersion(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> getSchemaVersion(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(
-                        "{\"schemaVersion\": \"" + systemSettingsService.getSchemaVersion() + "\"}",
-                        HttpStatus.OK);
+                Map<String, String> response = new HashMap<>();
+                response.put("schemaVersion", systemSettingsService.getSchemaVersion());
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

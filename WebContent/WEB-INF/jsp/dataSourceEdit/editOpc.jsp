@@ -22,17 +22,17 @@
           function(data) { return data.tag; },
           function(data) {
               if (data.dataType == ${applicationScope['constants.DataTypes.BINARY']})
-                  return "<fmt:message key="common.dataTypes.binary"/>";
+                  return "<spring:message code="common.dataTypes.binary"/>";
               if (data.dataType == ${applicationScope['constants.DataTypes.MULTISTATE']})
-                  return "<fmt:message key="common.dataTypes.multistate"/>";
+                  return "<spring:message code="common.dataTypes.multistate"/>";
               if (data.dataType == ${applicationScope['constants.DataTypes.NUMERIC']})
-                  return "<fmt:message key="common.dataTypes.numeric"/>";
+                  return "<spring:message code="common.dataTypes.numeric"/>";
               if (data.dataType == ${applicationScope['constants.DataTypes.ALPHANUMERIC']})
-                  return "<fmt:message key="common.dataTypes.alphanumeric"/>";
+                  return "<spring:message code="common.dataTypes.alphanumeric"/>";
               if (data.dataType == 7)
-                      return "<fmt:message key="common.dataTypes.bad"/>";
+                      return "<spring:message code="common.dataTypes.bad"/>";
 
-              return "<fmt:message key="common.unknown"/> ("+ data.dataType +")";
+              return "<spring:message code="common.unknown"/> ("+ data.dataType +")";
           },
           function(data) { return data.settable; },
           function(data) { return "<input type='checkbox' name='addTag'/>"; }
@@ -114,15 +114,15 @@
 			  tags.push(list.rows[i].cells[0].innerHTML);
 			  
 			  // TODO Not good. What is put into innerHTML is not always what comes out.
-			  if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.binary"/>") {
+			  if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.binary"/>") {
 	           	  dataTypes.push(1);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.multistate"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.multistate"/>") {
     			  dataTypes.push(2);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.numeric"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.numeric"/>") {
     			  dataTypes.push(3);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.alphanumeric"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.alphanumeric"/>") {
     			  dataTypes.push(4);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.unknown"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.unknown"/>") {
     			  dataTypes.push(0);
     		  }
     		  
@@ -171,15 +171,15 @@
 			  tags.push(list.rows[i].cells[0].innerHTML);
 			  
 			  // TODO Not good. What is put into innerHTML is not always what comes out.
-			  if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.binary"/>") {
+			  if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.binary"/>") {
 	           	  dataTypes.push(1);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.multistate"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.multistate"/>") {
     			  dataTypes.push(2);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.numeric"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.numeric"/>") {
     			  dataTypes.push(3);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.dataTypes.alphanumeric"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.dataTypes.alphanumeric"/>") {
     			  dataTypes.push(4);
-    		  } else if (list.rows[i].cells[1].innerHTML == "<fmt:message key="common.unknown"/>") {
+    		  } else if (list.rows[i].cells[1].innerHTML == "<spring:message code="common.unknown"/>") {
     			  dataTypes.push(0);
     		  }
     		  
@@ -227,16 +227,16 @@
 				td2.setAttribute("align","center");
 				var text2 = "";
 				if(response.dataType == ${applicationScope['constants.DataTypes.BINARY']}){
-					text2 = document.createTextNode("<fmt:message key="common.dataTypes.binary"/>");
+					text2 = document.createTextNode("<spring:message code="common.dataTypes.binary"/>");
 				}
 				if(response.dataType == ${applicationScope['constants.DataTypes.NUMERIC']}){
-					text2 = document.createTextNode("<fmt:message key="common.dataTypes.numeric"/>");
+					text2 = document.createTextNode("<spring:message code="common.dataTypes.numeric"/>");
 				}
 				if(response.dataType == ${applicationScope['constants.DataTypes.ALPHANUMERIC']}){
-					text2 = document.createTextNode("<fmt:message key="common.dataTypes.alphanumeric"/>");
+					text2 = document.createTextNode("<spring:message code="common.dataTypes.alphanumeric"/>");
 				}
 				if(response.dataType == 6) {
-					text2 = document.createTextNode("<fmt:message key="common.unknown"/>");
+					text2 = document.createTextNode("<spring:message code="common.unknown"/>");
 				}
 				td2.appendChild(text2);
 
@@ -250,12 +250,12 @@
 
 	 			if (response.validate == true) {
 	 				img.setAttribute("src","images/accept.png");
-	 				img.setAttribute("title","<fmt:message key="dsEdit.opc.TagValidated"/>")
+	 				img.setAttribute("title","<spring:message code="dsEdit.opc.TagValidated"/>")
 	 				text3 = document.createTextNode("true");
 				}
 	 			else {
 	 				img.setAttribute("src","images/cancel.png");
-	 				img.setAttribute("title","<fmt:message key="dsEdit.opc.TagNotValidated"/>")
+	 				img.setAttribute("title","<spring:message code="dsEdit.opc.TagNotValidated"/>")
 	 				text3 = document.createTextNode("false");
 		 		}
 
@@ -295,44 +295,44 @@ function toggleDiv(elem) {
 --></script>
 
 <c:set var="dsDesc">
-	<fmt:message key="dsEdit.opc.desc" />
+	<spring:message code="dsEdit.opc.desc" />
 </c:set>
 <c:set var="dsHelpId" value="opcDS" />
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf"%>
 <tr>
-	<td class="formLabelRequired"><fmt:message key="dsEdit.opc.host" /></td>
+	<td class="formLabelRequired"><spring:message code="dsEdit.opc.host" /></td>
 	<td class="formField"><input id="host" type="text"
 		value="${dataSource.host}" /></td>
 </tr>
 <tr>
-	<td class="formLabelRequired"><fmt:message key="dsEdit.opc.domain" /></td>
+	<td class="formLabelRequired"><spring:message code="dsEdit.opc.domain" /></td>
 	<td class="formField"><input id="domain" type="text"
 		value="${dataSource.domain}" /></td>
 </tr>
 <tr>
-	<td class="formLabelRequired"><fmt:message key="dsEdit.opc.user" /></td>
+	<td class="formLabelRequired"><spring:message code="dsEdit.opc.user" /></td>
 	<td class="formField"><input id="user" type="text"
 		value="${dataSource.user}" /></td>
 </tr>
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.opc.password" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.opc.password" /></td>
 	<td class="formField"><input id="password" type="password"
 		name="password" value="${dataSource.password}" maxlength="20" /></td>
 </tr>
 <tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-			key="dsEdit.opc.server" /></td>
+		<td class="formLabelRequired"><spring:message
+			code="dsEdit.opc.server" /></td>
 		<td class="formField"><sst:select id="server" value=""></sst:select>
 		<div style="height: 2px;"></div>
 		<input id="searchBtn" type="button"
-			value="<fmt:message key="dsEdit.opc.refreshServers"/>"
+			value="<spring:message code="dsEdit.opc.refreshServers"/>"
 			onclick="searchServer();" /></td>
 	</tr>
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-			key="dsEdit.updatePeriod" /></td>
+		<td class="formLabelRequired"><spring:message
+			code="dsEdit.updatePeriod" /></td>
 		<td class="formField"><input type="text" id="updatePeriods"
 			value="${dataSource.updatePeriods}" class="formShort" /> <sst:select
 			id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -342,21 +342,21 @@ function toggleDiv(elem) {
 	</tr>
 
 	<tr>
-		<td class="formLabelRequired"><fmt:message
-			key="dsEdit.opc.creationMode" /></td>
+		<td class="formLabelRequired"><spring:message
+			code="dsEdit.opc.creationMode" /></td>
 		<td class="formField"><sst:select id="selectMethodTag"
 			value="${dataSource.creationMode}" onchange="toggleDiv(this)">
 			<sst:option value="BrowseTags">
-				<fmt:message key="dsEdit.opc.browseTags" />
+				<spring:message code="dsEdit.opc.browseTags" />
 			</sst:option>
 			<sst:option value="AddTags">
-				<fmt:message key="dsEdit.opc.addTags" />
+				<spring:message code="dsEdit.opc.addTags" />
 			</sst:option>
 		</sst:select></td>
 	</tr>
 
 	<tr>
-		<td class="formLabelRequired"><fmt:message key="dsEdit.quantize" /></td>
+		<td class="formLabelRequired"><spring:message code="dsEdit.quantize" /></td>
 		<td class="formField"><sst:checkbox id="quantize"
 			selectedValue="${dataSource.quantize}" /></td>
 	</tr>
@@ -368,15 +368,15 @@ function toggleDiv(elem) {
 	<div id="browseDiv" class="borderDiv marB marR">
 	<table>
 		<tr>
-			<td colspan="2" class="smallTitle"><fmt:message
-				key="dsEdit.opc.tagList" /></td>
+			<td colspan="2" class="smallTitle"><spring:message
+				code="dsEdit.opc.tagList" /></td>
 		</tr>
 
 		<tr>
 			<td colspan="2" align="center"><input id="browseTags"
-				type="button" value="<fmt:message key="dsEdit.opc.browseTags"/>"
+				type="button" value="<spring:message code="dsEdit.opc.browseTags"/>"
 				onclick="browseTags();" /> <input id="addBtn" type="button"
-				value="<fmt:message key="dsEdit.opc.addTags"/>" onclick="addTags();" />
+				value="<spring:message code="dsEdit.opc.addTags"/>" onclick="addTags();" />
 			</td>
 		</tr>
 
@@ -387,10 +387,10 @@ function toggleDiv(elem) {
 			<td>
 			<table cellspacing="1" cellpadding="0" border="0">
 				<thead class="rowHeader">
-					<td align="center"><fmt:message key="dsEdit.opc.tag" /></td>
-					<td align="center"><fmt:message key="dsEdit.pointDataType" /></td>
-					<td align="center"><fmt:message key="dsEdit.settable" /></td>
-					<td align="center"><fmt:message key="common.add" /></td>
+					<td align="center"><spring:message code="dsEdit.opc.tag" /></td>
+					<td align="center"><spring:message code="dsEdit.pointDataType" /></td>
+					<td align="center"><spring:message code="dsEdit.settable" /></td>
+					<td align="center"><spring:message code="common.add" /></td>
 				</thead>
 
 				<!-- TODO why is the height being enforced? -->
@@ -415,15 +415,15 @@ function toggleDiv(elem) {
 	<div id="addDiv" class="borderDiv marB marR">
 	<table>
 		<tr>
-			<td colspan="2" class="smallTitle"><fmt:message
-				key="dsEdit.opc.addTags" /></td>
+			<td colspan="2" class="smallTitle"><spring:message
+				code="dsEdit.opc.addTags" /></td>
 		</tr>
 
 		<tr>
-			<td colspan="2" align="center"><fmt:message
-				key="dsEdit.opc.tagName" /> <input id="tagName" type="text" /> <input
+			<td colspan="2" align="center"><spring:message
+				code="dsEdit.opc.tagName" /> <input id="tagName" type="text" /> <input
 				id="btnAddTag" type="button"
-				value="<fmt:message key="dsEdit.opc.validateTag"/>"
+				value="<spring:message code="dsEdit.opc.validateTag"/>"
 				onclick="validateTag();" /></td>
 			</td>
 		</tr>
@@ -436,11 +436,11 @@ function toggleDiv(elem) {
 			<td>
 			<table cellspacing="1" cellpadding="0" border="0">
 				<thead class="rowHeader">
-					<td align="center"><fmt:message key="dsEdit.opc.tag" /></td>
-					<td align="center"><fmt:message key="dsEdit.pointDataType" /></td>
-					<td align="center"><fmt:message key="dsEdit.settable" /></td>
-					<td align="center"><fmt:message key="dsEdit.opc.validation" /></td>
-					<td align="center"><fmt:message key="common.add" /></td>
+					<td align="center"><spring:message code="dsEdit.opc.tag" /></td>
+					<td align="center"><spring:message code="dsEdit.pointDataType" /></td>
+					<td align="center"><spring:message code="dsEdit.settable" /></td>
+					<td align="center"><spring:message code="dsEdit.opc.validation" /></td>
+					<td align="center"><spring:message code="common.add" /></td>
 				</thead>
 
 				<!-- TODO why is the height being enforced? -->
@@ -451,7 +451,7 @@ function toggleDiv(elem) {
 
 		<tr>
 			<td colspan="2" align="center"><input id="btnAddTag"
-				type="button" value="<fmt:message key="dsEdit.opc.addTags"/>"
+				type="button" value="<spring:message code="dsEdit.opc.addTags"/>"
 				onclick="btnAddTag();" /></td>
 		</tr>
 

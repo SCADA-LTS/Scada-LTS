@@ -47,12 +47,18 @@ public class HttpReceiverDataSourceVO extends DataSourceVO<HttpReceiverDataSourc
 
     @Override
     protected void addEventTypes(List<EventTypeVO> ets) {
-        // no op
+        ets.add(createEventType(HttpReceiverDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.initialization")));
     }
 
     @Override
     public ExportCodes getEventCodes() {
-        return null;
+        return EVENT_CODES;
+    }
+
+    private static final ExportCodes EVENT_CODES = new ExportCodes();
+    static {
+        EVENT_CODES.addElement(HttpReceiverDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, "INITIALIZATION_EXCEPTION");
     }
 
     @Override

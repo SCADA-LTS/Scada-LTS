@@ -19,8 +19,7 @@
 package com.serotonin.mango.vo.report;
 
 import java.awt.Paint;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
@@ -32,27 +31,29 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
  * @author Matthew Lohbihler
  */
 public class PointTimeSeriesCollection {
-    private TimeSeriesCollection numericTimeSeriesCollection;
-    private List<Paint> numericPaint;
-    private List<DiscreteTimeSeries> discreteTimeSeriesCollection;
 
-    public void addNumericTimeSeries(TimeSeries numericTimeSeries) {
-        addNumericTimeSeries(numericTimeSeries, null);
+    private Map<Comparable, TimeSeries> numericTimeSeriesCollection;
+    private Map<Comparable, DiscreteTimeSeries> discreteTimeSeriesCollection;
+    private Map<Comparable, Paint> numericPaint;
+
+    public PointTimeSeriesCollection() {
+        this.numericTimeSeriesCollection = new TreeMap<>();
+        this.discreteTimeSeriesCollection  = new TreeMap<>();
+        this.numericPaint = new TreeMap<>();
     }
 
-    public void addNumericTimeSeries(TimeSeries numericTimeSeries, Paint paint) {
-        if (numericTimeSeriesCollection == null) {
-            numericTimeSeriesCollection = new TimeSeriesCollection();
-            numericPaint = new ArrayList<Paint>();
-        }
-        numericTimeSeriesCollection.addSeries(numericTimeSeries);
-        numericPaint.add(paint);
+    @Deprecated(since = "2.7.8")
+    public void addNumericTimeSeries(TimeSeries timeSeries) {
+        addNumericTimeSeries(timeSeries, null);
+    }
+
+    public void addNumericTimeSeries(TimeSeries timeSeries, Paint paint) {
+        numericTimeSeriesCollection.put(timeSeries.getKey(), timeSeries);
+        numericPaint.put(timeSeries.getKey(), paint);
     }
 
     public void addDiscreteTimeSeries(DiscreteTimeSeries discreteTimeSeries) {
-        if (discreteTimeSeriesCollection == null)
-            discreteTimeSeriesCollection = new ArrayList<DiscreteTimeSeries>();
-        discreteTimeSeriesCollection.add(discreteTimeSeries);
+        discreteTimeSeriesCollection.put(discreteTimeSeries.getName(), discreteTimeSeries);
     }
 
     public boolean hasData() {
@@ -60,46 +61,52 @@ public class PointTimeSeriesCollection {
     }
 
     public boolean hasNumericData() {
-        return numericTimeSeriesCollection != null;
+        return !numericTimeSeriesCollection.isEmpty();
     }
 
     public boolean hasDiscreteData() {
-        return discreteTimeSeriesCollection != null;
+        return !discreteTimeSeriesCollection.isEmpty();
     }
 
     public boolean hasMultiplePoints() {
         int count = 0;
         if (numericTimeSeriesCollection != null)
-            count += numericTimeSeriesCollection.getSeriesCount();
+            count += numericTimeSeriesCollection.size();
         if (discreteTimeSeriesCollection != null)
             count += discreteTimeSeriesCollection.size();
         return count > 1;
     }
 
     public TimeSeriesCollection getNumericTimeSeriesCollection() {
-        return numericTimeSeriesCollection;
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+        for(TimeSeries timeSeries: getTimeSeriesCollection()) {
+            timeSeriesCollection.addSeries(timeSeries);
+        }
+        return timeSeriesCollection;
     }
 
     public List<Paint> getNumericPaint() {
-        return numericPaint;
+        return new ArrayList<>(numericPaint.values());
     }
 
     public int getDiscreteValueCount() {
         int count = 0;
 
-        if (discreteTimeSeriesCollection != null) {
-            for (DiscreteTimeSeries dts : discreteTimeSeriesCollection)
-                count += dts.getDiscreteValueCount();
-        }
+
+        for (DiscreteTimeSeries dts : getDiscreteTimeSeriesCollection())
+            count += dts.getDiscreteValueCount();
+
 
         return count;
     }
 
-    public TimeSeriesCollection createTimeSeriesCollection(double numericMin, double spacingInterval) {
+    public TimeSeriesCollection createTimeSeriesCollection(double numericMin, double numericMax) {
+
+        double spacingInterval = getDiscreteInterval(numericMin, numericMax);
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
 
         int intervalIndex = 1;
-        for (DiscreteTimeSeries dts : discreteTimeSeriesCollection) {
+        for (DiscreteTimeSeries dts : getDiscreteTimeSeriesCollection()) {
             TimeSeries ts = new TimeSeries(dts.getName(), null, null, Second.class);
 
             for (PointValueTime pvt : dts.getValueTimes())
@@ -115,10 +122,23 @@ public class PointTimeSeriesCollection {
     }
 
     public int getDiscreteSeriesCount() {
-        return discreteTimeSeriesCollection.size();
+        return getDiscreteTimeSeriesCollection().size();
     }
 
     public DiscreteTimeSeries getDiscreteTimeSeries(int index) {
-        return discreteTimeSeriesCollection.get(index);
+        return getDiscreteTimeSeriesCollection().get(index);
+    }
+
+    public double getDiscreteInterval(double numericMin, double numericMax) {
+        int discreteValueCount = getDiscreteValueCount();
+        return (numericMax - numericMin) / (discreteValueCount + 1);
+    }
+
+    private List<DiscreteTimeSeries> getDiscreteTimeSeriesCollection() {
+        return new ArrayList<>(discreteTimeSeriesCollection.values());
+    }
+
+    private List<TimeSeries> getTimeSeriesCollection() {
+        return new ArrayList<>(numericTimeSeriesCollection.values());
     }
 }

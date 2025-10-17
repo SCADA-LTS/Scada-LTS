@@ -20,6 +20,9 @@ package com.serotonin.mango.view.component;
 
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -34,6 +37,13 @@ public class CompoundChild {
         this.description = description;
         this.viewComponent = viewComponent;
         this.dataTypesOverride = dataTypesOverride;
+    }
+
+    private CompoundChild(CompoundChild compoundChild) {
+        this.id = compoundChild.getId();
+        this.description = compoundChild.getDescription();
+        this.viewComponent = compoundChild.getViewComponent() != null ? compoundChild.getViewComponent().copy() : null;
+        this.dataTypesOverride = compoundChild.getDataTypes() != null ? compoundChild.getDataTypes().clone() : null;
     }
 
     public String getId() {
@@ -54,5 +64,34 @@ public class CompoundChild {
         if (viewComponent.isPointComponent())
             return ((PointComponent) viewComponent).getSupportedDataTypes();
         return null;
+    }
+
+    public CompoundChild copy() {
+        return new CompoundChild(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompoundChild)) return false;
+        CompoundChild that = (CompoundChild) o;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getDescription(), that.getDescription()) && Objects.equals(getViewComponent(), that.getViewComponent()) && Arrays.equals(dataTypesOverride, that.dataTypesOverride);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getId(), getDescription(), getViewComponent());
+        result = 31 * result + Arrays.hashCode(dataTypesOverride);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CompoundChild{" +
+                "id='" + id + '\'' +
+                ", description=" + description +
+                ", viewComponent=" + viewComponent +
+                ", dataTypesOverride=" + Arrays.toString(dataTypesOverride) +
+                '}';
     }
 }

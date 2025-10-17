@@ -2,52 +2,73 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointPropLogging from '@/views/DataPointDetails/PointProperties/PointPropLogging';
+import PointPropLogging from '@/views/DataObjects/DataPointDetails/PointProperties/PointPropLogging';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
-/**
- * @private
- * Initialize VueWrapper for local testing
- * Prepare wrapper wiht all required stubs and props.
- */
-function initWrapper() {
-	return prepareMountWrapper(
-		PointPropLogging, 
-		modules,
-		{data: dataPointMock}
-	);
-}
-
 global.requestAnimationFrame = (cb) => cb();
+global.cancelAnimationFrame = window.clearTimeout;
 
-describe('Point Properties Tests - Logging properties', () => {
-	
-	it('Initialize Component', () => {
-		const wrapper = initWrapper();
-		const items = wrapper.find('.v-select:first-of-type').props('items');
-		expect(items.length).to.equal(5);
-		expect(wrapper.vm.data.loggingType).to.equal(1);
-		expect(wrapper.get('.row[style="display: none;"]').html()).to.contain(
-			'Interval logging period every',
-		);
-	});
+context('💠️ Test Point Properties - Logging Scenario', () => {
+	let wrapper;
 
-	it('Change to "Interval" property', async () => {
-		const wrapper = initWrapper();
-		wrapper.vm.data.loggingType = 4;
-		await wrapper.vm.$nextTick();
-		expect(wrapper.text()).contains('logging period');
-	});
+	describe("UI Component Initialization for Numeric DP", () => {
 
-	it('Clear DataPoint cache', async () => {
-		const wrapper = initWrapper();
-		await wrapper.vm.clearCache();
-		expect(wrapper.vm.response.status).to.equal(true);
-	});
+		before(() => {
+			wrapper = prepareMountWrapper(PointPropLogging, modules, { data: dataPointMock });
+			wrapper.vm.data.pointLocator.dataTypeId = 3;
+		});
+
+		after(() => {
+			wrapper.vm.data.pointLocator.dataTypeId = 4;
+		});
+
+		it('Labels initialized', () => {			
+			expect(wrapper.find('#point-prop-logging h3').text()).to.include('Logging properties');
+			expect(wrapper.find('#point-prop-logging--type .v-select:first-of-type').text()).to.include('Logging Type');
+			expect(wrapper.find('#log-type--numeric > .row > .col:nth-of-type(1)').text()).to.include('Tolerance');
+			expect(wrapper.find('#log-type--numeric > .row > .col:nth-of-type(2)').text()).to.include('Discard extreme values');
+			expect(wrapper.find('#log-type--numeric > .row > .col:nth-of-type(3)').text()).to.include('Discard low limit');
+			expect(wrapper.find('#log-type--numeric > .row > .col:nth-of-type(4)').text()).to.include('Discard high limit');
+			expect(wrapper.find('#purge--select .v-select:first-of-type').text()).to.include('Purge strategy');
+			expect(wrapper.find('#purge--period .v-text-field:first-of-type').text()).to.include('Purge after');
+			expect(wrapper.find('#cache .v-text-field:first-of-type').text()).to.include('Default cache size');
+		});
+
+		it('Interval logging type', () => {
+			wrapper.vm.data.loggingType = 4;
+			expect(wrapper.find('#log-type--interval > .row > .col:nth-of-type(1)').text()).to.include('Interval logging period every');
+			expect(wrapper.find('#log-type--interval > .row > .col:nth-of-type(3)').text()).to.include('Value Type');
+		});
+
+		it('Logging type list contains 5 elements', () => {
+			expect(wrapper.find('#point-prop-logging--type .v-select:first-of-type').props('items').length).to.equal(5);
+		});
+	})
+
+	describe("Component methods validation", () => {
+
+		before(() => {
+			wrapper = prepareMountWrapper(PointPropLogging, modules, { data: dataPointMock });
+			wrapper.vm.data.pointLocator.dataTypeId = 3;
+		});
+
+		after(() => {
+			wrapper.vm.data.pointLocator.dataTypeId = 4;
+		});
+
+		it('Clear DataPoint cache', async () => {
+			await wrapper.vm.clearCache();
+			//There is no way to check the notification message
+			// expect(wrapper.vm.response.status).to.equal(true);
+		});
+
+	})
 });

@@ -28,9 +28,12 @@ public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
     public static final BinaryValue ONE = new BinaryValue(true);
 
     public static BinaryValue parseBinary(String s) {
-        if(s == null || s.equals("0") || s.equals("") || s.trim().toLowerCase().equals("false") ) {
+        if(s == null)
             return ZERO;
-        } else if(s.equals("1") || s.trim().toLowerCase().equals("true")) {
+        String value = s.trim();
+        if(value.equals("0") || value.equals("") || value.toLowerCase().equals("false")) {
+            return ZERO;
+        } else if(value.equals("1") || value.toLowerCase().equals("true")) {
             return ONE;
         }
         throw new NumberFormatException("Value is not a binary.");
@@ -54,7 +57,7 @@ public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
 
     @Override
     public String getStringValue() {
-        return null;
+        return String.valueOf(value);
     }
 
     @Override

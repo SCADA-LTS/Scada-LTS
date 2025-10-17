@@ -17,19 +17,22 @@
  */
 package org.scada_lts.service.pointhierarchy;
 
+import com.serotonin.ShouldNeverHappenException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.cache.PointHierarchyCache;
+import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
-import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
-import org.springframework.stereotype.Service;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchy;
+import org.scada_lts.web.mvc.api.dto.ObjectHierarchyType;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -37,33 +40,36 @@ import java.util.stream.Collectors;
  *
  * @author grzegorz.bylica@gmail.com
  */
-@Service
 public class PointHierarchyXidService extends PointHierarchyService {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyXidService.class);
 
-    private PointHierarchyXidDAO pointHierarchyXidDAO = new PointHierarchyXidDAO();
-
-    public List<FolderPointHierarchy> getFolders() {
-        return pointHierarchyXidDAO.getFolders();
+    public PointHierarchyXidService(PointHierarchyXidDAO pointHierarchyXidDAO, DataPointDAO dataPointDAO, HierarchyDAO hierarchyDAO) {
+        super(pointHierarchyXidDAO, dataPointDAO, hierarchyDAO);
     }
 
-    public boolean movePoint(String xidPoint, String xidFolder) {
+    public List<FolderPointHierarchy> getFolders() {
+        return getPointHierarchyDAO().getFolders();
+    }
+
+    @Deprecated(since = "2.8.0")
+    public boolean movePoint(String pointXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = pointHierarchyXidDAO.updateParentPoint(xidPoint, xidFolder);
+            res = getPointHierarchyDAO().updateParentPoint(pointXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
         }
         return res;
     }
 
-    public boolean moveFolder(String xidFolder, String newParentXidFolder) {
+    @Deprecated(since = "2.8.0")
+    public boolean moveFolder(String folderXid, String destinationFolderXid) {
         boolean res = false;
         try {
             //TODO use java.utils.Optional
-            res = pointHierarchyXidDAO.updateFolder(xidFolder, newParentXidFolder);
+            res = getPointHierarchyDAO().updateFolder(folderXid, destinationFolderXid);
         } catch (Exception e) {
             LOG.error(e);
         }
@@ -71,7 +77,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
     }
 
     public void folderAdd(FolderPointHierarchy folderPointHierarchy) {
-        pointHierarchyXidDAO.add(folderPointHierarchy);
+        getPointHierarchyDAO().add(folderPointHierarchy);
     }
 
     public List<FolderPointHierarchyExport> fillInThePoints(List<FolderPointHierarchy> folders) throws Exception {
@@ -87,13 +93,13 @@ public class PointHierarchyXidService extends PointHierarchyService {
 
     public FolderPointHierarchy folderCheckExist(String xidFolder) throws Exception {
 
-        FolderPointHierarchy fph = pointHierarchyXidDAO.folderCheckExist(xidFolder);
+        FolderPointHierarchy fph = getPointHierarchyDAO().folderCheckExist(xidFolder);
         fph = fill(fph);
         return fph;
     }
 
     public boolean updateNameFolder(String xidFolder, String newName) {
-        return pointHierarchyXidDAO.updateNameFolder(xidFolder, newName);
+        return getPointHierarchyDAO().updateNameFolder(xidFolder, newName);
     }
 
     public void cacheRefresh() {
@@ -105,7 +111,7 @@ public class PointHierarchyXidService extends PointHierarchyService {
     }
 
     public void deleteFolderXid(String xidFolder) {
-        pointHierarchyXidDAO.deleteFolderXid(xidFolder);
+        getPointHierarchyDAO().deleteFolderXid(xidFolder);
     }
 
     private FolderPointHierarchy fill(FolderPointHierarchy fph) throws Exception {
@@ -125,4 +131,20 @@ public class PointHierarchyXidService extends PointHierarchyService {
         return fph;
     }
 
+    public void deleteFolder(String folderXid, List<ObjectHierarchy> moveObjects) {
+        if(moveObjects != null) {
+            for (ObjectHierarchy object : moveObjects) {
+                moveToRoot(object);
+            }
+        }
+        getPointHierarchyDAO().deleteFolderXid(folderXid);
+    }
+
+    public boolean moveObject(ObjectHierarchy objectHierarchy, String destinationFolderXid) {
+        return objectHierarchy.getType().move(objectHierarchy.getXid(), destinationFolderXid, getPointHierarchyDAO());
+    }
+
+    public void moveToRoot(ObjectHierarchy object) {
+        moveObject(object, "_");
+    }
 }

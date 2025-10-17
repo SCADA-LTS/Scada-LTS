@@ -21,10 +21,10 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.dao.cache.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -37,10 +37,9 @@ import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -66,6 +65,7 @@ public class SystemSettingsDAO {
 	public static final String EMAIL_SMTP_PASSWORD = "emailSmtpPassword";
 	public static final String EMAIL_TLS = "emailTls";
 	public static final String EMAIL_CONTENT_TYPE = "emailContentType";
+	public static final String EMAIL_TIMEOUT = "emailTimeout";
 
 	// Event purging
 	public static final String EVENT_PURGE_PERIOD_TYPE = "eventPurgePeriodType";
@@ -81,6 +81,7 @@ public class SystemSettingsDAO {
 	public static final String HTTP_CLIENT_PROXY_PORT = "httpClientProxyPort";
 	public static final String HTTP_CLIENT_PROXY_USERNAME = "httpClientProxyUsername";
 	public static final String HTTP_CLIENT_PROXY_PASSWORD = "httpClientProxyPassword";
+	public static final String HTTP_RESPONSE_HEADERS = "httpResponseHeaders";
 
 	// New Mango version
 	public static final String NEW_VERSION_NOTIFICATION_LEVEL = "newVersionNotificationLevel";
@@ -116,6 +117,13 @@ public class SystemSettingsDAO {
 	// SMS domain
 	public static final String SMS_DOMAIN = "sms.domain";
 
+	// Purge with values limit
+	public static final String VALUES_LIMIT_FOR_PURGE = "valuesLimitForPurge";
+
+	// Values purging
+	public static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT = "purgePointValuesPeriodTypeDefault";
+	public static final String PURGE_POINT_VALUES_PERIOD_DEFAULT = "purgePointValuesPeriodDefault";
+
 	// Aggregation values
 	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
@@ -143,9 +151,27 @@ public class SystemSettingsDAO {
 	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+	private static final String DELETE_USERS_PROFILES = "delete from usersProfiles";
+	private static final String DELETE_USER_COMMENTS = "delete from userComments";
 
 	// Logging
 	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
+
+	public static final String VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN = "hideShortcutDisableFullScreen";
+	public static final String VIEW_FORCE_FULL_SCREEN_MODE = "viewForceFullScreenMode";
+	public static final String EVENT_PENDING_LIMIT = "eventPendingLimit";
+	public static final String EVENT_PENDING_CACHE_ENABLED = "eventPendingCacheEnabled";
+	public static final String WORK_ITEMS_REPORTING_ENABLED = "workItemsReportingEnabled";
+	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED = "workItemsReportingItemsPerSecondEnabled";
+	public static final String WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT = "workItemsReportingItemsPerSecondLimit";
+	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
+	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
+	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
+	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
+	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
+	public static final String TOP_DESCRIPTION = "topDescription";
+	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
+	public static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "dataPointExtendedNameLengthInReportsLimit";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -177,13 +203,15 @@ public class SystemSettingsDAO {
 	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
 
 	// Value cache
-	private static final Map<String, String> cache = new HashMap<String, String>();
+	private static final Map<String, String> cache = new ConcurrentHashMap<>();
 
 	public static String getValue(String key) {
 		return getValue(key, (String) DEFAULT_VALUES.get(key));
 	}
 
 	public static String getValue(String key, String defaultValue) {
+		if(key == null)
+			return null;
 		String result = cache.get(key);
 		if (result == null) {
 			if (!cache.containsKey(key)) {
@@ -192,10 +220,11 @@ public class SystemSettingsDAO {
 				} catch (EmptyResultDataAccessException e) {
 					result = null;
 				}
-				cache.put(key, result);
 				if (result == null) {
 					result = defaultValue;
 				}
+				if(result != null)
+					cache.put(key, result);
 			} else {
 				result = defaultValue;
 			}
@@ -222,7 +251,10 @@ public class SystemSettingsDAO {
 	}
 
 	public static boolean getBooleanValue(String key) {
-		return getBooleanValue(key, false);
+		Boolean defaultValue = (Boolean) DEFAULT_VALUES.get(key);
+		if(defaultValue == null)
+			return getBooleanValue(key, false);
+		return getBooleanValue(key, defaultValue);
 	}
 
 	public static boolean getBooleanValue(String key, boolean defaultValue) {
@@ -232,6 +264,7 @@ public class SystemSettingsDAO {
 		return DAO.charToBool(value);
 	}
 
+	@Deprecated(since = "2.7.7.1")
 	public static boolean getBooleanValueOrDefault(String key) {
 		String value = getValue(key, null);
 		if (value == null)
@@ -374,8 +407,28 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(AGGREGATION_ENABLED, aggregateSettings.isEnabled());
 		DEFAULT_VALUES.put(AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
 		DEFAULT_VALUES.put(AGGREGATION_VALUES_LIMIT, aggregateSettings.getValuesLimit());
+		DEFAULT_VALUES.put(VALUES_LIMIT_FOR_PURGE, 100);
+		DEFAULT_VALUES.put(HTTP_RESPONSE_HEADERS, SystemSettingsUtils.getHttpResponseHeaders());
 		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().getName());
-	}
+		DEFAULT_VALUES.put(EMAIL_TIMEOUT, String.valueOf(SystemSettingsUtils.getEmailTimeout()));
+		DEFAULT_VALUES.put(VIEW_FORCE_FULL_SCREEN_MODE, SystemSettingsUtils.isForceFullScreenMode());
+		DEFAULT_VALUES.put(VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN, SystemSettingsUtils.isHideShortcutDisableFullScreen());
+		DEFAULT_VALUES.put(EVENT_PENDING_LIMIT, SystemSettingsUtils.getEventPendingLimit());
+		DEFAULT_VALUES.put(EVENT_PENDING_CACHE_ENABLED, SystemSettingsUtils.isEventPendingCacheEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ENABLED, SystemSettingsUtils.isWorkItemsReportingEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED, SystemSettingsUtils.isWorkItemsReportingItemsPerSecondEnabled());
+		DEFAULT_VALUES.put(WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT, SystemSettingsUtils.getWorkItemsReportingItemsPerSecondLimit());
+		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
+		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
+		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
+		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
+		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
+		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
+        DEFAULT_VALUES.put(CUSTOM_CSS_CONTENT, SystemSettingsUtils.getCustomCssContent());
+		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
+		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
+		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+    }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void resetDataBase() {
@@ -393,20 +446,21 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUES);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAINTENANCE_EVENTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAILING_LISTS);
-		resetUsers();
+		DAO.getInstance().getJdbcTemp().update(DELETE_USER_COMMENTS);
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_PUBLISHERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINT_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCES);
-	}
+		DAO.getInstance().getJdbcTemp().update(DELETE_USERS_PROFILES);
 
-	private void resetUsers() {
-		IUserDAO userDAO = ApplicationBeans.getUserDaoBean();
-		List<User> users = userDAO.getUsers();
-		for (User user : users) {
-			userDAO.delete(user.getId());
-		}
+		ApplicationBeans.getBean("userCache", UserCacheable.class).resetCache();
+		ApplicationBeans.getBean("viewCache", ViewCacheable.class).resetCache();
+		ApplicationBeans.getBean("pointEventDetectorCache", PointEventDetectorCacheable.class).resetCache();
+		ApplicationBeans.getBean("usersProfileCache", UsersProfileCacheable.class).resetCache();
+		ApplicationBeans.getBean("highestAlarmLevelCache", HighestAlarmLevelCacheable.class).resetCache();
+		ApplicationBeans.getBean("userCommentCache", UserCommentCacheable.class).resetCache();
 	}
 
 	public double getDataBaseSize() {

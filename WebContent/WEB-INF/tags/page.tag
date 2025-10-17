@@ -31,7 +31,7 @@
 <head>
   <title><c:choose>
     <c:when test="${!empty instanceDescriptionHeader}">${instanceDescriptionHeader}</c:when>
-    <c:otherwise><fmt:message key="header.title"/></c:otherwise>
+    <c:otherwise><spring:message code="header.title"/></c:otherwise>
   </c:choose></title>
 
   <!-- Meta -->
@@ -45,8 +45,12 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+  <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+  <c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isLoggedToScadaUser" value="${isRoles && !isRoleService && !isRolePublic}" />
   <c:choose>
-    <c:when test="${!empty sessionUser}">
+    <c:when test="${isLoggedToScadaUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
     </c:when>
     <c:otherwise>
@@ -56,9 +60,19 @@
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
+  <link rel="stylesheet" type="text/css" href="assets/user_styles.css"/>
   <jsp:invoke fragment="styles"/>
 
+  <style type="text/css">
+    #__header__alarmLevelImg {
+        height: 32px !important;
+        width: 32px !important;
+        vertical-align: middle !important;
+    }
+  </style>
+
   <!-- Scripts -->
+  <script src="resources/fuscabr/fuscabr.js" defer></script>
   <script type="text/javascript">
   	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
   	var ctxPath = "<%=request.getContextPath()%>";
@@ -78,6 +92,10 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
+  <c:if test="${isLoggedToScadaUser}">
+      <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
+      <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
+  </c:if>
   <c:forEach items="${dwr}" var="dwrname">
     <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
   <c:forTokens items="${js}" var="jsname" delims=", ">
@@ -105,12 +123,15 @@
 		};
 
       dwr.util.setEscapeHtml(false);
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser || isRolePublic}">
         dojo.addOnLoad(mango.header.onLoad);
+      </c:if>
+      <c:if test="${isLoggedToScadaUser}">
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
         </c:if>
+        dojo.addOnLoad(function() { onloadHandler(); });
       </c:if>
 
       function setLocale(locale) {
@@ -131,6 +152,50 @@
           checkFullScreen();
         }
       }
+
+    <c:if test="${isLoggedToScadaUser}">
+
+        function onloadHandler() {
+            onloadHandlerWebsocket();
+        }
+
+        function setAlarmLevelText(alarmLevel, textNode) {
+            textNode = document.getElementById(textNode);
+            if (alarmLevel == 0)
+                textNode.innerHTML = "";
+            else if (alarmLevel == 1)
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.info"/>';
+            else if (alarmLevel == 2)
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.urgent"/>';
+            else if (alarmLevel == 3)
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.critical"/>';
+            else if (alarmLevel == 4)
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.lifeSafety"/>';
+            else
+                textNode.innerHTML = "Unknown: "+ alarmLevel;
+        }
+
+        function setAlarmLevelImg(alarmLevel, imgNode) {
+            if (alarmLevel == 0)
+                updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
+            else if (alarmLevel == 1)
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visible");
+            else if (alarmLevel == 2)
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visible");
+            else if (alarmLevel == 3)
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visible");
+            else if (alarmLevel == 4)
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visible");
+            else
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visible");
+        }
+
+        window.addEventListener('beforeunload', (event) => {
+            try {
+                disconnectWebsocket();
+            } catch(error) {}
+        });
+    </c:if>
     </script>
   </c:if>
 </head>
@@ -138,12 +203,13 @@
 <body>
 
 <!-- mainHeader -->
+<c:if test="${!sessionUser.hideHeader}">
 <div id="mainHeader">
   <tag:logo/>
 
   <div id="eventsRow">
     <a href="events.shtm">
-      <span id="__header__alarmLevelDiv" style="display:none;">
+      <span id="__header__alarmLevelDiv">
         <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
         <span id="__header__alarmLevelText"></span>
       </span>
@@ -162,17 +228,18 @@
 <div class="navHeader" id="subHeader">
   <div>
     <nav class="flex-default">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         <div class="spacer">
             <c:choose>
                 <c:when test="${sessionUser.hideMenu}">
                     <c:if test="${!empty sessionUser.homeUrl}">
                         <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
+                        <c:if test="${homeUrl[0] == 'app.shtm'}">
+                            <tag:menuItem href="app.shtm#/watch-list" png="desktop" key="header.newui"/>
+                            <img src="./images/menu_separator.png" class="separator"/>
+                        </c:if>
                         <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
                             <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                        </c:if>
-                        <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
-                          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
                         </c:if>
                         <c:if test="${homeUrl[0] == 'views.shtm'}">
                           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
@@ -180,20 +247,17 @@
                         <c:if test="${homeUrl[0] == 'events.shtm'}">
                           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
                         </c:if>
-                        <c:if test="${homeUrl[0] == 'app.shtm'}">
-                          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-                        </c:if>
                         <c:if test="${homeUrl[0] == 'reports.shtm'}">
                           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                         </c:if>
                     </c:if>
                 </c:when>
              <c:otherwise>
+                <tag:menuItem href="app.shtm#/watch-list" png="desktop" key="header.newui"/>
+                <img src="./images/menu_separator.png" class="separator"/>
                 <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
                 <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
                 <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-                <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
                 <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
              </c:otherwise>
            </c:choose>
@@ -232,7 +296,19 @@
 
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnectWebsocket()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
+          <tag:menuItem href="help.shtm" png="help" key="header.help"/>
+        </div>
+      </c:if>
+
+      <c:if test="${isRolePublic}">
+        <div class="spacer">
+          <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnectWebsocket()">
+          <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </div>
       </c:if>
@@ -246,14 +322,21 @@
 
   <div class="flex-default">
     <div id="navbarUserInfo">
-      <c:if test="${!empty sessionUser}">
-        <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-        <span class="userName">${sessionUser.username}</span>
+      <c:if test="${isLoggedToScadaUser}">
+        <span class="copyTitle"><spring:message code="header.user"/>:</span>
+        <c:choose>
+            <c:when test="${!empty sessionUser.firstName}">
+              <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
+            </c:when>
+            <c:otherwise>
+              <span class="userName"><c:out value="${sessionUser.username}"/></span>
+            </c:otherwise>
+        </c:choose>
       </c:if>
     </div>
 
     <div id="navbarUserProperties" class="flex-default spacer">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         <c:if test="${!sessionUser.hideMenu}">
             <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
             <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
@@ -273,13 +356,28 @@
   </div>
 </div>
 </c:if>
+</c:if>
 
 <div id="sltsContent" class="content">
   <jsp:doBody/>
 </div>
 <div id="sltsFooter" class="footer">
-    <span>&copy;2012-${toYear} Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+    <span>&copy;2012-${toYear} Scada-LTS <spring:message code="footer.rightsReserved"/><span>
 </div>
+
+<c:if test="${!!sessionUser.hideHeader}">
+    <div class="notification-alert--reset">
+        <span class="clickable" onclick="resetHideView()">Exit from embedded view</span>
+    </div>
+
+    <script type="text/javascript">
+    function resetHideView() {
+        let loc = window.location.href.split('/');
+        window.location = loc[0] + "//" + loc[2] + "/" + loc[3] + "/watch_list.shtm";
+    }
+    </script>
+</c:if>
+
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
 </c:if>

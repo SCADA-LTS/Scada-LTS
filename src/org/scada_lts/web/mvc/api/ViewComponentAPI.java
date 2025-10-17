@@ -1,7 +1,6 @@
 package org.scada_lts.web.mvc.api;
 
 import br.org.scadabr.view.component.LinkComponent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +32,19 @@ public class ViewComponentAPI {
 
     private static final Log LOG = LogFactory.getLog(ViewComponentAPI.class);
 
-    @Resource
-    ViewService viewService;
+    private final ViewService viewService;
+    private final DataPointService dataPointService;
 
-    @Resource
-    DataPointService dataPointService;
+    public ViewComponentAPI(ViewService viewService, DataPointService dataPointService) {
+        this.viewService = viewService;
+        this.dataPointService = dataPointService;
+    }
 
     @RequestMapping(value = "/api/component/getAllComponentsFromView/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllComponentsFromView(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/component/addComponentToView/{xid} xid:" + xid);
 
-        ResponseEntity<String> result;
+        ResponseEntity<List<ViewComponentDTO>> result;
 
         try {
             User user = Common.getUser(request);
@@ -60,17 +60,13 @@ public class ViewComponentAPI {
                     ViewComponentDTO viewComponentDTO = new ViewComponentDTO(vc.getId(), vc.getIndex(), vc.getDefName(), vc.getIdSuffix(), vc.getStyle(), vc.getX(), vc.getY());
                     viewComponentDTOList.add(viewComponentDTO);
                 }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(viewComponentDTOList);
-                result = new ResponseEntity<String>(json, HttpStatus.OK);
+                result = new ResponseEntity<>(viewComponentDTOList, HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                result = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return result;

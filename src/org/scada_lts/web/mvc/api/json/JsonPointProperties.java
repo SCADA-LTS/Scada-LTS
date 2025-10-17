@@ -4,12 +4,15 @@ import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.io.Serializable;
 
 public class JsonPointProperties implements Serializable {
 
+    @XssProtect
     private String name;
+    @XssProtect
     private String description;
     private Boolean enabled;
     private Integer loggingType;
@@ -27,12 +30,15 @@ public class JsonPointProperties implements Serializable {
     private Double discardLowLimit;
     private Double discardHighLimit;
     private Integer engineeringUnits;
+    @XssProtect
     private String chartColour;
+    private Integer purgeStrategy;
+    private Integer purgeValuesLimit;
 
     public JsonPointProperties() {
     }
 
-    public JsonPointProperties(String name, String description, Boolean enabled, Integer loggingType, Integer intervalLoggingPeriodType, Integer intervalLoggingPeriod, Integer intervalLoggingType, Double tolerance, Integer purgeType, Integer purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, Integer defaultCacheSize, Boolean discardExtremeValues, Double discardLowLimit, Double discardHighLimit, Integer engineeringUnits, String chartColour) {
+    public JsonPointProperties(String name, String description, Boolean enabled, Integer loggingType, Integer intervalLoggingPeriodType, Integer intervalLoggingPeriod, Integer intervalLoggingType, Double tolerance, Integer purgeType, Integer purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, Integer defaultCacheSize, Boolean discardExtremeValues, Double discardLowLimit, Double discardHighLimit, Integer engineeringUnits, String chartColour, Integer purgeStrategy, Integer purgeValuesLimit) {
         this.name = name;
         this.description = description;
         this.enabled = enabled;
@@ -52,6 +58,8 @@ public class JsonPointProperties implements Serializable {
         this.discardHighLimit = discardHighLimit;
         this.engineeringUnits = engineeringUnits;
         this.chartColour = chartColour;
+        this.purgeStrategy = purgeStrategy;
+        this.purgeValuesLimit = purgeValuesLimit;
     }
 
     public static void defaultValues(JsonPointProperties body) {
@@ -84,6 +92,11 @@ public class JsonPointProperties implements Serializable {
             body.setEventTextRenderer(defaultValues.getEventTextRenderer());
         if (body.getEnabled() == null)
             body.setEnabled(defaultValues.isEnabled());
+        if (body.getPurgeStrategy() == null)
+            body.setPurgeStrategy(defaultValues.getPurgeStrategy());
+        if (body.getPurgeValuesLimit() == null)
+            body.setPurgeValuesLimit(defaultValues.getPurgeValuesLimit());
+
     }
 
     public String getName() {
@@ -236,5 +249,21 @@ public class JsonPointProperties implements Serializable {
 
     public void setChartColour(String chartColour) {
         this.chartColour = chartColour;
+    }
+
+    public Integer getPurgeStrategy() {
+        return purgeStrategy;
+    }
+
+    public void setPurgeStrategy(Integer purgeStrategy) {
+        this.purgeStrategy = purgeStrategy;
+    }
+
+    public Integer getPurgeValuesLimit() {
+        return purgeValuesLimit;
+    }
+
+    public void setPurgeValuesLimit(Integer purgeValuesLimit) {
+        this.purgeValuesLimit = purgeValuesLimit;
     }
 }

@@ -133,7 +133,7 @@ public abstract class AbstractDataPointRtTest extends ConfigDataPointRtTest {
         PointValueTime oldValue = getOldValueWithUser();
         PointValueTime newValue = getNewValueWithUser();
         PointValueTime newValue2 = getNewValueWithUser2();
-        List<PointValueTime> pointValuesExpected = getPointValuesWithUserExpected();
+        List<PointValueTime> pointValuesExpected = getPointValuesWithUserDaoTestExpected();
 
         //when:
         dataPointRT.setPointValue(oldValue, getUser());
@@ -153,7 +153,7 @@ public abstract class AbstractDataPointRtTest extends ConfigDataPointRtTest {
         PointValueTime oldValue = getOldValue();
         PointValueTime newValue = getNewValue();
         PointValueTime newValue2 = getNewValue2();
-        List<PointValueTime> pointValuesExpected = getPointValuesExpected();
+        List<PointValueTime> pointValuesExpected = getPointValuesDaoTestExpected();
 
         //when:
         dataPointRT.setPointValue(oldValue, null);

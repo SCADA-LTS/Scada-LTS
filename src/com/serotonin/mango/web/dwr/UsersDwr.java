@@ -27,17 +27,15 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
-
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -45,12 +43,19 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
+
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
@@ -92,13 +97,17 @@ public class UsersDwr extends BaseDwr {
 				dataSources.add(ds);
 			}
 			initData.put("dataSources", dataSources);
-		} else
+		} else {
 			initData.put("user", user);
+			JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+			initData.put("forceFullScreenMode", jsonSettingsMisc.isViewForceFullScreenEnabled());
+			initData.put("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
+		}
 
 		return initData;
 	}
 
-	public User getUser(int id) {
+	public DwrResponseI18n getUser(int id) {
 		Permissions.ensureAdmin();
 		User user = null;
 		if (id == Common.NEW_ID) {
@@ -108,16 +117,22 @@ public class UsersDwr extends BaseDwr {
 		} else {
 			user = new UserDao().getUser(id);
 		}
-		return user;
+		DwrResponseI18n response = new DwrResponseI18n();
+		response.addData("user", user);
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		response.addData("forceFullScreenMode", jsonSettingsMisc.isViewForceFullScreenEnabled());
+		response.addData("forceHideShortcutDisableFulLScreen", jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
+		return response;
 
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String username,
+			String firstName, String lastName,
 			String password, String email, String phone, boolean admin,
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
 			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
-		    String theme, String homeUrl) {
+		    String theme, String homeUrl, boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -125,7 +140,7 @@ public class UsersDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserService userDao = new UserService();
 
 		User user;
 		if (id == Common.NEW_ID)
@@ -133,6 +148,8 @@ public class UsersDwr extends BaseDwr {
 		else
 			user = userDao.getUser(id);
 		user.setUsername(username);
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
 		user.setEmail(email);
@@ -144,14 +161,28 @@ public class UsersDwr extends BaseDwr {
 		user.setHideMenu(hideMenu);
 		user.setTheme(theme);
 		user.setHomeUrl(homeUrl);
-    if(usersProfileId == Common.NEW_ID) {
-        user.setDataSourcePermissions(dataSourcePermissions);
-        user.setDataPointPermissions(dataPointPermissions);
-    } else {
+		if(usersProfileId == Common.NEW_ID) {
+			user.setDataSourcePermissions(dataSourcePermissions);
+			user.setDataPointPermissions(dataPointPermissions);
+		} else {
 			user.setDataSourcePermissions(new ArrayList<>());
 			user.setDataPointPermissions(new ArrayList<>());
 		}
-		user.setUserProfileId(usersProfileId);
+		if(admin) {
+			user.setUserProfileId(Common.NEW_ID);
+		} else {
+			user.setUserProfileId(usersProfileId);
+		}
+    
+		if(id == Common.NEW_ID || StringUtils.isEmpty(user.getLang())) {
+			user.setLang(SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE, "en"));
+		}
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		if(!jsonSettingsMisc.isViewForceFullScreenEnabled())
+			user.setEnableFullScreen(enableFullScreen);
+		if(!jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled())
+			user.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
+
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -177,17 +208,6 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
-			userDao.updateUserHideMenu(user);
-			userDao.updateUserScadaTheme(user);
-
-			UsersProfileService usersProfileService = new UsersProfileService();
-			if (usersProfileId == Common.NEW_ID) {
-				usersProfileService.resetUserProfile(user);
-			} else {
-				UsersProfileVO profile = usersProfileService.getUserProfileById(usersProfileId);
-				profile.apply(user);
-				usersProfileService.updateUsersProfile(user, profile);
-			}
 
 			// If admin grant permissions to all WL and GViews
 			if (admin) {
@@ -196,19 +216,20 @@ public class UsersDwr extends BaseDwr {
 				// set permission on all watchlists
 			}
 
-			if (currentUser.getId() == id)
+			/*if (currentUser.getId() == id)
 				// Update the user object in session too. Why not?
-				Common.setUser(request, user);
-
+				Common.updateUserInSession(request, user);*/
+			ApplicationBeans.getLoggedUsersBean().updateUser(user);
 			response.addData("userId", user.getId());
 		}
 
 		return response;
 	}
 
-	public DwrResponseI18n saveUser(int id, String password, String email,
-			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId, String theme) {
+	public DwrResponseI18n saveUser(int id, String firstName, String lastName,
+									String password, String email, String phone,
+									int receiveAlarmEmails, boolean receiveOwnAuditEvents, int usersProfileId,
+									String theme, boolean enableFullScreen, boolean hideShortcutDisableFullScreen) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -222,18 +243,26 @@ public class UsersDwr extends BaseDwr {
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
+		updateUser.setFirstName(firstName);
+		updateUser.setLastName(lastName);
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
 		updateUser.setTheme(theme);
+		JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
+		if(!jsonSettingsMisc.isViewForceFullScreenEnabled())
+			updateUser.setEnableFullScreen(enableFullScreen);
+		if(!jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled())
+			updateUser.setHideShortcutDisableFullScreen(hideShortcutDisableFullScreen);
+
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
 			userDao.updateUserScadaTheme(updateUser);
-			Common.setUser(request, updateUser);
+			Common.updateUserInSession(request, updateUser);
 		}
 
 		return response;
@@ -247,12 +276,12 @@ public class UsersDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message", new LocalizableMessage("ftl.userTestEmail",
 					username));
-			MangoEmailContent cnt = new MangoEmailContent("testEmail", model,
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail", model,
 					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
 					Common.UTF8);
-			EmailWorkItem.queueEmail(email, cnt);
-			result.put("message", new LocalizableMessage(
-					"common.testEmailSent", email));
+			User user = Common.getUser();
+			sendMsgTestSync(email, cnt, result, () -> "sendTestEmail from: " + this.getClass().getName()
+					+ ", " + userInfo(user));
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());
 		}

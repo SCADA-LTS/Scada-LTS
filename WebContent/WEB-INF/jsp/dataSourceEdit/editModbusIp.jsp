@@ -39,6 +39,7 @@
   
   function initImpl() {
 	  checkTransportType($get("transportType"));
+	  changeRange("test_")
   }
 
   function scanImpl() {
@@ -55,44 +56,108 @@
       DataSourceEditDwr.testModbusIpData($get("timeout"), $get("retries"), $get("transportType"), $get("host"), 
               $get("port"), $get("encapsulated"), slaveId, range, offset, length, dataTestCB);
   }
+
+  function validateModbusConfig(temp){
+
+      let messages = [];
+
+      validateValue("updatePeriods", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
+      validateValue("updatePeriodType", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
+      validateValue("timeout", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
+      validateValue("retries", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
+      validateValue("maxReadBitCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
+      validateValue("maxReadRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
+      validateValue("maxWriteRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
+      validateValue("port", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.port, messages);
+
+      return messages;
+  }
+
+  function createModbusConfigTemp(){
+      let modbus = {};
+      modbus.dataSourceName = $get("dataSourceName");
+      modbus.dataSourceXid = $get("dataSourceXid");
+      modbus.updatePeriods = $get("updatePeriods");
+      modbus.updatePeriodType = $get("updatePeriodType");
+      modbus.quantize = $get("quantize");
+      modbus.timeout = $get("timeout");
+      modbus.retries = $get("retries");
+      modbus.contiguousBatches = $get("contiguousBatches");
+      modbus.createSlaveMonitorPoints = $get("createSlaveMonitorPoints");
+      modbus.maxReadBitCount = $get("maxReadBitCount");
+      modbus.maxReadRegisterCount = $get("maxReadRegisterCount");
+      modbus.maxWriteRegisterCount = $get("maxWriteRegisterCount");
+      modbus.transportType = $get("transportType");
+      modbus.host = $get("host");
+      modbus.port = $get("port");
+      modbus.encapsulated = $get("encapsulated");
+      modbus.createSocketMonitorPoint = $get("createSocketMonitorPoint");
+
+      return modbus;
+  }
   
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveModbusIpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("quantize"), $get("timeout"), $get("retries"), $get("contiguousBatches"),
-              $get("createSlaveMonitorPoints"), $get("maxReadBitCount"), $get("maxReadRegisterCount"), 
-              $get("maxWriteRegisterCount"), $get("transportType"), $get("host"), $get("port"), $get("encapsulated"), $get("createSocketMonitorPoint"),
-              saveDataSourceCB);
+
+      let temp = createModbusConfigTemp();
+
+      let messages = validateModbusConfig(temp);
+
+      if(messages.length > 0) {
+          stopImageFader("dsSaveImg");
+		  showDwrMessages(messages);
+      } else {
+		  let dataSourceName = temp.dataSourceName;
+		  let dataSourceXid = temp.dataSourceXid;
+		  let updatePeriods = parseInt(temp.updatePeriods);
+		  let updatePeriodType = parseInt(temp.updatePeriodType);
+		  let quantize = temp.quantize;
+		  let timeout = parseInt(temp.timeout);
+		  let retries = parseInt(temp.retries);
+		  let contiguousBatches = temp.contiguousBatches;
+		  let createSlaveMonitorPoints = temp.createSlaveMonitorPoints;
+		  let maxReadBitCount = parseInt(temp.maxReadBitCount);
+		  let maxReadRegisterCount = parseInt(temp.maxReadRegisterCount);
+		  let maxWriteRegisterCount = parseInt(temp.maxWriteRegisterCount);
+		  let transportType = temp.transportType;
+		  let host = temp.host;
+		  let port = parseInt(temp.port);
+		  let encapsulated = temp.encapsulated;
+		  let createSocketMonitorPoint = temp.createSocketMonitorPoint;
+		  DataSourceEditDwr.saveModbusIpDataSource(dataSourceName, dataSourceXid, updatePeriods,
+              updatePeriodType, quantize, timeout, retries, contiguousBatches, createSlaveMonitorPoints, maxReadBitCount, maxReadRegisterCount,
+                maxWriteRegisterCount, transportType, host, port, encapsulated, createSocketMonitorPoint, saveDataSourceCB);
+    }
   }
 </script>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.transportType"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.transportType"/></td>
   <td class="formField">
     <sst:select id="transportType" value="${dataSource.transportType}" onchange="checkTransportType(this.value)">
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcp"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcpKA"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.UDP.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.udp"/></sst:option>
-      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_LISTENER.toString() %>"><fmt:message key="dsEdit.modbusIp.transportType.tcpListener"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcp"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcpKA"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.UDP.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.udp"/></sst:option>
+      <sst:option value="<%= ModbusIpDataSourceVO.TransportType.TCP_LISTENER.toString() %>"><spring:message code="dsEdit.modbusIp.transportType.tcpListener"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.host"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.host"/></td>
   <td class="formField"><input id="host" type="text" value="${dataSource.host}"/></td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.port"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.port"/></td>
   <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.encapsulated"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.encapsulated"/></td>
   <td class="formField"><sst:checkbox id="encapsulated" selectedValue="${dataSource.encapsulated}"/></td>
 </tr>
 
 <tr id="socketMonitorRow">
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusIp.createSocketMonitorPoint"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusIp.createSocketMonitorPoint"/></td>
   <td class="formField"><sst:checkbox id="createSocketMonitorPoint" selectedValue="${dataSource.createSocketMonitorPoint}"/></td>
 </tr>

@@ -23,16 +23,16 @@
 
 <table cellpadding="0" cellspacing="0" id="pointProperties" style="display:none; width:60%;">
   <tr>
-    <td valign="top">
+    <td valign="top" style="width: 70%">
       <div class="borderDiv marR marB">
         <table width="100%">
           <tr>
-            <td class="smallTitle"><fmt:message key="dsEdit.points.points"/></td>
+            <td class="smallTitle"><spring:message code="dsEdit.points.points"/></td>
             <td align="right">
             <tag:img id="enableAllImg" png="icon_ds_go"
                       onclick="enableAllPoints()" title="common.enableAll" style="margin-right:10px;"/>
               <tag:img id="editImg${applicationScope['constants.Common.NEW_ID']}" png="icon_comp_add"
-                      onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" />
+                      onclick="editPoint(${applicationScope['constants.Common.NEW_ID']})" title="common.addPoint"/>
             </td>
           </tr>
         </table>
@@ -44,11 +44,11 @@
     </td>
 
     <td>
-      <div id="pointDetails" class="borderDiv marB" style="display: none;">
+      <div id="pointDetails" class="borderDiv marB" style="display: none; width: 100%;position: sticky;top: 0;">
         <table width="100%">
           <tr>
             <td>
-              <span class="smallTitle"><fmt:message key="dsEdit.points.details"/></span>
+              <span class="smallTitle"><spring:message code="dsEdit.points.details"/></span>
               <tag:help id="${pointHelpId}"/>
             </td>
             <td align="right">
@@ -61,11 +61,11 @@
 
         <table>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
+            <td class="formLabelRequired"><spring:message code="dsEdit.points.name"/></td>
             <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="name"/></td>
           </tr>
           <tr>
-            <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+            <td class="formLabelRequired"><spring:message code="common.xid"/></td>
             <td class="formField" style="width:100%;"><input style="width:90%;" type="text" id="xid"/></td>
           </tr>
           

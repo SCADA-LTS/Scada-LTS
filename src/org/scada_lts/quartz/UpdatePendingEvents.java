@@ -24,10 +24,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.PendingEventsCache;
-import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.mango.service.PendingEventService;
 
 /** 
  * Update data job for pending events in cache.
@@ -35,17 +34,23 @@ import org.scada_lts.dao.PendingEventsDAO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UpdatePendingEvents extends PendingEventsDAO implements StatefulJob {
+public class UpdatePendingEvents implements StatefulJob {
 	
 	private static final Log LOG = LogFactory.getLog(UpdatePendingEvents.class);
+	private final PendingEventService pendingEventService;
+
+	public UpdatePendingEvents() {
+		this.pendingEventService = new PendingEventService();
+	}
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		LOG.trace("UpdatePendingEvents");		
 		try {
-			PendingEventsCache.getInstance().setMapPendingEvents(getPendingEvents());
+			PendingEventsCache.getInstance().resetUpdate();
+			PendingEventsCache.getInstance().setMapPendingEvents(pendingEventService.getPendingEvents());
 			PendingEventsCache.getInstance().resetCountBuffer();
-		} catch (SchedulerException | IOException e) {
+		} catch (IOException e) {
 			LOG.error(e);	
 		}
 	}

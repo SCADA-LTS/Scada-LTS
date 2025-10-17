@@ -16,7 +16,7 @@ const storeAlarms = {
 	},
 	actions: {
 		getLiveAlarms({ commit }, { offset, limit }) {
-			return new Promise( (resolve, reject) => {
+			return new Promise((resolve, reject) => {
 				axios
 					.get(`./api/alarms/live/${offset}/${limit}`)
 					.then((res) => {
@@ -136,6 +136,44 @@ const storeAlarms = {
 				);
 			});
 		},
+
+		getAllEvents({ dispatch }, payload) {
+			return new Promise((resolve) => {
+				// dispatch('requestGet', '')
+				console.log('getAllEvents');
+				const fakeTime = new Date().getTime();
+				let fakeResponse = [
+					{
+						id: 11,
+						alarmLevel: 1,
+						message: 'Alarm occured! System fail!',
+						activeTs: fakeTime,
+					}, {
+						id: 12,
+						alarmLevel: 2,
+						message: 'Failed to load DataSource!',
+						activeTs: fakeTime,
+					}, {
+						id: 13,
+						alarmLevel: 1,
+						message: 'High limit alarm!',
+						activeTs: fakeTime,
+					}, {
+						id: 14,
+						alarmLevel: 4,
+						message: 'Failed to set DataSource!',
+						activeTs: fakeTime,
+					}, {
+						id: 15,
+						alarmLevel: 2,
+						message: 'Change detected',
+						activeTs: fakeTime,
+					}, 
+				]
+				fakeResponse = fakeResponse.filter(item => item.alarmLevel >= payload.minAlarmLevel);
+				resolve(fakeResponse.slice(0, payload.limit));
+			});
+		}
 	},
 	getters: {
 		msgError: (state) => state.msgErr,

@@ -46,4 +46,11 @@ public class FixedRateTrigger extends AbstractTimerTrigger {
     public long mostRecentExecutionTime() {
         return nextExecutionTime - period;
     }
+
+    @Override
+    public String toString() {
+        return "FixedRateTrigger{" +
+                "period=" + period +
+                ", " + super.toString() + '}';
+    }
 }

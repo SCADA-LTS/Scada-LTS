@@ -25,11 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -40,7 +41,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -51,7 +51,6 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.LocalizableJsonException;
@@ -62,7 +61,8 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /**
  * @author Matthew Lohbihler
@@ -85,6 +85,7 @@ public class EmportDwr extends BaseDwr {
 	public static final String POINT_VALUES = "pointValues";
 	public static final String SYSTEM_SETTINGS = "systemSettings";
 	public static final String USERS_PROFILES = "usersProfiles";
+	public static final String REPORTS = "reports";
 
 	public String createExportData(int prettyIndent, boolean graphicalViews,
 			boolean eventHandlers, boolean dataSources, boolean dataPoints,
@@ -92,7 +93,8 @@ public class EmportDwr extends BaseDwr {
 			boolean pointLinks, boolean users, boolean pointHierarchy,
 			boolean mailingLists, boolean publishers, boolean watchLists,
 			boolean maintenanceEvents, boolean scripts, boolean pointValues,
-			int maxPointValues, boolean systemSettings, boolean usersProfiles) {
+			int maxPointValues, boolean systemSettings, boolean usersProfiles,
+		    boolean reports) {
 
 		if (!Common.getUser().isAdmin()) {
 			return "Only admin user can export data.";
@@ -103,8 +105,10 @@ public class EmportDwr extends BaseDwr {
 				compoundEventDetectors, pointLinks, users, pointHierarchy,
 				mailingLists, publishers, watchLists, maintenanceEvents,
 				scripts, pointValues, maxPointValues, systemSettings,
-				usersProfiles);
+				usersProfiles, reports);
 	}
+
+	@Deprecated(since = "2.8.0")
 	public static String exportJSON(String xid){
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
@@ -120,6 +124,28 @@ public class EmportDwr extends BaseDwr {
 			throw new ShouldNeverHappenException(e);
 		}
 	}
+
+	public static Map<String, Object> exportDataPointBy(String xid) {
+		Map<String, Object> data = new LinkedHashMap<>();
+		DataPointService dataPointService = new DataPointService();
+		DataPointVO dataPoint = dataPointService.getDataPointByXid(xid);
+		if(dataPoint == null) {
+			data.put(DATA_POINTS, "In the database there is no data point with given xid ");
+		} else {
+			List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoint);
+			dataPoint.setEventDetectors(detectors);
+			data.put(DATA_POINTS, dataPoint);
+		}
+		JsonWriter writer = new JsonWriter();
+		try {
+			String content = writer.write(data);
+			ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
+			return objectMapper.readValue(content, new TypeReference<Map<String, Object>>() {});
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+
 	public static String createExportJSON(int prettyIndent,
 			boolean graphicalViews, boolean eventHandlers, boolean dataSources,
 			boolean dataPoints, boolean scheduledEvents,
@@ -127,11 +153,11 @@ public class EmportDwr extends BaseDwr {
 			boolean pointHierarchy, boolean mailingLists, boolean publishers,
 			boolean watchLists, boolean maintenanceEvents, boolean scripts,
 			boolean pointValues, int maxPointValues, boolean systemSettings,
-			boolean usersProfiles) {
+			boolean usersProfiles, boolean reports) {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
-			data.put(GRAPHICAL_VIEWS, new ViewDao().getViews());
+			data.put(GRAPHICAL_VIEWS, new ViewService().getViews());
 		if (dataSources)
 			data.put(DATA_SOURCES, new DataSourceDao().getDataSources());
 
@@ -158,7 +184,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(POINT_HIERARCHY, new DataPointDao().getPointHierarchy()
 					.getRoot().getSubfolders());
 		if (eventHandlers)
-			data.put(EVENT_HANDLERS, new EventDao().getEventHandlers());
+			data.put(EVENT_HANDLERS, new EventService().getEventHandlers());
 		if (watchLists) {
 			WatchListDao watchListDao = new WatchListDao();
 			List<WatchList> wls = watchListDao.getWatchLists();
@@ -170,7 +196,7 @@ public class EmportDwr extends BaseDwr {
 					new MaintenanceEventDao().getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, new ScriptDao().getScripts());
+			data.put(SCRIPTS, new ScriptService().getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 
@@ -191,6 +217,9 @@ public class EmportDwr extends BaseDwr {
 		}
 		if (usersProfiles) {
 			data.put(USERS_PROFILES, new UsersProfileService().getUsersProfiles());
+		}
+		if (reports) {
+			data.put(REPORTS, new ReportService().getReports());
 		}
 
 		JsonWriter writer = new JsonWriter();
@@ -228,6 +257,7 @@ public class EmportDwr extends BaseDwr {
 				JsonObject root = value.toJsonObject();
 				ImportTask importTask = new ImportTask(reader, root, bundle,
 						user);
+				Common.ctx.getBackgroundProcessing().addWorkItem(importTask);
 				user.setImportTask(importTask);
 				response.addData("importStarted", true);
 			} else {

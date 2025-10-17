@@ -3,13 +3,12 @@ package org.scada_lts.cache;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.quartz.CronTriggerScheduler;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 
 public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
@@ -59,7 +58,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 				cacheEnabled = false;
 				instance = null;
 			}
-		} catch (IOException | SchedulerException | ParseException e) {
+		} catch (IOException e) {
 			LOG.error(e);
 		}
 	}
@@ -96,25 +95,13 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		return dss;
 	}
 
-	private void cronInitialize() throws java.io.IOException, SchedulerException, ParseException {
+	private void cronInitialize() throws java.io.IOException {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("cacheInitialize");
 		}
-
-		JobDetail job = new JobDetail();
-		job.setName("UpdateDataSourcesPoints");
-		job.setJobClass(UpdateDataSourcesPoints.class);
-
-
-		CronTrigger trigger = new CronTrigger();
-		trigger.setName("Quartz - trigger-DataSourcePointsCache");
 		String cronExpression = ScadaConfig.getInstance().getProperty(ScadaConfig.CRONE_UPDATE_CACHE_DATA_SOURCES_POINTS);
-		trigger.setCronExpression(cronExpression);//"0 15 1 ? * *"
-		Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-		scheduler.start();
-		scheduler.scheduleJob(job, trigger);
-
+		ApplicationBeans.getBean("updateDataSourcesPointsScheduler", CronTriggerScheduler.class).schedule(cronExpression);
 	}
 
 }

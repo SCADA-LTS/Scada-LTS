@@ -20,6 +20,7 @@ package org.scada_lts.dao.watchlist;
 import java.sql.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -30,6 +31,7 @@ import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.ShareUserRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -37,7 +39,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,6 @@ import com.serotonin.mango.vo.WatchList;
  *
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class WatchListDAO implements GenericDaoCR<WatchList> {
 	
 	private static final Log LOG = LogFactory.getLog(WatchListDAO.class);
@@ -269,6 +269,24 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			"where " +
 			"wlup." + COLUMN_NAME_WLP_WATCHLIST_ID + "=?;";
 
+	private static final String SELECT_DATAPOINT_ORDER_FOR_WATCHLIST =""
+			+"SELECT "
+			+ COLUMN_NAME_WLP_DATA_POINT_ID + ", "
+			+ COLUMN_NAME_WLP_SORT_ORDER + " "
+			+ "FROM watchListPoints "
+			+ "WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String DELETE_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"DELETE FROM watchListPoints " +
+			"WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String PUT_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"INSERT (" +
+			COLUMN_NAME_WLP_WATCHLIST_ID + "," +
+			COLUMN_NAME_WLP_DATA_POINT_ID + "," +
+			COLUMN_NAME_WLP_SORT_ORDER + ") " +
+			"VALUES (?,?,?)";
+
 	// @formatter:on
 	
 	//RowMapper
@@ -291,10 +309,6 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			wlu.setAccessType(rs.getInt(COLUMN_NAME_WLU_ACCESS_TYPE));
 			return wlu;
 		}
-	}
-	@Override
-	public List<WatchList> findAllWithUserName(){
-		return null;
 	}
 	@Override
 	public List<WatchList> findAll() {
@@ -517,8 +531,38 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			return Collections.emptyList();
 		}
 	}
+  
+	@Deprecated
+	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
+		if(LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointOrder()");
+		}
 
-	public List<ScadaObjectIdentifier> selectWatchListIdentifiers() {
+		JsonDataPointOrder order = new JsonDataPointOrder();
+		List<Map<String, Object>> rows = DAO.getInstance().getJdbcTemp().queryForList(SELECT_DATAPOINT_ORDER_FOR_WATCHLIST, watchListId);
+		for (Map row : rows) {
+			order.addPointOrder((Integer) row.get(COLUMN_NAME_WLP_DATA_POINT_ID), (Integer) row.get(COLUMN_NAME_WLP_SORT_ORDER));
+		}
+		return order;
+
+	}
+
+	@Deprecated
+	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
+
+		//Delete all order
+		DAO.getInstance().getJdbcTemp().update(DELETE_DATAPOINT_ORDER_FOR_WATCHLIST, pointOrder.getWatchListId());
+
+		List<Object[]> batchArgs = pointOrder.getPointIds().entrySet().stream()
+				.map(a -> new Object[]{pointOrder.getWatchListId(), a.getKey(), a.getValue()})
+				.collect(Collectors.toList());
+
+		DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCH_LIST_POINTS_INSERT, batchArgs);
+    
+  	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
 		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)

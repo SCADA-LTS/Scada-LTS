@@ -27,7 +27,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.vmstat.attribute"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.vmstat.attribute"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
               function(p) { return p.pointLocator.configurationDescription; };
   }
@@ -46,15 +46,15 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.vmstat.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.vmstat.desc"/></c:set>
 <c:set var="dsHelpId" value="vmstatDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.vmstat.pollSeconds"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.vmstat.pollSeconds"/></td>
     <td class="formField"><input id="pollSeconds" type="text" value="${dataSource.pollSeconds}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.vmstat.outputScale"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.vmstat.outputScale"/></td>
     <td class="formField">
       <sst:select id="outputScale" value="${dataSource.outputScale}">
         <tag:exportCodesOptions sst="true" optionList="<%= VMStatDataSourceVO.OUTPUT_SCALE_CODES.getIdKeys() %>"/>
@@ -65,7 +65,7 @@
 
 <tag:pointList pointHelpId="vmstatPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.vmstat.attribute"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.vmstat.attribute"/></td>
     <td class="formField">
       <select id="attributeId">
         <tag:exportCodesOptions optionList="<%= VMStatPointLocatorVO.ATTRIBUTE_CODES.getIdKeys() %>"/>

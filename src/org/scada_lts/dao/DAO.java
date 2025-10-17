@@ -25,13 +25,14 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.serotonin.mango.Common;
 
 
-/** 
+/**
  * Data Abstract Object
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
@@ -48,11 +49,11 @@ public class DAO {
 	private DAO() {
 		try {
 			LOG.trace("Create DAO");
-			DataSource ds = Common.ctx.getDatabaseAccess().getDataSource();
+			DataSource ds = ApplicationBeans.getBean("databaseSource", DataSource.class);
 			namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
 			jdbcTemplate = new JdbcTemplate(ds);
 		} catch (Exception e) {
-			LOG.error(e);
+			LOG.error(e.getMessage(), e);
 		}
 	}
 	

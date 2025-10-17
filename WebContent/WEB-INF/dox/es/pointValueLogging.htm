@@ -22,6 +22,17 @@
 
 <p><b>Rechazar valores extremos</b> se utiliza para dispositivos que pueden emitir ocasionalmente valores erróneos. Cuando se selecciona <b>Rechazar valores extremos</b>, se activan los cuadros de diálogo <b>rechazar límite bajo</b> y <b>rechazar límite alto</b>. Todos los valores ya guardados se conservarán.</p>
 
-<p>El parámetro <b>Purga</b> determina la duración de la historia del valor del punto en la base de datos. En la práctica, los valores pueden mantenerse tanto tiempo como sea necesario, pero hay que tener en cuenta que esto puede dar lugar a una degradación del rendimiento del sistema si el historial de un punto se hace demasiado grande (de hecho, el rendimiento del sistema depende en gran medida del equipo informático central). El proceso de purga comienza todos los días a las 3:05 a.m. hora local.</p>
+<p>
+    The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
+    El proceso de purga comienza todos los días a las 3:05 a.m. hora local.
+</p>
+
+<p>El parámetro <b>Period</b> determina la duración de la historia del valor del punto en la base de datos. En la práctica, los valores pueden mantenerse tanto tiempo como sea necesario, pero hay que tener en cuenta que esto puede dar lugar a una degradación del rendimiento del sistema si el historial de un punto se hace demasiado grande (de hecho, el rendimiento del sistema depende en gran medida del equipo informático central). </p>
+
+<p>
+    When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+    <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+    system settings (<b>Values limit for purge</b>).
+</p>
 
 <p> <b>El tamaño de la caché por defecto</b> es el número de valores que se almacenarán en la memoria. Este parámetro es importante cuando se elige un método distinto a "Todos los datos". Los valores en la memoria serán eventualmente comparados con los valores almacenados en la base de datos. Un valor elevado del tamaño de la memoria caché puede mejorar el rendimiento del sistema (ya que puede impedir las consultas a la base de datos), pero la memoria es entonces consumida por la caché y pueden surgir problemas relacionados con la falta de memoria. "Vaciar la memoria caché" no es necesario en teoría, pero puede ser útil en caso de eliminación manual de puntos (utilizando funciones SQL, por ejemplo).</p>

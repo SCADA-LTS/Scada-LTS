@@ -20,7 +20,7 @@ package org.scada_lts.dao.alarms;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -87,16 +87,10 @@ class PlcAlarmsDAO implements AlarmsDAO {
             + "WHERE "
             + "pa." + COLUMN_NAME_ID + " = ?;";
 
-    private final JdbcTemplate jdbcTemplate;
-
-    PlcAlarmsDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public List<LiveAlarm> getLiveAlarms(int offset, int limit) {
         try {
-            return jdbcTemplate.query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET,
+            return DAO.getInstance().getJdbcTemp().query(SELECT_FROM_LIVE_ALARMS_VIEW_LIMIT_OFFSET,
                     new Object[]{limit, offset},
                     new LiveAlarmRowMapper());
         } catch (Exception ex) {
@@ -107,7 +101,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     @Override
     public List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) {
         try {
-            return jdbcTemplate.query(SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET,
+            return DAO.getInstance().getJdbcTemp().query(SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET,
                     new Object[]{dayDate, regex, limit, offset},
                     new HistoryAlarmRowMapper());
         } catch (Exception ex) {
@@ -118,7 +112,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     @Override
     public boolean setAcknowledgeTime(int id) {
         try {
-            int numberUpdateRows = jdbcTemplate.update(UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID, id);
+            int numberUpdateRows = DAO.getInstance().getJdbcTemp().update(UPDATE_PLC_ALARMS_SET_ACKNOWLEDGE_TIME_WHERE_ID, id);
             if(numberUpdateRows > 1) {
                 throw new IllegalStateException("Update more than 1 row plcAlarms for id: " + id);
             }
@@ -132,7 +126,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     @Override
     public Optional<Long> getInactiveTimeMs(int id) {
         try {
-            Long inactiveTime = jdbcTemplate.queryForObject(SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID,
+            Long inactiveTime = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_INACTIVE_TIME_FROM_PLC_ALARMS_WHERE_ID,
                     new Object[]{id}, Long.class);
             return Optional.ofNullable(inactiveTime);
         } catch (Exception ex) {

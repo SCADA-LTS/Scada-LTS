@@ -1,0 +1,15 @@
+
+<p>Utilice la configuración de "eventos de purga" para establecer la edad máxima de un evento antes de que sea purgado de la base de datos. La purga borra permanentemente el evento y cualquier comentario del usuario asociado a él.</p>
+
+<p>Utilice la configuración de "Purgar instancias de informes" para definir la edad máxima de una instancia de informe antes de ser purgada de la base de datos. La purga elimina permanentemente la instancia de informe. Es preferible fijar este valor lo más bajo posible porque los informes pueden consumir potencialmente mucho espacio de almacenamiento disponible. La purga puede evitarse estableciendo el atributo "prevenir la purga" en la instancia del informe.</p>
+
+<p>
+    Haga clic en el botón <b>Purgar todos los datos</b> para borrar permanentemente todas las muestras puntuales que se encuentran actualmente en la base de datos. Esto puede ser útil para dar un "nuevo comienzo" a una instancia de Mango, especialmente si existen datos erróneos en las actividades de configuración y de puesta en marcha.</p>
+
+<p>Utilice los ajustes de "Rechazar valores de puntos en una fecha posterior" para definir el tiempo máximo en el futuro en que los puntos de datos aceptarán nuevos valores. Cualquier valor con una marca de tiempo que exceda este valor será rechazado, y se escribirá un mensaje de error en el registro.</p>
+
+<p>
+    Option <b>Default values limit for purge</b> is related to property that can be set inside Point properties in Logging properties.
+    It indicates how many values will be left in database after purging data when purge strategy with <b>Values limit</b> is selected for a given datapoint.
+    This default value is used during datapoint creation.
+</p>

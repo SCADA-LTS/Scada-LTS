@@ -32,6 +32,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.PublisherEventType;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
@@ -39,11 +40,15 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
  */
 abstract public class PublisherRT<T extends PublishedPointVO> implements TimeoutClient {
+
+    private static final Log LOG = LogFactory.getLog(PublisherRT.class);
     public static final int POINT_DISABLED_EVENT = 1;
     public static final int QUEUE_SIZE_WARNING_EVENT = 2;
 
@@ -230,6 +235,10 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     // Scheduled snapshot send stuff
     //
     public void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.publisherInfo(getVo()));
+            return;
+        }
         if (jobThread != null)
             return;
 

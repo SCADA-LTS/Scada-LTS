@@ -21,15 +21,9 @@ package com.serotonin.mango.rt.dataSource.sql;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,6 +46,10 @@ import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import com.serotonin.mango.vo.dataSource.sql.SqlPointLocatorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.springframework.jdbc.core.*;
+
+import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
+import static com.serotonin.mango.util.SqlDataSourceUtils.createJdbcOperations;
 
 /**
  * @author Matthew Lohbihler
@@ -59,11 +57,12 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class SqlDataSourceRT extends PollingDataSource {
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int STATEMENT_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
-	private final Log log = LogFactory.getLog(SqlDataSourceRT.class);
+	private static final Log LOG = LogFactory.getLog(SqlDataSourceRT.class);
 
 	private final SqlDataSourceVO vo;
-	private Connection conn;
+	private JdbcOperations jdbcOperations;
 	private int timeoutCount = 0;
 	private int timeoutsToReconnect = 3;
 
@@ -76,110 +75,93 @@ public class SqlDataSourceRT extends PollingDataSource {
 	@Override
 	public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime,
 			SetPointSource source) {
-		if (conn == null)
+		if (jdbcOperations == null)
 			return;
 
 		SqlPointLocatorVO locatorVO = ((SqlPointLocatorRT) dataPoint
 				.getPointLocator()).getVO();
 
-		PreparedStatement stmt = null;
 		try {
-			stmt = conn.prepareStatement(locatorVO.getUpdateStatement());
 
+			Object value;
 			if (locatorVO.getDataTypeId() == DataTypes.ALPHANUMERIC)
-				stmt.setString(1, valueTime.getStringValue());
+				value = valueTime.getStringValue();
 			else if (locatorVO.getDataTypeId() == DataTypes.BINARY)
-				stmt.setBoolean(1, valueTime.getBooleanValue());
+				value = valueTime.getBooleanValue();
 			else if (locatorVO.getDataTypeId() == DataTypes.MULTISTATE)
-				stmt.setInt(1, valueTime.getIntegerValue());
+				value = valueTime.getIntegerValue();
 			else if (locatorVO.getDataTypeId() == DataTypes.NUMERIC)
-				stmt.setDouble(1, valueTime.getDoubleValue());
+				value = valueTime.getDoubleValue();
 			else if (locatorVO.getDataTypeId() == DataTypes.IMAGE) {
-				byte[] data = ((ImageValue) valueTime.getValue())
-						.getImageData();
-                                if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
-                                    stmt.setBinaryStream(1, new ByteArrayInputStream(data), data.length);
-                                }
-                                else{
-                                    stmt.setBlob(1, new ByteArrayInputStream(data), data.length);
-                                }
+				byte[] data = ((ImageValue) valueTime.getValue()).getImageData();
+				value = new ByteArrayInputStream(data);
 			} else
 				throw new ShouldNeverHappenException("What's this?: "
 						+ locatorVO.getDataTypeId());
 
-			int rows = stmt.executeUpdate();
+			int rows = jdbcOperations.update(locatorVO.getUpdateStatement(), value);
 			if (rows == 0) {
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(),
-						false, new LocalizableMessage(
+						true, new LocalizableMessage(
 								"event.sql.noRowsUpdated", dataPoint.getVO()
-										.getName()));
-			} else
+										.getName()), dataPoint);
+			} else {
 				dataPoint.setPointValue(valueTime, source);
-		} catch (IOException e) {
-			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), false,
-					new LocalizableMessage("event.sql.setError", dataPoint
-							.getVO().getName(), getExceptionMessage(e)));
-		} catch (SQLException e) {
-			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), false,
-					new LocalizableMessage("event.sql.setError", dataPoint
-							.getVO().getName(), getExceptionMessage(e)));
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e) {
-				throw new ShouldNeverHappenException(e);
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, valueTime.getTime());
 			}
+		} catch (Exception e) {
+			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), true,
+					new LocalizableMessage("event.sql.setError", dataPoint
+							.getVO().getName(), getExceptionMessage(e)), dataPoint);
 		}
 	}
 
 	@Override
 	protected void doPoll(long time) {
-		if (conn == null)
+		if (jdbcOperations == null) {
+			LOG.warn("[SQL] jdbcOperations is null! " + LoggingUtils.dataSourceInfo(this));
 			return;
+		}
 
 		// If there is no select statement, don't bother. It's true that we
 		// wouldn't need to bother polling at all,
 		// but for now this will do.
-		if (StringUtils.isEmpty(vo.getSelectStatement()))
+		if (StringUtils.isEmpty(vo.getSelectStatement())) {
+			LOG.warn("[SQL] selectStatement is null! " + LoggingUtils.dataSourceInfo(this));
 			return;
-
-		PreparedStatement stmt = null;
+		}
 
 		try {
 
 			if (timeoutCount >= timeoutsToReconnect) {
-				System.out.println("[SQL] Trying to reconnect !");
+				LOG.warn("[SQL] Trying to reconnect ! " + LoggingUtils.dataSourceInfo(this));
 				timeoutCount = 0;
 				initialize();
 			} else {
-				stmt = conn.prepareStatement(vo.getSelectStatement());
-				if (vo.isRowBasedQuery())
-					doRowPollImpl(time, stmt);
-				else
-					doColumnPollImpl(time, stmt);
+				String selectStatement = addLimitIfWithout(vo.getSelectStatement(), vo.getStatementLimit());
+				if (vo.isRowBasedQuery()) {
+					jdbcOperations.query(selectStatement, resultSet -> {
+						updateByRowId(time, resultSet);
+						return null;
+					});
+				} else {
+					jdbcOperations.query(selectStatement, resultSet -> {
+						updateByColumn(time, resultSet);
+						return null;
+					});
+				}
 			}
 
 		} catch (Exception e) {
 			raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 					getExceptionMessage(e));
 			timeoutCount++;
-			System.out.println("[SQL] Poll Failed !");
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e) {
-				// no op
-			}
+			LOG.error("[SQL] Poll Failed !: " + LoggingUtils.dataSourceInfo(this) + "," + LoggingUtils.exceptionInfo(e));
 		}
 	}
 
-	private void doColumnPollImpl(long time, PreparedStatement stmt)
-			throws SQLException {
-		ResultSet rs = stmt.executeQuery();
+	private void updateByColumn(long time, ResultSet rs) throws SQLException {
 		ResultSetMetaData meta = rs.getMetaData();
-
 		if (rs.next()) {
 
 			for (DataPointRT dp : dataPoints) {
@@ -192,9 +174,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 					MangoValue value;
 					try {
 						value = getValue(locatorVO, rs, fieldName, time);
-					} catch (IOException e) {
-						continue;
-					} catch (SQLException e) {
+					} catch (IOException | SQLException e) {
 						continue;
 					}
 
@@ -217,8 +197,10 @@ public class SqlDataSourceRT extends PollingDataSource {
 							raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage(
 											"event.sql.timeNotFound",
-											timeOverride));
+											timeOverride), dp);
 							continue;
+						} else {
+							returnToNormal(STATEMENT_EXCEPTION_EVENT, time, dp);
 						}
 
 						pointTime = getTimeOverride(meta, column, rs, time);
@@ -232,13 +214,9 @@ public class SqlDataSourceRT extends PollingDataSource {
 		} else
 			raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 					new LocalizableMessage("event.sql.noData"));
-
-		rs.close();
 	}
 
-	private void doRowPollImpl(long time, PreparedStatement stmt)
-			throws SQLException {
-		ResultSet rs = stmt.executeQuery();
+	private void updateByRowId(long time, ResultSet rs) throws SQLException {
 		ResultSetMetaData meta = rs.getMetaData();
 
 		while (rs.next()) {
@@ -266,9 +244,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 					try {
 						value = getValue(locatorVO, rs, meta.getColumnLabel(2),
 								time);
-					} catch (IOException e) {
-						continue;
-					} catch (SQLException e) {
+					} catch (IOException | SQLException e) {
 						continue;
 					}
 
@@ -287,9 +263,9 @@ public class SqlDataSourceRT extends PollingDataSource {
 			if (!found)
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.sql.noDataPoint", rowId));
+			else
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, time);
 		}
-
-		rs.close();
 	}
 
 	private MangoValue getValue(SqlPointLocatorVO locatorVO, ResultSet rs,
@@ -357,13 +333,14 @@ public class SqlDataSourceRT extends PollingDataSource {
 		// Get a connection to the database. No need to pool, because we don't
 		// intend to close it until we shut down.
 		try {
-			DriverManager.registerDriver((Driver) Class.forName(
-					vo.getDriverClassname()).newInstance());
-			conn = DriverManager.getConnection(vo.getConnectionUrl(),
-					vo.getUsername(), vo.getPassword());
+			this.jdbcOperations = createJdbcOperations(vo);
 
 			// Test the connection.
-			conn.getMetaData();
+			int result = jdbcOperations.queryForObject("SELECT 1", int.class);
+
+			if(result != 1) {
+				throw new IllegalStateException();
+			}
 
 			// Deactivate any existing event.
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
@@ -371,7 +348,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 		} catch (Exception e) {
 			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
 					true, DataSourceRT.getExceptionMessage(e));
-			log.info("Error while initializing data source", e);
+			LOG.info("Error while initializing data source", e);
 			return;
 		}
 
@@ -381,12 +358,10 @@ public class SqlDataSourceRT extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
+	}
 
-		try {
-			if (conn != null)
-				conn.close();
-		} catch (SQLException e) {
-			throw new ShouldNeverHappenException(e);
-		}
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

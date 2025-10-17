@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class UserDaoWithCache implements IUserDAO {
 
-    private final UserCachable userCache;
+    private final UserCacheable userCache;
 
-    public UserDaoWithCache(UserCachable userCache) {
+    public UserDaoWithCache(UserCacheable userCache) {
         this.userCache = userCache;
     }
 
@@ -45,16 +45,6 @@ public class UserDaoWithCache implements IUserDAO {
     }
 
     @Override
-    public void updateHideMenu(User user) {
-        userCache.updateHideMenu(user);
-    }
-
-    @Override
-    public void updateScadaTheme(User user) {
-        userCache.updateScadaTheme(user);
-    }
-
-    @Override
     public void updateHomeUrl(int userId, String homeUrl) {
         userCache.updateHomeUrl(userId, homeUrl);
     }
@@ -72,5 +62,15 @@ public class UserDaoWithCache implements IUserDAO {
     @Override
     public int insert(User user) {
         return userCache.insert(user);
+    }
+
+    @Override
+    public void updateUserPassword(int userId, String newPassword) {
+        userCache.updateUserPassword(userId, newPassword);
+    }
+
+    @Override
+    public void updateUserLang(int userId, String lang) {
+        userCache.updateLang(userId, lang);
     }
 }

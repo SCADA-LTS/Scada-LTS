@@ -20,38 +20,27 @@ package com.serotonin.mango.web.mvc.controller;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.serotonin.util.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.ui.Model;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.LocaleResolver;
 
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.web.i18n.Utf8ResourceBundle;
 
 /**
  * @author Matthew Lohbihler
  */
-public class ControllerUtils {
-    public static ResourceBundle getResourceBundle(HttpServletRequest request) {
-        return Utf8ResourceBundle.getBundle("messages", getLocale(request));
-    }
+public final class ControllerUtils {
 
-    public static Locale getLocale(HttpServletRequest request) {
-        WebApplicationContext webApplicationContext = WebApplicationContextUtils
-                .getRequiredWebApplicationContext(request.getSession().getServletContext());
-        LocaleResolver localeResolver = (LocaleResolver) webApplicationContext.getBean("localeResolver");
-        return localeResolver.resolveLocale(request);
-    }
+    private static final Log LOG = LogFactory.getLog(ControllerUtils.class);
+
+    private ControllerUtils() {}
 
     public static void addPointListDataToModel(User user, int pointId, Map<String, Object> model) {
         List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
@@ -91,5 +80,12 @@ public class ControllerUtils {
         	model.addAttribute("prevId", userPoints.get(pointIndex - 1).getId());
         if (pointIndex < userPoints.size() - 1)
             model.addAttribute("nextId", userPoints.get(pointIndex + 1).getId());
+    }
+
+    public static String getHomeUrl(User user) {
+        if(StringUtils.isEmpty(user.getHomeUrl())) {
+            return "/watch_list.shtm";
+        }
+        return user.getHomeUrl().startsWith("/") ? user.getHomeUrl() : "/" + user.getHomeUrl();
     }
 }

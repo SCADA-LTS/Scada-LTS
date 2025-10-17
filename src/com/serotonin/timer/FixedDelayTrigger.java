@@ -30,5 +30,10 @@ public class FixedDelayTrigger extends AbstractTimerTrigger {
         return nextExecutionTime - period;
     }
 
-
+    @Override
+    public String toString() {
+        return "FixedDelayTrigger{" +
+                "period=" + period +
+                ", " + super.toString() + '}';
+    }
 }

@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 public class UsersProfileDaoWithCache implements IUsersProfileDAO {
 
-    private final UsersProfileCachable usersProfileCache;
+    private final UsersProfileCacheable usersProfileCache;
     private final IUsersProfileDAO usersProfileDAO;
 
-    public UsersProfileDaoWithCache(UsersProfileCachable usersProfileCache, IUsersProfileDAO usersProfileDAO) {
+    public UsersProfileDaoWithCache(UsersProfileCacheable usersProfileCache, IUsersProfileDAO usersProfileDAO) {
         this.usersProfileCache = usersProfileCache;
         this.usersProfileDAO = usersProfileDAO;
     }

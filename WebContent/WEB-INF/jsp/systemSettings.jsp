@@ -17,11 +17,14 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@page import="org.scada_lts.dao.SystemSettingsDAO"%>
+<%@page import="org.scada_lts.utils.SystemSettingsUtils"%>
 <%@page import="com.serotonin.mango.Common"%>
 <%@page import="com.serotonin.mango.rt.event.AlarmLevels"%>
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
 <%@page import="com.serotonin.mango.util.freemarker.MangoEmailContent"%>
+<%@ page import="com.serotonin.mango.vo.DataPointVO" %>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%@ include file="/WEB-INF/jsp/include/highlight.jsp" %>
 
 
 <tag:page dwr="SystemSettingsDwr" onload="init">
@@ -31,7 +34,7 @@
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
-    
+
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
@@ -51,11 +54,11 @@
                     var etid = et.typeId +"-"+ et.typeRef1;
                     var content = "<select id='alarmLevel"+ etid +"' ";
                     content += "onchange='updateAlarmLevel("+ et.typeId +", "+ et.typeRef1 +", this.value)'>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.NONE %>"/>'><fmt:message key="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.INFORMATION %>"/>'><fmt:message key="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.URGENT %>"/>'><fmt:message key="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.CRITICAL %>"/>'><fmt:message key="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>";
-                    content += "<option value='<c:out value="<%= AlarmLevels.LIFE_SAFETY %>"/>'><fmt:message key="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.NONE %>"/>'><spring:message code="<%= AlarmLevels.NONE_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.INFORMATION %>"/>'><spring:message code="<%= AlarmLevels.INFORMATION_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.URGENT %>"/>'><spring:message code="<%= AlarmLevels.URGENT_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.CRITICAL %>"/>'><spring:message code="<%= AlarmLevels.CRITICAL_DESCRIPTION %>"/></option>";
+                    content += "<option value='<c:out value="<%= AlarmLevels.LIFE_SAFETY %>"/>'><spring:message code="<%= AlarmLevels.LIFE_SAFETY_DESCRIPTION %>"/></option>";
                     content += "</select> ";
                     content += "<img id='alarmLevelImg"+ etid +"' src='images/flag_green.png' style='display:none'>";
                     return content;
@@ -78,6 +81,7 @@
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>", unescapeHtml(JSON.stringify(settings.<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>, null, 2)));
             httpUseProxyChange();
             
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>);
@@ -92,13 +96,44 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
 
+            $set("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>", settings.<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>);
+
+
+            setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>);
+            setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/> || !settings.<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>);
+
+            $set("<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>);
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>", settings["<c:out value='<%= SystemSettingsDAO.SMS_DOMAIN %>'/>"]);
+          $set("<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>", settings.<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>);
+          $set("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>);
         });
-    /*
+
+<%--
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -108,8 +143,8 @@
         	if (msg == "mysql") {
         		document.getElementById('radioMysql').checked = true;
 			}
-        });*/
-    
+        });
+--%>
     
     }
     
@@ -127,7 +162,7 @@
     }
     
     function dbSizeUpdate() {
-        $set("databaseSize", "<fmt:message key="systemSettings.retrieving"/>");
+        $set("databaseSize", "<spring:message code="systemSettings.retrieving"/>");
         $set("filedataSize", "-");
         $set("totalSize", "-");
         $set("historyCount", "-");
@@ -136,7 +171,7 @@
         hide("refreshImg");
         SystemSettingsDwr.getDatabaseSize(function(data) {
             $set("databaseSize", data.databaseSize);
-            $set("filedataSize", data.filedataSize +" ("+ data.filedataCount +" <fmt:message key="systemSettings.files"/>)");
+            $set("filedataSize", data.filedataSize +" ("+ data.filedataCount +" <spring:message code="systemSettings.files"/>)");
             $set("totalSize", data.totalSize);
             $set("historyCount", data.historyCount);
             show("refreshImg");
@@ -166,7 +201,7 @@
             $get("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>"),
             function() {
                 stopImageFader("saveEmailSettingsImg");
-                setUserMessage("emailMessage", "<fmt:message key="systemSettings.emailSettingsSaved"/>");
+                setUserMessage("emailMessage", "<spring:message code="systemSettings.emailSettingsSaved"/>");
             });
         setUserMessage("emailMessage");
         startImageFader("saveEmailSettingsImg");
@@ -207,7 +242,7 @@
     function saveSystemEventAlarmLevels() {
         SystemSettingsDwr.saveSystemEventAlarmLevels(systemEventAlarmLevels, function() {
                 stopImageFader("saveSystemEventAlarmLevelsImg");
-                setUserMessage("systemEventAlarmLevelsMessage", "<fmt:message key="systemSettings.systemAlarmLevelsSaved"/>");
+                setUserMessage("systemEventAlarmLevelsMessage", "<spring:message code="systemSettings.systemAlarmLevelsSaved"/>");
         });
         setUserMessage("systemEventAlarmLevelsMessage");
         startImageFader("saveSystemEventAlarmLevelsImg");
@@ -216,7 +251,7 @@
     function saveAuditEventAlarmLevels() {
         SystemSettingsDwr.saveAuditEventAlarmLevels(auditEventAlarmLevels, function() {
                 stopImageFader("saveAuditEventAlarmLevelsImg");
-                setUserMessage("auditEventAlarmLevelsMessage", "<fmt:message key="systemSettings.auditAlarmLevelsSaved"/>");
+                setUserMessage("auditEventAlarmLevelsMessage", "<spring:message code="systemSettings.auditAlarmLevelsSaved"/>");
         });
         setUserMessage("auditEventAlarmLevelsMessage");
         startImageFader("saveAuditEventAlarmLevelsImg");
@@ -235,9 +270,14 @@
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"),
-                function() {
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"),
+                function(a) {
                     stopImageFader("saveHttpSettingsImg");
-                    setUserMessage("httpMessage", "<fmt:message key="systemSettings.httpSaved"/>");
+                    if(a.messages && a.messages.length > 0) {
+                        setUserMessage("httpMessage", a.messages[0].contextualMessage);
+                    } else {
+                        setUserMessage("httpMessage", "<spring:message code="systemSettings.httpSaved"/>");
+                    }
                 });
         setUserMessage("httpMessage");
         startImageFader("saveHttpSettingsImg");
@@ -250,25 +290,74 @@
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"), !proxy);
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"), !proxy);
     }
+
+    function workItemsReportingEnabledChange() {
+        var workItemsReportingEnabled = $("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>").checked;
+        if(!workItemsReportingEnabled) {
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>", false);
+            workItemsReportingItemsPerSecondEnabledChange();
+        }
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"), !workItemsReportingEnabled);
+    }
+
+    function workItemsReportingItemsPerSecondEnabledChange() {
+        var workItemsReportingItemsPerSecondEnabled = $("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>").checked;
+        if(!workItemsReportingItemsPerSecondEnabled) {
+            $set("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>", 0);
+        }
+        setDisabled($("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"), !workItemsReportingItemsPerSecondEnabled);
+    }
     
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
-                1,
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
-                function() {
+                $get("<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>"),
+                function(response) {
                     stopImageFader("saveMiscSettingsImg");
-                    setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
+                    if (response.hasMessages)
+                        showDwrMessages(response.messages);
+                    else {
+                        setUserMessage("miscMessage", "<spring:message code="systemSettings.miscSaved"/>");
+                    }
                 });
         setUserMessage("miscMessage");
+        hideContextualMessages("settingsMisc");
         startImageFader("saveMiscSettingsImg");
     }
+
+    function saveDataRetentionSettings() {
+            SystemSettingsDwr.saveDataRetentionSettings(
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
+                    1,
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>"),
+                    function() {
+                        stopImageFader("saveDataRetentionSettingsImg");
+                        setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.dataRetentionSaved"/>");
+                    });
+            setUserMessage("dataRetentionMessage");
+            startImageFader("saveDataRetentionSettingsImg");
+        }
     
     function setUserMessage(type, msg) {
         if (msg)
@@ -276,15 +365,23 @@
         else
             $set(type, "");
     }
-    
+
     function saveInfoSettings() {
+        var topDescriptionPrefix = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>");
+        var topDescription = $get("<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>");
+
         SystemSettingsDwr.saveInfoSettings("0",
-                //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
-                function() {
-                    stopImageFader("saveInfoSettingsImg");
-                    setUserMessage("infoMessage", "<fmt:message key="systemSettings.infoSaved"/>");
-                });
+            $get("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>"),
+            topDescriptionPrefix,
+            topDescription,
+            function() {
+                stopImageFader("saveInfoSettingsImg");
+                document.getElementById('top-description-prefix').innerText = topDescriptionPrefix;
+                document.getElementById('top-description').innerText = topDescription;
+                setUserMessage("infoMessage", "<spring:message code='systemSettings.infoSaved'/>");
+            }
+        );
+
         setUserMessage("infoMessage");
         startImageFader("saveInfoSettingsImg");
     }
@@ -293,34 +390,36 @@
         SystemSettingsDwr.newVersionCheck($get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
                 function(result) {
                     if (!result)
-                        result = "<fmt:message key="systemSettings.upToDate"/>";
+                        result = "<spring:message code="systemSettings.upToDate"/>";
                     alert(result);
                 }
         );
     }
     
     function purgeNow() {
-        SystemSettingsDwr.purgeNow(function() {
-            stopImageFader("purgeNowImg");
-            dbSizeUpdate();
-        });
-        startImageFader("purgeNowImg");
+        if (confirm("<spring:message code="systemSettings.purgeDataPointStrategyConfirm"/>")) {
+            SystemSettingsDwr.purgeNow(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
     }
     
     function saveLangSettings() {
         SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
             stopImageFader("saveLangSettingsImg");
-            setUserMessage("langMessage", "<fmt:message key="systemSettings.langSaved"/>");
+            setUserMessage("langMessage", "<spring:message code="systemSettings.langSaved"/>");
         });
         setUserMessage("langMessage");
         startImageFader("saveLangSettingsImg");
     }
     
     function checkPurgeAllData() {
-        if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
-            setUserMessage("miscMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
+        if (confirm("<spring:message code="systemSettings.purgeDataConfirm"/>")) {
+            setUserMessage("dataRetentionMessage", "<spring:message code="systemSettings.purgeDataInProgress"/>");
             SystemSettingsDwr.purgeAllData(function(msg) {
-                setUserMessage("miscMessage", msg);
+                setUserMessage("dataRetentionMessage", msg);
                 dbSizeUpdate();
             });
         }
@@ -363,7 +462,7 @@
     function useDerbyDB() {
     	SystemSettingsDwr.useDerbyDB();
 		SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
 		
     }
@@ -371,20 +470,20 @@
     function useMysqlDB() {
     	SystemSettingsDwr.useMysqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
     
     function useMssqlDB() {
     	SystemSettingsDwr.useMssqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
-    		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
+    		alert("<spring:message code="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
     
     function dbBackup() {
     	alert("Not implemented !");
-    }+
+    }
 
     function refreshImages() {
 
@@ -400,7 +499,7 @@
         jQuery.ajax({
             type: 'GET',
             dataType: 'text',
-            url:myLocation+"/api/resources/imagesRefresh",
+            url:myLocation+"api/resources/imagesRefresh",
             success: function(msg){
                 alert("Success: the resource images has been refreshed");
             },
@@ -410,15 +509,167 @@
         });
 
     }
-    
-    
+
+    /* CUSTOM CSS JAVASCRIPT */
+    let customCssUrl = `./api/customcss/`;
+
+    function showCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'flex';
+      initCustomCssData();
+    }
+
+    function hideCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'none';
+    }
+
+    function initCustomCssData() {
+      fetchCustomCssConfig().then((val) => {
+        let res = JSON.parse(val);
+        document.getElementById('cssEditor').innerHTML = res.content;
+        updateCodeTextEscaped(res.content, '#cssHighlightingContent');
+      });
+    }
+
+    function fetchCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('GET', customCssUrl, true);
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.response);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(null);
+      });
+    }
+
+    function saveCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('POST', customCssUrl, true);
+        req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        setUserMessage("customCssMessage");
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+            setUserMessage("customCssMessage", "<spring:message code="systemSettings.customCssSaved"/>");
+          } else if (req.status === 400) {
+            let errors = JSON.parse(req.responseText);
+            if(errors.length > 0) {
+              setUserMessage("customCssMessage", "<spring:message code="systemSettings.invalidCustomCss"/>");
+            }
+            reject(errors);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        let cssContent = document.getElementById('cssEditor').value;
+        let cssStyle = {
+            content: cssContent
+        };
+        let body = JSON.stringify(cssStyle);
+        req.send(body);
+      });
+    }
+
+    function toUiPerformanceId() {
+        var uiPerformance = $get("uiPerformanceId");
+        if(!uiPerformance) {
+            uiPerformance = 1000;
+        }
+        $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cssEditor = document.getElementById('cssEditor');
+      const cssHighlighting = document.getElementById('cssHighlighting');
+      if (cssEditor && cssHighlighting) {
+        cssEditor.addEventListener('input', () => {
+          updateCodeText(cssEditor.value, '#cssHighlightingContent');
+        });
+        cssEditor.addEventListener('scroll', () => {
+          syncCodeScroll(cssEditor, '#cssHighlighting');
+        });
+      }
+      document.getElementById('scadaConfigDialog').style.display = 'none';
+    });
+
+    function saveAmChartsSettings() {
+      SystemSettingsDwr.saveAmChartsSettings(
+              $get("<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>"),
+              $get("<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>"),
+              function() {
+                stopImageFader("saveAmChartsSettingsImg");
+                setUserMessage("amChartsMessage", "<spring:message code="systemSettings.amChartsSaved"/>");
+              });
+      setUserMessage("amChartsMessage");
+      hideContextualMessages("amChartsMessage");
+      startImageFader("saveAmChartsSettingsImg");
+    }
+
+    function showScadaConfigDialog() {
+      var dialog = document.getElementById('scadaConfigDialog');
+      dialog.style.display = 'block';
+      fetchScadaConfiguration();
+    }
+
+    function hideScadaConfigDialog() {
+      document.getElementById('scadaConfigDialog').style.display = 'none';
+    }
+
+    function fetchScadaConfiguration() {
+      SystemSettingsDwr.getScadaConfig(function(response) {
+        try {
+          var config = JSON.parse(response);
+          var content = "<table style='border-collapse: collapse; table-layout: auto;'>";
+          content += "<tr style='background-color:#f3f3f3;'>";
+          content +=   "<th style='padding:4px; text-align:left; border:1px solid #ccc; white-space:nowrap;'>Parameter</th>";
+          content +=   "<th style='padding:4px; text-align:left; border:1px solid #ccc; white-space:nowrap;'>Value</th>";
+          content += "</tr>";
+          for (var key in config) {
+            if (config.hasOwnProperty(key)) {
+              content += "<tr>";
+              content +=   "<td style='padding:4px; border:1px solid #ccc; white-space:nowrap;'>" + key + "</td>";
+              content +=   "<td style='padding:4px; border:1px solid #ccc; white-space:nowrap;'>" + config[key] + "</td>";
+              content += "</tr>";
+            }
+          }
+          content += "</table>";
+          document.getElementById('scadaConfigContent').innerHTML = content;
+        } catch(e) {
+          document.getElementById('scadaConfigContent').innerHTML = "Error parsing configuration data.";
+        }
+      });
+    }
+    dojo.addOnLoad(function() {
+      let webResourceGraphicsPath = document.getElementById("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>");
+      let webGraphicsUploadsPath = document.getElementById("<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>");
+      let smsDomain = document.getElementById("<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>");
+      webResourceGraphicsPath.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      webGraphicsUploadsPath.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      smsDomain.addEventListener('input', function(value){sizingField(30, value.target, 250)});
+      initSizeField(webResourceGraphicsPath);
+      initSizeField(webGraphicsUploadsPath);
+      initSizeField(smsDomain);
+    });
   </script>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.systemInformation"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.systemInformation"/></span>
           <tag:help id="systemInformation"/>
         </td>
         <td align="right">
@@ -428,28 +679,29 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.version"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.version"/></td>
         <td class="formField"><c:out value="<%= Common.getVersion() %>"/></td>
       </tr>
       <%-- 
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.notify"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.notify"/></td>
         <td class="formField" valign="top">
           <select id="<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>">
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_STABLE %>"/>"><fmt:message key="systemSettings.notifyStable"/></option>
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_RC %>"/>"><fmt:message key="systemSettings.notifyRC"/></option>
-            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_BETA %>"/>"><fmt:message key="systemSettings.notifyBeta"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_STABLE %>"/>"><spring:message code="systemSettings.notifyStable"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_RC %>"/>"><spring:message code="systemSettings.notifyRC"/></option>
+            <option value="<c:out value="<%= SystemSettingsDAO.NOTIFICATION_LEVEL_BETA %>"/>"><spring:message code="systemSettings.notifyBeta"/></option>
           </select>
           <tag:img png="accept" title="systemSettings.checkNow" onclick="newVersionCheck()"/>
         </td>
       </tr>
       --%>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text"/></td>
-      </tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.instanceDescription"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text" class="formMedium"/>
+        </td>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.databaseSize"/></td>
         <td class="formField">
           <span id="databaseSize"></span>
           <tag:img id="refreshImg" png="control_repeat_blue" onclick="dbSizeUpdate();" title="common.refresh"/>
@@ -457,36 +709,61 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.filedataSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.filedataSize"/></td>
         <td class="formField" id="filedataSize"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.totalSize"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.totalSize"/></td>
         <td class="formField" id="totalSize"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.historyCount"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.historyCount"/></td>
         <td class="formField" id="historyCount"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.topPoints"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.topPoints"/></td>
         <td class="formField" id="topPoints"></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.eventCount"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.eventCount"/></td>
         <td class="formField" id="eventCount"></td>
       </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.top.description.prefix"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION_PREFIX %>"/>" type="text" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.top.description"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.TOP_DESCRIPTION %>"/>" type="text" class="formMedium"/>
+        </td>
+      </tr>
+      <!-- Scada Configuration Component -->
+      <div id="scadaConfigContainer" style="position: relative; display: inline-block;">
+        <table width="100%">
+          <tr>
+            <td align="center">
+              <button onclick="showScadaConfigDialog()">
+                <spring:message code="systemSettings.scadaConfTitle"/>
+              </button>
+            </td>
+          </tr>
+        </table>
+    </table>
+    <table>
       <tr>
         <td colspan="2" id="infoMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  
-  <div class="borderDiv marB marR" style="float:left">
+
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.systemAlarmLevels"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.systemAlarmLevels"/></span>
           <tag:help id="systemAlarmLevels"/>
         </td>
         <td align="right">
@@ -502,12 +779,160 @@
       </tr>
     </table>
   </div>
-  
-  <div class="borderDiv marB marR" style="float:left">
+
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.auditAlarmLevels"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.otherSettings"/></span>
+          <tag:help id="otherSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+    <table id="settingsMisc">
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.uiPerformance"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
+          <select id="uiPerformanceId" onchange="toUiPerformanceId()">
+            <option value=""></option>
+            <option value="1000"><spring:message code="systemSettings.uiPerformance.veryHigh"/></option>
+            <option value="2000"><spring:message code="systemSettings.uiPerformance.high"/></option>
+            <option value="5000"><spring:message code="systemSettings.uiPerformance.med"/></option>
+            <option value="10000"><spring:message code="systemSettings.uiPerformance.low"/></option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
+            <option value="NONE"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
+            <option value="PARTIAL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
+            <option value="ALL"><spring:message code="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.view.forceFullScreen"/></td>
+        <td class="formField">
+          <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_FORCE_FULL_SCREEN_MODE %>"/>" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.view.hideShortcutDisableFullScreen"/></td>
+        <td class="formField">
+          <input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.VIEW_HIDE_SHORTCUT_DISABLE_FULL_SCREEN %>"/>" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingCacheEnabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_CACHE_ENABLED %>"/>" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.event.pendingLimit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PENDING_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingEnabledChange()"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_ENABLED %>"/>" type="checkbox" onchange="workItemsReportingItemsPerSecondEnabledChange()"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.workitems.reporting.itemspersecond.limit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WORK_ITEMS_REPORTING_ITEMS_PER_SECOND_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.threads.name.additional.length"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.THREADS_NAME_ADDITIONAL_LENGTH %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.webresource.graphics.path"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH %>"/>" type="text" class="formMediumFieldSizing"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.webresource.uploads.path"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH %>"/>" type="text" class="formMediumFieldSizing"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="event.assign.enabled"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.EVENT_ASSIGN_ENABLED %>"/>" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemsettings.reports.dataPointExtendedNameLengthLimit"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT %>"/>" type="number" class="formShort"/>
+        </td>
+      </tr>
+      <!-- SMS Domain -->
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.smsDomain.defaultGateway"/>
+        </td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.SMS_DOMAIN %>"/>" type="text" class="formMediumFieldSizing"/>
+        </td>
+      </tr>
+      <!-- Default Data Point Logging Type -->
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.defaultDataPointLoggingType"/>
+        </td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.DEFAULT_LOGGING_TYPE %>"/>">
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_CHANGE %>"/>">
+              <spring:message code="pointEdit.logging.type.change"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ALL %>"/>">
+              <spring:message code="pointEdit.logging.type.all"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.NONE %>"/>">
+              <spring:message code="pointEdit.logging.type.never"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.INTERVAL %>"/>">
+              <spring:message code="pointEdit.logging.type.interval"/>
+            </option>
+            <option value="<c:out value="<%= DataPointVO.LoggingTypes.ON_TS_CHANGE %>"/>">
+              <spring:message code="pointEdit.logging.type.tsChange"/>
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="miscMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.auditAlarmLevels"/></span>
           <tag:help id="auditAlarmLevels"/>
         </td>
         <td align="right">
@@ -523,37 +948,12 @@
       </tr>
     </table>
   </div>
-  
-  <div class="borderDiv marB marR" style="float:left">
-    <table width="100%">
-      <tr>
-        <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.languageSettings"/></span>
-          <tag:help id="languageSettings"/>
-        </td>
-        <td align="right">
-          <tag:img id="saveLangSettingsImg" png="save" onclick="saveLangSettings();" title="common.save"/>
-        </td>
-      </tr>
-    </table>
 
-    <table>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.systemLanguage"/></td>
-        <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" id="langMessage" class="formError"></td>
-      </tr>
-    </table>
-  </div>
-  <div class="borderDiv marB marR" style="clear:left;float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.emailSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.emailSettings"/></span>
           <tag:help id="emailSettings"/>
         </td>
         <td align="right">
@@ -564,61 +964,61 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.smtpHost"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.smtpHost"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.smtpPort"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.smtpPort"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.fromAddress"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.fromAddress"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_ADDRESS %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.fromName"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.fromName"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_FROM_NAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.auth"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.auth"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>" type="checkbox" onclick="smtpAuthChange()"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.smtpUsername"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.smtpUsername"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.smtpPassword"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.smtpPassword"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.tls"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.tls"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>" type="checkbox"/></td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.contentType"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.contentType"/></td>
         <td class="formField">
           <select id="<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>">
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_BOTH %>"/>"><fmt:message key="systemSettings.contentType.both"/></option>
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_HTML %>"/>"><fmt:message key="systemSettings.contentType.html"/></option>
-            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_TEXT %>"/>"><fmt:message key="systemSettings.contentType.text"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_BOTH %>"/>"><spring:message code="systemSettings.contentType.both"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_HTML %>"/>"><spring:message code="systemSettings.contentType.html"/></option>
+            <option value="<c:out value="<%= MangoEmailContent.CONTENT_TYPE_TEXT %>"/>"><spring:message code="systemSettings.contentType.text"/></option>
           </select>
         </td>
       </tr>
-      
+
       <tr>
         <td colspan="2" id="emailMessage" class="formError"></td>
       </tr>
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.httpSettings"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.httpSettings"/></span>
           <tag:help id="httpSettings"/>
         </td>
         <td align="right">
@@ -628,27 +1028,33 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.useProxy"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.useProxy"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>" type="checkbox"
                   onclick="httpUseProxyChange()"/>
         </td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyHost"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyHost"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyPort"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyPort"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyUsername"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyUsername"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.proxyPassword"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.proxyPassword"/></td>
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>" type="password"/></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center"><spring:message code="systemsettings.http.response.headers"/></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center"><textarea placeholder="<spring:message code="systemsettings.http.response.headers"/>" rows="5" cols="60" id="<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"></textarea></td>
       </tr>
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
@@ -656,37 +1062,27 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
-          <tag:help id="otherSettings"/>
+          <span class="smallTitle"><spring:message code="systemSettings.dataRetentionSettings"/></span>
+          <tag:help id="dataRetentionSettings"/>
         </td>
         <td align="right">
-          <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+          <tag:img id="saveDataRetentionSettingsImg" png="save" onclick="saveDataRetentionSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
     <table>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
-        <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
-            <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
-            <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
-            <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
-          </select>
-        </td>
-      </tr>
       <%--
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.groveLogging"/></td>
         <td class="formField"><input type="checkbox" id="<c:out value="<%= SystemSettingsDAO.GROVE_LOGGING %>"/>"/></td>
       </tr>
       --%>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.purgeEvents"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgeEvents"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>">
@@ -695,7 +1091,7 @@
         </td>
       </tr>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.purgeReports"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgeReports"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>">
@@ -704,12 +1100,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()"/>
-        </td>
-      </tr>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.futureDateLimit"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.futureDateLimit"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
           <select id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>">
@@ -718,26 +1109,124 @@
         </td>
       </tr>
       <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
-         <td class="formField">
-           <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
-             <option value="NONE"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
-             <option value="PARTIAL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
-             <option value="ALL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
-           </select>
-         </td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.purgePointValuesPeriodDefault"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT %>"/>" type="text" class="formShort"/>
+          <select id="<c:out value="<%= SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT %>"/>">
+            <tag:timePeriodOptions d="true" w="true" mon="true" y="true"/>
+          </select>
+        </td>
       </tr>
       <tr>
-        <td colspan="2" id="miscMessage" class="formError"></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.valuesLimitForPurge"/></td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE %>"/>" type="number" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="<spring:message code="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="<spring:message code="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="dataRetentionMessage" class="formError"></td>
       </tr>
     </table>
   </div>
 
-   <!--div class="borderDiv marB marR" style="float:left">
+  <!-- amCharts Settings -->
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+        <span class="smallTitle">
+          <spring:message code="systemSettings.amCharts"/>
+        </span>
+        </td>
+        <td align="right">
+          <tag:img id="saveAmChartsSettingsImg" png="save" onclick="saveAmChartsSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.amChart.enabled"/>
+        </td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_ENABLED %>"/>" type="checkbox"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.amChart.valuesLimit"/>
+        </td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_VALUES_LIMIT %>"/>" type="number" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="formLabelRequired">
+          <spring:message code="systemSettings.amChart.limitFactor"/>
+        </td>
+        <td class="formField">
+          <input id="<c:out value="<%= SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR %>"/>" type="number" class="formMedium"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="amChartsMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="borderDivPadded marB marR" style="float:left">
+    <table width="100%">
+      <tr>
+        <td>
+          <span class="smallTitle"><spring:message code="systemSettings.languageSettings"/></span>
+          <tag:help id="languageSettings"/>
+        </td>
+        <td align="right">
+          <tag:img id="saveLangSettingsImg" png="save" onclick="saveLangSettings();" title="common.save"/>
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td class="formLabelRequired"><spring:message code="systemSettings.systemLanguage"/></td>
+        <td class="formField">
+          <select id="<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"></select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="langMessage" class="formError"></td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="scadaConfigDialog" style="display:none; position: absolute; top: 40px; left: 40px; background-color: #ffffff; border: 1px solid #ccc; z-index: 1000; padding: 10px; display:inline-block;">
+  <div style="padding:5px; border-bottom: 1px solid #ccc; background-color: #eee;">
+      <span style="font-weight: bold;">
+        <spring:message code="systemSettings.scadaConfTitle"/>
+      </span>
+      <button style="float:right;" onclick="hideScadaConfigDialog()">Close</button>
+    </div>
+    <div id="scadaConfigContent" style="padding:5px;">
+
+    </div>
+  </div>
+  
+<%--
+   <div class="borderDivPadded marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.dbConfiguration"/></span>
+          <span class="smallTitle"><spring:message code="systemSettings.dbConfiguration"/></span>
           <tag:help id="dbConfiguration"/>
         </td>
         <td align="right">
@@ -745,24 +1234,22 @@
         </td>
       </tr>
       </table>
-      
       <table align="center">
       <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.dbConfiguration.Derby"/></td>
         <td class="formField">
           <input id="radioDerby" name="db" type="radio"/>
         </td>
       </tr>
       
        <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Mysql"/></td>
+        <td class="formLabelRequired"><spring:message code="systemSettings.dbConfiguration.Mysql"/></td>
         <td class="formField">
           <input id="radioMysql" name="db" type="radio"/>
         </td>
       </tr>
-<%--
        <tr>
-        <td class="formLabel"><fmt:message key="systemSettings.dbConfiguration.Mssql"/></td>
+        <td class="formLabel"><spring:message code="systemSettings.dbConfiguration.Mssql"/></td>
         <td class="formField">
           <input id="radioMssql" name="db" type="radio" disabled/>
         </td>
@@ -770,16 +1257,17 @@
        
        <tr>
         <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
+          <input type="button" value="<spring:message code="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="float:left">
+--%>
+
+  <div class="borderDivPadded marB marR" style="float:left">
        <table width="100%">
           <tr>
              <td>
@@ -787,22 +1275,113 @@
              </td>
           </tr>
           <tr>
-             <td>
-               <button onClick="refreshImages()">Refresh</button>
+             <td align="center">
+               <input type="button" value="Refresh" onClick="refreshImages()"/>
              </td>
           </tr>
        </table>
-  </div-->
-
-  <div class="borderDiv marB marR" style="float:left">
-    <div id="sms-domain"></div>
   </div>
+
+  <div class="borderDiv marB marR" style="float: left;">
+        <table>
+            <tr>
+              <td>
+                <span class="smallTitle"><spring:message code="systemSettings.customCss.title"/></span>
+              </td>
+            </tr>
+        </table>
+        <table>
+          <tr>
+            <td>
+              <button onclick="showCssDialog()"><spring:message code="systemSettings.customCss.edit"/></button>
+            </td>
+          </tr>
+        </table>
+      </div>
 
   <div class="" style="float:left; color:white">
   #branchName
-  </div>
+
+  <div id="css-editor-dialog">
+        <div class="css-dialog-content">
+          <div>
+            <h2><spring:message code="systemSettings.customCss.dialog.title"/></h2>
+          </div>
+          <div class="note">
+            <spring:message code="systemSettings.customCss.dialog.note"/>
+          </div>
+          <div class="css-dialog-editor">
+            <textarea
+              placeholder="Enter Code Here"
+              id="cssEditor"
+              class="hgl-editor"
+              spellcheck="false"
+              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
+              onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
+            </textarea>
+            <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">
+              <code id="cssHighlightingContent" class="language-css">
+              </code>
+            </pre>
+          </div>
+          <div class="css-dialog-buttons">
+          <table>
+            <tr>
+              <td>
+                <button onclick="hideCssDialog()"><spring:message code="common.close"/></button>
+              </td>
+              <td>
+                <button onclick="saveCustomCssConfig()"><spring:message code="common.save"/></button>
+              </td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td colspan="2" id="customCssMessage" class="formError"></td>
+            </tr>
+          </table>
+          </div>
+        </div>
+      </div>
+
+
+      <style>
+      #css-editor-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #00000082;
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .css-dialog-content {
+        width: 650px;
+        height: 90%;
+        background-color: white;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        border-radius: 5px;
+        padding: 15px;
+      }
+      .css-dialog-buttons > table {
+        float: right;
+      }
+      .css-dialog-buttons  td > button {
+        margin: 0 10px;
+        padding: 3px;
+      }
+      .css-dialog-editor {
+        position: relative;
+        height: 520px;
+      }
+
+      </style>
   
   
 </tag:page>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
+<tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>

@@ -17,12 +17,11 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -34,12 +33,10 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 
@@ -49,10 +46,11 @@ import com.serotonin.mango.vo.DataPointVO;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class DataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
+
+	private static final String TABLE_NAME = "dataPoints";
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -73,6 +71,16 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 
+	//dataPointUsers
+	private static final String COLUMN_NAME_DPU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DPU_ACCESS_TYPE = "permission";
+	private static final String COLUMN_NAME_DPU_DATA_POINT_ID = "dataPointId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
+	private static final String COLUMN_NAME_UP_PERMISSION = "permission";
+
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
@@ -91,10 +99,9 @@ public class DataPointDAO {
             + "select "
             + "dp." + COLUMN_NAME_ID + ", "
             + "dp." + COLUMN_NAME_XID + ", "
-            + "dp." + COLUMN_NAME_DATAPOINT_NAME + " "
-            + "from dataPoints dp join dataSources ds on "
-            + "ds." + COLUMN_NAME_DS_ID + "="
-            + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+            + "dp." + COLUMN_NAME_DATAPOINT_NAME + ", "
+			+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " "
+            + "from dataPoints dp ";
 
 	private static final String DATA_POINT_SELECT_PLC = "" +
 			"SELECT " +
@@ -146,6 +153,21 @@ public class DataPointDAO {
 			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
 			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
 
+
+	//dataSourceUsers
+	private static final String COLUMN_NAME_DSU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DSU_DATA_SOURCE_ID = "dataSourceId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_SOURCE_ID = "dataSourceId";
+
+	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME = ""
+			+ "dp.id in (select dpu." + COLUMN_NAME_DPU_DATA_POINT_ID + " from dataPointUsers dpu where dpu." + COLUMN_NAME_DPU_USER_ID + "=? and dpu." + COLUMN_NAME_DPU_ACCESS_TYPE +">?) or "
+			+ "dp.id in (select dpup." + COLUMN_NAME_UP_DATA_POINT_ID+" from dataPointUsersProfiles dpup where dpup." +COLUMN_NAME_UP_USER_PRFILE_ID + "=? and dpup."+COLUMN_NAME_UP_PERMISSION+">?) or "
+			+ "dp.dataSourceId in (select dsu." + COLUMN_NAME_DSU_DATA_SOURCE_ID + " from dataSourceUsers dsu where dsu." + COLUMN_NAME_DSU_USER_ID + "=?) or "
+			+ "dp.dataSourceId in (select dsup." + COLUMN_NAME_UP_DATA_SOURCE_ID + " from dataSourceUsersProfiles dsup where dsup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=?) "
+			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
+
 	// @formatter:on
 
 	private class DataPointRowMapper implements RowMapper<DataPointVO> {
@@ -192,8 +214,12 @@ public class DataPointDAO {
 
 		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
-		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.warn("datapoint does not exist for id: " + id + ", msg: " + e.getMessage());
+			return null;
+		}
 	}
 
 	public DataPointVO getDataPoint(String xid) {
@@ -251,6 +277,19 @@ public class DataPointDAO {
 		return dataPointList;
 	}
 
+	public List<DataPointVO> getDataPointByKeyword(String[] keywords) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointByKeyword(String search) search:" + keywords.toString());
+		}
+		String templateSelectWhereSearch = DATA_POINT_SELECT + " WHERE true ";
+		List<String> args = new ArrayList<String>();
+		for (String keyword : keywords) {
+			templateSelectWhereSearch += " AND dp." + COLUMN_NAME_DATAPOINT_NAME + " LIKE ? ";
+			args.add("%"+keyword+"%");
+		}
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch, new DataPointRowMapper(), args.toArray());
+	}
+
 	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
 
 		String templateSelectPlcWhereId = DATA_POINT_SELECT_PLC + " where (dp." + COLUMN_NAME_DATA_SOURCE_ID + "=? AND dp.plcAlarmLevel>0)";
@@ -295,24 +334,61 @@ public class DataPointDAO {
 		return keyHolder.getKey().intValue();
 	}
 
+	/**
+	 * Create DataPoint method v2
+	 *
+	 * DataPoint creation is the same but instead of
+	 * basic version this one returns DataPointVO object.
+	 *
+	 * @param entity Object to create
+	 * @return DataPointVO entity with unique ID number
+	 */
+	public DataPointVO create(DataPointVO entity) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[]{
+					entity.getXid(),
+					entity.getName(),
+					entity.getDataSourceId(),
+					new SerializationData().writeObject(entity),
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(entity.getName())
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		entity.setId(keyHolder.getKey().intValue());
+		return entity;
+	}
+
+	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
+		return getDataPoint(id);
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void update(DataPointVO dataPoint) {
+	public int update(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
-				PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
-				dataPoint.getXid(),
-				dataPoint.getName(),
-				new SerializationData().writeObject(dataPoint),
-				dataPoint.getId()
-		});
+		try {
+			return DAO.getInstance().getJdbcTemp().update(
+					DATA_POINT_UPDATE,
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
+					dataPoint.getXid(),
+					dataPoint.getName(),
+					new SerializationData().writeObject(dataPoint),
+					dataPoint.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("Data Point entity with id= " + dataPoint.getId() + " does not exists!");
+			return 0;
+		} catch (Exception e) {
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int id) {
+	public int delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int id) id:" + id);
@@ -320,7 +396,15 @@ public class DataPointDAO {
 
 		String templateDeleteIn = DATA_POINT_DELETE + "=?";
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
+		try {
+			DAO.getInstance().getJdbcTemp().update(templateDeleteIn, id);
+			return 0;
+		} catch (Exception e) {
+			String message = "FAILED ON DELETING DataPoint witj ID: ";
+			LOG.error(message + id);
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -359,17 +443,69 @@ public class DataPointDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
+	@Deprecated
 	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
 		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
-                new Object[] { userId },
-                new ScadaObjectIdentifierRowMapper.Builder()
-                        .idColumnName(COLUMN_NAME_ID)
-                        .xidColumnName(COLUMN_NAME_XID)
-                        .nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
-                        .build());
+		new Object[] { userId },
+		new ScadaObjectIdentifierRowMapper.Builder()
+			.idColumnName(COLUMN_NAME_ID)
+			.xidColumnName(COLUMN_NAME_XID)
+			.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+			.build());
+	}
+
+	public List<DataPointVO> selectDataPointsWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME,
+				new Object[] { userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE, userId, profileId },
+				new DataPointRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME,
+				new Object[] { userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE, userId, profileId },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+						.build());
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		ScadaObjectIdentifierRowMapper mapper = new ScadaObjectIdentifierRowMapper.Builder()
+				.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+				.idColumnName(COLUMN_NAME_ID)
+				.xidColumnName(COLUMN_NAME_XID)
+				.build();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers(int dataSourceId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("findIdentifiers(int dataSourceId) dataSourceId:" + dataSourceId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where dp." + COLUMN_NAME_DATA_SOURCE_ID + "=?", new Object[] {dataSourceId},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+						.build());
+	}
+
+	public List<DataPointVO> getDataPoints(String dataSourceXid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPoints(String dataSourceXid) dataSourceXid:" + dataSourceXid);
+		}
+
+		String templateSelectWhereXid = DATA_POINT_SELECT + " where ds." + COLUMN_NAME_DS_XID + "=?";
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereXid, new Object[] {dataSourceXid}, new DataPointRowMapper());
 	}
 }

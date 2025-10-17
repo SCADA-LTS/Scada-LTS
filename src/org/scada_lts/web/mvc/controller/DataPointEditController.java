@@ -18,16 +18,22 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
+import org.scada_lts.web.mvc.api.EngineeringUnitJson;
+import com.serotonin.mango.vo.EngineeringUnitsTypes;
+import com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -40,7 +46,6 @@ import org.springframework.web.util.WebUtils;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
@@ -54,6 +59,8 @@ import com.serotonin.propertyEditor.DecimalFormatEditor;
 import com.serotonin.propertyEditor.IntegerFormatEditor;
 import com.serotonin.util.StringUtils;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 /**
  * Controller for data point edition
  * Based on DataPointEditController from Mango by Matthew Lohbihler
@@ -63,16 +70,20 @@ import com.serotonin.util.StringUtils;
 @Controller
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
-	private static final Log LOG = LogFactory.getLog(LoginController.class);
+	private static final Log LOG = LogFactory.getLog(DataPointEditController.class);
 	
-	DataPointDao dataPointDao;
+	private final DataPointService dataPointService;
 	
     public static final String SUBMIT_SAVE = "save";
     public static final String SUBMIT_DISABLE = "disable";
     public static final String SUBMIT_ENABLE = "enable";
     public static final String SUBMIT_RESTART = "restart";
-    
-	@InitBinder("dataPointVO")
+
+    public DataPointEditController() {
+        this.dataPointService = new DataPointService();
+    }
+
+    @InitBinder("dataPointVO")
 	protected void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Double.TYPE, "tolerance", new DecimalFormatEditor(new DecimalFormat("#.##"), false));
         binder.registerCustomEditor(Integer.TYPE, "purgePeriod", new IntegerFormatEditor(new DecimalFormat("#"), false));
@@ -85,9 +96,10 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
+        CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
+        commonDataInterceptor.preHandle(request, null, null);
         User user = Common.getUser(request);
         Permissions.ensureAdmin(user);
-        dataPointDao = new DataPointDao();
         int id;
         String idStr = request.getParameter("dpid");
         if (idStr == null) {
@@ -96,12 +108,14 @@ public class DataPointEditController {
                 throw new ShouldNeverHappenException("dpid or pedid must be provided for this page");
 
             int pedid = Integer.parseInt(pedStr);
-            id = dataPointDao.getDataPointIdFromDetectorId(pedid);
+            id = dataPointService.getDataPointIdFromDetectorId(pedid);
         }
         else
             id = Integer.parseInt(idStr);
 
-        DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+        DataPointVO dataPoint = dataPointService.getDataPoint(id);
+        if(dataPoint == null)
+            throw new IllegalArgumentException("Data point does not exist for id: " + id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
@@ -112,13 +126,16 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		return "dataPointEdit";
+        model.addAttribute("unitsMap", EngineeringUnitsTypes.getUnitsGroupByKey());
+        model.addAttribute("unitsListJson", getUnitsListAsJson());
+        return "dataPointEdit";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveDataPoint(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
+        CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
+        commonDataInterceptor.preHandle(request, null, null);
         User user = Common.getUser(request);
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
@@ -128,9 +145,10 @@ public class DataPointEditController {
         ServletRequestDataBinder binder = new ServletRequestDataBinder(dataPoint);
         binder.bind(request);
         Map<String, String> errors = new HashMap<String, String>();
-        validate(dataPoint, errors);
+        validate(dataPoint, errors, request);
         
         if (errors.isEmpty()) {
+            setDefaultPurgeValuesWhenIncorrect(dataPoint);
         	executeUpdate(request, dataPoint, errors);
         }
         
@@ -142,7 +160,9 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		return "dataPointEdit";
+        model.addAttribute("unitsMap", EngineeringUnitsTypes.getUnitsGroupByKey());
+        model.addAttribute("unitsListJson", getUnitsListAsJson());
+        return "dataPointEdit";
 	}
 	
     private void executeUpdate(HttpServletRequest request, DataPointVO point, Map<String, String> errors) {
@@ -177,7 +197,7 @@ public class DataPointEditController {
     	}
     }
     
-    private void validate(DataPointVO point, Map<String, String> errors){
+    private void validate(DataPointVO point, Map<String, String> errors, HttpServletRequest request){
         if (StringUtils.isEmpty(point.getName()))
             errors.put("name", "validate.required");
 
@@ -204,32 +224,71 @@ public class DataPointEditController {
         	errors.put("discardHighLimit", "validate.greaterThanDiscardLow");
 
         if (point.getLoggingType() != DataPointVO.LoggingTypes.NONE) {
-            if (point.getPurgeType() != DataPointVO.PurgeTypes.DAYS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.WEEKS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.MONTHS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.YEARS)
-            	errors.put("purgeType", "validate.required");
+            if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+                if (point.getPurgeType() != DataPointVO.PurgeTypes.DAYS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.WEEKS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.MONTHS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.YEARS)
+                    errors.put("purgeType", "validate.required");
 
-            if (point.getPurgePeriod() <= 0)
-            	errors.put("purgePeriod", "validate.greaterThanZero");
+                if (point.getPurgePeriod() <= 0)
+                    errors.put("purgePeriod", "validate.greaterThanZero");
+            } else if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+                if (point.getPurgeValuesLimit() <= 1)
+                    errors.put("purgeValuesLimit", "validate.greaterThanOne");
+            }
         }
 
         if (point.getDefaultCacheSize() < 0)
         	errors.put("defaultCacheSize", "validate.cannotBeNegative");
 
         // Make sure that xids are unique
-        List<String> xids = new ArrayList<String>();
-        for (PointEventDetectorVO ped : point.getEventDetectors()) {
-            if (StringUtils.isEmpty(ped.getXid())) {
-            	errors.put("status", "validate.ped.xidMissing");
-                break;
-            }
+        List<String> xids = new ArrayList<>();
 
-            if (xids.contains(ped.getXid())) {
-            	errors.put(ped.getXid(), "validate.ped.xidUsed");
+        for (PointEventDetectorVO ped : point.getEventDetectors()) {
+
+            validateXid(errors, ped.getXid(), Common.getBundle(request), "eventDetector" + ped.getId() + "ErrorMessage");
+
+            if(!errors.isEmpty())
+                break;
+
+            if (xids.contains(ped.getXid()) || !dataPointService
+                    .isEventDetectorXidUnique(point.getId(), ped.getXid(), ped.getId())) {
+            	errors.put("eventDetector" + ped.getId() + "ErrorMessage", LocalizableMessage.getMessage(Common.getBundle(request),"validate.ped.xidUsed", ped.getXid()));
                 break;
             }
             xids.add(ped.getXid());
         }		
     }
+
+    private void setDefaultPurgeValuesWhenIncorrect(DataPointVO point) {
+        if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+            if (point.getPurgeValuesLimit() < 2)
+                point.setPurgeValuesLimit(SystemSettingsDAO
+                        .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        } else if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+            if (point.getPurgePeriod() <= 0)
+                point.setPurgePeriod(1);
+        }
+    }
+
+    private static String getUnitsListAsJson() {
+        List<EngineeringUnitJson> units = EngineeringUnitsTypes.getUnits().stream()
+                .map(EngineeringUnitJson::new)
+                .collect(Collectors.toList());
+
+        ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(units);
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            try {
+                return objectMapper.writeValueAsString(List.of(new EngineeringUnitJson(EngineeringUnitsTypes.NO_UNITS)));
+            } catch (Throwable ex) {
+                LOG.error(ex.getMessage());
+                return "[]";
+            }
+        }
+    }
+
 }

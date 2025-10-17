@@ -90,7 +90,7 @@ public class MySQLAccessTest extends AbstractMySQLDependentTest {
 		user.setHomeUrl("My home URL");
 		userDao.saveUser(user);
 
-		mysqlAccess.initialize();
+		mysqlAccess.initialize(this.getServletContextStub());
 
 		User userAfterSecondInitialization = userDao.getUser("admin");
 		assertEquals("My home URL", userAfterSecondInitialization.getHomeUrl());

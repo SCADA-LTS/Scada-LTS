@@ -1,12 +1,33 @@
 package org.scada_lts.utils;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.recursive.SearchCyclicDependencyAction;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.svg.SvgUtils;
+import org.scada_lts.utils.security.SafeFile;
+import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
+import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.text.MessageFormat;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static br.org.scadabr.vo.exporter.util.FileUtil.createSvgTempFile;
 
 public final class ValidationUtils {
+
+    private static final Logger LOG = LogManager.getLogger(ValidationUtils.class);
 
     private ValidationUtils() {}
 
@@ -14,12 +35,44 @@ public final class ValidationUtils {
         return msgIfNull("Correct id;", id);
     }
 
+    public static String validId(String id) {
+        return msgIfNull("Correct id;", id);
+    }
+
+    public static String validXid(String xid) {
+        return msgIfNullOrInvalid("Correct xid;", xid, StringUtils::isEmpty);
+    }
+
     public static String validXid(String xidExpected, String xid) {
         return msgIfNonNullAndInvalid("Correct xid;", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
     }
 
     public static String validId(Integer id, String xid) {
-        return msgIfNullAndInvalid("Correct id or xid;", id, a -> StringUtils.isEmpty(xid));
+        String errorId = validId(id);
+        if(errorId.isEmpty())
+            return "";
+        String errorXid = validXid(xid);
+        if (errorXid.isEmpty())
+            return "";
+        return "Correct id or xid;";
+    }
+
+    public static String validSvg(String xmlContent) {
+        SafeFile safeFile = null;
+        try {
+            File temp = createSvgTempFile(xmlContent);
+            safeFile = SafeFile.safe(temp);
+            if (SvgUtils.isSvg(safeFile)) {
+                return "";
+            }
+        } catch (Exception ex) {
+            LOG.error(LoggingUtils.exceptionInfo(ex));
+        } finally {
+            if(safeFile != null) {
+                safeFile.delete();
+            }
+        }
+        return "Invalid image";
     }
 
     static <T> String msgIfNull(String msg, T value) {
@@ -47,16 +100,53 @@ public final class ValidationUtils {
         return "";
     }
 
-    @Deprecated
-    static <T> String msgIfNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
-        if(Objects.isNull(value) && invalidIf.test(value)) {
-            return MessageFormat.format(msg, String.valueOf(value));
-        }
-        return "";
-    }
-
-
     public static String formatErrorsJson(String errors) {
         return "{\"errors\": \"" + errors + "\"}";
+    }
+
+    public static void checkArgsIfEmptyThenBadRequest(HttpServletRequest request, String message, Object... args) {
+        for(Object arg: args) {
+            if(arg == null) {
+                throw new BadRequestException(message, request.getRequestURI());
+            }
+            if((arg instanceof String) && StringUtils.isEmpty((String)arg)) {
+                throw new BadRequestException(message, request.getRequestURI());
+            }
+        }
+    }
+
+    public static void checkArgsIfTwoEmptyThenBadRequest(HttpServletRequest request, String message, Object arg1, Object arg2) {
+        if(arg1 == null && arg2 == null) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+        if((arg1 instanceof String) && StringUtils.isEmpty((String)arg1)) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+        if((arg2 instanceof String) && StringUtils.isEmpty((String)arg2)) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+    }
+
+    public static void checkIfNonAdminThenUnauthorized(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if (user == null || !user.isAdmin()) {
+            throw new UnauthorizedException(request.getRequestURI());
+        }
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints) {
+        int validationSearchCyclicDepth = SystemSettingsUtils.getValidationSearchCyclicDepth();
+        return isCyclicDependency(starDataPointId, findDataPointId, validationSearchCyclicDepth, dataPoints);
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, int validationSearchCyclicDepth, Map<Integer, DataPointVO> dataPoints) {
+        return isCyclicDependency(starDataPointId, findDataPointId, dataPoints, validationSearchCyclicDepth);
+    }
+
+    public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints, int searchDepth) {
+        Set<Boolean> result = new CopyOnWriteArraySet<>();
+        SearchCyclicDependencyAction searchCyclicDependencyAction = new SearchCyclicDependencyAction(starDataPointId, findDataPointId, dataPoints, searchDepth, result);
+        searchCyclicDependencyAction.call();
+        return result.stream().anyMatch(a -> a);
     }
 }

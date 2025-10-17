@@ -18,36 +18,29 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.util.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /** 
  * Controller for points hierarchy.
@@ -60,8 +53,11 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	//TODO add @Autowire
-	private PointHierarchyService phService = new PointHierarchyService();
+	private final PointHierarchyService pointHierarchyService;
+
+	public PointHierarchyController(PointHierarchyService pointHierarchyService) {
+		this.pointHierarchyService = pointHierarchyService;
+	}
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
@@ -77,48 +73,40 @@ public class PointHierarchyController {
 				
 				model.put("appName", request.getContextPath());
 				model.put("appPort", request.getLocalPort());
-				model.put("toYear",  DateTime.now().getYear());
+				model.put("toYear", DateUtils.getCurrentYearInt());
 				return new ModelAndView("pointHierarchySLTS", model);
 			} 
 		}
 		return new ModelAndView("redirect:/login.htm");
 	}
 
-	@RequestMapping(value = "/pointHierarchy/{key}", method = RequestMethod.GET)
-	public @ResponseBody String getPointHierarchy(@PathVariable("key") int key, HttpServletRequest request) {
+	@RequestMapping(value = "/pointHierarchy/{key}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<List<PointHierarchyNode>> getPointHierarchy(@PathVariable("key") int key, HttpServletRequest request) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("/pointHierarchy/{key} key:" + key);
 		}
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			String json = "";
+		if (user != null && user.isAdmin()) {
 			List<PointHierarchyNode> lst = null;
 			try {
 				lst = PointHierarchyCache.getInstance().getOnBaseParentId(key);
 			} catch (Exception e1) {
 				LOG.error(e1);
 			}
-
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				json = mapper.writeValueAsString(lst);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+			return ResponseEntity.ok(lst);
 		} else {
-			return "";
+			return ResponseEntity.ok(new ArrayList<>());
 		}
 	}
 
-	@RequestMapping(value = "/pointHierarchy/del/{parentId}/{key}/{isFolder}", method = RequestMethod.POST)
-	public @ResponseBody String deletePointHierarchy(@PathVariable("parentId") int parentId,
+	@RequestMapping(value = "/pointHierarchy/del/{parentId}/{key}/{isFolder}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<String> deletePointHierarchy(@PathVariable("parentId") int parentId,
 			@PathVariable("key") int key,@PathVariable("isFolder") boolean isFolder, HttpServletRequest request) throws InterruptedException {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("/pointHierarchy/del/{parentId}/{key} parentId:" + parentId + " key:" + key + " isFolder:"+isFolder);
 		}
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
+		if (user != null && user.isAdmin()) {
 			boolean ok = false;
 			if (isFolder) {
 				try {
@@ -126,7 +114,7 @@ public class PointHierarchyController {
 					List<PointHierarchyNode> elements = PointHierarchyCache.getInstance().getOnBaseParentId(key);
 					for (PointHierarchyNode element : elements) {
 						if (!element.isFolder()) {
-							phService.move(parentId, 0, element.getKey(), false);
+							pointHierarchyService.move(parentId, 0, element.getKey(), false);
 						}
 					}
 				} catch (Exception e) {
@@ -134,27 +122,20 @@ public class PointHierarchyController {
 					ok = false;
 				}
 
-			  	ok = phService.delete(parentId, key, isFolder);
+			  	ok = pointHierarchyService.delete(parentId, key, isFolder);
 			} else {
 				// is point
-			  ok = phService.move(parentId, 0, key, isFolder);
+			  ok = pointHierarchyService.move(parentId, 0, key, isFolder);
 			}
 
-			String json = "";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-			  json = mapper.writeValueAsString(ok);
-			} catch (JsonProcessingException e) {
-			  LOG.error(e);
-			}
-			return json;
+			return ResponseEntity.ok(String.valueOf(ok));
 		} else {
-			return "";
+			return ResponseEntity.ok("");
 		}
 	}
 
-	@RequestMapping(value = "/pointHierarchy/new/{newParentId}/{newTitle}", method = RequestMethod.POST)
-	public @ResponseBody String addPointHierarchy(@PathVariable("newParentId") int newParentId,
+	@RequestMapping(value = "/pointHierarchy/new/{newParentId}/{newTitle}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<String> addPointHierarchy(@PathVariable("newParentId") int newParentId,
 			@PathVariable("newTitle") String newTitle, ModelMap model, HttpServletRequest request)
 			throws IOException, NullPointerException {
 		if (LOG.isTraceEnabled()) {
@@ -162,100 +143,65 @@ public class PointHierarchyController {
 		}
 
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			int id = phService.add(PointHierarchyCache.ROOT, newTitle);
-			ObjectMapper mapper = new ObjectMapper();
-			String json = "";
-			try {
-				json = mapper.writeValueAsString(id);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+		if (user != null && user.isAdmin()) {
+			int id = pointHierarchyService.add(PointHierarchyCache.ROOT, newTitle);
+			return ResponseEntity.ok(String.valueOf(id));
 		} else {
-			return "";
+			return ResponseEntity.ok("");
 		}
 	}
 
-	@RequestMapping(value = "/pointHierarchy/edit/{parentId}/{key}/{newTitle}", method = RequestMethod.POST)
-	public @ResponseBody String editPointHierarchy(@PathVariable("parentId") int parentId, @PathVariable("key") int key,
+	@RequestMapping(value = "/pointHierarchy/edit/{parentId}/{key}/{newTitle}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<String> editPointHierarchy(@PathVariable("parentId") int parentId, @PathVariable("key") int key,
 			@PathVariable("newTitle") String newTitle, HttpServletRequest request) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("/pointHierarchy/edit/{key}/{newTitle} key:" + key + " newTitle:" + newTitle);
 		}
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			boolean ok = phService.edt(parentId, key, newTitle, true);
-			String json = "";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				json = mapper.writeValueAsString(ok);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+		if (user != null && user.isAdmin()) {
+			boolean ok = pointHierarchyService.edt(parentId, key, newTitle, true);
+			return ResponseEntity.ok(String.valueOf(ok));
 		} else {
-			return "";
+			return ResponseEntity.ok("");
 		}
 	}
 
-	@RequestMapping(value = "/pointHierarchy/move/{key}/{oldParentId}/{newParentId}/{isFolder}", method = RequestMethod.POST)
-	public @ResponseBody String movePointHierarchy(@PathVariable("key") int key,
+	@RequestMapping(value = "/pointHierarchy/move/{key}/{oldParentId}/{newParentId}/{isFolder}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<String> movePointHierarchy(@PathVariable("key") int key,
 			@PathVariable("oldParentId") int oldParentId, @PathVariable("newParentId") int newParentId,
 			@PathVariable("isFolder") boolean isFolder, HttpServletRequest request) {
 		LOG.info("/pointHierarchy/move/{key}/{oldParentId}/{newParentId}" + " key:" + key + "" + " oldParentId:"
 				+ oldParentId + "" + " newParentId:" + newParentId + "" + " isFolder:" + isFolder);
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			phService.move(oldParentId, newParentId, key, isFolder);
-			String json = "";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				json = mapper.writeValueAsString(true);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+		if (user != null && user.isAdmin()) {
+			pointHierarchyService.move(oldParentId, newParentId, key, isFolder);
+			return ResponseEntity.ok(String.valueOf(true));
 		} else {
-			return "";
+			return ResponseEntity.ok("");
 		}
 	}
 	
-	@RequestMapping(value = "/pointHierarchy/find/{search}/{page}", method = RequestMethod.GET)
-	public @ResponseBody String find(@PathVariable("search") String search, @PathVariable("page") int page, HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/pointHierarchy/find/{search}/{page}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<List<PointHierarchyNode>> find(@PathVariable("search") String search, @PathVariable("page") int page, HttpServletRequest request) throws Exception {
 		LOG.info("/pointHierarchy/find/{search} search:"+search+" page:"+page);
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			List<PointHierarchyNode> lst = phService.search(search, page);
-			String json = "";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				json = mapper.writeValueAsString(lst);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+		if (user != null && user.isAdmin()) {
+			List<PointHierarchyNode> lst = pointHierarchyService.search(search, page);
+			return ResponseEntity.ok(lst);
 		} else {
-			return "";
+			return ResponseEntity.ok(new ArrayList<>());
 		}
 	}
 	
-	@RequestMapping(value = "/pointHierarchy/paths/{key}/{isFolder}", method = RequestMethod.GET)
-	public @ResponseBody String find(@PathVariable("key") int key, @PathVariable("isFolder") boolean isFolder, @PathVariable("interval") int interval, HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/pointHierarchy/paths/{key}/{isFolder}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<List<PointHierarchyNode>> find(@PathVariable("key") int key, @PathVariable("isFolder") boolean isFolder, @PathVariable("interval") int interval, HttpServletRequest request) throws Exception {
 		LOG.info("/pointHierarchy/paths/{key}/{isFolder} key:"+key+" isFolder:"+isFolder+" interval:"+interval);
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
-			List<PointHierarchyNode> lst = phService.getPaths(key, isFolder);
-			String json = "";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				json = mapper.writeValueAsString(lst);
-			} catch (JsonProcessingException e) {
-				LOG.error(e);
-			}
-			return json;
+		if (user != null && user.isAdmin()) {
+			List<PointHierarchyNode> lst = pointHierarchyService.getPaths(key, isFolder);
+			return ResponseEntity.ok(lst);
 		} else {
-			return "";
+			return ResponseEntity.ok(new ArrayList<>());
 		}
 	}
 }

@@ -51,10 +51,6 @@ public class Oracle11GAccess extends BasePooledAccess {
 	private static final String ORACLE_DRIVER_CLASS = "oracle.jdbc.OracleDriver";
 	private final Log log = LogFactory.getLog(Oracle11GAccess.class);
 
-	public Oracle11GAccess(ServletContext ctx) {
-		super(ctx);
-	}
-
 	@Override
 	protected void initializeImpl(String propertyPrefix) {
 		super.initializeImpl(propertyPrefix);
@@ -81,7 +77,7 @@ public class Oracle11GAccess extends BasePooledAccess {
 	}
 
 	@Override
-	protected void createSchema(String scriptFile) {
+	protected void createSchema(String scriptFile, ServletContext ctx) {
 
 		// Create MySql Connection
 		try {
@@ -112,7 +108,7 @@ public class Oracle11GAccess extends BasePooledAccess {
 	}
 
 	@Override
-	protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
+	protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
 		try {
 			ejt.execute("select count(*) from users");
 		} catch (DataAccessException e) {
@@ -123,7 +119,7 @@ public class Oracle11GAccess extends BasePooledAccess {
 								.getCode()) {
 					// This state means a missing table. Assume that the schema
 					// needs to be created.
-					createSchema(CREATE_SCHEMA_SCRIPT_PATH);
+					createSchema(CREATE_SCHEMA_SCRIPT_PATH, ctx);
 					return true;
 				}
 			}

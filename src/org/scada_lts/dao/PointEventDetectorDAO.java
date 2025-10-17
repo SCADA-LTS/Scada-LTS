@@ -21,21 +21,25 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.SystemSettingsUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -45,8 +49,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
-public class PointEventDetectorDAO {
+public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointEventDetectorDAO.class);
 
@@ -84,6 +87,7 @@ public class PointEventDetectorDAO {
 				+ COLUMN_NAME_MULTISTATE_STATE + ", "
 				+ COLUMN_NAME_CHANGE_COUNT + ", "
 				+ COLUMN_NAME_ALPHANUMERIC_STATE + ", "
+			    + COLUMN_NAME_DATA_POINT_ID + ", "
 				+ COLUMN_NAME_WEIGHT + " "
 			+ "from pointEventDetectors ";
 
@@ -207,6 +211,32 @@ public class PointEventDetectorDAO {
 		}
 	}
 
+	private class PointEventDetectorDataPointIdRowMapper implements RowMapper<PointEventDetectorVO> {
+
+		@Override
+		public PointEventDetectorVO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
+			pointEventDetector.setId(rs.getInt(COLUMN_NAME_ID));
+			pointEventDetector.setXid(rs.getString(COLUMN_NAME_XID));
+			pointEventDetector.setAlias(rs.getString(COLUMN_NAME_ALIAS));
+			pointEventDetector.setDetectorType(rs.getInt(COLUMN_NAME_DETECTOR_TYPE));
+			pointEventDetector.setAlarmLevel(rs.getInt(COLUMN_NAME_ALARM_LEVEL));
+			pointEventDetector.setLimit(rs.getDouble(COLUMN_NAME_STATE_LIMIT));
+			pointEventDetector.setDuration(rs.getInt(COLUMN_NAME_DURATION));
+			pointEventDetector.setDurationType(rs.getInt(COLUMN_NAME_DURATION_TYPE));
+			pointEventDetector.setBinaryState(DAO.charToBool(rs.getString(COLUMN_NAME_BINARY_STATE)));
+			pointEventDetector.setMultistateState(rs.getInt(COLUMN_NAME_MULTISTATE_STATE));
+			pointEventDetector.setChangeCount(rs.getInt(COLUMN_NAME_CHANGE_COUNT));
+			pointEventDetector.setAlphanumericState(rs.getString(COLUMN_NAME_ALPHANUMERIC_STATE));
+			pointEventDetector.setWeight(rs.getDouble(COLUMN_NAME_WEIGHT));
+			DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault(), SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+			dataPointVO.setId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+			pointEventDetector.njbSetDataPoint(dataPointVO);
+			return pointEventDetector;
+		}
+	}
+
+	@Override
 	public int getDataPointId(int pointEventDetectorId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -218,6 +248,7 @@ public class PointEventDetectorDAO {
 		
 	}
 
+	@Override
 	public List<PointEventDetectorVO> getPointEventDetectors(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -232,6 +263,7 @@ public class PointEventDetectorDAO {
 
 	}
 
+	@Deprecated
 	public int getId(String pointEventDetectorXid, int dataPointId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -250,6 +282,7 @@ public class PointEventDetectorDAO {
 		
 	}
 
+	@Deprecated
 	public String getXid(int pointEventDetectorId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -261,6 +294,7 @@ public class PointEventDetectorDAO {
 
 	}
 
+	@Override
 	public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -273,8 +307,9 @@ public class PointEventDetectorDAO {
 		return size == 0;
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(final PointEventDetectorVO pointEventDetector) {
+	public int insert(int dataPointId, final PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -305,11 +340,14 @@ public class PointEventDetectorDAO {
 			}
 		}, keyHolder);
 
-		return keyHolder.getKey().intValue();
+		int id = keyHolder.getKey().intValue();
+		pointEventDetector.setId(id);
+		return id;
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void update(PointEventDetectorVO pointEventDetector) {
+	public void update(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -332,8 +370,9 @@ public class PointEventDetectorDAO {
 		);
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void updateWithType(PointEventDetectorVO pointEventDetector) {
+	public void updateWithType(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
@@ -357,19 +396,21 @@ public class PointEventDetectorDAO {
 		);
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int dataPointId, int pointEventDetectorId) {
+	public void delete(int dataPointId, PointEventDetectorVO pointEventDetector) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("delete(int dataPointId) dataPointId:" + pointEventDetectorId);
+			LOG.trace("delete(int dataPointId, PointEventDetectorVO pointEventDetector) dataPointId:" + pointEventDetector + ", pointEventDetector: " + pointEventDetector);
 		}
 
 		String templateDelete = POINT_EVENT_DETECTOR_DELETE + " id=?";
 
-		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataPointId, pointEventDetectorId});
-		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetectorId});
+		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataPointId, pointEventDetector.getId()});
+		DAO.getInstance().getJdbcTemp().update(templateDelete, new Object[] {pointEventDetector.getId()});
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteWithId(String dataPointIds) {
 
@@ -386,5 +427,71 @@ public class PointEventDetectorDAO {
 		queryBuilder.append(")");
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
+
+	@Override
+	public PointEventDetectorVO getPointEventDetector(int pointEventDetectorId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointEventDetector(int pointEventDetectorId) pointEventDetectorId:" +pointEventDetectorId);
+		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_ID + "=? "
+				+ "order by " + COLUMN_NAME_ID;
+
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
+					new Object[]{pointEventDetectorId}, new PointEventDetectorRowMapper(null));
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return null;
+		}
+
+	}
+
+	@Override
+	public PointEventDetectorVO getPointEventDetector(String pointEventDetectorXid, int dataPointId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointEventDetector(String pointEventDetectorXid, int dataPointId) pointEventDetectorXid:" +pointEventDetectorXid + ", dataPointId:" + dataPointId);
+		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "where " + COLUMN_NAME_XID + "=? and " + COLUMN_NAME_DATA_POINT_ID + "=?"
+				+ " order by " + COLUMN_NAME_ID;
+
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereIdOrderBy,
+					new Object[]{pointEventDetectorXid, dataPointId}, new PointEventDetectorRowMapper(null));
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		} catch (IncorrectResultSizeDataAccessException ex) {
+			LOG.warn("There is more than one detector with xid:" + pointEventDetectorXid + ", dataPointId:" + dataPointId + ", msg: " +ex.getMessage(), ex);
+			return new PointEventDetectorVO(Common.NEW_ID, null);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return new PointEventDetectorVO(Common.NEW_ID, null);
+		}
+	}
+
+	public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getPointEventDetector(long limit, int offset) limit:" +limit + ", offset:" + offset);
+		}
+
+		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID + " LIMIT ? OFFSET ?";
+
+		try {
+			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, new Object[]{limit, offset}, new PointEventDetectorDataPointIdRowMapper());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (IncorrectResultSizeDataAccessException ex) {
+			LOG.warn("There is more than one detector with limit:" + limit + ", offset:" + offset + ", msg: " +ex.getMessage(), ex);
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
 	}
 }

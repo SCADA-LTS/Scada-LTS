@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -35,6 +36,8 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * Data sources are things that produce data for consumption of this system. Anything that houses, creates, manages, or
  * otherwise can get data to Mango can be considered a data source. As such, this interface can more precisely be
@@ -49,7 +52,11 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class DataSourceRT implements ILifecycle {
+
+    @Deprecated(since = "2.8.0")
     public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
+    private volatile boolean initialized;
 
     private final DataSourceVO<?> vo;
 
@@ -73,14 +80,14 @@ abstract public class DataSourceRT implements ILifecycle {
     /**
      * Access to either the addedPoints or removedPoints lists should be synchronized with this object's monitor.
      */
-    protected Boolean pointListChangeLock = new Boolean(false);
+    protected final Object pointListChangeLock = new Object();
 
     private final List<DataSourceEventType> eventTypes;
 
     public DataSourceRT(DataSourceVO<?> vo) {
         this.vo = vo;
 
-        eventTypes = new ArrayList<DataSourceEventType>();
+        eventTypes = new ArrayList<>();
         for (EventTypeVO etvo : vo.getEventTypes())
             eventTypes.add((DataSourceEventType) etvo.createEventType());
     }
@@ -126,6 +133,11 @@ abstract public class DataSourceRT implements ILifecycle {
 
     abstract public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source);
 
+    protected abstract List<DataPointRT> getDataPoints();
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     public void relinquish(@SuppressWarnings("unused") DataPointRT dataPoint) {
         throw new ShouldNeverHappenException("not implemented in " + getClass());
     }
@@ -134,28 +146,70 @@ abstract public class DataSourceRT implements ILifecycle {
         // No op by default. Override as required.
     }
 
-    public static void raiseEvent(String describe, DataSourceVO vo) {
+    public static void raiseEvent(String describe, DataSourceVO<?> vo) {
         LocalizableMessage message = new LocalizableMessage("event.ds.describe", "", describe);
         int urgentAlarmLevel = 2;
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
+        DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
+        if(dataSourceRT != null && dataSourceRT.doSetUnreliableDataPoint(dset.getDataSourceEventTypeId())) {
+            setUnreliableDataPoints(dataSourceRT.getDataPoints());
+        }
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+        DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("dataSource", vo);
+
+        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
+
+        if(doSetUnreliableDataPoint(eventId)) {
+            if (dataPointId == -1) {
+                setUnreliableDataPoints(getDataPoints());
+            } else {
+                for (DataPointRT dataPoint : getDataPoints()) {
+                    if (dataPoint.getId() == dataPointId) {
+                        setUnreliableDataPoint(dataPoint);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void returnToNormal(int eventId, long time, int dataPointId) {
+        DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
+        Common.ctx.getEventManager().returnToNormal(type, time);
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
-        DataSourceEventType type = getEventType(eventId);
-
-        Map<String, Object> context = new HashMap<String, Object>();
-        context.put("dataSource", vo);
-
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
+        raiseEvent(eventId, time, rtn, message, -1);
     }
 
     protected void returnToNormal(int eventId, long time) {
-        DataSourceEventType type = getEventType(eventId);
-        Common.ctx.getEventManager().returnToNormal(type, time);
+        returnToNormal(eventId, time, -1);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
+        raiseEvent(eventId, time, rtn, message, dataPoint.getId());
+    }
+
+    protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
+        returnToNormal(eventId, time, dataPoint.getId());
+    }
+
+    private DataSourceEventType getDataSourceEventType(int eventId, int dataPointId) {
+        DataSourceEventType eventType = getEventType(eventId);
+        if(eventType == null)
+            return null;
+        if(dataPointId == Common.NEW_ID)
+            return eventType;
+        return new DataSourcePointEventType(eventType, dataPointId);
     }
 
     protected DataSourceEventType getEventType(int eventId) {
@@ -166,7 +220,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return null;
     }
 
-    protected LocalizableMessage getSerialExceptionMessage(Exception e, String portId) {
+    protected LocalizableMessage getSerialExceptionMessage(Throwable e, String portId) {
         if (e instanceof NoSuchPortException)
             return new LocalizableMessage("event.serial.portOpenError", portId);
         if (e instanceof PortInUseException)
@@ -174,7 +228,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return getExceptionMessage(e);
     }
 
-    protected static LocalizableMessage getExceptionMessage(Exception e) {
+    protected static LocalizableMessage getExceptionMessage(Throwable e) {
         return new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage());
     }
 
@@ -185,9 +239,11 @@ abstract public class DataSourceRT implements ILifecycle {
     //
     public void initialize() {
         // no op
+        this.initialized = true;
     }
 
     public void terminate() {
+        this.initialized = false;
         // Remove any outstanding events.
         Common.ctx.getEventManager().cancelEventsForDataSource(vo.getId());
     }
@@ -200,5 +256,9 @@ abstract public class DataSourceRT implements ILifecycle {
     // Additional lifecycle.
     public void beginPolling() {
         // no op
+    }
+
+    public boolean doSetUnreliableDataPoint(int eventId) {
+        return true;
     }
 }

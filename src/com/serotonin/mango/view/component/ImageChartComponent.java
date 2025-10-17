@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import com.serotonin.json.JsonException;
@@ -62,6 +63,14 @@ public class ImageChartComponent extends CompoundComponent {
 
     public ImageChartComponent() {
         initialize();
+    }
+
+    private ImageChartComponent(ImageChartComponent imageChartComponent) {
+        super(imageChartComponent);
+        this.width = imageChartComponent.getWidth();
+        this.height = imageChartComponent.getHeight();
+        this.durationType = imageChartComponent.getDurationType();
+        this.durationPeriods = imageChartComponent.getDurationPeriods();
     }
 
     @Override
@@ -113,6 +122,11 @@ public class ImageChartComponent extends CompoundComponent {
 
     public void setDurationPeriods(int durationPeriods) {
         this.durationPeriods = durationPeriods;
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new ImageChartComponent(this);
     }
 
     @Override
@@ -184,5 +198,29 @@ public class ImageChartComponent extends CompoundComponent {
         super.jsonSerialize(map);
 
         map.put("durationType", Common.TIME_PERIOD_CODES.getCode(durationType));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ImageChartComponent)) return false;
+        if (!super.equals(o)) return false;
+        ImageChartComponent that = (ImageChartComponent) o;
+        return getWidth() == that.getWidth() && getHeight() == that.getHeight() && getDurationType() == that.getDurationType() && getDurationPeriods() == that.getDurationPeriods();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getWidth(), getHeight(), getDurationType(), getDurationPeriods());
+    }
+
+    @Override
+    public String toString() {
+        return "ImageChartComponent{" +
+                "width=" + width +
+                ", height=" + height +
+                ", durationType=" + durationType +
+                ", durationPeriods=" + durationPeriods +
+                "} " + super.toString();
     }
 }

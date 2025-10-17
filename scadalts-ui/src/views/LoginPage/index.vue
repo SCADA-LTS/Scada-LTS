@@ -12,6 +12,7 @@
 					<v-row>
 						<v-col cols="12">
 							<v-text-field
+								autofocus
 								v-model="user.username"
 								:label="$t('loginPage.username')"
 								:rules="[(v) => !!v || $t('loginPage.validation.username')]"
@@ -33,9 +34,9 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn :disabled="!valid" block color="primary" @click="login()">{{$t('loginPage.login')}}</v-btn>
+					<v-btn @click="login" :disabled="!valid" block color="primary">{{$t('loginPage.login')}}</v-btn>
 				</v-card-actions>
-			</v-form>
+			</v-form>			
 		</v-card>
 
 	</v-container>
@@ -56,21 +57,37 @@ export default {
 		};
 	},
 
+	created() {
+		window.addEventListener('keyup', this.getEnterKey);
+	},
+
+	beforeDestroy() {
+		window.removeEventListener('keyup', this.getEnterKey);
+	},
+
 	methods: {
-		login() {
+		async login() {
             this.errorMessage = '';
 			if (this.valid) {
-				this.$store.dispatch('loginUser', this.user).then((r) => {
-					if (r) {
+				try {
+					let logged = await this.$store.dispatch('loginUser', this.user);
+					if (logged) {
 						this.$router.push({ name: 'datapoint-list' });
-					} else {
-						this.errorMessage = this.$t('loginPage.validation.not.valid');
+						return;
 					}
-				}).catch(()=> {
-                    this.errorMessage = this.$t('loginPage.validation.not.valid');
-                });
+					this.errorMessage = this.$t('loginPage.validation.not.valid');
+				} catch (e) {
+					this.errorMessage = e.message;
+				}
 			}
 		},
+
+		getEnterKey(e) {
+			if(e.keyCode === 13) {
+				this.$refs.loginForm.validate();
+				this.login();
+			}
+		}
 	},
 };
 </script>

@@ -22,6 +22,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.*;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -36,10 +37,6 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.ImageValue;
 import com.serotonin.mango.view.ShareUser;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.DataExportDefinition;
@@ -47,7 +44,6 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 public class WatchListDwr extends BaseDwr {
@@ -429,7 +425,7 @@ public class WatchListDwr extends BaseDwr {
 	//
 	// Share users
 	//
-	@MethodFilter
+	
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType) {
 		WatchList watchList = Common.getUser().getWatchList();
 		boolean found = false;
@@ -453,7 +449,7 @@ public class WatchListDwr extends BaseDwr {
 		return watchList.getWatchListUsers();
 	}
 
-	@MethodFilter
+	
 	public List<ShareUser> removeSharedUser(int userId) {
 		WatchList watchList = Common.getUser().getWatchList();
 
@@ -469,7 +465,7 @@ public class WatchListDwr extends BaseDwr {
 		return watchList.getWatchListUsers();
 	}
 
-	@MethodFilter
+	
 	public void getChartData(int[] pointIds, int fromYear, int fromMonth,
 			int fromDay, int fromHour, int fromMinute, int fromSecond,
 			boolean fromNone, int toYear, int toMonth, int toDay, int toHour,

@@ -1,9 +1,14 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.dataImage.PointValueState;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
+import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.RestApiSource;
+import com.serotonin.mango.vo.User;
 import com.serotonin.util.ObjectUtils;
 
 public final class PointValueStateUtils {
@@ -20,13 +25,13 @@ public final class PointValueStateUtils {
         return false;
     }
 
-    public static boolean isLogValue(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
+    public static boolean isLogValue(PointValueTime newValue, PointValueState oldState, DataPointVO vo, SetPointSource source) {
         double toleranceOrigin = getToleranceOrigin(newValue, oldState, false);
         if(isLoggingTypeIn(vo, DataPointVO.LoggingTypes.ON_CHANGE, DataPointVO.LoggingTypes.ALL,
                 DataPointVO.LoggingTypes.ON_TS_CHANGE)) {
             switch (vo.getLoggingType()) {
                 case DataPointVO.LoggingTypes.ON_CHANGE:
-                    return isChange(newValue, oldState, toleranceOrigin, vo.getTolerance());
+                    return isChange(newValue, oldState, toleranceOrigin, vo.getTolerance(), source);
                 case DataPointVO.LoggingTypes.ALL:
                     return true;
                 case DataPointVO.LoggingTypes.ON_TS_CHANGE:
@@ -58,15 +63,22 @@ public final class PointValueStateUtils {
         return true;
     }
 
-    public static boolean isBackdated(PointValueTime newValue, PointValueState oldState) {
-        return !oldState.isEmpty() && newValue.getTime() < oldState.getNewValue().getTime();
+    public static boolean isBackdated(PointValueTime newValue, PointValueState oldState, SetPointSource source) {
+        return newValue != null && !oldState.isEmpty()
+                && newValue.getTime() < oldState.getNewValue().getTime()
+                && !isSetPoint(source);
+    }
+
+    public static boolean isSetPoint(SetPointSource source) {
+        return source instanceof SetPointHandlerRT || source instanceof User
+                || source instanceof PointLinkSetPointSource || source instanceof RestApiSource;
     }
 
     private static boolean isChange(PointValueTime newValue, PointValueState oldState,
-                                    double toleranceOrigin, double tolerance) {
+                                    double toleranceOrigin, double tolerance, SetPointSource source) {
         if (oldState.isEmpty()) {
             return true;
-        } else if (isBackdated(newValue, oldState)) {
+        } else if (isBackdated(newValue, oldState, source)) {
             return false;
         } else {
             if (newValue.getValue() instanceof NumericValue) {

@@ -54,10 +54,21 @@
 </p>
 
 <p>
-  Le param&egrave;tre <b>Purge</b> determine la dur&eacute;e d'historisation de la valeur du point dans la base de donn&eacute;e.
-  Les valeurs peuvent en pratique &ecirc;tre conserv&eacute;es aussi longtemps que n&eacute;cessaire, mais notez que ceci peut engendrer des d&eacute;gradation de performance du syst&egrave;me
-  si l'historique d'un point devient trop important. (En fait, la performance du syst&egrave;me d&eacute;pent en grande partie du mat&eacute;riel h&ocirc;te.) 
+  The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
   Le processus de purge se lance chaque jour &agrave; 3h 05 heure locale.
+</p>
+
+<p>
+  Le param&egrave;tre <b>Period</b> determine la dur&eacute;e d'historisation de la valeur du point dans la base de donn&eacute;e.
+  Les valeurs peuvent en pratique &ecirc;tre conserv&eacute;es aussi longtemps que n&eacute;cessaire, mais notez que ceci peut engendrer des d&eacute;gradation de performance du syst&egrave;me
+  si l'historique d'un point devient trop important. (En fait, la performance du syst&egrave;me d&eacute;pent en grande partie du mat&eacute;riel h&ocirc;te)
+
+</p>
+
+<p>
+  When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+  <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+  system settings (<b>Values limit for purge</b>).
 </p>
 
 <p>

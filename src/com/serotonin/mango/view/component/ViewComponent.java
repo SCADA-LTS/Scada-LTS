@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
@@ -158,8 +154,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			result.add(def.getExportName());
 		return result;
 	}
-
+	@JsonRemoteProperty
 	private int index;
+	@JsonRemoteProperty
 	private String idSuffix;
 	private String style;
 	@JsonRemoteProperty
@@ -168,6 +165,18 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	private int y;
 	@JsonRemoteProperty
 	private int z = 2;
+
+	protected ViewComponent() {
+	}
+
+	protected ViewComponent(ViewComponent viewComponent) {
+		this.index = viewComponent.getIndex();
+		this.idSuffix = viewComponent.getIdSuffix();
+		this.style = viewComponent.getStyle();
+		this.x = viewComponent.getX();
+		this.y = viewComponent.getY();
+		this.z = viewComponent.getZ();
+	}
 
 	public void setLocation(int x, int y) {
 		this.x = x;
@@ -183,6 +192,8 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	abstract public boolean isValid();
 
 	abstract public boolean containsValidVisibleDataPoint(int dataPointId);
+
+	public abstract ViewComponent copy();
 
 	public boolean isPointComponent() {
 		return false;
@@ -268,6 +279,21 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 					"validate.cannotBeNegative"));
 		if (y < 0)
 			response.addMessage("y", new LocalizableMessage(
+					"validate.cannotBeNegative"));
+		if (z < 0)
+			response.addMessage("z", new LocalizableMessage(
+					"validate.cannotBeNegative"));
+	}
+
+	public void validate(String prefix, DwrResponseI18n response) {
+		if (x < 0)
+			response.addMessage(prefix + "x", new LocalizableMessage(
+					"validate.cannotBeNegative"));
+		if (y < 0)
+			response.addMessage(prefix + "y", new LocalizableMessage(
+					"validate.cannotBeNegative"));
+		if (z < 0)
+			response.addMessage(prefix + "z", new LocalizableMessage(
 					"validate.cannotBeNegative"));
 	}
 
@@ -384,5 +410,30 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 			return resolveClass(def);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ViewComponent)) return false;
+		ViewComponent that = (ViewComponent) o;
+		return getIndex() == that.getIndex() && getX() == that.getX() && getY() == that.getY() && getZ() == that.getZ() && Objects.equals(getIdSuffix(), that.getIdSuffix()) && Objects.equals(getStyle(), that.getStyle());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getIndex(), getIdSuffix(), getStyle(), getX(), getY(), getZ());
+	}
+
+	@Override
+	public String toString() {
+		return "ViewComponent{" +
+				"index=" + index +
+				", idSuffix='" + idSuffix + '\'' +
+				", style='" + style + '\'' +
+				", x=" + x +
+				", y=" + y +
+				", z=" + z +
+				'}';
 	}
 }

@@ -17,11 +17,32 @@ public class EventDTO {
     private int alarmLevel;
     private String message;
     private long ackTs;
-    private String username;
     private int ackAlternateSource;
     private List<UserComment> userComments;
+    private String xid;
+    private boolean silenced;
+    private int comments;
+    private String username;
 
     public EventDTO() {
+    }
+
+    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, int ackAlternateSource, String xid, boolean silenced, int comments) {
+        this.id = id;
+        this.typeId = typeId;
+        this.typeRef1 = typeRef1;
+        this.typeRef2 = typeRef2;
+        this.activeTs = activeTs;
+        this.rtnApplicable = rtnApplicable;
+        this.rtnTs = rtnTs;
+        this.rtnCause = rtnCause;
+        this.alarmLevel = alarmLevel;
+        this.message = message;
+        this.ackTs = ackTs;
+        this.ackAlternateSource = ackAlternateSource;
+        this.xid = xid;
+        this.silenced = silenced;
+        this.comments = comments;
     }
 
     public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, String username, int ackAlternateSource) {
@@ -128,14 +149,6 @@ public class EventDTO {
         this.ackTs = ackTs;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public int getAckAlternateSource() {
         return ackAlternateSource;
     }
@@ -150,5 +163,21 @@ public class EventDTO {
 
     public void setUserComments(List<UserComment> userComments) {
         this.userComments = userComments;
+    }
+
+    public String getXid() { return xid; }
+
+    public void setXid(String xid) { this.xid = xid; }
+
+    public boolean isSilenced() { return silenced; }
+
+    public void setSilenced(boolean silenced) { this.silenced = silenced; }
+
+    public int getComments() {
+        return comments;
+    }
+
+    public void setComments(int comments) {
+        this.comments = comments;
     }
 }

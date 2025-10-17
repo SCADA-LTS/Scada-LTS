@@ -30,6 +30,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 /**
  * @author Matthew Lohbihler
  */
+@Deprecated
 public class LoggedInAjaxFilter implements AjaxFilter {
     private static final Log LOG = LogFactory.getLog(LoggedInAjaxFilter.class);
 

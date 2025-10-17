@@ -2,17 +2,19 @@ package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.mvc.api.json.JsonUserComment;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
 import static org.scada_lts.utils.UserCommentApiUtils.validUserCommentWithTs;
@@ -24,34 +26,37 @@ public class UserCommentAPI {
 
     private static final Log LOG = LogFactory.getLog(UserCommentAPI.class);
 
-    @Resource
-    private UserCommentService userCommentService;
+    private final UserCommentService userCommentService;
+
+    public UserCommentAPI() {
+        this.userCommentService = ApplicationBeans.getUserCommentServiceBean();
+    }
 
     /**
      * Create User Comment
      *
      * @param request HTTP request
-     * @param body UserComment object
+     * @param createUserComment String comment
      * @param typeId UserComment type (1 - Event or 2 - Point)
      * @param refId Reference ID of the object
      *
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody UserComment body, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<?> createUserComment(HttpServletRequest request, @Valid @RequestBody CreateUserComment createUserComment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                String error = validUserComment(typeId, refId, body);
+                String error = validUserComment(typeId, refId, createUserComment.getCommentText());
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                int result = userCommentService.setUserComment(body, typeId, refId);
-                if(result != 0) {
-                    return new ResponseEntity<>(String.valueOf(result), HttpStatus.CREATED);
-                } else {
-                    return new ResponseEntity<>(String.valueOf(result), HttpStatus.BAD_REQUEST);
-                }
+                return userCommentService.addUserComment(createUserComment.getCommentText(), typeId, refId, user).map(a -> {
+                            JsonUserComment comment = new JsonUserComment(a.getUserId(), typeId, a.getTypeKey(),
+                                    a.getTs(), a.getComment(), a.getUsername(), a.getPrettyTime());
+                            return new ResponseEntity<>(comment, HttpStatus.CREATED);
+                        })
+                        .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -91,6 +96,27 @@ public class UserCommentAPI {
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    static class CreateUserComment {
+
+        @XssProtect
+        private String commentText;
+
+        public CreateUserComment() {
+        }
+
+        public CreateUserComment(String commentText) {
+            this.commentText = commentText;
+        }
+
+        public String getCommentText() {
+            return commentText;
+        }
+
+        public void setCommentText(String commentText) {
+            this.commentText = commentText;
         }
     }
 }

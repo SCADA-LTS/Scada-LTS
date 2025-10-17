@@ -18,39 +18,34 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.springframework.beans.propertyeditors.LocaleEditor;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.*;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.util.DocumentationItem;
 import com.serotonin.mango.util.DocumentationManifest;
 import com.serotonin.mango.vo.DataPointVO;
@@ -63,12 +58,14 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.dwr.longPoll.LongPollData;
 import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
 import com.serotonin.mango.web.dwr.longPoll.LongPollState;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
+import static com.serotonin.mango.util.ViewControllerUtils.*;
 
 public class MiscDwr extends BaseDwr {
 	public static final Log LOG = LogFactory.getLog(MiscDwr.class);
@@ -86,26 +83,28 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventDao()
-					.toggleSilence(eventId, user.getId());
-			resetLastAlarmLevelChange();
-			response.addData("silenced", result);
-		} else
+			EventService eventService = new EventService();
+			EventInstance event = eventService.getEvent(eventId);
+			if(event != null) {
+				boolean result = eventService.toggleSilence(event, user);
+				resetLastAlarmLevelChange();
+				response.addData("silenced", result);
+			} else {
+				response.addData("silenced", false);
+			}
+		} else {
 			response.addData("silenced", false);
-
+		}
 		return response;
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n silenceAll() {
-		List<Integer> silenced = new ArrayList<Integer>();
+		List<Integer> silenced = new ArrayList<>();
 		User user = Common.getUser();
-		EventDao eventDao = new EventDao();
-		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
-			if (!evt.isSilenced()) {
-				eventDao.toggleSilence(evt.getId(), user.getId());
-				silenced.add(evt.getId());
-			}
+		if (user != null) {
+			MangoEvent eventService = new EventService();
+			silenced = eventService.silenceEvents(user);
 		}
 
 		resetLastAlarmLevelChange();
@@ -117,21 +116,50 @@ public class MiscDwr extends BaseDwr {
 
 	public int acknowledgeEvent(int eventId) {
 		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
 		if (user != null) {
-			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
-					user.getId(), 0);
-			resetLastAlarmLevelChange();
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null && !evt.isActive()) {
+				eventService.ackEvent(evt, System.currentTimeMillis(), user, 0);
+				resetLastAlarmLevelChange();
+			}
 		}
 		return eventId;
+	}
+
+	public boolean assignEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		boolean result = false;
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				result = eventService.assignEvent(evt, user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return result;
+	}
+
+	public boolean unassignEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		boolean result = false;
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				result = eventService.unassignEvent(evt, user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return result;
 	}
 
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {
-			EventDao eventDao = new EventDao();
-			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
-				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
+			MangoEvent eventService = new EventService();
+			eventService.ackEvents(user);
 			resetLastAlarmLevelChange();
 		}
 	}
@@ -154,16 +182,15 @@ public class MiscDwr extends BaseDwr {
 			result.put("error", getMessage("dox.notFound"));
 		else {
 			// Read the content.
-			String filename = Common.getDocPath() + "/" + getMessage("dox.dir")
-					+ "/" + documentId + ".htm";
+			String filename = Common.getDocPath() + File.separator + getMessage("dox.dir")
+					+ File.separator + documentId + ".htm";
 			try {
-				Reader in = new FileReader(filename);
-				StringWriter out = new StringWriter();
-				StreamUtils.transfer(in, out);
-				in.close();
-
-				addDocumentationItem(result, item);
-				result.put("content", out.toString());
+				try (Reader in = new FileReader(filename, StandardCharsets.UTF_8);
+					 StringWriter out = new StringWriter()) {
+					StreamUtils.transfer(in, out);
+					addDocumentationItem(result, item);
+					result.put("content", out.toString());
+				}
 
 				List<Map<String, Object>> related = new ArrayList<Map<String, Object>>();
 				for (String relatedId : item.getRelated()) {
@@ -200,7 +227,7 @@ public class MiscDwr extends BaseDwr {
 				+ "   osName: " + osName + "\r\n" + "   location: " + location);
 	}
 
-	@MethodFilter
+	
 	public DwrResponseI18n sendTestEmail(
 			List<RecipientListEntryBean> recipientList, String prefix,
 			String message) {
@@ -217,10 +244,12 @@ public class MiscDwr extends BaseDwr {
 				model.put("user", Common.getUser());
 				model.put("message", new LocalizableMessage("common.default",
 						message));
-				MangoEmailContent cnt = new MangoEmailContent("testEmail",
+				IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
-				EmailWorkItem.queueEmail(toAddrs, cnt);
+				User user = Common.getUser();
+				sendMsgTestSync(toAddrs, cnt, response, () -> "sendTestEmail from: " + this.getClass().getName() +
+						", " + userInfo(user));
 			} catch (Exception e) {
 				response.addGenericMessage("common.default", e.getMessage());
 			}
@@ -232,20 +261,17 @@ public class MiscDwr extends BaseDwr {
 	}
 
 	public void setLocale(String locale) {
-		WebContext webContext = WebContextFactory.get();
-
-		LocaleResolver localeResolver = new SessionLocaleResolver();
-
-		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(locale);
-
-		localeResolver.setLocale(webContext.getHttpServletRequest(),
-				webContext.getHttpServletResponse(),
-				(Locale) localeEditor.getValue());
+		Permissions.ensureValidUser();
+		User user = Common.getUser();
+		if(user != null) {
+			new UserService().updateUserLang(user.getId(), locale);
+			ScadaLocaleUtils.setLocaleInSession(locale);
+		}
 	}
 
-	@MethodFilter
+	
 	public void setHomeUrl(String url) {
+		Permissions.ensureValidUser();
 		// Remove the scheme, domain, and context if there.
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -269,10 +295,14 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
+		User user = Common.getUser();
+		user.setHomeUrl(url);
+		UserService userService = new UserService();
+		userService.saveHomeUrl(user.getId(), url);
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
-	@MethodFilter
+	
 	public String getHomeUrl() {
 		String url = Common.getUser().getHomeUrl();
 		if (StringUtils.isEmpty(url))
@@ -297,8 +327,7 @@ public class MiscDwr extends BaseDwr {
 		HttpServletRequest httpRequest = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
-		EventManager eventManager = Common.ctx.getEventManager();
-		EventDao eventDao = new EventDao();
+		MangoEvent eventService = new EventService();
 
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
@@ -307,10 +336,9 @@ public class MiscDwr extends BaseDwr {
 
 		long runTime = System.currentTimeMillis();
 		response.put("runtime",runTime);
+		response.put("intervalTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
 		long expireTime = runTime + 60000; // One minute
 		LongPollState state = data.getState();
-		int waitTime = SystemSettingsDAO
-				.getIntValue(SystemSettingsDAO.UI_PERFORMANCE);
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always
@@ -318,51 +346,31 @@ public class MiscDwr extends BaseDwr {
 		// user-specific event change tracking code.
 		state.setLastAlarmLevelChange(0);
 
-		while (!pollRequest.isTerminated()
+		if (!pollRequest.isTerminated()
 				&& System.currentTimeMillis() < expireTime) {
-			if (pollRequest.isMaxAlarm() && user != null) {
-				// Check the max alarm. First check if the events have changed
-				// since the last time this request checked.
-				long lastEMUpdate = eventManager.getLastAlarmTimestamp();
-				if (state.getLastAlarmLevelChange() < lastEMUpdate) {
-					state.setLastAlarmLevelChange(lastEMUpdate);
-
-					// The events have changed. See if the user's particular max
-					// alarm level has changed.
-					int maxAlarmLevel = eventDao
-							.getHighestUnsilencedAlarmLevel(user.getId());
-					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
-					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
-						response.put("highestUnsilencedAlarmLevel",
-								maxAlarmLevel);
-						state.setMaxAlarmLevel(maxAlarmLevel);
-					}
-				}
-			}
 
 			if (pollRequest.isWatchList() && user != null) {
-				synchronized (state) {
-					List<WatchListState> newStates = watchListDwr
-							.getPointData();
-					List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					for (WatchListState newState : newStates) {
-						WatchListState oldState = state
-								.getWatchListState(newState.getId());
-						if (oldState == null)
-							differentStates.add(newState);
-						else {
-							WatchListState copy = newState.clone();
-							copy.removeEqualValue(oldState);
-							if (!copy.isEmpty())
-								differentStates.add(copy);
-						}
-					}
+				List<WatchListState> newStates = watchListDwr
+						.getPointData();
+				List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					if (!differentStates.isEmpty()) {
-						response.put("watchListStates", differentStates);
-						state.setWatchListStates(newStates);
+				for (WatchListState newState : newStates) {
+					WatchListState oldState = state
+							.getWatchListState(newState.getId());
+					if (oldState == null)
+						differentStates.add(newState);
+					else {
+						WatchListState copy = newState.clone();
+						copy.removeEqualValue(oldState);
+						if (!copy.isEmpty())
+							differentStates.add(copy);
 					}
+				}
+
+				if (!differentStates.isEmpty()) {
+					response.put("watchListStates", differentStates);
+					state.setWatchListStates(newStates);
 				}
 			}
 
@@ -387,13 +395,17 @@ public class MiscDwr extends BaseDwr {
 			if ((pollRequest.isView() && user != null)
 					|| (pollRequest.isViewEdit() && user != null)
 					|| pollRequest.getAnonViewId() > 0) {
-				List<ViewComponentState> newStates;
+				List<ViewComponentState> newStates = new ArrayList<>();
 				if (pollRequest.getAnonViewId() > 0)
 					newStates = viewDwr.getViewPointDataAnon(pollRequest
 							.getAnonViewId());
-				else
-					newStates = viewDwr.getViewPointData(pollRequest
+				else {
+					int viewId = pollRequest.getViewId();
+					View view = getView(viewId, httpRequest, new ViewService(), pollRequest.isViewEdit());
+					view.validateViewComponents(user);
+					newStates = viewDwr.getViewPointData(user, view, pollRequest
 							.isViewEdit());
+				}
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
 
 				for (ViewComponentState newState : newStates) {
@@ -442,9 +454,12 @@ public class MiscDwr extends BaseDwr {
 			if (pollRequest.isPendingAlarms() && user != null) {
 				// Create the list of most current pending alarm content.
 				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("events", eventDao.getPendingEvents(user.getId()));
+				model.put("events", eventService.getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
+				SystemSettingsService service = new SystemSettingsService();
+				model.put("isEventAssignEnabled", service.isEventAssignEnabled());
+
 				String currentContent = generateContent(httpRequest,
 						"eventList.jsp", model);
 				currentContent = StringUtils.trimWhitespace(currentContent);
@@ -455,18 +470,6 @@ public class MiscDwr extends BaseDwr {
 					state.setPendingAlarmsContent(currentContent);
 				}
 			}
-
-			if (!response.isEmpty())
-				break;
-
-			synchronized (pollRequest) {
-				try {
-					pollRequest.wait(waitTime);
-				} catch (InterruptedException e) {
-					// no op
-				}
-			}
-
 		}
 
 		if (pollRequest.isTerminated())
@@ -494,8 +497,10 @@ public class MiscDwr extends BaseDwr {
 		synchronized (data.getState()) {
 			data.getState().getWatchListStates().clear();
 			WatchList wl = Common.getUser().getWatchList();
-			for (DataPointVO dp : wl.getPointList())
-				dp.resetLastValue();
+			if(wl != null) {
+				for (DataPointVO dp : wl.getPointList())
+					dp.resetLastValue();
+			}
 		}
 		notifyLongPollImpl(data.getRequest());
 	}
@@ -551,7 +556,7 @@ public class MiscDwr extends BaseDwr {
 				data = (List<LongPollData>) session
 						.getAttribute(LONG_POLL_DATA_KEY);
 				if (data == null) {
-					data = new ArrayList<LongPollData>();
+					data = new CopyOnWriteArrayList<>();
 					session.setAttribute(LONG_POLL_DATA_KEY, data);
 				}
 			}
@@ -566,12 +571,12 @@ public class MiscDwr extends BaseDwr {
 																	// minutes.
 		if (lastTimeoutCheck < cutoff) {
 			synchronized (data) {
-				Iterator<LongPollData> iter = data.iterator();
-				while (iter.hasNext()) {
-					LongPollData lpd = iter.next();
+				List<LongPollData> toDelete = new ArrayList<>();
+				for(LongPollData lpd: data) {
 					if (lpd.getTimestamp() < cutoff)
-						iter.remove();
+						toDelete.add(lpd);
 				}
+				data.removeAll(toDelete);
 			}
 
 			session.setAttribute(LONG_POLL_DATA_TIMEOUT_KEY,

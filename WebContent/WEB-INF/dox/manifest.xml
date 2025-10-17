@@ -35,7 +35,7 @@
   </item>
 
   <item id="reportInstances">
-    <relation id="otherSettings"/>
+    <relation id="dataRetentionSettings"/>
     <relation id="reportTemplates"/>
   </item>
   
@@ -222,7 +222,6 @@
   </item>
 
   <item id="otherSettings">
-    <relation id="reportInstances"/>
   </item>
   
   <item id="snmpDS"/>
@@ -384,6 +383,22 @@
     <relation id="radiuinoDS"/>
    </item>
 
+  <item id="amqpPP">
+    <relation id="amqpDS"/>
+  </item>
+
+  <item id="amqpDS">
+    <relation id="amqpPP"/>
+  </item>
+
+  <item id="mqttPP">
+    <relation id="mqttDS"/>
+  </item>
+
+  <item id="mqttDS">
+    <relation id="mqttPP"/>
+  </item>
+
     <item id="collectInactiveMsg">
         <relation id="emailSettings"/>
         <relation id="eventHandlers"/>
@@ -400,5 +415,28 @@
   </item>
 
   <item id="anonymousView">
+  </item>
+
+  <item id="newUISettings">
+  </item>
+
+  <item id="dataRetentionSettings">
+    <relation id="reportInstances"/>
+  </item>
+
+  <item id="opcUaDS">
+    <relation id="opcUaPP"/>
+  </item>
+
+  <item id="opcUaPP">
+    <relation id="opcUaDS"/>
+  </item>
+
+  <item id="internalPP">
+    <relation id="internalDS"/>
+  </item>
+
+  <item id="internalDS">
+    <relation id="internalPP"/>
   </item>
 </doxManifest>

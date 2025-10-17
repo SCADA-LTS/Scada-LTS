@@ -89,7 +89,7 @@ public class ASCIIFilePointLocatorVO extends AbstractPointLocatorVO implements
 
 	@Override
 	public LocalizableMessage getConfigurationDescription() {
-		return null;
+		return new LocalizableMessage("common.tp.description", new LocalizableMessage("dsEdit.asciiFile.valueRegex"), this.valueRegex);
 	}
 
 	private static final long serialVersionUID = -1;

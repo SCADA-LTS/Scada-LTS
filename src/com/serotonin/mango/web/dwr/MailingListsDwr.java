@@ -27,27 +27,34 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
+import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.util.LoggingUtils.mailingListInfo;
+import static com.serotonin.mango.util.LoggingUtils.userInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsgTestSync;
+
 
 public class MailingListsDwr extends BaseDwr {
 	private final Log log = LogFactory.getLog(MailingListsDwr.class);
 	private static final String DEFAULT_CRON = "1 */15 * * * ?";
 
 	public DwrResponseI18n init() {
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("lists", new MailingListDao().getMailingLists());
 		response.addData("users", new UserDao().getUsers());
@@ -69,7 +76,7 @@ public class MailingListsDwr extends BaseDwr {
 			List<RecipientListEntryBean> entryBeans, List<Integer> inactiveIntervals,
             boolean dailyLimitSentEmails, String cronPattern, boolean collectInactiveEmails,
 			int collectInactiveEmailsNumber) {
-
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		MailingListDao mailingListDao = new MailingListDao();
 
@@ -87,11 +94,6 @@ public class MailingListsDwr extends BaseDwr {
 		ml.setCronPattern(cronPattern);
 		ml.setCollectInactiveEmails(collectInactiveEmails);
 
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!mailingListDao.isXidUnique(xid, id))
-			response.addContextualMessage("xid", "validate.xidUsed");
-
 		ml.validate(response);
 
 		if (!response.getHasMessages()) {
@@ -104,6 +106,7 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public void deleteMailingList(int mlId) {
+		Permissions.ensureAdmin();
 		new MailingListDao().deleteMailingList(mlId);
 	}
 
@@ -123,10 +126,12 @@ public class MailingListsDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message",
 					new LocalizableMessage("ftl.userTestEmail", ml.getName()));
-			MangoEmailContent cnt = new MangoEmailContent("ftl.testEmail",
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 					model, bundle,
 					I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
-			EmailWorkItem.queueEmail(toAddrs, cnt);
+			User user = Common.getUser();
+			sendMsgTestSync(toAddrs, cnt, response, () -> "sendTestEmail from: " + this.getClass().getName() + ", "
+					+ userInfo(user) + ", " + mailingListInfo(ml));
 		} catch (Exception e) {
 			response.addGenericMessage("mailingLists.testerror", e.getMessage());
 			log.warn("", e);

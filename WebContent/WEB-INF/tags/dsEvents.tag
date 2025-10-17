@@ -20,13 +20,13 @@
 --%><table width="100%">
   <tr><td class="smallTitle">
     <tag:img png="flag_white"/>
-    <fmt:message key="dsEdit.events.alarmLevels"/>
+    <spring:message code="dsEdit.events.alarmLevels"/>
   </td></tr>
 </table>
 <table cellspacing="1">
   <c:choose>
     <c:when test="${empty dataSource.eventTypes}">
-      <tr><td><b><fmt:message key="dsEdit.events.noEvents"/></b></td></tr>
+      <tr><td><b><spring:message code="dsEdit.events.noEvents"/></b></td></tr>
     </c:when>
     <c:otherwise>
       <c:forEach items="${dataSource.eventTypes}" var="type">

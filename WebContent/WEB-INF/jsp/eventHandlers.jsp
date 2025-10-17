@@ -24,12 +24,26 @@
 
 <tag:page dwr="EventHandlersDwr,ScriptsDwr" js="emailRecipients" onload="init">
   <script>
+    jQuery(document).ready(function(){
+      (function($) {
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+    });
+
     function init() {
     	ScriptsDwr.getScripts(getScriptsCB);
         EventHandlersDwr.getInitData(initCB);
         
         var tree = dojo.widget.manager.getWidgetById('eventTypeTree');
         dojo.event.topic.subscribe("eventTypeTree/titleClick", new TreeClickHandler(), 'handle');
+
+      jQuery("#targetPointSelect, #activePointId, #inactivePointId").chosen({
+        allow_single_deselect: true,
+        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+        search_contains: true,
+        width: "400px"
+      });
     }
 
 	function getScriptsCB(scripts) {
@@ -67,27 +81,27 @@
         allPoints = data.allPoints;
         
         emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
-                "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         emailRecipients.write("emailRecipients", "emailRecipients", null,
-            "<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
+            "<spring:message code="eventHandlers.emailRecipients" />");
         smsRecipients = new mango.erecip.EmailRecipients("smsRecipients",
-                "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         smsRecipients.write("smsRecipients", "smsRecipients", "smsRecipients",
-        		"<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.emailRecipients" />");
         
         escalRecipients = new mango.erecip.EmailRecipients("escalRecipients",
-                "<sst:i18n key="eventHandlers.escalTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.escalTestEmailMessage" />",
                 data.mailingLists, data.users);
         escalRecipients.write("escalRecipients", "escalRecipients", "escalationAddresses2",
-        		"<sst:i18n key="eventHandlers.escalRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.escalRecipients" />");
         
         inactiveRecipients = new mango.erecip.EmailRecipients("inactiveRecipients",
-                "<sst:i18n key="eventHandlers.inactiveTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.inactiveTestEmailMessage" />",
                 data.mailingLists, data.users);
         inactiveRecipients.write("inactiveRecipients", "inactiveRecipients", "inactiveAddresses2",
-        		"<sst:i18n key="eventHandlers.inactiveRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.inactiveRecipients" />");
         
         var pointRoot = dojo.widget.manager.getWidgetById('rootPoint');
         for (i=0; i<data.dataPoints.length; i++) {
@@ -260,7 +274,10 @@
             if (dp.settable)
                 pointSelect.options[pointSelect.options.length] = new Option(dp.name, dp.id);
         }
-        if (selectedHandlerNode) {
+      jQuery("#targetPointSelect").trigger("chosen:updated");
+      jQuery("#activePointId").trigger("chosen:updated");
+      jQuery("#inactivePointId").trigger("chosen:updated");
+      if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
 
@@ -273,6 +290,7 @@
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
                 $set("targetPointSelect", handler.targetPointId);
+                jQuery("#targetPointSelect").trigger("chosen:updated");
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
             }
@@ -385,13 +403,16 @@
             dp = allPoints[i];
             if (dp.id != targetPointId && dp.dataType == targetDataTypeId) {
                 activeSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
-                inactiveSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
+                inactiveSourceSelect.options[inactiveSourceSelect.options.length] = new Option(dp.name, dp.id);
             }
         }
+
         if (selectedHandlerNode) {
             $set(activeSourceSelect, selectedHandlerNode.object.activePointId);
             $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
         }
+        jQuery("#activePointId").trigger("chosen:updated");
+        jQuery("#inactivePointId").trigger("chosen:updated");
     }
 
     function activeActionChanged() {
@@ -456,7 +477,13 @@
         var xid = $get("xid");
         var alias = $get("alias");
         var disabled = $get("disabled");
-        if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
+        if (isEmpty(xid) && handlerId !== ${NEW_ID}){
+          let message = createValidationMessage("xid", "<spring:message code='validate.valueRestored'/>");
+          $set("xid", selectedHandlerNode.object.xid);
+          stopImageFader("saveImg");
+          showDwrMessages([message]);
+        } else {
+          if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
             var emailList = emailRecipients.createRecipientArray();
             var escalList = escalRecipients.createRecipientArray();
             var inactiveList = inactiveRecipients.createRecipientArray();
@@ -464,28 +491,25 @@
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
                     disabled, emailList, $get("sendEscalation"), $get("escalationDelayType"), $get("escalationDelay"),
                     escalList, $get("sendInactive"), $get("inactiveOverride"), inactiveList, saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
             var smsList = smsRecipients.createRecipientArray();
             EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
                     disabled, $get("targetPointSelect"), $get("activeAction"), $get("setPointValueActive"),
                     $get("activePointId"), $get("inactiveAction"), $get("setPointValueInactive"),
                     $get("inactivePointId"), saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
             EventHandlersDwr.saveProcessEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
                     alias, disabled, $get("activeProcessCommand"), $get("inactiveProcessCommand"), saveEventHandlerCB);
-        }
-        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
+          } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>) {
             EventHandlersDwr.saveScriptEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
                     alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
+          }
         }
     }
 
@@ -496,7 +520,6 @@
             showDwrMessages(response.messages, $("genericMessages"));
         else {
             var handler = response.data.handler;
-            setUserMessage("<fmt:message key="eventHandlers.saved"/>");
             if (!selectedHandlerNode) {
                 selectedHandlerNode = createHandlerNode(handler);
                 selectedEventTypeNode.addChild(selectedHandlerNode);
@@ -506,6 +529,7 @@
             else
                 $set(handler.id +"Msg", handler.message);
 
+            setUserMessage("<spring:message code="eventHandlers.saved"/>");
             selectedHandlerNode.object = handler;
         }
     }
@@ -552,7 +576,7 @@
 
   <table class="marB subPageHeader" id="eventHandlerHeader"><tr><td>
     <tag:img png="cog" title="eventHandlers.eventHandlers"/>
-    <span class="smallTitle"><fmt:message key="eventHandlers.eventHandlers"/></span>
+    <span class="smallTitle"><spring:message code="eventHandlers.eventHandlers"/></span>
     <tag:help id="eventHandlers"/>
   </td></tr></table>
 
@@ -560,19 +584,19 @@
     <tr>
       <td valign="top">
         <div class="borderDivPadded marR">
-          <span class="smallTitle"><fmt:message key="eventHandlers.types"/></span>
+          <span class="smallTitle"><spring:message code="eventHandlers.types"/></span>
           <div dojoType="TreeBasicController" widgetId="controller"></div>
           <img src="images/hourglass.png" id="loadingImg"/>
           <div id="tree" style="display:none;">
             <div dojoType="Tree" widgetId="eventTypeTree" listeners="controller" toggle="wipe">
-              <div dojoType="TreeNode" title="<img src='images/bell.png'/> <fmt:message key="eventHandlers.pointEventDetector"/>" widgetId="rootPoint"></div>
-              <div dojoType="TreeNode" title="<img src='images/clock.png'/> <fmt:message key="scheduledEvents.ses"/>" widgetId="rootScheduled"></div>
-              <div dojoType="TreeNode" title="<img src='images/multi_bell.png'/> <fmt:message key="compoundDetectors.compoundEventDetectors"/>" widgetId="rootCompound"></div>
-              <div dojoType="TreeNode" title="<fmt:message key="eventHandlers.dataSourceEvents"/>" widgetId="rootDataSource"></div>
-              <div dojoType="TreeNode" title="<fmt:message key="eventHandlers.publisherEvents"/>" widgetId="rootPublisher"></div>
-              <div dojoType="TreeNode" title="<img src='images/hammer.png'/> <fmt:message key="eventHandlers.maintenanceEvents"/>" widgetId="rootMaintenance"></div>
-              <div dojoType="TreeNode" title="<fmt:message key="eventHandlers.systemEvents"/>" widgetId="rootSystem"></div>
-              <div dojoType="TreeNode" title="<fmt:message key="eventHandlers.auditEvents"/>" widgetId="rootAudit"></div>
+              <div dojoType="TreeNode" title="<img src='images/bell.png'/> <spring:message code="eventHandlers.pointEventDetector"/>" widgetId="rootPoint"></div>
+              <div dojoType="TreeNode" title="<img src='images/clock.png'/> <spring:message code="scheduledEvents.ses"/>" widgetId="rootScheduled"></div>
+              <div dojoType="TreeNode" title="<img src='images/multi_bell.png'/> <spring:message code="compoundDetectors.compoundEventDetectors"/>" widgetId="rootCompound"></div>
+              <div dojoType="TreeNode" title="<spring:message code="eventHandlers.dataSourceEvents"/>" widgetId="rootDataSource"></div>
+              <div dojoType="TreeNode" title="<spring:message code="eventHandlers.publisherEvents"/>" widgetId="rootPublisher"></div>
+              <div dojoType="TreeNode" title="<img src='images/hammer.png'/> <spring:message code="eventHandlers.maintenanceEvents"/>" widgetId="rootMaintenance"></div>
+              <div dojoType="TreeNode" title="<spring:message code="eventHandlers.systemEvents"/>" widgetId="rootSystem"></div>
+              <div dojoType="TreeNode" title="<spring:message code="eventHandlers.auditEvents"/>" widgetId="rootAudit"></div>
             </div>
           </div>
         </div>
@@ -582,7 +606,7 @@
         <div id="handlerEditDiv" class="borderDivPadded" style="display:none;">
           <table width="100%">
             <tr>
-              <td class="smallTitle"><fmt:message key="eventHandlers.eventHandler"/></td>
+              <td class="smallTitle"><spring:message code="eventHandlers.eventHandler"/></td>
               <td align="right">
                 <tag:img id="deleteImg" png="delete" title="common.delete" onclick="deleteHandler();"/>
                 <tag:img id="saveImg" png="save" title="common.save" onclick="saveHandler();"/>
@@ -593,14 +617,14 @@
 
           <table width="100%">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.type"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.type"/></td>
               <td class="formField">
                 <select id="handlerTypeSelect" onchange="handlerTypeChanged()">
-                  <option value="<c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>"><fmt:message key="eventHandlers.type.email"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>"><fmt:message key="eventHandlers.type.setPoint"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>"><fmt:message key="eventHandlers.type.process"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>"><fmt:message key="eventHandlers.type.script"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>"><fmt:message key="eventHandlers.type.sms"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>"><spring:message code="eventHandlers.type.email"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>"><spring:message code="eventHandlers.type.setPoint"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>"><spring:message code="eventHandlers.type.process"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>"><spring:message code="eventHandlers.type.script"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>"><spring:message code="eventHandlers.type.sms"/></option>
                 </select>
                 <tag:img id="handler1Img" png="cog_wrench" title="eventHandlers.type.setPointHandler" style="display:none;"/>
                 <tag:img id="handler2Img" png="cog_email" title="eventHandlers.type.emailHandler" style="display:none;"/>
@@ -614,17 +638,17 @@
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.alias"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.alias"/></td>
               <td class="formField"><input id="alias" type="text"/></td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
+              <td class="formLabelRequired"><spring:message code="common.disabled"/></td>
               <td class="formField"><input type="checkbox" id="disabled"/></td>
             </tr>
 
@@ -633,51 +657,65 @@
 
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>" style="display:none" width="100%">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.target"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.target"/></td>
               <td class="formField">
-                <select id="targetPointSelect" onchange="targetPointSelectChanged()"></select>
+                <select id="targetPointSelect"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
+                        onchange="targetPointSelectChanged()">
+                </select>
               </td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.activeAction"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.activeAction"/></td>
               <td class="formField">
                 <select id="activeAction" onchange="activeActionChanged()">
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><fmt:message key="eventHandlers.action.none"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><fmt:message key="eventHandlers.action.point"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><fmt:message key="eventHandlers.action.static"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><spring:message code="eventHandlers.action.none"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><spring:message code="eventHandlers.action.point"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><spring:message code="eventHandlers.action.static"/></option>
                 </select>
               </td>
             </tr>
 
             <tr id="activePointIdRow">
-              <td class="formLabel"><fmt:message key="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="activePointId"></select></td>
+              <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
+              <td class="formField">
+                <select id="activePointId"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                </select>
+              </td>
             </tr>
 
             <tr id="activeValueToSetRow">
-              <td class="formLabel"><fmt:message key="eventHandlers.valueToSet"/></td>
+              <td class="formLabel"><spring:message code="eventHandlers.valueToSet"/></td>
               <td class="formField" id="activeValueToSetContent"></td>
             </tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveAction"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveAction"/></td>
               <td class="formField">
                 <select id="inactiveAction" onchange="inactiveActionChanged()">
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><fmt:message key="eventHandlers.action.none"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><fmt:message key="eventHandlers.action.point"/></option>
-                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><fmt:message key="eventHandlers.action.static"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><spring:message code="eventHandlers.action.none"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><spring:message code="eventHandlers.action.point"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><spring:message code="eventHandlers.action.static"/></option>
                 </select>
               </td>
             </tr>
 
             <tr id="inactivePointIdRow">
-              <td class="formLabel"><fmt:message key="eventHandlers.sourcePoint"/></td>
-              <td class="formField"><select id="inactivePointId"></select></td>
+              <td class="formLabel"><spring:message code="eventHandlers.sourcePoint"/></td>
+              <td class="formField">
+                <select id="inactivePointId"
+                        class="chzn-select"
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                </select>
+              </td>
             </tr>
 
             <tr id="inactiveValueToSetRow">
-              <td class="formLabel"><fmt:message key="eventHandlers.valueToSet"/></td>
+              <td class="formLabel"><spring:message code="eventHandlers.valueToSet"/></td>
               <td class="formField" id="inactiveValueToSetContent"></td>
             </tr>
           </table>
@@ -688,12 +726,12 @@
             <tr><td class="horzSeparator" colspan="2"></td></tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.escal"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.escal"/></td>
               <td class="formField"><input id="sendEscalation" type="checkbox" onclick="sendEscalationChanged()"/></td>
             </tr>
 
             <tr id="escalationAddresses1">
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.escalPeriod"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.escalPeriod"/></td>
               <td class="formField">
                 <input id="escalationDelay" type="text" class="formShort"/>
                 <select id="escalationDelayType">
@@ -707,12 +745,12 @@
             <tr><td class="horzSeparator" colspan="2"></td></tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveNotif"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveNotif"/></td>
               <td class="formField"><input id="sendInactive" type="checkbox" onclick="sendInactiveChanged()"/></td>
             </tr>
 
             <tr id="inactiveAddresses1">
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveOverride"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveOverride"/></td>
               <td class="formField"><input id="inactiveOverride" type="checkbox" onclick="inactiveOverrideChanged()"/></td>
             </tr>
 
@@ -725,7 +763,7 @@
           
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>" style="display:none" width="100%">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.activeCommand"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.activeCommand"/></td>
               <td class="formField">
                 <input type="text" id="activeProcessCommand" class="formLong"/>
                 <tag:img png="cog_go" onclick="testProcessCommand('activeProcessCommand')" title="eventHandlers.commandTest.title"/>
@@ -733,7 +771,7 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveCommand"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveCommand"/></td>
               <td class="formField">
                 <input type="text" id="inactiveProcessCommand" class="formLong"/>
                 <tag:img png="cog_go" onclick="testProcessCommand('inactiveProcessCommand')" title="eventHandlers.commandTest.title"/>
@@ -743,7 +781,7 @@
           
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>" style="display:none" width="100%">
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.activeScript"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.activeScript"/></td>
               <td class="formField">
               	<select id="activeScriptCommand"></select>
                 <tag:img png="cog_go" onclick="testScriptCommand('activeScriptCommand')" title="eventHandlers.commandTest.title"/>
@@ -751,7 +789,7 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveScript"/></td>
+              <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveScript"/></td>
               <td class="formField">
               	<select id="inactiveScriptCommand"></select>
                 <tag:img png="cog_go" onclick="testScriptCommand('inactiveScriptCommand')" title="eventHandlers.commandTest.title"/>

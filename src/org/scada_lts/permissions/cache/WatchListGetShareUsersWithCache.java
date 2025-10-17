@@ -5,12 +5,10 @@ import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
-@Service
 @CacheConfig(cacheNames = "share_user_list_by_watchlist")
 public class WatchListGetShareUsersWithCache implements GetShareUsers<WatchList> {
 

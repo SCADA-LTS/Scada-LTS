@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.dataImage;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -45,7 +46,6 @@ public class PointValueTime implements Serializable, IValueTime,
 	private static final long serialVersionUID = -1;
 	private final MangoValue value;
 	private final long time;
-	private String whoChangedValue;
 
 	public static boolean equalValues(PointValueTime pvt1, PointValueTime pvt2) {
 		if (pvt1 == null && pvt2 == null)
@@ -64,22 +64,6 @@ public class PointValueTime implements Serializable, IValueTime,
 	public PointValueTime(MangoValue value, long time) {
 		this.value = value;
 		this.time = time;
-	}
-
-	public PointValueTime(MangoValue value, long time, String whoChangedValue) {
-		this.value = value;
-		this.time = time;
-		this.whoChangedValue = whoChangedValue;
-	}
-
-	public String getWhoChangedValue() {
-		String EMPTY_STRING = "";
-		return (whoChangedValue==null)?EMPTY_STRING:whoChangedValue;
-
-	}
-
-	public void setWhoChangedValue(String whoChangedValue) {
-		this.whoChangedValue = whoChangedValue;
 	}
 
 	public PointValueTime(boolean value, long time) {
@@ -125,25 +109,31 @@ public class PointValueTime implements Serializable, IValueTime,
 	public boolean getBooleanValue() {
 		return value.getBooleanValue();
 	}
-
+/*
 	@Override
 	public boolean equals(Object o) {
 		PointValueTime that = (PointValueTime) o;
 		if (time != that.time)
 			return false;
 		return ObjectUtils.isEqual(value, that.value);
+	}*/
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PointValueTime)) return false;
+		PointValueTime that = (PointValueTime) o;
+		return getTime() == that.getTime() && Objects.equals(getValue(), that.getValue());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getValue(), getTime());
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder()
-				.append("PointValueTime(")
-				.append(getWhoChangedValue())
-				.append(" -- ")
-				.append(getValue())
-				.append("@")
-				.append(DateFunctions.getTime(time))
-				.append(")").toString();
+		return "PointValueTime(" + value + "@" + DateFunctions.getTime(time) + ")";
 	}
 
 	@Override

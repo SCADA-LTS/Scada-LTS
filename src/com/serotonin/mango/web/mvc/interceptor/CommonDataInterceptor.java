@@ -20,28 +20,32 @@ package com.serotonin.mango.web.mvc.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.joda.time.DateTime;
 import org.scada_lts.config.ScadaVersion;
+
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.SystemSettingsDAO;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 
+import com.serotonin.mango.util.DateUtils;
 /**
  * @author Matthew Lohbihler
  */
 public class CommonDataInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
         request.setAttribute("availableLanguages", Common.getLanguages());
-        request.setAttribute("lang", ControllerUtils.getLocale(request).getLanguage());
+        request.setAttribute("lang", Common.getBundle(request).getLocale().getLanguage());
         request.setAttribute("instanceDescriptionHeader", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
         request.setAttribute("NEW_ID", Common.NEW_ID);
         request.setAttribute("scadaVersion", ScadaVersion.getInstance());
-        request.setAttribute("toYear", DateTime.now().getYear());
+        request.setAttribute("toYear", DateUtils.getCurrentYearInt());
+        request.setAttribute("topDescriptionPrefix", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION_PREFIX));
+        request.setAttribute("topDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.TOP_DESCRIPTION));
         return true;
     }
 

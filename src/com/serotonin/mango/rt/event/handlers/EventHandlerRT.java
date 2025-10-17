@@ -18,12 +18,29 @@
  */
 package com.serotonin.mango.rt.event.handlers;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 
-abstract public class EventHandlerRT {
+public abstract class EventHandlerRT {
     protected EventHandlerVO vo;
+
+    private final EventType eventType;
+
+    protected EventHandlerRT(EventHandlerVO vo, EventType eventType) {
+        this.vo = vo;
+        this.eventType = eventType;
+    }
+
+    protected EventHandlerVO getVo() {
+        return vo;
+    }
+
+    protected EventType getEventType() {
+        return eventType;
+    }
 
     /**
      * Not all events that are raised are made active. It depends on the event's alarm level and duplicate handling.
@@ -31,7 +48,7 @@ abstract public class EventHandlerRT {
      * @see EventManager.raiseEvent for details.
      * @param evt
      */
-    abstract public void eventRaised(EventInstance evt);
+    public abstract void eventRaised(EventInstance evt);
 
     /**
      * Called when the event is considered inactive.
@@ -39,6 +56,9 @@ abstract public class EventHandlerRT {
      * @see EventManager.raiseEvent for details.
      * @param evt
      */
-    abstract public void eventInactive(EventInstance evt);
+    public abstract void eventInactive(EventInstance evt);
 
+    public int getId() {
+        return getVo() == null ? Common.NEW_ID : getVo().getId();
+    }
 }

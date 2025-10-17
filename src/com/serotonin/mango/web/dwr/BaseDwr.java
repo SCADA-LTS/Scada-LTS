@@ -18,28 +18,17 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import com.serotonin.mango.rt.dataImage.PointValueCache;
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
+import com.serotonin.mango.vo.*;
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -48,10 +37,6 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.view.chart.ChartRenderer;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.BasePointState;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
@@ -59,21 +44,23 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.content.ContentGenerator;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.content.SnippetContentGenerator;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
     public static final String MODEL_ATTR_HAS_UNACKED_EVENT = "hasUnacknowledgedEvent";
     public static final String MODEL_ATTR_RESOURCE_BUNDLE = "bundle";
 
-    protected static EventDao EVENT_DAO;
+    protected static MangoEvent EVENT_SERVICE;
 
     public static void initialize() {
-        EVENT_DAO = new EventDao();
+        EVENT_SERVICE = new EventService();
     }
 
     protected ResourceBundle changeSnippetMap = ResourceBundle.getBundle("changeSnippetMap");
@@ -85,8 +72,8 @@ abstract public class BaseDwr {
      * @param componentId
      *            a unique id for the browser side component. Required for set point snippets.
      * @param state
+     * @param pointVO
      * @param point
-     * @param status
      * @param model
      * @return
      */
@@ -107,6 +94,10 @@ abstract public class BaseDwr {
                 model.put("pointValue", pointValue);
         }
 
+        User user = Common.getUser();
+        if(user != null)
+            model.put(Common.SESSION_USER, user);
+
         return pointValue;
     }
 
@@ -114,7 +105,7 @@ abstract public class BaseDwr {
         int userId = 0;
         if (user != null)
             userId = user.getId();
-        List<EventInstance> events = EVENT_DAO.getPendingEventsForDataPoint(pointVO.getId(), userId);
+        List<EventInstance> events = EVENT_SERVICE.getPendingEventsForDataPoint(pointVO.getId(), userId);
         if (events != null) {
             model.put(MODEL_ATTR_EVENTS, events);
             for (EventInstance event : events) {
@@ -177,6 +168,8 @@ abstract public class BaseDwr {
 
     protected void setMessages(BasePointState state, HttpServletRequest request, String snippet,
             Map<String, Object> model) {
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         state.setMessages(generateContent(request, snippet + ".jsp", model).trim());
     }
 
@@ -188,7 +181,7 @@ abstract public class BaseDwr {
      * @param valueStr
      * @return
      */
-    @MethodFilter
+    
     public int setPoint(int pointId, int componentId, String valueStr) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -213,7 +206,7 @@ abstract public class BaseDwr {
         }
     }
 
-    @MethodFilter
+    
     public void forcePointRead(int pointId) {
         User user = Common.getUser();
         DataPointVO point = new DataPointDao().getDataPoint(pointId);
@@ -227,7 +220,8 @@ abstract public class BaseDwr {
     /**
      * Logs a user comment after validation.
      * 
-     * @param eventId
+     * @param typeId
+     * @param referenceId
      * @param comment
      * @return
      */
@@ -243,7 +237,7 @@ abstract public class BaseDwr {
         c.setUsername(user.getUsername());
 
         if (typeId == UserComment.TYPE_EVENT)
-            EVENT_DAO.insertEventComment(referenceId, c);
+            EVENT_SERVICE.insertEventComment(referenceId, c);
         else if (typeId == UserComment.TYPE_POINT)
             new UserDao().insertUserComment(UserComment.TYPE_POINT, referenceId, c);
         else
@@ -251,32 +245,21 @@ abstract public class BaseDwr {
 
         return c;
     }
-    protected String getOwnerNameOfChangePointValue(String pointvalue){
-        PointValueAdnnotationsDAO p = new PointValueAdnnotationsDAO();
-        //PointValueCache pvc = new PointValueCache();
-        //point
-        UserDao userDao = new UserDao();
-        User a =userDao.getUser(1);
-        return a.getUsername();
-    }
-    protected List<DataPointBean> getReadablePoints() {
-        User user = Common.getUser();
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        if (!Permissions.hasAdmin(user)) {
-            List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
-            for (DataPointVO dp : points) {
-                if (Permissions.hasDataPointReadPermission(user, dp))
-                    userPoints.add(dp);
-            }
-            points = userPoints;
-        }
+    protected List<DataPointBean> getReadablePoints() {
+        List<DataPointVO> points = getPoints();
 
         List<DataPointBean> result = new ArrayList<DataPointBean>();
         for (DataPointVO dp : points)
             result.add(new DataPointBean(dp));
 
         return result;
+    }
+
+    protected List<DataPointVO> getPoints() {
+        User user = Common.getUser();
+        DataPointService dataPointService = new DataPointService();
+        return dataPointService.getDataPointsWithAccess(user);
     }
 
     public Map<String, Object> getDateRangeDefaults(int periodType, int period) {
@@ -303,7 +286,7 @@ abstract public class BaseDwr {
     }
 
     protected String getMessage(String key) {
-        return I18NUtils.getMessage(getResourceBundle(), key);
+        return I18NUtils.getMessage(getResourceBundle(), key == null ? "" : key);
     }
 
     protected String getMessage(LocalizableMessage message) {
@@ -311,10 +294,7 @@ abstract public class BaseDwr {
     }
 
     protected ResourceBundle getResourceBundle() {
-        WebContext webContext = WebContextFactory.get();
-        LocalizationContext localizationContext = (LocalizationContext) Config.get(webContext.getHttpServletRequest(),
-                Config.FMT_LOCALIZATION_CONTEXT);
-        return localizationContext.getResourceBundle();
+        return Common.getBundle();
     }
 
     public static String generateContent(HttpServletRequest request, String snippet, Map<String, Object> model) {
@@ -322,7 +302,7 @@ abstract public class BaseDwr {
 //            System.out.println("request >>> " + request);
 //            System.out.println("snippet >>> " + snippet);
 //            System.out.println("model >>> " + model);
-            String str = ContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
+            String str = SnippetContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
             
 //            System.out.println("Content:\n"+str);
             

@@ -1,30 +1,42 @@
 package org.scada_lts.mango.service;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
-import org.scada_lts.dao.UserCommentDAO;
-import org.springframework.stereotype.Service;
+import org.scada_lts.dao.IUserCommentDAO;
+
+import java.util.Optional;
 
 /**
  * Service for Comments
  *
  * @author Radoslaw Jajko, rjajko@softq.pl
  */
-@Service
 public class UserCommentService {
 
-    private final UserCommentDAO userCommentDAO = new UserCommentDAO();
+    private final IUserCommentDAO userCommentDAO;
+
+    public UserCommentService(IUserCommentDAO userCommentDAO) {
+        this.userCommentDAO = userCommentDAO;
+    }
 
     /**
      * Save user comment to database.
      *
-     * @param userComment User comment object data
+     * @param comment String
      * @param typeComment Type of the comment (Event or Point)
      * @param referenceId Reference ID of the object (EventID or PointID)
      *
      * @return Result status.
      */
-    public int setUserComment(UserComment userComment, int typeComment, int referenceId) {
-        return userCommentDAO.insert(userComment, typeComment, referenceId);
+    @Deprecated(since = "2.8.0")
+    public int setUserComment(String comment, int typeComment, int referenceId, User user) {
+        UserComment c = new UserComment();
+        c.setComment(comment);
+        c.setTs(System.currentTimeMillis());
+        c.setUserId(user.getId());
+        c.setUsername(user.getUsername());
+        c.setTypeKey(referenceId);
+        return userCommentDAO.insert(c, typeComment, referenceId);
     }
 
     /**
@@ -38,5 +50,27 @@ public class UserCommentService {
      */
     public int deleteUserComment(int userId, int typeComment, int referenceId, long timestamp) {
         return userCommentDAO.deleteUserComment(userId, typeComment, referenceId, timestamp);
+    }
+
+    /**
+     * Save user comment to database.
+     *
+     * @param comment String
+     * @param typeComment Type of the comment (Event or Point)
+     * @param referenceId Reference ID of the object (EventID or PointID)
+     *
+     * @return Result Optional<UserComment>.
+     */
+    public Optional<UserComment> addUserComment(String comment, int typeComment, int referenceId, User user) {
+        UserComment c = new UserComment();
+        c.setComment(comment);
+        c.setTs(System.currentTimeMillis());
+        c.setUserId(user.getId());
+        c.setUsername(user.getUsername());
+        c.setTypeKey(referenceId);
+        int result = userCommentDAO.insert(c, typeComment, referenceId);
+        if(result == 0)
+            return Optional.empty();
+        return Optional.of(c);
     }
 }

@@ -288,11 +288,11 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		if (!RANGE_CODES.isValidId(range))
 			response.addContextualMessage("range", "validate.invalidValue");
 
-		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType))
+		if (!MODBUS_DATA_TYPE_CODES.isValidId(modbusDataType) || modbusDataType == DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED)
 			response.addContextualMessage("modbusDataType",
-					"validate.invalidValue");
-		if (!StringUtils.isBetweenInc(slaveId, 1, 240) && !socketMonitor)
-			response.addContextualMessage("slaveId", "validate.1to240");
+					"validate.unsupportedDataType", modbusDataType);
+		if (!StringUtils.isBetweenInc(slaveId, 0, 255) && !socketMonitor)
+			response.addContextualMessage("slaveId", "validate.0to255");
 
 		if (!slaveMonitor && !socketMonitor) {
 			int maxEndOffset = 65536 - DataType
@@ -314,7 +314,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 
 				try {
 					Charset.forName(charset);
-				} catch (IllegalCharsetNameException e) {
+				} catch (Exception e) {
 					response.addContextualMessage("charset",
 							"validate.invalidCharset");
 				}
@@ -521,5 +521,23 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		map.put("range", RANGE_CODES.getCode(range));
 		map.put("modbusDataType",
 				MODBUS_DATA_TYPE_CODES.getCode(modbusDataType));
+	}
+
+	@Override
+	public String toString() {
+		return "ModbusPointLocatorVO{" +
+				"range=" + range +
+				", modbusDataType=" + modbusDataType +
+				", slaveId=" + slaveId +
+				", slaveMonitor=" + slaveMonitor +
+				", socketMonitor=" + socketMonitor +
+				", offset=" + offset +
+				", bit=" + bit +
+				", registerCount=" + registerCount +
+				", charset='" + charset + '\'' +
+				", settableOverride=" + settableOverride +
+				", multiplier=" + multiplier +
+				", additive=" + additive +
+				'}';
 	}
 }

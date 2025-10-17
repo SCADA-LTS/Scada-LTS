@@ -18,20 +18,26 @@
  */
 package com.serotonin.mango.rt.event.type;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import static com.serotonin.mango.rt.event.type.EventType.DuplicateHandling.IGNORE;
 
 @JsonRemoteEntity
 public class SystemEventType extends EventType {
@@ -40,6 +46,7 @@ public class SystemEventType extends EventType {
 	// / Static stuff
 	// /
 	//
+	private static final Log LOG = LogFactory.getLog(SystemEventType.class);
 	private static final String SYSTEM_SETTINGS_PREFIX = "systemEventAlarmLevel";
 
 	public static final int TYPE_SYSTEM_STARTUP = 1;
@@ -52,6 +59,10 @@ public class SystemEventType extends EventType {
 	public static final int TYPE_EMAIL_SEND_FAILURE = 8;
 	public static final int TYPE_POINT_LINK_FAILURE = 9;
 	public static final int TYPE_PROCESS_FAILURE = 10;
+	public static final int TYPE_SCRIPT_HANDLER_FAILURE = 11;
+	public static final int TYPE_SMS_SEND_FAILURE = 12;
+	public static final int TYPE_ASSIGNED_EVENT = 13;
+	public static final int TYPE_UNASSIGNED_EVENT = 14;
 
 	public static final ExportCodes TYPE_CODES = new ExportCodes();
 	static {
@@ -68,13 +79,17 @@ public class SystemEventType extends EventType {
 		TYPE_CODES.addElement(TYPE_EMAIL_SEND_FAILURE, "EMAIL_SEND_FAILURE");
 		TYPE_CODES.addElement(TYPE_POINT_LINK_FAILURE, "POINT_LINK_FAILURE");
 		TYPE_CODES.addElement(TYPE_PROCESS_FAILURE, "PROCESS_FAILURE");
+		TYPE_CODES.addElement(TYPE_SCRIPT_HANDLER_FAILURE, "SCRIPT_HANDLER_FAILURE");
+		TYPE_CODES.addElement(TYPE_SMS_SEND_FAILURE, "SMS_SEND_FAILURE");
+		TYPE_CODES.addElement(TYPE_ASSIGNED_EVENT, "ASSIGNED_EVENT");
+		TYPE_CODES.addElement(TYPE_UNASSIGNED_EVENT, "UNASSIGNED_EVENT");
 	}
 
 	private static List<EventTypeVO> systemEventTypes;
 
 	public static List<EventTypeVO> getSystemEventTypes() {
 		if (systemEventTypes == null) {
-			systemEventTypes = new ArrayList<EventTypeVO>();
+			systemEventTypes = new CopyOnWriteArrayList<>();
 
 			addEventTypeVO(TYPE_SYSTEM_STARTUP, "event.system.startup",
 					AlarmLevels.INFORMATION);
@@ -96,6 +111,14 @@ public class SystemEventType extends EventType {
 					AlarmLevels.URGENT);
 			addEventTypeVO(TYPE_PROCESS_FAILURE, "event.system.process",
 					AlarmLevels.URGENT);
+			addEventTypeVO(TYPE_SCRIPT_HANDLER_FAILURE, "event.system.script",
+					AlarmLevels.URGENT);
+			addEventTypeVO(TYPE_SMS_SEND_FAILURE, "event.system.sms",
+					AlarmLevels.INFORMATION);
+			addEventTypeVO(TYPE_ASSIGNED_EVENT, "event.system.assigned",
+					AlarmLevels.INFORMATION);
+			addEventTypeVO(TYPE_UNASSIGNED_EVENT, "event.system.unassigned",
+					AlarmLevels.INFORMATION);
 		}
 		return systemEventTypes;
 	}
@@ -118,21 +141,29 @@ public class SystemEventType extends EventType {
 
 	public static void setEventTypeAlarmLevel(int type, int alarmLevel) {
 		EventTypeVO et = getEventType(type);
-		et.setAlarmLevel(alarmLevel);
+		if(et != null) {
+			et.setAlarmLevel(alarmLevel);
 
-		SystemSettingsDAO dao = new SystemSettingsDAO();
-		dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
+			SystemSettingsDAO dao = new SystemSettingsDAO();
+			dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
+		} else {
+			LOG.warn(LoggingUtils.eventTypeInfo(type, alarmLevel));
+		}
 	}
 
-	public static void raiseEvent(SystemEventType type, long time, boolean rtn,
+	public static void raiseEvent(EventType type, long time, boolean rtn,
 			LocalizableMessage message) {
-		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
-		int alarmLevel = vo.getAlarmLevel();
-		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
-				message, null);
+		EventTypeVO vo = getEventType(type.getReferenceId1());
+		if(vo != null) {
+			int alarmLevel = vo.getAlarmLevel();
+			Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
+					message, null);
+		} else {
+			LOG.error(LoggingUtils.systemEventTypInfo(type));
+		}
 	}
 
-	public static void returnToNormal(SystemEventType type, long time) {
+	public static void returnToNormal(EventType type, long time) {
 		Common.ctx.getEventManager().returnToNormal(type, time);
 	}
 
@@ -165,6 +196,10 @@ public class SystemEventType extends EventType {
 		this.duplicateHandling = duplicateHandling;
 	}
 
+	public static SystemEventType duplicateIgnoreEventType(int systemEventTypeId, int refId2) {
+		return new SystemEventType(systemEventTypeId, refId2, IGNORE);
+	}
+
 	@Override
 	public int getEventSourceId() {
 		return EventType.EventSources.SYSTEM;
@@ -175,13 +210,26 @@ public class SystemEventType extends EventType {
 	}
 
 	@Override
+	public int getEventHandlerId() {
+		return this.systemEventTypeId == TYPE_SET_POINT_HANDLER_FAILURE ||
+				this.systemEventTypeId == TYPE_SCRIPT_HANDLER_FAILURE ||
+				this.systemEventTypeId == TYPE_EMAIL_SEND_FAILURE ||
+				this.systemEventTypeId == TYPE_SMS_SEND_FAILURE ||
+				this.systemEventTypeId == TYPE_PROCESS_FAILURE ? getReferenceId2() : -1;
+	}
+
+	@Override
 	public boolean isSystemMessage() {
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "SystemEventType(eventTypeId=" + systemEventTypeId + ")";
+		return "SystemEventType{" +
+				"systemEventTypeId=" + systemEventTypeId +
+				", refId2=" + refId2 +
+				", duplicateHandling=" + duplicateHandling +
+				'}';
 	}
 
 	@Override
@@ -201,11 +249,7 @@ public class SystemEventType extends EventType {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + refId2;
-		result = prime * result + systemEventTypeId;
-		return result;
+		return Objects.hash(systemEventTypeId, refId2, getClass());
 	}
 
 	@Override

@@ -17,26 +17,21 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.dao.model.DataSourceIdentifier;
+import org.scada_lts.web.mvc.api.datasources.DataPointJson;
+import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.util.ArrayList;
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
@@ -45,122 +40,110 @@ import java.util.List;
 public class DataSourceAPI {
 
     private static final Log LOG = LogFactory.getLog(DataSourceAPI.class);
+    private final DataSourceApiService dataSourceApiService;
 
+    public DataSourceAPI(DataSourceApiService dataSourceApiService) {
+        this.dataSourceApiService = dataSourceApiService;
+    }
 
-    DataSourceService dataSourceService = new DataSourceService();
+    @GetMapping(value = "/api/datasources")
+    public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
 
-    @RequestMapping(value = "/api/datasource/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
-        LOG.info("/api/datasource/getAll");
+        List<DataSourceJson> response = dataSourceApiService.readAll(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        try {
-            User user = Common.getUser(request);
+    @GetMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> getDataSource(@RequestParam(required = false) Integer id,
+                                                        @RequestParam(required = false) String xid,
+                                                        HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
 
-            if (user != null) {
-                class DatasourceJSON implements Serializable {
-                    private long id;
-                    private String xid;
+        DataSourceJson response = dataSourceApiService.read(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-                    DatasourceJSON(long id,String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
+    @GetMapping(value = "/api/datasource/toggle")
+    public ResponseEntity<Map<String, Object>> toggleDataSource(@RequestParam(required = false) Integer id,
+                                                                @RequestParam(required = false) String xid,
+                                                                HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
 
-                    public long getId() { return id; }
-                    public void setId(long id) { this.id = id; }
-                    public String getXid() {
-                        return xid;
-                    }
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
+        Map<String, Object> response = dataSourceApiService.toggleDataSource(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-                List<DataSourceVO<?>> lstDS;
-                if (user.isAdmin()) {
-                    lstDS = dataSourceService.getDataSources();
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
+    @GetMapping(value = "/api/datasource/validate")
+    public ResponseEntity<Map<String, Object>> isUniqueXid(@RequestParam(required = false) Integer id,
+                                                           @RequestParam(required = false) String xid,
+                                                           HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+        Map<String, Object> response = new HashMap<>();
+        boolean isUnique = dataSourceApiService.isUniqueXid(request, xid, id);
+        response.put("unique", isUnique);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-                List<DatasourceJSON> lst = new ArrayList<DatasourceJSON>();
-                for (DataSourceVO<?> ds:lstDS) {
-                    DatasourceJSON dsJ = new DatasourceJSON(ds.getId(), ds.getXid());
-                    lst.add(dsJ);
-                }
+    @GetMapping(value = "/api/datasource/datapoints/enable")
+    public ResponseEntity<List<DataPointJson>> enableAllPointsInDataSource(@RequestParam(required = false) Integer id,
+                                                                           @RequestParam(required = false) String xid,
+                                                                           HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
 
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
+        List<DataPointJson> response = dataSourceApiService.enableAllPointsInDataSource(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-                return new ResponseEntity<String>(json,HttpStatus.OK);
-            }
+    @GetMapping(value = "/api/datasource/generateUniqueXid")
+    public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+        String response = dataSourceApiService.generateUniqueXid(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> createDataSource(@RequestBody(required = false) @Valid DataSourceJson dataSource,
+                                                           HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+
+        DataSourceJson response = dataSourceApiService.create(request, dataSource);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody(required = false) @Valid DataSourceJson dataSource,
+                                                           HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+
+        DataSourceJson response = dataSourceApiService.update(request, dataSource);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> deleteDataSource(@RequestParam(required = false) Integer id,
+                                                           @RequestParam(required = false) String xid,
+                                                           HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+
+        DataSourceJson response = dataSourceApiService.delete(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/api/datasource/getAll")
+    public ResponseEntity<List<DataSourceIdentifier>> getDataSourceIdentifiers(HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+
+        List<DataSourceIdentifier> response = dataSourceApiService.getIdentifiers(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datasource/getAllPlc", produces = "application/json")
-    public ResponseEntity<List<DataSourceSimpleJSON>> getAllPlcDataSources(HttpServletRequest request) {
-        LOG.info("/api/datasource/getAllPlc");
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                List<DataSourceVO<?>> list;
-                list = dataSourceService.getDataSourcesPlc();
-                List<DataSourceSimpleJSON> result = new ArrayList<>();
-                for(DataSourceVO<?> ds: list) {
-                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName());
-                    result.add(d);
-                }
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<DataSourceIdentifier>> getDataSourcesPlcIdentifers(HttpServletRequest request) {
+        LOG.debug( request.getRequestURI());
+
+        List<DataSourceIdentifier> response = dataSourceApiService.getDataSourcesPlcIdentifers(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-    private class DataSourceSimpleJSON {
-        private long id;
-        private String xid;
-        private String name;
-
-        DataSourceSimpleJSON(long id, String xid, String name) {
-            this.setId(id);
-            this.setXid(xid);
-            this.setName(name);
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public void setId(long id) {
-            this.id = id;
-        }
-
-        public String getXid() {
-            return xid;
-        }
-
-        public void setXid(String xid) {
-            this.xid = xid;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
 }

@@ -5,7 +5,7 @@ import org.scada_lts.dao.UserDAO;
 
 import java.util.List;
 
-public class UserCache implements UserCachable {
+public class UserCache implements UserCacheable {
 
     private final UserDAO userDAO;
 
@@ -39,17 +39,17 @@ public class UserCache implements UserCachable {
     }
 
     @Override
-    public void updateHideMenu(User user) {
-        userDAO.updateHideMenu(user);
-    }
-
-    @Override
-    public void updateScadaTheme(User user) {
-        userDAO.updateScadaTheme(user);
-    }
-
-    @Override
     public void delete(int userId) {
         userDAO.delete(userId);
+    }
+
+    @Override
+    public void updateUserPassword(int userId, String newPassword) {
+        userDAO.updateUserPassword(userId, newPassword);
+    }
+
+    @Override
+    public void updateLang(int userId, String lang) {
+        userDAO.updateUserLang(userId, lang);
     }
 }

@@ -12,6 +12,7 @@ import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.junit.Test;
+import utils.TestUtils;
 
 import java.lang.reflect.Array;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class EventDetectorMessageTest {
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(mangoValue.getDataType());
 
-        DataPointVO pointFromContextVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO pointFromContextVO = TestUtils.newDefaultEmptyDataPointVO();
         pointFromContextVO.setPointLocator(locatorFromContext);
         pointFromContextVO.setEventDetectors(Collections.emptyList());
         pointFromContextVO.setId(pointFromContextId);

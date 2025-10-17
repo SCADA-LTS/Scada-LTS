@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -53,6 +54,16 @@ public class DynamicGraphicComponent extends PointComponent {
     private double min;
     @JsonRemoteProperty
     private double max;
+
+    public DynamicGraphicComponent() {}
+
+    public DynamicGraphicComponent(DynamicGraphicComponent dynamicGraphicComponent) {
+        super(dynamicGraphicComponent);
+        this.dynamicImage = dynamicGraphicComponent.tgetDynamicImage();
+        this.displayText = dynamicGraphicComponent.isDisplayText();
+        this.min = dynamicGraphicComponent.getMin();
+        this.max = dynamicGraphicComponent.getMax();
+    }
 
     public DynamicImage tgetDynamicImage() {
         return dynamicImage;
@@ -146,6 +157,11 @@ public class DynamicGraphicComponent extends PointComponent {
     }
 
     @Override
+    public ViewComponent copy() {
+        return new DynamicGraphicComponent(this);
+    }
+
+    @Override
     public void addDataToModel(Map<String, Object> model, PointValueTime pointValue) {
         model.put("proportion", getProportion(pointValue));
     }
@@ -207,5 +223,29 @@ public class DynamicGraphicComponent extends PointComponent {
             map.put("dynamicImage", null);
         else
             map.put("dynamicImage", dynamicImage.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DynamicGraphicComponent)) return false;
+        if (!super.equals(o)) return false;
+        DynamicGraphicComponent that = (DynamicGraphicComponent) o;
+        return isDisplayText() == that.isDisplayText() && Double.compare(that.getMin(), getMin()) == 0 && Double.compare(that.getMax(), getMax()) == 0 && Objects.equals(dynamicImage, that.dynamicImage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), dynamicImage, isDisplayText(), getMin(), getMax());
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicGraphicComponent{" +
+                "dynamicImage=" + dynamicImage +
+                ", displayText=" + displayText +
+                ", min=" + min +
+                ", max=" + max +
+                "} " + super.toString();
     }
 }

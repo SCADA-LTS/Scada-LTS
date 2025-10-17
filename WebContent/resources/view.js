@@ -62,6 +62,10 @@ mango.view.setMessages = function(state) {
     var warningNode = $("c"+ state.id +"Warning");
     if (warningNode && state.messages != null) {
         $set("c"+ state.id +"Messages", state.messages);
+        var warningIconNode = $("c"+ state.id +"WarningIcon");
+        if(warningIconNode) {
+            $set("c"+ state.id +"WarningIcon", state.warningIcon);
+        }
         if (state.messages)
             show(warningNode);
         else
@@ -96,10 +100,10 @@ mango.view.setContent = function(state) {
 };
 
 function extractSrcAttribute(string) {
-	string = string.replace("<img ","");
-	string = string.replace(string.match("alt=.*"),"");
-	string = string.replace("src=\"","");
-	return string.replace("\"","");
+	string = string.replaceAll("<img ","");
+	string = string.replaceAll(string.match("alt=.*"),"");
+	string = string.replaceAll("src=\"","");
+	return string.replaceAll("\"","");
 }
 
 mango.view.runScripts = function(node) { 
@@ -198,10 +202,13 @@ mango.view.anon.setPoint = function(pointId, viewComponentId, value) {
 
 //
 // Normal views
-mango.view.initNormalView = function() {
+mango.view.initNormalView = function(viewId) {
     mango.view.setPoint = mango.view.norm.setPoint;
     // Tell the long poll request that we're interested in view data.
     mango.longPoll.pollRequest.view = true;
+
+    // Specify view Id
+    mango.longPoll.pollRequest.viewId = viewId;
 };
 
 mango.view.norm = {};
@@ -209,7 +216,7 @@ mango.view.norm.setPoint = function(pointId, viewComponentId, value) {
     dwr.engine.setErrorHandler(errh);
     show("c"+ viewComponentId +"Changing");
     mango.view.hideChange("c"+ viewComponentId +"Change");
-    ViewDwr.setViewPoint(viewComponentId, value, function(viewComponentId) {
+    ViewDwr.setViewPoint(viewComponentId, value, mango.longPoll.pollRequest.viewId, function(viewComponentId) {
         hide("c"+ viewComponentId +"Changing");
         MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
     });
@@ -218,10 +225,12 @@ mango.view.norm.setPoint = function(pointId, viewComponentId, value) {
 
 //
 // View editing
-mango.view.initEditView = function() {
+mango.view.initEditView = function(viewId) {
     // Tell the long poll request that we're interested in view editing data.
     mango.longPoll.pollRequest.viewEdit = true;
     mango.view.setData = mango.view.edit.setData;
+
+    mango.longPoll.pollRequest.viewId = viewId;
 };
 
 mango.view.edit = {};
@@ -554,3 +563,25 @@ mango.view.graphic.HorizontalLevel.setValue = function(viewComponentId, value) {
     
     g.paint();
 };
+
+async function loadDefaultSizeContainer(fileUrl, containerId) {
+    const response = await fetch(fileUrl);
+    const notFoundFile = await isNotFoundFile(response);
+    const container = document.getElementById(containerId);
+    const width = response.headers.get("img-width");
+    const height = response.headers.get("img-height");
+    if(notFoundFile || (width == "-1" || height == "-1")) {
+        container.width = 1920;
+        container.height = 1080;
+    }else if (width && height) {
+        container.width = width;
+        container.height = height;
+    } else {
+         container.removeAttribute("width");
+         container.removeAttribute("height");
+     }
+}
+
+async function isNotFoundFile(response) {
+    return response.status === 404;
+}

@@ -63,7 +63,7 @@
     }
     
     function deleteDataSource(dataSourceId) {
-        if (confirm("<fmt:message key="dsList.dsDeleteConfirm"/>")) {
+        if (confirm("<spring:message code="dsList.dsDeleteConfirm"/>")) {
             startImageFader("deleteDataSourceImg"+ dataSourceId);
             DataSourceListDwr.deleteDataSource(dataSourceId, function(dataSourceId) {
                 stopImageFader("deleteDataSourceImg"+ dataSourceId);
@@ -85,7 +85,7 @@
     }
     
     function deleteDataPoint(pointId) {
-        if (confirm("<fmt:message key="dsList.pointDeleteConfirm"/>")) {
+        if (confirm("<spring:message code="dsList.pointDeleteConfirm"/>")) {
             DataSourceListDwr.deleteDataPoint(pointId, function(pointId) {
                 var row = $("pointRow"+ pointId);
                 row.parentNode.removeChild(row);
@@ -102,7 +102,7 @@
     <tr>
       <td>
         <tag:img png="icon_ds" title="dsList.dataSources"/>
-        <span class="smallTitle"><fmt:message key="dsList.dataSources"/></span>
+        <span class="smallTitle"><spring:message code="dsList.dataSources"/></span>
         <tag:help id="dataSourceList"/>
       </td>
       <td align="right" id="dataSourceTypesContent" style="display:none">
@@ -119,19 +119,19 @@
             <td colspan="2">
               <table class="dataSourcesTable">
                 <tr class="rowHeader">
-                  <td><fmt:message key="dsList.name"/></td>
-                  <td><fmt:message key="dsList.type"/></td>
-                  <td><fmt:message key="dsList.connection"/></td>
-                  <td><fmt:message key="dsList.status"/></td>
-                  <td><fmt:message key="dsList.statusDescribe"/></td>
+                  <td><spring:message code="dsList.name"/></td>
+                  <td><spring:message code="dsList.type"/></td>
+                  <td><spring:message code="dsList.connection"/></td>
+                  <td><spring:message code="dsList.status"/></td>
+                  <td><spring:message code="dsList.statusDescribe"/></td>
                   <td></td>
                 </tr>
-                <c:set var="hideText"><fmt:message key="dsList.hide"/></c:set>
-                <c:set var="showText"><fmt:message key="dsList.show"/></c:set>
+                <c:set var="hideText"><spring:message code="dsList.hide"/></c:set>
+                <c:set var="showText"><spring:message code="dsList.show"/></c:set>
                 <c:forEach items="${data}" var="listParent"> 
                     <tr class="row" id="dataSourceRow${listParent.parent.id}">
-                    <td><b>${listParent.parent.name}</b></td>
-                    <td><fmt:message key="${listParent.parent.type.key}"/></td>
+                    <td><b><c:out value="${listParent.parent.name}"/></b></td>
+                    <td><spring:message code="${listParent.parent.type.key}"/></td>
                     <td><sst:i18n message="${listParent.parent.connectionDescription}"/></td>
                     <td align="center">
                       <c:choose>
@@ -146,7 +146,7 @@
                       </c:choose>
                     </td>
                     <td id="stateDes${listParent.parent.id}">
-                      ${listParent.parent.state.describe}
+                      <c:out value="${listParent.parent.state.describe}"/>
                     </td>
                     <td>
                       <a href="data_source_edit.shtm?dsid=${listParent.parent.id}"><tag:img png="icon_ds_edit"
@@ -163,14 +163,14 @@
                     <td colspan="5" class="datasource-row">
                       <table cellspacing="1" cellpadding="0" border="0">
                         <tr class="rowHeader">
-                          <td><fmt:message key="dsList.pointName"/></td>
-                          <td><fmt:message key="dsList.description"/></td>
-                          <td><fmt:message key="dsList.status"/></td>
+                          <td><spring:message code="dsList.pointName"/></td>
+                          <td><spring:message code="dsList.description"/></td>
+                          <td><spring:message code="dsList.status"/></td>
                           <td></td>
                         </tr>
                         <c:forEach items="${listParent.list}" var="point">
                           <tr id="pointRow${point.id}">
-                            <td>${point.name}</td>
+                            <td><c:out value="${point.name}"/></td>
                             <td><sst:i18n message="${point.dataTypeMessage}"/> / <sst:i18n message="${point.configurationDescription}"/></td>
                             <td align="center">
                               <c:choose>
@@ -200,5 +200,6 @@
         </table>  
       </td>
     </tr>
+    <tag:newPageNotification href="./app.shtm#/datasources" ref="datasourcesNotification"/>
   </table>
 </tag:page>

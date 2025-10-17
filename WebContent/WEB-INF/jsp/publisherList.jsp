@@ -39,15 +39,15 @@
                 function(p) { return p.configDescription; },
                 function(p) {
                     if (p.enabled)
-                        return '<img src="images/transmit_go.png" title="<fmt:message key="common.enabledToggle"/>" '+
+                        return '<img src="images/transmit_go.png" title="<spring:message code="common.enabledToggle"/>" '+
                             'class="ptr" onclick="togglePublisher('+ p.id +')" id="pImg'+ p.id +'"/>';
-                    return '<img src="images/transmit_stop.png" title="<fmt:message key="common.disabledToggle"/>" '+
+                    return '<img src="images/transmit_stop.png" title="<spring:message code="common.disabledToggle"/>" '+
                         'class="ptr" onclick="togglePublisher('+ p.id +')" id="pImg'+ p.id +'"/>';
                 },
                 function(p) {
                     return '<a href="publisher_edit.shtm?pid='+ p.id +'"><img src="images/transmit_edit.png" '+
-                        'border="0" title="<fmt:message key="common.edit"/>"/></a> '+
-                        '<img src="images/transmit_delete.png" title="<fmt:message key="common.delete"/>" id="deleteImg'+ p.id +'" '+
+                        'border="0" title="<spring:message code="common.edit"/>"/></a> '+
+                        '<img src="images/transmit_delete.png" title="<spring:message code="common.delete"/>" id="deleteImg'+ p.id +'" '+
                         'class="ptr" onclick="deletePublisher('+ p.id +')"/>';
                 }
             ],
@@ -80,7 +80,7 @@
     
     
     function deletePublisher(id) {
-        if (confirm("<fmt:message key="publisherList.deleteConfirm"/>")) {
+        if (confirm("<spring:message code="publisherList.deleteConfirm"/>")) {
             startImageFader("deleteImg"+ id);
             PublisherListDwr.deletePublisher(id, function(publisherId) {
                 stopImageFader("deleteImg"+ publisherId);
@@ -100,7 +100,7 @@
     <tr>
       <td>
         <tag:img png="transmit" title="publisherList.publishers"/>
-        <span class="smallTitle"><fmt:message key="publisherList.publishers"/></span>
+        <span class="smallTitle"><spring:message code="publisherList.publishers"/></span>
         <tag:help id="publisherList"/>
       </td>
       <td align="right">
@@ -113,13 +113,13 @@
       <td colspan="2">
         <table cellspacing="1" cellpadding="0" border="0">
           <tr class="rowHeader">
-            <td><fmt:message key="publisherList.name"/></td>
-            <td><fmt:message key="publisherList.type"/></td>
-            <td><fmt:message key="publisherList.config"/></td>
-            <td><fmt:message key="publisherList.status"/></td>
+            <td><spring:message code="publisherList.name"/></td>
+            <td><spring:message code="publisherList.type"/></td>
+            <td><spring:message code="publisherList.config"/></td>
+            <td><spring:message code="publisherList.status"/></td>
             <td></td>
           </tr>
-          <tbody id="noPublishers" style="display:none"><tr><td colspan="5"><fmt:message key="publisherList.noRows"/></td></tr></tbody>
+          <tbody id="noPublishers" style="display:none"><tr><td colspan="5"><spring:message code="publisherList.noRows"/></td></tr></tbody>
           <tbody id="publisherList"></tbody>
         </table>
       </td>

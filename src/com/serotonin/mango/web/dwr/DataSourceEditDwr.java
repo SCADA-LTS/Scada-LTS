@@ -24,6 +24,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -42,7 +44,11 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import com.serotonin.mango.util.LoggingScriptUtils;
+import com.serotonin.bacnet4j.type.enumerated.ObjectType;
+import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.vo.*;
+import com.serotonin.mango.web.dwr.beans.*;
+import com.serotonin.modbus4j.FixedModbusMaster;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -89,14 +95,21 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.protocol.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
+import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaService;
+import org.scada_lts.ds.polling.protocol.opcua.vo.*;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -119,9 +132,6 @@ import com.serotonin.mango.rt.dataSource.snmp.Version;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntMessagePair;
-import com.serotonin.mango.vo.DataPointNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
@@ -176,22 +186,6 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.beans.BACnetDiscovery;
-import com.serotonin.mango.web.dwr.beans.BACnetObjectBean;
-import com.serotonin.mango.web.dwr.beans.DataPointDefaulter;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceReader;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceUpdater;
-import com.serotonin.mango.web.dwr.beans.EventInstanceBean;
-import com.serotonin.mango.web.dwr.beans.GalilCommandTester;
-import com.serotonin.mango.web.dwr.beans.HttpReceiverDataListener;
-import com.serotonin.mango.web.dwr.beans.MBusDiscovery;
-import com.serotonin.mango.web.dwr.beans.ModbusNodeScanListener;
-import com.serotonin.mango.web.dwr.beans.NmeaUtilListener;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDataPointBean;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDiscovery;
-import com.serotonin.mango.web.dwr.beans.OpenV4JProtocolBean;
-import com.serotonin.mango.web.dwr.beans.SnmpOidGet;
-import com.serotonin.mango.web.dwr.beans.SqlStatementTester;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.RegisterRange;
@@ -212,12 +206,24 @@ import com.serotonin.viconics.ViconicsTransportException;
 import com.serotonin.viconics.msg.NetworkIdentifyRequest;
 import com.serotonin.viconics.msg.NetworkIdentifyResponse;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.utils.AlarmLevelsDwrUtils;
+import org.scada_lts.serial.SerialPortParameters;
+import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
+import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.utils.TimeLocker;
 
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyAndSaveDataPoint;
+import static com.serotonin.mango.rt.dataSource.bacnet.BACnetUtils.checkFreePort;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
+import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 /**
  * @author Matthew Lohbihler
@@ -225,12 +231,15 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
 public class DataSourceEditDwr extends DataSourceListDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceEditDwr.class);
 
+    private static TimeLocker TIME_LOCKER = new TimeLocker(20, 15);
+
 	//
 	//
 	// Common methods
 	//
-	@MethodFilter
+	//
 	public DwrResponseI18n editInit() {
+        Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("points", getPoints());
 		response.addData("alarms", getAlarms());
@@ -238,29 +247,35 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	}
 
 	private DwrResponseI18n tryDataSourceSave(DataSourceVO<?> ds) {
-
+        Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
+        return tryDataSourceSave(ds, response);
+    }
 
-		ds.validate(response);
+    private DwrResponseI18n tryDataSourceSave(DataSourceVO<?> ds, DwrResponseI18n response) {
+        Permissions.ensureAdmin();
 
-		if (!response.getHasMessages()) {
-			LOG.debug("Trying to save datasource " + ds.getName());
-			Common.ctx.getRuntimeManager().saveDataSource(ds);
-			response.addData("id", ds.getId());
-			LOG.debug("Response: " + response.toString());
-		}
+        ds.validate(response);
+
+        if (!response.getHasMessages()) {
+            LOG.debug("Trying to save datasource " + ds.getName());
+            Common.ctx.getRuntimeManager().saveDataSource(ds);
+            response.addData("id", ds.getId());
+            LOG.debug("Response: " + response.toString());
+        }
 
         return response;
     }
 
-    @MethodFilter
+    //
     public void cancelTestingUtility() {
         Common.getUser().cancelTestingUtility();
     }
 
-    @MethodFilter
+    //
     public List<DataPointVO> enableAllPoints() {
         User user = Common.getUser();
+        Permissions.ensureAdmin(user);
         if (user == null)
             return null;
 
@@ -268,7 +283,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (ds.getId() == Common.NEW_ID)
             return null;
 
-        List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
+        List<DataPointVO> points = new DataPointService().getDataPoints(ds.getId(),
                 DataPointNameComparator.instance);
         for (DataPointVO dataPointVO : points) {
             if (!dataPointVO.isEnabled()) {
@@ -283,40 +298,41 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return points;
     }
 
-    @MethodFilter
+    //
     public List<DataPointVO> getPoints() {
         User user = Common.getUser();
+        Permissions.ensureAdmin(user);
         if (user == null)
             return null;
 
         DataSourceVO<?> ds = user.getEditDataSource();
         if (ds.getId() == Common.NEW_ID)
             return null;
-
-        List<DataPointVO> points = new DataPointDao().getDataPoints(ds.getId(),
-                DataPointNameComparator.instance);
-        return points;
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> points = dataPointService.getDataPoints(ds.getId(), DataPointNameComparator.instance);
+        return GetDataPointsWithAccess.filteringByAccess(user, points);
     }
 
-    @MethodFilter
+    //
     public DataPointVO getPoint(int pointId) {
         return getPoint(pointId, null);
     }
 
     private DataPointVO getPoint(int pointId, DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
 
         DataPointVO dp;
         if (pointId == Common.NEW_ID) {
             dp = new DataPointVO();
-            dp.setXid(new DataPointDao().generateUniqueXid());
+            dp.setXid(new DataPointService().generateUniqueXid());
             dp.setDataSourceId(ds.getId());
             dp.setPointLocator(ds.createPointLocator());
             dp.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
             if (defaulter != null)
                 defaulter.setDefaultValues(dp);
         } else {
-            dp = new DataPointDao().getDataPoint(pointId);
+            dp = new DataPointService().getDataPoint(pointId);
             if (dp != null && dp.getDataSourceId() != ds.getId())
                 throw new RuntimeException("Data source id mismatch");
         }
@@ -326,36 +342,19 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     private DwrResponseI18n validatePoint(int id, String xid, String name,
                                           PointLocatorVO locator, DataPointDefaulter defaulter) {
-        DwrResponseI18n response = new DwrResponseI18n();
+        Permissions.ensureAdmin();
 
         DataPointVO dp = getPoint(id, defaulter);
         dp.setXid(xid);
         dp.setName(name);
         dp.setPointLocator(locator);
 
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!new DataPointDao().isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
-        else if (StringUtils.isLengthGreaterThan(xid, 50))
-            response.addContextualMessage("xid", "validate.notLongerThan", 50);
-
-        if (StringUtils.isEmpty(name))
-            response.addContextualMessage("name", "dsEdit.validate.required");
-
-        locator.validate(response);
-
-        if (!response.getHasMessages()) {
-            Common.ctx.getRuntimeManager().saveDataPoint(dp);
-            response.addData("id", dp.getId());
-            response.addData("points", getPoints());
-        }
-
-        return response;
+        return validateAndSaveDataPoint(dp);
     }
 
-    @MethodFilter
+    //
     public List<DataPointVO> deletePoint(int id) {
+        Permissions.ensureAdmin();
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
@@ -364,24 +363,26 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return getPoints();
     }
 
-    @MethodFilter
+    //
     public Map<String, Object> toggleEditDataSource() {
+        Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         return super.toggleDataSource(ds.getId());
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n togglePoint(int dataPointId) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = super.toggleDataPoint(dataPointId);
         response.addData("points", getPoints());
         return response;
     }
 
-    @MethodFilter
+    //
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         List<EventInstance> events = new EventService()
-                .getPendingSimpleEventsForDataSource(ds.getId(), Common.getUser()
+                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
                         .getId());
         Collections.sort(events, new Comparator<EventInstance>() {
             @Override
@@ -400,19 +401,22 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return beans;
     }
 
-    @MethodFilter
+    //
     public void updateEventAlarmLevel(int eventId, int alarmLevel) {
+        Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         ds.setAlarmLevel(eventId, alarmLevel);
+        putAlarmLevels("AlarmLevels_" + ds.getXid(), eventId, alarmLevel);
     }
 
     //
     //
     // Virtual stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveVirtualDataSource(String name, String xid,
                                                  int updatePeriods, int updatePeriodType) {
+        Permissions.ensureAdmin();
         VirtualDataSourceVO ds = (VirtualDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -424,22 +428,58 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public IntMessagePair[] getChangeTypes(int dataTypeId) {
         return ChangeTypeVO.getChangeTypes(dataTypeId);
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n saveVirtualPointLocator(int id, String xid,
                                                    String name, VirtualPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    // AMQP Receiver //
+    //
+    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+    //
+    public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
+        if (locator.getExchangeType() == ExchangeType.NONE) {
+            locator.setRoutingKey("");
+            locator.setExchangeName("");
+        }
+        if (locator.getExchangeType() == ExchangeType.FANOUT) {
+            locator.setRoutingKey("");
+        }
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    // MQTT Receiver //
+    //
+    public DwrResponseI18n saveMqttDataSource(MqttDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+
+
+    //
+    public DwrResponseI18n saveMqttPointLocator(int id, String xid, String name, MqttPointLocatorVO locator){
+        return validatePoint(id, xid, name, locator, null);
+    }
     //
     //
     // Modbus common stuff
     //
-    @MethodFilter
+    //
     public Map<String, Object> modbusScanUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
         ModbusNodeScanListener scan = Common.getUser().getTestingUtility(
@@ -454,7 +494,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return result;
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n saveModbusPointLocator(int id, String xid,
                                                   String name, ModbusPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -490,7 +530,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         } catch (IllegalCharsetNameException e) {
             response.addMessage(new LocalizableMessage(
                     "validate.invalidCharset"));
-        } finally {
+        } catch (Exception e) {
+            response.addMessage(new LocalizableMessage("common.default", e.getLocalizedMessage()));
+        } finally
+        {
             modbusMaster.destroy();
         }
     }
@@ -552,7 +595,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Modbus serial stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveModbusSerialDataSource(String name, String xid,
                                                       int updatePeriods, int updatePeriodType, boolean quantize,
                                                       int timeout, int retries, boolean contiguousBatches,
@@ -561,6 +604,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                       String commPortId, int baudRate, int flowControlIn,
                                                       int flowControlOut, int dataBits, int stopBits, int parity,
                                                       String encoding, boolean echo, int concurrency) {
+        Permissions.ensureAdmin();
         ModbusSerialDataSourceVO ds = (ModbusSerialDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -590,7 +634,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public String modbusSerialScan(int timeout, int retries, String commPortId,
                                    int baudRate, int flowControlIn, int flowControlOut, int dataBits,
                                    int stopBits, int parity, String encoding, int concurrency) {
@@ -608,7 +652,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return null;
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n testModbusSerialLocator(int timeout, int retries,
                                                    String commPortId, int baudRate, int flowControlIn,
                                                    int flowControlOut, int dataBits, int stopBits, int parity,
@@ -627,7 +671,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return response;
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n testModbusSerialData(int timeout, int retries,
                                                 String commPortId, int baudRate, int flowControlIn,
                                                 int flowControlOut, int dataBits, int stopBits, int parity,
@@ -658,34 +702,29 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (StringUtils.isEmpty(commPortId))
             throw new Exception();
 
-        SerialParameters params = new SerialParameters();
-        params.setCommPortId(commPortId);
-        params.setPortOwnerName("Mango Modbus Serial Data Source Scan");
-        params.setBaudRate(baudRate);
-        params.setFlowControlIn(flowControlIn);
-        params.setFlowControlOut(flowControlOut);
-        params.setDataBits(dataBits);
-        params.setStopBits(stopBits);
-        params.setParity(parity);
+        SerialPortParameters serialPortParameters = SerialPortParameters
+                .newParameters("Mango Modbus Serial Data Source Scan", commPortId, baudRate,
+                        flowControlIn, flowControlOut, dataBits, stopBits, parity, timeout);
+        SerialPortService serialPortService = SerialPortService.newService(serialPortParameters);
 
         EncodingType encodingType = EncodingType.valueOf(encoding);
 
         ModbusMaster modbusMaster;
         if (encodingType == EncodingType.ASCII)
-            modbusMaster = new ModbusFactory().createAsciiMaster(params);
+            modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(serialPortService));
         else
-            modbusMaster = new ModbusFactory().createRtuMaster(params);
+            modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(serialPortService));
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
-        return modbusMaster;
+        return new FixedModbusMaster(modbusMaster);
     }
 
     //
     //
     // Modbus IP stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveModbusIpDataSource(String name, String xid,
                                                   int updatePeriods, int updatePeriodType, boolean quantize,
                                                   int timeout, int retries, boolean contiguousBatches,
@@ -693,6 +732,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                   int maxReadRegisterCount, int maxWriteRegisterCount,
                                                   String transportType, String host, int port, boolean encapsulated,
                                                   boolean createSocketMonitorPoint) {
+        Permissions.ensureAdmin();
         ModbusIpDataSourceVO ds = (ModbusIpDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -717,7 +757,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public String modbusIpScan(int timeout, int retries, String transport,
                                String host, int port, boolean encapsulated) {
         ModbusMaster modbusMaster = createModbusIpMaster(timeout, retries,
@@ -728,7 +768,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return null;
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n testModbusIpLocator(int timeout, int retries,
                                                String transport, String host, int port, boolean encapsulated,
                                                ModbusPointLocatorVO locator) {
@@ -739,7 +779,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return response;
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n testModbusIpData(int timeout, int retries,
                                             String transport, String host, int port, boolean encapsulated,
                                             int slaveId, int range, int offset, int length) {
@@ -774,14 +814,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
-        return modbusMaster;
+        return new FixedModbusMaster(modbusMaster);
     }
 
     //
     //
     // SNMP stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveSnmpDataSource(String name, String xid,
                                               int updatePeriods, int updatePeriodType, String host, int port,
                                               int snmpVersion, String community, String securityName,
@@ -789,6 +829,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                               String privPassphrase, int securityLevel, String contextName,
                                               int retries, int timeout, boolean trapEnabled, int trapPort,
                                               String localAddress) {
+        Permissions.ensureAdmin();
         SnmpDataSourceVO ds = (SnmpDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -816,13 +857,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n saveSnmpPointLocator(int id, String xid,
                                                 String name, SnmpPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    //
     public void snmpGetOid(String oid, String host, int port, int snmpVersion,
                            String community, String securityName, String authProtocol,
                            String authPassphrase, String privProtocol, String privPassphrase,
@@ -838,7 +879,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 version, oid, retries, timeout));
     }
 
-    @MethodFilter
+    //
     public void snmpWalkOid(String oid, String host, int port, int snmpVersion,
                             String community, String securityName, String authProtocol,
                             String authPassphrase, String privProtocol, String privPassphrase,
@@ -854,7 +895,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 //				version, oid, retries, timeout));
     }
 
-    @MethodFilter
+    //
     public String snmpGetOidUpdate() {
         SnmpOidGet snmpOidGet = Common.getUser().getTestingUtility(
                 SnmpOidGet.class);
@@ -863,7 +904,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return snmpOidGet.getResult();
     }
 
-//	@MethodFilter
+//	//
 //	public String snmpGetWalkUpdate() {
 //		SnmpOidWalk snmpOidWalk = Common.getUser().getTestingUtility(
 //				SnmpOidWalk.class);
@@ -876,11 +917,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // SQL stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveSqlDataSource(String name, String xid,
                                              int updatePeriods, int updatePeriodType, String driverClassname,
                                              String connectionUrl, String username, String password,
-                                             String selectStatement, boolean rowBasedQuery) {
+                                             String selectStatement, boolean rowBasedQuery, boolean jndiResource,
+                                             String jndiResourceName, int statementLimit) {
+        Permissions.ensureAdmin();
         SqlDataSourceVO ds = (SqlDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -888,38 +931,54 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setName(name);
         ds.setUpdatePeriods(updatePeriods);
         ds.setUpdatePeriodType(updatePeriodType);
-        ds.setDriverClassname(driverClassname);
-        ds.setConnectionUrl(connectionUrl);
-        ds.setUsername(username);
-        ds.setPassword(password);
+
+        if(jndiResource) {
+            ds.setDriverClassname("");
+            ds.setConnectionUrl("");
+            ds.setUsername("");
+            ds.setPassword("");
+            ds.setJndiResourceName(jndiResourceName);
+        } else {
+            ds.setDriverClassname(driverClassname);
+            ds.setConnectionUrl(connectionUrl);
+            ds.setUsername(username);
+            ds.setPassword(password);
+            ds.setJndiResourceName("");
+        }
+
         ds.setSelectStatement(selectStatement);
         ds.setRowBasedQuery(rowBasedQuery);
+        ds.setJndiResource(jndiResource);
+        ds.setStatementLimit(statementLimit);
 
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n saveSqlPointLocator(int id, String xid, String name,
                                                SqlPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    //
     public void sqlTestStatement(String driverClassname, String connectionUrl,
                                  String username, String password, String selectStatement,
-                                 boolean rowBasedQuery) {
+                                 boolean rowBasedQuery, boolean jndiResource,
+                                 String jndiResourceName, int statementLimit) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
-        user.setTestingUtility(new SqlStatementTester(getResourceBundle(),
-                driverClassname, connectionUrl, username, password,
-                selectStatement, rowBasedQuery));
+        SqlDataSourceVO sqlDataSourceVO = createSqlDataSourceVO(driverClassname, connectionUrl, username, password,
+                selectStatement, rowBasedQuery, jndiResource, jndiResourceName, statementLimit);
+        JdbcOperationsTester tester = new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO);
+        tester.start();
+        user.setTestingUtility(tester);
     }
 
-    @MethodFilter
+    //
     public Map<String, Object> sqlTestStatementUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
-        SqlStatementTester statementTester = Common.getUser()
-                .getTestingUtility(SqlStatementTester.class);
+        JdbcOperationsTester statementTester = Common.getUser()
+                .getTestingUtility(JdbcOperationsTester.class);
         if (statementTester == null)
             return null;
         if (!statementTester.isDone())
@@ -936,9 +995,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // HTTP receiver stuff
     //
-    @MethodFilter
+    //
     public DwrResponseI18n saveHttpReceiverDataSource(String name, String xid,
                                                       String[] ipWhiteList, String[] deviceIdWhiteList) {
+        Permissions.ensureAdmin();
         HttpReceiverDataSourceVO ds = (HttpReceiverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -950,13 +1010,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    //
     public DwrResponseI18n saveHttpReceiverPointLocator(int id, String xid,
                                                         String name, HttpReceiverPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    //
     public void httpReceiverListenForData(String[] ipWhiteList,
                                           String[] deviceIdWhiteList) {
         User user = Common.getUser();
@@ -965,7 +1025,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 getResourceBundle(), ipWhiteList, deviceIdWhiteList));
     }
 
-    @MethodFilter
+    //
     public Map<String, Object> httpReceiverListenerUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
         HttpReceiverDataListener l = Common.getUser().getTestingUtility(
@@ -985,7 +1045,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return result;
     }
 
-    @MethodFilter
+    //
     public String validateIpMask(String ipMask) {
         return IpAddressUtils.checkIpMask(ipMask);
     }
@@ -994,10 +1054,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // OneWire stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveOneWireDataSource(String name, String xid,
                                                  String commPortId, int updatePeriodType, int updatePeriods,
                                                  int rescanPeriodType, int rescanPeriods) {
+        Permissions.ensureAdmin();
         OneWireDataSourceVO ds = (OneWireDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1012,13 +1073,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveOneWirePointLocator(int id, String xid,
                                                    String name, OneWirePointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n readOneWireNetwork(String commPointId) {
         DwrResponseI18n response = new DwrResponseI18n();
 
@@ -1067,7 +1128,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return response;
     }
 
-    @MethodFilter
+    
     public DataPointVO addOneWirePoint(String address) {
         DataPointVO dp = getPoint(Common.NEW_ID, null);
         OneWirePointLocatorVO locator = dp.getPointLocator();
@@ -1079,8 +1140,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Meta stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveMetaDataSource(String name, String xid) {
+        Permissions.ensureAdmin();
         MetaDataSourceVO ds = (MetaDataSourceVO) Common.getUser()
                 .getEditDataSource();
         ds.setXid(xid);
@@ -1088,13 +1150,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveMetaPointLocator(int id, String xid,
                                                 String name, MetaPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n validateScript(String script,
                                           List<IntValuePair> context, int dataTypeId) {
         DwrResponseI18n response = new DwrResponseI18n();
@@ -1123,8 +1185,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             response.addMessage("script", e.getLocalizableMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
+            response.addMessage("script", new LocalizableMessage("common.default", e.getMessage()));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
-            throw e;
         }
 
         return response;
@@ -1134,15 +1196,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // BACnet I/P stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveBACnetIpDataSource(String name, String xid,
                                                   int updatePeriods, int updatePeriodType, int deviceId,
                                                   String broadcastAddress, int port, int timeout, int segTimeout,
                                                   int segWindow, int retries, int covSubscriptionTimeoutMinutes,
                                                   int maxReadMultipleReferencesSegmented,
                                                   int maxReadMultipleReferencesNonsegmented) {
+        Permissions.ensureAdmin();
         BACnetIPDataSourceVO ds = (BACnetIPDataSourceVO) Common.getUser()
                 .getEditDataSource();
+        DwrResponseI18n response = new DwrResponseI18n();
 
         ds.setXid(xid);
         ds.setName(name);
@@ -1150,7 +1214,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setUpdatePeriodType(updatePeriodType);
         ds.setDeviceId(deviceId);
         ds.setBroadcastAddress(broadcastAddress);
-        ds.setPort(port);
+        if(ds.getPort() != port) {
+            checkFreePort(response, port);
+            if(!response.getHasMessages())
+                ds.setPort(port);
+        }
         ds.setTimeout(timeout);
         ds.setSegTimeout(segTimeout);
         ds.setSegWindow(segWindow);
@@ -1159,16 +1227,24 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setMaxReadMultipleReferencesSegmented(maxReadMultipleReferencesSegmented);
         ds.setMaxReadMultipleReferencesNonsegmented(maxReadMultipleReferencesNonsegmented);
 
-        return tryDataSourceSave(ds);
+        return tryDataSourceSave(ds, response);
     }
 
-    @MethodFilter
-    public DwrResponseI18n saveBACnetIPPointLocator(int id, String xid,
-                                                    String name, BACnetIPPointLocatorVO locator) {
-        return validatePoint(id, xid, name, locator, null);
+    
+    public DwrResponseI18n saveBACnetIPPointLocator(int id, String xid, String name, int engineeringUnits,
+                                                    BACnetIPPointLocatorVO locator) {
+        Permissions.ensureAdmin();
+
+        DataPointVO dp = getPoint(id, null);
+        dp.setXid(xid);
+        dp.setName(name);
+        dp.setPointLocator(locator);
+        dp.setEngineeringUnits(engineeringUnits);
+
+        return validateAndSaveDataPoint(dp);
     }
 
-    @MethodFilter
+    
     public void sendBACnetWhoIs(int deviceId, String broadcastAddress,
                                 int port, int timeout, int segTimeout, int segWindow, int retries,
                                 int whoIsPort, int maxReadMultipleReferencesSegmented,
@@ -1184,7 +1260,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         user.setTestingUtility(whoIs);
     }
 
-    @MethodFilter
+    
     public Map<String, Object> bacnetWhoIsUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
         BACnetDiscovery test = Common.getUser().getTestingUtility(
@@ -1197,7 +1273,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return result;
     }
 
-    @MethodFilter
+    
     public int getBACnetDeviceDetails(int index) {
         BACnetDiscovery test = Common.getUser().getTestingUtility(
                 BACnetDiscovery.class);
@@ -1207,7 +1283,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return -1;
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n sendObjectListRequest(int deviceId,
                                                  String broadcastAddress, int port, int timeout, int segTimeout,
                                                  int segWindow, int retries, int maxReadMultipleReferencesSegmented,
@@ -1266,7 +1342,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return result;
     }
 
-    @MethodFilter
+    
     public DataPointVO addBacnetPoint(String ip, int port, int networkNumber,
                                       String networkAddress, int deviceInstanceNumber,
                                       BACnetObjectBean bean) {
@@ -1274,6 +1350,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         BACnetIPPointLocatorVO locator = dp.getPointLocator();
 
         dp.setName(bean.getObjectName());
+        dp.setEngineeringUnits(bean.getEngineeringUnitValue());
 
         // Default some of the locator values.
         locator.setRemoteDeviceIp(ip);
@@ -1298,10 +1375,12 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // HTTP Retriever stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
-                                                       int timeoutSeconds, int retries, boolean stop) {
+                                                       int timeoutSeconds, int retries, boolean stop,
+                                                       String username, String password, List<KeyValuePair> staticHeaders) {
+        Permissions.ensureAdmin();
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1313,14 +1392,83 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
+        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    private static void setAuthorizationStaticHeader(HttpRetrieverDataSourceVO ds, String username, String password) {
+        toBasicCredentials(username, password).ifPresent(headerValue -> {
+            if (ds.getStaticHeaders().isEmpty() || !containsKey(ds.getStaticHeaders(), "Authorization")) {
+                ds.getStaticHeaders().add(new KeyValuePair("Authorization", headerValue));
+            } else {
+                for (KeyValuePair kvp : ds.getStaticHeaders()) {
+                    if (kvp.getKey().equalsIgnoreCase("Authorization")) {
+                        kvp.setValue(headerValue);
+                    }
+                }
+            }
+        });
+    }
+
+    private static boolean containsKey(List<KeyValuePair> staticHeaders, String key) {
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Optional<String> toBasicCredentials(String username, String password) {
+        if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
+            byte[] credentials = (username + ':' + password).getBytes();
+            return Optional.of("Basic " + Base64.getEncoder().encodeToString(credentials));
+        }
+        return Optional.empty();
+    }
+
+    public static String[] getBasicCredentials(List<KeyValuePair> staticHeaders) {
+        return getAuthorization(staticHeaders)
+                .filter(authorization -> authorization.startsWith("Basic")
+                        || authorization.startsWith("basic"))
+                .map(authorization -> {
+                    String base64Credentials = authorization.substring("Basic".length()).trim();
+                    byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+                    String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+                    // credentials = username:password
+                    return credentials.split(":", 2);
+                })
+                .orElseGet(() -> new String[]{});
+    }
+
+    private static Optional<String> getAuthorization(List<KeyValuePair> staticHeaders) {
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equalsIgnoreCase("Authorization")) {
+                return Optional.ofNullable(kvp.getValue());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public DwrResponseI18n initHttpRetriever() {
+        HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
+                .getUser().getEditDataSource();
+
+        List<KeyValuePair> staticHeaders = ds.getStaticHeaders();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("staticHeaders", staticHeaders);
+        return response;
+    }
+
+    
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
-                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation) {
+                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation,
+                                                                              String username, String password, List<KeyValuePair> staticHeaders) {
+        Permissions.ensureAdmin();
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1334,6 +1482,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setStop(stop);
         ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
         ds.setReactivation(rDs);
+        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         DwrResponseI18n result;
 
@@ -1350,18 +1500,19 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
 
-    @MethodFilter
+    
     public DwrResponseI18n saveHttpRetrieverPointLocator(int id, String xid,
                                                          String name, HttpRetrieverPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public String testHttpRetrieverValueParams(String url, int timeoutSeconds,
-                                               int retries, String valueRegex, int dataTypeId, String valueFormat) {
+                                               int retries, String valueRegex, int dataTypeId, String valueFormat,
+                                               List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern valuePattern = Pattern.compile(valueRegex);
             DecimalFormat decimalFormat = null;
@@ -1378,12 +1529,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         }
     }
 
-    @MethodFilter
+    
     public String testHttpRetrieverTimeParams(String url, int timeoutSeconds,
-                                              int retries, String timeRegex, String timeFormat) {
+                                              int retries, String timeRegex, String timeFormat,
+                                              List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern timePattern = Pattern.compile(timeRegex);
             DateFormat dateFormat = new SimpleDateFormat(timeFormat);
@@ -1402,9 +1554,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // HTTP Image stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveHttpImageDataSource(String name, String xid,
                                                    int updatePeriods, int updatePeriodType) {
+        Permissions.ensureAdmin();
         HttpImageDataSourceVO ds = (HttpImageDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1416,7 +1569,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveHttpImagePointLocator(int id, String xid,
                                                      String name, HttpImagePointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, new DataPointDefaulter() {
@@ -1432,10 +1585,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // POP3 Email stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n savePop3DataSource(String name, String xid,
                                               int updatePeriods, int updatePeriodType, String pop3Server,
                                               String username, String password) {
+        Permissions.ensureAdmin();
         Pop3DataSourceVO ds = (Pop3DataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1450,13 +1604,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n savePop3PointLocator(int id, String xid,
                                                 String name, Pop3PointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public String testPop3ValueParams(String testData, String valueRegex,
                                       int dataTypeId, String valueFormat) {
         try {
@@ -1475,7 +1629,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         }
     }
 
-    @MethodFilter
+    
     public String testPop3TimeParams(String testData, String timeRegex,
                                      String timeFormat) {
         try {
@@ -1494,9 +1648,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // NMEA stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveNmeaDataSource(String name, String xid,
                                               String commPortId, int baudRate, int resetTimeout) {
+        Permissions.ensureAdmin();
         NmeaDataSourceVO ds = (NmeaDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1509,13 +1664,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveNmeaPointLocator(int id, String xid,
                                                 String name, NmeaPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public void nmeaListenForMessages(String commPortId, int baudRate) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
@@ -1523,7 +1678,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                 commPortId, baudRate));
     }
 
-    @MethodFilter
+    
     public Map<String, Object> nmeaListenerUpdate() {
         NmeaUtilListener l = Common.getUser().getTestingUtility(
                 NmeaUtilListener.class);
@@ -1541,10 +1696,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Galil stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveGalilDataSource(String name, String xid,
                                                String host, int port, int timeout, int retries, int updatePeriods,
                                                int updatePeriodType) {
+        Permissions.ensureAdmin();
         GalilDataSourceVO ds = (GalilDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1560,13 +1716,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveGalilPointLocator(int id, String xid,
                                                  String name, GalilPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public String galilTestCommand(String host, int port, int timeout,
                                    String command) {
         User user = Common.getUser();
@@ -1590,10 +1746,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // EBI25 stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveEBI25DataSource(String name, String xid,
                                                int updatePeriods, int updatePeriodType, int timeout, int retries,
                                                String host, int port, boolean keepAlive) {
+        Permissions.ensureAdmin();
         EBI25DataSourceVO ds = (EBI25DataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1610,7 +1767,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public EBI25InterfaceReader ebi25ReadInterface(String host, int port,
                                                    boolean keepAlive, int timeout, int retries) {
         User user = Common.getUser();
@@ -1630,16 +1787,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return reader;
     }
 
-    @MethodFilter
+    
     public LocalizableMessage ebi25SyncTime(String host, int port, int timeout,
                                             int retries) {
         return new EBI25InterfaceUpdater().updateSysTime(host, port, timeout,
                 retries);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveEBI25PointLocator(int id, String xid,
                                                  String name, final EBI25PointLocatorVO locator) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         if (locator.getType() == EBI25PointLocatorVO.TYPE_VALUE) {
@@ -1690,9 +1848,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // VMStat stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveVMStatDataSource(String name, String xid,
                                                 int pollSeconds, int outputScale) {
+        Permissions.ensureAdmin();
         VMStatDataSourceVO ds = (VMStatDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1704,7 +1863,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveVMStatPointLocator(int id, String xid,
                                                   String name, VMStatPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -1714,12 +1873,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Viconics stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveViconicsDataSource(String name, String xid,
                                                   String commPortId, int panId, int channel, int timeout,
                                                   int retries, int networkTimeoutSeconds,
                                                   int deviceWarningTimeoutSeconds, int deviceRemoveTimeoutSeconds,
                                                   int pointValueMinimumFreshnessSeconds, boolean convertToCelsius) {
+        Permissions.ensureAdmin();
         ViconicsDataSourceVO ds = (ViconicsDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -1739,13 +1899,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveViconicsPointLocator(int id, String xid,
                                                     String name, ViconicsPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n getRfModuleInfo() {
         ViconicsDataSourceVO ds = (ViconicsDataSourceVO) Common.getUser()
                 .getEditDataSource();
@@ -1816,6 +1976,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     public DwrResponseI18n saveMBusDataSource(String name, String xid,
                                               TcpIpConnection connection, int updatePeriodType, int updatePeriods) {
+        Permissions.ensureAdmin();
         MBusDataSourceVO ds = (MBusDataSourceVO) Common.getUser()
                 .getEditDataSource();
         ds.setXid(xid);
@@ -1964,6 +2125,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveOpenV4JDataSource(String name, String xid,
                                                  String commPortId, int updatePeriodType, int updatePeriods,
                                                  String device, String protocol) {
+        Permissions.ensureAdmin();
         OpenV4JDataSourceVO ds = (OpenV4JDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2042,11 +2204,12 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // DNP3 stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveDNP3IpDataSource(String name, String xid,
                                                 int sourceAddress, int slaveAddress, String host, int port,
                                                 int staticPollPeriods, int rbePollPeriods, int rbePeriodType,
                                                 boolean quantize, int timeout, int retries) {
+        Permissions.ensureAdmin();
         Dnp3IpDataSourceVO ds = (Dnp3IpDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2067,11 +2230,12 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveDNP3SerialDataSource(String name, String xid,
                                                     int sourceAddress, int slaveAddress, String commPortId,
                                                     int baudRate, int staticPollPeriods, int rbePollPeriods,
                                                     int rbePeriodType, boolean quantize, int timeout, int retries) {
+        Permissions.ensureAdmin();
         Dnp3SerialDataSourceVO ds = (Dnp3SerialDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2091,9 +2255,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveDnp3PointLocator(int id, String xid,
                                                 String name, Dnp3PointLocatorVO locator) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         if (locator.getTimeOn() < 0)
@@ -2122,7 +2287,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return response;
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveMultipleDnp3PointLocator(String[] names,
                                                         int[] index, Dnp3PointLocatorVO[] locators) {
         return validateMultipleDnp3Points(names, index, locators, null);
@@ -2131,6 +2296,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     private DwrResponseI18n validateMultipleDnp3Points(String[] names,
                                                        int[] index, Dnp3PointLocatorVO[] locators,
                                                        DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         if (locators[0].getClass().equals(Dnp3PointLocatorVO.class)) {
@@ -2169,16 +2335,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             locators[i].setIndex(index[i]);
             dp.setPointLocator(locators[i]);
 
-            if (StringUtils.isEmpty(dp.getXid()))
-                response.addContextualMessage("xid", "validate.required");
-            else if (!new DataPointDao()
-                    .isXidUnique(dp.getXid(), Common.NEW_ID))
-                response.addContextualMessage("xid", "validate.xidUsed");
-            else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))
-                response.addContextualMessage("xid", "validate.notLongerThan",
-                        50);
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
-            locators[i].validate(response);
+            locators[i].validate(response, dp.getId());
 
             if (!response.getHasMessages()) {
                 Common.ctx.getRuntimeManager().saveDataPoint(dp);
@@ -2194,11 +2354,12 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     // / OPC DA stuff
     // /
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveOPCDataSource(String name, String xid,
                                              String host, String domain, String user, String password,
                                              String server, int updatePeriods, int updatePeriodType,
                                              boolean quantize) {
+        Permissions.ensureAdmin();
         OPCDataSourceVO<?> ds = (OPCDataSourceVO<?>) Common.getUser()
                 .getEditDataSource();
         ds.setXid(xid);
@@ -2215,7 +2376,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveOPCPointLocator(int id, String xid, String name,
                                                VirtualPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -2289,6 +2450,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     private DwrResponseI18n validateMultipleOPCPoints(String[] tags,
                                                       int[] dataTypes, boolean[] settables, OPCPointLocatorVO[] locators,
                                                       String context, DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
         OPCDataSourceVO<?> ds = (OPCDataSourceVO<?>) Common.getUser()
                 .getEditDataSource();
@@ -2305,14 +2467,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             locators[i].setSettable(settables[i]);
             dp.setPointLocator(locators[i]);
 
-            if (StringUtils.isEmpty(dp.getXid()))
-                response.addContextualMessage("xid", "validate.required");
-            else if (!new DataPointDao()
-                    .isXidUnique(dp.getXid(), Common.NEW_ID))
-                response.addContextualMessage("xid", "validate.xidUsed");
-            else if (StringUtils.isLengthGreaterThan(dp.getXid(), 50))
-                response.addContextualMessage("xid", "validate.notLongerThan",
-                        50);
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
 
             // locators[i].validate(response);
             if (!response.getHasMessages()) {
@@ -2331,7 +2487,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveASCIIFileDataSource(String name, String xid,
                                                    int updatePeriods, int updatePeriodType, String filePath,
                                                    boolean quantize) {
-
+        Permissions.ensureAdmin();
         ASCIIFileDataSourceVO ds = (ASCIIFileDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2345,7 +2501,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveASCIIFilePointLocator(int id, String xid,
                                                      String name, ASCIIFilePointLocatorVO locator) {
         locator.setSettable(false);
@@ -2364,7 +2520,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                        int updatePeriods, int updatePeriodType, String commPortId,
                                                        int baudRate, int dataBits, int stopBits, int parity, int timeout,
                                                        int retries, String initString, boolean quantize) {
-
+        Permissions.ensureAdmin();
         DrStorageHt5bDataSourceVO ds = (DrStorageHt5bDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -2385,7 +2541,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveDrStorageHt5bPointLocator(int id, String xid,
                                                          String name, DrStorageHt5bPointLocatorVO locator) {
         locator.setSettable(false);
@@ -2402,7 +2558,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                      int retries, int stopMode, int nChar, int charStopMode,
                                                      String charX, String hexValue, int stopTimeout, String initString,
                                                      int bufferSize, boolean quantize) {
-
+        Permissions.ensureAdmin();
         ASCIISerialDataSourceVO ds = (ASCIISerialDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2430,7 +2586,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveASCIISerialPointLocator(int id, String xid,
                                                        String name, ASCIISerialPointLocatorVO locator) {
         locator.setSettable(false);
@@ -2442,7 +2598,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     // / IEC101 Serial stuff
     // /
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveIEC101SerialDataSource(String name, String xid,
                                                       int updatePeriods, int updatePeriodType, int giRelativePeriod,
                                                       int clockSynchRelativePeriod, int linkLayerAddressSize,
@@ -2450,7 +2606,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                       int cotSize, int objectAddressSize, int timeout, int retries,
                                                       String commPortId, int baudRate, int dataBits, int stopBits,
                                                       int parity, boolean quantize) {
-
+        Permissions.ensureAdmin();
         IEC101SerialDataSourceVO ds = (IEC101SerialDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -2478,7 +2634,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveIEC101EthernetDataSource(String name,
                                                         String xid, int updatePeriods, int updatePeriodType,
                                                         int giRelativePeriod, int clockSynchRelativePeriod,
@@ -2486,7 +2642,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                         int asduAddressSize, int asduAddress, int cotSize,
                                                         int objectAddressSize, int timeout, int retries, String host,
                                                         int port, boolean quantize) {
-
+        Permissions.ensureAdmin();
         IEC101EthernetDataSourceVO ds = (IEC101EthernetDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -2511,7 +2667,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveIEC101PointLocator(int id, String xid,
                                                   String name, IEC101PointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -2521,10 +2677,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Pachube stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n savePachubeDataSource(String name, String xid,
                                                  String apiKey, int updatePeriods, int updatePeriodType,
                                                  int timeoutSeconds, int retries) {
+        Permissions.ensureAdmin();
         PachubeDataSourceVO ds = (PachubeDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2539,13 +2696,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n savePachubePointLocator(int id, String xid,
                                                    String name, PachubePointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public String testPachubeValueParams(String apiKey, int timeoutSeconds,
                                          int retries, int feedId, String dataStreamId, int dataTypeId,
                                          String binary0Value) {
@@ -2575,10 +2732,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // JMX stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveJmxDataSource(String name, String xid,
                                              boolean useLocalServer, String remoteServerAddr,
                                              int updatePeriodType, int updatePeriods, boolean quantize) {
+        Permissions.ensureAdmin();
         JmxDataSourceVO ds = (JmxDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2593,13 +2751,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveJmxPointLocator(int id, String xid, String name,
                                                JmxPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n getJmxObjectNames(boolean useLocalServer,
                                              String remoteServerAddr) {
         DwrResponseI18n response = new DwrResponseI18n();
@@ -2695,9 +2853,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Persistent stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n savePersistentDataSource(String name, String xid,
                                                     int port, String authorizationKey, boolean acceptPointUpdates) {
+        Permissions.ensureAdmin();
         PersistentDataSourceVO ds = (PersistentDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2710,7 +2869,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n savePersistentPointLocator(int id, String xid,
                                                       String name, PersistentPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -2719,7 +2878,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveNodaveS7DataSource(String name, String xid,
                                                   int updatePeriods, int updatePeriodType, String filePath,
                                                   boolean quantize, String nodaveWriteBaseCmd) {
-
+        Permissions.ensureAdmin();
         NodaveS7DataSourceVO ds = (NodaveS7DataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2735,7 +2894,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveNodaveS7PointLocator(int id, String xid,
                                                     String name, NodaveS7PointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -2745,7 +2904,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                 int updatePeriods, int updatePeriodType, String commPortId,
                                                 int baudRate, int dataBits, int stopBits, int parity, int timeout,
                                                 int retries, int station) {
-
+        Permissions.ensureAdmin();
         Alpha2DataSourceVO ds = (Alpha2DataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2765,7 +2924,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveAlpha2PointLocator(int id, String xid,
                                                   String name, Alpha2PointLocatorVO locator) {
 
@@ -2776,9 +2935,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     // Internal stuff
     //
-    @MethodFilter
+    
     public DwrResponseI18n saveInternalDataSource(String name, String xid,
                                                   int updatePeriods, int updatePeriodType) {
+        Permissions.ensureAdmin();
         InternalDataSourceVO ds = (InternalDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2790,7 +2950,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveInternalPointLocator(int id, String xid,
                                                     String name, InternalPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
@@ -2800,7 +2960,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                   int updatePeriods, int updatePeriodType, String commPortId,
                                                   int baudRate, int dataBits, int stopBits, int parity,
                                                   boolean pollingMode, int timeout, int retries) {
-
+        Permissions.ensureAdmin();
         RadiuinoDataSourceVO ds = (RadiuinoDataSourceVO) Common.getUser()
                 .getEditDataSource();
 
@@ -2820,10 +2980,167 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    @MethodFilter
+    
     public DwrResponseI18n saveRadiuinoPointLocator(int id, String xid,
                                                     String name, RadiuinoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    public DwrResponseI18n copyDataPoint(final int dataSourceId, final int dataPointId) {
+        DataSourceService dataSourceService = new DataSourceService();
+        DataSourceVO<?> dataSource = dataSourceService.getDataSource(dataSourceId);
+
+        DataPointService dataPointService = new DataPointService();
+        DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
+        DwrResponseI18n response = new DwrResponseI18n();
+        if(dataPoint != null) {
+            DataPointVO dataPointCopy = copyAndSaveDataPoint(dataSource, dataPoint, new DataPointService());
+            response.addData("id", dataPointCopy.getId());
+        } else {
+            response.addData("id", -1);
+        }
+        response.addData("points", getPoints());
+        return response;
+    }
+    public String getObjectTypeName(int objectTypeId) {
+        ObjectType objectType = new ObjectType(objectTypeId);
+        return objectType.toString();
+    }
+
+    public DwrResponseI18n saveOpcUaDataSource(OpcUaDataSourceVO form) {
+        Permissions.ensureAdmin();
+        toSecurePath(form.getKeyStoreFile()).ifPresent(keyStoreSecuredPath -> {
+            form.setKeyStoreFile(keyStoreSecuredPath.toString());
+        });
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+    public DwrResponseI18n saveOpcUaPointLocator(int id, String xid, String name,
+                                                 OpcUaPointLocatorVO locator) {
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    public DwrResponseI18n searchServerOpcUa(OpcUaDataSourceVO dataSourceVO) {
+        Logger log = JISystem.getLogger();
+        log.setLevel(Level.OFF);
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        LinkedHashSet<String> serverList = new LinkedHashSet<>();
+
+        try(IOpcUaService service = IOpcUaService.newService(dataSourceVO)) {
+            service.initialize();
+            serverList.add(dataSourceVO.getServerAddress());
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            response.addMessage("console", new LocalizableMessage("common.default", e.getMessage()));
+        }
+        response.addData("serverList", serverList);
+        return response;
+    }
+
+    public DwrResponseI18n findNodesOpcUa(OpcUaDataSourceVO dataSource, int searchDepth, int namespaceIndex,
+                                          String identifier, OpcUaIdentifierType identifierType, OpcUaDataType dataType) {
+
+        Logger log = JISystem.getLogger();
+        log.setLevel(Level.OFF);
+
+        DwrResponseI18n response = new DwrResponseI18n();
+
+        int searchDepthLimit = SystemSettingsUtils.getOpcUaSearchDepthLimit();
+        if(searchDepth > searchDepthLimit) {
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", new LocalizableMessage("dsEdit.opcua.searchDepthLimit", searchDepthLimit)));
+            response.addData("nodes", Collections.emptyList());
+            return response;
+        }
+
+        if(TIME_LOCKER.remainingSeconds() > 0) {
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", TIME_LOCKER.getDetails()));
+            response.addData("nodes", Collections.emptyList());
+            return response;
+        }
+
+        List<OpcUaItem> nodes = new ArrayList<>();
+
+        try(IOpcUaService service = IOpcUaService.newService(dataSource)) {
+            service.initialize();
+            OpcUaPointLocatorVO root = new OpcUaPointLocatorVO();
+            root.setOpcDataType(dataType);
+            root.setNamespaceIndex(namespaceIndex);
+            root.setIdentifier(identifier);
+            root.setIdentifierType(identifierType);
+            long time = System.currentTimeMillis();
+            List<OpcUaPointLocatorVO> pointLocators = service.browse(root, searchDepth, Comparator.comparing(OpcUaPointLocatorVO::getNodeName).reversed());
+            for(OpcUaPointLocatorVO pointLocator: pointLocators) {
+                boolean validated = service.validate(pointLocator);
+                nodes.add(new OpcUaItem(validated, pointLocator));
+            }
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default",  nodes.size() + " nodes found, in time: " + (System.currentTimeMillis() - time) + " [ms]"));
+            response.addData("nodes", nodes);
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            response.addMessage("tagsMessage", new LocalizableMessage("common.default", e.getMessage()));
+            response.addData("nodes", Collections.emptyList());
+            return response;
+        }
+        return response;
+    }
+    public DwrResponseI18n saveMultipleOpcUaPointLocator(OpcUaPointLocatorVO[] locators, String context) {
+
+        return validateMultipleOpcUaPoints(locators,
+                context, null);
+    }
+
+    private DwrResponseI18n validateMultipleOpcUaPoints(OpcUaPointLocatorVO[] locators, String context,
+                                                        DataPointDefaulter defaulter) {
+        Permissions.ensureAdmin();
+        DwrResponseI18n response = new DwrResponseI18n();
+        OpcUaDataSourceVO ds = (OpcUaDataSourceVO) Common.getUser()
+                .getEditDataSource();
+        if (ds.isNew()) {
+            response.addContextualMessage(context,
+                    "dsEdit.opc.validate.dataSourceNotSaved");
+            return response;
+        }
+        for (int i = 0; i < locators.length; i++) {
+            DataPointVO dp = getPoint(Common.NEW_ID, defaulter);
+            String dataPointName = locators[i].getNodeName();
+            dp.setName(StringUtils.truncate(dataPointName, 250, "..."));
+            dp.setPointLocator(locators[i]);
+
+            DataPointService dataPointService = new DataPointService();
+            validateXid(response, dataPointService::isXidUnique, dp.getXid(), Common.NEW_ID);
+
+            // locators[i].validate(response);
+            if (!response.getHasMessages()) {
+                Common.ctx.getRuntimeManager().saveDataPoint(dp);
+                response.addData("id", dp.getId());
+                response.addData("points", getPoints());
+            }
+        }
+        return response;
+    }
+
+    public DwrResponseI18n validateAndSaveDataPoint(DataPointVO dp) {
+        Permissions.ensureAdmin();
+        DwrResponseI18n response = new DwrResponseI18n();
+        DataPointService dataPointService = new DataPointService();
+        validateXid(response, dataPointService::isXidUnique, dp.getXid(), dp.getId());
+
+        if (StringUtils.isEmpty(dp.getName()))
+            response.addContextualMessage("name", "dsEdit.validate.required");
+
+        PointLocatorVO locator = dp.getPointLocator();
+        locator.validate(response, dp.getId());
+
+        if (!response.getHasMessages()) {
+            Common.ctx.getRuntimeManager().saveDataPoint(dp);
+            response.addData("id", dp.getId());
+            response.addData("points", getPoints());
+        }
+
+        return response;
+    }
 }

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.*;
 import java.util.List;
 
-public final class OnlyMigrationUserDAO extends UserDAO {
+public final class OnlyMigrationUserDAO implements IUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationUserDAO.class);
 
@@ -253,7 +253,6 @@ public final class OnlyMigrationUserDAO extends UserDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
-
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
 				user.getUsername(),
 				user.getPassword(),
@@ -266,6 +265,7 @@ public final class OnlyMigrationUserDAO extends UserDAO {
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.getId()
 		});
+
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -279,12 +279,12 @@ public final class OnlyMigrationUserDAO extends UserDAO {
 	}
 
 	@Override
-	public void updateHideMenu(User user) {
+	public void updateUserPassword(int userId, String newPassword) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void updateScadaTheme(User user) {
+	public void updateUserLang(int userId, String lang) {
 		throw new UnsupportedOperationException();
 	}
 }

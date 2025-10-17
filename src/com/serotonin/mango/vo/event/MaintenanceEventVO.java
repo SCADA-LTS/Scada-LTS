@@ -1,5 +1,6 @@
 package com.serotonin.mango.vo.event;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.mango.service.MaintenanceEventService;
+import org.scada_lts.utils.XidUtils;
 
 @JsonRemoteEntity
 public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>, JsonSerializable {
@@ -410,10 +413,10 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
             "common.month.sep", "common.month.oct", "common.month.nov", "common.month.dec" };
 
     private LocalizableMessage month(boolean active) {
-        int day = activeDay;
+        int month = activeMonth;
         if (!active)
-            day = inactiveDay;
-        return new LocalizableMessage(months[day]);
+            month = inactiveMonth;
+        return new LocalizableMessage(months[month]);
     }
 
     @Override
@@ -422,6 +425,10 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     }
 
     public void validate(DwrResponseI18n response) {
+
+        MaintenanceEventService maintenanceEventService = new MaintenanceEventService();
+        XidUtils.validateXid(response, maintenanceEventService::isXidUnique, xid, id);
+
         if (StringUtils.isLengthGreaterThan(alias, 50))
             response.addContextualMessage("alias", "maintenanceEvents.validate.aliasTooLong");
 
@@ -463,12 +470,29 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
 
         // If the event is once, make sure the active time is earlier than the inactive time.
         if (scheduleType == TYPE_ONCE) {
-            DateTime adt = new DateTime(activeYear, activeMonth, activeDay, activeHour, activeMinute, activeSecond, 0);
-            DateTime idt = new DateTime(inactiveYear, inactiveMonth, inactiveDay, inactiveHour, inactiveMinute,
-                    inactiveSecond, 0);
-            if (idt.getMillis() <= adt.getMillis())
+            try {
+                DateTime adt = new DateTime(activeYear, activeMonth, activeDay, activeHour, activeMinute, activeSecond, 0);
+                DateTime idt = new DateTime(inactiveYear, inactiveMonth, inactiveDay, inactiveHour, inactiveMinute,
+                        inactiveSecond, 0);
+                if (idt.getMillis() <= adt.getMillis())
+                    response.addContextualMessage("scheduleType", "maintenanceEvents.validate.invalidRtn");
+            } catch (Exception ex) {
                 response.addContextualMessage("scheduleType", "maintenanceEvents.validate.invalidRtn");
+            }
         }
+        validateHour(response, activeHour, "activeHour");
+        validateMinute(response, activeMinute, "activeMinute");
+        validateSecond(response, activeSecond, "activeSecond");
+        validateMonth(response, activeMonth, "activeMonth");
+        validateYear(response, activeYear, "activeYear");
+        validateDay(response, activeYear, activeMonth, activeDay, "activeDay");
+
+        validateHour(response, inactiveHour, "inactiveHour");
+        validateMinute(response, inactiveMinute, "inactiveMinute");
+        validateSecond(response, inactiveSecond, "inactiveSecond");
+        validateMonth(response, inactiveMonth, "inactiveMonth");
+        validateYear(response, inactiveYear, "inactiveYear");
+        validateDay(response, inactiveYear, inactiveMonth, inactiveDay, "inactiveDay");
     }
 
     @Override
@@ -538,6 +562,57 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
             if (!TYPE_CODES.isValidId(scheduleType))
                 throw new LocalizableJsonException("emport.error.maintenanceEvent.invalid", "scheduleType", text,
                         TYPE_CODES.getCodeList());
+        }
+    }
+
+    private void validateYear(DwrResponseI18n response, int year, String contextKey) {
+        if (year < 1) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateMonth(DwrResponseI18n response, int month, String contextKey) {
+        if (month < 1 || month > 12) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateDay(DwrResponseI18n response, int year, int month, int day, String contextKey) {
+        if(scheduleType == TYPE_MONTHLY || scheduleType == TYPE_YEARLY) {
+               if (day != -1 && day != -2 && day != -3) {
+                   doValidateDay(response, year, month, day, contextKey);
+               }
+        } else if(scheduleType == TYPE_WEEKLY) {
+            if (day < 1 || day > 7) {
+                response.addContextualMessage(contextKey, "validate.invalidValue");
+            }
+        } else if(scheduleType == TYPE_ONCE) {
+            doValidateDay(response, year, month, day, contextKey);
+        }
+    }
+
+    private void doValidateDay(DwrResponseI18n response, int year, int month, int day, String contextKey) {
+        YearMonth date = YearMonth.of(year, month);
+        if(!date.isValidDay(day)) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateHour(DwrResponseI18n response, int hour, String contextKey) {
+        if (hour < 0 || hour > 23) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateMinute(DwrResponseI18n response, int minute, String contextKey) {
+        if (minute < 0 || minute > 59) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateSecond(DwrResponseI18n response, int second, String contextKey) {
+        if (second < 0 || second > 59) {
+            response.addContextualMessage(contextKey, "validate.invalidValue");
         }
     }
 }

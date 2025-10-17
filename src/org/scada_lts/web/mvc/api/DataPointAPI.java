@@ -17,26 +17,24 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.web.mvc.api.json.JsonDataPoint;
+import org.scada_lts.dao.model.DataPointIdentifier;
+import org.scada_lts.web.mvc.api.datasources.DataPointJson;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
+import javax.validation.Valid;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -47,201 +45,144 @@ public class DataPointAPI {
 
     private static final Log LOG = LogFactory.getLog(DataPointAPI.class);
 
-    DataPointService dataPointService = new DataPointService();
+    private final DataPointApiService dataPointApiService;
+
+    public DataPointAPI(DataPointApiService dataPointApiService) {
+        this.dataPointApiService = dataPointApiService;
+    }
 
     @GetMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) Integer id,
-                                                    @RequestParam(required = false) String xid,
+    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) String xid,
+                                                    @RequestParam(required = false) Integer id,
                                                     HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                if(id != null) {
-                    return new ResponseEntity<>(dataPointService.getDataPoint(id), HttpStatus.OK);
-                } else if (xid != null){
-                    return new ResponseEntity<>(dataPointService.getDataPoint(xid), HttpStatus.OK);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        LOG.debug(request.getRequestURI());
+
+        DataPointVO response = dataPointApiService.getDataPointFromDatabase(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/api/datapoint/datasource")
+    public ResponseEntity<List<DataPointJson>> getDataPointsByDataSource(@RequestParam(required = false) String xid,
+                                                                         @RequestParam(required = false) Integer id,
+                                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        List<DataPointJson> response = dataPointApiService.getDataPointsByDataSource(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/api/datapoint/validate")
+    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(@RequestParam(required = false) String xid,
+                                                                    @RequestParam(required = false) Integer id,
+                                                                    HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        Map<String, Object> response = new HashMap<>();
+        boolean isUnique = dataPointApiService.isUniqueXid(request, xid, id);
+        response.put("unique", isUnique);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/api/datapoint/generateUniqueXid")
+    public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        String response = dataPointApiService.generateUniqueXid(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
+                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        DataPointJson response = dataPointApiService.create(request, datapoint);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
+                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        DataPointJson response = dataPointApiService.update(request, datapoint);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointJson> deleteDataPoint(@RequestParam(required = false) String xid,
+                                                         @RequestParam(required = false) Integer id,
+                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        DataPointJson response = dataPointApiService.delete(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/api/datapoints/datasource")
+    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByDataSourceId(@RequestParam(required = false) String xid,
+                                                                                           @RequestParam(required = false) Integer id,
+                                                                                           HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+
+        List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersByDataSource(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datapoints")
-    public ResponseEntity<List<JsonDataPoint>> getDataPoints(HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                List<DataPointVO> lstDP;
+    public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@RequestParam(value="keywordSearch", required = false) String searchText,
+                                                                                HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
-                    @Override
-                    public int compare(DataPointVO o1, DataPointVO o2) {
-                        return 0;
-                    }
-                };
-
-                lstDP = dataPointService.getDataPoints(comparator, false);
-
-                List<JsonDataPoint> result = new ArrayList<>();
-                for (DataPointVO dp:lstDP){
-                    JsonDataPoint jdp = new JsonDataPoint(
-                            dp.getId(),
-                            dp.getName(),
-                            dp.getXid(),
-                            dp.isEnabled(),
-                            dp.getDescription(),
-                            dp.getDataSourceName(),
-                            dp.getPointLocator().getDataTypeId()
-                    );
-                    result.add(jdp);
-                }
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchText);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/api/datapoint/getConfigurationByXid/{xid}")
+    public ResponseEntity<Map<String, Object>> getConfigurationByXid(@PathVariable(required = false) String xid,
+                                                        HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-    @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<String> getConfigurationByXid(
-            @PathVariable String xid,
-            HttpServletRequest request) {
-        LOG.info("/api/datapoint/getAllByXid/{xid}");
-
-        if( !xid.isEmpty() || xid != null ) {
-            try {
-                User user = Common.getUser(request);
-                if (user != null) {
-
-                    String json = null;
-                    if (user.isAdmin()) {
-                        json = EmportDwr.exportJSON(xid);
-                    } else {
-                        return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                    }
-
-                    return new ResponseEntity<String>(json, HttpStatus.OK);
-                }
-
-                return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
-            } catch (Exception e) {
-                LOG.error(e);
-                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-            }
-        }
-        else
-            {
-                return new ResponseEntity<String>("Given xid is empty.",HttpStatus.OK);
-            }
+        Map<String, Object>  response = dataPointApiService.getDataPointByXid(request, xid);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/datapoint/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
-        LOG.info("/api/datapoint/getAll");
+    @GetMapping(value = "/api/datapoint/getAll")
+    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByTypes(@RequestParam(value = "types", required = false) Integer[] types,
+                                                                                    HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-
-
-                List<DataPointVO> lstDP;
-
-                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
-                    @Override
-                    public int compare(DataPointVO o1, DataPointVO o2) {
-                        return 0;
-                    }
-                };
-
-                if (user.isAdmin()) {
-                    lstDP = dataPointService.getDataPoints(comparator, false);
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-
-                List<DatapointJSON> lst = new ArrayList<>();
-                for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
-                    lst.add(dpJ);
-                }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
-
-                return new ResponseEntity<String>(json,HttpStatus.OK);
-            }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
+        List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersByTypes(request, types);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datapoint/{datasourceId}/getAllPlc", produces = "application/json")
-    public ResponseEntity<List<DatapointJSON>> getAllPlcDataPoints(@PathVariable("datasourceId") int datasourceId, HttpServletRequest request) {
-        LOG.info("/api/datapoint/datasourceId/getAllPlc");
+    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersPlcByDataSourceId(@PathVariable(value = "datasourceId", required = false) Integer datasourceId,
+                                                                                              HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                List<DatapointJSON> resultList = new ArrayList<>();
-                List<DataPointVO> datapointList = dataPointService.getPlcDataPoints(datasourceId);
-                for(DataPointVO datapoint: datapointList) {
-                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid(), datapoint.getDescription());
-                    resultList.add(dp);
-                }
-                return new ResponseEntity<>(resultList, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersPlcByDataSourceId(request, datasourceId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public class DatapointJSON implements Serializable {
-        private long id;
-        private String name;
-        private String xid;
-        private String description;
+    @PutMapping(value = "/api/datapoint/enabled")
+    public ResponseEntity<DataPointJson> enableDataPoint(@RequestParam(required = false) String xid,
+                                                         @RequestParam(required = false) Integer id,
+                                                         HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-        DatapointJSON(long id, String name, String xid, String description) {
-            this.setId(id);
-            this.setName(name);
-            this.setXid(xid);
-            this.setDescription(description);
-        }
+        DataPointJson response = dataPointApiService.enableDataPoint(request, xid, id, true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        public long getId() { return id; }
-        public void setId(long id) { this.id = id; }
-        public String getName() {
-            return name;
-        }
-        public String getDescription() { return description; }
+    @PutMapping(value = "/api/datapoint/disabled")
+    public ResponseEntity<DataPointJson> disableDataPoint(@RequestParam(required = false) String xid,
+                                                          @RequestParam(required = false) Integer id,
+                                                          HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
 
-        public void setName(String name) {
-            this.name = name;
-        }
-        public String getXid() {
-            return xid;
-        }
-        public void setXid(String xid) {
-            this.xid = xid;
-        }
-        public void setDescription(String description) { this.description = description; }
+        DataPointJson response = dataPointApiService.enableDataPoint(request, xid, id, false);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
 

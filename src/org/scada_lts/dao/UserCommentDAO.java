@@ -17,7 +17,7 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +43,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
-public class UserCommentDAO {
+public class UserCommentDAO implements IUserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserCommentDAO.class);
 
@@ -63,6 +61,7 @@ public class UserCommentDAO {
 			+ "select "
 				+ "uc." + COLUMN_NAME_USER_ID + ", "
 				+ "u." + COLUMN_NAME_U_USERNAME + ", "
+				+ "uc." + COLUMN_NAME_TYPE_KEY + ", "
 				+ "uc." + COLUMN_NAME_TS + ", "
 				+ "uc." + COLUMN_NAME_COMMENT_TEXT + " "
 			+ "from userComments uc left join users u on "
@@ -74,9 +73,16 @@ public class UserCommentDAO {
 				+ "uc." + COLUMN_NAME_COMMENT_TYPE + "="
 				+ UserComment.TYPE_EVENT + " "
 			+ "and "
-				+ "us." + COLUMN_NAME_TYPE_KEY + "=? "
+				+ "uc." + COLUMN_NAME_TYPE_KEY + "=? "
 			+ "order by "
 				+ "uc." + COLUMN_NAME_TS;
+
+	private static final String ALL_EVENT_COMMENT_SELECT = USER_COMMENT_SELECT
+			+ "where "
+			+ "uc." + COLUMN_NAME_COMMENT_TYPE + "="
+			+ UserComment.TYPE_EVENT + " "
+			+ "order by "
+			+ "uc." + COLUMN_NAME_TS;
 
 	private static final String POINT_COMMENT_SELECT = USER_COMMENT_SELECT
 			+ "where "
@@ -125,10 +131,12 @@ public class UserCommentDAO {
 			uC.setUsername(rs.getString(COLUMN_NAME_U_USERNAME));
 			uC.setTs(rs.getLong(COLUMN_NAME_TS));
 			uC.setComment(rs.getString(COLUMN_NAME_COMMENT_TEXT));
+			uC.setTypeKey(rs.getInt(COLUMN_NAME_TYPE_KEY));
 			return uC;
 		}
 	}
 
+	@Override
 	public List<UserComment> getEventComments(EventInstance event) {
 
 		if (LOG.isTraceEnabled()) {
@@ -139,6 +147,7 @@ public class UserCommentDAO {
 
 	}
 
+	@Override
 	public List<UserComment> getPointComments(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -148,6 +157,7 @@ public class UserCommentDAO {
 		return DAO.getInstance().getJdbcTemp().query(POINT_COMMENT_SELECT, new Object[] {dataPoint.getId()}, new UserCommentRowMapper());
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final UserComment userComment, final int typeId, final int referenceId) {
 
@@ -173,6 +183,7 @@ public class UserCommentDAO {
 		return userComment.getUserId();
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void update(int userId) {
 
@@ -183,18 +194,7 @@ public class UserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_COMMENT_UPDATE_ID_TO_NULL, new Object[] {userId});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void deleteUserCommentEvent() {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("deleteUserCommentEvent()");
-		}
-
-		String templateDeleteTypeEvent = USER_COMMENT_DELETE + "not in (select id from events)";
-
-		DAO.getInstance().getJdbcTemp().update(templateDeleteTypeEvent, new Object[] {UserComment.TYPE_EVENT});
-	}
-
+	@Override
 	public int deleteUserComment(int userId, int typeId, int referenceId, long ts) {
 		if(LOG.isTraceEnabled()) {
 			LOG.trace("deleteUserComment(UserComment::"+userId+"::"+ts);
@@ -203,6 +203,7 @@ public class UserCommentDAO {
 		return DAO.getInstance().getJdbcTemp().update(USER_COMMENT_DELETE_ONE, new Object[] {userId, typeId, referenceId, ts});
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteUserCommentPoint(String dataPointIdList) {
 
@@ -223,4 +224,8 @@ public class UserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), parameters.toArray());
 	}
 
+	@Override
+	public List<UserComment> getEventComments() {
+		return DAO.getInstance().getJdbcTemp().query(ALL_EVENT_COMMENT_SELECT, new UserCommentRowMapper());
+	}
 }

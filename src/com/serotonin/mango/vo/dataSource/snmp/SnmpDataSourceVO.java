@@ -79,12 +79,15 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         ets.add(createEventType(SnmpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.dataSource")));
         ets.add(createEventType(SnmpDataSourceRT.PDU_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pdu")));
+        ets.add(createEventType(SnmpDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
         EVENT_CODES.addElement(SnmpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(SnmpDataSourceRT.PDU_EXCEPTION_EVENT, "PDU_EXCEPTION");
+        EVENT_CODES.addElement(SnmpDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override
@@ -307,9 +310,6 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (port <= 0 || port > 65535)
             response.addContextualMessage("port", "validate.invalidValue");
 
-        if (trapPort <= 0 || trapPort > 65535)
-            response.addContextualMessage("trapPort", "validate.invalidValue");
-
         if (StringUtils.isEmpty(host))
             response.addContextualMessage("host", "validate.required");
 
@@ -323,6 +323,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (snmpVersion != SnmpConstants.version1 && snmpVersion != SnmpConstants.version2c
                 && snmpVersion != SnmpConstants.version3)
             response.addContextualMessage("snmpVersion", "validate.invalidValue");
+        if (snmpVersion != SnmpConstants.version1 && (trapEnabled && (trapPort <= 0 || trapPort > 65535)))
+            response.addContextualMessage("trapPort", "validate.invalidValue");
         if (timeout <= 0)
             response.addContextualMessage("timeout", "validate.greaterThanZero");
         if (retries < 0)
@@ -345,7 +347,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.sl.label", securityLevel);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.retries", retries);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.timeout", timeout);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapEnabled", trapEnabled);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPortEnabled", trapEnabled);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPort", trapPort);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.localAddress", localAddress);
     }
@@ -369,7 +371,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.sl.label", from.securityLevel, securityLevel);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.retries", from.retries, retries);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.timeout", from.timeout, timeout);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapEnabled", from.trapEnabled, trapEnabled);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPortEnabled", from.trapEnabled, trapEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPort", from.trapPort, trapPort);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.localAddress", from.localAddress, localAddress);
     }

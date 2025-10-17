@@ -139,8 +139,18 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 .formShort {
 	width: 50px;
 }
+.formMediumFieldSizing {
+	min-width: 150px;
+	max-width: 250px;
+	field-sizing: content;
+}
 .formLong {
 	width: 250px;
+}
+.formLongFieldSizing {
+	min-width: 250px;
+	max-width: 650px;
+    field-sizing: content;
 }
 input[type="submit"], input[type="button"] {
 	overflow: visible;
@@ -201,6 +211,8 @@ input[type="submit"], input[type="button"] {
 	position:relative;
 	margin: 0px;
 	padding: 0px;
+	overflow-x: auto;
+	max-width: 100%;
 }
 #viewContent img {
 	display: block;
@@ -412,4 +424,29 @@ img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="i
 form.view-edit-form {
     max-width: 100vw;
     overflow-x: auto;
+}
+
+.notification-alert--reset {
+	  position: fixed;
+    top: 0;
+    right: 0;
+    padding: 10px;
+	  margin: 15px;
+    border: 1px solid var(--slts-color-primary);
+	  animation: slideIn 0.4s;
+    animation-timing-function: cubic-bezier(0, 0, 0.36, 1.38);
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+    z-index: 99;
+}
+.notification-alert--reset > .clickable {
+    cursor: pointer;
+}
+textarea#cssEditor {
+    white-space: pre-wrap !important;
+}
+
+#viewContent input[type='button'] {
+    text-align: center;
+    vertical-align: middle;
 }

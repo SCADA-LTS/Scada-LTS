@@ -33,11 +33,11 @@
     </table>
     <table>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.position.x"/></td>
         <td class="formField"><input id="staticPositionX" type="number" default="0" min="0"/></td></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.position.y"/></td>
         <td class="formField"><input id="staticPositionY" type="number" default="0" min="0"/></td></td>
       </tr>
     </table>
@@ -48,69 +48,70 @@
     </table>
     <table id="linkEditor">
       <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.text"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.text"/></td>
           <td class="formField"><input id="linkText" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.link"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.link"/></td>
           <td class="formField"><input id="linkLink" type="text"/></td>
         </tr>
         <tr>
-        <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.views"/></td>
+        <td class="formLabelRequired"><spring:message code="viewEdit.graphic.views"/></td>
         <td class="formField"><select id="viewsList" onchange="staticEditor.viewSelectChanged(this.value)"></select></td>
       </tr>
     </table>
     <table id="scriptButtonEditor">
       	<tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.text"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.text"/></td>
           <td class="formField"><input id="scriptButtonText" type="text"/></td>
         </tr>
         <tr>
-        	<td class="formLabelRequired"><fmt:message key="eventHandlers.type.script"/></td>
+        	<td class="formLabelRequired"><spring:message code="eventHandlers.type.script"/></td>
         	<td class="formField"><select id="scriptsList"></select></td>
       	</tr>
     </table>
 
     <table id="chartComparatorEditor">
       	<tr>
-          <td class="formLabelRequired"><fmt:message key="graphic.chartWidth"/></td>
+          <td class="formLabelRequired"><spring:message code="graphic.chartWidth"/></td>
           <td class="formField"><input id="chartComparatorWidth" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="graphic.chartHeight"/></td>
+          <td class="formLabelRequired"><spring:message code="graphic.chartHeight"/></td>
           <td class="formField"><input id="chartComparatorHeight" type="text"/></td>
         </tr>
     </table>
 
      <table id="flexEditor">
       	<tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.width"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.width"/></td>
           <td class="formField"><input id="flexWidth" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.height"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.height"/></td>
           <td class="formField"><input id="flexHeight" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.projectDefined"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.projectDefined"/></td>
           <td class="formField"><input id="flexProjectDefined" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.projectsSource"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.projectsSource"/></td>
           <td class="formField"><input  id="flexProjectsSource" type="text"/></td>
         </tr>
 		<tr>
-        	<td class="formLabelRequired"><fmt:message key="viewEdit.graphic.project"/></td>
+        	<td class="formLabelRequired"><spring:message code="viewEdit.graphic.project"/></td>
         	<td class="formField"><select id="flexProjectsList"></select></td>
       	</tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.runtimeMode"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.runtimeMode"/></td>
           <td class="formField"><input id="flexRuntimeMode" type="checkbox"/></td>
         </tr>
     </table>
   </td></tr></table>
 
   <script type="text/javascript">
+    var viewId = mango.longPoll.pollRequest.viewId;
     function StaticEditor() {
         this.componentId = null;
         this.component = null;
@@ -125,7 +126,7 @@
             hide('flexEditor');
 
             staticEditor.componentId = compId;
-            ViewDwr.getViewComponent(compId, function(comp) {
+            ViewDwr.getViewComponent(compId, viewId, function(comp) {
                 // Update the data in the form.
                 staticEditor.component = comp;
 
@@ -218,23 +219,23 @@
             case 'html':
               ViewDwr.saveHtmlComponent(staticEditor.componentId,
                 $get("staticPointContent"),
-                posX, posY,
+                posX, posY, viewId,
                 function() {
 	                staticEditor.close();
-	                updateHtmlComponentContent("c"+ staticEditor.componentId, $get("staticPointContent"));
+	                updateHtmlComponentContent("c"+ staticEditor.componentId, escapeHtml($get("staticPointContent")));
 	              }
               );
               break;
             case 'link':
               ViewDwr.saveLinkComponent(staticEditor.componentId,
                 $get("linkText"), $get("linkLink"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 	                if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
 					        else {
 						        staticEditor.close();
-		                tempContent = "<a> " +$get("linkText") +"</a>";
+		                tempContent = "<a> " + escapeHtml($get("linkText")) +"</a>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					        }
 	              }
@@ -243,13 +244,13 @@
             case 'scriptButton':
               ViewDwr.saveScriptButtonComponent(staticEditor.componentId,
                 $get("scriptButtonText"), $get("scriptsList"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 					        if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
 					        else {
 						        staticEditor.close();
-		                tempContent = "<button> " +$get("scriptButtonText") +"</button>";
+		                tempContent = "<button> " +escapeHtml($get("scriptButtonText")) +"</button>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					        }
 	            });
@@ -257,14 +258,14 @@
             case 'chartComparator':
               ViewDwr.saveChartComparatorComponent(staticEditor.componentId,
                 $get("chartComparatorWidth"), $get("chartComparatorHeight"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);
 						      else {
 							      staticEditor.close();
 			              tempContent =
-				              "<div style='background-color: silver; border: 1px solid red; width: "+ ($get("chartComparatorWidth")*2) +"px; height: "+$get("chartComparatorHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
+				              "<div style='background-color: silver; border: 1px solid red; width: "+ ($get("chartComparatorWidth")*2) +"px; height: "+$get("chartComparatorHeight") +"px;'> <b> <spring:message code='viewEdit.graphic.saveToLoad'/> </b> </div>";
 			              componentId = "c"+ staticEditor.componentId;
 			              updateHtmlComponentContent(componentId, tempContent);
 			                //$(componentId).style.top=  "0px";
@@ -280,14 +281,14 @@
                 $get("flexWidth"), $get("flexHeight"),
 						    $get("flexProjectDefined"),$get("flexProjectsSource"),
                 $get("flexProjectsList"),$get("flexRuntimeMode"),
-                posX, posY,
+                posX, posY, viewId,
 					      function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);
 						      else {
 							      staticEditor.close();
 			              tempContent =
-				              "<div style='background-color: silver; border: 1px solid red; width: "+ $get("flexWidth") +"px; height: "+$get("flexHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
+				              "<div style='background-color: silver; border: 1px solid red; width: "+ $get("flexWidth") +"px; height: "+$get("flexHeight") +"px;'> <b> <spring:message code='viewEdit.graphic.saveToLoad'/> </b> </div>";
 			              componentId = "c"+ staticEditor.componentId;
 			              updateHtmlComponentContent(componentId, tempContent);
 			                //$(componentId).style.top=  "0px";
@@ -334,7 +335,7 @@
         this.viewSelectChanged = function(value) {
         	$set("linkLink","");
             if(value!=0) {
-            	link = getAbsolutePath()+"views.shtm?viewId="+value;
+            	link = "views.shtm?viewId="+value;
                 $set("linkLink",link);
             }
         };

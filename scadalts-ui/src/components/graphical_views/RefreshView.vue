@@ -20,26 +20,31 @@ export default {
 	},
 	methods: {
 		check() {
-			this.$store
-				.dispatch('checkViewModificationTime', this.viewId)
-				.then((ret) => {
-					if (this.lastTModification == 0) {
-						this.lastTModification = ret.data.mtime;
-					} else if (this.lastTModification < ret.data.mtime) {
-						location.reload();
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-				});
+            if(this.doCheck()) {
+                this.$store
+                    .dispatch('checkViewModificationTime', this.viewId)
+                    .then((ret) => {
+                        if (this.lastTModification == 0) {
+                            this.lastTModification = ret.data.mtime;
+                        } else if (this.lastTModification < ret.data.mtime) {
+                            location.reload();
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+			}
 		},
+		doCheck() {
+            return this.viewId != undefined && this.viewId > 0;
+        }
 	},
 	created() {},
 	mounted() {
 		if (this.timeToCheckRefresh == undefined || this.timeToCheckRefresh > 5000) {
 			this.timeToCheckRefresh = 5000;
 		}
-		if (this.viewId != undefined && this.viewId > 0) {
+		if (this.doCheck()) {
 			setInterval(
 				function () {
 					this.check(this.id);
@@ -49,21 +54,17 @@ export default {
 		} else {
 			console.log('Err get viewId');
 		}
-
-		setInterval(
-			function () {
-				this.check(this.id);
-			}.bind(this),
-			this.timeToCheckRefresh,
-		);
-	},
+	}
 };
 </script>
 
 <style>
-td > select, div[id*='Content'] select, div[id*='Content'] textarea, #viewContent select {
+td > select,
+div[id*='Content'] select,
+div[id*='Content'] textarea,
+#viewContent select {
 	background-color: rgb(221, 221, 221);
-	border: 1px solid #39B54A;
+	border: 1px solid #39b54a;
 	appearance: auto;
 }
 </style>

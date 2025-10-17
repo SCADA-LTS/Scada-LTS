@@ -4,6 +4,7 @@ Open Source, web-based, multi-platform solution for building your own SCADA
 (Supervisory Control and Data Acquisition) system.
 Code released under [the GPL license](https://github.com/SCADA-LTS/Scada-LTS/blob/develop/LICENSE).
 
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/SCADA-LTS/Scada-LTS)
 
 [![Build Status](https://travis-ci.org/SCADA-LTS/Scada-LTS.svg?branch=develop)](https://travis-ci.org/SCADA-LTS/Scada-LTS)
@@ -20,14 +21,12 @@ There is also a Scada-LTS users community so if you have a problem feel free to 
 For the developers we are preparing a complete code documentation that will contain all the REST API interfaces
 described with example usage. To do that we use Open API specification in version 3 that is compatible with
 most of the modern API tools like Swagger or Postman. Documentation file can be found in [Scada-LTS/doc](https://github.com/SCADA-LTS/Scada-LTS/tree/develop/doc/RESTAPI) directory.
-To take your first steps inside Scada-LTS we suggest to get acquainted with video tutorials on YouTube or with [ScadaBR instructions](https://sourceforge.net/p/scadabr/wiki/Manual%20ScadaBR%20English%200%20Summary/).
+To take your first steps inside Scada-LTS we suggest to get acquainted with video tutorials on YouTube [Scada-LTS Youtube](https://www.youtube.com/@ScadaLTS).
 
 Follow the [Release Section](https://github.com/SCADA-LTS/Scada-LTS/releases) to be up to date with the latest features and see the specific version changelogs.   
 We follow the [Semantic Versioning Guidelines](http://semver.org/) to organize changes in our application.
 
-If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
-
-
+If you need support for deployment please contact us and find more information on [our website](http://scada-lts.com/#support)
 
 ## Issues and ideas
 Have you found a bug? Do you have idea for a new feature? Open a new [Issue](https://github.com/SCADA-LTS/Scada-LTS/issues) on our GitHub project site!

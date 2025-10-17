@@ -13,6 +13,6 @@ public interface CommunicationChannelTypable {
     Set<String> formatAddresses(Set<String> addresses, String domain);
     String getReplaceRegex();
     int getEventHandlerType();
-    boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork);
-    boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork);
+    void sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork);
+    void sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork);
 }

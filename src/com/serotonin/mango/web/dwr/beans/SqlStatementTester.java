@@ -34,6 +34,8 @@ import com.serotonin.web.i18n.I18NUtils;
 /**
  * @author Matthew Lohbihler
  */
+
+@Deprecated
 public class SqlStatementTester extends Thread implements TestingUtility {
     private static final int MAX_ROWS = 50;
 

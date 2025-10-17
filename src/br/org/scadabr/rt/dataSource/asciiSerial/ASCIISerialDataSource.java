@@ -1,5 +1,6 @@
 package br.org.scadabr.rt.dataSource.asciiSerial;
 
+import com.serotonin.mango.util.LoggingUtils;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
@@ -26,12 +27,15 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.serial.gnu.io.ScadaCommPortIdentifier;
 
 public class ASCIISerialDataSource extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(ASCIISerialDataSource.class);
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
+
 	private final ASCIISerialDataSourceVO<?> vo;
 	private Enumeration portList;
 	private InputStream inSerialStream;
@@ -44,10 +48,6 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
 				vo.isQuantize());
 
-		portList = CommPortIdentifier.getPortIdentifiers();
-		getPort(vo.getCommPortId());
-		configurePort(getsPort());
-
 	}
 
 	private boolean reconnect() {
@@ -55,7 +55,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			while (true) {
 				Thread.sleep(5000);
-				portList = CommPortIdentifier.getPortIdentifiers();
+				portList = ScadaCommPortIdentifier.getPortIdentifiers();
 				SerialPort p = getPort(vo.getCommPortId());
 				if (p != null) {
 					configurePort(getsPort());
@@ -63,7 +63,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 					return true;
 				}
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 			return false;
 		}
 
@@ -75,7 +76,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 
 			// nao tem dados
-			if (getInSerialStream().available() == 0) {
+			if (getInSerialStream() == null || getInSerialStream().available() == 0) {
 
 				for (DataPointRT dataPoint : dataPoints) {
 					ASCIISerialPointLocatorVO dataPointVO = dataPoint.getVO()
@@ -93,6 +94,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 						new LocalizableMessage("event.exception2",
 								vo.getName(), "Sem dados disponíveis !"));
 			} else if (getInSerialStream().available() > 0) {
+				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 				byte[] readBuffer = new byte[vo.getBufferSize()];
 				try {
 
@@ -176,7 +178,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 											new LocalizableMessage(
 													"event.exception2", vo
 															.getName(), e
-															.getMessage()));
+															.getMessage()), dataPoint);
 									timestamp = time;
 								}
 
@@ -184,30 +186,49 @@ public class ASCIISerialDataSource extends PollingDataSource {
 
 							dataPoint.updatePointValue(new PointValueTime(
 									value, timestamp));
+							returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
 						} catch (Exception e) {
+							LOG.warn(LoggingUtils.info(e, this), e);
 							raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage("event.exception2",
-											vo.getName(), e.getMessage()));
+											vo.getName(), e.getMessage()), dataPoint);
 							// e.printStackTrace();
 						}
 
 					}
 
-				} catch (Exception e) {
+				} catch (Throwable e) {
+					LOG.warn(LoggingUtils.info(e, this), e);
 				}
 			}
 
 		} catch (IOException io) {
-			getsPort().close();
-			reconnect();
-		} catch (Exception e) {
+			LOG.warn(LoggingUtils.info(io, this), io);
+			try {
+				getsPort().close();
+				reconnect();
+			} catch (Throwable e) {
+				LOG.warn(LoggingUtils.info(io, this), e);
+			}
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 	}
 
 	@Override
 	public void initialize() {
+		try {
+			portList = ScadaCommPortIdentifier.getPortIdentifiers();
+			getPort(vo.getCommPortId());
+			configurePort(getsPort());
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+			return;
+		}
 		super.initialize();
-
 	}
 
 	private MangoValue getValue(ASCIISerialPointLocatorVO point, String arquivo)
@@ -260,7 +281,17 @@ public class ASCIISerialDataSource extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
-		getsPort().close();
+		try {
+			SerialPort serialPort = getsPort();
+			if(serialPort != null) {
+				serialPort.close();
+			}
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
+			raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+					new LocalizableMessage("event.exception2",
+							vo.getName(), e.getMessage()));
+		}
 	}
 
 	@Override
@@ -274,7 +305,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			setInSerialStream(port.getInputStream());
 			setOutSerialStream(port.getOutputStream());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 
 		port.notifyOnDataAvailable(true);
@@ -282,7 +314,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		try {
 			port.setSerialPortParams(vo.getBaudRate(), vo.getDataBits(),
 					vo.getStopBits(), vo.getParity());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.warn(LoggingUtils.info(e, this), e);
 		}
 
 	}
@@ -298,8 +331,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 						serialPort = (SerialPort) portId.open(this.getName(),
 								10000);
 						setsPort(serialPort);
-					} catch (Exception e) {
-						System.out.println("Erro ao abrir a porta !");
+					} catch (Throwable e) {
+						LOG.error("Erro ao abrir a porta ! :" + LoggingUtils.info(e, this));
 					}
 				}
 			}
@@ -332,4 +365,8 @@ public class ASCIISerialDataSource extends PollingDataSource {
 		this.sPort = sPort;
 	}
 
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
+	}
 }

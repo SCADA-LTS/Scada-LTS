@@ -31,10 +31,11 @@ window.onerror = function mangoHandler(desc, page, line)  {
 
 mango.header = {};
 mango.header.onLoad = function() {
+    let imgNode = document.getElementById("__header__alarmLevelDiv");
     if (dojo.render.html.ie)
-        mango.header.evtVisualizer = new IEBlinker($("__header__alarmLevelDiv"), 500, 200);
+        mango.header.evtVisualizer = new IEBlinker(imgNode, 500, 200);
     else
-        mango.header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
+        mango.header.evtVisualizer = new ImageFader(imgNode, 75, .2);
     mango.longPoll.start();
 };
 
@@ -136,6 +137,13 @@ function SoundPlayer() {
         if (!this.mute)
         	this._repeat();
     };
+
+    this.playOnce = function(soundId) {
+        this.stop();
+        this.soundId = soundId;
+        if (!this.mute)
+            this._once();
+    };
     
     this.stop = function() {
         if (this.soundId) {
@@ -187,6 +195,28 @@ function SoundPlayer() {
         else
             // Wait for the sound manager to load.
             setTimeout(self._repeat, 500);
+    };
+
+    this._once = function() {
+        if (soundManager.onloadFinished) {
+          if (self.soundId && !self.mute) {
+              var snd = soundManager.getSoundById(self.soundId);
+              if (snd) {
+                  if (snd.readyState == 0 || snd.readyState == 1) {
+                      if (snd.readyState == 0)
+                          // Load the sound
+                          snd.load(snd.options);
+                      setTimeout(self._once, 500);
+                  } else if (snd.readyState == 3) {
+                      // The sound exists, so play it.
+                      soundManager.play(self.soundId, {} );
+                  }
+              }
+          }
+        }
+        else
+          // Wait for the sound manager to load.
+          setTimeout(self._once, 500);
     };
     
     this._repeatDelay = function() {

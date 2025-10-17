@@ -19,6 +19,7 @@
 package com.serotonin.mango.vo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -35,9 +36,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.util.EmailValidator;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -52,6 +52,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -62,6 +63,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private String username;
 	@JsonRemoteProperty
 	private String password;
+	@JsonRemoteProperty
+	private String firstName;
+	@JsonRemoteProperty
+	private String lastName;
 	@JsonRemoteProperty
 	private String email;
 	@JsonRemoteProperty
@@ -91,7 +96,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private String theme;
 	@JsonRemoteProperty
 	private boolean hideMenu;
-
+	@JsonRemoteProperty
+	private String lang;
+	@JsonRemoteProperty
+	private boolean enableFullScreen;
+	@JsonRemoteProperty
+	private boolean hideShortcutDisableFullScreen;
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -100,7 +110,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private int userProfile = Common.NEW_ID;
 
-	private transient View view;
 	private transient WatchList watchList;
 	private transient DataPointVO editPoint;
 	private transient DataSourceVO<?> editDataSource;
@@ -111,13 +120,16 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient boolean muted = false;
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
-	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient Map<String, Object> attributes = new ConcurrentHashMap<>();
+	private transient boolean hideHeader = false;
 
 	public User() { }
 
-	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.phone = phone;
 		this.admin = admin;
@@ -148,7 +160,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.theme = user.theme;
 		this.hideMenu = user.hideMenu;
 		this.userProfile = user.userProfile;
-		this.view = user.view;
 		this.watchList = user.watchList;
 		this.editPoint = user.editPoint;
 		this.editDataSource = user.editDataSource;
@@ -161,6 +172,24 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = user.eventExportDefinition;
 		this.attributes = user.attributes;
 		this.uploadedProject = user.uploadedProject;
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
+		this.lang = user.lang;
+		this.enableFullScreen = user.enableFullScreen;
+		this.hideShortcutDisableFullScreen = user.hideShortcutDisableFullScreen;
+	}
+
+	public static User onlyId(int userId) {
+		User user = new User();
+		user.setId(userId);
+		return user;
+	}
+
+	public static User onlyIdAndProfile(int userId, int profileId) {
+		User user = new User();
+		user.setId(userId);
+		user.setUserProfileId(profileId);
+		return user;
 	}
 
 	/**
@@ -192,29 +221,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		throw new ShouldNeverHappenException("");
 	}
 
-	//
-	// /
-	// / HttpSessionBindingListener implementation
-	// /
-	//
-	public void valueBound(HttpSessionBindingEvent evt) {
-		// User is bound to a session when logged in. Notify the event manager.
-		SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis(), true, new LocalizableMessage(
-				"event.login", username));
+	@Override
+	public void valueBound(HttpSessionBindingEvent event) {
+		ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> loggedUsers.addUser(this, event.getSession()));
 	}
 
-	public void valueUnbound(HttpSessionBindingEvent evt) {
-		// User is unbound from a session when logged out or the session
-		// expires.
-		SystemEventType.returnToNormal(new SystemEventType(
-				SystemEventType.TYPE_USER_LOGIN, id), System
-				.currentTimeMillis());
-
-		// Terminate any testing utility
-		if (testingUtility != null)
-			testingUtility.cancel();
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent event) {
+		ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> loggedUsers.removeUser(this, event.getSession()));
 	}
 
 	// Convenience method for JSPs
@@ -248,6 +262,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void cancelTestingUtility() {
 		setTestingUtility(null);
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	// Properties
@@ -297,14 +327,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public View getView() {
-		return view;
-	}
-
-	public void setView(View view) {
-		this.view = view;
 	}
 
 	public WatchList getWatchList() {
@@ -464,6 +486,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.hideMenu = hideMenu;
 	}
 
+	public boolean isHideHeader() {
+		return hideHeader;
+	}
+
+	public void setHideHeader(boolean hideHeader) {
+		this.hideHeader = hideHeader;
+	}
+
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
 	}
@@ -481,7 +511,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (StringUtils.isEmpty(username))
 			response.addMessage("username", new LocalizableMessage(
 					"validate.required"));
-		if (StringUtils.isEmpty(email))
+		if (StringUtils.isEmpty(email) || !EmailValidator.isValidEmail(email))
 			response.addMessage("email", new LocalizableMessage(
 					"validate.required"));
 		if (id == Common.NEW_ID && StringUtils.isEmpty(password))
@@ -644,6 +674,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void resetUserProfile() {
 		this.userProfile = Common.NEW_ID;
+		this.dataPointProfilePermissions.clear();
+		this.dataSourceProfilePermissions.clear();
+		this.watchListProfilePermissions.clear();
+		this.viewProfilePermissions.clear();
 	}
 
 	@Override
@@ -684,25 +718,76 @@ public class User implements SetPointSource, HttpSessionBindingListener,
         this.viewProfilePermissions = viewProfilePermissions;
     }
 
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	public boolean isEnableFullScreen() {
+		return enableFullScreen;
+	}
+
+	public void setEnableFullScreen(boolean enableFullScreen) {
+		this.enableFullScreen = enableFullScreen;
+	}
+
+	public boolean isHideShortcutDisableFullScreen() {
+		return hideShortcutDisableFullScreen;
+	}
+
+	public void setHideShortcutDisableFullScreen(boolean hideShortcutDisableFullScreen) {
+		this.hideShortcutDisableFullScreen = hideShortcutDisableFullScreen;
+	}
+
+	public void setUserProfile(int userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public TestingUtility getTestingUtility() {
+		return testingUtility;
+	}
+
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
 				"id=" + id +
 				", username='" + username + '\'' +
-				", password='" + password + '\'' +
+				", password='*****'" +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
 				", email='" + email + '\'' +
 				", phone='" + phone + '\'' +
 				", admin=" + admin +
 				", disabled=" + disabled +
+				", dataSourcePermissions=" + dataSourcePermissions +
+				", dataPointPermissions=" + dataPointPermissions +
+				", dataSourceProfilePermissions=" + dataSourceProfilePermissions +
+				", dataPointProfilePermissions=" + dataPointProfilePermissions +
+				", watchListProfilePermissions=" + watchListProfilePermissions +
+				", viewProfilePermissions=" + viewProfilePermissions +
+				", selectedWatchList=" + selectedWatchList +
 				", homeUrl='" + homeUrl + '\'' +
 				", lastLogin=" + lastLogin +
 				", receiveAlarmEmails=" + receiveAlarmEmails +
 				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
 				", theme='" + theme + '\'' +
 				", hideMenu=" + hideMenu +
+				", lang='" + lang + '\'' +
 				", userProfile=" + userProfile +
 				", muted=" + muted +
 				", attributes=" + attributes +
+				", hideHeader=" + hideHeader +
 				'}';
 	}
 }

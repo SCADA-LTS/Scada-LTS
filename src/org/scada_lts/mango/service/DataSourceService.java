@@ -18,19 +18,26 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,18 +45,36 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.copyAndSaveDataPoint;
+import static com.serotonin.mango.rt.dataSource.DataSourceUtils.generateCopyName;
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 
 /**
  * Service for DataSourceDAO
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
-	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
+	private final DataSourceDAO dataSourceDAO;
+	private final DataPointService dataPointService;
+	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
-	private static final DataPointService dataPointService = new DataPointService();
+	public DataSourceService() {
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
+		this.dataPointService = new DataPointService();
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
+	}
+
+	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService, DataPointDAO dataPointDAO) {
+		this.dataSourceDAO = dataSourceDAO;
+		this.dataPointService = dataPointService;
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, dataPointDAO);
+	}
 
 	@Override
 	public List<DataSourceVO<?>> getDataSources() {
@@ -65,6 +90,29 @@ public class DataSourceService implements MangoDataSource {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		return dataSourceDAO.getAllDataSources();
+	}
+
+	@Override
+	public boolean toggleDataSource(int id) {
+
+		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
+		if(vo == null)
+			return false;
+		return toggleDataSource(vo);
+	}
+
+	@Override
+	public boolean toggleDataSource(String xid) {
+
+		DataSourceVO<?> vo = dataSourceDAO.getDataSource(xid);
+		if(vo == null)
+			return false;
+		return toggleDataSource(vo);
 	}
 
 	@Override
@@ -86,6 +134,7 @@ public class DataSourceService implements MangoDataSource {
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
 		if (dataSource.getId() == Common.NEW_ID) {
 			dataSource.setId(dataSourceDAO.insert(dataSource));
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_DATA_SOURCE, dataSource);
 		} else {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
@@ -95,6 +144,7 @@ public class DataSourceService implements MangoDataSource {
 	private void updateDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> oldDataSource = dataSourceDAO.getDataSource(dataSource.getId());
 		dataSourceDAO.update(dataSource);
+		AuditEventUtils.raiseChangedDataSourceEvent(oldDataSource, dataSource);
 
 		// if datasource's name has changed, update datapoints
 		if (!dataSource.getName().equals(oldDataSource.getName())) {
@@ -107,6 +157,10 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	public void updateAndInitializeDataSource(DataSourceVO<?> dataSource) {
+		Common.ctx.getRuntimeManager().saveDataSource(dataSource);
+	}
+
 	@Override
 	public void deleteDataSource(final int dataSourceId) {
 		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
@@ -114,6 +168,8 @@ public class DataSourceService implements MangoDataSource {
 
 		if (dataSource != null) {
 			deleteInTransaction(dataSourceId);
+			Common.ctx.getRuntimeManager().stopDataSource(dataSourceId);
+			Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 		}
 	}
 
@@ -123,6 +179,8 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updatePermissions();
+		//TODO: IMPORTANT: DataSources are not deleted from memory! They do not exist in database but
+		//objects are still inside RuntimeManager
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -143,7 +201,7 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceCopy.setState(new UserCpChangeEnableStateDs());
 
 		//TODO seroUtils
-		dataSourceCopy.setName(StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
+		dataSourceCopy.setName(generateCopyName(bundle, dataSource.getName(), 40));
 
 		saveDataSource(dataSourceCopy);
 
@@ -152,45 +210,78 @@ public class DataSourceService implements MangoDataSource {
 
 		//Copy points
 		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
-			DataPointVO dataPointCopy = dataPoint.copy();
-			dataPointCopy.setId(Common.NEW_ID);
-			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-			dataPointCopy.setName(dataPoint.getName());
-			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
-			dataPointCopy.setDataSourceName(dataSourceCopy.getName());
-			dataPointCopy.setDeviceName(dataSourceCopy.getName());
-			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
-			dataPointCopy.getComments().clear();
-
-			//Copy event detectors
-			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
-				pointEventDetector.setId(Common.NEW_ID);
-				pointEventDetector.njbSetDataPoint(dataPointCopy);
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-
-			//Copy permissions
-			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
+			copyAndSaveDataPoint(dataSourceCopy, dataPoint, dataPointService);
 		}
 		return dataSourceCopy.getId();
 	}
 
-	@Deprecated
-	public List<Integer> getDataSourceId(int userId) {
-		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
+	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {
+		DataSourceVO<?> created = dataSourceDAO.create(dataSource);
+		Common.ctx.getRuntimeManager().saveDataSource(created);
+		return created;
 	}
 
-	@Deprecated
-	public void deleteDataSourceUser(int userId) {
-		dataSourceDAO.deleteDataSourceUser(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePermissions();
+	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null));
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
 	}
 
-	@Deprecated
-	public void insertPermissions(User user) {
-		dataSourceDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updatePermissions();
+	public List<DataPointVO> enableAllDataPointsInDS(String dataSourceXid, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceXid, null));
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
+		return dataSourceDAO.getDataSources(type.getId());
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
+		return getDataSourcesWithAccess.getObjectsWithAccess(user);
+	}
+
+	@Override
+	public boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+		return getDataSourcesWithAccess.hasReadPermission(user, dataSource);
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesPlc(User user) {
+		return getDataSourcesPlc().stream()
+				.filter(a -> getDataSourcesWithAccess.hasReadPermission(user, a))
+				.collect(Collectors.toList());
+	}
+
+	private boolean toggleDataSource(DataSourceVO<?> vo) {
+		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
+		if(vo.isEnabled()) {
+			if(rt != null) {
+				rt.terminate();
+			}
+			vo.setEnabled(false);
+		} else {
+			if(rt != null) {
+				rt.initialize();
+			} else {
+				vo.createDataSourceRT();
+			}
+			vo.setEnabled(true);
+		}
+		vo.setState(new UserChangeEnableStateDs());
+		Common.ctx.getRuntimeManager().saveDataSource(vo);
+		return vo.isEnabled();
 	}
 }

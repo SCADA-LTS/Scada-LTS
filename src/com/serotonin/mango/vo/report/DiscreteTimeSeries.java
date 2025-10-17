@@ -31,17 +31,18 @@ import com.serotonin.mango.view.text.TextRenderer;
  * @author Matthew Lohbihler
  */
 public class DiscreteTimeSeries {
-    private final String name;
+    private final Comparable name;
     private final TextRenderer textRenderer;
     private final Paint paint;
-    private final List<PointValueTime> valueTimes = new ArrayList<PointValueTime>();
-    private final List<ValueDescription> valueDescriptions = new ArrayList<ValueDescription>();
+    private final List<PointValueTime> valueTimes = new ArrayList<>();
+    private final List<ValueDescription> valueDescriptions = new ArrayList<>();
 
-    public DiscreteTimeSeries(String name, TextRenderer textRenderer) {
+    @Deprecated(since = "2.7.8")
+    public DiscreteTimeSeries(Comparable name, TextRenderer textRenderer) {
         this(name, textRenderer, null);
     }
 
-    public DiscreteTimeSeries(String name, TextRenderer textRenderer, Paint paint) {
+    public DiscreteTimeSeries(Comparable name, TextRenderer textRenderer, Paint paint) {
         this.name = name;
         this.textRenderer = textRenderer;
         this.paint = paint;
@@ -69,7 +70,7 @@ public class DiscreteTimeSeries {
         }
     }
 
-    public String getName() {
+    public Comparable getName() {
         return name;
     }
 

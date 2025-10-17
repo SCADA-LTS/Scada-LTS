@@ -24,7 +24,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -36,20 +38,23 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.beans.ApplicationBeans;
+
+import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
-public class View implements Serializable, JsonSerializable {
+public class View implements Serializable, JsonSerializable, GetExtendedName {
 	public static final String XID_PREFIX = "GV_";
 
 	private int id = Common.NEW_ID;
@@ -72,7 +77,28 @@ public class View implements Serializable, JsonSerializable {
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
-	
+
+	public View() {}
+
+	private View(View view) {
+		this.id = view.getId();
+		this.xid = view.getXid();
+		this.name = view.getName();
+		this.backgroundFilename = view.getBackgroundFilename();
+		this.width = view.getWidth();
+		this.height = view.getHeight();
+		this.resolution = view.getResolution();
+		this.modificationTime = view.getModificationTime();
+		this.userId = view.getUserId();
+		this.viewComponents = view.getViewComponents().stream()
+				.map(ViewComponent::copy)
+				.collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+		this.anonymousAccess = view.getAnonymousAccess();
+		this.viewUsers = view.getViewUsers().stream()
+				.map(ShareUser::copy)
+				.collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+	}
+
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
 		int min = 0;
@@ -91,6 +117,10 @@ public class View implements Serializable, JsonSerializable {
 				return vc;
 		}
 		return null;
+	}
+
+	public void setViewComponents(List<ViewComponent> viewComponents) {
+		this.viewComponents = viewComponents;
 	}
 
 	public void removeViewComponent(ViewComponent vc) {
@@ -189,6 +219,7 @@ public class View implements Serializable, JsonSerializable {
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -235,6 +266,10 @@ public class View implements Serializable, JsonSerializable {
 
 	public Integer getHeight() {
 		return height;
+	}
+
+	public View copy() {
+		return new View(this);
 	}
 
 	public void setHeight(Integer height) {
@@ -355,18 +390,13 @@ public class View implements Serializable, JsonSerializable {
 			response.addMessage("name", new LocalizableMessage(
 					"validate.notLongerThan", 100));
 
-		if (StringUtils.isEmpty(xid))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.required"));
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.notLongerThan", 50));
-		else if (!new ViewDao().isXidUnique(xid, id))
-			response.addMessage("xid", new LocalizableMessage(
-					"validate.xidUsed"));
+		ViewService viewService = new ViewService();
+		validateXid(response, viewService::isXidUnique, xid, id);
 
-		for (ViewComponent vc : viewComponents)
-			vc.validate(response);
+		for (int i = 0; i < viewComponents.size(); i++) {
+			var vc = viewComponents.get(i);
+			vc.validate("viewComponents[" + i + "].", response);
+		}
 	}
 
 	//
@@ -464,5 +494,36 @@ public class View implements Serializable, JsonSerializable {
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
 		map.put("resolution", ResolutionView.RESOLUTION_VIEW_CODES.getCode(resolution));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof View)) return false;
+		View view = (View) o;
+		return getId() == view.getId() && getResolution() == view.getResolution() && getModificationTime() == view.getModificationTime() && getUserId() == view.getUserId() && getAnonymousAccess() == view.getAnonymousAccess() && Objects.equals(getXid(), view.getXid()) && Objects.equals(getName(), view.getName()) && Objects.equals(getBackgroundFilename(), view.getBackgroundFilename()) && Objects.equals(getWidth(), view.getWidth()) && Objects.equals(getHeight(), view.getHeight()) && Objects.equals(getViewComponents(), view.getViewComponents()) && Objects.equals(getViewUsers(), view.getViewUsers());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId(), getXid(), getName(), getBackgroundFilename(), getWidth(), getHeight(), getResolution(), getModificationTime(), getUserId(), getViewComponents(), getAnonymousAccess(), getViewUsers());
+	}
+
+	@Override
+	public String toString() {
+		return "View{" +
+				"id=" + id +
+				", xid='" + xid + '\'' +
+				", name='" + name + '\'' +
+				", backgroundFilename='" + backgroundFilename + '\'' +
+				", width=" + width +
+				", height=" + height +
+				", resolution=" + resolution +
+				", modificationTime=" + modificationTime +
+				", userId=" + userId +
+				", viewComponents=" + viewComponents +
+				", anonymousAccess=" + anonymousAccess +
+				", viewUsers=" + viewUsers +
+				'}';
 	}
 }

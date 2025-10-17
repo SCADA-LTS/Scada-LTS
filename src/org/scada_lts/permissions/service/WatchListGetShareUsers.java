@@ -3,13 +3,11 @@ package org.scada_lts.permissions.service;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.watchlist.WatchListDAO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 
-@Service
 public class WatchListGetShareUsers implements GetShareUsers<WatchList> {
 
     private final WatchListDAO watchListDAO;

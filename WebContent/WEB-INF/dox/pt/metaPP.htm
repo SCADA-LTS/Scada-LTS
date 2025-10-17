@@ -19,14 +19,14 @@
 <!--<h1>Overview</h1>-->
 <!--<p>Meta points are configured by creating a "context" of existing-->
 <!--points, which become available for access within the script when it-->
-<!--executes. These context points can be any point saved in ScadaBR at the-->
+<!--executes. These context points can be any point saved in Scada-LTS at the-->
 <!--time, including the current point being edited. (The current point must-->
 <!--be saved&mdash;i.e. cannot be "new"&mdash;before it will appear in the-->
 <!--context point list.)</p>-->
 <h1>Vis&atilde;o Geral</h1>
 <p>Meta pontos s&atilde;o configurados criando um "contexto" de
 pontos existentes acessados pelo script quando executado. Estes pontos
-de contexto podem ser quaisquer pontos salvos no ScadaBR, incluindo o
+de contexto podem ser quaisquer pontos salvos no Scada-LTS, incluindo o
 ponto sendo editado. (O ponto corrente deve ser salvo&mdash;ou seja,
 n&atilde;o pode ser "novo"&mdash; antes de aparecer na lista de pontos
 de contexto.)</p>
@@ -108,12 +108,12 @@ execu&ccedil;&atilde;o do script ocorra.</p>
 <!--return tmp;</pre>-->
 <!--<p>The above is not intended to calculate any useful value, but-->
 <!--rather to show the potential for script complexity.</p>-->
-<!--<p>In addition to the ECMAScript context, ScadaBR also defines a few-->
+<!--<p>In addition to the ECMAScript context, Scada-LTS also defines a few-->
 <!--useful global functions including max(), min(), avg(), and sum(). (These-->
 <!--functions are implemented in a script file located at-->
 <!--WEB-INF/scripts/scriptFunctions.js. This file can be altered or extended-->
 <!--as necessary to implement your own global functions. The file is loaded-->
-<!--once per ScadaBR runtime, and so to deploy changes a system restart is-->
+<!--once per Scada-LTS runtime, and so to deploy changes a system restart is-->
 <!--required.) To use them, simply call them from your script, for example:</p>-->
 <!--<pre>return max(x.value, y.value, z.value);</pre>-->
 <!--<p>This returns the maximum of the present values of 'x', 'y', and-->
@@ -156,15 +156,15 @@ return tmp;</pre>
 <p>O script acima n&atilde;o tem inten&ccedil;&atilde;o de calcular
 qualquer valor em particular, mas demonstrar o potencial de complexidade
 para escrita de scripts.</p>
-<p>Adicionando ao contexto de ECMAScript, o ScadaBR tamb&eacute;m
+<p>Adicionando ao contexto de ECMAScript, o Scada-LTS tamb&eacute;m
 define algumas fun&ccedil;&otilde;es globais &uacute;teis, incluindo
 max(), min(), avg() e sum(). (Estas fun&ccedil;&otilde;es s&atilde;o
 implementadas em um arquivo de scripts localizado em
 WEB-INF/scripts/scriptFunctions.js. Este arquivo pode ser alterado ou
 extendido conforme necess&aacute;rio para implementar
 fun&ccedil;&otilde;es globais particulares. O arquivo &eacute;
-carregardo na inicializa&ccedil;&atilde;o do ScadaBR e, para instalar
-altera&ccedil;&otilde;es deve-se reiniciar o ScadaBR.) Para serem usados,
+carregardo na inicializa&ccedil;&atilde;o do Scada-LTS e, para instalar
+altera&ccedil;&otilde;es deve-se reiniciar o Scada-LTS.) Para serem usados,
 basta que sejam chamados pelo script, por exemplo:</p>
 <pre>return max(x.value, y.value, z.value);</pre>
 <p>Isto retorna o valor m&aacute;ximo dos valores atuais de 'x', 'y'
@@ -257,7 +257,7 @@ return p.value + 1;
 <!--toString() function, which is available on all context objects (i.e. not-->
 <!--just script vars).</p>-->
 <!--<p>The <b>value</b> property is the present value of the point. The-->
-<!--JavaScript type of the value is analogous to its ScadaBR type: Binary-->
+<!--JavaScript type of the value is analogous to its Scada-LTS type: Binary-->
 <!--become boolean, Numeric becomes float, Multistate becomes integer, and-->
 <!--Alphanumeric becomes string.</p>-->
 <!--<p>Each script var also implements four functions. The objects-->
@@ -303,7 +303,7 @@ todos os objetos de contexto e n&atilde;o apenas em vari&aacute;veis de
 script.</p>
 <p>A propriedade <b>valor</b> representa o valor atual do ponto. O
 tipo JavaScript do valor &eacute; an&aacute;logo ao tipo definido no
-ScadaBR: Bin&aacute;rio se torna boolean, Num&eacute;rico se torna float,
+	Scada-LTS: Bin&aacute;rio se torna boolean, Num&eacute;rico se torna float,
 Multi-estado se torna integer e Alnum&eacute;rico se torna string.</p>
 <p>Cada vari&aacute;vel de script tamb&eacute;m implementa quatro
 fun&ccedil;&otilde;es. Os objetos retornado por essas

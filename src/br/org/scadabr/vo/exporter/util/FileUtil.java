@@ -1,5 +1,9 @@
 package br.org.scadabr.vo.exporter.util;
 
+import com.serotonin.mango.util.LoggingUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -7,12 +11,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
+
+	private static final Log LOG = LogFactory.getLog(FileUtil.class);
 	private static final int BUFFER_SIZE = 2048;
 	private static final String FILE_SEPARATOR = System
 			.getProperty("file.separator");
@@ -20,33 +29,27 @@ public class FileUtil {
 	public static void compactFiles(OutputStream os, FileToPack[] files) {
 		int cont;
 		byte[] data = new byte[BUFFER_SIZE];
-		BufferedInputStream origin = null;
-		FileInputStream inputStream = null;
-		ZipOutputStream output = null;
-		ZipEntry entry = null;
-		try {
-			output = new ZipOutputStream(new BufferedOutputStream(os));
+
+		try (ZipOutputStream output = new ZipOutputStream(new BufferedOutputStream(os))) {
 			for (FileToPack file : files) {
 				if (file.getFile().isFile()) {
-					inputStream = new FileInputStream(file.getFile());
-					origin = new BufferedInputStream(inputStream, BUFFER_SIZE);
-					entry = new ZipEntry(file.getFileNameWhenPacked());
-					try {
-						output.putNextEntry(entry);
-					} catch (Exception e) {
-						continue;
+					try (FileInputStream inputStream = new FileInputStream(file.getFile());
+						 BufferedInputStream origin = new BufferedInputStream(inputStream, BUFFER_SIZE)) {
+						ZipEntry entry = new ZipEntry(file.getFileNameWhenPacked());
+						try {
+							output.putNextEntry(entry);
+						} catch (Exception e) {
+							continue;
+						}
+						while ((cont = origin.read(data, 0, BUFFER_SIZE)) != -1) {
+							output.write(data, 0, cont);
+						}
 					}
-					while ((cont = origin.read(data, 0, BUFFER_SIZE)) != -1) {
-						output.write(data, 0, cont);
-					}
-					origin.close();
 				}
 			}
-			output.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.exceptionInfo(e), e);
 		}
-
 	}
 
 	public static File createTxtTempFile(String text) {
@@ -60,30 +63,39 @@ public class FileUtil {
 			file.deleteOnExit();
 			return file;
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.exceptionInfo(e), e);
 		}
 		return file;
 	}
 
-	public static List<File> getFilesOnDirectory(String directoryName) {
-		List<File> files = new ArrayList<File>();
+	public static File createSvgTempFile(String xmlContent) throws IOException {
+		File temp = File.createTempFile("" + System.currentTimeMillis(), ".svg");
+		temp.deleteOnExit();
+		Files.writeString(temp.toPath(), xmlContent);
+		return temp;
+	}
+
+	public static List<File> getFilesOnDirectory(Path directoryName) {
+		List<File> files = new ArrayList<>();
 		try {
-			File directory = new File(directoryName);
+			File directory = directoryName.toFile();
 			if (directory.exists()) {
 
 				if (directory.isDirectory()) {
 					String[] filesOnDirectory = directory.list();
 
-					for (String fileName : filesOnDirectory) {
-						files.addAll(getFilesOnDirectory(directory
-								.getAbsolutePath() + FILE_SEPARATOR + fileName));
+					if(filesOnDirectory != null) {
+						for (String fileName : filesOnDirectory) {
+							files.addAll(getFilesOnDirectory(Paths.get(directory
+									.getAbsolutePath() + FILE_SEPARATOR + fileName)));
+						}
 					}
 				} else if (directory.isFile()) {
 					files.add(directory);
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(LoggingUtils.exceptionInfo(e), e);
 		}
 		return files;
 	}

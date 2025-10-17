@@ -17,57 +17,52 @@
  */
 package org.scada_lts.mango.service;
 
-import java.io.IOException;
+import com.serotonin.db.IntValuePair;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.PointValueDao;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointExtendedNameComparator;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.bean.PointHistoryCount;
+import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.mango.vo.hierarchy.PointFolder;
+import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.util.Tuple;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.DataPointUserDAO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
-import org.scada_lts.dao.PointLinkDAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
-import org.springframework.dao.DuplicateKeyException;
-import com.serotonin.db.IntValuePair;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.bean.PointHistoryCount;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.mango.vo.hierarchy.PointFolder;
-import com.serotonin.mango.vo.hierarchy.PointHierarchy;
-import com.serotonin.mango.vo.link.PointLinkVO;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-import com.serotonin.util.Tuple;
 
 import static org.scada_lts.utils.AggregateUtils.*;
 
@@ -81,27 +76,41 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
-	private static final DataPointDAO dataPointDAO = new DataPointDAO();
+	private final DataPointDAO dataPointDAO;
 
-	private DataSourceDAO dataSourceDAO = new DataSourceDAO();
+	private final DataSourceDAO dataSourceDAO;
 
-	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
+	private final IUserCommentDAO userCommentDAO;
 
-	private static final PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
+	private final IPointEventDetectorDAO pointEventDetectorDAO;
 
-	private static final PointHierarchyDAO pointHierarchyDAO = new PointHierarchyDAO();
+	private final PointHierarchyDAO pointHierarchyDAO;
 
-	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
+	private final DataPointUserDAO dataPointUserDAO ;
 
 	private static final PointValueDAO pointValueDAO = new PointValueDAO();
 
-	private static final WatchListDAO watchListDAO = new WatchListDAO();
+	private final WatchListDAO watchListDAO;
 
 	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
-	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
+	private final PointHierarchyService pointHierarchyService;
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
+
+	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
+
+	public DataPointService() {
+		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
+		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", PointHierarchyDAO.class);
+		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
+		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
+		this.userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
+		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
+		this.pointEventDetectorDAO = ApplicationBeans.getPointEventDetectorDaoBean();
+	}
 
 	@Override
 	public String generateUniqueXid() {
@@ -125,6 +134,9 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public DataPointVO getDataPoint(String xId) {
 		DataPointVO dp = dataPointDAO.getDataPoint(xId);
+		if (dp == null) {
+			return null;
+		}
 		setRelationalData(dp);
 		return dp;
 	}
@@ -136,6 +148,9 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public DataPointVO getDataPoint(int id) {
 		DataPointVO dp = dataPointDAO.getDataPoint(id);
+		if (dp == null) {
+			return null;
+		}
 		setRelationalData(dp);
 		return dp;
 	}
@@ -160,6 +175,31 @@ public class DataPointService implements MangoDataPoint {
 			Collections.sort(dpList, comparator);
 		}
 		return dpList;
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator) {
+		List<DataPointVO> dpList = dataPointDAO.getDataPoints(dataSourceXid);
+		setRelationalData(dpList);
+		if (comparator != null) {
+			dpList.sort(comparator);
+		}
+		return dpList;
+	}
+
+	/**
+	 * Get PointList with permission validation
+	 *
+	 * Get All DataPoints with specific access permission.
+	 * To validate that you need to provide a user that should be
+	 * checked and the access type.
+	 *
+	 * @param user - User to validate
+	 * @return - Filtered list of DataPoints object
+	 */
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user) {
+		return getDataPointsWithAccess.getObjectsWithAccess(user);
 	}
 
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
@@ -194,6 +234,10 @@ public class DataPointService implements MangoDataPoint {
 		return pointsWithListData;
 	}
 
+	public List<DataPointVO> searchDataPoints(String[] keywords) {
+		return dataPointDAO.getDataPointByKeyword(keywords);
+	}
+
 	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
 		List<DataPointVO> datapointList = dataPointDAO.getPlcDataPoints(dataSourceId);
 		return datapointList;
@@ -216,28 +260,20 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-
-
-	public void save(String value, String xid, int typePointValueOfREST ) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		
-		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
-
-		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-        } else {
-
-			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-					dpvo.getId());
-
-			dpRT.updatePointValue(pvt);
-		}
+	public void save(User user, String value, String xid, int pointValueType, SetPointSource source) {
+		DataPointVO point = dataPointDAO.getDataPoint(xid);
+		if(point == null || point.getPointLocator() == null)
+			throw new IllegalArgumentException();
+		if(point.getPointLocator().getDataTypeId() != pointValueType)
+			throw new IllegalArgumentException();
+		save(user, value, point, source);
 	}
 
-	public void saveAPI(User user, String value, String xid) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		Permissions.ensureDataPointSetPermission(user, dpvo);
-		setPointImpl(dpvo, value, user);
+	public void save(User user, String value, String xid, SetPointSource source) {
+		DataPointVO point = dataPointDAO.getDataPoint(xid);
+		if(point == null || point.getPointLocator() == null)
+			throw new IllegalArgumentException();
+		save(user, value, point, source);
 	}
 
 	private void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
@@ -266,12 +302,38 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	public void updateDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() != Common.NEW_ID) {
+			DataPointVO existingDataPoint = getDataPoint(dp.getId());
+			if(existingDataPoint == null)
+				throw new IllegalArgumentException("Data point does not exist for id: " + dp.getId());
+			existingDataPoint.setName(dp.getName());
+			existingDataPoint.setXid(dp.getXid());
+			existingDataPoint.setDescription(dp.getDescription());
+			existingDataPoint.setEnabled(dp.isEnabled());
+			existingDataPoint.setPointLocator(dp.getPointLocator());
+			updateAndInitializeDataPoint(existingDataPoint);
+		}
+	}
+
+	public void updateAndInitializeDataPoint(DataPointVO dp) {
+		Common.ctx.getRuntimeManager().saveDataPoint(dp);
+	}
+
+	public void createDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() == Common.NEW_ID) {
+			dp.setEventDetectors(new ArrayList<>());
+			createDataPoint(dp);
+		}
+	}
+
 	@Override
 	public void saveDataPoint(final DataPointVO dp) {
 		if (dp.getId() == -1) {
 			insertDataPoint(dp);
 			PointHierarchyDAO.cachedPointHierarchy = null;
 			MangoPointHierarchy.getInst().addDataPoint(dp);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_DATA_POINT, dp);
 		} else {
 			updateDataPoint(dp);
 			MangoPointHierarchy.getInst().updateDataPoint(dp);
@@ -298,6 +360,7 @@ public class DataPointService implements MangoDataPoint {
 
 		updateDataPointShallow(dp);
 		saveEventDetectors(dp);
+		AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_DATA_POINT, oldDp, dp);
 	}
 
 	@Override
@@ -308,14 +371,22 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public void deleteDataPoint(int dataPointId) {
 		try {
-			DataPointVO dp = getDataPoint(dataPointId);
+			//Note: See class DataSourceEditDWR::deletePoint
+			Common.ctx.getEventManager().cancelEventsForDataPoint(dataPointId);
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
+			UsersProfileService ups = new UsersProfileService();
+			ups.updateDataPointPermissions();
 		} catch (EmptyResultDataAccessException e) {
 			Log.error(e);
 			return;
 		}
+	}
+
+	public void deleteDataPoint(String dataPointXid) {
+		DataPointVO dp = getDataPoint(dataPointXid);
+		deleteDataPoint(dp.getId());
 	}
 
 	@Override
@@ -329,16 +400,9 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		List<Integer> pointIds = dataPointDAO.getDataPointsIds(dataSourceId);
-		if (pointIds.size() > 0) {
-			StringBuilder idsWithCommaSB = new StringBuilder();
-			Iterator idsIterator = pointIds.iterator();
-			idsWithCommaSB.append(pointIds.get(0));
-			while (idsIterator.hasNext()) {
-				idsWithCommaSB.append(",");
-				idsWithCommaSB.append(idsIterator.next());
-			}
-
-			deleteDataPointImpl(idsWithCommaSB.toString());
+		if(!pointIds.isEmpty()) {
+			String ids = pointIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+			deleteDataPointImpl(ids);
 		}
 	}
 
@@ -359,7 +423,7 @@ public class DataPointService implements MangoDataPoint {
 	public void deletePointHistory(int dpId, long min, long max) {
 		while (true) {
 			try {
-				pointValueDAO.deletePointValuesBeforeWithOutLast(dpId, max);
+				pointValueDAO.deletePointValuesBeforeWithOutLastTwo(dpId, max);
 				break;
 			} catch (UncategorizedSQLException e) {
                 if ("The total number of locks exceeds the lock table size".equals(e.getSQLException().getMessage())) {
@@ -399,12 +463,18 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public String getDetectorXid(int pointEventDetectorId) {
-		return pointEventDetectorDAO.getXid(pointEventDetectorId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorId);
+		if(pointEventDetectorVO == null)
+			return null;
+		return pointEventDetectorVO.getXid();
 	}
 
 	@Override
 	public int getDetectorId(String pointEventDetectorXid, int dataPointId) {
-		return pointEventDetectorDAO.getId(pointEventDetectorXid, dataPointId);
+		PointEventDetectorVO pointEventDetectorVO = pointEventDetectorDAO.getPointEventDetector(pointEventDetectorXid, dataPointId);
+		if(pointEventDetectorVO == null)
+			return 0;
+		return pointEventDetectorVO.getId();
 	}
 
 	@Override
@@ -426,68 +496,37 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
-
-		EventDetectorsCache.LOG.trace("getEventDetectors() dpId:" + dataPoint.getId());
-		long startTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			startTime = System.currentTimeMillis();
-		}
-
-		List<PointEventDetectorVO> result = null;
 		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
-			} else {
-				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-			}
-		} catch (SchedulerException | IOException e) {
-			EventDetectorsCache.LOG.error(e);
+			return pointEventDetectorDAO.getPointEventDetectors(dataPoint);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return new ArrayList<>();
 		}
-
-		long endTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			endTime = System.currentTimeMillis();
-		}
-		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
-
-		return result;
 	}
 
 	public void saveEventDetectors(DataPointVO dataPoint) {
 		List<PointEventDetectorVO> detectors = getEventDetectors(dataPoint);
-
 		for (PointEventDetectorVO pointEventDetector: detectors) {
-			if(!dataPoint.getEventDetectors().contains(pointEventDetector)) {
-				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+			if(dataPoint.getEventDetectors().stream()
+					.noneMatch(a -> a.getXid().equals(pointEventDetector.getXid()))) {
+				pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector);
 			}
 		}
-		
 		for (PointEventDetectorVO pointEventDetector: dataPoint.getEventDetectors()) {
 			try {
-			    pointEventDetectorDAO.insert(pointEventDetector);
-			} catch (DuplicateKeyException e) {
-				pointEventDetectorDAO.update(pointEventDetector);
+				pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
+			} catch (Exception e) {
+				pointEventDetectorDAO.update(dataPoint.getId(), pointEventDetector);
 			}
 		}
 	}
 
-	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
-		pointEventDetectorDAO.updateWithType(eventDetector);
+	public void updateEventDetectorWithType(DataPointVO dataPoint, PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(dataPoint.getId(), eventDetector);
 	}
 
-	public void deleteEventDetector(DataPointVO dataPoint, int id){
-		pointEventDetectorDAO.delete(dataPoint.getId(), id);
-	}
-
-	private PointEventDetectorVO removeFromList(List<PointEventDetectorVO> list, int id) {
-		for (PointEventDetectorVO ped : list) {
-			if (ped.getId() == id) {
-				list.remove(ped);
-				return ped;
-			}
-		}
-		return null;
+	public void deleteEventDetector(DataPointVO dataPoint, PointEventDetectorVO eventDetector){
+		pointEventDetectorDAO.delete(dataPoint.getId(), eventDetector);
 	}
 
 	@Override
@@ -527,8 +566,7 @@ public class DataPointService implements MangoDataPoint {
 			final Map<Integer, List<PointFolder>> folders = pointHierarchyDAO.getFolderList();
 
 			PointHierarchy ph = new PointHierarchy();
-			PointHierarchyService phService = new PointHierarchyService();
-			phService.addFoldersToHierarchy(ph, 0 ,folders);
+			pointHierarchyService.addFoldersToHierarchy(ph, 0 ,folders);
 
 			List<DataPointVO> points = getDataPoints(DataPointExtendedNameComparator.instance, false);
 			for (DataPointVO dataPoint: points) {
@@ -564,25 +602,6 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		return counts;
-	}
-
-	@Deprecated
-	public List<DataPointAccess> getDataPointAccessList(final int userId) {
-		return dataPointUserDAO.getDataPointAccessList(userId);
-	}
-
-    @Deprecated
-	public void deleteDataPointUser(int userId) {
-		dataPointUserDAO.delete(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
-	}
-
-    @Deprecated
-	public void insertPermissions(User user) {
-		dataPointUserDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
 	}
 
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
@@ -622,7 +641,7 @@ public class DataPointService implements MangoDataPoint {
 				.map(Optional::get)
 				.peek(a -> {
 					if(a.getPointLocator() == null) {
-						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
+						LOG.warn(LoggingUtils.dataPointInfo(a));
 					}
 				})
 				.filter(a -> a.getPointLocator() != null)
@@ -641,6 +660,11 @@ public class DataPointService implements MangoDataPoint {
 		return pointIds;
 	}
 
+	public boolean isDataPointRunning(DataPointVO dataPoint){
+		DataSourceVO<?> dataSourceVO = dataSourceDAO.getDataSource(dataPoint.getDataSourceId());
+        return dataPoint.isEnabled() && dataSourceVO.isEnabled();
+	}
+
 	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,
 																					 List<DataPointVO> pointIds,
 																					 AggregateSettings aggregateSettings) {
@@ -651,13 +675,10 @@ public class DataPointService implements MangoDataPoint {
 			pvcList.clear();
 			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
 			int revisedLimit = calculateLimit(aggregateSettings);
-			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
+			long revisedStartTs = calculateStartTs(startTs, intervalMs);
+			return aggregateSortValues(revisedStartTs, endTs, pointIds, revisedLimit, intervalMs);
 		}
 		return pvcList;
-	}
-
-	private int calculateLimit(AggregateSettings aggregateSettings) {
-		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
 	}
 
 	private int[] getPointIds(List<DataPointVO> pointIds) {
@@ -668,7 +689,8 @@ public class DataPointService implements MangoDataPoint {
 																				List<DataPointVO> dataPoints,
 																				int limit, long intervalMs) {
 		return dataPoints.stream()
-				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
+				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs,
+						limitByDataType(dataPoint, limit)).stream())
 				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
 				.collect(Collectors.toList());
 	}
@@ -682,5 +704,27 @@ public class DataPointService implements MangoDataPoint {
 			LOG.error(ex.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	public DataPointVO createDataPoint(DataPointVO dataPoint) {
+		dataPoint.setEventDetectors(new ArrayList<>());
+		dataPoint.setTextRenderer(new NoneRenderer());
+		DataPointVO created = dataPointDAO.create(dataPoint);
+		Common.ctx.getRuntimeManager().saveDataPoint(created);
+		return created;
+	}
+
+	@Override
+	public List<DataPointVO> searchDataPointsBy(String searchText) {
+		if (searchText != null) {
+			String[] keywords = searchText.split("\\s+");
+			return searchDataPoints(keywords);
+		}
+		return getDataPoints(Comparator.comparing(DataPointVO::getName), false);
+	}
+
+	private void save(User user, String value, DataPointVO point, SetPointSource source) {
+		Permissions.ensureDataPointSetPermission(user, point);
+		setPointImpl(point, value, source);
 	}
 }

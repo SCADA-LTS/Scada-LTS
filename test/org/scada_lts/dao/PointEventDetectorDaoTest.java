@@ -21,6 +21,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.junit.Test;
+import utils.TestUtils;
 
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		//TODO It is necessary to insert DataSource object before insert DataPoint object
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
 
-		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
+		DataPointVO dataPoint = TestUtils.newDefaultEmptyDataPointVO();
 		dataPoint.setXid(DP_XID);
 		dataPoint.setDataSourceId(DP_DATA_SOURCE_ID);
 		dataPoint.setDataSourceName(DP_DATA_SOURCE_NAME);
@@ -130,8 +131,8 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 
 		//Insert PointEventDetector
-		int firstId = pointEventDetectorDAO.insert(pointEventDetector);
-		int secondId = pointEventDetectorDAO.insert(secondPointEventDecorator);
+		int firstId = pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
+		int secondId = pointEventDetectorDAO.insert(dataPoint.getId(), secondPointEventDecorator);
 		pointEventDetector.setId(firstId);
 		secondPointEventDecorator.setId(secondId);
 
@@ -151,7 +152,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		updatePointEventDecorator.setAlphanumericState(UPDATE_ALPHANUMERIC_STATE);
 		updatePointEventDecorator.setWeight(UPDATE_WEIGHT);
 
-		pointEventDetectorDAO.update(updatePointEventDecorator);
+		pointEventDetectorDAO.update(dataPoint.getId(), updatePointEventDecorator);
 
 		//Select all PointEventDetectors with specific DataPoint
 		List<PointEventDetectorVO> pointEventDetectorList = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
@@ -174,7 +175,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		assertTrue(pointEventDetectorList.get(0).getWeight() == UPDATE_WEIGHT);
 
 		//Delete all pointEventDetector with specific DataPointId
-		pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector.getId());
+		pointEventDetectorDAO.delete(dataPoint.getId(), pointEventDetector);
 		assertTrue(pointEventDetectorDAO.getPointEventDetectors(dataPoint).size() == 1);
 	}
 }

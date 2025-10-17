@@ -18,6 +18,7 @@
 package org.scada_lts.mango.adapter;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportDataStreamHandler;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportUserComment;
@@ -25,6 +26,7 @@ import com.serotonin.mango.vo.report.ReportVO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -40,13 +42,18 @@ public interface MangoReport {
 
 	ReportVO getReport(int id);
 
+	ReportVO getReport(String xid);
+
 	void saveReport(ReportVO report);
 
+	@Deprecated(since = "2.8.0")
 	void deleteReport(int reportId);
 
 	List<ReportInstance> getReportInstances(int userId);
 
-	ReportInstance getReportInstance(int id);
+    List<ReportInstance> getReportInstances();
+
+    ReportInstance getReportInstance(int id);
 
 	void deleteReportInstance(int id, int userId);
 
@@ -54,7 +61,9 @@ public interface MangoReport {
 
 	void setReportInstancePreventPurge(int id, boolean preventPurge, int userId);
 
-	void saveReportInstance(ReportInstance instance);
+    void setReportInstancePreventPurge(int id, boolean preventPurge);
+
+    void saveReportInstance(ReportInstance instance);
 
 	int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle);
 
@@ -63,4 +72,26 @@ public interface MangoReport {
 	List<EventInstance> getReportInstanceEvents(int instanceId);
 
 	List<ReportUserComment> getReportInstanceUserComments(int instanceId);
+
+	List<ReportVO> search(User user, Map<String, String> query);
+
+	boolean hasReportReadPermission(User user, ReportVO report);
+
+	boolean hasReportSetPermission(User user, ReportVO report);
+
+	boolean hasReportOwnerPermission(User user, ReportVO report);
+
+	boolean hasReportInstanceReadPermission(User user, ReportInstance report);
+
+	boolean hasReportInstanceSetPermission(User user, ReportInstance report);
+
+	boolean hasReportInstanceOwnerPermission(User user, ReportInstance report);
+
+	boolean hasReportInstanceReadPermission(User user, int reportInstanceId);
+
+	boolean hasReportInstanceSetPermission(User user, int reportInstanceId);
+
+	boolean hasReportInstanceOwnerPermission(User user, int reportInstanceId);
+
+	void deleteReport(ReportVO report);
 }

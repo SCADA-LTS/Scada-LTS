@@ -20,7 +20,7 @@ public class ExportConfigAPI {
 
     private static final Log LOG = LogFactory.getLog(ExportConfigAPI.class);
 
-    @RequestMapping(value = "/", method = RequestMethod.GET,
+    @RequestMapping(value = "", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<String> export(@RequestParam(required = false) String projectName,
                                          @RequestParam(required = false) boolean includeGraphicalFolder,

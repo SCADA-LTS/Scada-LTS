@@ -20,10 +20,9 @@ package com.serotonin.mango.rt.dataSource.meta;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptException;
 
@@ -37,14 +36,18 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.DateUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.AbstractTimer;
 import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
+import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.utils.ValidationUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.generateContext;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -63,11 +66,11 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     AbstractTimer timer;
     private MetaDataSourceRT dataSource;
     protected DataPointRT dataPoint;
-    protected Map<String, IDataPoint> context;
+    protected volatile Map<String, IDataPoint> context;
     boolean initialized;
     TimerTask timerTask;
 
-    private final static Log LOG = LogFactory.getLog(MetaPointLocatorRT.class);
+    private static final Log LOG = LogFactory.getLog(MetaPointLocatorRT.class);
 
     public MetaPointLocatorRT(MetaPointLocatorVO vo) {
         this.vo = vo;
@@ -82,6 +85,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         return vo;
     }
 
+    @Deprecated(since = "2.8.0")
     boolean isContextCreated() {
         return context != null;
     }
@@ -96,7 +100,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         this.dataSource = dataSource;
         this.dataPoint = dataPoint;
 
-        createContext();
+        this.context = createContext(dataPoint);
 
         // Add listener registrations
         RuntimeManager rm = Common.ctx.getRuntimeManager();
@@ -106,9 +110,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 rm.addDataPointListener(contextKey.getKey(), this);
         }
 
+        initializeTimerTask();
+
         initialized = true;
 
-        initializeTimerTask();
+        if(dataPoint.isInitialized() && (vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
+                || vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE) && !vo.getContext().isEmpty()) {
+            execute(System.currentTimeMillis(), new ArrayList<>(), true, dataPoint);
+        }
     }
 
     protected void initializeTimerTask() {
@@ -160,13 +169,52 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     }
 
     public void pointInitialized() {
-        createContext();
-        dataSource.checkForDisabledPoints();
+
+        context = createContext(dataPoint);
+
+        if(context == null) {
+            return;
+        }
+
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
+        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+
+        if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
+            DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
+            if(dataPointListener != null && dataPointListener != this) {
+                if(dataPointListener instanceof MetaPointLocatorRT) {
+                    MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
+                    checkCyclicDependencyThenRunAction(dataPoint, fromContext, dataSource, fromContext::pointInitialized, dataPointsMap);
+                }
+
+            }
+        }
     }
 
     public void pointTerminated() {
-        createContext();
-        dataSource.checkForDisabledPoints();
+
+        context = createContext(dataPoint);
+
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
+        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+
+        if(dataPoint.getPointLocator() instanceof MetaPointLocatorRT) {
+            DataPointListener dataPointListener = Common.ctx.getRuntimeManager().getDataPointListeners(dataPoint.getId());
+            if(dataPointListener != null && dataPointListener != this) {
+                if(dataPointListener instanceof MetaPointLocatorRT) {
+                    MetaPointLocatorRT fromContext = (MetaPointLocatorRT)dataPointListener;
+                    checkCyclicDependencyThenRunAction(dataPoint, fromContext, dataSource, fromContext::pointTerminated, dataPointsMap);
+                }
+            }
+        }
+    }
+
+    public DataPointRT getDataPoint() {
+        return dataPoint;
     }
 
     //
@@ -227,26 +275,32 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             execute(updateTime, sourceIds);
         }
     }
+    private void execute(long runtime, List<Integer> sourceIds) {
+        execute(runtime, sourceIds, false, dataPoint);
+    }
 
-    void execute(long runtime, List<Integer> sourceIds) {
-        if (context == null) {
-            LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
+    private void execute(long runtime, List<Integer> sourceIds, boolean initializeMode, DataPointRT dataPoint) {
+        this.context = createContext(dataPoint);
+        if(context == null) {
+            LOG.info("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
         }
 
         // Check if we've reached the maximum number of recursions for this point
         int count = 0;
         for (Integer id : sourceIds) {
-            if (id.intValue() == dataPoint.getId())
+            if (id == dataPoint.getId())
                 count++;
         }
 
         if (count > MAX_RECURSION) {
-            handleError(runtime, new LocalizableMessage("event.meta.recursionFailure"));
+            handleRecursiveError(runtime, dataPoint, new LocalizableMessage("event.meta.recursionFailure"));
             String msg = MessageFormat.format("Recursion failure: exceeded MAX_RECURSION: expected <= {0} but was {1}, Context: {2}",
                     String.valueOf(MAX_RECURSION), count, generateContext(dataPoint, dataSource));
             LOG.warn(msg);
             return;
+        } else {
+            returnToNormalRecursive(runtime, dataPoint);
         }
 
         sourceIds.add(dataPoint.getId());
@@ -254,24 +308,23 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor executor = new ScriptExecutor();
             try {
-                PointValueTime pvt = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
+                PointValueTime valueTime = executor.execute(vo.getScript(), context, timer.currentTimeMillis(),
                         vo.getDataTypeId(), runtime);
-                if (pvt.getValue() == null)
-                    handleError(runtime, new LocalizableMessage("event.meta.nullResult"));
-                else
-                    updatePoint(pvt);
-            }
-            catch (ScriptException e) {
-                handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
+                returnToNormalType(System.currentTimeMillis(), dataPoint);
+                PointValueTime previousValueTime = dataPoint.getPointValue();
+                if (valueTime.getValue() == null)
+                    handleScriptError(runtime, dataPoint, new LocalizableMessage("event.meta.nullResult"));
+                else if(isUpdatePoint(initializeMode, valueTime, previousValueTime, vo))
+                    doUpdate(valueTime, dataPoint);
+            } catch (ScriptException e) {
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getLocalizedMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
-            }
-            catch (ResultTypeException e) {
-                handleError(runtime, e.getLocalizableMessage());
+            } catch (ResultTypeException e) {
+                handleTypeError(runtime, dataPoint, e.getLocalizableMessage());
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
                 LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
-                throw e;
             }
         }
         finally {
@@ -279,17 +332,24 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
     }
 
-    private void createContext() {
-        context = null;
+    protected Map<String, IDataPoint> createContext(DataPointRT dataPoint) {
+        Map<String, IDataPoint> context;
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
-            context = scriptExecutor.convertContext(vo.getContext());
+            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
+            returnToNormalContext(System.currentTimeMillis(), dataPoint);
+            return context;
         } catch (Exception e) {
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+            return null;
         }
     }
 
-    private void execute(PointValueTime newValue) {
+    private void execute(PointValueTime value) {
+        execute(value, false);
+    }
+
+    private void execute(PointValueTime newValue, boolean initializeMode) {
         // Check for infinite loops
         List<Integer> sourceIds;
         if (threadLocal.get() == null)
@@ -299,7 +359,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         long time = newValue.getTime();
         if (vo.getExecutionDelaySeconds() == 0)
-            execute(time, sourceIds);
+            execute(time, sourceIds, initializeMode, dataPoint);
         else {
             synchronized (LOCK) {
                 if (initialized) {
@@ -311,11 +371,59 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
     }
 
-    protected void updatePoint(PointValueTime pvt) {
+    protected void doUpdate(PointValueTime pvt, DataPointRT dataPoint) {
         dataPoint.updatePointValue(pvt);
+        returnToNormal(System.currentTimeMillis(), dataPoint);
     }
 
-    protected void handleError(long runtime, LocalizableMessage message) {
+    protected void handleRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseRecursiveError(runtime, dataPoint, message);
+    }
+
+    protected void handleScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         dataSource.raiseScriptError(runtime, dataPoint, message);
+    }
+
+    protected void handleContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseContextError(runtime, dataPoint, message);
+    }
+
+    protected void returnToNormal(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalScript(runtime, dataPoint);
+    }
+
+    protected void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalRecursive(runtime, dataPoint);
+    }
+
+    protected void returnToNormalContext(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalContext(runtime, dataPoint);
+    }
+
+    protected void handleTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseResultTypeError(runtime, dataPoint, message);
+    }
+
+    protected void returnToNormalType(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalType(runtime, dataPoint);
+    }
+
+    private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {
+        return !initializeMode || (metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE
+                && metaPointLocator.getUpdateEvent() != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)
+                || (previousValueTime == null || !ObjectUtils.isEqual(valueTime.getValue(), previousValueTime.getValue()));
+    }
+
+    private static void checkCyclicDependencyThenRunAction(DataPointRT dataPointStart, MetaPointLocatorRT fromContext, MetaDataSourceRT dataSource,
+                                                           Runnable action, Map<Integer, DataPointVO> dataPointsMap) {
+        DataPointRT dataPointRtFromContext = fromContext.getDataPoint();
+        DataPointVO dataPointVoFromContext = dataPointRtFromContext.getVO();
+
+        if(ValidationUtils.isCyclicDependency(dataPointStart.getId(), dataPointRtFromContext.getId(), dataPointsMap)) {
+            dataSource.raiseRecursiveError(System.currentTimeMillis(), dataPointStart,
+                    new LocalizableMessage("validate.cyclicDependency", dataPointVoFromContext.getName()));
+        } else {
+            action.run();
+        }
     }
 }

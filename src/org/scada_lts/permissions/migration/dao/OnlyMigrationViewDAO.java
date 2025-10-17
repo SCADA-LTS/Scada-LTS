@@ -23,20 +23,13 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDAO;
-import org.scada_lts.dao.SerializationData;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.*;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +38,12 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<View> {
+public final class OnlyMigrationViewDAO implements IViewDAO {
 	
 	private Log LOG = LogFactory.getLog(OnlyMigrationViewDAO.class);
+
+	private static final String LIMIT = " LIMIT ";
+	private static final int NO_LIMIT = 0;
 	
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -98,27 +94,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
             + "from "
             + "mangoViews";
 	
-	private static final String VIEW_FILTER_BASE_ON_ID=""
-			 +COLUMN_NAME_ID+"=?";
-	
-	private static final String VIEW_FILTER_BASE_ON_XID=""
-			 +COLUMN_NAME_XID+"=?";
-	
-	private static final String VIEW_FILTER_BASE_ON_NAME=""
-			 +COLUMN_NAME_NAME+"=?";
-	
-	private static final String VIEW_INSERT = ""
-			+"insert mangoViews ("
-				+ COLUMN_NAME_XID+", "
-				+ COLUMN_NAME_NAME+", "
-				+ COLUMN_NAME_BACKGROUND+", "
-				+ COLUMN_NAME_USER_ID+", "
-				+ COLUMN_NAME_ANONYMOUS_ACCESS+", "
-				+ COLUMN_NAME_DATA+","
-				+ COLUMN_NAME_HEIGHT+", "
-				+ COLUMN_NAME_WIDTH+") "
-			+ "values (?,?,?,?,?,?,?,?)";
-	
 	private static final String VIEW_UPDATE = ""
 			+"update mangoViews set "
 				+ COLUMN_NAME_XID+"=?, "
@@ -139,25 +114,8 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			+ "where "
 				+ COLUMN_NAME_ID+"=?";
 	
-	private static final String VIEW_SELECT_ID_NAME = ""
-			+ "select "
-				+ COLUMN_NAME_ID+", "
-				+ COLUMN_NAME_NAME+" "
-			+ "from "
-				+ "mangoViews";
-	
 	
 	//mangoviewUsers
-	private static final String VIEW_USER_BASE_ON_VIEW_ID = ""
-			+"select "
-				+ COLUMN_NAME_MVU_VIEW_ID+", "
-				+ COLUMN_NAME_MVU_USER_ID+", "
-				+ COLUMN_NAME_MVU_ACCESS_TYPE+" "
-			+ "from "
-				+ "mangoViewUsers "
-			+ "where "
-				+ COLUMN_NAME_MVU_VIEW_ID+"=?";
-
 	private static final String VIEW_USER_BASE_ON_USER_ID = ""
 			+"select "
 			+ COLUMN_NAME_MVU_VIEW_ID+", "
@@ -166,11 +124,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			+ "mangoViewUsers "
 			+ "where "
 			+ COLUMN_NAME_MVU_USER_ID+"=?";
-	
-	public static final String VIEW_FILTERED_BASE_ON_ID = ""
-			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
-			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=?)";
 
 	public static final String VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
@@ -266,30 +219,10 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			return idName;
 		}
 	}
-	@Override
-	public List<View> findAllWithUserName(){
-		return null;
-	}
+
 	@Override
 	public List<View> findAll() {
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
-	}
-
-	@Override
-	public View findById(Object[] pk) {
-		try {
-			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-	}
-	
-	public View findByXId(Object[] pk) {
-		try { 
-			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
 	}
 
 	//TO rewrite order for example Object[] with column to order.
@@ -308,39 +241,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	@Override
-	public Object[] create(final View entity) {
-		
-		if (LOG.isTraceEnabled()) {
-			  LOG.trace(entity);
-		}
-			
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-					
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement(VIEW_INSERT, Statement.RETURN_GENERATED_KEYS);
-						 				new ArgumentPreparedStatementSetter( new Object[] { 
-						 						entity.getXid(),
-						 						entity.getName(),
-						 						entity.getBackgroundFilename(),
-						 						entity.getUserId(),
-						 						entity.getAnonymousAccess(),
-						 						new SerializationData().writeObject(entity),
-						 						entity.getHeight(),
-						 						entity.getWidth()
-						 				}).setValues(ps);
-						 				return ps;
-						 			}
-					}, keyHolder);
-					
-			entity.setId(keyHolder.getKey().intValue());		
-			return new Object[] {keyHolder.getKey().intValue()};
-	}
-
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	@Override
 	public void update(View entity) {
 		
 		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
@@ -356,32 +256,8 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			
 	}
 
-	@Override
 	public void delete(View entity) {
-		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });		
-	}
-
-	public List<ShareUser> getShareUsers(int mangoViewId) {
-		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_VIEW_ID, new Object[] {mangoViewId}, new ViewUserRowMapper());
-	}
-	
-	public List<IdName> getViewNames(int userId, int userProfileId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME + " where " + VIEW_FILTERED_BASE_ON_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId },new IdNameRowMapper());
-	}
-	
-	public List<IdName> getAllViewNames() {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME , new Object[] {  },new IdNameRowMapper());
-	}
-	
-	public View getView(String name) {
-		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
-	}
-
-	//TODO rewrite
-	@Override
-	public List<View> filtered(String filter, Object[] argsFilter, long limit) {
-		// TODO Auto-generated method stub
-		return null;
+		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });
 	}
 
 	public void deleteViewForUser(int viewId) {
@@ -484,7 +360,7 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 						.build());
 	}
 
-    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+    public List<ScadaObjectIdentifier> findIdentifiers() {
         return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
@@ -492,4 +368,44 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	@Override
+	public View save(View entity) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void delete(Integer integer) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsers(int viewId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsersFromProfile(int viewId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findById(Integer integer) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findByXid(String xid) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findByName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<BaseObjectIdentifier> findBaseIdentifiers() {
+		throw new UnsupportedOperationException();
+	}
 }

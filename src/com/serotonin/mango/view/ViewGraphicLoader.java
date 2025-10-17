@@ -24,47 +24,51 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.UploadFileUtils;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
+
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getGraphicsBaseSystemFilePath;
+import static org.scada_lts.utils.PathSecureUtils.normalizeSeparator;
+import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ViewGraphicLoader {
     private static final Log LOG = LogFactory.getLog(ViewGraphicLoader.class);
 
-    private static final String GRAPHICS_PATH = "graphics";
-    private static final String INFO_FILE_NAME = "info.txt";
+    private Path path;
 
-    private static final String IGNORE_THUMBS = "Thumbs.db";
+    public List<ViewGraphic> loadViewGraphics(Path path) {
+        this.path = getGraphicsBaseSystemFilePath(path);
+        List<ViewGraphic> viewGraphics = new ArrayList<>();
 
-    private String path;
-    private List<ViewGraphic> viewGraphics;
-
-    public List<ViewGraphic> loadViewGraphics(String path) {
-        this.path = path;
-        viewGraphics = new ArrayList<ViewGraphic>();
-
-        File graphicsPath = new File(path, GRAPHICS_PATH);
+        File graphicsPath = path.toFile();
         File[] dirs = graphicsPath.listFiles();
-        for (File dir : dirs) {
-            try {
-                if (dir.isDirectory())
-                    loadDirectory(dir, "");
+        if(dirs != null) {
+            for (File dir : dirs) {
+                try {
+                    if (dir.isDirectory())
+                        viewGraphics.addAll(loadDirectory(dir, ""));
+                } catch (Exception e) {
+                    LOG.warn("Failed to load image set at " + dir, e);
+                }
             }
-            catch (Exception e) {
-                LOG.warn("Failed to load image set at " + dir, e);
-            }
+        } else {
+            LOG.warn("Not exists: " + path);
         }
-
+        viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
         return viewGraphics;
     }
 
-    private void loadDirectory(File dir, String baseId) throws Exception {
+    private List<ViewGraphic> loadDirectory(File dir, String baseId) throws Exception {
+        List<ViewGraphic> result = new ArrayList<>();
         String id = baseId + dir.getName();
         String name = id;
         String typeStr = "imageSet";
@@ -75,41 +79,45 @@ public class ViewGraphicLoader {
 
         File[] files = dir.listFiles();
         Arrays.sort(files);
-        List<String> imageFiles = new ArrayList<String>();
+        List<String> imageUrls = new ArrayList<>();
         for (File file : files) {
             if (file.isDirectory())
                 loadDirectory(file, id + ".");
-            else if (IGNORE_THUMBS.equalsIgnoreCase(file.getName())) {
+            else if (isThumbsFile(file)) {
                 // no op
             }
-            else if (INFO_FILE_NAME.equalsIgnoreCase(file.getName())) {
+            else if (isInfoFile(file)) {
                 // Info file
                 Properties props = new Properties();
-                props.load(new FileInputStream(file));
-
-                name = getProperty(props, "name", name);
-                typeStr = getProperty(props, "type", "imageSet");
-                width = getIntProperty(props, "width", width);
-                height = getIntProperty(props, "height", height);
-                textX = getIntProperty(props, "text.x", textX);
-                textY = getIntProperty(props, "text.y", textY);
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    props.load(fileInputStream);
+                    name = getProperty(props, "name", name);
+                    typeStr = getProperty(props, "type", "imageSet");
+                    width = getIntProperty(props, "width", width);
+                    height = getIntProperty(props, "height", height);
+                    textX = getIntProperty(props, "text.x", textX);
+                    textY = getIntProperty(props, "text.y", textY);
+                }
             }
-            else {
+            else if(isImageBitmap(file) || isImageSvg(file)) {
                 // Image file. Subtract the load path from the image path
-                String imagePath = file.getPath().substring(path.length());
-                if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
-                    imagePath=imagePath.substring(1);
+                String imageUrl = file.getPath().substring(path.toString().length());
+                if(imageUrl.startsWith("/") || imageUrl.startsWith("\\")) {
+                    imageUrl=imageUrl.substring(1);
                 }
                 // Replace Windows-style '\' path separators with '/'
-                imagePath = imagePath.replaceAll("\\\\", "/");
-                imageFiles.add(imagePath);
+                imageUrl = imageUrl.replaceAll("\\\\", "/");
+                imageUrls.add(imageUrl);
+            }
+            else {
+                LOG.warn("File is not supported type: " + file);
             }
         }
 
-        if (!imageFiles.isEmpty()) {
+        if (!imageUrls.isEmpty()) {
+            String imageSystemFilePath = path + File.separator + normalizeSeparator(imageUrls.get(0));
             if (width == -1 || height == -1) {
-                String imagePath = path + "/" + imageFiles.get(0);
-                Image image = Toolkit.getDefaultToolkit().getImage(imagePath);
+                Image image = Toolkit.getDefaultToolkit().getImage(imageSystemFilePath);
                 MediaTracker tracker = new MediaTracker(new Container());
                 tracker.addImage(image, 0);
                 tracker.waitForID(0);
@@ -120,26 +128,31 @@ public class ViewGraphicLoader {
                     height = image.getHeight(null);
             }
 
+            if (width == -1 || height == -1) {
+                File file = new File(imageSystemFilePath);
+                UploadImage image = UploadFileUtils.createUploadImage(file);
+
+                if (width == -1)
+                    width = image.getWidth();
+                if (height == -1)
+                    height = image.getHeight();
+            }
+
             if (width == -1 || height == -1)
                 throw new Exception("Unable to derive image dimensions");
 
-            String[] imageFileArr = imageFiles.toArray(new String[imageFiles.size()]);
+            String[] imageUrlsArray = imageUrls.toArray(new String[imageUrls.size()]);
             ViewGraphic g;
             if ("imageSet".equals(typeStr))
-                g = new ImageSet(id, name, imageFileArr, width, height, textX, textY);
+                g = new ImageSet(id, name, imageUrlsArray, width, height, textX, textY);
             else if ("dynamic".equals(typeStr))
-                g = new DynamicImage(id, name, imageFileArr[0], width, height, textX, textY);
+                g = new DynamicImage(id, name, imageUrlsArray[0], width, height, textX, textY);
             else
                 throw new Exception("Invalid type: " + typeStr);
 
-            viewGraphics.add(g);
+            result.add(g);
         }
-        Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
-		      @Override
-		      public int compare(final ViewGraphic prev, final ViewGraphic next) {
-		          return prev.getName().compareTo(next.getName());
-		      }
-		  });
+        return result;
     }
 
     private String getProperty(Properties props, String key, String defaultValue) {

@@ -28,7 +28,5 @@
 You do not have sufficient authority to access the resource you requested. Sadly, this exception must be logged
 for review by a system administrator.<br/>
 <br/>
-
-<log:error message="${stackTrace}"/>
 </div>
 </tag:page>

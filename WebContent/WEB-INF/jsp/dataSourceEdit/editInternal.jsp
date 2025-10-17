@@ -27,7 +27,7 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.internal.attribute"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.internal.attribute"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] =
               function(p) { return p.pointLocator.configurationDescription; };
   }
@@ -47,11 +47,11 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.internal.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.internal.desc"/></c:set>
 <c:set var="dsHelpId" value="internalDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -63,7 +63,7 @@
 
 <tag:pointList pointHelpId="internalPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.internal.attribute"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.internal.attribute"/></td>
     <td class="formField">
       <select id="attributeId">
         <tag:exportCodesOptions optionList="<%= InternalPointLocatorVO.ATTRIBUTE_CODES.getIdKeys() %>"/>

@@ -25,20 +25,18 @@ import com.serotonin.mango.vo.ListParent;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.ACLConfig;
-import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
 import org.scada_lts.permissions.model.PermissionDataSourceACL;
 import org.scada_lts.web.mvc.comparators.DataSourceComparator;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -47,24 +45,23 @@ import java.util.*;
  * 
  * @author Marcin Gołda
  */
-@Controller
-@RequestMapping("/data_sources.shtm")
-public class DataSourceListController {
-	private static final Log LOG = LogFactory.getLog(SqlController.class);
+public class DataSourceListController extends ParameterizableViewController {
+	private static final Log LOG = LogFactory.getLog(DataSourceListController.class);
 
-	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView showList(HttpServletRequest request){
+    @Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/data_sources.shtm");
+        Permissions.ensureAdmin(request);
 		
 		//PagingDataForm paging = new PagingDataForm();
 		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);
         //paging.setData(data.getData());
         //paging.setNumberOfItems(data.getRowCount());
-        
+
 		Map<String, Object> model = new HashMap<String, Object>();
 		//model.put("paging", paging);
 		model.put("data", data);
-		return new ModelAndView("dataSourceList", model);
+		return new ModelAndView(getViewName(), model);
 	}
 	
     protected List<ListParent<DataSourceVO<?>, DataPointVO>> getData(HttpServletRequest request, final String sortFieldName, boolean desc) {
@@ -96,7 +93,7 @@ public class DataSourceListController {
             }
         }
 
-        List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ControllerUtils.getResourceBundle(request), dataSources, sortFieldName, desc);
+        List<ListParent<DataSourceVO<?>, DataPointVO>> ds1= sortData(ScadaLocaleUtils.getBundle(request), dataSources, sortFieldName, desc);
         
         //PaginatedData pd = new PaginatedData<ListParent<DataSourceVO<?>, DataPointVO>>(dataSources, data.size());
         return ds1;

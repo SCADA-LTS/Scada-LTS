@@ -27,6 +27,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.DiscreteTimeSeries;
 import com.serotonin.mango.vo.report.ImageChartUtils;
 import com.serotonin.mango.vo.report.PointTimeSeriesCollection;
+import com.serotonin.mango.vo.report.SeriesIdentifier;
 import com.serotonin.util.StringUtils;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
@@ -153,13 +154,15 @@ public class ImageChartServlet extends BaseInfoServlet {
                     if (dp == null || dp.getName() == null)
                         ; // no op
                     else if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
-                        TimeSeries ts = new TimeSeries(dp.getName(), null, null, Second.class);
+                        SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
+                        TimeSeries ts = new TimeSeries(seriesIdentifier, null, null, Second.class);
                         for (PointValueTime pv : data)
                             ImageChartUtils.addSecond(ts, pv.getTime(), pv.getValue().numberValue());
                         ptsc.addNumericTimeSeries(ts, colour);
                     }
                     else {
-                        DiscreteTimeSeries ts = new DiscreteTimeSeries(dp.getName(), dp.getTextRenderer(), colour);
+                        SeriesIdentifier seriesIdentifier = new SeriesIdentifier(dp.getId(), dp.getExtendedName());
+                        DiscreteTimeSeries ts = new DiscreteTimeSeries(seriesIdentifier, dp.getTextRenderer(), colour);
                         for (PointValueTime pv : data)
                             ts.addValueTime(pv);
                         ptsc.addDiscreteTimeSeries(ts);

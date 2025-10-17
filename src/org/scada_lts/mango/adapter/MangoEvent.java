@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -37,12 +38,30 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 public interface MangoEvent {
 	
 	void saveEvent(EventInstance event);
-	
+
+	@Deprecated(since = "2.8.0")
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange);
-	
+
+	@Deprecated(since = "2.8.0")
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
-	
-	//TODO userIds should be the List<Long>
+
+    void silenceEvent(int eventId, int userId);
+
+	void unsilenceEvent(int eventId, int userId);
+
+    void silenceEvents(List<Integer> eventIds, int userId);
+
+	void unsilenceEvents(List<Integer> eventIds, int userId);
+
+	@Deprecated(since = "2.8.0")
+	void ackAllPending(long time, int userId, int alternateAckSource);
+
+	@Deprecated(since = "2.8.0")
+    void silenceAll(int userId);
+
+    void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids);
+
+    //TODO userIds should be the List<Long>
 	void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm);
 	
 	void attachRelationInfo(List<EventInstance> list);
@@ -52,16 +71,12 @@ public interface MangoEvent {
 	List<EventInstance> getEventsForDataPoint(int dataPointId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId);
-
-	List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataSource(int dataSourceId,	int userId);
 	
 	List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId);
 	
 	List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId);
-
-	List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId);
 	
 	List<EventInstance> getPendingEvents(int userId);
 	
@@ -106,11 +121,28 @@ public interface MangoEvent {
 	void updateEventHandler(EventHandlerVO handler);
 	
 	void deleteEventHandler(final int handlerId);
-	
+
+	@Deprecated(since = "2.8.0")
 	boolean toggleSilence(int eventId, int userId);
-	
+
 	int getHighestUnsilencedAlarmLevel(int userId);
 
 	EventInstance getEvent(int eventId);
 
+	String generateUniqueXid();
+
+	boolean isXidUnique(String xid, int excludeId);
+
+	List<EventInstance> getPendingEventsAlarmLevelMin(int userId, int alarmLevelMin, int limit);
+
+	boolean toggleSilence(EventInstance event, User user);
+
+	boolean assignEvent(EventInstance event, User user);
+	boolean unassignEvent(EventInstance event, User user);
+
+	void ackEvent(EventInstance event, long time, User user, int alternateAckSource, boolean signalAlarmLevelChange);
+	void ackEvent(EventInstance event, long time, User user, int alternateAckSource);
+	void unassignEvents();
+	void ackEvents(User user);
+	List<Integer> silenceEvents(User user);
 }

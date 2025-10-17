@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.dataImage.types;
 
 import com.serotonin.mango.DataTypes;
 import com.serotonin.util.StringUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -28,7 +29,7 @@ public class AlphanumericValue extends MangoValue implements Comparable<Alphanum
     private final String value;
 
     public AlphanumericValue(String value) {
-        this.value = StringUtils.escapeLT(value);
+        this.value = SystemSettingsUtils.isDataTypeAlphanumericSaveValueAsEscaped() ? StringUtils.escapeLT(value) : value;
     }
 
     @Override

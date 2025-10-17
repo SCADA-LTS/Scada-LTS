@@ -205,7 +205,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 				+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
 
 		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
-		reportInstancePointDAO.insert(reportInstance, dataPointVO, POINT_NAME, DATA_TYPE, startValue, pointInfo);
+		reportInstancePointDAO.insert(reportInstance, DATA_TYPE, startValue, pointInfo);
 
 		ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
 
@@ -266,8 +266,8 @@ public class ReportInstanceDaoTest extends TestDAO {
 		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
 
 		//Insert objects
-		int firstId = reportInstancePointDAO.insert(reportInstance, dataPointVO, POINT_NAME, DATA_TYPE, startValue, pointInfo);
-		int secondId = reportInstancePointDAO.insert(reportInstance, dataPointVO, SECOND_POINT_NAME, SECOND_DATA_TYPE, startValue, pointInfo);
+		int firstId = reportInstancePointDAO.insert(reportInstance, DATA_TYPE, startValue, pointInfo);
+		int secondId = reportInstancePointDAO.insert(reportInstance, SECOND_DATA_TYPE, startValue, pointInfo);
 
 		//Select all objects
 		List<ReportPointInfo> reportPointInfoList = reportInstancePointDAO.getPointInfos(INSTANCE_ID);

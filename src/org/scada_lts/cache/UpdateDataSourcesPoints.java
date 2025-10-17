@@ -1,5 +1,6 @@
 package org.scada_lts.cache;
 
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +19,14 @@ public class UpdateDataSourcesPoints implements StatefulJob{
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        LOG.trace("UpdateEventDetectors");
+        try {
+            LOG.trace("UpdateEventDetectors");
             List<DataPointVO> dps = new DataPointDAO().getDataPoints();
             Map<Long, List<DataPointVO>> dss = DataSourcePointsCache.getInstance().composeCashData(dps);
             DataSourcePointsCache.getInstance().setData(dss);
+        } catch (Exception ex) {
+            LOG.error(LoggingUtils.causeInfo(ex), ex);
+        }
 
     }
 }

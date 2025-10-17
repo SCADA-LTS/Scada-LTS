@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://localhost:8080/ScadaBR/api'
+  - url: 'http://localhost:8080/Scada-LTS/api'
     description: 'Scada development Server'
     variables: {}
 info:

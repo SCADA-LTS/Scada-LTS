@@ -32,6 +32,9 @@ public class V1_1__ViewsHierarchy extends BaseJavaMigration {
 
 		final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
+		// Event Detector Templates/Users Profiles for migration from ScadaBR 1.2
+		migrationScadaBr(jdbcTmp);
+
 		final String folderViewsHierarchySQL = ""
 		    		+ "create table category_views_hierarchy ("
 		    			+ "id int(11) not null auto_increment,"
@@ -177,4 +180,122 @@ public class V1_1__ViewsHierarchy extends BaseJavaMigration {
 		
 	}
 
+	private static void migrationScadaBr(JdbcTemplate jdbcTemplate) {
+		final String eventDetectorTemplatesSQL = ""
+				+ "CREATE TABLE IF NOT EXISTS eventDetectorTemplates ("
+				+ "id int NOT NULL auto_increment,"
+				+ "name varchar(255) NOT NULL,"
+				+ "primary key (id)"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(eventDetectorTemplatesSQL);
+
+		final String templatesDetectorsSQL = ""
+				+ "CREATE TABLE IF NOT EXISTS templatesDetectors ("
+				+ "id int NOT NULL auto_increment,"
+				+ "xid varchar(50) NOT NULL,"
+				+ "alias varchar(255),"
+				+ "detectorType int NOT NULL,"
+				+ "alarmLevel int NOT NULL,"
+				+ "stateLimit FLOAT,"
+				+ "duration int,"
+				+ "durationType int,"
+				+ "binaryState char(1),"
+				+ "multistateState int,"
+				+ "changeCount int,"
+				+ "alphanumericState varchar(128),"
+				+ "weight float,"
+				+ "threshold double,"
+				+ "eventDetectorTemplateId int NOT NULL,"
+				+ "primary key (id),"
+				+ "KEY templatesDetectorsFk1 (eventDetectorTemplateId),"
+				+ "CONSTRAINT templatesDetectorsFk1 FOREIGN KEY (eventDetectorTemplateId) REFERENCES eventDetectorTemplates (id)"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(templatesDetectorsSQL);
+
+		final String usersProfilesSQL = ""
+				+ "CREATE TABLE IF NOT EXISTS usersProfiles ("
+				+ "id int NOT NULL auto_increment,"
+				+ "xid varchar(50) not null,"
+				+ "name varchar(255) NOT NULL,"
+				+ "primary key (id),"
+				+ "UNIQUE KEY usersProfilesUn1 (xid)"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(usersProfilesSQL);
+
+		// Data source permissions
+
+		final String dataSourceUsersProfilesSQL = ""
+				+ "create table IF NOT EXISTS dataSourceUsersProfiles ("
+				+ "dataSourceId int not null,"
+				+ "userProfileId int not null, "
+				+ "KEY dataSourceUsersProfilesFk1 (dataSourceId),"
+				+ "KEY dataSourceUsersProfilesFk2 (userProfileId),"
+				+ "CONSTRAINT dataSourceUsersProfilesFk1 FOREIGN KEY (dataSourceId) REFERENCES dataSources (id) ON DELETE CASCADE,"
+				+ "CONSTRAINT dataSourceUsersProfilesFk2 FOREIGN KEY (userProfileId) REFERENCES usersProfiles (id) ON DELETE CASCADE"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(dataSourceUsersProfilesSQL);
+
+		// Data point permissions
+
+		final String dataPointUsersProfilesSQL = ""
+				+ "create table IF NOT EXISTS dataPointUsersProfiles ("
+				+ "dataPointId int not null,"
+				+ "userProfileId int not null,"
+				+ "permission int not null,"
+				+ "KEY dataPointUsersProfilesFk1 (dataPointId),"
+				+ "KEY dataPointUsersProfilesFk2 (userProfileId),"
+				+ "CONSTRAINT dataPointUsersProfilesFk1 FOREIGN KEY (dataPointId) REFERENCES dataPoints (id) ON DELETE CASCADE,"
+				+ "CONSTRAINT dataPointUsersProfilesFk2 FOREIGN KEY (userProfileId) REFERENCES usersProfiles (id) ON DELETE CASCADE"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(dataPointUsersProfilesSQL);
+
+		//Data source permissions
+
+		final String usersUsersProfilesSQL = ""
+				+ "create table IF NOT EXISTS usersUsersProfiles ("
+				+ "userProfileId int not null,"
+				+ "userId int not null,"
+				+ "KEY usersUsersProfilesFk1 (userProfileId),"
+				+ "KEY usersUsersProfilesFk2 (userId),"
+				+ "CONSTRAINT usersUsersProfilesFk1 FOREIGN KEY (userProfileId) REFERENCES usersProfiles (id) ON DELETE CASCADE,"
+				+ "CONSTRAINT usersUsersProfilesFk2 FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(usersUsersProfilesSQL);
+
+		// Watchlist permissions
+
+		final String watchListUsersProfilesSQL = ""
+				+ "create table IF NOT EXISTS watchListUsersProfiles ("
+				+ "watchlistId int not null,"
+				+ "userProfileId int not null,"
+				+ "permission int not null,"
+				+ "KEY watchlistUsersProfilesFk1 (watchlistId),"
+				+ "KEY watchlistUsersProfilesFk2 (userProfileId),"
+				+ "CONSTRAINT watchlistUsersProfilesFk1 FOREIGN KEY (watchlistId) REFERENCES watchLists (id) ON DELETE CASCADE,"
+				+ "CONSTRAINT watchlistUsersProfilesFk2 FOREIGN KEY (userProfileId) REFERENCES usersProfiles (id) ON DELETE CASCADE"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(watchListUsersProfilesSQL);
+
+		// View Users Profiles
+
+		final String viewUsersProfilesSQL = ""
+				+ "create table IF NOT EXISTS viewUsersProfiles ("
+				+ "viewId int not null,"
+				+ "userProfileId int not null,"
+				+ "permission int not null,"
+				+ "KEY viewUsersProfilesFk1 (viewId)," 
+				+ "KEY viewUsersProfilesFk2 (userProfileId)," 
+				+ "CONSTRAINT viewUsersProfilesFk1 FOREIGN KEY (viewId) REFERENCES mangoViews (id) ON DELETE CASCADE,"
+				+ "CONSTRAINT viewUsersProfilesFk2 FOREIGN KEY (userProfileId) REFERENCES usersProfiles (id) ON DELETE CASCADE"
+				+ ") ENGINE=InnoDB;";
+
+		jdbcTemplate.execute(viewUsersProfilesSQL);
+	}
 }

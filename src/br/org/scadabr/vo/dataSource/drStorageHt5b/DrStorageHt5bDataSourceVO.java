@@ -37,6 +37,9 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 		eventTypes.add(createEventType(
 				DrStorageHt5bDataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
+		eventTypes.add(createEventType(
+				DrStorageHt5bDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -47,6 +50,9 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 		EVENT_CODES.addElement(
 				DrStorageHt5bDataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
+		EVENT_CODES.addElement(
+				DrStorageHt5bDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override
@@ -73,8 +79,7 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", commPortId);
 	}
 
 	@Override
@@ -109,7 +114,6 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 	@JsonRemoteProperty
 	private boolean quantize;
 
-	@JsonRemoteProperty
 	@Override
 	public void validate(DwrResponseI18n response) {
 		super.validate(response);

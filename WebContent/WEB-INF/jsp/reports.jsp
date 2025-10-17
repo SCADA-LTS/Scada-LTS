@@ -24,7 +24,7 @@
 <tag:page dwr="ReportsDwr" js="emailRecipients" onload="init">
   <script type="text/javascript">
     var allPointsArray = new Array();
-    var reportPointsArray;
+    var reportPointsContext;
     var selectedReport;
     var emailRecipients;
     
@@ -34,8 +34,8 @@
             allPointsArray = response.data.points;
             
             emailRecipients = new mango.erecip.EmailRecipients("recipients",
-                    "<fmt:message key="reports.recipTestEmailMessage"/>", response.data.mailingLists, response.data.users);
-            emailRecipients.write("emailRecipBody", "emailRecipients", null, "<fmt:message key="reports.emailRecipients"/>");
+                    "<spring:message code="reports.recipTestEmailMessage"/>", response.data.mailingLists, response.data.users);
+            emailRecipients.write("emailRecipBody", "emailRecipients", null, "<spring:message code="reports.emailRecipients"/>");
             
             updateReportInstancesList(response.data.instances);
             
@@ -47,6 +47,12 @@
             <c:if test="${!empty param.wlid}">
               ReportsDwr.createReportFromWatchlist(${param.wlid}, loadReportCB);
             </c:if>
+        });
+        jQuery("#allPointsList").chosen({
+            allow_single_deselect: true,
+            placeholder_text_single: " ",
+            search_contains: true,
+            width: "400px"
         });
     }
     
@@ -72,10 +78,9 @@
         selectedReport = report;
         
         $set("name", report.name);
-        reportPointsArray = new Array();
-        for (var i=0; i<report.points.length; i++)
-            addToReportPointsArray(report.points[i].pointId, report.points[i].colour,
-                    report.points[i].consolidatedChart);
+        let handlePointsContext = new ReportPointsContext(report.points, allPointsArray);
+        setPointsContext(handlePointsContext);
+
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);
         $set("dateRangeType", report.dateRangeType);
@@ -110,123 +115,24 @@
         emailRecipients.updateRecipientList(report.recipients);
         
         showMessage("userMessage");
-  
-        writeReportPointsArray();
         updateDateRangeFields();
         updateScheduleFields();
         updateSchedulePeriodFields();
         updateEmailFields();
     }
-    
-    function addPointToReport() {
-        var pointId = $get("allPointsList");
-        addToReportPointsArray(pointId, "", true);
-        writeReportPointsArray();
-    }
-    
-    function addToReportPointsArray(pointId, colour, consolidatedChart) {
-        var data = getPointData(pointId);
-        if (data) {
-            // Missing names imply that the point was deleted, so ignore.
-            reportPointsArray[reportPointsArray.length] = {
-                pointId: pointId,
-                pointName : data.name,
-                pointType : data.dataTypeMessage,
-                colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
-                consolidatedChart : consolidatedChart
-            };
-        }
-    }
-    
-    function getPointData(pointId) {
-        for (var i=0; i<allPointsArray.length; i++) {
-            if (allPointsArray[i].id == pointId)
-                return allPointsArray[i];
-        }
-        return null;
-    }
-    
-    function writeReportPointsArray() {
-        dwr.util.removeAllRows("reportPointsTable");
-        if (reportPointsArray.length == 0) {
-            show($("reportPointsTableEmpty"));
-            hide($("reportPointsTableHeaders"));
-        }
-        else {
-            hide($("reportPointsTableEmpty"));
-            show($("reportPointsTableHeaders"));
-            dwr.util.addRows("reportPointsTable", reportPointsArray,
-                [
-                    function(data) { return data.pointName; },
-                    function(data) { return data.pointType; },
-                    function(data) {
-                            return "<input type='text' value='"+ data.colour +"' "+
-                                    "onblur='updatePointColour("+ data.pointId +", this.value)'/>";
-                    },
-                    function(data) {
-                        return "<input type='checkbox'"+ (data.consolidatedChart ? " checked='checked'" : "") +
-                                " onclick='updatePointConsolidatedChart("+ data.pointId +", this.checked)'/>";
-                    },
-                    function(data) { 
-                            return "<img src='images/bullet_delete.png' class='ptr' "+
-                                    "onclick='removeFromReportPointsArray("+ data.pointId +")'/>";
-                    }
-                ],
-                {
-                    rowCreator:function(options) {
-                        var tr = document.createElement("tr");
-                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                        return tr;
-                    },
-                    cellCreator:function(options) {
-                        var td = document.createElement("td");
-                        if (options.cellNum == 3)
-                            td.align = "center";
-                        return td;
-                    }
-                });
-        }
-        updatePointsList();
+
+    function setPointsContext(reportPointsContext) {
+        this.reportPointsContext = reportPointsContext;
     }
     
     function updatePointColour(pointId, colour) {
-        var item = getElement(reportPointsArray, pointId, "pointId");
-        if (item)
-            item["colour"] = colour;
+        reportPointsContext.updatePoint(pointId, "colour", colour);
     }
     
     function updatePointConsolidatedChart(pointId, consolidatedChart) {
-        var item = getElement(reportPointsArray, pointId, "pointId");
-        if (item)
-            item["consolidatedChart"] = consolidatedChart;
+        reportPointsContext.updatePoint(pointId, "consolidatedChart", consolidatedChart);
     }
-    
-    function updatePointsList() {
-        dwr.util.removeAllOptions("allPointsList");
-        var availPoints = new Array();
-        for (var i=0; i<allPointsArray.length; i++) {
-            var found = false;
-            for (var j=0; j<reportPointsArray.length; j++) {
-                if (reportPointsArray[j].pointId == allPointsArray[i].id) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found)
-                availPoints[availPoints.length] = allPointsArray[i];
-        }
-        dwr.util.addOptions("allPointsList", availPoints, "id", "name");
-    }
-    
-    function removeFromReportPointsArray(pointId) {
-        for (var i=reportPointsArray.length-1; i>=0; i--) {
-            if (reportPointsArray[i].pointId == pointId)
-                reportPointsArray.splice(i, 1);
-        }
-        writeReportPointsArray();
-    }
-    
+
     function updateReportInstancesList(instanceArray) {
         stopImageFader("reportInstancesRefreshImg");
         dwr.util.removeAllRows("reportInstancesList");
@@ -236,7 +142,7 @@
             hide("noReportInstances");
             dwr.util.addRows("reportInstancesList", instanceArray,
                 [
-                    function(ri) { return ri.name; },
+                    function(ri) { return "<span>" + escapeHtml(ri.name) + "</span>"; },
                     function(ri) { return ri.prettyRunStartTime; },
                     function(ri) { return ri.prettyRunDuration; },
                     function(ri) { return ri.prettyReportStartTime; },
@@ -251,18 +157,18 @@
                                 ri.state == <c:out value="<%= ReportInstance.STATE_STARTED %>"/>)
                             return "";
                             
-                        var result = "<img src='images/bullet_down.png' class='ptr' title='<fmt:message key="reports.export"/>' "+
-                                "onclick='exportData(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                        var result = "<img src='images/bullet_down.png' class='ptr' title='<spring:message code="reports.export"/>' "+
+                                "onclick='exportData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeEvents != <c:out value="<%= ReportVO.EVENTS_NONE %>"/>)
-                            result += "<img src='images/flag_white.png' class='ptr' title='<fmt:message key="reports.eventExport"/>' "+
-                                    "onclick='exportEventData(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                            result += "<img src='images/flag_white.png' class='ptr' title='<spring:message code="reports.eventExport"/>' "+
+                                    "onclick='exportEventData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeUserComments)
-                            result += "<img src='images/comment.png' class='ptr' title='<fmt:message key="reports.userCommentExport"/>' "+
-                                    "onclick='exportUserComments(\""+ encodeQuotes(ri.name) +"\", "+ ri.id +")'/>";
+                            result += "<img src='images/comment.png' class='ptr' title='<spring:message code="reports.userCommentExport"/>' "+
+                                    "onclick='exportUserComments(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
                         
-                        result += "<img src='images/icon_chart.png' class='ptr' title='<fmt:message key="reports.charts"/>' "+
+                        result += "<img src='images/icon_chart.png' class='ptr' title='<spring:message code="reports.charts"/>' "+
                                 "onclick='viewChart("+ ri.id +")'/>"+
                                 "<img id='ri"+ ri.id +"DeleteImg' src='images/bullet_delete.png' class='ptr' "+
                                 "onclick='deleteReportInstance("+ ri.id +")'/> ";
@@ -393,17 +299,9 @@
         display("emailRecipBody", email);
     }
     
-    function getReportPointIdsArray() {
-        var points = new Array();
-        for (var i=0; i<reportPointsArray.length; i++)
-            points[points.length] = { pointId: reportPointsArray[i].pointId, colour: reportPointsArray[i].colour,
-                    consolidatedChart: reportPointsArray[i].consolidatedChart };
-        return points;
-    }
-    
     function saveReport() {
         startImageFader("saveImg");
-        ReportsDwr.saveReport(selectedReport.id, $get("name"), getReportPointIdsArray(), $get("includeEvents"),
+        ReportsDwr.saveReport(selectedReport.id, $get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -421,12 +319,12 @@
                     selectedReport.id = response.data.reportId;
                     appendReport(selectedReport.id);
                     startImageFader("r"+ selectedReport.id +"Img");
-                    showMessage("userMessage", "<fmt:message key="reports.reportAdded"/>");
+                    showMessage("userMessage", "<spring:message code="reports.reportAdded"/>");
                     show("deleteImg");
                     show("copyImg");
                 }
                 else
-                    showMessage("userMessage", "<fmt:message key="reports.reportSaved"/>");
+                    showMessage("userMessage", "<spring:message code="reports.reportSaved"/>");
                 updateReport(selectedReport.id, $get("name"));
             }
         });
@@ -438,7 +336,8 @@
     }
     
     function updateReport(id, name) {
-        $("r"+ id +"Name").innerHTML = name;
+        let escapedName = escapeHtml(name);
+        $("r"+ id +"Name").innerHTML = escapedName;
     }
     
     function clearMessages() {
@@ -473,7 +372,7 @@
         if (hasImageFader("runImg"))
             return;
         
-        ReportsDwr.runReport($get("name"), getReportPointIdsArray(), $get("includeEvents"),
+        ReportsDwr.runReport($get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -485,12 +384,19 @@
             if (response.hasMessages)
                 showMessages(response.messages);
             else {
-                showMessage("userMessage", "<fmt:message key="reports.reportQueued"/>");
+                showMessage("userMessage", "<spring:message code="reports.reportQueued"/>");
                 refreshReportInstanceList();
             }
         });
         startImageFader("runImg");
     }
+
+    jQuery(document).ready(function(){
+        (function($) {
+            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+        })(jQuery);
+    });
   </script>
   
   <table cellpadding="0" cellspacing="0"><tr><td>
@@ -498,7 +404,7 @@
       <table width="100%">
         <tr>
           <td>
-            <span class="smallTitle"><fmt:message key="reports.reportQueue"/></span>
+            <span class="smallTitle"><spring:message code="reports.reportQueue"/></span>
             <tag:help id="reportInstances"/>
           </td>
           <td align="right">
@@ -510,17 +416,17 @@
       
       <table cellspacing="1">
         <tr class="rowHeader">
-          <td><fmt:message key="reports.reportName"/></td>
-          <td><fmt:message key="reports.runTimeStart"/></td>
-          <td><fmt:message key="reports.runDuration"/></td>
-          <td><fmt:message key="common.dateRangeFrom"/></td>
-          <td><fmt:message key="common.dateRangeTo"/></td>
-          <td><fmt:message key="reports.reportRecords"/></td>
-          <td><fmt:message key="reports.doNotPurge"/></td>
+          <td><spring:message code="reports.reportName"/></td>
+          <td><spring:message code="reports.runTimeStart"/></td>
+          <td><spring:message code="reports.runDuration"/></td>
+          <td><spring:message code="common.dateRangeFrom"/></td>
+          <td><spring:message code="common.dateRangeTo"/></td>
+          <td><spring:message code="reports.reportRecords"/></td>
+          <td><spring:message code="reports.doNotPurge"/></td>
           <td></td>
         </tr>
         <tr id="hourglass" class="row"><td colspan="8" align="center"><tag:img png="hourglass" title="reports.loading"/></td></tr>
-        <tr id="noReportInstances" class="row" style="display:none;"><td colspan="8"><fmt:message key="reports.noInstances"/></td></tr>
+        <tr id="noReportInstances" class="row" style="display:none;"><td colspan="8"><spring:message code="reports.noInstances"/></td></tr>
         <tbody id="reportInstancesList"></tbody>
       </table>
     </div>
@@ -533,7 +439,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="reports.templates"/></span>
+                <span class="smallTitle"><spring:message code="reports.templates"/></span>
                 <tag:help id="reportTemplates"/>
               </td>
               <td align="right"><tag:img png="report_add" title="reports.newReport"
@@ -556,7 +462,7 @@
             <tr>
               <td>
                 <span class="smallTitle"><tag:img id="reportImg" png="report" title="reports.report"/>
-                <fmt:message key="reports.criteria"/></span>
+                <spring:message code="reports.criteria"/></span>
               </td>
               <td align="right">
                 <tag:img id="deleteImg" png="delete" title="common.delete" onclick="deleteReport();"/>
@@ -570,7 +476,7 @@
           
           <table>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.reportName"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.reportName"/></td>
               <td class="formField">
                 <input type="text" id="name" class="formLong"/><br/>
                 <span class="formError" id="nameError"></span>
@@ -578,54 +484,55 @@
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.points"/></td>
+              <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
                 <select id="allPointsList"></select>
-                <tag:img png="add" onclick="addPointToReport();" title="common.add"/>
+                <tag:img png="add" onclick="reportPointsContext.addPointToContext();" title="common.add"/>
                 
                 <table cellspacing="1">
-                  <tbody id="reportPointsTableEmpty" style="display:none;">
-                    <tr><th colspan="4"><fmt:message key="reports.noPoints"/></th></tr>
+                  <tbody id="contextTableEmpty" style="display:none;">
+                    <tr><th colspan="4"><spring:message code="reports.noPoints"/></th></tr>
                   </tbody>
-                  <tbody id="reportPointsTableHeaders" style="display:none;">
+                  <tbody id="contextTableHeaders" style="display:none;">
                     <tr class="smRowHeader">
-                      <td><fmt:message key="reports.pointName"/></td>
-                      <td><fmt:message key="reports.dataType"/></td>
-                      <td><fmt:message key="reports.colour"/></td>
-                      <td><fmt:message key="reports.consolidatedChart"/></td>
+                      <td><spring:message code="reports.pointName"/></td>
+                      <td><spring:message code="pointHierarchySLTS.xid"/></td>
+                      <td><spring:message code="reports.dataType"/></td>
+                      <td><spring:message code="reports.colour"/></td>
+                      <td><spring:message code="reports.consolidatedChart"/></td>
                       <td></td>
                     </tr>
                   </tbody>
-                  <tbody id="reportPointsTable"></tbody>
+                  <tbody id="contextTable"></tbody>
                 </table>
                 <span id="pointsError" class="formError"></span>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.events"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.events"/></td>
               <td class="formField">
                 <select id="includeEvents">
-                  <option value="<c:out value="<%= ReportVO.EVENTS_NONE %>"/>"><fmt:message key="reports.events.none"/></option>
-                  <option value="<c:out value="<%= ReportVO.EVENTS_ALARMS %>"/>"><fmt:message key="reports.events.alarms"/></option>
-                  <option value="<c:out value="<%= ReportVO.EVENTS_ALL %>"/>"><fmt:message key="reports.events.all"/></option>
+                  <option value="<c:out value="<%= ReportVO.EVENTS_NONE %>"/>"><spring:message code="reports.events.none"/></option>
+                  <option value="<c:out value="<%= ReportVO.EVENTS_ALARMS %>"/>"><spring:message code="reports.events.alarms"/></option>
+                  <option value="<c:out value="<%= ReportVO.EVENTS_ALL %>"/>"><spring:message code="reports.events.all"/></option>
                 </select>
               </td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.comments"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.comments"/></td>
               <td class="formField"><input type="checkbox" id="includeUserComments"/></td>
             </tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.dateRange"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.dateRange"/></td>
               <td class="formField">
                 <table>
                   <tr><td>
                     <input type="radio" name="dateRangeType" value="<c:out value="<%= ReportVO.DATE_RANGE_TYPE_RELATIVE %>"/>" id="drrel" 
                             checked="checked" onchange="updateDateRangeFields()"/><label 
-                            for="drrel"><fmt:message key="reports.relative"/></label>
+                            for="drrel"><spring:message code="reports.relative"/></label>
                   </td></tr>
                   <tr>
                     <td style="padding-left:40px;">
@@ -633,7 +540,7 @@
                         <tr>
                           <td valign="top"><input type="radio" name="relativeType" onchange="updateDateRangeFields()"
                                   id="relprev" value="<c:out value="<%= ReportVO.RELATIVE_DATE_TYPE_PREVIOUS %>"/>" 
-                                  checked="checked"/><label for="relprev"><fmt:message key="reports.previous"/></label></td>
+                                  checked="checked"/><label for="relprev"><spring:message code="reports.previous"/></label></td>
                           <td valign="top">
                             <input type="text" id="prevPeriodCount" class="formVeryShort"/>
                             <select id="prevPeriodType">
@@ -645,7 +552,7 @@
                         <tr>
                           <td valign="top"><input type="radio" name="relativeType" onchange="updateDateRangeFields()"
                                   id="relpast" value="<c:out value="<%= ReportVO.RELATIVE_DATE_TYPE_PAST %>"/>"/><label 
-                                  for="relpast"><fmt:message key="reports.past"/></label></td>
+                                  for="relpast"><spring:message code="reports.past"/></label></td>
                           <td valign="top">
                             <input type="text" id="pastPeriodCount" class="formVeryShort"/>
                             <select id="pastPeriodType">
@@ -660,39 +567,39 @@
                   
                   <tr><td>
                     <input type="radio" name="dateRangeType" value="<c:out value="<%= ReportVO.DATE_RANGE_TYPE_SPECIFIC %>"/>" id="drspec" 
-                            onchange="updateDateRangeFields()"/><label for="drspec"><fmt:message key="reports.specificDates"/></label>
+                            onchange="updateDateRangeFields()"/><label for="drspec"><spring:message code="reports.specificDates"/></label>
                   </td></tr>
                   <tr>
                     <td style="padding-left:40px;">
                       <table>
                         <tr>
                           <td></td>
-                          <td align="center"><fmt:message key="common.tp.year"/></td>
-                          <td align="center"><fmt:message key="common.tp.month"/></td>
-                          <td align="center"><fmt:message key="common.tp.day"/></td>
-                          <td align="center"><fmt:message key="common.tp.hour"/></td>
-                          <td align="center"><fmt:message key="common.tp.minute"/></td>
+                          <td align="center"><spring:message code="common.tp.year"/></td>
+                          <td align="center"><spring:message code="common.tp.month"/></td>
+                          <td align="center"><spring:message code="common.tp.day"/></td>
+                          <td align="center"><spring:message code="common.tp.hour"/></td>
+                          <td align="center"><spring:message code="common.tp.minute"/></td>
                           <td></td>
                         </tr>
                         <tr>
-                          <td><fmt:message key="common.dateRangeFrom"/></td>
+                          <td><spring:message code="common.dateRangeFrom"/></td>
                           <td><input type="text" id="fromYear" class="formVeryShort"/></td>
                           <td><select id="fromMonth"><tag:monthOptions/></select></td>
                           <td><select id="fromDay"><tag:dayOptions/></select></td>
                           <td><select id="fromHour"><tag:hourOptions/></select></td>
                           <td><select id="fromMinute"><tag:minuteOptions/></select></td>
                           <td><input type="checkbox" name="fromNone" id="fromNone"
-                                  onclick="updateDateRangeFields()"/><label for="fromNone"><fmt:message key="common.inception"/></label></td>
+                                  onclick="updateDateRangeFields()"/><label for="fromNone"><spring:message code="common.inception"/></label></td>
                         </tr>
                         <tr>
-                          <td><fmt:message key="common.dateRangeTo"/></td>
+                          <td><spring:message code="common.dateRangeTo"/></td>
                           <td><input type="text" id="toYear" class="formVeryShort"/></td>
                           <td><select id="toMonth"><tag:monthOptions/></select></td>
                           <td><select id="toDay"><tag:dayOptions/></select></td>
                           <td><select id="toHour"><tag:hourOptions/></select></td>
                           <td><select id="toMinute"><tag:minuteOptions/></select></td>
                           <td><input type="checkbox" name="toNone" id="toNone" 
-                                  onclick="updateDateRangeFields()"/><label for="toNone"><fmt:message key="common.latest"/></label></td>
+                                  onclick="updateDateRangeFields()"/><label for="toNone"><spring:message code="common.latest"/></label></td>
                         </tr>
                       </table>
                     </td>
@@ -704,7 +611,7 @@
             <tr><td colspan="3" class="horzSeparator"></td></tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.schedule"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.schedule"/></td>
               <td class="formField">
                 <input type="checkbox" id="schedule" onclick="updateScheduleFields();"/>
               </td>
@@ -712,21 +619,21 @@
             
             <tbody id="scheduleDetails">
               <tr>
-                <td class="formLabelRequired"><fmt:message key="reports.runEvery"/></td>
+                <td class="formLabelRequired"><spring:message code="reports.runEvery"/></td>
                 <td class="formField">
                   <table cellpadding="0" cellspacing="0">
                     <tr><td>
                       <select id="schedulePeriod" onchange="updateSchedulePeriodFields()">
                         <tag:timePeriodOptions h="true" d="true" w="true" mon="true" y="true" singular="true"/>
-                        <option value="<c:out value="<%= ReportVO.SCHEDULE_CRON %>"/>"><fmt:message key="reports.cron"/></option>
+                        <option value="<c:out value="<%= ReportVO.SCHEDULE_CRON %>"/>"><spring:message code="reports.cron"/></option>
                       </select>
                     </td></tr>
                     <tr><td style="padding-left:40px;">
-                      <fmt:message key="reports.runDelay"/>: <input type="text" id="runDelayMinutes" class="formVeryShort"/>
+                      <spring:message code="reports.runDelay"/>: <input type="text" id="runDelayMinutes" class="formVeryShort"/>
                       <div id="runDelayMinutesError" class="formError"></div>
                     </td></tr>
                     <tr><td style="padding-left:40px;">
-                      <fmt:message key="common.cronPattern"/>: <input type="text" id="scheduleCron"/>
+                      <spring:message code="common.cronPattern"/>: <input type="text" id="scheduleCron"/>
                       <tag:help id="cronPatterns"/><br/>
                       <span id="scheduleCronError" class="formError"></span>
                     </td></tr>
@@ -738,18 +645,18 @@
             <tr><td colspan="3" class="horzSeparator"></td></tr>
             
             <tr>
-              <td class="formLabelRequired"><fmt:message key="reports.emailReport"/></td>
+              <td class="formLabelRequired"><spring:message code="reports.emailReport"/></td>
               <td class="formField"><input type="checkbox" id="email" onclick="updateEmailFields();"/></td>
             </tr>
               
             <tbody id="emailDetails">
               <tr>
-                <td class="formLabelRequired"><fmt:message key="reports.includeTabular"/></td>
+                <td class="formLabelRequired"><spring:message code="reports.includeTabular"/></td>
                 <td class="formField"><input type="checkbox" id="includeData"/></td>
               </tr>
               
               <tr>
-                <td class="formLabelRequired"><fmt:message key="reports.zipData"/></td>
+                <td class="formLabelRequired"><spring:message code="reports.zipData"/></td>
                 <td class="formField"><input type="checkbox" id="zipData"/></td>
               </tr>
             </tbody>

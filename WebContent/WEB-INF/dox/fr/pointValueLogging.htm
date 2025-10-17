@@ -30,6 +30,17 @@
 
 <p><b>Rejeter les valeurs extêmes</b> est utilisé pour les appareils pouvant occasionnellemnt diffusée des valeurs erronées. Lorsque <b>Rejeter les valeurs extêmes</b> est sélectionné, les boites de dialogues  <b>rejeter limite basse</b> et <b>rejeter limite haute</b> sont activées. Toutes les valeurs dèjà enregistrées seront conservées.</p>
 
-<p>Le paramètre <b>Purge</b> determine la durée d'historisation de la valeur du point dans la base de donnée. Les valeurs peuvent en pratique être conservées aussi longtemps que nécessaire, mais notez que ceci peut engendrer des dégradation de performance du système si l'historique d'un point devient trop important. (En fait, la performance du système dépent en grande partie du matériel hôte.). Le processus de purge se lance chaque jour à 3h 05 heure locale.</p>
+<p>
+    The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
+    Le processus de purge se lance chaque jour à 3h 05 heure locale.
+</p>
+
+<p>Le paramètre <b>Period</b> determine la durée d'historisation de la valeur du point dans la base de donnée. Les valeurs peuvent en pratique être conservées aussi longtemps que nécessaire, mais notez que ceci peut engendrer des dégradation de performance du système si l'historique d'un point devient trop important. (En fait, la performance du système dépent en grande partie du matériel hôte). </p>
+
+<p>
+    When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+    <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+    system settings (<b>Values limit for purge</b>).
+</p>
 
 <p> <b>Taille par défaut du cache</b> est le nombre de valeur qui seront enregistrées en mémoire. Ce paramètre est important quand une méthode autre que "Toutes les données" est choisie. Les valeurs en mémoire seront éventuellement comparées aux valeurs enregistrées dans la base. Une valeur élevée pour la taille du cache peut améliorer les performances du système (car cela peut empêcher les requêtes sur la base), mais la mémoire est alors consommée par le cache, et des problèmes liés au manque de mémoire peuvent survenir. "Vider le cache" n'est pas nécessaire en théorie, mais peut être utile en cas de suppression manuelle de point (en utilisant les fonctions SQL par exemple).</p>

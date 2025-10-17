@@ -36,24 +36,29 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.utils.XidUtils;
 
 @JsonRemoteEntity
 public class MailingList extends EmailRecipient {
     public static final String XID_PREFIX = "ML_";
 
     private int id = Common.NEW_ID;
+    @JsonRemoteProperty
     private String xid;
     @JsonRemoteProperty
     private String name;
     @JsonRemoteProperty(innerType = EmailRecipient.class)
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
     private List<EmailRecipient> entries;
-
+    @JsonRemoteProperty
     private String cronPattern;
+    @JsonRemoteProperty
     private boolean collectInactiveEmails;
+    @JsonRemoteProperty
     private int dailyLimitSentEmailsNumber;
+    @JsonRemoteProperty
     private boolean dailyLimitSentEmails;
 
     /**
@@ -149,6 +154,10 @@ public class MailingList extends EmailRecipient {
     }
 
     public void validate(DwrResponseI18n response) {
+
+        MailingListService mailingListService = new MailingListService();
+        XidUtils.validateXid(response, mailingListService::isXidUnique, xid, id);
+
         // Check that required fields are present.
         if (StringUtils.isEmpty(name))
             response.addContextualMessage("name", "mailingLists.validate.nameRequired");

@@ -22,16 +22,18 @@
   function initImpl() {
       sqlTestButton(false);
       rowBasedQueryChange();
+      changeJndiResource();
   }
   
   function sqlTest() {
-      $set("sqlTestError", "<fmt:message key="dsEdit.sql.testing"/>");
+      $set("sqlTestError", "<spring:message code="dsEdit.sql.testing"/>");
       show("sqlTestError");
       sqlTestButton(true);
       hide("sqlTestResults");
       dwr.util.removeAllRows("sqlTestResults");
       DataSourceEditDwr.sqlTestStatement($get("driverClassname"), $get("connectionUrl"), $get("username"), 
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), sqlTestCB);
+              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
+              $get("jndiResourceName"), $get("statementLimit"), sqlTestCB);
   }
   
   function sqlTestCB() {
@@ -83,9 +85,27 @@
   }
 
   function saveDataSourceImpl() {
-      DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-              $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), saveDataSourceCB);
+      let statementLimit = $get("statementLimit");
+      let selectStatement = $get("selectStatement");
+      let selectStatementLowerCase = selectStatement.toLowerCase();
+      let selectWithLimitLowerCaseRegex = new RegExp("${selectWithLimitLowerCaseRegex}");
+      if(statementLimit == 0 && !selectWithLimitLowerCaseRegex.test(selectStatementLowerCase)) {
+        let result = confirm('<spring:message code="dsEdit.sql.statementLimit.warning"/>');
+        if(!result) {
+           stopImageFader("dsSaveImg");
+           return;
+        }
+      }
+      if(isValid(statementLimit)) {
+        DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
+                  $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
+                  $get("password"), selectStatement, $get("rowBasedQuery"), $get("jndiResource"),
+                  $get("jndiResourceName"), statementLimit, saveDataSourceCB);
+      } else {
+        let message = createValidationMessage("statementLimit","<spring:message code="badIntegerFormat"/>");
+        showDwrMessages([message]);
+        stopImageFader("dsSaveImg");
+      }
   }
   
   function writePointListImpl(points) {
@@ -125,23 +145,37 @@
   
   function rowBasedQueryChange() {
       if ($get("rowBasedQuery")) {
-          $set("fieldNameLabel", "<fmt:message key="dsEdit.sql.rowId"/>");
-          $set("fieldNameTitle", "<fmt:message key="dsEdit.sql.rowId"/>");
+          $set("fieldNameLabel", "<spring:message code="dsEdit.sql.rowId"/>");
+          $set("fieldNameTitle", "<spring:message code="dsEdit.sql.rowId"/>");
           hide("columnBasedProperties");
       }
       else {
-          $set("fieldNameLabel", "<fmt:message key="dsEdit.sql.columnName"/>");
-          $set("fieldNameTitle", "<fmt:message key="dsEdit.sql.columnName"/>");
+          $set("fieldNameLabel", "<spring:message code="dsEdit.sql.columnName"/>");
+          $set("fieldNameTitle", "<spring:message code="dsEdit.sql.columnName"/>");
           show("columnBasedProperties");
       }
   }
+
+  function changeJndiResource() {
+      if ($get("jndiResource")) {
+          show("isJndiResource");
+          hide("isNotJndiResource");
+      } else {
+          hide("isJndiResource");
+          show("isNotJndiResource");
+      }
+  }
+
+  function isValid(value) {
+      return value == "" || (isInt32(value) && value >= 0);
+  }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.sql.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.sql.desc"/></c:set>
 <c:set var="dsHelpId" value="sqlDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -149,37 +183,56 @@
             </sst:select>
           </td>
         </tr>
-        
+
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.driverClassName"/></td>
-          <td class="formField"><input id="driverClassname" type="text" value="${dataSource.driverClassname}"/></td>
-        </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.connectionString"/></td>
-          <td class="formField"><input id="connectionUrl" type="text" value="${dataSource.connectionUrl}"
-                  class="formLong"/></td>
-        </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.username"/></td>
-          <td class="formField"><input id="username" type="text" value="${dataSource.username}"/></td>
-        </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.password"/></td>
-          <td class="formField"><input id="password" type="text" value="${dataSource.password}"/></td>
-        </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.select"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.sql.jndiResource"/></td>
           <td class="formField">
-            <textarea id="selectStatement" rows="10" cols="45">${dataSource.selectStatement}</textarea>
+            <sst:checkbox id="jndiResource" selectedValue="${dataSource.jndiResource}" onclick="changeJndiResource()"/>
           </td>
         </tr>
+
+        <tr id="isJndiResource" style="visible:none">
+          <td class="formLabelRequired"><spring:message code="dsEdit.sql.jndiResourceName"/></td>
+          <td class="formField"><input id="jndiResourceName" type="text" value="${dataSource.jndiResourceName}"/></td>
+        </tr>
+
+        <tbody id="isNotJndiResource">
+            <tr>
+              <td class="formLabelRequired"><spring:message code="dsEdit.sql.driverClassName"/></td>
+              <td class="formField"><input id="driverClassname" type="text" value="${dataSource.driverClassname}"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><spring:message code="dsEdit.sql.connectionString"/></td>
+              <td class="formField"><input id="connectionUrl" type="text" value="${dataSource.connectionUrl}"
+                      class="formLong"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><spring:message code="dsEdit.sql.username"/></td>
+              <td class="formField"><input id="username" type="text" value="${dataSource.username}"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><spring:message code="dsEdit.sql.password"/></td>
+              <td class="formField"><input id="password" type="text" value="${dataSource.password}"/></td>
+            </tr>
+        </tbody>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.rowQuery"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.sql.select"/></td>
+          <td class="formField">
+            <textarea id="selectStatement" rows="10" cols="45"><c:out value="${dataSource.selectStatement}"/></textarea>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="formLabelRequired"><spring:message code="dsEdit.sql.statementLimit"/></td>
+          <td class="formField"><input id="statementLimit" type="number" value="${dataSource.statementLimit}"/></td>
+        </tr>
+        
+        <tr>
+          <td class="formLabelRequired"><spring:message code="dsEdit.sql.rowQuery"/></td>
           <td class="formField">
             <sst:checkbox id="rowBasedQuery" selectedValue="${dataSource.rowBasedQuery}"
                     onclick="rowBasedQueryChange()"/>
@@ -194,11 +247,11 @@
   <td valign="top">
     <div class="borderDiv marB">
       <table cellspacing="1">
-        <tr><td class="smallTitle"><fmt:message key="dsEdit.sql.test"/></td></tr>
+        <tr><td class="smallTitle"><spring:message code="dsEdit.sql.test"/></td></tr>
         
         <tr>
           <td align="center">
-            <input id="sqlTestBtn" type="button" value="<fmt:message key="dsEdit.sql.execute"/>" onclick="sqlTest();"/>
+            <input id="sqlTestBtn" type="button" value="<spring:message code="dsEdit.sql.execute"/>" onclick="sqlTest();"/>
           </td>
         </tr>
         
@@ -208,7 +261,7 @@
 
 <tag:pointList pointHelpId="sqlPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select name="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -223,13 +276,13 @@
   
   <tbody id="columnBasedProperties">
     <tr>
-      <td class="formLabel"><fmt:message key="dsEdit.sql.timeColumn"/></td>
+      <td class="formLabel"><spring:message code="dsEdit.sql.timeColumn"/></td>
       <td class="formField"><input type="text" id="timeOverrideName"/></td>
     </tr>
   </tbody>
   
   <tr>
-    <td class="formLabel"><fmt:message key="dsEdit.sql.update"/></td>
+    <td class="formLabel"><spring:message code="dsEdit.sql.update"/></td>
     <td class="formField"><textarea cols="35" rows="4" name="updateStatement"></textarea></td>
   </tr>
 </tag:pointList>

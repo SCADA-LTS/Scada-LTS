@@ -49,6 +49,7 @@ public class Pop3DataSourceRT extends PollingDataSource {
     public static final int INBOX_EXCEPTION_EVENT = 1;
     public static final int MESSAGE_READ_EXCEPTION_EVENT = 2;
     public static final int PARSE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
     private final Pop3DataSourceVO vo;
 
@@ -60,7 +61,7 @@ public class Pop3DataSourceRT extends PollingDataSource {
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis());
+        returnToNormal(PARSE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
     }
 
     @Override
@@ -123,19 +124,21 @@ public class Pop3DataSourceRT extends PollingDataSource {
             returnToNormal(INBOX_EXCEPTION_EVENT, time);
 
             if (messagesRead) {
-                if (messageReadError != null)
-                    raiseEvent(MESSAGE_READ_EXCEPTION_EVENT, time, false, messageReadError);
-                else
+                if (messageReadError != null) {
+                    raiseEvent(MESSAGE_READ_EXCEPTION_EVENT, time, true, messageReadError);
+                    return;
+                } else
                     returnToNormal(MESSAGE_READ_EXCEPTION_EVENT, time);
 
-                if (parseError != null)
-                    raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseError);
-                else
+                if (parseError != null) {
+                    raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseError);
+                    return;
+                } else
                     returnToNormal(PARSE_EXCEPTION_EVENT, time);
             }
         }
         catch (Exception e) {
-            raiseEvent(INBOX_EXCEPTION_EVENT, time, false, new LocalizableMessage("common.default", e.getMessage()));
+            raiseEvent(INBOX_EXCEPTION_EVENT, time, true, new LocalizableMessage("common.default", e.getMessage()));
         }
         finally {
             try {
@@ -226,5 +229,10 @@ public class Pop3DataSourceRT extends PollingDataSource {
             // Save the new value
             dp.updatePointValue(new PointValueTime(value, valueTime));
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

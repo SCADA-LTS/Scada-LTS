@@ -7,6 +7,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -167,8 +168,21 @@ public class RealTimeTimer extends AbstractTimer {
             queue.notify(); // In case queue was already empty.
         }
 
-        if (ownsExecutor)
-            getExecutorService().shutdown();
+        LOG.info("Stopping RealTimeTimer");
+        ExecutorService executorService = getExecutorService();
+        try {
+            executorService.shutdown();
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            LOG.error(LoggingUtils.exceptionInfo(ex));
+        } finally {
+            if (!executorService.isTerminated())
+                executorService.shutdownNow();
+        }
+        if (executorService.isTerminated())
+            LOG.info("Stopped RealTimeTimer");
+        else
+            LOG.info("Stopped RealTimeTimer Fail");
 
         return tasks;
     }

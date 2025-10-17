@@ -2,13 +2,15 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointPropEventRenderer from '@/views/DataPointDetails/PointProperties/PointPropEventRenderer';
+import PointPropEventRenderer from '@/views/DataObjects/DataPointDetails/PointProperties/PointPropEventRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 /**
@@ -17,11 +19,7 @@ const modules = {
  * Prepare wrapper wiht all required stubs and props.
  */
 function initWrapper(props = dataPointMock) {
-	return prepareMountWrapper(
-		PointPropEventRenderer, 
-		modules,
-		{data: props}
-	);
+	return prepareMountWrapper(PointPropEventRenderer, modules, { data: props });
 }
 
 global.requestAnimationFrame = (cb) => cb();

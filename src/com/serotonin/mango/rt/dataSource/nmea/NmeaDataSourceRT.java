@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.dataSource.nmea;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,6 +40,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageListener, TimeoutClient {
+
+    private static final Log LOG = LogFactory.getLog(NmeaDataSourceRT.class);
+
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int PARSE_EXCEPTION_EVENT = 2;
 
@@ -86,7 +91,7 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             LocalizableMessage message = getSerialExceptionMessage(e, vo.getCommPortId());
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, message);
             log.debug("Error while initializing data source", e);
@@ -97,7 +102,8 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
     }
 
     synchronized private void termNmea() {
-        nmeaReceiver.terminate();
+        if(nmeaReceiver != null)
+            nmeaReceiver.terminate();
     }
 
     //
@@ -126,7 +132,7 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
                     if (parseError == null)
                         parseError = e.getLocalizableMessage();
                 }
-                catch (Exception e) {
+                catch (Throwable e) {
                     if (parseError == null)
                         parseError = new LocalizableMessage("event.exception2", dp.getVO().getName(), e.getMessage());
                 }
@@ -134,7 +140,9 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
         }
 
         if (parseError != null)
-            raiseEvent(PARSE_EXCEPTION_EVENT, time, false, parseError);
+            raiseEvent(PARSE_EXCEPTION_EVENT, time, true, parseError);
+        else
+            returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
     private void receivedMessageImpl(DataPointRT dp, NmeaMessage message, long time) throws Exception {
@@ -169,6 +177,10 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
     // /
     //
     public void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataSourceInfo(this));
+            return;
+        }
         // We haven't heard from the device for too long. Restart the listener.
         termNmea();
         if (initNmea())

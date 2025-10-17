@@ -20,6 +20,8 @@ package com.serotonin.mango.vo.report;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.TextRenderer;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /**
  * @author Matthew Lohbihler
@@ -37,7 +39,10 @@ public class ReportPointInfo {
     public String getExtendedName() {
         return deviceName + " - " + pointName;
     }
-
+    public String getExtendedNameForReport() {
+        SystemSettingsService systemSettingsService = ApplicationBeans.getBean("systemSettingsService", SystemSettingsService.class);
+        return ImageChartUtils.truncatePointNameForReport(getExtendedName(), systemSettingsService);
+    }
     public int getReportPointId() {
         return reportPointId;
     }

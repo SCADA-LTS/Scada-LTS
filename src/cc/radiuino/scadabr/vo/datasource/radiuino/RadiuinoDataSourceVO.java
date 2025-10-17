@@ -39,6 +39,9 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 		eventTypes.add(createEventType(
 				RadiuinoPollingDataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
+		eventTypes.add(createEventType(
+				RadiuinoPollingDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 
 	}
 
@@ -50,6 +53,9 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 		EVENT_CODES.addElement(
 				RadiuinoPollingDataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
+		EVENT_CODES.addElement(
+				RadiuinoPollingDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override
@@ -74,8 +80,7 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.commPortId);
 	}
 
 	@Override

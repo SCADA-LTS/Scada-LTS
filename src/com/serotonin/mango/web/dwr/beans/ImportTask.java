@@ -22,32 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 import br.org.scadabr.vo.importer.UsersProfileImporter;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PointLinkDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -60,6 +44,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
@@ -70,13 +55,17 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.util.ProgressiveTask;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
+import org.scada_lts.mango.adapter.MangoReport;
+import org.scada_lts.mango.service.*;
 
 /**
  * @author Matthew Lohbihler
@@ -86,19 +75,20 @@ public class ImportTask extends ProgressiveTask {
 	private final ResourceBundle bundle;
 	private final User user;
 	private final DwrResponseI18n response;
-	private final UserDao userDao = new UserDao();
-	private final DataSourceDao dataSourceDao = new DataSourceDao();
-	private final DataPointDao dataPointDao = new DataPointDao();
-	private final ViewDao viewDao = new ViewDao();
-	private final PointLinkDao pointLinkDao = new PointLinkDao();
-	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
-	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
-	private final EventDao eventDao = new EventDao();
-	private final MailingListDao mailingListDao = new MailingListDao();
-	private final PublisherDao publisherDao = new PublisherDao();
-	private final WatchListDao watchListDao = new WatchListDao();
-	private final MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
-	private final ScriptDao scriptDao = new ScriptDao();
+	private final UserService userDao = new UserService();
+	private final DataSourceService dataSourceDao = new DataSourceService();
+	private final DataPointService dataPointService = new DataPointService();
+	private final ViewService viewDao = new ViewService();
+	private final PointLinkService pointLinkDao = new PointLinkService();
+	private final ScheduledEventService scheduledEventDao = new ScheduledEventService();
+	private final CompoundEventDetectorService compoundEventDetectorDao = new CompoundEventDetectorService();
+	private final EventService eventService = new EventService();
+	private final MailingListService mailingListDao = new MailingListService();
+	private final PublisherService publisherDao = new PublisherService();
+	private final WatchListService watchListDao = new WatchListService();
+	private final MaintenanceEventService maintenanceEventDao = new MaintenanceEventService();
+	private final ScriptService scriptService = new ScriptService();
+	private final PointValueService pointValueService = new PointValueService();
 
 	private final List<JsonValue> users;
 	private int userIndexPass1;
@@ -135,6 +125,8 @@ public class ImportTask extends ProgressiveTask {
 	private int systemSettingsIndex;
 	private final List<JsonValue> usersProfiles;
 	private int userProfilesIndex;
+	private final List<JsonValue> reports;
+	private int reportsIndex;
 
 	private final List<Integer> disabledDataSources = new ArrayList<Integer>();
 
@@ -165,9 +157,7 @@ public class ImportTask extends ProgressiveTask {
 		pointValues = nonNullList(root, EmportDwr.POINT_VALUES);
 		systemSettings = nonNullList(root, EmportDwr.SYSTEM_SETTINGS);
 		usersProfiles = nonNullList(root, EmportDwr.USERS_PROFILES);
-
-		Common.timer.execute(this);
-
+		reports = nonNullList(root, EmportDwr.REPORTS);
 	}
 
 	private void preloadDataPoints() {
@@ -185,7 +175,7 @@ public class ImportTask extends ProgressiveTask {
 							name == null ? "(undefined)" : name);
 				else {
 					DataSourceVO<?> dsvo;
-					DataPointVO vo = dataPointDao.getDataPoint(xid);
+					DataPointVO vo = dataPointService.getDataPoint(xid);
 					if (vo == null) {
 						// Locate the data source for the point.
 						String dsxid = dataPoint.getString("dataSourceXid");
@@ -198,7 +188,8 @@ public class ImportTask extends ProgressiveTask {
 							vo.setXid(xid);
 							vo.setDataSourceId(dsvo.getId());
 							vo.setDataSourceXid(dsxid);
-							vo.setPointLocator(dsvo.createPointLocator());
+							vo.setName(name);
+							vo.setPointLocator(createPointLocator(dsvo, xid));
 							vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(
 									0));
 							vo.setTextRenderer(new PlainRenderer());
@@ -222,10 +213,14 @@ public class ImportTask extends ProgressiveTask {
 										dsvo);
 							}
 
-							Common.ctx.getRuntimeManager().saveDataPoint(vo);
-							addSuccessMessage(isnew, "emport.dataPoint.prefix",
-									xid);
-
+							DwrResponseI18n dataPointResponse = new DwrResponseI18n();
+							vo.validateIdentifier(dataPointResponse);
+							if(dataPointResponse.getHasMessages()) {
+								copyValidationMessages(dataPointResponse, "emport.dataPoint.prefix", xid);
+							} else {
+								Common.ctx.getRuntimeManager().saveDataPoint(vo);
+								addSuccessMessage(isnew, "emport.dataPoint.prefix", xid);
+							}
 						}
 					}
 
@@ -317,12 +312,6 @@ public class ImportTask extends ProgressiveTask {
 				return;
 			}
 
-			if (eventHandlerIndex < eventHandlers.size()) {
-				importEventHandler(eventHandlers.get(eventHandlerIndex++)
-						.toJsonObject());
-				return;
-			}
-
 			if (watchListIndex < watchLists.size()) {
 				importWatchList(watchLists.get(watchListIndex++).toJsonObject());
 				return;
@@ -340,6 +329,12 @@ public class ImportTask extends ProgressiveTask {
 				return;
 			}
 
+			if (eventHandlerIndex < eventHandlers.size()) {
+				importEventHandler(eventHandlers.get(eventHandlerIndex++)
+						.toJsonObject());
+				return;
+			}
+
 			if (systemSettingsIndex < systemSettings.size()) {
 				importSystemSettings(systemSettings.get(systemSettingsIndex++)
 						.toJsonObject());
@@ -354,6 +349,12 @@ public class ImportTask extends ProgressiveTask {
 
 			if (pointValuesIndex < pointValues.size()) {
 				importPointValues(pointValues.get(pointValuesIndex++)
+						.toJsonObject());
+				return;
+			}
+
+			if(reportsIndex < reports.size()) {
+				importReports(reports.get(reportsIndex++)
 						.toJsonObject());
 				return;
 			}
@@ -500,7 +501,7 @@ public class ImportTask extends ProgressiveTask {
 					name == null ? "(undefined)" : name);
 		else {
 			DataSourceVO<?> dsvo;
-			DataPointVO vo = dataPointDao.getDataPoint(xid);
+			DataPointVO vo = dataPointService.getDataPoint(xid);
 			if (vo == null) {
 				// Locate the data source for the point.
 				String dsxid = dataPoint.getString("dataSourceXid");
@@ -513,7 +514,7 @@ public class ImportTask extends ProgressiveTask {
 					vo.setXid(xid);
 					vo.setDataSourceId(dsvo.getId());
 					vo.setDataSourceXid(dsxid);
-					vo.setPointLocator(dsvo.createPointLocator());
+					vo.setPointLocator(createPointLocator(dsvo, xid));
 					vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 					vo.setTextRenderer(new PlainRenderer());
 					vo.setEventTextRenderer(new NoneEventRenderer());
@@ -551,8 +552,8 @@ public class ImportTask extends ProgressiveTask {
 							dsvo.setState(new ImportChangeEnableStateDs());
 							Common.ctx.getRuntimeManager().saveDataSource(dsvo);
 						}
-
 						Common.ctx.getRuntimeManager().saveDataPoint(vo);
+						dataPointService.saveEventDetectors(vo);
 						addSuccessMessage(isnew, "emport.dataPoint.prefix", xid);
 					}
 				} catch (LocalizableJsonException e) {
@@ -632,13 +633,13 @@ public class ImportTask extends ProgressiveTask {
 					pointHierarchyJson, List.class, PointFolder.class);
 			root.setSubfolders(subfolders);
 
-			for (DataPointVO dp : dataPointDao.getDataPoints(null, false)) {
+			for (DataPointVO dp : dataPointService.getDataPoints(null, false)) {
 				dp.setPointFolderId(0);
-				dataPointDao.updateDataPointShallow(dp);
+				dataPointService.updateDataPointShallow(dp);
 			}
 
 			// Save the new values.
-			dataPointDao.savePointHierarchy(root);
+			dataPointService.savePointHierarchy(root);
 			response.addGenericMessage("emport.pointHierarchy.prefix",
 					I18NUtils.getMessage(bundle, "emport.saved"));
 		} catch (LocalizableJsonException e) {
@@ -869,7 +870,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.eventHandler.xid");
 		else {
-			EventHandlerVO handler = eventDao.getEventHandler(xid);
+			EventHandlerVO handler = eventService.getEventHandler(xid);
 			if (handler == null) {
 				handler = new EventHandlerVO();
 				handler.setXid(xid);
@@ -897,11 +898,11 @@ public class ImportTask extends ProgressiveTask {
 
 					if (!isnew) {
 						// Check if the event type has changed.
-						EventType oldEventType = eventDao
+						EventType oldEventType = eventService
 								.getEventHandlerType(handler.getId());
 						if (!oldEventType.equals(eventType)) {
 							// Event type has changed. Delete the old one.
-							eventDao.deleteEventHandler(handler.getId());
+							eventService.deleteEventHandler(handler.getId());
 
 							// Call it new
 							handler.setId(Common.NEW_ID);
@@ -910,7 +911,7 @@ public class ImportTask extends ProgressiveTask {
 					}
 
 					// Save it.
-					eventDao.saveEventHandler(eventType, handler);
+					eventService.saveEventHandler(eventType, handler);
 					addSuccessMessage(isnew, "emport.eventHandler.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -1008,7 +1009,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.script.xid");
 		else {
-			ScriptVO vo = scriptDao.getScript(xid);
+			ScriptVO vo = scriptService.getScript(xid);
 			if (vo == null) {
 
 				String typeStr = script.getString("type");
@@ -1031,7 +1032,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = vo.isNew();
-					scriptDao.saveScript(vo);
+					scriptService.saveScript(vo);
 					addSuccessMessage(isnew, "emport.script.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
@@ -1048,19 +1049,18 @@ public class ImportTask extends ProgressiveTask {
 
 	private void importPointValues(JsonObject json) {
 		String pointXid = json.getString("pointXid");
-		DataPointVO dp = new DataPointDao().getDataPoint(pointXid);
+		DataPointVO dp = dataPointService.getDataPoint(pointXid);
 		if (dp == null) {
 			// response.addGenericMessage("emport.script.xid");
 			response.addGenericMessage("emport.pointValue.missingPoint",
 					pointXid);
 		} else {
-			long time = json.getLong("timestamp");
+			long time = json.getLong("timestamppointValueService");
 			String value = json.getString("value");
-			PointValueDao dao = new PointValueDao();
 			PointValueTime pointValue = new PointValueTime(
 					MangoValue.stringToValue(value, dp.getPointLocator()
 							.getDataTypeId()), time);
-			dao.savePointValue(dp.getId(), pointValue);
+			pointValueService.savePointValue(dp.getId(), pointValue);
 		}
 
 	}
@@ -1073,6 +1073,48 @@ public class ImportTask extends ProgressiveTask {
 			response.addGenericMessage("emport.systemSettingsFailed");
 		}
 
+	}
+
+	private void importReports(JsonObject json) {
+		String xid = json.getString("xid");
+		MangoReport reportService = new ReportService();
+		if(!StringUtils.isEmpty(xid))
+			importReport(json, xid, reportService::getReport, reportService::saveReport);
+		else {
+			Integer id = json.getInt("id");
+			importReport(json, id, reportService::getReport, reportService::saveReport);
+		}
+	}
+
+	private <T> void importReport(JsonObject json, T id,
+								  Function<T, ReportVO> get,
+								  Consumer<ReportVO> save) {
+		String name = json.getString("name");
+		try {
+			ReportVO report;
+			boolean isNew = false;
+			if(id == null || (report = get.apply(id)) == null) {
+				report = new ReportVO();
+				isNew = true;
+			}
+			reader.populateObject(report, json);
+			if(isNew) {
+				report.setId(Common.NEW_ID);
+			} else {
+				report.setId(report.getId());
+			}
+			save.accept(report);
+			addSuccessMessage(isNew, "emport.reports.prefix", report.getName());
+		} catch (LocalizableJsonException ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.prefix", name, ex.getMsg());
+		} catch (JsonException ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.prefix", name, getJsonExceptionMessage(ex));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.invalid", name);
+		}
 	}
 
 	private void copyValidationMessages(DwrResponseI18n voResponse, String key,
@@ -1119,7 +1161,16 @@ public class ImportTask extends ProgressiveTask {
 		profileImporter.importUsersProfile(profileJson, response, reader, this);
 	}
 
-	public List<JsonValue> getUsers() {
+	public List<JsonValue> _getUsers() {
 		return users;
+	}
+
+	private PointLocatorVO createPointLocator(DataSourceVO<?> dataSource, String dataPointXid) {
+		PointLocatorVO pointLocator = dataSource.createPointLocator();
+		if(pointLocator instanceof MqttPointLocatorVO) {
+			MqttPointLocatorVO mqttPointLocator = (MqttPointLocatorVO) pointLocator;
+			mqttPointLocator.setDataPointXid(dataPointXid);
+		}
+		return pointLocator;
 	}
 }

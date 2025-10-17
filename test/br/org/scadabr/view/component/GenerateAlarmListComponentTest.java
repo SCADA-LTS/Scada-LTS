@@ -1,7 +1,6 @@
 package br.org.scadabr.view.component;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.BaseDwr;
@@ -17,6 +16,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,8 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BaseDwr.class, WebContextFactory.class, Common.class,
-        AlarmListComponent.class, LogFactory.class, EventService.class,
-        EventDao.class})
+        AlarmListComponent.class, LogFactory.class, EventService.class})
 public class GenerateAlarmListComponentTest {
 
     private final static String CONTENT_EXPECTED = "test";
@@ -41,6 +40,8 @@ public class GenerateAlarmListComponentTest {
     private WebContext webContext;
 
     private EventService eventService;
+    private SystemSettingsService systemSettingsService;
+
 
     @Mock
     private User user;
@@ -62,6 +63,10 @@ public class GenerateAlarmListComponentTest {
         eventService = PowerMockito.mock(EventService.class);
         whenNew(EventService.class).withNoArguments().thenReturn(eventService);
 
+        systemSettingsService = PowerMockito.mock(SystemSettingsService.class);
+        whenNew(SystemSettingsService.class).withNoArguments().thenReturn(systemSettingsService);
+
+
         subject = new AlarmListComponent();
     }
 
@@ -72,10 +77,7 @@ public class GenerateAlarmListComponentTest {
         CopyOnWriteArrayList<EventInstance> events = new CopyOnWriteArrayList<>();
         when(eventService.getPendingEvents(anyInt())).thenReturn(events);
 
-        HashMap<String, Object> model = new HashMap<>();
-        whenNew(HashMap.class).withNoArguments().thenReturn(model);
-
-        when(BaseDwr.generateContent(any(), any(), eq(model)))
+        when(BaseDwr.generateContent(any(), anyString(), anyMap()))
                 .thenAnswer(invocation -> {
                     Map<String, Object> modelArgs = (Map<String, Object>)invocation.getArguments()[2];
                     List<String> eventsSubList = (List<String>)modelArgs.get("events");

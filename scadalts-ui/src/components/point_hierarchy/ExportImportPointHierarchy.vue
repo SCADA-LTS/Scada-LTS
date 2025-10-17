@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
 	<div>
-		<div class="col-md-4" style="background-color: white; padding: 2em">
+		<div style="background-color: white; padding: 2em">
 			<v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 200px">
 			</v-jsoneditor>
 			<br />
@@ -752,9 +752,18 @@ export default {
 						this.toMoveFolder.xidFolderMoved.length,
 				);
 
-				const apiMoveFolder = `./api/pointHierarchy/folderMoveTo/${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}/${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`;
+				const apiMoveFolder = `./api/pointHierarchy/pointsMoveTo/`;
+
+                const data = {
+                    moveObjects: [{
+                        xid: `${this.toMoveFolder.xidFolderToMoveTo[0].xidFolder}`,
+                        type: 'FOLDER'
+                    }],
+                    destinationFolderXid: `${this.toMoveFolder.xidFolderToMoveTo[0].newParentXid}`
+                };
+
 				axios
-					.put(apiMoveFolder)
+					.put(apiMoveFolder, data)
 					.then((response) => {
 						console.log(response);
 						let moved = this.toMoveFolder.xidFolderToMoveTo[0];
@@ -805,9 +814,18 @@ export default {
 						this.toMovePoints.xidPointMoved.length,
 				);
 
-				const apiMovePoints = `./api/pointHierarchy/pointMoveTo/${arrPointToMove[0].xidPoint}/${newParent}`;
+				const apiMovePoints = `./api/pointHierarchy/pointsMoveTo/`;
+
+                const data = {
+                    moveObjects: [{
+                        xid: `${arrPointToMove[0].xidPoint}`,
+                        type: 'POINT'
+                    }],
+                    destinationFolderXid: `${newParent}`
+                };
+
 				axios
-					.put(apiMovePoints)
+					.put(apiMovePoints, data)
 					.then((response) => {
 						console.log(response);
 						let moved = arrPointToMove[0];
@@ -852,9 +870,26 @@ export default {
 						this.toDeleteFolder.xidFolderDeleted.length,
 				);
 
-				const apiDeleteFolders = `./api/pointHierarchy/deleteFolder/${this.toDeleteFolder.xidFolderToDelete[0].xidFolder}`;
+				const apiDeleteFolders = `./api/pointHierarchy/deleteFolders/`;
+
+				let moveObjects = [];
+				this.toMoveFolder.xidFolderToMoveTo.forEach(object => {
+                    moveObjects.push({
+                           xid: object.xidFolder,
+                           type: 'FOLDER'
+                    });
+				});
+
+                const data = {
+                    deleteObjects: [{
+                        xid: `${this.toDeleteFolder.xidFolderToDelete[0].xidFolder}`,
+                        type: 'FOLDER'
+                    }],
+                    moveObjects: moveObjects
+                };
+
 				axios
-					.post(apiDeleteFolders)
+					.delete(apiDeleteFolders, data)
 					.then((response) => {
 						let deleted = this.toDeleteFolder.xidFolderToDelete[0];
 						this.toDeleteFolder.xidFolderDeleted.push(deleted);

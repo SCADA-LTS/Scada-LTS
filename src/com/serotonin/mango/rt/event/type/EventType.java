@@ -27,7 +27,6 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
@@ -40,6 +39,8 @@ import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 
 /**
  * An event class specifies the type of event that was raised.
@@ -204,6 +205,14 @@ abstract public class EventType implements JsonSerializable {
         return -1;
     }
 
+    public int getEventHandlerId() {
+        return -1;
+    }
+
+    public int getSystemEventTypeId() {
+        return -1;
+    }
+
     /**
      * Determines whether an event type that, once raised, will always first be deactivated or whether overriding events
      * can be raised. Overrides can occur in data sources and point locators where a retry of a failed action causes the
@@ -216,6 +225,10 @@ abstract public class EventType implements JsonSerializable {
     abstract public int getReferenceId1();
 
     abstract public int getReferenceId2();
+
+    public int getReferenceId3() {
+        return -1;
+    }
 
     /**
      * Determines if the notification of this event to the given user should be suppressed. Useful if the action of the
@@ -268,9 +281,7 @@ abstract public class EventType implements JsonSerializable {
     // }
     //
     protected int getCompoundEventDetectorId(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        String xid = getXid(json, name);
         CompoundEventDetectorVO ced = new CompoundEventDetectorDao().getCompoundEventDetector(xid);
         if (ced == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
@@ -288,9 +299,7 @@ abstract public class EventType implements JsonSerializable {
     // }
     //
     protected int getScheduledEventId(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        String xid = getXid(json, name);
         ScheduledEventVO se = new ScheduledEventDao().getScheduledEvent(xid);
         if (se == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
@@ -298,9 +307,7 @@ abstract public class EventType implements JsonSerializable {
     }
 
     protected int getDataPointId(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        String xid = getXid(json, name);
         DataPointVO dp = new DataPointDao().getDataPoint(xid);
         if (dp == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
@@ -322,9 +329,7 @@ abstract public class EventType implements JsonSerializable {
     }
 
     protected int getPointEventDetectorId(JsonObject json, int dpId, String pedName) throws JsonException {
-        String pedXid = json.getString(pedName);
-        if (pedXid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", pedName);
+        String pedXid = getXid(json, pedName);
         int id = new DataPointDao().getDetectorId(pedXid, dpId);
         if (id == -1)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", pedName, pedXid);
@@ -333,19 +338,25 @@ abstract public class EventType implements JsonSerializable {
     }
 
     protected DataSourceVO<?> getDataSource(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
-        DataSourceVO<?> ds = new DataSourceDao().getDataSource(xid);
+        String xid = getXid(json, name);
+        DataSourceService dataSourceService = new DataSourceService();
+        DataSourceVO<?> ds = dataSourceService.getDataSource(xid);
         if (ds == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return ds;
     }
 
+    protected DataPointVO getDataPoint(JsonObject json, String name) throws JsonException {
+        String xid = getXid(json, name);
+        DataPointService dataPointService = new DataPointService();
+        DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+        if (dataPoint == null)
+            throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
+        return dataPoint;
+    }
+
     protected PublisherVO<?> getPublisher(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        String xid = getXid(json, name);
         PublisherVO<?> pb = new PublisherDao().getPublisher(xid);
         if (pb == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
@@ -353,12 +364,17 @@ abstract public class EventType implements JsonSerializable {
     }
 
     protected int getMaintenanceEventId(JsonObject json, String name) throws JsonException {
-        String xid = json.getString(name);
-        if (xid == null)
-            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        String xid = getXid(json, name);
         MaintenanceEventVO me = new MaintenanceEventDao().getMaintenanceEvent(xid);
         if (me == null)
             throw new LocalizableJsonException("emport.error.eventType.invalid.reference", name, xid);
         return me.getId();
+    }
+
+    private static String getXid(JsonObject json, String name) throws LocalizableJsonException {
+        String xid = json.getString(name);
+        if (xid == null)
+            throw new LocalizableJsonException("emport.error.eventType.missing.reference", name);
+        return xid;
     }
 }

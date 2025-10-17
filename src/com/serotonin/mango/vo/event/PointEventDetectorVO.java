@@ -127,6 +127,14 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     private String alphanumericState;
     private double weight;
 
+    public PointEventDetectorVO() {
+    }
+
+    public PointEventDetectorVO(int id, String xid) {
+        this.id = id;
+        this.xid = xid;
+    }
+
     public EventTypeVO getEventType() {
         return new EventTypeVO(EventType.EventSources.DATA_POINT, dataPoint.getId(), id, getDescription(), alarmLevel,
                 getEventDetectorKey());
@@ -284,7 +292,7 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     public void addProperties(List<LocalizableMessage> list) {
         AuditEventType.addPropertyMessage(list, "common.xid", xid);
         AuditEventType.addPropertyMessage(list, "pointEdit.detectors.alias", alias);
-        AuditEventType.addPropertyMessage(list, "pointEdit.detectors.type", getDef().getNameKey());
+        AuditEventType.addPropertyMessage(list, "pointEdit.detectors.type", new LocalizableMessage(getDef().getNameKey()));
         AuditEventType.addPropertyMessage(list, "common.alarmLevel", AlarmLevels.getAlarmLevelMessage(alarmLevel));
         AuditEventType.addPropertyMessage(list, "common.configuration", getConfigurationDescription());
         AuditEventType.addPropertyMessage(list, "pointEdit.detectors.weight", weight);
@@ -295,8 +303,8 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid", from.xid, xid);
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.detectors.alias", from.alias, alias);
         if (from.detectorType != detectorType)
-            AuditEventType.addPropertyChangeMessage(list, "pointEdit.detectors.type", from.getDef().getNameKey(),
-                    getDef().getNameKey());
+            AuditEventType.addPropertyChangeMessage(list, "pointEdit.detectors.type", new LocalizableMessage(from.getDef().getNameKey()),
+                    new LocalizableMessage(getDef().getNameKey()));
         AuditEventType.maybeAddAlarmLevelChangeMessage(list, "common.alarmLevel", from.alarmLevel, alarmLevel);
         if (from.limit != limit || from.duration != duration || from.durationType != durationType
                 || from.binaryState != binaryState || from.multistateState != multistateState
@@ -682,5 +690,13 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
 
     public static boolean validDurationType(int durationType) {
         return Common.TIME_PERIOD_CODES.isValidId(durationType);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", xid='" + xid + '\'' +
+                "} ";
     }
 }

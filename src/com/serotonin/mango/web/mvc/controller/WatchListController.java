@@ -26,8 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.scada_lts.permissions.service.GetObjectsWithAccess;
-import org.scada_lts.permissions.service.GetWatchListsWithAccess;
+import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
@@ -51,6 +50,7 @@ public class WatchListController extends ParameterizableViewController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) {
+		Common.getUser(request).setHideHeader(false);
 		return new ModelAndView(getViewName(), createModel(request));
 	}
 
@@ -84,8 +84,8 @@ public class WatchListController extends ParameterizableViewController {
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
 				// ACL end;
 			} else {
-			    GetObjectsWithAccess<WatchList, User> watchListService = new GetWatchListsWithAccess();
-				watchLists = watchListService.getObjectsWithAccess(user);
+			    WatchListService watchListService = new WatchListService();
+				watchLists = watchListService.getWatchListsWithAccess(user);
             }
 		} else {
 			watchLists = watchListDao.getWatchLists();
@@ -100,7 +100,7 @@ public class WatchListController extends ParameterizableViewController {
 			// Add a default watch list if none exist.
 			WatchList watchList = new WatchList();
 			watchList.setName(I18NUtils.getMessage(
-					ControllerUtils.getResourceBundle(request),
+					Common.getBundle(request),
 					"common.newName"));
 			watchLists.add(watchListDao.createNewWatchList(watchList,
 					user.getId()));

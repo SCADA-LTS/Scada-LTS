@@ -40,6 +40,6 @@ public interface AlarmsDAO {
     Optional<Long> getInactiveTimeMs(int id) throws DataAccessException;
 
     static AlarmsDAO getInstance() {
-        return new PlcAlarmsDAO(DAO.getInstance().getJdbcTemp());
+        return new PlcAlarmsDAO();
     }
 }

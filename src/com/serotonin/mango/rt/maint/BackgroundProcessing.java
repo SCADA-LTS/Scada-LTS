@@ -20,18 +20,20 @@ package com.serotonin.mango.rt.maint;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
+
+import com.serotonin.mango.util.ThreadPoolExecutorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createForkJoinPool;
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -44,19 +46,24 @@ public class BackgroundProcessing implements ILifecycle {
 	public static final String JOB_NAME = BackgroundProcessing.class.getName();
 	public static final String JOB_GROUP = "maintenance";
 
-	final Log log = LogFactory.getLog(BackgroundProcessing.class);
+	private static final Log LOG = LogFactory.getLog(BackgroundProcessing.class);
 
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
+	private ForkJoinPool commonPool;
+	private volatile boolean terminating;
 
 	public void addWorkItem(final WorkItem item) {
+		if(isTerminating()) {
+			LOG.info("Scada-LTS terminating! For workItem: " + item);
+		}
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
 					item.execute();
 				} catch (Throwable t) {
 					try {
-						log.error("Error in work item", t);
+						LOG.error("Error in work item", t);
 					} catch (RuntimeException e) {
 						t.printStackTrace();
 					}
@@ -64,10 +71,10 @@ public class BackgroundProcessing implements ILifecycle {
 			}
 		};
 
-		if (item.getPriority() == WorkItem.PRIORITY_HIGH)
+		if (item.getPriorityType() == WorkItemPriority.HIGH)
 			Common.timer.execute(runnable);
 
-		else if (item.getPriority() == WorkItem.PRIORITY_MEDIUM)
+		else if (item.getPriorityType() == WorkItemPriority.MEDIUM)
 			mediumPriorityService.execute(new Runnable() {
 				public void run() {
 					try {
@@ -78,14 +85,12 @@ public class BackgroundProcessing implements ILifecycle {
 							PrintWriter pw = new PrintWriter(sw);
 							t.printStackTrace(pw);
 							String sStackTrace = sw.toString();
-							if ((sStackTrace != null) && (log != null)) {
+							if ((sStackTrace != null) && (LOG != null)) {
 								if (!sStackTrace.contains("java.lang.NullPointerException")) {
-									log.error("Error in work item: " + sStackTrace);
+									LOG.error("Error in work item: " + sStackTrace);
 								}
 							}
 						}
-					} finally {
-						mediumPriorityService.remove(this);
 					}
 				}
 			});
@@ -101,55 +106,37 @@ public class BackgroundProcessing implements ILifecycle {
 	}
 
 	public void initialize() {
-		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
-				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		this.terminating = false;
+		mediumPriorityService = createPool(WorkItemPriority.MEDIUM);
 		mediumPriorityService.allowCoreThreadTimeOut(true);
-		lowPriorityService = Executors.newSingleThreadExecutor();
+		lowPriorityService = createPool(WorkItemPriority.LOW);
+		commonPool = createForkJoinPool();
 	}
 
 	public void terminate() {
+		this.terminating = true;
 		// Close the executor services.
 		mediumPriorityService.shutdown();
 		lowPriorityService.shutdown();
+		commonPool.shutdown();
 	}
 
 	public void joinTermination() {
-		boolean medDone = false;
-		boolean lowDone = false;
+		this.terminating = true;
+		ThreadPoolExecutorUtils.joinTermination(mediumPriorityService, "MediumPriorityService");
+		ThreadPoolExecutorUtils.joinTermination(lowPriorityService, "LowPriorityService");
+		ThreadPoolExecutorUtils.joinTermination(commonPool, "CommonPool");
+	}
 
-		try {
-			// With 5 second waits and a worst case of both of both high and low
-			// priority jobs that just won't finish,
-			// this thread will wait a maximum of 6 minutes.
-			int rewaits = 36;
-			while (rewaits > 0) {
-				if (!medDone
-						&& mediumPriorityService.awaitTermination(5,
-								TimeUnit.SECONDS))
-					medDone = true;
-				if (!lowDone
-						&& lowPriorityService.awaitTermination(5,
-								TimeUnit.SECONDS))
-					lowDone = true;
+	public ForkJoinPool getCommonPool() {
+		return commonPool;
+	}
 
-				if (lowDone && medDone)
-					break;
+	public boolean isTerminating() {
+		return this.terminating;
+	}
 
-				if (!lowDone && !medDone)
-					log.info("BackgroundProcessing waiting for medium ("
-							+ mediumPriorityService.getQueue().size()
-							+ ") and low priority tasks to complete");
-				else if (!medDone)
-					log.info("BackgroundProcessing waiting for medium priority tasks ("
-							+ mediumPriorityService.getQueue().size()
-							+ ") to complete");
-				else
-					log.info("BackgroundProcessing waiting for low priority tasks to complete");
-
-				rewaits--;
-			}
-		} catch (InterruptedException e) {
-			log.info("", e);
-		}
+	public boolean isTerminated() {
+		return mediumPriorityService.isTerminated() && lowPriorityService.isTerminated();
 	}
 }

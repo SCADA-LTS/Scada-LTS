@@ -36,37 +36,38 @@
     </table>
     <table>
       <tr>
-        <td class="formLabelRequired"><fmt:message key="viewEdit.settings.point"/></td>
+        <td class="formLabelRequired"><spring:message code="viewEdit.settings.point"/></td>
         <td class="formField"><select id="settingsPointList" onchange="settingsEditor.pointSelectChanged()"></select></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.settings.nameOverride"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.settings.nameOverride"/></td>
         <td class="formField"><input id="settingsPointName" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.settings.settableOverride"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.settings.settableOverride"/></td>
         <td class="formField"><input id="settingsSettable" type="checkbox"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.settings.background"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.settings.background"/></td>
         <td class="formField"><input id="settingsBkgdColor" type="text"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.settings.displayControls"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.settings.displayControls"/></td>
         <td class="formField"><input id="settingsControls" type="checkbox"/></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.position.x"/></td>
         <td class="formField"><input id="settingsPositionX" type="number"/></td></td>
       </tr>
       <tr>
-        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
+        <td class="formLabel"><spring:message code="viewEdit.position.y"/></td>
         <td class="formField"><input id="settingsPositionY" type="number"/></td></td>
       </tr>
     </table>
   </td></tr></table>
   
   <script type="text/javascript">
+    var viewId = mango.longPoll.pollRequest.viewId;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -79,7 +80,7 @@
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
-            ViewDwr.getViewComponent(compId, function(comp) {
+            ViewDwr.getViewComponent(compId, viewId, function(comp) {
             	
                 $set("settingsComponentName", comp.displayName);
                 
@@ -125,7 +126,7 @@
             );
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), posX, posY, function(response) {
+                    $get("settingsControls"), posX, posY, viewId, function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }

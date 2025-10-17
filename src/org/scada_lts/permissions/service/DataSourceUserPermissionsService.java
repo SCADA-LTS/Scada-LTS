@@ -3,11 +3,9 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.DataSourceDAO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class DataSourceUserPermissionsService implements PermissionsService<Integer, User> {
 
     private final DataSourceDAO dataSourceDAO;

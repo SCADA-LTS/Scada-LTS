@@ -5,10 +5,10 @@
 		</template>
 		<v-card class="dialog-confirmation">
 			<v-card-title class="headline">
-				{{ title }}
+				<span v-html="title"></span>
 			</v-card-title>
 			<v-card-text>
-				{{ message }}
+				<span v-html="message"></span>
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer></v-spacer>
@@ -23,21 +23,24 @@
 	</v-dialog>
 </template>
 <script>
+/**
+ * Confirmation dialog
+ * @deprecated - Use ConfirmationDialogV2 it can handle the data that is passed to it
+ */
+
 export default {
 	name: 'ConfirmationDialog',
 
 	data() {
-		return {};
+		return {
+			dialog: false,
+		};
 	},
 
 	props: {
 		btnvisible: {
 			type: Boolean,
 			default: true,
-		},
-		dialog: {
-			type: Boolean,
-			default: false,
 		},
 		title: {
 			type: String,
@@ -50,6 +53,10 @@ export default {
 	},
 
 	methods: {
+		showDialog() {
+			this.dialog = true;
+		},
+
 		cancel() {
 			this.dialog = false;
 			this.$emit('result', false);

@@ -1,0 +1,90 @@
+# Docker compose file to manage your deployed images.
+# Use MySQL server 8 and latest Scada-LTS local build.
+# Using attached webapps folder as developer you will be able to modify the static content from host os.
+# Attach shell to stop the tomcat instance and then you will be able to run in JPDA mode.
+version: '3'
+services: 
+    database:
+        container_name: mysql
+        image: mysql/mysql-server:8.0.32
+        ports:
+            - "3306:3306"
+        environment: 
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=root
+            - MYSQL_DATABASE=scadalts
+        expose: ["3306"]
+        volumes:
+            - ./db_data:/var/lib/mysql:rw
+            - ./db_conf:/etc/mysql:ro
+        command: --log_bin_trust_function_creators=1
+    scadalts:
+        image: scadalts/scadalts:latest
+        environment:
+            - CATALINA_OPTS=-Xmx2G -Xms2G
+            - JPDA_ADDRESS=0.0.0.0:8000
+            - JPDA_TRANSPORT=dt_socket
+        ports: 
+            - "8080:8080"
+            - "8000:8000"
+        depends_on: 
+            - database
+        expose: ["8080", "8000"]
+        volumes:
+            - ./tomcat_log:/usr/local/tomcat/logs:rw
+            #- ./tomcat_webapps:/usr/local/tomcat/webapps:rw
+        links:
+            - database:database
+            - mqtt:mqtt
+            - amqp:amqp
+            - smtp4dev:smtp4dev
+            - opcua:opcua
+        command:
+            - /usr/bin/wait-for-it
+            - --host=database
+            - --port=3306
+            - --timeout=30
+            - --strict
+            - --
+            - /usr/local/tomcat/bin/catalina.sh
+            - jpda
+            - run
+    mqtt:
+        image: hivemq/hivemq4:latest
+        environment:
+            HIVEMQ_DEFAULT_USER: "admin"
+            HIVEMQ_DEFAULT_PASS: "hivemq"
+        ports: 
+            - "8081:8080"
+            - "1883:1883"
+        expose: ["8081", "1883"]
+    amqp:
+        image: library/rabbitmq:management
+        environment:
+            RABBITMQ_DEFAULT_USER: "admin"
+            RABBITMQ_DEFAULT_PASS: "rabbitmq"
+            RABBITMQ_DEFAULT_VHOST: "/"
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+        expose: ["15672", "5672"]
+    smtp4dev:
+        image: rnwood/smtp4dev:latest
+        ports:
+            - '5000:80'
+            - '25:25'
+            - '143:143'
+        expose: ["5000", "25", "143"]
+    opcua:
+        #Server OPC UA doc: https://learn.microsoft.com/en-us/samples/azure-samples/iot-edge-opc-plc/azure-iot-sample-opc-ua-server/
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+            - 4840:50000
+            - 8082:8080
+        expose: ["4840", "8082"]
+        command: "--autoaccept --nodesfile /opt/nodesfile.json --sph --csr --adminuser admin --adminpassword admin --disableanonymousauth --disablecertauth"
+        volumes:
+            - ./config:/opt
+            - ./security:/app/pki
+

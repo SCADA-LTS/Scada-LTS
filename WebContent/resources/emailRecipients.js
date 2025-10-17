@@ -107,10 +107,15 @@ mango.erecip.EmailRecipients = function(prefix, testEmailMessage, mailingLists, 
 
     this.sendTestEmailCB = function(response) {
         stopImageFader($(this.prefix +"SendTestImg"));
-        if (response.messages.length > 0)
-            this.setErrorMessage(response.messages[0]);
-        else
+        if (response.messages.length > 0) {
+            if(response.messages[0].genericMessage) {
+                this.setErrorMessage(response.messages[0].genericMessage);
+            } else {
+                this.setErrorMessage(response.messages[0]);
+            }
+        } else {
             this.setErrorMessage(mango.i18n["js.email.testSent"]);
+        }
     }
 
     this.deleteRecipient = function(id) {

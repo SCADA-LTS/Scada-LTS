@@ -1,7 +1,5 @@
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +35,11 @@ public class EventDetectorAPI {
 
     private static final Log LOG = LogFactory.getLog(EventDetectorAPI.class);
 
-    @Resource
-    private DataPointService dataPointService;
+    private final DataPointService dataPointService;
+
+    public EventDetectorAPI(DataPointService dataPointService) {
+        this.dataPointService = dataPointService;
+    }
 
     @GetMapping(value = "/getAll/id/{datapointId}", produces = "application/json")
     public ResponseEntity<List<PointEventDetectorVO>> getEventDetectorsById(@PathVariable int datapointId, HttpServletRequest request) {
@@ -47,7 +47,10 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(dataPointService.getEventDetectors(dataPointService.getDataPoint(datapointId)), HttpStatus.OK);
+                DataPointVO dataPoint = dataPointService.getDataPoint(datapointId);
+                if(dataPoint == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(dataPointService.getEventDetectors(dataPoint), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -62,7 +65,10 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(dataPointService.getEventDetectors(dataPointService.getDataPointByXid(datapointXid)), HttpStatus.OK);
+                DataPointVO dataPoint = dataPointService.getDataPointByXid(datapointXid);
+                if(dataPoint == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(dataPointService.getEventDetectors(dataPoint), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -82,28 +88,24 @@ public class EventDetectorAPI {
     }
 
     @DeleteMapping(value = "/delete/{datapointId}/{id}", produces = "application/json")
-    public ResponseEntity<String> deleteEventDetectorById(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> deleteEventDetectorById(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request) {
         LOG.info("/api/eventDetector/delete/" + datapointId + "/" + id);
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
+                if(dataPointVO == null)
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+                PointEventDetectorVO pointEventDetectorVO = peds.stream().filter(a -> a.getId() == id).findAny().orElse(null);
                 if (!peds.isEmpty())  {
                     peds.removeIf(ped -> ped.getId() == id);
                 }
-                dataPointService.deleteEventDetector(dataPointVO, id);
+                dataPointService.deleteEventDetector(dataPointVO, pointEventDetectorVO);
                 Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 Map<String, String> response = new HashMap<>();
                 response.put("status", "deleted");
-                ObjectMapper m = new ObjectMapper();
-                try {
-                    String json = m.writeValueAsString(response);
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -199,7 +201,7 @@ public class EventDetectorAPI {
     private ResponseEntity<String> updateEventDetector(EventDetectorDTO eventDetectorBody, DataPointVO dataPoint,
                                                        PointEventDetectorVO toUpdate) {
         updateValueEventDetector(toUpdate, eventDetectorBody);
-        dataPointService.updateEventDetectorWithType(toUpdate);
+        dataPointService.updateEventDetectorWithType(dataPoint, toUpdate);
         Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
         return new ResponseEntity<>("update", HttpStatus.OK);
     }

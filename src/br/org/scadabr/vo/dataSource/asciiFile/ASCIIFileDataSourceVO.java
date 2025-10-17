@@ -39,7 +39,9 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 		eventTypes.add(createEventType(
 				ASCIIFileDataSource.DATA_SOURCE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
-
+		eventTypes.add(createEventType(
+				ASCIIFileDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 	}
 
 	private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -48,6 +50,8 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 				"DATA_SOURCE_EXCEPTION");
 		EVENT_CODES.addElement(ASCIIFileDataSource.POINT_READ_EXCEPTION_EVENT,
 				"POINT_READ_EXCEPTION");
+		EVENT_CODES.addElement(ASCIIFileDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 	}
 
 	@Override
@@ -74,8 +78,7 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.filePath);
 	}
 
 	@Override

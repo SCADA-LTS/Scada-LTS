@@ -35,24 +35,24 @@
     <table>
       <tbody id="graphicRenderer_analogGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererAnalogMin" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.max"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.max"/></td>
           <td class="formField"><input id="graphicRendererAnalogMax" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererAnalogDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererAnalogImageSet" onchange="graphicRendererEditor.updateSampleImageSet(this)">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select><br/>
             <img id="graphicRendererAnalogImageSetSample"/>
@@ -62,29 +62,29 @@
       
       <tbody id="graphicRenderer_binaryGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererBinaryDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererBinaryImageSet" onchange="graphicRendererEditor.displayBinaryImages($get(this));">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.zero"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.zero"/></td>
           <td class="formField">
             <div id="graphicRendererBinaryImageSetZero" style="width:200px; overflow:auto; white-space:nowrap;"></div>
             <input type="hidden" id="graphicRendererBinaryImageSetZeroMsg"/>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.one"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.one"/></td>
           <td class="formField">
             <div id="graphicRendererBinaryImageSetOne" style="width:200px; overflow:auto; white-space:nowrap;"></div>
             <input type="hidden" id="graphicRendererBinaryImageSetOneMsg"/>
@@ -94,19 +94,19 @@
       
       <tbody id="graphicRenderer_dynamicGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.min"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.min"/></td>
           <td class="formField"><input id="graphicRendererDynamicMin" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.max"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.max"/></td>
           <td class="formField"><input id="graphicRendererDynamicMax" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererDynamicDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.dynamicImage"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.dynamicImage"/></td>
           <td>
             <select id="graphicRendererDynamicImage" onchange="graphicRendererEditor.updateSampleDynamicImage(this)">
               <option value=""></option>
@@ -121,22 +121,22 @@
       
       <tbody id="graphicRenderer_multistateGraphic" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayText"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayText"/></td>
           <td class="formField"><input id="graphicRendererMultistateDisplayText" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.imageSet"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.imageSet"/></td>
           <td>
             <select id="graphicRendererMultistateImageSet" onchange="graphicRendererEditor.displayMultistateImages($get(this));">
               <option value=""></option>
               <c:forEach items="${imageSets}" var="imageSet">
-                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <fmt:message key="viewEdit.graphic.images"/>)</option>
+                <option value="${imageSet.id}">${imageSet.name} (${imageSet.imageCount} <spring:message code="viewEdit.graphic.images"/>)</option>
               </c:forEach>
             </select>
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.state"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.state"/></td>
           <td class="formField" id="graphicRendererMultistateImageSetList">
           </td>
         </tr>
@@ -145,48 +145,48 @@
       <tbody id="graphicRenderer_script" style="display:none;">
         <tr>
           <td colspan="2">
-            <span class="formLabelRequired"><fmt:message key="viewEdit.graphic.script"/></span><br/>
+            <span class="formLabelRequired"><spring:message code="viewEdit.graphic.script"/></span><br/>
             <span class="formField"><textarea id="graphicRendererScriptScript" rows="10" cols="50"></textarea></span>
           </td>
         </tr>
       </tbody>
       
       <tbody id="graphicRenderer_simpleImage" style="display:none;">
-        <tr><td class="formLabelRequired"><fmt:message key="viewEdit.graphic.noConfig"/></td></tr>
+        <tr><td class="formLabelRequired"><spring:message code="viewEdit.graphic.noConfig"/></td></tr>
       </tbody>
       
       <tbody id="graphicRenderer_simple" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.displayPointName"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.displayPointName"/></td>
           <td class="formField"><input id="graphicRendererSimpleDisplayPointName" type="checkbox"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.styleAttribute"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.styleAttribute"/></td>
           <td class="formField"><input id="graphicRendererSimpleStyleAttribute" type="text"/></td>
         </tr>
       </tbody>
       
       <tbody id="graphicRenderer_thumbnailImage" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.scale"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.scale"/></td>
           <td class="formField"><input id="graphicRendererThumbnailScalePercent" type="text"/></td>
         </tr>
       </tbody>
       <tbody id="graphicRenderer_button" style="display:none;">
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.whenOnLabel"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.whenOnLabel"/></td>
           <td class="formField"><input id="graphicRendererButtonWhenOnLabel" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.whenOffLabel"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.whenOffLabel"/></td>
           <td class="formField"><input id="graphicRendererButtonWhenOffLabel" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.height"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.height"/></td>
           <td class="formField"><input id="graphicRendererButtonHeight" type="text"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="viewEdit.graphic.width"/></td>
+          <td class="formLabelRequired"><spring:message code="viewEdit.graphic.width"/></td>
           <td class="formField"><input id="graphicRendererButtonWidth" type="text"/></td>
         </tr>
         
@@ -196,6 +196,7 @@
   </td></tr></table>
   
   <script type="text/javascript">
+      var viewId = mango.longPoll.pollRequest.viewId;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -217,7 +218,7 @@
             graphicRendererEditor.componentId = compId;
             
             // Set the renderers for the data type of this point view.
-            ViewDwr.getViewComponent(compId, graphicRendererEditor.setViewComponent);
+            ViewDwr.getViewComponent(compId, viewId, graphicRendererEditor.setViewComponent);
         };
 
         this.setViewComponent = function(comp) {
@@ -255,14 +256,22 @@
                 $set("graphicRendererBinaryDisplayText", comp.displayText);
                 $set("graphicRendererBinaryImageSet", comp.imageSetId);
                 graphicRendererEditor.displayBinaryImages(comp.imageSetId);
-                graphicRendererEditor.setZeroImage(comp.zeroImage);
-                graphicRendererEditor.setOneImage(comp.oneImage);
+                var imageSet = graphicRendererEditor.findImageSet(comp.imageSetId);
+                if(imageSet) {
+                    graphicRendererEditor.setZeroImage(comp.zeroImage);
+                    graphicRendererEditor.setOneImage(comp.oneImage);
+                }
             }
             else if (comp.typeName == "dynamicGraphic") {
                 $set("graphicRendererDynamicMin", comp.min);
                 $set("graphicRendererDynamicMax", comp.max);
                 $set("graphicRendererDynamicDisplayText", comp.displayText);
-                $set("graphicRendererDynamicImage", comp.dynamicImageId);
+                var dynamicImage = graphicRendererEditor.findDynamicImage(comp.dynamicImageId);
+                if(dynamicImage) {
+                    $set("graphicRendererDynamicImage", comp.dynamicImageId);
+                } else {
+                    $set("graphicRendererDynamicImage");
+                }
             }
             else if (comp.typeName == "multistateGraphic") {
                 $set("graphicRendererMultistateDisplayText", comp.displayText);
@@ -308,15 +317,15 @@
             if (graphicRendererEditor.typeName == "analogGraphic")
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
-                        $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererAnalogImageSet"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "binaryGraphic")
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
-                        $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererBinaryImageSet"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "dynamicGraphic")
                 ViewDwr.saveDynamicGraphicComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
-                        $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
+                        $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"), viewId,
                         graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "multistateGraphic") {
                 var imageSet = $get("graphicRendererMultistateImageSet");
@@ -333,22 +342,22 @@
                 
                 ViewDwr.saveMultistateGraphicComponent(graphicRendererEditor.componentId, imageStates,
                         $get("graphicRendererMultistateDefault"), $get("graphicRendererMultistateDisplayText"),
-                        imageSet, graphicRendererEditor.saveCB);
+                        imageSet, viewId, graphicRendererEditor.saveCB);
             }
             else if (graphicRendererEditor.typeName == "script")
-                ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"),
+                ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"), viewId,
                         graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "simple")
                 ViewDwr.saveSimplePointComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererSimpleDisplayPointName"), 
-                        $get("graphicRendererSimpleStyleAttribute"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererSimpleStyleAttribute"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "thumbnailImage")
                 ViewDwr.saveThumbnailComponent(graphicRendererEditor.componentId,
-                        $get("graphicRendererThumbnailScalePercent"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererThumbnailScalePercent"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "button") {
             	ViewDwr.saveButtonComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererButtonWhenOnLabel"), $get("graphicRendererButtonWhenOffLabel"),$get("graphicRendererButtonWidth"),
-                        $get("graphicRendererButtonHeight"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererButtonHeight"), viewId, graphicRendererEditor.saveCB);
             }
             else
                 graphicRendererEditor.close();
@@ -397,9 +406,9 @@
                 var html = "\
                     <table>\
                       <tr>\
-                        <th><fmt:message key="viewEdit.graphic.image"/></th>\
-                        <th><fmt:message key="viewEdit.graphic.stateList"/></th>\
-                        <th><fmt:message key="viewEdit.graphic.default"/></th>\
+                        <th><spring:message code="viewEdit.graphic.image"/></th>\
+                        <th><spring:message code="viewEdit.graphic.stateList"/></th>\
+                        <th><spring:message code="viewEdit.graphic.default"/></th>\
                       </tr>";
 
                 for (var i=0; i<imageSet.imageFilenames.length; i++) {
@@ -427,19 +436,29 @@
         
         this.setZeroImage = function(imageId) {
             var image;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "0";
+            var exists = imageId != -1;
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.zeroImage = imageId;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId)
-                $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "2";
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         this.setOneImage = function(imageId) {
             var image;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "0";
+            var exists = imageId != -1;
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "transparent";
+            }
             graphicRendererEditor.oneImage = imageId;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId)
-                $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "2";
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists) {
+                var elementId = "graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage;
+                $(elementId).style.backgroundColor = "grey";
+            }
         };
         
         this.updateSampleImageSet = function(selectComp) {

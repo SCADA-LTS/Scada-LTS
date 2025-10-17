@@ -21,7 +21,7 @@
 
 <html>
 <head>
-  <title><fmt:message key="header.title"/></title>
+  <title><spring:message code="header.title"/></title>
   
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
@@ -31,6 +31,7 @@
   <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 
   <!-- Script -->
+  <script src="resources/fuscabr/fuscabr.js" defer></script>
   <script type="text/javascript">var djConfig = { isDebug: true };</script>
   <!--<script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script> -->
   <script type="text/javascript" src="resources/dojo/dojo.js"></script>

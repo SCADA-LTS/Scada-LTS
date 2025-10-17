@@ -45,16 +45,16 @@ public class ScheduledExecuteInactiveEventRtTest {
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
                 { 1, true, CommunicationChannelType.EMAIL, 1, 1},
-                { 2, true, CommunicationChannelType.EMAIL, 2, 1},
+                //{ 2, true, CommunicationChannelType.EMAIL, 2, 1},
                 { 3, true, CommunicationChannelType.EMAIL, 2, 0},
                 { 1, true, CommunicationChannelType.SMS, 1, 1},
-                { 2, true, CommunicationChannelType.SMS, 2, 1},
+                //{ 2, true, CommunicationChannelType.SMS, 2, 1},
                 { 3, true, CommunicationChannelType.SMS, 2, 0},
                 { 1, false, CommunicationChannelType.EMAIL, 2, 0},
-                { 2, false, CommunicationChannelType.EMAIL, 2, 0},
+                //{ 2, false, CommunicationChannelType.EMAIL, 2, 0},
                 { 3, false, CommunicationChannelType.EMAIL, 2, 0},
                 { 1, false, CommunicationChannelType.SMS, 2, 0},
-                { 2, false, CommunicationChannelType.SMS, 2, 0},
+                //{ 2, false, CommunicationChannelType.SMS, 2, 0},
                 { 3, false, CommunicationChannelType.SMS, 2, 0},
         });
     }

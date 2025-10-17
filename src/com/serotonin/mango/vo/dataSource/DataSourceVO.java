@@ -28,11 +28,12 @@ import br.org.scadabr.vo.dataSource.iec101.IEC101EthernetDataSourceVO;
 import br.org.scadabr.vo.dataSource.iec101.IEC101SerialDataSourceVO;
 import br.org.scadabr.vo.dataSource.nodaves7.NodaveS7DataSourceVO;
 import br.org.scadabr.vo.dataSource.opc.OPCDataSourceVO;
+import com.serotonin.mango.vo.GetExtendedName;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -40,6 +41,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.ScadaValidation;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -67,18 +69,27 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.DataSourceIdentifier;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
+import org.scada_lts.mango.service.DataSourceService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
+import static org.scada_lts.utils.XidUtils.validateXid;
+
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation, GetExtendedName {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -296,6 +307,24 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 				return new RadiuinoDataSourceVO();
 			}
+		},
+		AMQP(45, "dsEdit.amqp", true) {
+		 	@Override
+			public DataSourceVO<?> createDataSourceVO() {
+		 		return new AmqpDataSourceVO();
+			}
+		},
+		MQTT(47, "dsEdit.mqtt", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new MqttDataSourceVO();
+			}
+		},
+		OPC_UA(48, "dsEdit.opcua", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new OpcUaDataSourceVO();
+			}
 		};
 
 		private Type(int id, String key, boolean display) {
@@ -345,6 +374,8 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			return result;
 		}
 	}
+
+	private static final Log LOG = LogFactory.getLog(DataSourceVO.class);
 
 	public static final String XID_PREFIX = "DS_";
 
@@ -425,6 +456,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -442,6 +474,10 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		if (level == null)
 			return defaultLevel;
 		return level;
+	}
+
+	public Integer getAlarmLevel(int eventId) {
+		return alarmLevels.get(eventId);
 	}
 
 	public EventTypeVO getEventType(int eventId) {
@@ -466,13 +502,19 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 				duplicateHandling);
 	}
 
+	@Override
 	public void validate(DwrResponseI18n response) {
-		if (StringUtils.isEmpty(xid))
-			response.addContextualMessage("xid", "validate.required");
-		else if (!new DataSourceDao().isXidUnique(xid, id))
-			response.addContextualMessage("xid", "validate.xidUsed");
-		else if (StringUtils.isLengthGreaterThan(xid, 50))
-			response.addContextualMessage("xid", "validate.notLongerThan", 50);
+		validate(response, id);
+	}
+
+	@Override
+	public void validateForCreate(DwrResponseI18n response) {
+		validate(response, -1);
+	}
+
+	private void validate(DwrResponseI18n response, int id) {
+		DataSourceService dataSourceService = new DataSourceService();
+		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
 
 		if (StringUtils.isEmpty(name))
 			response.addContextualMessage("dataSourceName",
@@ -488,11 +530,26 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	}
 
 	public DataSourceVO<?> copy() {
+		DataSourceVO<?> dataSource;
 		try {
-			return (DataSourceVO<?>) super.clone();
+			dataSource = (DataSourceVO<?>) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new ShouldNeverHappenException(e);
 		}
+		dataSource.alarmLevels = new HashMap<>(alarmLevels);
+		dataSource.resetListeners();
+		if(state != null) {
+			try {
+				Constructor<? extends IStateDs> constructor = state.getClass().getConstructor();
+				if(constructor != null) {
+					IStateDs newState = constructor.newInstance();
+					dataSource.setState(newState);
+				}
+			} catch (Exception e) {
+				LOG.warn(e.getMessage(), e);
+			}
+		}
+		return dataSource;
 	}
 
 	@Override
@@ -505,7 +562,6 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		AuditEventType.addPropertyMessage(list, "dsEdit.head.name", name);
 		AuditEventType.addPropertyMessage(list, "common.xid", xid);
 		AuditEventType.addPropertyMessage(list, "common.enabled", enabled);
-		AuditEventType.addPropertyMessage(list, "common.state", state);
 
 
 		addPropertiesImpl(list);
@@ -519,8 +575,6 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 				from.getXid(), xid);
 		AuditEventType.maybeAddPropertyChangeMessage(list, "common.enabled",
 				from.isEnabled(), enabled);
-
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.describeStatus", from.getState(), state);
 
 		addPropertyChangesImpl(list, from);
 	}
@@ -642,4 +696,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return value;
 	}
 
+	public DataSourceIdentifier toIdentifier() {
+		return new DataSourceIdentifier(getId(), getXid(), getName(), getType(), isEnabled());
+	}
 }

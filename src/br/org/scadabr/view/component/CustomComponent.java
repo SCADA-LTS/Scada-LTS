@@ -6,6 +6,14 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 abstract public class CustomComponent extends ViewComponent {
 
+	private static final long serialVersionUID = -3945956862776589874L;
+
+	protected CustomComponent() {}
+
+	protected CustomComponent(CustomComponent customComponent) {
+		super(customComponent);
+	}
+
 	abstract public String generateContent();
 
 	abstract public String generateInfoContent();
@@ -42,4 +50,8 @@ abstract public class CustomComponent extends ViewComponent {
 
 	}
 
+	@Override
+	public String toString() {
+		return "CustomComponent{} " + super.toString();
+	}
 }

@@ -1,0 +1,41 @@
+/* place for custom CSS styles for Scada-LTS */
+
+/* **** GRAPHICAL VIEWS **** */
+/* To make sure that styles do not override
+ *   the other components in the application
+ *   try to define your own class prefix or to use
+ *   #viewContainer > #viewContent prefix before
+ *   style definition to make that style specificity
+ *   values more relevant.
+ */
+
+/*  **** Example ****
+ * #viewContainer > #viewContent .slts-btn {
+ *  font-size: 1.5em;
+ * }
+ */
+
+/* ----- Custom information stylesheet ----- */
+#top-description-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+#top-description-prefix {
+    color: black !important;
+    font-size: 2em !important;
+    margin-left: 0.5em !important;
+    margin-right: 0.5em !important;
+    display: inline-block !important;
+    vertical-align: bottom !important;
+    line-height: 1 !important;
+}
+
+#top-description {
+    color: #39B54A !important;
+    font-size: 2em !important;
+    display: inline-block !important;
+    vertical-align: bottom !important;
+    line-height: 1 !important;
+}

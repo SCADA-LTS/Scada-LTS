@@ -47,15 +47,15 @@
                 var i, j;
                 for (i=0; i<data.users.length; i++) {
                     appendUser(data.users[i].id);
-                    updateUser(data.users[i]);
+                    updateUser({user: data.users[i]});
                 }
 
                 var usersProfileHtml = "", userProfileId, userProfileName;
-                usersProfileHtml += "<option value=" + <c:out value="<%= Common.NEW_ID %>"/> + ">"+ "<fmt:message key="userProfiles.none"/>" + "</option>";
+                usersProfileHtml += "<option value=" + <c:out value="<%= Common.NEW_ID %>"/> + ">"+ "<spring:message code="userProfiles.none"/>" + "</option>";
                 
                 for (k=0; k<data.usersProfiles.length; k++) {
                 	userProfileId = data.usersProfiles[k].id;
-                	userProfileName = data.usersProfiles[k].name;
+                	userProfileName = <c:out value="data.usersProfiles[k].name"/>;
                 	usersProfileHtml += "<option value=" + userProfileId + ">"+ userProfileName + "</option>";
                 }
                 $("usersProfilesList").innerHTML = usersProfileHtml;
@@ -66,22 +66,22 @@
                 for (i=0; i<dataSources.length; i++) {
                     id = "ds"+ dataSources[i].id;
                     dshtml += '<input type="checkbox" id="'+ id +'" onclick="dataSourceChange(this)">';
-                    dshtml += '<label for="'+ id +'"> '+ dataSources[i].name +'</label><br/>';
+                    dshtml += '<label for="'+ id +'"> '+ escapeHtml(dataSources[i].name) +'</label><br/>';
                     dshtml += '<div style="margin-left:25px;" id="dsps'+ dataSources[i].id +'">';
                     if (dataSources[i].points.length > 0) {
                         dshtml +=   '<table cellspacing="0" cellpadding="1">';
                         for (j=0; j<dataSources[i].points.length; j++) {
                             dp = dataSources[i].points[j];
                             dshtml += '<tr>';
-                            dshtml +=   '<td class="formLabelRequired">'+ dp.name +'</td>';
+                            dshtml +=   '<td class="formLabelRequired">'+ escapeHtml(dp.name) +'</td>';
                             dshtml +=   '<td>';
                             dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/0" value="0">';
-                            dshtml +=             '<label for="dp'+ dp.id +'/0"><fmt:message key="common.access.none"/></label> ';
+                            dshtml +=             '<label for="dp'+ dp.id +'/0"><spring:message code="common.access.none"/></label> ';
                             dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/1" value="1">';
-                            dshtml +=             '<label for="dp'+ dp.id +'/1"><fmt:message key="common.access.read"/></label> ';
+                            dshtml +=             '<label for="dp'+ dp.id +'/1"><spring:message code="common.access.read"/></label> ';
                             if (dp.settable) {
                                 dshtml +=     '<input type="radio" name="dp'+ dp.id +'" id="dp'+ dp.id +'/2" value="2">';
-                                dshtml +=             '<label for="dp'+ dp.id +'/2"><fmt:message key="common.access.set"/></label>';
+                                dshtml +=             '<label for="dp'+ dp.id +'/2"><spring:message code="common.access.set"/></label>';
                             }
                             dshtml +=   '</td>';
                             dshtml += '</tr>';
@@ -97,14 +97,19 @@
                 // Not an admin user.
                 adminUser = false;
                 editingUserId = data.user.id;
-                showUserCB(data.user);
+                showUserCB(data);
                 hide("usersProfilesListTable");
             }
         });
     }
     
     function showUser(userId, hideMsg) {
-    	
+
+    	if (userId == -1)
+    	    hide($('deleteImg'));
+    	else
+    	    show($('deleteImg'));
+
     	if (hideMsg)
             setUserMessage();
     	
@@ -117,10 +122,28 @@
     	
     }
     
-    function showUserCB(user) {
-
+    function showUserCB(response) {
+        var user = response.data ? response.data.user : response.user;
+        var forceFullScreenMode = response.data ? response.data.forceFullScreenMode : response.forceFullScreenMode;
+        var forceHideShortcutDisableFulLScreen = response.data ? response.data.forceHideShortcutDisableFulLScreen : response.forceHideShortcutDisableFulLScreen;
         show($("userDetails"));
+        if(forceFullScreenMode) {
+            document.getElementById("enableFullScreen").disabled = true;
+            document.getElementById("enableFullScreen").title = '<spring:message code="user.view.forceAdminTitle"/>';
+        } else {
+            document.getElementById("enableFullScreen").disabled = false;
+            document.getElementById("enableFullScreen").title = '<spring:message code="user.view.enableFullScreen"/>';
+        }
+        if(forceHideShortcutDisableFulLScreen) {
+            document.getElementById("hideShortcutDisableFullScreen").disabled = true;
+            document.getElementById("hideShortcutDisableFullScreen").title = '<spring:message code="user.view.forceAdminTitle"/>';
+        } else {
+            document.getElementById("hideShortcutDisableFullScreen").disabled = false;
+            document.getElementById("hideShortcutDisableFullScreen").title = '<spring:message code="user.view.hideShortcutDisableFullScreen"/>';
+        }
         $set("username", user.username);
+        $set("firstName", user.firstName);
+        $set("lastName", user.lastName);
         $set("password", user.password);
         $set("email", user.email);
         $set("phone", user.phone);
@@ -131,8 +154,10 @@
         $set("hideMenu", user.hideMenu);
         $set("homeUrl", user.homeUrl);
         $set("theme", user.theme);
+        $set("hideShortcutDisableFullScreen", user.hideShortcutDisableFullScreen);
+    	$set("enableFullScreen", user.enableFullScreen);
 
-    	
+
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
         	 $set("usersProfilesList", user.userProfile);
         	 //console.log("User profile: " + user.userProfile);
@@ -231,15 +256,15 @@
                 }
             }
             
-            UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
+            UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
-                    saveUserCB);
+                    $get("enableFullScreen"), $get("hideShortcutDisableFullScreen"), saveUserCB);
         }
         else
-            UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
+            UsersDwr.saveUser(editingUserId, $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
-                    $get("theme"), saveUserCB);
+                    $get("theme"), $get("enableFullScreen"), $get("hideShortcutDisableFullScreen"), saveUserCB);
      
     }
     
@@ -248,19 +273,19 @@
         if (response.hasMessages)
             showDwrMessages(response.messages, "genericMessages");
         else if (!adminUser)
-            setUserMessage("<fmt:message key="users.dataSaved"/>");
+            setUserMessage("<spring:message code="users.dataSaved"/>");
         else {
             if (editingUserId == <c:out value="<%= Common.NEW_ID %>"/>) {
                 stopImageFader($("u"+ editingUserId +"Img"));
                 editingUserId = response.data.userId;
                 appendUser(editingUserId);
                 startImageFader($("u"+ editingUserId +"Img"));
-                setUserMessage("<fmt:message key="users.added"/>");
+                setUserMessage("<spring:message code="users.added"/>");
                 UsersDwr.getUser(editingUserId, updateUser);
 	            showUser(editingUserId, false);
             }
             else {
-	                setUserMessage("<fmt:message key="users.saved"/>");
+	                setUserMessage("<spring:message code="users.saved"/>");
 		            UsersDwr.getUser(editingUserId, updateUser);
 		            showUser(editingUserId, false);
                 }
@@ -296,8 +321,9 @@
         createFromTemplate("u_TEMPLATE_", userId, "usersTable");
     }
     
-    function updateUser(user) {
-        $("u"+ user.id +"Username").innerHTML = user.username;
+    function updateUser(response) {
+        var user = response.data ? response.data.user : response.user;
+        $("u"+ user.id +"Username").textContent = user.username;
         setUserImg(user.admin, user.disabled, $("u"+ user.id +"Img"));
     }
     
@@ -327,7 +353,7 @@
     }
     
     function deleteUser() {
-        if (confirm("<sst:i18n key="users.deleteConfirm" escapeDQuotes="true"/>")) {
+        if (confirm("<spring:message code="users.deleteConfirm" />")) {
         	var userId = editingUserId;
             startImageFader("deleteImg");
             UsersDwr.deleteUser(userId, function(response) {
@@ -360,7 +386,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="users.title"/></span>
+                <span class="smallTitle"><spring:message code="users.title"/></span>
                 <tag:help id="userAdministration"/>
               </td>
               <td align="right"><tag:img png="user_add" onclick="showUser(${applicationScope['constants.Common.NEW_ID']}, false)"
@@ -382,7 +408,7 @@
             <tr>
               <td>
                 <span class="smallTitle"><tag:img id="userImg" png="user_green" title="users.user"/>
-                <fmt:message key="users.details"/></span>
+                <spring:message code="users.details"/></span>
               </td>
               <td align="right">
                 <tag:img id="saveImg" png="save" onclick="saveUser();" title="common.save"/>
@@ -400,61 +426,78 @@
               <td colspan="2" id="userMessage" class="formError"></td>
             </tr>
             <tr id="usernameRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="users.username"/></td>
+              <td class="formLabelRequired"><spring:message code="users.username"/></td>
               <td class="formField"><input id="username" type="text"/></td>
             </tr>
+            <tr id="firstNameRow">
+              <td class="formLabelRequired"><spring:message code="users.firstName"/></td>
+              <td class="formField"><input id="firstName" type="text"/></td>
+            </tr>
+            <tr id="lastNameRow">
+              <td class="formLabelRequired"><spring:message code="users.lastName"/></td>
+              <td class="formField"><input id="lastName" type="text"/></td>
+            </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.newPassword"/></td>
+              <td class="formLabelRequired"><spring:message code="users.newPassword"/></td>
               <td class="formField"><input id="password" type="text"/></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.email"/></td>
+              <td class="formLabelRequired"><spring:message code="users.email"/></td>
               <td class="formField"><input id="email" type="text" class="formLong"/></td>
             </tr>
             <tr>
-              <td class="formLabel"><fmt:message key="users.phone"/></td>
+              <td class="formLabel"><spring:message code="users.phone"/></td>
               <td class="formField"><input id="phone" type="text"/></td>
             </tr>
             <tr id="administrationRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="common.administrator"/></td>
+              <td class="formLabelRequired"><spring:message code="common.administrator"/></td>
               <td class="formField"><input id="administrator" type="checkbox" onclick="updateUserImg();"/></td>
             </tr>
             <tr id="disabledRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
+              <td class="formLabelRequired"><spring:message code="common.disabled"/></td>
               <td class="formField"><input id="disabled" type="checkbox" onclick="updateUserImg();"/></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.receiveAlarmEmails"/></td>
+              <td class="formLabelRequired"><spring:message code="users.receiveAlarmEmails"/></td>
               <td class="formField"><select id="receiveAlarmEmails"><tag:alarmLevelOptions/></select></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
+              <td class="formLabelRequired"><spring:message code="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
             </tr>
             <tr id="hideMenuRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="users.hideMenu"/></td>
+              <td class="formLabelRequired"><spring:message code="users.hideMenu"/></td>
               <td class="formField"><input id="hideMenu" type="checkbox"/></td>
             </tr>
             <tr id="homeUrlRow" style="display:none;">
-              <td class="formLabel"><fmt:message key="users.homeUrl"/></td>
+              <td class="formLabel"><spring:message code="users.homeUrl"/></td>
               <td class="formField"><input id="homeUrl" type="text"/></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.theme"/></td>
+              <td class="formLabelRequired"><spring:message code="users.theme"/></td>
               <td class="formField"><select id="theme"><tag:ScadaThemeOptions/></select></td>
             </tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>
-              <td class="formLabel"><fmt:message key="userProfiles.selectName"/></td>
+              <td class="formLabel"><spring:message code="userProfiles.selectName"/></td>
               <td class="formField"><select id="usersProfilesList" onchange="checkProfile()">
               </select></td>
+            </tr>
+            </tbody>
+            <tr>
+             <td class="formLabelRequired"><spring:message code="user.view.enableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="enableFullScreen" /></td>
+            </tr>
+            <tr>
+             <td class="formLabelRequired"><spring:message code="user.view.hideShortcutDisableFullScreen"/></td>
+             <td class="formField"><input type="checkbox" id="hideShortcutDisableFullScreen" /></td>
             </tr>
             </div>
             
             <tbody id="dataSources" style="display:none;">
               <tr><td class="horzSeparator" colspan="2"></td></tr>
               <tr id="dataSources">
-                <td class="formLabelRequired"><fmt:message key="users.dataSources"/></td>
+                <td class="formLabelRequired"><spring:message code="users.dataSources"/></td>
                 <td class="formField" id="dataSourceList"></td>
               </tr>
             </tbody>
@@ -462,5 +505,7 @@
         </div>
       </td>
     </tr>
+
+    <tag:newPageNotification href="./app.shtm#/users" ref="usersNotification"/>
   </table>
 </tag:page>

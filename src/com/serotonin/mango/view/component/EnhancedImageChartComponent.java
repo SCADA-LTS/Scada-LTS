@@ -3,10 +3,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -58,6 +55,15 @@ public class EnhancedImageChartComponent extends CompoundComponent {
 
     public EnhancedImageChartComponent() {
         initialize();
+    }
+
+    private EnhancedImageChartComponent(EnhancedImageChartComponent enhancedImageChartComponent) {
+        super(enhancedImageChartComponent);
+        this.width = enhancedImageChartComponent.getWidth();
+        this.height = enhancedImageChartComponent.getHeight();
+        this.durationType = enhancedImageChartComponent.getDurationType();
+        this.durationPeriods = enhancedImageChartComponent.getDurationPeriods();
+        this.enhancedImageChartType = enhancedImageChartComponent.getEnhancedImageChartType();
     }
 
     @Override
@@ -151,6 +157,11 @@ public class EnhancedImageChartComponent extends CompoundComponent {
 
     public String generateImageChartData() {
         return generateImageChartData(false);
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new EnhancedImageChartComponent(this);
     }
 
     public String generateImageChartData(boolean getDataForStatic) {
@@ -272,4 +283,28 @@ public class EnhancedImageChartComponent extends CompoundComponent {
         map.put("durationType", Common.TIME_PERIOD_CODES.getCode(durationType));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EnhancedImageChartComponent)) return false;
+        if (!super.equals(o)) return false;
+        EnhancedImageChartComponent that = (EnhancedImageChartComponent) o;
+        return getWidth() == that.getWidth() && getHeight() == that.getHeight() && getDurationType() == that.getDurationType() && getDurationPeriods() == that.getDurationPeriods() && getEnhancedImageChartType() == that.getEnhancedImageChartType();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getWidth(), getHeight(), getDurationType(), getDurationPeriods(), getEnhancedImageChartType());
+    }
+
+    @Override
+    public String toString() {
+        return "EnhancedImageChartComponent{" +
+                "width=" + width +
+                ", height=" + height +
+                ", durationType=" + durationType +
+                ", durationPeriods=" + durationPeriods +
+                ", enhancedImageChartType=" + enhancedImageChartType +
+                "} " + super.toString();
+    }
 }

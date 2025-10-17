@@ -16,7 +16,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>
-  Internal data points can be created to monitor specific values that monitor the internal workings of ScadaBR.
-</p>
+  <body>
+  <h1>Overview</h1>
+
+  <p>Internal data points can be created to monitor specific values that monitor the internal workings of Scada-LTS.</p>
+
+  <h3>Point values to be written</h3>
+  <p>This attribute monitors the number of point values that are waiting to be written, reflecting the workload of the batch processing mechanism.</p>
+
+  <h3>Point value write threads</h3>
+  <p>This attribute indicates the threads handling the writing process of point values, providing insight into how the system distributes the batch write workload.</p>
+
+  <h3>High priority work items</h3>
+  <p>This attribute tracks high priority work items in the processing queue, allowing administrators to quickly identify and respond to critical processing delays.</p>
+
+  <h3>Medium priority work items</h3>
+  <p>This attribute reflects the work items with a medium priority level that are pending execution, helping to gauge the routine load on the system.</p>
+
+  <h3>Scheduled work items</h3>
+  <p>This attribute represents work items that are scheduled to run at specific intervals, ensuring that periodic tasks are executed in a timely manner.</p>
+
+  <h3>Maximum thread stack height</h3>
+  <p>This attribute shows the maximum depth of the thread stack, indicating the level of nested operations that could impact performance or reveal potential issues.</p>
+
+  <h3>Active thread count</h3>
+  <p> This attribute monitors the number of active threads, offering insights into the overall concurrency and load of the system.</p>
+
+  <p>For further details or configuration guidance, please refer to the system documentation or contact support.</p>
+  </body>

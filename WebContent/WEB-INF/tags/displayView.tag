@@ -19,15 +19,23 @@
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
+<script type="text/javascript">
+    dojo.addOnLoad(function() {
+        const viewBackground = document.getElementById("viewBackground");
+        if(viewBackground && !viewBackground.src.includes("spacer.gif")) {
+            loadDefaultSizeContainer('${view.backgroundFilename}','viewBackground');
+        }
+    })
+</script>
 <div id="viewContainer">
 <div id="viewContent" width="${view.width}" height="${view.height}">
   <c:choose>
-    <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
+    <c:when test="${empty view || view.id == -1}"><spring:message code="${emptyMessageKey}"/> <a href="view_edit.shtm"><spring:message code="views.noViews.prefix"/></a></c:when>
     <c:when test="${empty view.backgroundFilename}">
       <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
     </c:when>
     <c:otherwise>
-      <img id="viewBackground" src="${view.backgroundFilename}" alt=""/>
+      <img id="viewBackground" src="<c:out value="${view.backgroundFilename}"/>" alt=""/>
     </c:otherwise>
   </c:choose>
   
@@ -42,10 +50,10 @@
           <tag:pointComponent vc="${vc.leadComponent}"/>
           <c:choose>
             <c:when test="${empty vc.backgroundColour}"><c:set var="bkgd"></c:set></c:when>
-            <c:otherwise><c:set var="bkgd">background:${vc.backgroundColour};</c:set></c:otherwise>
+            <c:otherwise><c:set var="bkgd">background:<c:out value="${vc.backgroundColour}"/>;</c:set></c:otherwise>
           </c:choose>
           <div id="c${vc.id}Controls" class="controlContent" style="left:5px;top:5px;${bkgd}">
-            <b>${vc.name}</b><br/>
+            <b><c:out value="${vc.name}"/></b><br/>
             <c:forEach items="${vc.childComponents}" var="child">
               <c:if test="${child.viewComponent.visible && child.viewComponent.id != vc.leadComponent.id}">
                 <tag:pointComponent vc="${child.viewComponent}"/>
@@ -57,7 +65,7 @@
       
       <c:when test="${vc.defName == 'imageChart'}">
         <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;z-index:${vc.z};"
-                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}, ${vc.z}');">
+                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}', ${vc.z});">
           <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
           <div id="c${vc.id}Controls" class="controlContent">
             <div id="c${vc.id}Info">
@@ -88,9 +96,9 @@
 			<c:forEach var="childComponent" items="${vc.childComponents}">
 				<c:if test="${not empty childComponent.viewComponent.extendedName}">
 					pointProps.push({
-						pointName: "${childComponent.viewComponent.extendedName}",
-	        			alias: "${childComponent.viewComponent.alias}",
-	        			color: "${childComponent.viewComponent.color}",
+						pointName: "<c:out value="${childComponent.viewComponent.extendedName}"/>",
+	        			alias: "<c:out value="${childComponent.viewComponent.alias}"/>",
+	        			color: "<c:out value="${childComponent.viewComponent.color}"/>",
 	        			strokeWidth: ${childComponent.viewComponent.strokeWidth},
 	        			lineType: "${childComponent.viewComponent.lineType}",
 	        			showPoints: ${childComponent.viewComponent.showPoints}

@@ -53,7 +53,7 @@ public class NumericValue extends MangoValue implements Comparable<NumericValue>
 
     @Override
     public String getStringValue() {
-        return null;
+        return String.valueOf(value);
     }
 
     @Override

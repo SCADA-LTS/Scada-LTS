@@ -18,12 +18,15 @@
  */
 package com.serotonin.mango.rt.event;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
@@ -95,6 +98,9 @@ public class EventInstance {
     private String acknowledgedByUsername;
     private int alternateAckSource;
 
+    private long assigneeTimestamp;
+    private String assigneeUsername;
+
     //
     //
     // These fields are used only in the context of access by a particular user, providing state filled in from
@@ -139,6 +145,12 @@ public class EventInstance {
         this.context = context;
     }
 
+    public static EventInstance emptySystemNoneEvent(int eventId) {
+        EventInstance eventInstance = new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
+        eventInstance.setId(eventId);
+        return eventInstance;
+    }
+
     public LocalizableMessage getRtnMessage() {
         LocalizableMessage rtnKey = null;
 
@@ -174,7 +186,15 @@ public class EventInstance {
                 return new LocalizableMessage("events.ackedByMaintenance");
         }
 
-        return null;
+        return new LocalizableMessage("event.auto.acknowledge");
+    }
+
+    public LocalizableMessage getAssigneeMessage() {
+        if (isAssignee()) {
+            if (!StringUtils.isEmpty(assigneeUsername))
+                return new LocalizableMessage("events.assigneeByUser", assigneeUsername);
+        }
+        return new LocalizableMessage("common.noMessage");
     }
 
     public LocalizableMessage getExportAckMessage() {
@@ -187,7 +207,7 @@ public class EventInstance {
                 return new LocalizableMessage("events.export.ackedByMaintenance");
         }
 
-        return null;
+        return new LocalizableMessage("event.auto.acknowledge");
     }
 
     public String getPrettyActiveTimestamp() {
@@ -236,6 +256,10 @@ public class EventInstance {
 
     public boolean isAcknowledged() {
         return acknowledgedTimestamp > 0;
+    }
+
+    public boolean isAssignee() {
+        return assigneeTimestamp > 0;
     }
 
     public long getActiveTimestamp() {
@@ -342,36 +366,32 @@ public class EventInstance {
         this.alternateAckSource = alternateAckSource;
     }
 
+    public long getAssigneeTimestamp() {
+        return assigneeTimestamp;
+    }
+
+    public void setAssigneeTimestamp(long assigneeTimestamp) {
+        this.assigneeTimestamp = assigneeTimestamp;
+    }
+
+    public String getAssigneeUsername() {
+        return assigneeUsername;
+    }
+
+    public void setAssigneeUsername(String assigneeUsername) {
+        this.assigneeUsername = assigneeUsername;
+    }
+
     public Map<String, Object> getContext() {
         return context;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + acknowledgedByUserId;
-		result = prime * result + ((acknowledgedByUsername == null) ? 0 : acknowledgedByUsername.hashCode());
-		result = prime * result + (int) (acknowledgedTimestamp ^ (acknowledgedTimestamp >>> 32));
-		result = prime * result + (int) (activeTimestamp ^ (activeTimestamp >>> 32));
-		result = prime * result + alarmLevel;
-		result = prime * result + alternateAckSource;
-		result = prime * result + ((context == null) ? 0 : context.hashCode());
-		result = prime * result + ((eventComments == null) ? 0 : eventComments.hashCode());
-		result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
-		result = prime * result + ((handlers == null) ? 0 : handlers.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((shortMessage == null) ? 0 : shortMessage.hashCode());
-		result = prime * result + (rtnApplicable ? 1231 : 1237);
-		result = prime * result + rtnCause;
-		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
-		result = prime * result + (silenced ? 1231 : 1237);
-		result = prime * result + (userNotified ? 1231 : 1237);
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, eventType, activeTimestamp, rtnApplicable, rtnTimestamp, rtnCause, alarmLevel, message, shortMessage, eventComments, handlers, acknowledgedTimestamp, acknowledgedByUserId, acknowledgedByUsername, alternateAckSource, assigneeTimestamp, assigneeUsername, userNotified, silenced, context);
+    }
 
-	@Override
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -451,6 +471,8 @@ public class EventInstance {
         eventInstance.setHandlers(handlers);
         eventInstance.setSilenced(silenced);
         eventInstance.setUserNotified(userNotified);
+        eventInstance.setAssigneeTimestamp(assigneeTimestamp);
+        eventInstance.setAssigneeUsername(assigneeUsername);
         return eventInstance;
     }
 

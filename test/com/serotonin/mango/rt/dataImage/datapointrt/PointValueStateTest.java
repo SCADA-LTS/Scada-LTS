@@ -5,6 +5,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.vo.DataPointVO;
 import org.junit.Test;
+import utils.TestUtils;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -20,7 +21,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime newValue = null;
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.newState(new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis()),
                 PointValueState.empty(), dataPointVO);
 
@@ -36,7 +37,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime newValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         DataPointVO dataPointNull = null;
         PointValueState oldState = PointValueState.newState(new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis()), null, dataPointVO);
 
@@ -49,7 +50,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -64,7 +65,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -80,7 +81,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ALL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -96,7 +97,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -112,7 +113,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue("abc"), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -128,7 +129,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(false), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:
@@ -144,7 +145,7 @@ public class PointValueStateTest {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1), System.currentTimeMillis());
-        DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        DataPointVO dataPointVO = TestUtils.newDefaultEmptyDataPointVO();
         PointValueState oldState = PointValueState.empty();
 
         //when:

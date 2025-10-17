@@ -20,6 +20,6 @@
 --%><%@attribute name="href" required="true"%><%--
 --%><%@attribute name="png" required="true"%><%--
 --%><%@attribute name="key" required="true"%><%--
---%><c:set var="text"><fmt:message key="${key}"/></c:set><%--
+--%><c:set var="text"><spring:message code="${key}"/></c:set><%--
 --%><a href="${href}"><tag:img png="${png}" onmouseout="if (typeof hMD == 'function') hMD();"
         onmouseover="if (typeof hMD == 'function') hMD('${text}', this);"/></a>

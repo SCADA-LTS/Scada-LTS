@@ -47,10 +47,52 @@
               $get("flowControlOut"), $get("dataBits"), $get("stopBits"), $get("parity"), $get("encoding"),
               $get("echo"), $get("concurrency"), saveDataSourceCB);
   }
+
+  function createModbusConfigTemp() {
+      let modbus = {};
+      modbus.dataSourceName = $get("dataSourceName");
+      modbus.dataSourceXid = $get("dataSourceXid");
+      modbus.updatePeriods = $get("updatePeriods");
+      modbus.updatePeriodType = $get("updatePeriodType");
+      modbus.quantize = $get("quantize");
+      modbus.timeout = $get("timeout");
+      modbus.retries = $get("retries");
+      modbus.contiguousBatches = $get("contiguousBatches");
+      modbus.createSlaveMonitorPoints = $get("createSlaveMonitorPoints");
+      modbus.maxReadBitCount = $get("maxReadBitCount");
+      modbus.maxReadRegisterCount = $get("maxReadRegisterCount");
+      modbus.maxWriteRegisterCount = $get("maxWriteRegisterCount");
+      modbus.commPortId = $get("commPortId");
+      modbus.baudRate = $get("baudRate");
+      modbus.flowControlIn = $get("flowControlIn");
+      modbus.flowControlOut = $get("flowControlOut");
+      modbus.dataBits = $get("dataBits");
+      modbus.stopBits = $get("stopBits");
+      modbus.parity = $get("parity");
+      modbus.encoding = $get("encoding");
+      modbus.echo = $get("echo");
+      modbus.concurrency = $get("concurrency");
+      return modbus;
+  }
+
+  function validateModbusConfig(temp) {
+      let messages = [];
+      validateValue("updatePeriods", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriods, messages);
+      validateValue("updatePeriodType", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.updatePeriodType, messages);
+      validateValue("timeout", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.timeout, messages);
+      validateValue("retries", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.retries, messages);
+      validateValue("maxReadBitCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadBitCount, messages);
+      validateValue("maxReadRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxReadRegisterCount, messages);
+      validateValue("maxWriteRegisterCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.maxWriteRegisterCount, messages);
+      validateValue("dataBits", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.dataBits, messages);
+      validateValue("stopBits", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.stopBits, messages);
+      validateValue("parity", "<spring:message code='badIntegerFormat'/>", isPositiveInt, temp.parity, messages);
+      return messages;
+  }
 </script>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.port"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.port"/></td>
   <td class="formField">
     <c:choose>
       <c:when test="${!empty commPortError}">
@@ -69,7 +111,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.baud"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.baud"/></td>
   <td class="formField">
     <sst:select id="baudRate" value="${dataSource.baudRate}">
       <sst:option>110</sst:option>
@@ -90,29 +132,29 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.flowIn"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.flowIn"/></td>
   <td class="formField">
     <sst:select id="flowControlIn" value="${dataSource.flowControlIn}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.flow.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.flow.rtsCts"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.flow.xonXoff"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.flow.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.flow.rtsCts"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.flow.xonXoff"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.flowOut"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.flowOut"/></td>
   <td class="formField">
     <sst:select id="flowControlOut" value="${dataSource.flowControlOut}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.flow.none"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.flow.rtsCts"/></sst:option>
-      <sst:option value="8"><fmt:message key="dsEdit.modbusSerial.flow.xonXoff"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.flow.none"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.flow.rtsCts"/></sst:option>
+      <sst:option value="8"><spring:message code="dsEdit.modbusSerial.flow.xonXoff"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -124,7 +166,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -135,45 +177,45 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.encoding"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.encoding"/></td>
   <td class="formField">
     <sst:select id="encoding" value="${dataSource.encoding}">
-      <sst:option value="<%= ModbusSerialDataSourceVO.EncodingType.RTU.toString() %>"><fmt:message key="dsEdit.modbusSerial.encoding.rtu"/></sst:option>
-      <sst:option value="<%= ModbusSerialDataSourceVO.EncodingType.ASCII.toString() %>"><fmt:message key="dsEdit.modbusSerial.encoding.ascii"/></sst:option>
+      <sst:option value="<%= ModbusSerialDataSourceVO.EncodingType.RTU.toString() %>"><spring:message code="dsEdit.modbusSerial.encoding.rtu"/></sst:option>
+      <sst:option value="<%= ModbusSerialDataSourceVO.EncodingType.ASCII.toString() %>"><spring:message code="dsEdit.modbusSerial.encoding.ascii"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.echo"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.echo"/></td>
   <td class="formField">
     <sst:select id="echo" value="${dataSource.echo}">
-      <sst:option value="false"><fmt:message key="dsEdit.modbusSerial.echo.off"/></sst:option>
-      <sst:option value="true"><fmt:message key="dsEdit.modbusSerial.echo.on"/></sst:option>
+      <sst:option value="false"><spring:message code="dsEdit.modbusSerial.echo.off"/></sst:option>
+      <sst:option value="true"><spring:message code="dsEdit.modbusSerial.echo.on"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.modbusSerial.concurrency"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.modbusSerial.concurrency"/></td>
   <td class="formField">
     <sst:select id="concurrency" value="${dataSource.concurrency}">
-      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_TRANSPORT) %>"><fmt:message key="dsEdit.modbusSerial.concurrency.transport"/></sst:option>
-      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_SLAVE) %>"><fmt:message key="dsEdit.modbusSerial.concurrency.slave"/></sst:option>
-      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_FUNCTION) %>"><fmt:message key="dsEdit.modbusSerial.concurrency.function"/></sst:option>
+      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_TRANSPORT) %>"><spring:message code="dsEdit.modbusSerial.concurrency.transport"/></sst:option>
+      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_SLAVE) %>"><spring:message code="dsEdit.modbusSerial.concurrency.slave"/></sst:option>
+      <sst:option value="<%= Integer.toString(SerialMaster.SYNC_FUNCTION) %>"><spring:message code="dsEdit.modbusSerial.concurrency.function"/></sst:option>
     </sst:select>
   </td>
 </tr>

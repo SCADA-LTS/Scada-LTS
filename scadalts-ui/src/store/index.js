@@ -1,17 +1,28 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
+import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
+import storeReports from './reports';
 import storeEvents from './events';
+import storeScripts from './scripts';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
+import graphicalViewModule from './graphicalViews';
 import pointHierarchy from './pointHierarchy';
 import alarms from './alarms';
 import storeUsers from './users';
+import userProfileModule from './userProfiles';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
-import watchListModule from './modernWatchList';
+import SynopticPanelModule from './synopticPanel';
+import watchListModule from './watchList';
+import notificationModule from './notificationStore';
+import webSocketModule from './websocketStore';
+import staticResources from './static';
+import {getAppLocation} from '../utils/common';
+
 import axios from 'axios';
 
 import i18n from '@/i18n';
@@ -24,18 +35,27 @@ const myLoggerForVuexMutation = (store) => {
 
 export default new Vuex.Store({
 	modules: {
+		storeReports,
 		dataSource,
+		dataSourceState,
 		dataPoint,
 		eventDetectorModule,
 		storeEvents,
 		graphicView,
+		graphicalViewModule,
 		pointHierarchy,
 		alarms,
+		staticResources,
 		storeUsers,
+		notificationModule,
+		storeScripts,
+		userProfileModule,
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
+		SynopticPanelModule,
 		watchListModule,
+		webSocketModule,
 	},
 	state: {
 		loggedUser: null,
@@ -54,10 +74,8 @@ export default new Vuex.Store({
 			timeout: 5000,
 			// useCredentials: true,
 			// credentials: 'same-origin',
-			
-			
 		},
-		webSocketUrl: 'http://localhost:8080/ScadaBR/ws/alarmLevel',
+		webSocketUrl: 'ws-scada',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -76,20 +94,23 @@ export default new Vuex.Store({
 			{ id: 2, label: i18n.t('common.alarmlevels.urgent') },
 			{ id: 3, label: i18n.t('common.alarmlevels.critical') },
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
-		],
+		]
 	},
 	mutations: {
 		updateWebSocketUrl(state) {
-			let locale = window.location.pathname.split('/')[1];
-    		let protocol = window.location.protocol;
-    		let host = window.location.host.split(":");
-
-			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+            let base = getAppLocation();
+            if(!state.webSocketUrl.includes(base)) {
+                state.webSocketUrl = base + state.webSocketUrl;
+            }
 		},
 
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
-		}
+		},
+
+        setLoggedUser(state, loggedUser) {
+            state.loggedUser = loggedUser;
+        }
 	},
 	actions: {
 		getUserRole() {
@@ -112,15 +133,23 @@ export default new Vuex.Store({
 
 		async loginUser({dispatch}, userdata) {
 			axios.defaults.withCredentials = true;
-			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
-			if(answer) {
-				dispatch('getUserInfo');
-			}
-			return answer;
+			let logged = false;
+			let res = await dispatch('requestPostNonApi', {
+			    url: `login.htm` + `?username=` + userdata.username + `&password=` + userdata.password + `&submit=Login`,
+			    data: null
+			});
+			if(res != null && res != '') {
+                let userInfo = await dispatch('getUserInfo');
+                logged = userInfo != null && userInfo.username === userdata.username;
+            }
+			return logged;
 		},
 
-		logoutUser({state}) {
-			state.loggedUser = null;
+		logoutUser({ state, dispatch }) {
+			dispatch('requestGetNonApi', `logout.htm`)
+			.then((resp) => {
+                state.loggedUser = null;
+            });
 		},
 
 		/**
@@ -129,8 +158,13 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 */
 		async getUserInfo({ state, dispatch, commit }) {
-			state.loggedUser = await dispatch('requestGet', '/auth/user');
-			commit('updateWebSocketUrl');
+			return dispatch('requestGet', '/auth/user').then((r) => {
+			     commit('setLoggedUser', r);
+                 commit('updateWebSocketUrl');
+                 commit('INIT_WEBSOCKET_URL');
+                 commit('INIT_WEBSOCKET');
+                 return r;
+            });
 		},
 
 		/**
@@ -144,10 +178,12 @@ export default new Vuex.Store({
 				axios
 					.get(state.applicationUrl + requestUrl, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -163,10 +199,30 @@ export default new Vuex.Store({
 				axios
 					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
+					});
+			});
+		},
+
+		requestPostFile({ state, dispatch }, {url, data, headers}) {
+			const fileHeaders = {
+				'Content-Type': 'multipart/form-data'
+			}
+			return new Promise((resolve, reject) => {
+				axios
+					.post(state.applicationUrl + url, data, {headers: headers || fileHeaders })
+					.then(async (r) => {
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+					})
+					.catch(async (error) => {
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -182,10 +238,12 @@ export default new Vuex.Store({
 				axios
 					.delete(state.applicationUrl + requestUrl, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -201,10 +259,12 @@ export default new Vuex.Store({
 				axios
 					.put(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -220,10 +280,12 @@ export default new Vuex.Store({
 				axios
 					.patch(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -262,37 +324,83 @@ export default new Vuex.Store({
 		},
 
 		/**
-		 * 
+		 *
 		 * Validate server response
-		 * 
-		 * Check if the response status code from server 
+		 *
+		 * Check if the response status code from server
 		 * is one of the Successful responses. If not report
 		 * proper message in the browser console and block
 		 * the response handling and change to error handling.
-		 * It is possible to create catch chain to take 
+		 * It is possible to create catch chain to take
 		 * specific action if request is failed.
-		 * 
+		 *
 		 * @private
 		 * @param {HTTP Response} response - JSON Response from server
 		 * @returns true|false
 		 */
-		validateResponse({state}, response) {
-			if(!!response) {
+		validateResponse({ state, dispatch }, response) {
+			if (!!response) {
 				if (response.status >= 200 && response.status < 300) {
 					return true;
 				} else if (response.status === 401) {
+					dispatch('showNetworkErrorNotification', 'User is not authorized!');
 					console.error('⛔️ - User is not Authorized!');
 				} else if (response.status === 400) {
+					dispatch('showNetworkErrorNotification', 'Check request data!');
 					console.error('❌️ - Bad Request! Check request data');
 				} else if (response.status === 500) {
+					dispatch('showNetworkErrorNotification', 'Server exception!');
 					console.error('🚫️ - Internal server error!\n Something went wrong!');
 				}
 			} else {
-				console.error('🚫️ - No internet connection!\n Something went wrong!');
+				dispatch('showNetworkErrorNotification', 'No response received!');
+				console.error('⚫️ - Not received response message!');
 			}
-			
+
 			return false;
 		},
+
+        /**
+         * HTTP Request GET method to fetch data from the REST API
+         *
+         * @param {*} param0 - Vuex Store variables
+         * @param {*} requestUrl - URL to specific resource of the Application
+         */
+        requestGetNonApi({ state, dispatch }, requestUrl) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .get("./"+requestUrl, state.requestConfig)
+                    .then(async (r) => {
+                        (await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+                    })
+                    .catch(async (error) => {
+                        (await dispatch('validateResponse', error.response))
+                            ? console.warn('Request Exception...')
+                            : reject(error.response);
+                    });
+            });
+        },
+
+        /**
+         * HTTP Request POST method to push data to the REST API
+         *
+         * @param {*} param0 - Vuex Store variables
+         * @param {*} payload - {url, data} JS object with request data.
+         */
+        requestPostNonApi({ state, dispatch }, payload) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .post("./"+payload.url, payload.data, state.requestConfig)
+                    .then(async (r) => {
+                        (await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+                    })
+                    .catch(async (error) => {
+                        (await dispatch('validateResponse', error.response))
+                            ? console.warn('Request Exception...')
+                            : reject(error.response);
+                    });
+            });
+        }
 	},
 	getters: {
 		appVersion: (state) => {
@@ -330,6 +438,9 @@ export default new Vuex.Store({
 		appPullRequestBranch: (state) => {
 			return state.scadaLtsPullRequestBranch;
 		},
+        loggedUser: (state) => {
+             return state.loggedUser;
+        }
 	},
 	plugins: [myLoggerForVuexMutation],
 });

@@ -1,5 +1,7 @@
 package org.scada_lts.dao.model;
 
+import com.serotonin.mango.vo.GetExtendedName;
+
 /**
  * Scada Object Identifier
  *
@@ -8,41 +10,49 @@ package org.scada_lts.dao.model;
  * places among the project where user want
  * to list business object without details.
  */
-public class ScadaObjectIdentifier {
+public class ScadaObjectIdentifier extends BaseObjectIdentifier implements GetExtendedName {
 
-    private int id;
-    private String xid;
+    private BaseObjectIdentifier baseObjectIdentifier;
+
     private String name;
 
-    public ScadaObjectIdentifier() {}
+    public ScadaObjectIdentifier() {
+        super(-1, "");
+        this.baseObjectIdentifier = new BaseObjectIdentifier(-1, "");
+    }
 
     public ScadaObjectIdentifier(int id, String xid, String name) {
-        this.id = id;
-        this.xid = xid;
+        super(id, xid);
+        this.baseObjectIdentifier = new BaseObjectIdentifier(id, xid);
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getXid() {
-        return xid;
-    }
-
-    public void setXid(String xid) {
-        this.xid = xid;
-    }
-
+    @Override
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int getId() {
+        return baseObjectIdentifier.getId();
+    }
+
+    @Override
+    public void setId(int id) {
+        baseObjectIdentifier.setId(id);
+    }
+
+    @Override
+    public String getXid() {
+        return baseObjectIdentifier.getXid();
+    }
+
+    @Override
+    public void setXid(String xid) {
+        baseObjectIdentifier.setXid(xid);
     }
 }

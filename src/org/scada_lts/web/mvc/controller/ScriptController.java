@@ -21,16 +21,17 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.errors.ErrorCode;
+import org.scada_lts.mango.service.ScriptService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
@@ -59,12 +60,13 @@ public class ScriptController {
 		// TODO ta metoda powinna przyjmowac jako argument tresc skryptu z
 		// odpowiednimi argumentami nie powinno to isc przez baze danych !!!.
 		User user = Common.getUser(request);
+		Permissions.ensureAdmin(user);
 		String result = "";
 		if (user == null) {
 			response.setStatus(ErrorCode.USER_NOT_LOGGED);
 			result = "";
 		} else {
-			ScriptVO<?> script = new ScriptDao().getScript(xid);
+			ScriptVO<?> script = new ScriptService().getScript(xid);
 			try {
 				if (script != null) {
 					ScriptRT rt = script.createScriptRT();

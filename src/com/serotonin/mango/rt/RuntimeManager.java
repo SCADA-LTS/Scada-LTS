@@ -18,33 +18,33 @@
  */
 package com.serotonin.mango.rt;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.*;
+import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.util.StartStopDataPointsUtils;
 import com.serotonin.mango.view.event.NoneEventRenderer;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.mango.service.*;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -72,8 +72,10 @@ import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static org.scada_lts.utils.MetaDataPointUtils.*;
+
 public class RuntimeManager {
-	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
+	private static final Logger LOG = LogManager.getLogger(RuntimeManager.class);
 
 	private final List<DataSourceRT> runningDataSources = new CopyOnWriteArrayList<DataSourceRT>();
 
@@ -120,7 +122,7 @@ public class RuntimeManager {
 	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
 
 
-	private boolean started = false;
+	private volatile boolean started = false;
 
 	//
 	// Lifecycle
@@ -128,9 +130,6 @@ public class RuntimeManager {
 		if (started)
 			throw new ShouldNeverHappenException(
 					"RuntimeManager already started");
-
-		// Set the started indicator to true.
-		started = true;
 
 		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
 		MailingListService mailingListService = new MailingListService();
@@ -174,6 +173,8 @@ public class RuntimeManager {
 					pollingRound.add(config);
 			}
 		}
+
+		startPoints();
 
 		// Set up point links.
 		PointLinkDao pointLinkDao = new PointLinkDao();
@@ -247,6 +248,9 @@ public class RuntimeManager {
 					startMaintenanceEvent(vo);
 			}
 		}
+
+		// Set the started indicator to true.
+		started = true;
 	}
 
 	synchronized public void terminate() {
@@ -266,6 +270,10 @@ public class RuntimeManager {
 
 		for (PointLinkRT pointLink : pointLinks)
 			stopPointLink(pointLink.getId());
+
+		stopPoints();
+
+		markAsTerminatingAll();
 
 		// First stop meta data sources.
 		for (DataSourceRT dataSource : runningDataSources) {
@@ -294,7 +302,7 @@ public class RuntimeManager {
 			try {
 				dataSource.joinTermination();
 			} catch (ShouldNeverHappenException e) {
-				LOG.error("Error stopping data source " + dataSource.getId(), e);
+				LOG.error("Error stopping: " + LoggingUtils.dataSourceInfo(dataSource) + " : " + LoggingUtils.exceptionInfo(e), e);
 			}
 		}
 	}
@@ -316,16 +324,16 @@ public class RuntimeManager {
 	}
 
 	public List<DataSourceVO<?>> getDataSources() {
-		return new DataSourceDao().getDataSources();
+		return new DataSourceService().getDataSources();
 	}
 
 	public DataSourceVO<?> getDataSource(int dataSourceId) {
-		return new DataSourceDao().getDataSource(dataSourceId);
+		return new DataSourceService().getDataSource(dataSourceId);
 	}
 
 	public void deleteDataSource(int dataSourceId) {
 		stopDataSource(dataSourceId);
-		new DataSourceDao().deleteDataSource(dataSourceId);
+		new DataSourceService().deleteDataSource(dataSourceId);
 		Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 	}
 
@@ -338,7 +346,7 @@ public class RuntimeManager {
 		// In case this is a new data source, we need to save to the database
 		// first so that it has a proper id.
 		LOG.debug("Saving DS: " + vo.getName());
-		new DataSourceDao().saveDataSource(vo);
+		new DataSourceService().saveDataSource(vo);
 		LOG.debug("DS saved!");
 		// If the data source is enabled, start it.
 		if (vo.isEnabled()) {
@@ -354,9 +362,12 @@ public class RuntimeManager {
 	private boolean initializeDataSource(DataSourceVO<?> vo) {
 		synchronized (runningDataSources) {
 			// If the data source is already running, just quit.
-			if (isDataSourceRunning(vo.getId()))
+			if (isDataSourceRunning(vo.getId())) {
+				LOG.info("{} is already running!", LoggingUtils.dataSourceInfo(vo));
 				return false;
-
+			}
+			long start = System.currentTimeMillis();
+			LOG.info("{} initializing...", LoggingUtils.dataSourceInfo(vo));
 			// Ensure that the data source is enabled.
 			// Assert.isTrue(vo.isEnabled());
 
@@ -371,11 +382,10 @@ public class RuntimeManager {
 			List<DataPointVO> dataSourcePoints = new DataPointDao()
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
-				if (dataPoint.isEnabled())
+				if (dataPoint.isEnabled() && started)
 					startDataPointSafe(dataPoint);
 			}
-
-			LOG.info("Data source '" + vo.getName() + "' initialized");
+			LOG.info("{} initialized in {} [ms].", LoggingUtils.dataSourceInfo(vo), (System.currentTimeMillis() - start));
 
 			return true;
 		}
@@ -390,9 +400,12 @@ public class RuntimeManager {
 	public void stopDataSource(int id) {
 		synchronized (runningDataSources) {
 			DataSourceRT dataSource = getRunningDataSource(id);
-			if (dataSource == null)
+			if (dataSource == null) {
+				LOG.info("Data source with id: {} was not running.", id);
 				return;
-
+			}
+			long start = System.currentTimeMillis();
+			LOG.info("{} stopping...", LoggingUtils.dataSourceInfo(dataSource));
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -403,8 +416,12 @@ public class RuntimeManager {
 			dataSource.terminate();
 
 			dataSource.joinTermination();
-			LOG.info("Data source '" + dataSource.getName() + "' stopped");
+			LOG.info("{} stopped in {} [ms].", LoggingUtils.dataSourceInfo(dataSource), (System.currentTimeMillis() - start));
 		}
+	}
+
+	public void markAsTerminatingAll() {
+		PollingDataSource.markAsTerminating();
 	}
 
 	//
@@ -445,6 +462,7 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
+			AuditEventUtils.raiseAuditDetectorEvent(point, ped, new PointEventDetectorDAO());
 		}
 
 		new DataPointDao().saveDataPoint(point);
@@ -467,6 +485,9 @@ public class RuntimeManager {
 			// Only add the data point if its data source is enabled.
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
+				long start = System.currentTimeMillis();
+				LOG.info("Data point '{}' initializing...", vo.getExtendedName());
+
 				// Change the VO into a data point implementation.
 				DataPointRT dataPoint = createDataPointRT(vo);
 
@@ -481,6 +502,12 @@ public class RuntimeManager {
 
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
+
+				boolean unreliable = dataPoint.isUnreliable();
+
+				LOG.info("Data point '{}' initialized in {} [ms] - unreliable: {}", vo.getExtendedName(), (System.currentTimeMillis() - start), unreliable);
+			} else {
+				LOG.info("Data point '{}' was not initialized because {} is not running.", vo.getExtendedName(), LoggingUtils.dataSourceInfo(vo));
 			}
 		}
 	}
@@ -499,7 +526,7 @@ public class RuntimeManager {
 		try {
 			startDataPoint(vo);
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			LOG.error(ex.getMessage() + " - " + LoggingUtils.dataPointInfo(vo) + " : ", ex);
 			stopDataPointSafe(vo.getId());
 		}
 	}
@@ -512,13 +539,24 @@ public class RuntimeManager {
 
 			// Remove it from the data source, and terminate it.
 			if (p != null) {
+				long start = System.currentTimeMillis();
+				LOG.info("Data point '{}' stopping...", p.getVO().getExtendedName());
+
 				getRunningDataSource(p.getDataSourceId()).removeDataPoint(p);
 				DataPointListener l = getDataPointListeners(dataPointId);
 				if (l != null)
 					l.pointTerminated();
 				p.terminate();
+				DataPointVO point = p.getVO();
+				LOG.info("Data point '{}' stopped in {} [ms].", point.getExtendedName(), (System.currentTimeMillis() - start));
+			} else {
+				LOG.info("Data point with id: {} was not running.", dataPointId);
 			}
 		}
+	}
+
+	private void stopDataPointSafe(DataPointVO dataPoint) {
+		stopDataPointSafe(dataPoint.getId());
 	}
 
 	private void stopDataPointSafe(int dataPointId) {
@@ -561,11 +599,6 @@ public class RuntimeManager {
 	// Point values
 	public void setDataPointValue(int dataPointId, MangoValue value,
 			SetPointSource source) {
-		if(source instanceof User){
-			setDataPointValue(dataPointId,
-					new PointValueTime(value, System.currentTimeMillis(),((User)source).getUsername()), source);
-		}
-		else
 		setDataPointValue(dataPointId,
 				new PointValueTime(value, System.currentTimeMillis()), source);
 	}
@@ -650,6 +683,13 @@ public class RuntimeManager {
 			updateDataPointValuesRT(dataPointId);
 		return count;
 		//return 0;
+	}
+
+	public long purgeDataPointValuesWithLimit(int dataPointId, int limit) {
+		long count = new PointValueService().deletePointValuesWithValueLimit(dataPointId, limit);
+		if (count > 0)
+			updateDataPointValuesRT(dataPointId);
+		return count;
 	}
 
 	private void updateDataPointValuesRT(int dataPointId) {
@@ -1052,4 +1092,50 @@ public class RuntimeManager {
 		reset.terminate();
 		resetDailyLimitSentEmails.remove(mailingListId);
 	}
+
+	public boolean isStarted() {
+		return started;
+	}
+
+	private void startPoints() {
+		DataPointService dataPointService = new DataPointService();
+		StartStopDataPointsUtils.startPoints(dataPointService, this::startDataPointSafe, this::getDataPoint, this::getRunningDataSource);
+	}
+
+	private void stopPoints() {
+		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, boolean unreliable) {
+		return getRunningMetaDataPoints(dataPointInContextId, a -> a.isUnreliable() == unreliable, false);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPointsToReset(int dataPointInContextId) {
+		return getRunningMetaDataPoints(dataPointInContextId, DataPointRT::isUnreliable, true);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPointsToSet(int dataPointInContextId) {
+		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> !dataPoint.isUnreliable(), false);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, Predicate<DataPointRT> condition, boolean filteringCanReset) {
+		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
+		return filterRunningDataPoints(dataPoints.values(), dataPoint -> isMetaDataPointRT(dataPoint)
+				&& isDataPointInContext(dataPoint, dataPointInContextId)
+				&& (!filteringCanReset || doResetUnreliableDataPoint(dataPoint, dataPointInContextId))
+				&& condition.test(dataPoint));
+	}
+
+	private static List<DataPointRT> filterRunningDataPoints(List<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
+	private static List<DataPointRT> filterRunningDataPoints(Collection<DataPointRT> dataPoints, Predicate<DataPointRT> filter) {
+		return dataPoints.stream()
+				.filter(filter)
+				.collect(Collectors.toList());
+	}
+
 }

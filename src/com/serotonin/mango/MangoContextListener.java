@@ -33,10 +33,10 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.WorkItemMonitor;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.mango.view.ViewGraphicLoader;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
@@ -55,17 +55,26 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Session;
+import org.apache.catalina.core.ApplicationContext;
+import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
 import org.scada_lts.cache.DataSourcePointsCache;
-import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
+import org.scada_lts.quartz.EverySecond;
+import org.scada_lts.quartz.EverySecondTool;
 import org.scada_lts.scripting.SandboxContextFactory;
+import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
+import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -73,20 +82,48 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+
+import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createPool;
+import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
+	private boolean initialized;
+
+	@Override
 	public void contextInitialized(ServletContextEvent evt) {
+		try {
+			initialized(evt);
+			// Notify the event manager of the startup.
+			SystemEventType.raiseEvent(new SystemEventType(
+					SystemEventType.TYPE_SYSTEM_STARTUP), System
+					.currentTimeMillis(), false, new LocalizableMessage(
+					"event.system.startup"));
+			initialized = true;
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			initialized = false;
+			throw ex;
+		}
+	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	private void initialized(ServletContextEvent evt) {
 		log.info("Scada-LTS context starting at: " + Common.getStartupTime());
-		
+
+		sessionsInitialize(evt);
+
+		scriptContextInitialize();
+
 		// Get a handle on the context.
 		ServletContext ctx = evt.getServletContext();
 
@@ -97,14 +134,14 @@ public class MangoContextListener implements ServletContextListener {
 		ScadaVersion.getInstance().printScadaVersionProperties(log);
 
 		// Initialize the timer
-		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,
-				TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
+		Common.timer.init(createPool(WorkItemPriority.HIGH));
 
 		// Create all the stuff we need.
 		constantsInitialize(ctx);
 		freemarkerInitialize(ctx);
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
+		highestAlarmLevelServiceInitialize();
 		dataPointsNameToIdMapping(ctx);
 
 		// Check if the known servlet context path has changed.
@@ -120,16 +157,16 @@ public class MangoContextListener implements ServletContextListener {
 		new SystemSettingsDAO().setValue(
 				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
-		utilitiesInitialize(ctx);
 		eventManagerInitialize(ctx);
-		
+		utilitiesInitialize(ctx);
+
 		try {
-			EventDetectorsCache.getInstance();
+			ApplicationBeans.getPointEventDetectorDaoBean().init();
 			log.info("Cache event detectors initialized");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
-		
+
 		try {
 			DataSourcePointsCache.getInstance().cacheInitialize();
 			log.info("Cache data points initialized");
@@ -137,7 +174,7 @@ public class MangoContextListener implements ServletContextListener {
 			runtimeManagerInitialize(ctx);
 			
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		} finally {
 			DataSourcePointsCache.getInstance().cacheFinalized();
 		}
@@ -145,22 +182,22 @@ public class MangoContextListener implements ServletContextListener {
 		
 		reportsInitialize();
 		maintenanceInitialize();
-		
-		scriptContextInitialize();
 
-		// Notify the event manager of the startup.
-		SystemEventType.raiseEvent(new SystemEventType(
-				SystemEventType.TYPE_SYSTEM_STARTUP), System
-				.currentTimeMillis(), false, new LocalizableMessage(
-				"event.system.startup"));
 
-		
-		log.info("Scada-LTS context started");
+
+
 		try {
 			PointHierarchyCache.getInstance();
 			log.info("Cache point hierarchy initialized");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+			ApplicationBeans.getViewDaoBean().init();
+			log.info("Cache views initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 		
 		try {
@@ -170,9 +207,16 @@ public class MangoContextListener implements ServletContextListener {
 			log.error(e);
 		}
 
+		initSchedule();
+
+		log.info("Scada-LTS context started");
 	}
 
 	public void contextDestroyed(ServletContextEvent evt) {
+		if(Common.ctx == null) {
+			log.warn("Scada-LTS context terminated");
+			return;
+		}
 		log.info("Scada-LTS context terminating");
 
 		if (Common.ctx.getEventManager() != null) {
@@ -190,16 +234,17 @@ public class MangoContextListener implements ServletContextListener {
 		runtimeManagerTerminate(ctx);
 		eventManagerTerminate(ctx);
 		utilitiesTerminate(ctx);
+		highPriorityServiceTerminate();
 		databaseTerminate(ctx);
-
-		Common.timer.cancel();
-		Common.timer.getExecutorService().shutdown();
 
 		Common.ctx = null;
 
 		log.info("Scada-LTS context terminated");
 	}
-	
+
+	private void highPriorityServiceTerminate() {
+		Common.timer.cancel();
+	}
 	/**
 	 * Set global permission for the ScriptEngine 
 	 */
@@ -239,7 +284,8 @@ public class MangoContextListener implements ServletContextListener {
 		ctx.setAttribute("constants.DataTypes.ALPHANUMERIC",
 				DataTypes.ALPHANUMERIC);
 		ctx.setAttribute("constants.DataTypes.IMAGE", DataTypes.IMAGE);
-
+		ctx.setAttribute("constants.DataSourceVO.Types.AMQP",
+				DataSourceVO.Type.AMQP.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.VIRTUAL",
 				DataSourceVO.Type.VIRTUAL.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MODBUS_SERIAL",
@@ -306,6 +352,11 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.INTERNAL.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.JMX",
 				DataSourceVO.Type.JMX.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
+				DataSourceVO.Type.MQTT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC_UA",
+				DataSourceVO.Type.OPC_UA.getId());
+
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",
@@ -357,6 +408,14 @@ public class MangoContextListener implements ServletContextListener {
 				SystemEventType.TYPE_POINT_LINK_FAILURE);
 		ctx.setAttribute("constants.SystemEventType.TYPE_PROCESS_FAILURE",
 				SystemEventType.TYPE_PROCESS_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SMS_SEND_FAILURE",
+				SystemEventType.TYPE_SMS_SEND_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE",
+				SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_ASSIGNED_EVENT",
+				SystemEventType.TYPE_ASSIGNED_EVENT);
+		ctx.setAttribute("constants.SystemEventType.TYPE_UNASSIGNED_EVENT",
+				SystemEventType.TYPE_UNASSIGNED_EVENT);
 
 		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_SOURCE",
 				AuditEventType.TYPE_DATA_SOURCE);
@@ -413,10 +472,10 @@ public class MangoContextListener implements ServletContextListener {
 	// Database.
 	//
 	private void databaseInitialize(ServletContext ctx) {
-		DatabaseAccess databaseAccess = DatabaseAccess
-				.createDatabaseAccess(ctx);
+		DatabaseAccess databaseAccess = ApplicationBeans
+				.getBean("databaseAccess", DatabaseAccess.class);
 		ctx.setAttribute(Common.ContextKeys.DATABASE_ACCESS, databaseAccess);
-		databaseAccess.initialize();
+		databaseAccess.initialize(ctx);
 	}
 
 	private void databaseTerminate(ContextWrapper ctx) {
@@ -445,10 +504,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void utilitiesTerminate(ContextWrapper ctx) {
+		log.info("Stopping BackgroundProcessing");
 		BackgroundProcessing bp = ctx.getBackgroundProcessing();
 		if (bp != null) {
 			bp.terminate();
 			bp.joinTermination();
+			if(bp.isTerminated())
+				log.info("Stopped BackgroundProcessing");
+			else
+				log.info("Stopped BackgroundProcessing Fail");
+		} else {
+			log.info("BackgroundProcessing is null");
 		}
 	}
 
@@ -463,10 +529,14 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void eventManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping EventManager");
 		EventManager em = ctx.getEventManager();
 		if (em != null) {
 			em.terminate();
 			em.joinTermination();
+			log.info("Stopped EventManager");
+		} else {
+			log.info("EventManager is null");
 		}
 	}
 	
@@ -521,10 +591,17 @@ public class MangoContextListener implements ServletContextListener {
 	}
 
 	private void runtimeManagerTerminate(ContextWrapper ctx) {
+		log.info("Stopping RuntimeManager");
 		RuntimeManager rtm = ctx.getRuntimeManager();
 		if (rtm != null) {
 			rtm.terminate();
 			rtm.joinTermination();
+			if(!rtm.isStarted())
+				log.info("Stopped RuntimeManager");
+			else
+				log.info("Stopped RuntimeManager Fail");
+		} else {
+			log.info("RuntimeManager is null");
 		}
 	}
 
@@ -536,16 +613,7 @@ public class MangoContextListener implements ServletContextListener {
 		ViewGraphicLoader loader = new ViewGraphicLoader();
 		List<ImageSet> imageSets = new ArrayList<ImageSet>();
 		List<DynamicImage> dynamicImages = new ArrayList<DynamicImage>();
-
-		for (ViewGraphic g : loader.loadViewGraphics(ctx.getRealPath(""))) {
-			if (g.isImageSet())
-				imageSets.add((ImageSet) g);
-			else if (g.isDynamicImage())
-				dynamicImages.add((DynamicImage) g);
-			else
-				throw new ShouldNeverHappenException(
-						"Unknown view graphic type");
-		}
+		loadGraphics(loader, imageSets, dynamicImages);
 
 		ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
 		ctx.setAttribute(Common.ContextKeys.DYNAMIC_IMAGES, dynamicImages);
@@ -613,5 +681,61 @@ public class MangoContextListener implements ServletContextListener {
 		WorkItemMonitor.start();
 
 		// MemoryCheck.start();
+	}
+
+	private void highestAlarmLevelServiceInitialize() {
+		try {
+			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+			if(highestAlarmLevelService instanceof HighestAlarmLevelServiceWithCache) {
+				((HighestAlarmLevelServiceWithCache)highestAlarmLevelService).init();
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+
+	private void initSchedule() {
+		try {
+			EverySecond.init();
+			log.info("Quartz EverySecond initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+
+		try {
+			EverySecondTool.init();
+			log.info("Quartz EverySecondTool initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+
+	private void sessionsInitialize(ServletContextEvent evt) {
+		try {
+			Session[] sessions = getSessions(evt);
+			ApplicationBeans.getLoggedUsersBean().loadSessions(sessions);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+		}
+	}
+
+	private static Session[] getSessions(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		Manager manager = getManager(evt);
+		return manager.findSessions();
+	}
+
+	private static Manager getManager(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		ApplicationContextFacade applicationContextFacade =  (ApplicationContextFacade) evt.getServletContext();
+
+		Field applicationContextField = applicationContextFacade.getClass().getDeclaredField("context");
+		applicationContextField.setAccessible(true);
+		ApplicationContext applicationContext = (ApplicationContext) applicationContextField.get(applicationContextFacade);
+		applicationContextField.setAccessible(false);
+
+		Field standardContextField = applicationContext.getClass().getDeclaredField("context");
+		standardContextField.setAccessible(true);
+		StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
+		standardContextField.setAccessible(false);
+		return standardContext.getManager();
 	}
 }

@@ -35,7 +35,6 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.meta.ResultTypeException;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.link.PointLinkRT;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -57,6 +56,7 @@ public class PointLinksDwr extends BaseDwr {
     private static final Log LOG = LogFactory.getLog(PointLinksDwr.class);
     public Map<String, Object> init() {
         User user = Common.getUser();
+        Permissions.ensureAdmin(user);
         Map<String, Object> data = new HashMap<String, Object>();
 
         // Get the points that this user can access.
@@ -109,6 +109,7 @@ public class PointLinksDwr extends BaseDwr {
     public DwrResponseI18n savePointLink(int id, String xid, int sourcePointId, int targetPointId, String script,
             int event, boolean disabled) {
         // Validate the given information. If there is a problem, return an appropriate error message.
+        Permissions.ensureAdmin();
         PointLinkVO vo = new PointLinkVO();
         vo.setId(id);
         vo.setXid(xid);
@@ -120,11 +121,6 @@ public class PointLinksDwr extends BaseDwr {
 
         DwrResponseI18n response = new DwrResponseI18n();
         PointLinkDao pointLinkDao = new PointLinkDao();
-
-        if (StringUtils.isEmpty(xid))
-            response.addContextualMessage("xid", "validate.required");
-        else if (!pointLinkDao.isXidUnique(xid, id))
-            response.addContextualMessage("xid", "validate.xidUsed");
 
         vo.validate(response);
 
@@ -138,6 +134,7 @@ public class PointLinksDwr extends BaseDwr {
     }
 
     public void deletePointLink(int id) {
+        Permissions.ensureAdmin();
         Common.ctx.getRuntimeManager().deletePointLink(id);
     }
 

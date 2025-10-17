@@ -24,11 +24,14 @@ import java.util.List;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * @author Matthew Lohbihler
  */
-public class SetPointWorkItem implements WorkItem {
+public class SetPointWorkItem extends AbstractBeforeAfterWorkItem {
     private static final ThreadLocal<List<String>> threadLocal = new ThreadLocal<List<String>>();
     private static final int MAX_RECURSION = 10;
 
@@ -37,7 +40,9 @@ public class SetPointWorkItem implements WorkItem {
     private final SetPointSource source;
     private final List<String> sourceIds;
 
-    public SetPointWorkItem(int targetPointId, PointValueTime pvt, SetPointSource source) {
+    private final EventType eventType;
+
+    public SetPointWorkItem(int targetPointId, PointValueTime pvt, SetPointSource source, EventType eventType) {
         this.targetPointId = targetPointId;
         this.pvt = pvt;
         this.source = source;
@@ -46,10 +51,12 @@ public class SetPointWorkItem implements WorkItem {
             sourceIds = new ArrayList<String>();
         else
             sourceIds = threadLocal.get();
+
+        this.eventType = eventType;
     }
 
     @Override
-    public void execute() {
+    public void work() {
         String sourceId = Integer.toString(source.getSetPointSourceType()) + "-"
                 + Integer.toString(source.getSetPointSourceId());
 
@@ -76,7 +83,32 @@ public class SetPointWorkItem implements WorkItem {
     }
 
     @Override
-    public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+    public void workSuccess() {
+        SystemEventType.returnToNormal(eventType, System.currentTimeMillis());
+    }
+
+    @Override
+    public void workFail(Throwable exception) {
+        SystemEventType.raiseEvent(eventType, System.currentTimeMillis(), true, new LocalizableMessage("common.default", exception.getMessage()));
+    }
+
+    @Override
+    public WorkItemPriority getPriorityType() {
+        return WorkItemPriority.HIGH;
+    }
+
+    @Override
+    public String toString() {
+        return "SetPointWorkItem{" +
+                "targetPointId=" + targetPointId +
+                ", pvt=" + pvt +
+                ", source=" + source +
+                ", sourceIds=" + sourceIds +
+                '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
     }
 }

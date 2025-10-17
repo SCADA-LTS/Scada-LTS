@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.web.mvc.api.json.JsonScript;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -178,7 +179,11 @@ public class ScriptDAO  {
 	}
 
 	public ScriptVO<?> getScript(int id) {
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { id }, new ScriptRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]{id}, new ScriptRowMapper());
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 	
 	public List<ScriptVO<?>> getScripts() {
@@ -186,9 +191,12 @@ public class ScriptDAO  {
 	}
 		
 	public ScriptVO<?> getScript(String xid) {
-		
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]  { 
-				xid }, new ScriptRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]{
+					xid}, new ScriptRowMapper());
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 
 	public String generateUniqueXid() {
@@ -198,5 +206,8 @@ public class ScriptDAO  {
 	public boolean isXidUnique(String xid, int excludeId) {
 		return DAO.getInstance().isXidUnique(xid, excludeId, "scripts");
 	}
-	
+
+	public JsonScript findScriptsByPage(String query) {
+		return (JsonScript) DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT + " ", new Object[]{ }, new ScriptRowMapper());
+	}
 }

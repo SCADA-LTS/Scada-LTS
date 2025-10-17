@@ -24,12 +24,12 @@ public class SystemSettingsUtilsTest {
     }
 
     @Test
-    public void when_getDataPointSynchronizedMode_then_medium() {
+    public void when_getDataPointSynchronizedMode_then_low() {
 
         //when:
         DataPointSyncMode result = SystemSettingsUtils.getDataPointSynchronizedMode();
 
         //then:
-        assertEquals(DataPointSyncMode.MEDIUM, result);
+        assertEquals(DataPointSyncMode.LOW, result);
     }
 }

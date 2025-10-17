@@ -17,13 +17,15 @@
  */
 package org.scada_lts.dao;
 
-import com.mysql.jdbc.Statement;
+
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -31,7 +33,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,15 +43,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.util.LoggingUtils.dataSourceInfo;
+
 /**
  * DataSource DAO
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
+
+	private static final String TABLE_NAME = "dataSources";
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -67,6 +71,15 @@ public class DataSourceDAO {
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF = "eventTypeRef1";
 
 	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
+
+	//dataSourceUsers
+	private static final String COLUMN_NAME_DSU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DSU_ACCESS_TYPE = "permission";
+	private static final String COLUMN_NAME_DSU_DATA_SOURCE_ID = "dataSourceId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_SOURCE_ID = "dataSourceId";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
 
 	// @formatter:off
 	private static final String DATA_SOURCE_SELECT = ""
@@ -214,6 +227,45 @@ public class DataSourceDAO {
 			"where " +
 			"dsup." + COLUMN_NAME_DS_USER_ID + "=?;";
 
+	private static final String DATA_SOURCE_SELECT_WHERE_TYPE = ""
+			+ DATA_SOURCE_SELECT
+			+ "where "
+			+ COLUMN_NAME_DS_TYPE + "=? ";
+
+
+	//dataPointUsers
+	private static final String COLUMN_NAME_DPU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DPU_PERMISSION = "permission";
+	private static final String COLUMN_NAME_DPU_DATA_POINT_ID = "dataPointId";
+
+	//userProfile
+	private static final String COLUMN_NAME_DPUP_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_DPUP_USER_PRFILE_ID = "userProfileId";
+	private static final String COLUMN_NAME_DPUP_PERMISSION = "permission";
+
+	private static final String DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + ", "
+			+ "ds." + COLUMN_NAME_DATA + " "
+			+ "from dataSources ds left join dataPoints dp on ds.id=dp.dataSourceId ";
+
+	private static final String DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP_IDENTIFIER = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + " "
+			+ "from dataSources ds left join dataPoints dp on ds.id=dp.dataSourceId ";
+
+	public static final String DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME = ""
+			+ "ds.id in (select dsu."+ COLUMN_NAME_DSU_DATA_SOURCE_ID +" from dataSourceUsers dsu where dsu."+ COLUMN_NAME_DSU_USER_ID +"=?) or "
+			+ "ds.id in (select dsup."+COLUMN_NAME_UP_DATA_SOURCE_ID+" from dataSourceUsersProfiles dsup where dsup."+COLUMN_NAME_UP_USER_PRFILE_ID+"=?) or "
+			+ "dp.id in (select dpu."+ COLUMN_NAME_DPU_DATA_POINT_ID +" from dataPointUsers dpu where dpu." + COLUMN_NAME_DPU_USER_ID + "=? and dpu." + COLUMN_NAME_DPU_PERMISSION + ">?) or "
+			+ "dp.id in (select dpup." + COLUMN_NAME_DPUP_DATA_POINT_ID + " from dataPointUsersProfiles dpup where dpup." + COLUMN_NAME_DPUP_USER_PRFILE_ID + "=? and dpup." + COLUMN_NAME_DPUP_PERMISSION + ">?) "
+			+ "group by ds.id, ds.xid, ds.name "
+			+ "order by ds." + COLUMN_NAME_NAME;
+
 	// @formatter:on
 
 	private class DataSourceRowMapper implements RowMapper<DataSourceVO<?>> {
@@ -248,6 +300,12 @@ public class DataSourceDAO {
 		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
 		Collections.sort(objList, new DataSourceNameComparator());
 		return objList;
+	}
+
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
 	public List<DataSourceVO<?>> getDataSourcesPlc() {
@@ -335,7 +393,7 @@ public class DataSourceDAO {
 	public int insert(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -378,33 +436,81 @@ public class DataSourceDAO {
 
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final DataSourceVO<?> dataSource) {
-
+	public DataSourceVO<?> create(DataSourceVO<?> entity) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(entity));
 		}
 
-		DataSourceVO<?> oldDataSource = getDataSource(dataSource.getId());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[]{
+					entity.getXid(),
+					entity.getName(),
+					entity.getType().getId(),
+					new SerializationData().writeObject(entity)
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		entity.setId(keyHolder.getKey().intValue());
+		return entity;
+	}
 
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_UPDATE, new Object[]{
-				dataSource.getXid(),
-				dataSource.getName(),
-				new SerializationData().writeObject(dataSource),
-				dataSource.getId()}
-		);
+	@Deprecated
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
+	public List<DataSourceVO<?>> getAll() {
+		return getDataSources();
+	}
+
+	public DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException {
+		return getDataSource(id);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int dataSourceId) {
+	public int update(final DataSourceVO<?> dataSource) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
+		}
+
+		try {
+			return DAO.getInstance().getJdbcTemp().update(
+					DATA_SOURCE_UPDATE,
+					dataSource.getXid(),
+					dataSource.getName(),
+					new SerializationData().writeObject(dataSource),
+					dataSource.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("DataSource entity with id= " + dataSource.getId() + " does not exists!");
+			return 0;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public int delete(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int dataSourceId): dataSourceId" + dataSourceId);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+		try {
+			DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, dataSourceId);
+			return 0;
+		} catch (Exception e) {
+			String message = "FAILED ON DELETING Data Source with ID: ";
+			LOG.error(message + dataSourceId);
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -471,5 +577,36 @@ public class DataSourceDAO {
 			LOG.error(ex.getMessage(), ex);
 			return Collections.emptyList();
 		}
+	}
+
+	public List<DataSourceVO<?>> getDataSources(int type) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataSources(int type)");
+		}
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT_WHERE_TYPE,
+				new Object[]{type}, new DataSourceRowMapper());
+	}
+
+	public List<DataSourceVO<?>> selectDataSourcesWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
+				new DataSourceDAO.DataSourceRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP_IDENTIFIER + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 }

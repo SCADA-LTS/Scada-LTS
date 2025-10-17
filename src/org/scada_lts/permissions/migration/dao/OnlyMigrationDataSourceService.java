@@ -21,6 +21,7 @@ package org.scada_lts.permissions.migration.dao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoDataSource;
 
 import java.util.List;
@@ -74,18 +75,38 @@ public final class OnlyMigrationDataSourceService implements MangoDataSource {
 		throw new UnsupportedOperationException();
 	}
 
-	@Deprecated
-	public List<Integer> getDataSourceId(int userId) {
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Deprecated
-	public void deleteDataSourceUser(int userId) {
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Deprecated
-	public void insertPermissions(User user) {
+	@Override
+	public boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesPlc(User user) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean toggleDataSource(int id) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean toggleDataSource(String xid) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getAllDataSources() {
 		throw new UnsupportedOperationException();
 	}
 }

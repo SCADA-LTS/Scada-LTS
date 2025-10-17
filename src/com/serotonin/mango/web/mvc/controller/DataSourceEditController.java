@@ -26,6 +26,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.util.SqlDataSourceUtils;
+import com.serotonin.mango.vo.CommPortProxy;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -59,8 +61,6 @@ public class DataSourceEditController extends ParameterizableViewController {
                 // Adding a new data source? Get the type id.
                 int typeId = Integer.parseInt(request.getParameter("typeId"));
 
-                Permissions.ensureAdmin(user);
-
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
                 dataSourceVO.setId(Common.NEW_ID);
@@ -82,7 +82,6 @@ public class DataSourceEditController extends ParameterizableViewController {
             dataSourceVO = Common.ctx.getRuntimeManager().getDataSource(id);
             if (dataSourceVO == null)
                 throw new ShouldNeverHappenException("DataSource not found with id " + id);
-            Permissions.ensureDataSourcePermission(user, id);
         }
 
         // Set the id of the data source in the user object for the DWR.
@@ -96,7 +95,7 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         // Reference data
         try {
-            model.put("commPorts", Common.getCommPorts());
+            model.put("commPorts", getPorts(dataSourceVO));
         }
         catch (CommPortConfigException e) {
             model.put("commPortError", e.getMessage());
@@ -114,7 +113,15 @@ public class DataSourceEditController extends ParameterizableViewController {
         }
         model.put("userPoints", userPoints);
         model.put("analogPoints", analogPoints);
-
+        model.put("selectWithLimitLowerCaseRegex", SqlDataSourceUtils.selectWithLimitLowerCaseEscape());
         return new ModelAndView(getViewName(), model);
+    }
+
+    private static List<CommPortProxy>  getPorts(DataSourceVO<?> dataSource) throws CommPortConfigException {
+        if(DataSourceVO.Type.MODBUS_SERIAL == dataSource.getType()) {
+            return Common.getSerialPorts();
+        } else {
+            return Common.getCommPorts();
+        }
     }
 }

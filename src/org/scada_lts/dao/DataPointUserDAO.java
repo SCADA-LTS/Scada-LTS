@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +43,6 @@ import java.util.stream.Collectors;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-@Repository
 public class DataPointUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataPointUserDAO.class);
@@ -133,7 +131,7 @@ public class DataPointUserDAO {
 		});
 	}
 
-	public List<DataPointAccess> getDataPointAccessList(final int userId) {
+	private List<DataPointAccess> getDataPointAccessList(final int userId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointAccessList(final int userId) userId:" + userId);
@@ -173,6 +171,7 @@ public class DataPointUserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Deprecated
 	public void insertPermissions(final User user) {
 
 		if (LOG.isTraceEnabled()) {

@@ -1,0 +1,120 @@
+package org.scada_lts.permissions.service;
+
+import com.serotonin.mango.vo.GetExtendedNameComparator;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.PermissionException;
+import com.serotonin.mango.vo.report.ReportVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.report.ReportDAO;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSortByUser;
+
+public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User> {
+
+    private static final Log LOG = LogFactory.getLog(GetReportsWithAccess.class);
+
+    private final ReportDAO reportDAO;
+
+    public GetReportsWithAccess(ReportDAO reportDAO) {
+        this.reportDAO = reportDAO;
+    }
+
+    @Override
+    public List<ReportVO> getObjectsWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        return getAndSortByUser(user, reportDAO::getReports,
+                usr -> reportDAO.getReports().stream()
+                        .filter(reportInstance -> hasReportReadPermission(usr, reportInstance))
+                        .collect(Collectors.toList()),
+                GetExtendedNameComparator.instance);
+    }
+
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        return getObjectsWithAccess(user).stream()
+                .map(a -> new ScadaObjectIdentifier(a.getId(), a.getXid(), a.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean hasReadPermission(User user, ReportVO object) {
+        return GetReportsWithAccess.hasReportReadPermission(user, object);
+    }
+
+    @Override
+    public boolean hasSetPermission(User user, ReportVO object) {
+        return GetReportsWithAccess.hasReportSetPermission(user, object);
+    }
+
+    @Override
+    public boolean hasOwnerPermission(User user, ReportVO object) {
+        return GetReportsWithAccess.hasReportOwnerPermission(user, object);
+    }
+
+    public static boolean hasReportReadPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
+        return user.isAdmin() || report.getUserId() == user.getId();
+    }
+
+    public static boolean hasReportSetPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
+        return user.isAdmin() || report.getUserId() == user.getId();
+    }
+
+    public static boolean hasReportOwnerPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
+        return user.isAdmin() || report.getUserId() == user.getId();
+    }
+
+    public static void ensureReportReadPermission(User user, ReportVO report) {
+        if(!hasReportReadPermission(user, report)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
+    }
+
+    public static void ensureReportSetPermission(User user, ReportVO report) {
+        if(!hasReportSetPermission(user, report)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
+    }
+
+    public static void ensureReportOwnerPermission(User user, ReportVO report) {
+        if(!hasReportOwnerPermission(user, report)) {
+            throw new PermissionException("User does not have permission to access the report", user);
+        }
+    }
+}

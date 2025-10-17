@@ -2,6 +2,7 @@ package br.org.scadabr.rt.dataSource.dnp3;
 
 import java.util.List;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,8 +19,8 @@ public class DNP3Master {
 	private DNPUser user;
 	private int relativePollingPeriod = 10;
 	private int pollingCount = 0;
-	private int timeoutCount = 0;
-	private int timeoutsToReconnect = 3;
+	private volatile int timeoutCount = 0;
+	private final int timeoutsToReconnect = 3;
 
 	public void initEthernet(int sourceAddress, int slaveAddress, String host,
 			int port, int relativePollingPeriod) throws Exception {
@@ -39,38 +40,54 @@ public class DNP3Master {
 		DNPConfig config = new DNPConfig(parameters, sourceAddress,
 				slaveAddress);
 		user = new DNPUser(config);
-
-		user.init();
+		try {
+			user.init();
+		} catch (Error e) {
+			log.fatal(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw e;
+		}
 	}
 
 	private boolean reconnecting = false;
 
 	public void doPoll() throws Exception {
 		if (reconnecting) {
-			log.debug("[DNP3Master] Trying to reconnect...");
+			log.warn("[DNP3Master] Trying to reconnect...");
 			timeoutCount = 0;
 			try {
 				try {
 					user.init();
 					reconnecting = false;
-					log.debug("[DNP3Master] Reconnected!");
-				} catch (Exception e) {
-					terminate();
+					log.warn("[DNP3Master] Reconnected!");
+				} catch (Throwable e) {
+					log.warn(LoggingUtils.exceptionInfo(e));
+					try {
+						terminate();
+					} catch (Throwable ex) {
+						log.warn(LoggingUtils.exceptionInfo(ex));
+						throw ex;
+					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error(LoggingUtils.exceptionInfo(e));
+				throw e;
 			}
 		} else {
 			if (reconnectNeeded()) {
 				reconnecting = true;
-				System.out
-						.println("[DNP3Master] Conexão falhou. Terminar Conexão.");
+				log.debug("[DNP3Master] Conexão falhou. Terminar Conexão.");
 				terminate();
 				log.debug("[DNP3Master] Conexão terminada.");
-				throw new Exception("[DNP3Master] Poll failed!");
+                throw new Exception("[DNP3Master] Poll failed! User: " + this.user + ", pollingCount: " + this.pollingCount
+                        + ", relativePollingPeriod: " + this.relativePollingPeriod
+                        + ", timeoutCount: " + this.timeoutCount
+                        + ", reconnecting: " + this.reconnecting);
 			} else {
 				try {
-					log.debug("[DNP3Master] Poll " + pollingCount + " / "
+					log.warn("[DNP3Master] Poll " + pollingCount + " / "
 							+ relativePollingPeriod);
 					if (pollingCount == 0) {
 						user.sendSynch(user.buildReadStaticDataMsg());
@@ -82,10 +99,11 @@ public class DNP3Master {
 							pollingCount = 0;
 					}
 					timeoutCount = 0;
-				} catch (Exception e) {
-					log.debug("[DNP3Master] Poll failed! (Error: "
+				} catch (Throwable e) {
+					log.warn("[DNP3Master] Poll failed! (Error: "
 							+ e.getMessage() + ")");
 					timeoutCount++;
+					throw e;
 				}
 
 			}
@@ -106,7 +124,13 @@ public class DNP3Master {
 	}
 
 	public void terminate() throws Exception {
-		user.stop();
+		try {
+			user.stop();
+		} catch (Exception ex) {
+			if(ex instanceof NullPointerException)
+				throw new Exception(this.getClass().getSimpleName() + " error terminate. It probably failed to initialize." , ex);
+			throw ex;
+		}
 	}
 
 	public void sendAnalogCommand(int index, int value) throws Exception {

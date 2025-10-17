@@ -3,7 +3,7 @@
  */
 import { expect } from 'chai';
 
-import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggingTypeComponent';
+import DefaultLoggingTypeSettingsComponent from '@/views/System/SystemSettings/DefaultLoggingTypeComponent';
 import systemSettings from '../../mocks/store/systemSettingsMock';
 import dataPoint from '../../mocks/store/dataPointMock';
 
@@ -21,10 +21,10 @@ const modules = {
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		DefaultLoggingTypeSettingsComponent, 
+		DefaultLoggingTypeSettingsComponent,
 		modules,
 		{},
-		{stubs: ['VSelect', 'VIcon']}
+		{ stubs: ['VSelect', 'VIcon'] },
 	);
 }
 

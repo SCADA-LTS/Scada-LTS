@@ -21,12 +21,16 @@ package com.serotonin.mango.rt.event.handlers;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AfterWork;
-import com.serotonin.mango.util.SendMsgUtils;
+import com.serotonin.mango.util.MsgContentUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.timer.TimerTask;
+import com.serotonin.web.i18n.LocalizableMessage;
+import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -34,7 +38,12 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 
+import java.io.IOException;
 import java.util.Set;
+
+import static com.serotonin.mango.util.LoggingUtils.eventHandlerInfo;
+import static com.serotonin.mango.util.LoggingUtils.eventInfo;
+import static com.serotonin.mango.util.SendUtils.sendMsg;
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
@@ -42,28 +51,35 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private TimerTask escalationTask;
 
     private Set<String> activeRecipients;
-    private ScheduledExecuteInactiveEventService service;
-    private MailingListService mailingListService;
+    private final ScheduledExecuteInactiveEventService service;
+    private final MailingListService mailingListService;
 
     public enum EmailNotificationType implements NotificationType {
         ACTIVE("active", "ftl.subject.active"), //
         ESCALATION("escalation", "ftl.subject.escalation"), //
         INACTIVE("inactive", "ftl.subject.inactive");
 
-        String file;
-        String key;
+        private final String file;
+        private final String key;
 
         EmailNotificationType(String file, String key) {
             this.file = file;
             this.key = key;
         }
 
+        @Override
         public String getFile() {
             return file;
         }
 
+        @Override
         public String getKey() {
             return key;
+        }
+
+        @Override
+        public IMsgSubjectContent createContent(EventInstance evt, String alias) throws TemplateException, IOException {
+            return MsgContentUtils.createEmail(evt, this, alias);
         }
     }
 
@@ -73,21 +89,20 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private Set<String> inactiveRecipients;
 
     public EmailHandlerRT(EventHandlerVO vo) {
-        this.vo = vo;
+        this(vo, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_EMAIL_SEND_FAILURE, vo.getId()));
+    }
+
+    protected EmailHandlerRT(EventHandlerVO vo, SystemEventType systemEventType) {
+        super(vo, systemEventType);
         this.service = ScheduledExecuteInactiveEventService.getInstance();
         this.mailingListService = new MailingListService();
     }
 
-    public EmailHandlerRT(EventHandlerVO vo, MailingListService mailingListService) {
-        this.vo = vo;
-        this.service = ScheduledExecuteInactiveEventService.getInstance();
-        this.mailingListService = mailingListService;
-    }
-
-    public EmailHandlerRT(EventHandlerVO vo,
-                          ScheduledExecuteInactiveEventService service,
-                          MailingListService mailingListService) {
-        this.vo = vo;
+    protected EmailHandlerRT(EventHandlerVO vo,
+                             ScheduledExecuteInactiveEventService service,
+                             MailingListService mailingListService,
+                             SystemEventType systemEventType) {
+        super(vo, systemEventType);
         this.service = service;
         this.mailingListService = mailingListService;
     }
@@ -151,7 +166,13 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, null);
+        sendMsg(evt, EmailNotificationType.ACTIVE, addresses, null, new AfterWork() {
+            @Override
+            public void workFail(Throwable exception) {
+                LOG.error("Failed sending email for " + eventInfo(evt)
+                        + ", error: " + exception.getMessage());
+            }
+        }, () -> "sendActiveEmail from: " + EmailHandlerRT.class.getName() + ", " + eventInfo(evt));
     }
 
     protected Set<String> getActiveRecipients(EventInstance evt) {
@@ -173,10 +194,25 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, vo.getAlias());
+        sendEmail(evt, EmailNotificationType.ACTIVE, addresses);
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, notificationType, addresses, vo.getAlias());
+        sendMsg(evt, notificationType, addresses, vo.getAlias(), new AfterWork() {
+            @Override
+            public void workFail(Throwable exception) {
+                String msg = "Failed sending email for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
+                        + ", error: " + exception.getMessage();
+                LOG.error(msg);
+                LocalizableMessage message = new LocalizableMessage("event.email.failure",
+                        vo.getAlias(), addresses, msg);
+                SystemEventType.raiseEvent(getEventType(), System.currentTimeMillis(), true, message);
+            }
+
+            @Override
+            public void workSuccess() {
+                SystemEventType.returnToNormal(getEventType(), System.currentTimeMillis());
+            }
+        }, () -> eventHandlerInfo(getVo()) + ", " + eventInfo(evt));
     }
 }

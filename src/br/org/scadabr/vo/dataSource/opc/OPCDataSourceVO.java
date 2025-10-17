@@ -42,6 +42,9 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 		eventTypes.add(createEventType(
 				OPCDataSource.POINT_WRITE_EXCEPTION_EVENT,
 				new LocalizableMessage("event.ds.dataSource")));
+		eventTypes.add(createEventType(
+				OPCDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
 
 	}
 
@@ -53,6 +56,8 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 				"POINT_READ_EXCEPTION");
 		EVENT_CODES.addElement(OPCDataSource.POINT_WRITE_EXCEPTION_EVENT,
 				"POINT_WRITE_EXCEPTION");
+		EVENT_CODES.addElement(OPCDataSource.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+				"UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
 
 	}
 
@@ -68,8 +73,7 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 
 	@Override
 	public LocalizableMessage getConnectionDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LocalizableMessage("common.default", this.server);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package org.scada_lts.permissions.migration;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -31,16 +31,16 @@ public class MigrationPermissionsUtilsTest {
 
     @Before
     public void config() {
-        dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPoint1 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint1.setId(11);
 
-        dataPoint2 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPoint2 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint2.setId(22);
 
-        dataPoint3 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPoint3 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint3.setId(33);
 
-        dataPoint4 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPoint4 = TestUtils.newDefaultEmptyDataPointVO();
         dataPoint4.setId(44);
 
         user1 = TestUtils.newUser(123);
@@ -165,7 +165,7 @@ public class MigrationPermissionsUtilsTest {
         VirtualPointLocatorVO pointLocatorSettable = new VirtualPointLocatorVO();
         pointLocatorSettable.setSettable(true);
 
-        DataPointVO dataPointSettable = new DataPointVO(LoggingType.ON_CHANGE.getCode());
+        DataPointVO dataPointSettable = TestUtils.newDefaultEmptyDataPointVO();
         dataPointSettable.setId(5);
         dataPointSettable.setPointLocator(pointLocatorSettable);
 

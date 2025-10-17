@@ -49,6 +49,23 @@ export const dataPoint = {
 				resolve(true);
 			});
 		},
+
+		getDataPointValue({ dispatch }, datapointId) {
+			return new Promise((resolve, reject) => {
+				resolve({value: 10});
+			})
+		},
+
+		getDataPointValueFromTimeperiod({dispatch}, payload) {
+			return new Promise((resolve) => {
+				const point = {
+					name: "TestPoint",
+					type: "Numeric",
+					values: [ { value: "11.0", ts: 1637237555393}],
+				}
+				resolve(point);
+			});
+		}
 	},
 };
 

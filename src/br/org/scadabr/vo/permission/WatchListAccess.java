@@ -7,7 +7,6 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.mango.service.WatchListService;
@@ -29,7 +28,12 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("watchlistXid", new WatchListDao().getWatchList(id).getXid());
+		WatchList watchList = new WatchListService().getWatchList(id);
+		if(watchList != null) {
+			map.put("watchlistXid", watchList.getXid());
+		} else {
+			throw new NullPointerException("watchlistXid is null!");
+		}
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 

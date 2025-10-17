@@ -24,6 +24,7 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.view.stats.AnalogStatistics;
 import com.serotonin.mango.view.stats.IValueTime;
@@ -38,6 +39,8 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.serotonin.mango.rt.dataImage.PointValueState.newState;
+import static org.scada_lts.utils.PointValueStateUtils.isBackdated;
 
 public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
     private static final Log LOG = LogFactory.getLog(DataPointNonSyncRT.class);
@@ -60,13 +63,6 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
-    }
-    public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
-        super(vo, pointLocator, cacheSize, maxSize);
-    }
-
-    public DataPointNonSyncRT(DataPointVO vo) {
-        super(vo);
     }
 
     @Override
@@ -113,10 +109,9 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
             return;
         }
 
-        PointValueTime oldValue = getOldAndSetNew(newValue);
+        PointValueTime oldValue = getOldAndSetNew(newValue, source);
 
-        boolean backdated = oldValue != null
-                && newValue.getTime() < oldValue.getTime();
+        boolean backdated = isBackdated(newValue, newState(oldValue, PointValueState.empty(), getVO()), source);
 
         // Determine whether the new value qualifies for logging.
         boolean logValue;
@@ -156,18 +151,21 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
             case DataPointVO.LoggingTypes.INTERVAL:
                 if (!backdated)
                     intervalSave(newValue);
+                //Always is 'logValue = false' because in INTERVAL Logging Mode individual values are not saved before aggregation
+                logValue = false;
+                break;
             default:
                 logValue = false;
         }
 
         if (saveValue){
-            this.notifyWebSocketListeners(newValue.getValue().toString());
+            notifyWebSocketSubscribers(newValue.getValue());
             getPointValueCache().savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
         }
 
 
         // Ignore historical values.
-        if (oldValue == null || newValue.getTime() >= oldValue.getTime()) {
+        if (!backdated) {
             fireEvents(oldValue, newValue, source != null, false);
         } else
             fireEvents(null, newValue, false, true);
@@ -175,14 +173,14 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     @Override
     public PointValueTime getPointValue() {
-        return getOldAndSetNew(null);
+        return getOldAndSetNew(null, null);
     }
 
-    private PointValueTime getOldAndSetNew(PointValueTime newValue) {
+    private PointValueTime getOldAndSetNew(PointValueTime newValue, SetPointSource source) {
         if(newValue == null) {
             return pointValue;
         }
-        if(pointValue == null || newValue.getTime() >= pointValue.getTime()) {
+        if(!isBackdated(newValue, newState(pointValue, PointValueState.empty(), getVO()), source)) {
             PointValueTime oldValue = pointValue;
             pointValue = newValue;
             return oldValue;
@@ -287,6 +285,10 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
 
     @Override
     public void scheduleTimeout(long fireTime) {
+        if(Common.isTerminating()) {
+            LOG.info("Scada-LTS terminating! fireTime:" + fireTime + " : " + LoggingUtils.dataPointInfo(getVO()));
+            return;
+        }
         synchronized (intervalLoggingLock) {
             DataPointVO vo = getVO();
             MangoValue value;

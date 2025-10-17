@@ -20,17 +20,18 @@ package org.scada_lts.dao.pointvalues;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.model.point.PointValueTypeOfREST;
+import org.scada_lts.mango.service.PointValueService;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 
 /** 
@@ -39,6 +40,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
  * 
  */
 @Repository
+@Deprecated
 public class PointValueDAO4REST {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueDAO4REST.class);
@@ -77,30 +79,15 @@ public class PointValueDAO4REST {
 				new RuntimeException("Value not compatible with type (double)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_STRING) {
-			
-			pvt = new PointValueTime(value, new Date().getTime() );
-			Object[] resultPointValue = new PointValueDAO().createNoTransaction(dpid, DataTypes.ALPHANUMERIC, 0, new Date().getTime());
-			PointValueAdnnotation pva = new PointValueAdnnotation();
-			Long pointValueId = (Long) resultPointValue[0];
-			pva.setPointValueId(pointValueId);
-			pva.setSourceType(DataTypes.ALPHANUMERIC);
-			
-			int lengthShortValue = 128; 
-			if (value.length()<=lengthShortValue) {
-			    pva.setTextPointValueShort(value);
-			} else {
-				pva.setTextPointValueLong(value);
-			}
-			
-			new PointValueAdnnotationsDAO().create(pva);
-			
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("save data string:" + dpid);
-			}
-						
+			pvt = new AnnotatedPointValueTime(MangoValue.objectToValue(value), new Date().getTime(), SetPointSource.Types.REST_API, 0);
 		} else {
 			new RuntimeException("Unknown value type");
-		}	
+		}
+
+		if(pvt != null) {
+			PointValueService pointValueService = new PointValueService();
+			pointValueService.savePointValue(dpid, pvt);
+		}
 		
 		return pvt;
 	}
