@@ -1161,7 +1161,7 @@ public class ImportTask extends ProgressiveTask {
 		profileImporter.importUsersProfile(profileJson, response, reader, this);
 	}
 
-	public List<JsonValue> getUsers() {
+	public List<JsonValue> _getUsers() {
 		return users;
 	}
 

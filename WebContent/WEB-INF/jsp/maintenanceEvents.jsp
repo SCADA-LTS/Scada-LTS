@@ -158,9 +158,9 @@
     function updateMaintenanceEvent(me) {
         $("me"+ me.id +"Name").innerHTML = me.description;
         if (me.disabled)
-            updateImg("me"+ me.id +"Img", "images/hammer_disabled.png", "<sst:i18n key="maintenanceEvents.meDisabled" escapeDQuotes="true"/>", true);
+            updateImg("me"+ me.id +"Img", "images/hammer_disabled.png", "<spring:message code="maintenanceEvents.meDisabled" />", true);
         else
-            updateImg("me"+ me.id +"Img", "images/hammer.png", "<sst:i18n key="maintenanceEvents.me" escapeDQuotes="true"/>", true);
+            updateImg("me"+ me.id +"Img", "images/hammer.png", "<spring:message code="maintenanceEvents.me" />", true);
     }
     
     function deleteMaintenanceEvent() {
@@ -320,9 +320,9 @@
         var display = editingMaintenanceEvent.id != ${NEW_ID};
     	
     	if (active)
-            updateImg("toggleImg", "images/hammer_activated.png", "<sst:i18n key="maintenanceEvents.activated" escapeDQuotes="true"/>", display);
+            updateImg("toggleImg", "images/hammer_activated.png", "<spring:message code="maintenanceEvents.activated" />", display);
     	else
-            updateImg("toggleImg", "images/hammer_deactivated.png", "<sst:i18n key="maintenanceEvents.deactivated" escapeDQuotes="true"/>", display);
+            updateImg("toggleImg", "images/hammer_deactivated.png", "<spring:message code="maintenanceEvents.deactivated" />", display);
     }
     
     function toggleMaintenanceEvent() {
