@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.event.type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -28,6 +29,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.vo.TimePeriod;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ChangeComparable;
@@ -36,6 +38,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
 
 @JsonRemoteEntity
 public class AuditEventType extends EventType {
@@ -170,6 +173,12 @@ public class AuditEventType extends EventType {
                 .getPeriodDescription(periodType, period)));
     }
 
+    public static void addPeriodMessage(List<LocalizableMessage> list, String propertyNameKey, TimePeriod periodType,
+                                        int period) {
+        list.add(new LocalizableMessage("event.audit.property", new LocalizableMessage(propertyNameKey), Common
+                .getPeriodDescription(periodType, period)));
+    }
+
     public static void addExportCodeMessage(List<LocalizableMessage> list, String propertyNameKey, ExportCodes codes,
             int id) {
         list.add(new LocalizableMessage("event.audit.property", new LocalizableMessage(propertyNameKey),
@@ -179,6 +188,10 @@ public class AuditEventType extends EventType {
     public static void addDataTypeMessage(List<LocalizableMessage> list, String propertyNameKey, int dataTypeId) {
         list.add(new LocalizableMessage("event.audit.property", new LocalizableMessage(propertyNameKey), DataTypes
                 .getDataTypeMessage(dataTypeId)));
+    }
+
+    public static void addDataTypeMessage(List<LocalizableMessage> list, String propertyNameKey, OpcUaDataType dataType) {
+        list.add(new LocalizableMessage("event.audit.property", new LocalizableMessage(propertyNameKey), dataType.getName()));
     }
 
     public static void maybeAddPropertyChangeMessage(List<LocalizableMessage> list, String propertyNameKey,
@@ -213,6 +226,13 @@ public class AuditEventType extends EventType {
                     Common.getPeriodDescription(toPeriodType, toPeriod));
     }
 
+    public static void maybeAddPeriodChangeMessage(List<LocalizableMessage> list, String propertyNameKey,
+                                                   TimePeriod fromPeriodType, int fromPeriod, TimePeriod toPeriodType, int toPeriod) {
+        if (fromPeriodType != toPeriodType || fromPeriod != toPeriod)
+            addPropertyChangeMessage(list, propertyNameKey, Common.getPeriodDescription(fromPeriodType, fromPeriod),
+                    Common.getPeriodDescription(toPeriodType, toPeriod));
+    }
+
     public static void maybeAddExportCodeChangeMessage(List<LocalizableMessage> list, String propertyNameKey,
             ExportCodes exportCodes, int fromId, int toId) {
         if (fromId != toId)
@@ -225,6 +245,13 @@ public class AuditEventType extends EventType {
         if (fromDataTypeId != toDataTypeId)
             addPropertyChangeMessage(list, propertyNameKey, DataTypes.getDataTypeMessage(fromDataTypeId),
                     DataTypes.getDataTypeMessage(toDataTypeId));
+    }
+
+    public static void maybeAddObjectChangeMessage(List<LocalizableMessage> list, String propertyNameKey,
+                                                   OpcUaDataType fromDataType, OpcUaDataType toDataType) {
+        if (fromDataType != toDataType)
+            addPropertyChangeMessage(list, propertyNameKey, fromDataType,
+                    toDataType);
     }
 
     private static LocalizableMessage getBooleanMessage(boolean value) {
@@ -306,11 +333,7 @@ public class AuditEventType extends EventType {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + auditEventTypeId;
-        result = prime * result + referenceId;
-        return result;
+        return Objects.hash(auditEventTypeId, referenceId, getClass());
     }
 
     @Override

@@ -19,17 +19,21 @@ package org.scada_lts.web.mvc.controller;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
+import org.scada_lts.web.mvc.api.EngineeringUnitJson;
+import com.serotonin.mango.vo.EngineeringUnitsTypes;
 import com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.utils.XidUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -110,6 +114,8 @@ public class DataPointEditController {
             id = Integer.parseInt(idStr);
 
         DataPointVO dataPoint = dataPointService.getDataPoint(id);
+        if(dataPoint == null)
+            throw new IllegalArgumentException("Data point does not exist for id: " + id);
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
@@ -120,7 +126,9 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		return "dataPointEdit";
+        model.addAttribute("unitsMap", EngineeringUnitsTypes.getUnitsGroupByKey());
+        model.addAttribute("unitsListJson", getUnitsListAsJson());
+        return "dataPointEdit";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
@@ -152,7 +160,9 @@ public class DataPointEditController {
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
-		return "dataPointEdit";
+        model.addAttribute("unitsMap", EngineeringUnitsTypes.getUnitsGroupByKey());
+        model.addAttribute("unitsListJson", getUnitsListAsJson());
+        return "dataPointEdit";
 	}
 	
     private void executeUpdate(HttpServletRequest request, DataPointVO point, Map<String, String> errors) {
@@ -261,4 +271,24 @@ public class DataPointEditController {
                 point.setPurgePeriod(1);
         }
     }
+
+    private static String getUnitsListAsJson() {
+        List<EngineeringUnitJson> units = EngineeringUnitsTypes.getUnits().stream()
+                .map(EngineeringUnitJson::new)
+                .collect(Collectors.toList());
+
+        ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(units);
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            try {
+                return objectMapper.writeValueAsString(List.of(new EngineeringUnitJson(EngineeringUnitsTypes.NO_UNITS)));
+            } catch (Throwable ex) {
+                LOG.error(ex.getMessage());
+                return "[]";
+            }
+        }
+    }
+
 }

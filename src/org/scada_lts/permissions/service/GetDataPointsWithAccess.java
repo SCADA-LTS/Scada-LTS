@@ -1,8 +1,7 @@
 package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.*;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +11,8 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
 
 public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO, User> {
 
@@ -29,9 +30,9 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return dataPointDAO.getDataPoints();
-        return dataPointDAO.selectDataPointsWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, dataPointDAO::getDataPoints,
+                dataPointDAO::selectDataPointsWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override
@@ -40,9 +41,9 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return dataPointDAO.findIdentifiers();
-        return dataPointDAO.selectDataPointIdentifiersWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, dataPointDAO::findIdentifiers,
+                dataPointDAO::selectDataPointIdentifiersWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override
@@ -63,6 +64,12 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     public static List<DataPointVO> filteringByAccess(User user, List<DataPointVO> dataPoints) {
         return dataPoints.stream()
                 .filter(point -> Permissions.hasDataPointReadPermission(user, point))
+                .collect(Collectors.toList());
+    }
+
+    public static List<DataPointVO> filteringBySetAccess(User user, List<DataPointVO> dataPoints) {
+        return dataPoints.stream()
+                .filter(point -> Permissions.hasDataPointSetPermission(user, point))
                 .collect(Collectors.toList());
     }
 

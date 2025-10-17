@@ -18,7 +18,7 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
-<tag:page dwr="DataPointEditDwr">
+<tag:page dwr="DataPointEditDwr" onload="init">
 
      <link href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
      <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
@@ -69,20 +69,28 @@
     <input type="hidden" id="taskName" name="asdf" value=""/>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td valign="top">
+        <td valign="top" width="60%">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
-          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
         </td>
-        <td valign="top">
+        <td valign="top" width="40%">
           <%@ include file="/WEB-INF/jsp/pointEdit/eventDetectors.jsp" %>
         </td>
       </tr>
       <tr>
         <td>
             <script>
+                    function init() {
+                        jQuery("#selected_base_on_existing_point_chooser").chosen({
+                            allow_single_deselect: true,
+                            placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
+                            search_contains: true,
+                            width: "400px"
+                        });
+                    }
 
                    function checkGetAlertError() {
                      return jQuery("#checkGetAlertError").prop('checked');
@@ -396,13 +404,9 @@
                       }
                   }
                   // const
-                  var pathArray = location.href.split( '/' );
-                  var protocol = pathArray[0];
-                  var host = pathArray[2];
-                  var appScada = pathArray[3];
                   var myLocation;
                   if (!myLocation) {
-                    myLocation = protocol + "//" + host + "/" + appScada + "/";
+                    myLocation = getAppLocation();
                    }
 
                    var arrDictLoggingType = ["", "When point value changes", "All data", "Do not log", "Interval", "When point timestamp changes"];
@@ -813,7 +817,7 @@
                     jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                                                            success: function(properties){
                                                                 setConfig(properties);
                                                            },
@@ -836,7 +840,7 @@
                        jQuery.ajax({
                             type: "GET",
                             dataType: "json",
-                            url:myLocation+"/api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
+                            url:myLocation+"api/point_properties/getPropertiesBaseOnId/"+idPointConfigurationToBaseOnExistingPoint,
                            					        	   success: function(properties){
 
                                                                     let bCheckedType = checkType(properties.dataTypeId);
@@ -887,6 +891,39 @@
                            					        	   }
                            					        	});
                   }
+
+                    jQuery(document).ready(function(){
+                        (function($) {
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+                        })(jQuery);
+                    });
+
+                   jQuery(document).ready(function() {
+                       function updateSuffixForEngineeringUnits() {
+                           let value = jQuery("select[name='engineeringUnits']").val();
+                           let unitValue = parseInt(value);
+                           let units = ${unitsListJson};
+                           units.forEach(unit => {
+                                if(unit.value === unitValue) {
+                                    jQuery("#textRendererAnalogFormat").val('#.#');
+                                    jQuery("#textRendererAnalogSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                    jQuery("#textRendererPlainSuffix").val(' ' + unescapeHtml(unit.suffix));
+                                }
+                           });
+                       }
+
+                       jQuery("select[name='engineeringUnits']").on("change", function() {
+                           updateSuffixForEngineeringUnits();
+                       });
+
+                       let suffix = jQuery("#textRendererAnalogSuffix").val();
+
+                       if(!suffix){
+                           updateSuffixForEngineeringUnits();
+                       }
+                   });
+
             </script>
 
         </td>
@@ -901,26 +938,26 @@
                 <div class="borderDiv marB marR" style="margin:20px; padding:10px; border-color:blue; max-width: 800px;">
                     <table width="100%" cellpadding="0" cellspacing="0">
                         <tr><td colspan="4">
-                            <span class="smallTitle"> <fmt:message key="pointEdit.basing_on.title"/></span>
+                            <span class="smallTitle"> <spring:message code="pointEdit.basing_on.title"/></span>
                         </td></tr>
 
                         <tr>
-                            <td class="formLabelRequired"><fmt:message key="pointEdit.basing_on.select"/></td>
+                            <td class="formLabelRequired"><spring:message code="pointEdit.basing_on.select"/></td>
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
                                     <c:forEach items="${userPoints}" var="point">
-                                        <sst:option value="${point.id}">${point.extendedName}</sst:option>
+                                        <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
                                     </c:forEach>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input id="baseOnExistingPointBtn" type="button" value="<fmt:message key="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
+                                <input id="baseOnExistingPointBtn" type="button" value="<spring:message code="pointEdit.basing_on.apply"/>" onclick="baseOnExistingPoint()">
                             </td>
                             <td colspan="3">
                                 <input type="checkbox" id="checkGetAlertError" value="true" checked>
-                                <label for="checkGetAlertError"><fmt:message key="pointEdit.basing_on.warning_on"/></label>
+                                <label for="checkGetAlertError"><spring:message code="pointEdit.basing_on.warning_on"/></label>
                             </td>
                         </tr>
                     </table>

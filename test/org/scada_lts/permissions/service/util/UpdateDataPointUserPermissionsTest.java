@@ -1,6 +1,6 @@
 package org.scada_lts.permissions.service.util;
 
-import br.org.scadabr.db.utils.TestUtils;
+import utils.TestUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Test;

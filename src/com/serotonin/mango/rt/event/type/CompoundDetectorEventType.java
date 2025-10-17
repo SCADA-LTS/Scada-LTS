@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -87,10 +88,7 @@ public class CompoundDetectorEventType extends EventType {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + compoundDetectorId;
-        return result;
+        return Objects.hash(compoundDetectorId, getClass());
     }
 
     @Override

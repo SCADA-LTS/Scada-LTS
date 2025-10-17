@@ -45,7 +45,7 @@
   
   function saveCommentCB(comment) {
       if (!comment)
-          alert("<fmt:message key="notes.enterComment"/>");
+          alert("<spring:message code="notes.enterComment"/>");
       else {
           closeCommentDialog();
           
@@ -58,7 +58,7 @@
           else if (commentTypeId == <%= UserComment.TYPE_POINT %>)
               commentsNode = $("pointComments"+ commentReferenceId);
           commentsNode.appendChild(content);
-          $("comment"+ comment.ts +"UserTime").textContent = comment.prettyTime + ' <fmt:message key="notes.by"/> ' + comment.username;
+          $("comment"+ comment.ts +"UserTime").textContent = comment.prettyTime + ' <spring:message code="notes.by"/> ' + comment.username;
           $("comment"+ comment.ts +"Text").textContent = comment.comment;
       }
   }
@@ -83,15 +83,15 @@
 </style>
 
 <div dojoType="dialog" id="CommentDialog" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250">
-  <span class="smallTitle"><fmt:message key="notes.addNote"/></span>
+  <span class="smallTitle"><spring:message code="notes.addNote"/></span>
   <table>
     <tr>
       <td><textarea rows="8" cols="50" id="commentText"></textarea></td>
     </tr>
     <tr>
       <td align="center">
-        <input type="button" value="<fmt:message key="notes.save"/>" onclick="saveComment();"/>
-        <input type="button" value="<fmt:message key="notes.cancel"/>" onclick="closeCommentDialog();"/>
+        <input type="button" value="<spring:message code="notes.save"/>" onclick="saveComment();"/>
+        <input type="button" value="<spring:message code="notes.cancel"/>" onclick="closeCommentDialog();"/>
       </td>
     </tr>
   </table>
@@ -101,7 +101,7 @@
   <tr id="comment_TEMPLATE_">
     <td valign="top" width="16"><tag:img png="comment" title="notes.note"/></td>
     <td valign="top">
-      <span id="comment_TEMPLATE_UserTime" class="copyTitle"><fmt:message key="notes.timeByUsername"/></span><br/>
+      <span id="comment_TEMPLATE_UserTime" class="copyTitle"><spring:message code="notes.timeByUsername"/></span><br/>
       <span id="comment_TEMPLATE_Text"></span>
     </td>
   </tr>

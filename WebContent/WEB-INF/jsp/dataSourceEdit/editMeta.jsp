@@ -22,15 +22,15 @@
 
 <script type="text/javascript">
   var pointsArray = new Array();
-  var contextArray = new Array();
+  var scriptPointsContext;
   
   function initImpl() {
       <c:forEach items="${userPoints}" var="dp">
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
-            name : '${sst:quotEncode(dp.extendedName)}',
-            xid : '${dp.xid}',
-            type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
+            name : "<c:out value="${dp.extendedName}"/>",
+            xid : "<c:out value="${dp.xid}"/>",
+            type : "<sst:i18n message="${dp.dataTypeMessage}"/>"
         };
       </c:forEach>
       
@@ -50,7 +50,7 @@
      // pointListColumnFunctions.push(function(p) {
      //     var id = "generateImg"+ p.id;
      //     var onclick = "generateHistory("+ p.id +")";
-     //     return writeImage(id, null, "clock-history", "<fmt:message key="dsEdit.meta.generate"/>", onclick);
+     //     return writeImage(id, null, "clock-history", "<spring:message code="dsEdit.meta.generate"/>", onclick);
      // });
      return null;
   }
@@ -68,11 +68,14 @@
   }
   
   function editPointCBImpl(locator) {
-      contextArray.length = 0;
-      for (var i=0; i<locator.context.length; i++)
-          addToContextArray(locator.context[i].key, locator.context[i].value);
-      writeContextArray();
-      
+      if (this.scriptPointsContext) {
+         for (var i = 0; i < locator.context.length; i++) {
+             this.scriptPointsContext.addToContextArray(locator.context[i].key, locator.context[i].value);
+         }
+         this.scriptPointsContext.writeContextArray();
+      } else {
+         this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
+      }
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);
@@ -86,7 +89,7 @@
   }
   
   function savePointImpl(locator) {
-      locator.context = createContextArray();
+      locator.context = this.scriptPointsContext.convertToSave();
       locator.script = $get("script");
       locator.dataTypeId = $get("dataTypeId");
       locator.settable = $get("settable");
@@ -97,108 +100,10 @@
       
       DataSourceEditDwr.saveMetaPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
-  
-  function addPointToContext() {
-      var pointId = $get("allPointsList");
-      addToContextArray(pointId, "p"+ pointId);
-      writeContextArray();
-  }
-  
-  function addToContextArray(pointId, scriptVarName) {
-      var data = getElement(pointsArray, pointId);
-      if (data) {
-          // Missing names imply that the point was deleted, so ignore.
-          contextArray[contextArray.length] = {
-              pointId : pointId,
-              pointName : data.name,
-              xid : data.xid,
-              pointType : data.type,
-              scriptVarName : scriptVarName
-          };
-      }
-  }
-  
-  function removeFromContextArray(pointId) {
-      for (var i=contextArray.length-1; i>=0; i--) {
-          if (contextArray[i].pointId == pointId)
-              contextArray.splice(i, 1);
-      }
-      writeContextArray();
-  }
-  
-  function writeContextArray() {
-      dwr.util.removeAllRows("contextTable");
-      if (contextArray.length == 0) {
-          show($("contextTableEmpty"));
-          hide($("contextTableHeaders"));
-      }
-      else {
-          hide($("contextTableEmpty"));
-          show($("contextTableHeaders"));
-          dwr.util.addRows("contextTable", contextArray,
-              [
-                  function(data) { return data.pointName; },
-                  function(data) { return data.xid; },
-                  function(data) { return data.pointType; },
-                  function(data) {
-                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
-                                  "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
-                  },
-                  function(data) { 
-                          return "<img src='images/bullet_delete.png' class='ptr' "+
-                                  "onclick='removeFromContextArray("+ data.pointId +")'/>";
-                  }
-              ],
-              {
-                  rowCreator:function(options) {
-                      var tr = document.createElement("tr");
-                      tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                      return tr;
-                  }
-              });
-      }
-      updatePointsList();
-  }
-  
-  function updatePointsList() {
-      dwr.util.removeAllOptions("allPointsList");
-      var availPoints = new Array();
-      for (var i=0; i<pointsArray.length; i++) {
-          var found = false;
-          for (var j=0; j<contextArray.length; j++) {
-              if (contextArray[j].pointId == pointsArray[i].id) {
-                  found = true;
-                  break;
-              }
-          }
-          if (!found)
-              availPoints[availPoints.length] = pointsArray[i];
-      }
-      dwr.util.addOptions("allPointsList", availPoints, "id", "name");
-      jQuery("#allPointsList").trigger('chosen:updated');
-  }
-  
-  function updateScriptVarName(pointId, scriptVarName) {
-      for (var i=contextArray.length-1; i>=0; i--) {
-          if (contextArray[i].pointId == pointId)
-              contextArray[i].scriptVarName = scriptVarName;
-      }
-  }
-  
+
   function validateScript() {
       hideContextualMessages("pointProperties");
-      DataSourceEditDwr.validateScript($get("script"), createContextArray(), $get("dataTypeId"), validateScriptCB);
-  }
-  
-  function createContextArray() {
-      var context = new Array();
-      for (var i=0; i<contextArray.length; i++) {
-          context[context.length] = {
-              key : contextArray[i].pointId,
-              value : contextArray[i].scriptVarName
-          };
-      }
-      return context;
+      DataSourceEditDwr.validateScript($get("script"), this.scriptPointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
   }
   
   function validateScriptCB(response) {
@@ -217,14 +122,14 @@
   });
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.meta.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.meta.desc"/></c:set>
 <c:set var="dsHelpId" value="metaDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="metaPP">
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.pointDataType"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.pointDataType"/></td>
     <td class="formField">
       <select id="dataTypeId">
         <tag:dataTypeOptions excludeImage="true"/>
@@ -233,26 +138,26 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     <td class="formField"><input type="checkbox" id="settable"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.scriptContext"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
       <select id="allPointsList"></select>
-      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
+      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">
-          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
+          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
         </tbody>
         <tbody id="contextTableHeaders" style="display:none;">
           <tr class="smRowHeader">
-            <td><fmt:message key="dsEdit.meta.pointName"/></td>
-            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
-            <td><fmt:message key="dsEdit.pointDataType"/></td>
-            <td><fmt:message key="dsEdit.meta.var"/></td>
+            <td><spring:message code="dsEdit.meta.pointName"/></td>
+            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+            <td><spring:message code="dsEdit.pointDataType"/></td>
+            <td><spring:message code="dsEdit.meta.var"/></td>
             <td></td>
           </tr>
         </tbody>
@@ -263,35 +168,35 @@
   
   <tr>
     <td class="formLabelRequired">
-      <fmt:message key="dsEdit.meta.script"/> <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/>
+      <spring:message code="dsEdit.meta.script"/> <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/>
     </td>
     <td class="formField"><textarea id="script" rows="10" cols="50"/></textarea></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.event"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.event"/></td>
     <td class="formField">
       <select id="updateEvent" onchange="updateEventChanged()">
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE %>"/>"><fmt:message key="dsEdit.meta.event.context"/></option>
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE %>"/>"><fmt:message key="dsEdit.meta.event.context.change"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.MINUTES %>"/>"><fmt:message key="dsEdit.meta.event.minute"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.HOURS %>"/>"><fmt:message key="dsEdit.meta.event.hour"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.DAYS %>"/>"><fmt:message key="dsEdit.meta.event.day"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.WEEKS %>"/>"><fmt:message key="dsEdit.meta.event.week"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.MONTHS %>"/>"><fmt:message key="dsEdit.meta.event.month"/></option>
-        <option value="<c:out value="<%= Common.TimePeriods.YEARS %>"/>"><fmt:message key="dsEdit.meta.event.year"/></option>
-        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>"/>"><fmt:message key="dsEdit.meta.event.cron"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE %>"/>"><spring:message code="dsEdit.meta.event.context"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE %>"/>"><spring:message code="dsEdit.meta.event.context.change"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.MINUTES %>"/>"><spring:message code="dsEdit.meta.event.minute"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.HOURS %>"/>"><spring:message code="dsEdit.meta.event.hour"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.DAYS %>"/>"><spring:message code="dsEdit.meta.event.day"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.WEEKS %>"/>"><spring:message code="dsEdit.meta.event.week"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.MONTHS %>"/>"><spring:message code="dsEdit.meta.event.month"/></option>
+        <option value="<c:out value="<%= Common.TimePeriods.YEARS %>"/>"><spring:message code="dsEdit.meta.event.year"/></option>
+        <option value="<c:out value="<%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>"/>"><spring:message code="dsEdit.meta.event.cron"/></option>
       </select>
     </td>
   </tr>
   
   <tr id="updateCronPatternRow">
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.event.cron"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.event.cron"/></td>
     <td class="formField"><input id="updateCronPattern" type="text"/> <tag:help id="cronPatterns"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.meta.delay"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.meta.delay"/></td>
     <td class="formField">
         <input id="executionDelaySeconds" type="text" class="formShort"/>
         <sst:select id="executionDelayPeriodTypeCode">

@@ -103,7 +103,7 @@ public class UploadBackgroundFileUtilsTest {
     public void config() {
         ContextWrapper contextWrapper = mock(ContextWrapper.class);
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getRealPath(File.separator)).thenReturn("WebContent" + File.separator);
+        when(servletContext.getRealPath(File.separator)).thenReturn(PathSecureUtils.normalizePath("WebContent").toString());
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
         Common.ctx = contextWrapper;
     }

@@ -53,6 +53,8 @@ import com.serotonin.mango.vo.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import static java.util.stream.Collectors.toList;
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getUploadsSystemFilePaths;
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getUploadsSystemFileToWritePath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.*;
 import static org.scada_lts.utils.StaticImagesUtils.getUploadsSystemFilePath;

@@ -60,6 +60,8 @@
 
   <bean id="messageSource" class="com.serotonin.web.i18n.Utf8ResourceBundleMessageSource">
     <property name="basename"><value>messages</value></property>
+    <property name="useCodeAsDefaultMessage" value="true"/>
+    <property name="defaultEncoding" value="UTF-8"/>
   </bean>
 
   <cache:annotation-driven cache-manager="ehCacheManager" />
@@ -233,10 +235,10 @@
 
   <!-- Quartz -->
 
-  <bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory"/>
-  <bean id="scheduler" class="org.quartz.Scheduler" factory-method="getScheduler" factory-bean="schedulerFactory"/>
+  <bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory" />
+  <bean id="scheduler" class="org.quartz.Scheduler" factory-method="getScheduler" factory-bean="schedulerFactory" />
 
-  <bean id="scadaScheduler" class="org.scada_lts.quartz.ScadaScheduler" destroy-method="destroy" init-method="init">
+  <bean id="scadaScheduler" class="org.scada_lts.quartz.ScadaScheduler" destroy-method="destroy" init-method="init" >
     <constructor-arg ref="scheduler"/>
   </bean>
 
@@ -277,6 +279,26 @@
     <constructor-arg ref="scadaScheduler"/>
     <constructor-arg ref="everySecondTrigger"/>
     <constructor-arg ref="everySecondJobDetail"/>
+  </bean>
+
+  <!-- Quartz EverySecondTool -->
+
+  <bean id="everySecondToolTrigger" class="org.quartz.CronTrigger">
+    <constructor-arg value="Quartz - trigger-EverySecondToolTrigger"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="0/1 * * ? * *"/>
+  </bean>
+
+  <bean id="everySecondToolJobDetail" class="org.quartz.JobDetail">
+    <constructor-arg value="Quartz - job-EverySecondTool"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="org.scada_lts.quartz.EverySecondTool" type="java.lang.Class"/>
+  </bean>
+
+  <bean id="everySecondToolScheduler" class="org.scada_lts.quartz.CronTriggerScheduler" destroy-method="stop">
+    <constructor-arg ref="scadaScheduler"/>
+    <constructor-arg ref="everySecondToolTrigger"/>
+    <constructor-arg ref="everySecondToolJobDetail"/>
   </bean>
 
   <!-- Quartz DataSourcePointsCache -->
@@ -335,4 +357,7 @@
     <constructor-arg ref="updatePendingEventsTrigger"/>
     <constructor-arg ref="updatePendingEventsJobDetail"/>
   </bean>
+
+  <bean id="opcUaTrustListManager" class="org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaTrustListManager"
+        destroy-method="close" lazy-init="true"/>
 </beans>

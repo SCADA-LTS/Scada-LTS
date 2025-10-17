@@ -28,6 +28,8 @@ import br.org.scadabr.vo.dataSource.iec101.IEC101EthernetDataSourceVO;
 import br.org.scadabr.vo.dataSource.iec101.IEC101SerialDataSourceVO;
 import br.org.scadabr.vo.dataSource.nodaves7.NodaveS7DataSourceVO;
 import br.org.scadabr.vo.dataSource.opc.OPCDataSourceVO;
+import com.serotonin.mango.vo.GetExtendedName;
+import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import cc.radiuino.scadabr.vo.datasource.radiuino.RadiuinoDataSourceVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
@@ -87,7 +89,7 @@ import java.util.*;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T>, ScadaValidation, GetExtendedName {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -317,7 +319,13 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 				return new MqttDataSourceVO();
 			}
-		},;
+		},
+		OPC_UA(48, "dsEdit.opcua", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new OpcUaDataSourceVO();
+			}
+		};
 
 		private Type(int id, String key, boolean display) {
 			this.id = id;
@@ -448,6 +456,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -495,7 +504,15 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 
 	@Override
 	public void validate(DwrResponseI18n response) {
+		validate(response, id);
+	}
 
+	@Override
+	public void validateForCreate(DwrResponseI18n response) {
+		validate(response, -1);
+	}
+
+	private void validate(DwrResponseI18n response, int id) {
 		DataSourceService dataSourceService = new DataSourceService();
 		validateXid(response, dataSourceService::isXidUnique, xid, id, "dataSourceXid");
 

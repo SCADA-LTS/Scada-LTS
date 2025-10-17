@@ -87,7 +87,7 @@
       <td>
         <table>
           <tr>
-            <td colspan="2"><h1>${instance.name}</h1></td>
+            <td colspan="2"><h1>${security.escapeHtml(instance.name)}</h1></td>
           </tr>
           <tr>
             <td class="label"><@fmt key="reports.runTimeStart"/></td>
@@ -121,7 +121,7 @@
       
       <td class="stats">
         <table>
-          <tr><td colspan="2" class="pointName">${point.name}</td></tr>
+          <tr><td colspan="2" class="pointName">${security.escapeHtml(point.name)}</td></tr>
           <tr>
             <td class="label"><@fmt key="reports.dataType"/></td>
             <td>${point.dataTypeDescription}</td>

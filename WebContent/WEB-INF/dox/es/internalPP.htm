@@ -8,7 +8,31 @@
     Vea el Licencia Pública General de GNU para más detalles.
     Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
  -->
-<h1>Visión general</h1>
-<p>
-  Se pueden crear puntos de datos internos para controlar valores específicos que vigilen el funcionamiento interno del Scada-LTS.
-</p>
+<body>
+<h1>Visión General</h1>
+
+<p>Se pueden crear puntos de datos internos para monitorear valores específicos que controlan el funcionamiento interno de Scada-LTS.</p>
+
+<h3>Valores de puntos a escribir</h3>
+<p>Este atributo supervisa el número de valores de puntos que están esperando ser escritos, reflejando la carga de trabajo del mecanismo de procesamiento en lotes.</p>
+
+<h3>Hilos de escritura de valores de puntos</h3>
+<p>Este atributo indica los hilos que gestionan el proceso de escritura de valores de puntos, proporcionando información sobre cómo el sistema distribuye la carga de trabajo de escritura en lotes.</p>
+
+<h3>Elementos de trabajo de alta prioridad</h3>
+<p>Este atributo rastrea los elementos de trabajo de alta prioridad en la cola de procesamiento, permitiendo a los administradores identificar y responder rápidamente a retrasos críticos en el procesamiento.</p>
+
+<h3>Elementos de trabajo de prioridad media</h3>
+<p>Este atributo refleja los elementos de trabajo con un nivel de prioridad media que están pendientes de ejecución, ayudando a evaluar la carga rutinaria del sistema.</p>
+
+<h3>Elementos de trabajo programados</h3>
+<p>Este atributo representa los elementos de trabajo que están programados para ejecutarse a intervalos específicos, asegurando que las tareas periódicas se realicen de manera oportuna.</p>
+
+<h3>Altura máxima de la pila de hilos</h3>
+<p>Este atributo muestra la profundidad máxima de la pila de hilos, indicando el nivel de operaciones anidadas que podría impactar el rendimiento o revelar problemas potenciales.</p>
+
+<h3>Conteo de hilos activos</h3>
+<p>Este atributo supervisa el número de hilos activos, ofreciendo una visión global sobre la concurrencia y la carga del sistema.</p>
+
+<p>Para obtener más detalles o asistencia en la configuración, por favor consulte la documentación del sistema o contacte con el soporte.</p>
+</body>

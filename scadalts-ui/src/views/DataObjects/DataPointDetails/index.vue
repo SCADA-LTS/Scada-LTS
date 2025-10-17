@@ -33,15 +33,15 @@
 								$t('datapointDetails.pointProperties.toggle.datasourceDisabled')
 							}}</span>
 						</v-tooltip>
-						{{ dataPointDetails.name }}
+						<span v-html="dataPointDetails.name" ></span>
 						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
 					<p class="thin-top-margin small-description">
-						<span>{{ dataPointDetails.xid }}</span>
+						<span v-html="dataPointDetails.xid" ></span>
 						<span v-if="dataPointDetails.description">
 							<span v-if="dataPointDetails.description.length > 0">
-								- {{ dataPointDetails.description }}</span
-							>
+								- <span v-html="dataPointDetails.description" ></span>
+							</span>
 						</span>
 					</p>
 				</v-col>
@@ -49,6 +49,7 @@
 					<PointProperties
 						:data="dataPointDetails"
 						@saved="saveDataPointDetails"
+						ref="pointProperties"
 					></PointProperties>
 				</v-col>
 				<v-col cols="2">
@@ -160,6 +161,8 @@ export default {
 					'getDatasourceByXid',
 					this.dataPointDetails.dataSourceXid,
 				);
+				if(this.$refs.pointProperties)
+				    this.$refs.pointProperties.reload();
 			} catch (e) {
 				this.dataPointDetails = null;
 				this.datasource = null;
@@ -186,22 +189,22 @@ export default {
 			}
 		},
 
-		saveDataPointDetails() {
+		saveDataPointDetails(data) {
 			this.$store
-				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.dispatch('saveDataPointDetails', data)
 				.catch((e) => {
 					this.$store.dispatch(
 						'showErrorNotification', 
 						`${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`)
 				})
 				.then((resp) => {
-					if (resp === 'saved') {
+					if (resp.status === 'saved') {
 						this.$store.dispatch(
 							'showSuccessNotification',
 							this.$t('common.snackbar.update.success')
 						);
 						this.$refs.valueHistory.fetchData();
-
+                        this.fetchDataPointDetails(data.id);
 					}
 				});
 		},

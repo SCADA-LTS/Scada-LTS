@@ -31,6 +31,9 @@ import org.scada_lts.monitor.type.IntegerMonitor;
  * @author Matthew Lohbihler
  */
 public class InternalDataSourceRT extends PollingDataSource {
+
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 1;
+
     public InternalDataSourceRT(InternalDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
@@ -44,13 +47,19 @@ public class InternalDataSourceRT extends PollingDataSource {
             String monitorId = InternalPointLocatorVO.MONITOR_NAMES[locator.getPointLocatorVO().getAttributeId()];
             // They are all integer monitors so far, so this is fine.
             IntegerMonitor m = (IntegerMonitor) Common.MONITORED_VALUES.getValueMonitor(monitorId);
-            if (m != null)
+            if (m != null) {
                 dataPoint.updatePointValue(new PointValueTime((double) m.getValue(), time));
+            }
         }
     }
 
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
         // no op
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

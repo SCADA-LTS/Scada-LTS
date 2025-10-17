@@ -17,7 +17,7 @@
                 <v-col>
                     <v-text-field 
                         :label="$t('common.name')"
-						v-model="report.name"
+						v-model="report.tempName"
                     ></v-text-field>
                 </v-col>
                 <v-col>
@@ -321,10 +321,12 @@
 							<v-text-field
 								v-model="email"
 								label="Add email address"
-								append-outer-icon="mdi-plus"
-								@click:append-outer="addMail"
 								:rules="emailRules"
-							></v-text-field>
+							>
+							   <template slot="append-outer">
+                                 <v-icon v-if="validEmail" color="green darken-2" @click="addMail" >mdi-plus</v-icon>
+                               </template>
+                            </v-text-field>
 						</v-col>
 					</v-row>
 				</v-col>
@@ -368,6 +370,8 @@
 import { RECIPIENT } from '../../store/mailingList/constants';
 import { ALARM_OPTIONS, DATE_RANGE_TYPE_OPTIONS } from '../../store/reports/constants';
 import DataPointsSettingsDialog from './DataPointsDialog.vue'
+import {unescapeHtml} from '@/utils/common';
+
 export default {
     components: {
 		DataPointsSettingsDialog
@@ -390,13 +394,15 @@ export default {
 				this.$t('reports.cronPatternMustBeValid')
 			],
 			emailRules: [
-				v =>  /\S+@\S+\.\S+/.test(v) || this.$t('reports.emailMustBeValid')
+				v =>  /\S+@\S+\.\S+/.test(v) || this.$t('reports.emailMustBeValid'),
+				v => !(/^(.*?((expression\s*\()|url\s*\(\s*['\"]?javascript:|url\s*\(\s*['\"]?data:|<script[^>]*>|<\/script>|<img[^>]+onerror=|@import\s+url\s*\(\s*['\"]?javascript:|<img[^>]*>|<script[^>]*>|<[^>]+>onerror\s*=|onload\s*=|eval\s*\(|alert\s*\(|onerror\s*=|document.location){1}.*?)$/.test(v)) || this.$t('reports.emailMustBeValid')
 			],
 
 			userList: [],
-			recipientList: [],	
-			email: '',
+			recipientList: [],
 			activeRecipients: [],
+			validEmail: false,
+			emailText: ''
         }
     },
     computed: {
@@ -411,7 +417,16 @@ export default {
 			});
 			periods.push({id: 0, label: 'Cron pattern'})
 			return  periods;
-		}
+		},
+        email: {
+          get() {
+            return this.emailText;
+          },
+          set(newValue) {
+            this.validEmail = this.validateEmail(newValue);
+            this.emailText = newValue;
+          }
+        }
     },
 
 	mounted() {
@@ -425,11 +440,14 @@ export default {
 			this.initDateTimeFields();
 			this.initReportTimeFields();
 			this.initRecipients();
+			this.report.tempName= this.report.name;
 		},
 
 		saveReport() {
 			this.setDateTime();
-			this.$emit('saved', this.report);
+			let report = JSON.parse(JSON.stringify(this.report));
+			report.name = this.report.tempName;
+			this.$emit('saved', report);
 		},
 
 		async fetchUserList() {
@@ -527,6 +545,7 @@ export default {
 		initRecipients() {
 			this.activeRecipients = [];
 			this.report.recipients.forEach(r => {
+			    r.referenceAddress = unescapeHtml(r.referenceAddress);
 				let entry = { 
 					type: r.recipientType, 
 					name: '', 
@@ -598,9 +617,14 @@ export default {
 				}))
 			.then(() => this.$store.dispatch("showSuccessNotification", "Test emails sent successfully"))
 			.catch(() => this.$slots.dispatch("showErrorNotification", "Test emails could not be sent"));
-		}
+		},
 
-		
+        validateEmail(v) {
+            if(!v) {
+                return false;
+            }
+            return !(typeof this.emailRules[0](v) === 'string') && !(typeof this.emailRules[1](v) === 'string');
+        }
 	}
 }
 </script>

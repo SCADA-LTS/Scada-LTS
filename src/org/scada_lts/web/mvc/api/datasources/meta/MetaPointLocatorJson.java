@@ -5,6 +5,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.vo.TimePeriodType;
 import com.serotonin.mango.vo.UpdateEventType;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
     private String script;
     private UpdateEventType updateEvent = UpdateEventType.CONTEXT_CHANGE;
     @JsonRemoteProperty
+    @XssProtect
     private String updateCronPattern;
     @JsonRemoteProperty
     private int executionDelaySeconds;

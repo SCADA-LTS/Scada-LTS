@@ -21,10 +21,9 @@ package com.serotonin.mango.vo.dataSource.meta;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
@@ -52,6 +51,11 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
+
+import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
+import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 /**
  * @author Matthew Lohbihler
@@ -81,7 +85,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
-    private int updateEvent = UPDATE_EVENT_CONTEXT_UPDATE;
+    private int updateEvent = UPDATE_EVENT_CONTEXT_CHANGE;
     @JsonRemoteProperty
     private String updateCronPattern;
     @JsonRemoteProperty
@@ -174,25 +178,48 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.updateCronPattern = updateCronPattern;
     }
 
+    @Override
     public void validate(DwrResponseI18n response) {
+        validate(response, Common.NEW_ID);
+    }
+
+    @Override
+    public void validate(DwrResponseI18n response, int dataPointId) {
         if (StringUtils.isEmpty(script))
             response.addContextualMessage("script", "validate.required");
 
-        List<String> varNameSpace = new ArrayList<String>();
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
+        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
+
+        List<String> varNameSpace = new ArrayList<>();
         for (IntValuePair point : context) {
             String varName = point.getValue();
+            int pointId = point.getKey();
+
+            if(pointId != Common.NEW_ID && isCyclicDependency(pointId, dataPointId, dataPointsMap)) {
+                response.addContextualMessage("context", "validate.cyclicDependency", escapeHtml(varName));
+                break;
+            }
+
+            if(pointId != Common.NEW_ID && pointId == dataPointId) {
+                response.addContextualMessage("context", "validate.invalidVariable", escapeHtml(varName));
+                break;
+            }
+
             if (StringUtils.isEmpty(varName)) {
                 response.addContextualMessage("context", "validate.allVarNames");
                 break;
             }
 
-            if (!validateVarName(varName)) {
-                response.addContextualMessage("context", "validate.invalidVarName", varName);
+            if (!validateVarNameScript(varName)) {
+                response.addContextualMessage("context", "validate.invalidVarName", escapeHtml(varName));
                 break;
             }
 
             if (varNameSpace.contains(varName)) {
-                response.addContextualMessage("context", "validate.duplicateVarName", varName);
+                response.addContextualMessage("context", "validate.duplicateVarName", escapeHtml(varName));
                 break;
             }
 
@@ -219,18 +246,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         if (executionDelayPeriodType == TimePeriodType.MILLISECONDS && executionDelaySeconds != 0 && executionDelaySeconds < 100)
             response.addContextualMessage("executionDelaySeconds", "validate.invalidValue");
-    }
-
-    private boolean validateVarName(String varName) {
-        char ch = varName.charAt(0);
-        if (!Character.isLetter(ch) && ch != '_')
-            return false;
-        for (int i = 1; i < varName.length(); i++) {
-            ch = varName.charAt(i);
-            if (!Character.isLetterOrDigit(ch) && ch != '_')
-                return false;
-        }
-        return true;
     }
 
     @Override

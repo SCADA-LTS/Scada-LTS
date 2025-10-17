@@ -57,6 +57,7 @@ import static com.serotonin.mango.util.SqlDataSourceUtils.createJdbcOperations;
 public class SqlDataSourceRT extends PollingDataSource {
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 	public static final int STATEMENT_EXCEPTION_EVENT = 2;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 3;
 
 	private static final Log LOG = LogFactory.getLog(SqlDataSourceRT.class);
 
@@ -101,15 +102,17 @@ public class SqlDataSourceRT extends PollingDataSource {
 			int rows = jdbcOperations.update(locatorVO.getUpdateStatement(), value);
 			if (rows == 0) {
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(),
-						false, new LocalizableMessage(
+						true, new LocalizableMessage(
 								"event.sql.noRowsUpdated", dataPoint.getVO()
-										.getName()));
-			} else
+										.getName()), dataPoint);
+			} else {
 				dataPoint.setPointValue(valueTime, source);
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, valueTime.getTime());
+			}
 		} catch (Exception e) {
-			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), false,
+			raiseEvent(STATEMENT_EXCEPTION_EVENT, valueTime.getTime(), true,
 					new LocalizableMessage("event.sql.setError", dataPoint
-							.getVO().getName(), getExceptionMessage(e)));
+							.getVO().getName(), getExceptionMessage(e)), dataPoint);
 		}
 	}
 
@@ -194,8 +197,10 @@ public class SqlDataSourceRT extends PollingDataSource {
 							raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 									new LocalizableMessage(
 											"event.sql.timeNotFound",
-											timeOverride));
+											timeOverride), dp);
 							continue;
+						} else {
+							returnToNormal(STATEMENT_EXCEPTION_EVENT, time, dp);
 						}
 
 						pointTime = getTimeOverride(meta, column, rs, time);
@@ -258,6 +263,8 @@ public class SqlDataSourceRT extends PollingDataSource {
 			if (!found)
 				raiseEvent(STATEMENT_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.sql.noDataPoint", rowId));
+			else
+				returnToNormal(STATEMENT_EXCEPTION_EVENT, time);
 		}
 	}
 
@@ -351,5 +358,10 @@ public class SqlDataSourceRT extends PollingDataSource {
 	@Override
 	public void terminate() {
 		super.terminate();
+	}
+
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
 	}
 }

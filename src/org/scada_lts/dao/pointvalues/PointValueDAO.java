@@ -194,30 +194,30 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 
 	public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+" >= ? order by "+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+COLUMN_NAME_TIME_STAMP+" >= ? order by pv."+COLUMN_NAME_TIME_STAMP+", pv." + COLUMN_NAME_ID;
 
 	public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+">=? and pv."+COLUMN_NAME_TIME_STAMP+"<? order by "+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+COLUMN_NAME_TIME_STAMP+">=? and pv."+COLUMN_NAME_TIME_STAMP+"<? order by pv."+COLUMN_NAME_TIME_STAMP+", pv." + COLUMN_NAME_ID;
 
 	public static final String POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc, pv." + COLUMN_NAME_ID + " desc";
 
 	public static final String POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc, pv." + COLUMN_NAME_ID + " desc";
 
 	public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP+", pv." + COLUMN_NAME_ID;
 
 	public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
 			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
+			+ "order by pv."+COLUMN_NAME_TIME_STAMP+", pv." + COLUMN_NAME_ID;
 
 	public static final String POINT_VALUE_ID_OF_LAST_VALUE = ""
 			+ "select"
@@ -246,7 +246,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 			+ "select id "
 			+ "from pointValues "
 			+ "where dataPointId =? "
-			+ "order by id DESC "
+			+ "order by ts DESC, id DESC "
 			+ "limit 2 "
 			+ ") lastId ) and " + COLUMN_NAME_TIME_STAMP + "<? ";
 
@@ -279,7 +279,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 			"(select " + COLUMN_NAME_ID +
 			" from pointValues " +
 			"where " + COLUMN_NAME_DATA_POINT_ID + " =? " +
-			"order by " + COLUMN_NAME_ID + " desc " +
+			"order by " + COLUMN_NAME_TIME_STAMP + " desc, " + COLUMN_NAME_ID + " desc " +
 			"limit 1 offset ?) lastId)";
 
 	private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""

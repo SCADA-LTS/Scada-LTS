@@ -17,7 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.scada_lts.utils.UploadFileUtils.*;
+import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.*;
 
 public final class StaticImagesUtils {
 
@@ -87,7 +87,7 @@ public final class StaticImagesUtils {
             path = getUploadsSystemFilePath(Paths.get(url));
         }
         if(StringUtils.isEmpty(path.toString()))
-            path = PathSecureUtils.getAppContextSystemFilePath(url);
+            path = getAppContextSystemFilePath(url);
         return path.toFile();
     }
 

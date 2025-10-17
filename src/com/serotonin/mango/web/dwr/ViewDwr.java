@@ -99,11 +99,13 @@ import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
 
+import static com.serotonin.mango.util.ViewControllerUtils.copyAndSaveView;
 import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getRequest;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getResponse;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.authenticateAnonymousUser;
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -211,9 +213,9 @@ public class ViewDwr extends BaseDwr {
 						if (point != null) {
 							Map<String, Object> map = new HashMap<String, Object>();
 							if (imageChart)
-								map.put("name", point.getName());
+								map.put("name", escapeHtml(point.getName()));
 							else
-								map.put("name", getMessage(child.getDescription()));
+								map.put("name", escapeHtml(getMessage(child.getDescription())));
 							map.put("point", point);
 							map.put("pointValue", point.lastValue());
 							childData.add(map);
@@ -303,6 +305,7 @@ public class ViewDwr extends BaseDwr {
 		}
 
 		state.setInfo(generateContent(request, "infoContent.jsp", model));
+		state.setWarningIcon(generateContent(request, "warningIcon.jsp", model));
 		setMessages(state, request, "warningContent", model);
 
 		return state;
@@ -897,7 +900,10 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	
-	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width, boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn, boolean hideInactivityColumn, boolean hideAckColumn, int viewId) {
+	public DwrResponseI18n saveAlarmListComponent(String viewComponentId, int minAlarmLevel, int maxListSize, int width,
+												  boolean hideIdColumn, boolean hideAlarmLevelColumn, boolean hideTimestampColumn,
+												  boolean hideInactivityColumn, boolean hideAckColumn, int viewId,
+												  boolean hideAssigneeColumn) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -916,6 +922,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHideTimestampColumn(hideTimestampColumn);
 			c.setHideInactivityColumn(hideInactivityColumn);
 			c.setHideAckColumn(hideAckColumn);
+			c.setHideAssigneeColumn(hideAssigneeColumn);
 			// resetPointComponent(c);
 		}
 
@@ -1009,7 +1016,7 @@ public class ViewDwr extends BaseDwr {
 			DataPointService dataPointService = new DataPointService();
 			for (Integer dpId : dataPoints) {
 				DataPointVO dp = dataPointService.getDataPoint(dpId);
-				if(GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
+				if(dp != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
 					dps.add(dp);
 			}
 
@@ -1087,4 +1094,18 @@ public class ViewDwr extends BaseDwr {
 			}
 		}
 	}
+
+	public DwrResponseI18n copyView(final int viewId){
+		ViewService viewService = new ViewService();
+		View view = viewService.getView(viewId);
+
+		View viewCopy = copyAndSaveView(view, viewService);
+		DwrResponseI18n response = new DwrResponseI18n();
+
+		response.addData("viewId", viewId);
+		response.addData("viewCopy", viewCopy);
+
+		return response;
+	}
+
 }

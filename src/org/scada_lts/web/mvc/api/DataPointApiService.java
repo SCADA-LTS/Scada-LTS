@@ -8,6 +8,7 @@ import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.ApiUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.*;
@@ -17,12 +18,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
-import static org.scada_lts.utils.ApiUtils.idExists;
-import static org.scada_lts.utils.ApiUtils.validateObject;
+import static org.scada_lts.utils.ApiUtils.*;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
@@ -65,7 +66,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     public DataPointJson create(HttpServletRequest request, DataPointJson datapoint) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
-        DataPointVO fromRequest = toDataPointVO(request, datapoint);
+        DataPointVO fromRequest = toDataPointVO(request, datapoint, ApiUtils::validateObjectForCreate);
         dataSourceApiService.read(request, null, fromRequest.getDataSourceId());
         DataPointJson response;
         try {
@@ -154,6 +155,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return response;
     }
 
+    @Deprecated(since = "2.8.0")
     public String getConfigurationByXid(HttpServletRequest request, String xid) {
         checkIfNonAdminThenUnauthorized(request);
         if(StringUtils.isEmpty(xid)) {
@@ -170,6 +172,17 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
             throw new BadRequestException(ex, request.getRequestURI());
         }
         return response;
+    }
+
+    public Map<String, Object> getDataPointByXid(HttpServletRequest request, String xid) {
+        checkIfNonAdminThenUnauthorized(request);
+        if(StringUtils.isEmpty(xid)) {
+            throw new ScadaApiException(ScadaErrorMessage.builder(HttpStatus.OK)
+                    .detail("Given xid is empty.")
+                    .instance(request.getRequestURI())
+                    .build());
+        }
+        return EmportDwr.exportDataPointBy(xid);
     }
 
     public DataPointVO getDataPointFromDatabase(HttpServletRequest request, String xid, Integer id) {
@@ -255,14 +268,15 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return Stream.of(types).anyMatch(type -> point.getPointLocator().getDataTypeId() == type);
     }
 
-    private static DataPointVO toDataPointVO(HttpServletRequest request, DataPointJson datapoint) {
+    private static DataPointVO toDataPointVO(HttpServletRequest request, DataPointJson datapoint,
+                                             BiConsumer<HttpServletRequest, DataPointVO> doValidate) {
         DataPointVO dataPointVO;
         try {
             dataPointVO = datapoint.createDataPointVO();
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        validateObject(request, dataPointVO);
+        doValidate.accept(request, dataPointVO);
         return dataPointVO;
     }
 

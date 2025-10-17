@@ -66,7 +66,7 @@
 
 							<v-col md="6" cols="12">
 								<v-text-field
-									v-model="data.name"
+									v-model="data.tempName"
 									:label="$t('datapointDetails.pointProperties.point.name')"
 									dense
 								></v-text-field>
@@ -75,12 +75,12 @@
 							<v-col md="6" cols="12" @click="navToDataSource">
 								<v-btn text block>
 									<v-icon>mdi-database </v-icon>
-									<span> {{ data.dataSourceName }}</span>
+									<span v-html="data.dataSourceName" ></span>
 								</v-btn>
 							</v-col>
 							<v-col cols="12">
 								<v-text-field
-									v-model="data.description"
+									v-model="data.tempDescription"
 									:label="$t('datapointDetails.pointProperties.point.description')"
 									dense
 								></v-text-field>
@@ -150,13 +150,21 @@ export default {
 	data() {
 		return {
 			dialog: false,
-			purgeDialog: false,
+			purgeDialog: false
 		};
 	},
 
+    mounted() {
+        this.reload();
+    },
+
 	methods: {
 		save() {
-			this.$emit('saved');
+            let datapoint = JSON.parse(JSON.stringify(this.data));
+            datapoint.name = this.data.tempName;
+            datapoint.description = this.data.tempDescription;
+
+			this.$emit('saved', datapoint);
 			this.dialog = false;
 		},
 
@@ -197,6 +205,11 @@ export default {
 				}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`,
 			);
 		},
+
+		reload() {
+            this.data.tempName = this.data.name;
+            this.data.tempDescription = this.data.description;
+		}
 	},
 };
 </script>

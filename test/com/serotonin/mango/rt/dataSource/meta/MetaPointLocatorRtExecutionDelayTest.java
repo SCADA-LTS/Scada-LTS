@@ -15,7 +15,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import utils.mock.MockUtils;
+import utils.mock.PowerMockUtils;
 
 import java.util.ArrayList;
 
@@ -67,7 +67,7 @@ public class MetaPointLocatorRtExecutionDelayTest {
         MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
         RealTimeTimer timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
-        MockUtils.configMockContextWrapper(runtimeManagerMock);
+        PowerMockUtils.configMockContextWrapper(runtimeManagerMock);
         metaPointLocatorRT.initialize(timer, dataSource, dataPoint);
     }
 

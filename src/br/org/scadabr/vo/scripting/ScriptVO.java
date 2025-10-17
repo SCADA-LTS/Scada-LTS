@@ -16,6 +16,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -25,7 +26,7 @@ import org.scada_lts.mango.service.UserService;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
-		JsonSerializable {
+		JsonSerializable, GetExtendedName {
 	abstract public Type getType();
 
 	abstract public ScriptRT createScriptRT();
@@ -116,6 +117,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

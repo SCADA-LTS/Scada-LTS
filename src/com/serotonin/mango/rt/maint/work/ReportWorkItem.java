@@ -54,6 +54,7 @@ import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
 import static com.serotonin.mango.util.SendUtils.sendMsg;
@@ -207,8 +208,9 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 			String inlinePrefix = "R" + System.currentTimeMillis() + "-"
 					+ reportInstance.getId() + "-";
 
+			SystemSettingsService service = new SystemSettingsService();
 			// We are creating an email from the result. Create the content.
-			final ReportChartCreator creator = new ReportChartCreator(bundle);
+			final ReportChartCreator creator = new ReportChartCreator(bundle, service);
 			creator.createContent(reportInstance, reportDao, inlinePrefix,
 					reportConfig.isIncludeData());
 

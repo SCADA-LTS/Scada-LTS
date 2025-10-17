@@ -1,6 +1,5 @@
 package org.scada_lts.web.mvc.api.dtp.report;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -8,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class DataPointsBaseOnNameFilter {
     DataPointService dataPointService = new DataPointService();
 
     @RequestMapping(value = "/api/dtp/report/get/{partOfNameDS}/{typeDS}/{partOfNamePoint}/{startTime}/{endTime}", method = RequestMethod.GET)
-    public ResponseEntity<String> get(
+    public ResponseEntity<Map<String, List<PointValueDTO>>> get(
             @PathVariable("partOfNameDS") String partOfNameDS,
             @PathVariable("typeDS") String typeDS,
             @PathVariable("partOfNamePoint") String partOfNamePoint,
@@ -63,29 +64,25 @@ public class DataPointsBaseOnNameFilter {
                 }
             } catch (Exception e) {
                 LOG.error(e);
-                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
 
             User user = Common.getUser(request);
 
             if (user != null && user.isAdmin()) {
-
-
                 Map<DataPointVO, List<PointValue>> pointsAndValuesFromRangeTime = dataPointService.getDataPoints(partOfNameDS, typeDS, partOfNamePoint, startTimeDT, endTimeDT);
-                List result = dataPointService.valuesPointBooleanBaseOnNameFilter2DTO(pointsAndValuesFromRangeTime);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(result);
-
-                return new ResponseEntity<String>("{\"data\":"+json+"}", HttpStatus.OK);
+                List<PointValueDTO> result = dataPointService.valuesPointBooleanBaseOnNameFilter2DTO(pointsAndValuesFromRangeTime);
+                Map<String, List<PointValueDTO>> response = new HashMap<>();
+                response.put("data", result);
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

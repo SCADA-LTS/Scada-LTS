@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.datasources;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.datasources.meta.MetaDataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.modbusip.ModbusIpDataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.snmp.SnmpDataSourceJson;
@@ -22,7 +23,9 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualDataSourceJson;
 public class DataSourceJson {
 
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     private int type;
 

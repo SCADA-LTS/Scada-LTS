@@ -28,7 +28,7 @@
   }
   
   function scan() {
-      $set("scanMessage", "<fmt:message key="dsEdit.modbus.startScan"/>");
+      $set("scanMessage", "<spring:message code="dsEdit.modbus.startScan"/>");
       dwr.util.removeAllOptions("scanNodes");
       scanButtons(true);
       scanImpl();
@@ -70,12 +70,12 @@
 
       let messages = [];
 
-      validateValue("test_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.slaveId, messages);
-      validateValue("test_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.range, messages);
-      validateValue("test_modbusDataType", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.modbusDataType, messages);
-      validateValue("test_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.offset, messages);
-      validateValue("test_bit", "<fmt:message key='validate.invalidValue'/>", isPositiveByte, locator.bit, messages);
-      validateValue("test_registerCount", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, locator.registerCount, messages);
+      validateValue("test_slaveId", "<spring:message code='badIntegerFormat'/>", isPositiveInt, locator.slaveId, messages);
+      validateValue("test_range", "<spring:message code='badIntegerFormat'/>", isPositiveInt, locator.range, messages);
+      validateValue("test_modbusDataType", "<spring:message code='badIntegerFormat'/>", isPositiveInt, locator.modbusDataType, messages);
+      validateValue("test_offset", "<spring:message code='badIntegerFormat'/>", isPositiveInt, locator.offset, messages);
+      validateValue("test_bit", "<spring:message code='validate.invalidValue'/>", isPositiveByte, locator.bit, messages);
+      validateValue("test_registerCount", "<spring:message code='badIntegerFormat'/>", isPositiveInt, locator.registerCount, messages);
 
       return messages;
   }
@@ -178,10 +178,10 @@
 
       let messages = [];
 
-      validateValue("dataTest_slaveId", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.slaveId, messages);
-      validateValue("dataTest_range", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.range, messages);
-      validateValue("dataTest_offset", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.offset, messages);
-      validateValue("dataTest_length", "<fmt:message key='badIntegerFormat'/>", isPositiveInt, testData.length, messages);
+      validateValue("dataTest_slaveId", "<spring:message code='badIntegerFormat'/>", isPositiveInt, testData.slaveId, messages);
+      validateValue("dataTest_range", "<spring:message code='badIntegerFormat'/>", isPositiveInt, testData.range, messages);
+      validateValue("dataTest_offset", "<spring:message code='badIntegerFormat'/>", isPositiveInt, testData.offset, messages);
+      validateValue("dataTest_length", "<spring:message code='badIntegerFormat'/>", isPositiveInt, testData.length, messages);
 
       return messages;
   }
@@ -231,19 +231,19 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.modbus.slave"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.modbus.slave"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.slaveId; };
       
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.modbus.range"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.modbus.range"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) {
           if (p.pointLocator.slaveMonitor)
-              return "<fmt:message key="dsEdit.modbus.slaveMonitor"/>";
+              return "<spring:message code="dsEdit.modbus.slaveMonitor"/>";
           if (p.pointLocator.socketMonitor)
-              return "<fmt:message key="dsEdit.modbus.socketMonitor"/>";
+              return "<spring:message code="dsEdit.modbus.socketMonitor"/>";
           return p.pointLocator.rangeMessage;
       };
       
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.modbus.offset"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.modbus.offset"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) {
     	  if (p.pointLocator.slaveMonitor)
     		  return "";
@@ -368,17 +368,17 @@
 
 <c:choose>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_SERIAL']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.modbus.descSerial"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.modbus.descSerial"/></c:set>
     <c:set var="dsHelpId" value="modbusSerialDS"/>
   </c:when>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_IP']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.modbus.descIp"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.modbus.descIp"/></c:set>
     <c:set var="dsHelpId" value="modbusIpDS"/>
   </c:when>
 </c:choose>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -388,42 +388,42 @@
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
           <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.timeout"/></td>
           <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.retries"/></td>
           <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.contiguousBatches"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.contiguousBatches"/></td>
           <td class="formField"><sst:checkbox id="contiguousBatches" selectedValue="${dataSource.contiguousBatches}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.createSlaveMonitorPoints"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.createSlaveMonitorPoints"/></td>
           <td class="formField"><sst:checkbox id="createSlaveMonitorPoints" selectedValue="${dataSource.createSlaveMonitorPoints}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.maxReadBitCount"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.maxReadBitCount"/></td>
           <td class="formField"><input type="text" id="maxReadBitCount" value="${dataSource.maxReadBitCount}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.maxReadRegisterCount"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.maxReadRegisterCount"/></td>
           <td class="formField"><input type="text" id="maxReadRegisterCount" value="${dataSource.maxReadRegisterCount}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.maxWriteRegisterCount"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.maxWriteRegisterCount"/></td>
           <td class="formField"><input type="text" id="maxWriteRegisterCount" value="${dataSource.maxWriteRegisterCount}"/></td>
         </tr>
               
@@ -443,18 +443,18 @@
   <td valign="top">
     <div class="borderDiv marB marR" style="float:left;">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.nodeScan"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.modbus.nodeScan"/></td></tr>
         <tr>
           <td colspan="2" align="center">
-            <input id="scanBtn" type="button" value="<fmt:message key="dsEdit.modbus.scanForNodes"/>" onclick="scan();"/>
-            <input id="scanCancelBtn" type="button" value="<fmt:message key="common.cancel"/>" onclick="scanCancel();"/>
+            <input id="scanBtn" type="button" value="<spring:message code="dsEdit.modbus.scanForNodes"/>" onclick="scan();"/>
+            <input id="scanCancelBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="scanCancel();"/>
           </td>
         </tr>
         
         <tr><td colspan="2" id="scanMessage" class="formError"></td></tr>
         
         <tr>
-          <td class="formLabel"><fmt:message key="dsEdit.modbus.nodesFound"/></td>
+          <td class="formLabel"><spring:message code="dsEdit.modbus.nodesFound"/></td>
           <td class="formField"><select id="scanNodes" size="8"></select></td>
         </tr>
       </table>
@@ -462,38 +462,38 @@
     
     <div class="borderDiv marB marR" style="float:left;" id="dataTestDiv">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.dataTest"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.modbus.dataTest"/></td></tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.slaveId"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.slaveId"/></td>
           <td class="formField"><input type="text" id="dataTest_slaveId" value="1"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerRange"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerRange"/></td>
           <td class="formField">
             <select id="dataTest_range">
-              <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><fmt:message key="dsEdit.modbus.coilStatus"/></option>
-              <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><fmt:message key="dsEdit.modbus.inputStatus"/></option>
-              <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.holdingRegister"/></option>
-              <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.inputRegister"/></option>
+              <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><spring:message code="dsEdit.modbus.coilStatus"/></option>
+              <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><spring:message code="dsEdit.modbus.inputStatus"/></option>
+              <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><spring:message code="dsEdit.modbus.holdingRegister"/></option>
+              <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><spring:message code="dsEdit.modbus.inputRegister"/></option>
             </select>
           </td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.offset"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.offset"/></td>
           <td class="formField"><input type="text" id="dataTest_offset" value="0"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerCount"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerCount"/></td>
           <td class="formField"><input type="text" id="dataTest_length" value="100"/></td>
         </tr>
         
         <tr>
           <td colspan="2" align="center">
-            <input id="dataTestBtn" type="button" value="<fmt:message key="dsEdit.modbus.dataTest.read"/>" onclick="dataTest();"/>
+            <input id="dataTestBtn" type="button" value="<spring:message code="dsEdit.modbus.dataTest.read"/>" onclick="dataTest();"/>
           </td>
         </tr>
         
@@ -505,77 +505,77 @@
     
     <div class="borderDiv marB" id="locatorTestDiv" style="clear:both;">
       <table>
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.modbus.locatorTest"/></td></tr>
+        <tr><td colspan="2" class="smallTitle"><spring:message code="dsEdit.modbus.locatorTest"/></td></tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.slaveId"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.slaveId"/></td>
           <td class="formField"><input type="text" id="test_slaveId" value="1"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerRange"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerRange"/></td>
           <td class="formField">
             <select id="test_range" onchange="changeRange('test_')">
-              <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><fmt:message key="dsEdit.modbus.coilStatus"/></option>
-              <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><fmt:message key="dsEdit.modbus.inputStatus"/></option>
-              <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.holdingRegister"/></option>
-              <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.inputRegister"/></option>
+              <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><spring:message code="dsEdit.modbus.coilStatus"/></option>
+              <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><spring:message code="dsEdit.modbus.inputStatus"/></option>
+              <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><spring:message code="dsEdit.modbus.holdingRegister"/></option>
+              <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><spring:message code="dsEdit.modbus.inputRegister"/></option>
             </select>
           </td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.modbusDataType"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.modbusDataType"/></td>
           <td class="formField">
             <select id="test_modbusDataType" onchange="changeDataType('test_')">
-              <option value="<c:out value="<%= DataType.BINARY %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.binary"/></option>
-              <option value="<c:out value="<%= DataType.TWO_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bUnsigned"/></option>
-              <option value="<c:out value="<%= DataType.TWO_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bSigned"/></option>
-              <option value="<c:out value="<%= DataType.TWO_BYTE_BCD %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bBcd"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bUnsigned"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bSigned"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bUnsignedSwapped"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bSignedSwapped"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloat"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloatSwapped"/></option>
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloatSwappedInverted"/></option>            
-              <option value="<c:out value="<%= DataType.FOUR_BYTE_BCD %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bBcd"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bUnsigned"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bSigned"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bUnsignedSwapped"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bSignedSwapped"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bFloat"/></option>
-              <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bFloatSwapped"/></option>
-              <option value="<c:out value="<%= DataType.CHAR %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.char"/></option>
-              <option value="<c:out value="<%= DataType.VARCHAR %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.varchar"/></option>
+              <option value="<c:out value="<%= DataType.BINARY %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.binary"/></option>
+              <option value="<c:out value="<%= DataType.TWO_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bUnsigned"/></option>
+              <option value="<c:out value="<%= DataType.TWO_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bSigned"/></option>
+              <option value="<c:out value="<%= DataType.TWO_BYTE_BCD %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bBcd"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bUnsigned"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bSigned"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bUnsignedSwapped"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bSignedSwapped"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloat"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloatSwapped"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloatSwappedInverted"/></option>
+              <option value="<c:out value="<%= DataType.FOUR_BYTE_BCD %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bBcd"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bUnsigned"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bSigned"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bUnsignedSwapped"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bSignedSwapped"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bFloat"/></option>
+              <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bFloatSwapped"/></option>
+              <option value="<c:out value="<%= DataType.CHAR %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.char"/></option>
+              <option value="<c:out value="<%= DataType.VARCHAR %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.varchar"/></option>
             </select>
           </td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.offset"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.offset"/></td>
           <td class="formField"><input type="text" id="test_offset" value="0"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.bit"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.bit"/></td>
           <td class="formField"><input id="test_bit" type="text" value="0"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerCount"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerCount"/></td>
           <td class="formField"><input id="test_registerCount" type="text" value="0"/></td>
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.charset"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.charset"/></td>
           <td class="formField"><input id="test_charset" type="text" value="ASCII"/></td>
         </tr>
         
         <tr>
           <td colspan="2" align="center">
-            <input id="locatorTestBtn" type="button" value="<fmt:message key="dsEdit.modbus.locatorTest.test"/>" onclick="locatorTest();"/>
-            <input type="button" value="<fmt:message key="dsEdit.modbus.addPoint"/>" onclick="addPoint();"/>
+            <input id="locatorTestBtn" type="button" value="<spring:message code="dsEdit.modbus.locatorTest.test"/>" onclick="locatorTest();"/>
+            <input type="button" value="<spring:message code="dsEdit.modbus.addPoint"/>" onclick="addPoint();"/>
           </td>
         </tr>
         
@@ -586,83 +586,83 @@
 
 <tag:pointList pointHelpId="modbusPP">
   <tr id="slaveIdRow">
-    <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.slaveId"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.modbus.slaveId"/></td>
     <td class="formField"><input type="text" id="slaveId"/></td>
   </tr>
   
   <tbody id="nonSlaveMonitor">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerRange"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerRange"/></td>
       <td class="formField">
         <select id="range" onchange="changeRange('')">
-          <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><fmt:message key="dsEdit.modbus.coilStatus"/></option>
-          <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><fmt:message key="dsEdit.modbus.inputStatus"/></option>
-          <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.holdingRegister"/></option>
-          <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><fmt:message key="dsEdit.modbus.inputRegister"/></option>
+          <option value="<c:out value="<%= RegisterRange.COIL_STATUS %>"/>"><spring:message code="dsEdit.modbus.coilStatus"/></option>
+          <option value="<c:out value="<%= RegisterRange.INPUT_STATUS %>"/>"><spring:message code="dsEdit.modbus.inputStatus"/></option>
+          <option value="<c:out value="<%= RegisterRange.HOLDING_REGISTER %>"/>"><spring:message code="dsEdit.modbus.holdingRegister"/></option>
+          <option value="<c:out value="<%= RegisterRange.INPUT_REGISTER %>"/>"><spring:message code="dsEdit.modbus.inputRegister"/></option>
         </select>
       </td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.modbusDataType"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.modbusDataType"/></td>
       <td class="formField">
         <select id="modbusDataType" onchange="changeDataType('')">
-          <option value="<c:out value="<%= DataType.BINARY %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.binary"/></option>
-          <option value="<c:out value="<%= DataType.TWO_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bUnsigned"/></option>
-          <option value="<c:out value="<%= DataType.TWO_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bSigned"/></option>
-          <option value="<c:out value="<%= DataType.TWO_BYTE_BCD %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.2bBcd"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bUnsigned"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bSigned"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bUnsignedSwapped"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bSignedSwapped"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloat"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloatSwapped"/></option>
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bFloatSwappedInverted"/></option>            
-          <option value="<c:out value="<%= DataType.FOUR_BYTE_BCD %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.4bBcd"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bUnsigned"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bSigned"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bUnsignedSwapped"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bSignedSwapped"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bFloat"/></option>
-          <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT_SWAPPED %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.8bFloatSwapped"/></option>
-          <option value="<c:out value="<%= DataType.CHAR %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.char"/></option>
-          <option value="<c:out value="<%= DataType.VARCHAR %>"/>"><fmt:message key="dsEdit.modbus.modbusDataType.varchar"/></option>
+          <option value="<c:out value="<%= DataType.BINARY %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.binary"/></option>
+          <option value="<c:out value="<%= DataType.TWO_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bUnsigned"/></option>
+          <option value="<c:out value="<%= DataType.TWO_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bSigned"/></option>
+          <option value="<c:out value="<%= DataType.TWO_BYTE_BCD %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.2bBcd"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bUnsigned"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bSigned"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bUnsignedSwapped"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_INT_SIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bSignedSwapped"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloat"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloatSwapped"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_FLOAT_SWAPPED_INVERTED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bFloatSwappedInverted"/></option>
+          <option value="<c:out value="<%= DataType.FOUR_BYTE_BCD %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.4bBcd"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bUnsigned"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bSigned"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_UNSIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bUnsignedSwapped"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_INT_SIGNED_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bSignedSwapped"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bFloat"/></option>
+          <option value="<c:out value="<%= DataType.EIGHT_BYTE_FLOAT_SWAPPED %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.8bFloatSwapped"/></option>
+          <option value="<c:out value="<%= DataType.CHAR %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.char"/></option>
+          <option value="<c:out value="<%= DataType.VARCHAR %>"/>"><spring:message code="dsEdit.modbus.modbusDataType.varchar"/></option>
         </select>
       </td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.offset"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.offset"/></td>
       <td class="formField"><input type="text" id="offset"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.bit"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.bit"/></td>
       <td class="formField"><input id="bit" type="text"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.registerCount"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.registerCount"/></td>
       <td class="formField"><input id="registerCount" type="text"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.charset"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.charset"/></td>
       <td class="formField"><input id="charset" type="text"/></td>
     </tr>
     
     <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.settableOverride"/></td>
+      <td class="formLabelRequired"><spring:message code="dsEdit.modbus.settableOverride"/></td>
       <td class="formField"><input id="settableOverride" type="checkbox"/></td>
     </tr>
     
     <tr>
-      <td class="formLabel"><fmt:message key="dsEdit.modbus.multiplier"/></td>
+      <td class="formLabel"><spring:message code="dsEdit.modbus.multiplier"/></td>
       <td class="formField"><input type="text" id="multiplier"/></td>
     </tr>
     
     <tr>
-      <td class="formLabel"><fmt:message key="dsEdit.modbus.additive"/></td>
+      <td class="formLabel"><spring:message code="dsEdit.modbus.additive"/></td>
       <td class="formField"><input type="text" id="additive"/></td>
     </tr>
   </tbody>

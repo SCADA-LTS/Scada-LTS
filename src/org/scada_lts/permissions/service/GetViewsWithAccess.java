@@ -2,6 +2,7 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.GetExtendedNameComparator;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.PermissionException;
 import org.apache.commons.logging.Log;
@@ -11,6 +12,8 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
 
 public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
 
@@ -28,9 +31,9 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return viewDAO.findAll();
-        return viewDAO.selectViewWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, viewDAO::findAll,
+                viewDAO::selectViewWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override
@@ -39,9 +42,9 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return viewDAO.findIdentifiers();
-        return viewDAO.selectViewIdentifiersWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, viewDAO::findIdentifiers,
+                viewDAO::selectViewIdentifiersWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override

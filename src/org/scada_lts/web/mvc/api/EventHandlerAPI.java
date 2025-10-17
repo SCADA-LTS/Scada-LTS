@@ -1,7 +1,5 @@
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +24,11 @@ public class EventHandlerAPI {
 
     private static final Log LOG = LogFactory.getLog(EventHandlerAPI.class);
 
-    @Resource
-    private EventService eventHandlerService;
+    private final EventService eventHandlerService;
+
+    public EventHandlerAPI(EventService eventHandlerService) {
+        this.eventHandlerService = eventHandlerService;
+    }
 
     @GetMapping(value = "/getAll", produces = "application/json")
     public ResponseEntity<List<EventHandlerVO>> getAllEventHandlers(HttpServletRequest request) {
@@ -152,17 +152,20 @@ public class EventHandlerAPI {
     }
 
     @PutMapping(value = "/update/{typeId}/{typeRef1}/{typeRef2}", consumes = "application/json")
-    public ResponseEntity<String> updateEventHandler(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerVO handler, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateEventHandler(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerVO handler, HttpServletRequest request) {
         LOG.info("/api/eventHandler/update/...");
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                Map<String, String> response = new HashMap<>();
                 try {
                     EventTypeVO typeVO = new EventTypeVO(typeId, typeRef1, typeRef2);
                     eventHandlerService.saveEventHandler(typeVO, handler);
-                    return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+                    response.put("status", "updated");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 } catch (NullPointerException ex) {
-                    return new ResponseEntity<>("{\"status\":\"warning\"}", HttpStatus.OK);
+                    response.put("status", "warning");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -174,7 +177,7 @@ public class EventHandlerAPI {
     }
 
     @DeleteMapping(value = "/delete/{xid}", produces = "application/json")
-    public ResponseEntity<String> deleteEventHandlerByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> deleteEventHandlerByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/eventHandler/delete/" + xid);
         try {
             User user = Common.getUser(request);
@@ -182,14 +185,7 @@ public class EventHandlerAPI {
                 eventHandlerService.deleteEventHandler(xid);
                 Map<String, String> response = new HashMap<>();
                 response.put("status", "deleted");
-                ObjectMapper m = new ObjectMapper();
-                try {
-                    String json = m.writeValueAsString(response);
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -200,7 +196,7 @@ public class EventHandlerAPI {
     }
 
     @DeleteMapping(value = "/delete/id/{id}", produces = "application/json")
-    public ResponseEntity<String> deleteEventHandlerById(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> deleteEventHandlerById(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("/api/eventHandler/delete/id/" + id);
         try {
             User user = Common.getUser(request);
@@ -208,14 +204,7 @@ public class EventHandlerAPI {
                 eventHandlerService.deleteEventHandler(id);
                 Map<String, String> response = new HashMap<>();
                 response.put("status", "deleted");
-                ObjectMapper m = new ObjectMapper();
-                try {
-                    String json = m.writeValueAsString(response);
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

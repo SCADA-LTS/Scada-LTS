@@ -21,11 +21,8 @@ package com.serotonin.mango.web.dwr;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
+import com.serotonin.mango.vo.*;
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
 
@@ -40,10 +37,6 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.view.chart.ChartRenderer;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.BasePointState;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
@@ -51,12 +44,13 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.content.ContentGenerator;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.content.SnippetContentGenerator;
 
 abstract public class BaseDwr {
     public static final String MODEL_ATTR_EVENTS = "events";
@@ -99,6 +93,10 @@ abstract public class BaseDwr {
             if (pointValue != null)
                 model.put("pointValue", pointValue);
         }
+
+        User user = Common.getUser();
+        if(user != null)
+            model.put(Common.SESSION_USER, user);
 
         return pointValue;
     }
@@ -170,6 +168,8 @@ abstract public class BaseDwr {
 
     protected void setMessages(BasePointState state, HttpServletRequest request, String snippet,
             Map<String, Object> model) {
+        SystemSettingsService systemSettingsService = new SystemSettingsService();
+        model.put("isEventAssignEnabled", systemSettingsService.isEventAssignEnabled());
         state.setMessages(generateContent(request, snippet + ".jsp", model).trim());
     }
 
@@ -247,23 +247,19 @@ abstract public class BaseDwr {
     }
 
     protected List<DataPointBean> getReadablePoints() {
-        User user = Common.getUser();
-
-        List<DataPointVO> points = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        if (!Permissions.hasAdmin(user)) {
-            List<DataPointVO> userPoints = new ArrayList<DataPointVO>();
-            for (DataPointVO dp : points) {
-                if (Permissions.hasDataPointReadPermission(user, dp))
-                    userPoints.add(dp);
-            }
-            points = userPoints;
-        }
+        List<DataPointVO> points = getPoints();
 
         List<DataPointBean> result = new ArrayList<DataPointBean>();
         for (DataPointVO dp : points)
             result.add(new DataPointBean(dp));
 
         return result;
+    }
+
+    protected List<DataPointVO> getPoints() {
+        User user = Common.getUser();
+        DataPointService dataPointService = new DataPointService();
+        return dataPointService.getDataPointsWithAccess(user);
     }
 
     public Map<String, Object> getDateRangeDefaults(int periodType, int period) {
@@ -306,7 +302,7 @@ abstract public class BaseDwr {
 //            System.out.println("request >>> " + request);
 //            System.out.println("snippet >>> " + snippet);
 //            System.out.println("model >>> " + model);
-            String str = ContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
+            String str = SnippetContentGenerator.generateContent(request, "/WEB-INF/snippet/" + snippet, model);
             
 //            System.out.println("Content:\n"+str);
             

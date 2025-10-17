@@ -6,7 +6,7 @@
 		:creator="createMode"
 		availablePeriodTypes="1,2,3,8,9,11,26,27"
 		@cancel="cancel()"
-		@accept="save()"
+		@accept="save"
 	>
 		<template v-slot:selector>
 			<slot name="selector"></slot>

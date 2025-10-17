@@ -59,13 +59,13 @@
   }
 </script>
 
-<c:set var="dsDesc"><fmt:message key="dsEdit.alpha2.desc"/></c:set>
+<c:set var="dsDesc"><spring:message code="dsEdit.alpha2.desc"/></c:set>
 <c:set var="dsHelpId" value="asciiSerialDS"/>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.commPortId" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.commPortId" /></td>
 	<td class="formField"><c:choose>
 		<c:when test="${!empty commPortError}">
 			<input id="commPortId" type="hidden" value="" />
@@ -82,8 +82,8 @@
 </tr>
 
 <tr>
-	<td class="formLabelRequired"><fmt:message
-		key="dsEdit.asciiSerial.baud" /></td>
+	<td class="formLabelRequired"><spring:message
+		code="dsEdit.asciiSerial.baud" /></td>
 	<td class="formField"><sst:select id="baudRate"
 		value="${dataSource.baudRate}">
 		<sst:option>110</sst:option>
@@ -103,7 +103,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.dataBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.dataBits"/></td>
   <td class="formField">
     <sst:select id="dataBits" value="${dataSource.dataBits}">
       <sst:option value="5">5</sst:option>
@@ -115,7 +115,7 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.stopBits"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.stopBits"/></td>
   <td class="formField">
     <sst:select id="stopBits" value="${dataSource.stopBits}">
       <sst:option value="1">1</sst:option>
@@ -126,20 +126,20 @@
 </tr>
 
 <tr>
-  <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.parity"/></td>
+  <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.parity"/></td>
   <td class="formField">
     <sst:select id="parity" value="${dataSource.parity}">
-      <sst:option value="0"><fmt:message key="dsEdit.modbusSerial.parity.none"/></sst:option>
-      <sst:option value="1"><fmt:message key="dsEdit.modbusSerial.parity.odd"/></sst:option>
-      <sst:option value="2"><fmt:message key="dsEdit.modbusSerial.parity.even"/></sst:option>
-      <sst:option value="3"><fmt:message key="dsEdit.modbusSerial.parity.mark"/></sst:option>
-      <sst:option value="4"><fmt:message key="dsEdit.modbusSerial.parity.space"/></sst:option>
+      <sst:option value="0"><spring:message code="dsEdit.modbusSerial.parity.none"/></sst:option>
+      <sst:option value="1"><spring:message code="dsEdit.modbusSerial.parity.odd"/></sst:option>
+      <sst:option value="2"><spring:message code="dsEdit.modbusSerial.parity.even"/></sst:option>
+      <sst:option value="3"><spring:message code="dsEdit.modbusSerial.parity.mark"/></sst:option>
+      <sst:option value="4"><spring:message code="dsEdit.modbusSerial.parity.space"/></sst:option>
     </sst:select>
   </td>
 </tr>
 
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -149,16 +149,16 @@
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.retries"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.retries"/></td>
     <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.asciiSerial.timeout"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.asciiSerial.timeout"/></td>
     <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
   </tr>
   
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.alpha2.station"/></td>
+    <td class="formLabelRequired"><spring:message code="dsEdit.alpha2.station"/></td>
     <td class="formField">
     	<input id="station" type="text" value="${dataSource.station}"/>
     </td>
@@ -168,40 +168,40 @@
 
 <tag:pointList pointHelpId="asciiSerialPP">
   <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.alpha2.pointType"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.alpha2.pointType"/></td>
           <td class="formField"> 
             <select id="deviceCode" onchange="deviceCodeChanged()">
-              <option value="<c:out value="<%= Alpha2PointLocatorVO.RUN_STOP_CODE %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.runStop"/></option>
-              <option value="<c:out value="<%= DeviceCodes.SYSTEM_BIT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.systemBit"/></option>
-              <option value="<c:out value="<%= DeviceCodes.INPUT_TERMINAL.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.inputTerminal"/></option>
-              <option value="<c:out value="<%= DeviceCodes.EXTERNAL_INPUT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.externalInput"/></option>
-              <option value="<c:out value="<%= DeviceCodes.OUTPUT_TERMINAL.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.outputTerminal"/></option>
-              <option value="<c:out value="<%= DeviceCodes.EXTERNAL_OUTPUT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.externalOutput"/></option>
-              <option value="<c:out value="<%= DeviceCodes.KEY_INPUT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.keyInput"/></option>
-              <option value="<c:out value="<%= DeviceCodes.LINK_INPUT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.linkInput"/></option>
-              <option value="<c:out value="<%= DeviceCodes.LINK_OUTPUT.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.linkOutput"/></option>
-              <option value="<c:out value="<%= DeviceCodes.CONTROL_DEVICE.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.controlDevice"/></option>
-              <option value="<c:out value="<%= DeviceCodes.ANALOG_IN.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.analogIn"/></option>
-              <option value="<c:out value="<%= DeviceCodes.COMM_BIT_DEVICE.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.commBitDevice"/></option>
-              <option value="<c:out value="<%= DeviceCodes.COMM_WORD_DEVICE.getId() %>"/>"><fmt:message key="dsEdit.alpha2.deviceCode.commWordDevice"/></option>
+              <option value="<c:out value="<%= Alpha2PointLocatorVO.RUN_STOP_CODE %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.runStop"/></option>
+              <option value="<c:out value="<%= DeviceCodes.SYSTEM_BIT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.systemBit"/></option>
+              <option value="<c:out value="<%= DeviceCodes.INPUT_TERMINAL.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.inputTerminal"/></option>
+              <option value="<c:out value="<%= DeviceCodes.EXTERNAL_INPUT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.externalInput"/></option>
+              <option value="<c:out value="<%= DeviceCodes.OUTPUT_TERMINAL.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.outputTerminal"/></option>
+              <option value="<c:out value="<%= DeviceCodes.EXTERNAL_OUTPUT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.externalOutput"/></option>
+              <option value="<c:out value="<%= DeviceCodes.KEY_INPUT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.keyInput"/></option>
+              <option value="<c:out value="<%= DeviceCodes.LINK_INPUT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.linkInput"/></option>
+              <option value="<c:out value="<%= DeviceCodes.LINK_OUTPUT.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.linkOutput"/></option>
+              <option value="<c:out value="<%= DeviceCodes.CONTROL_DEVICE.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.controlDevice"/></option>
+              <option value="<c:out value="<%= DeviceCodes.ANALOG_IN.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.analogIn"/></option>
+              <option value="<c:out value="<%= DeviceCodes.COMM_BIT_DEVICE.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.commBitDevice"/></option>
+              <option value="<c:out value="<%= DeviceCodes.COMM_WORD_DEVICE.getId() %>"/>"><spring:message code="dsEdit.alpha2.deviceCode.commWordDevice"/></option>
             </select>
           </td>
         </tr>
   <tr>
   
   <tbody id="accessModeDiv"> 
-  	<td class="formLabelRequired"><fmt:message key="dsEdit.alpha2.deviceNumber"/></td>
+  	<td class="formLabelRequired"><spring:message code="dsEdit.alpha2.deviceNumber"/></td>
 	  	<td class="formField">
 		<input id="deviceNumber" type="text" value=""/>
 	</td>
 	
 		<tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.alpha2.accessMode"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.alpha2.accessMode"/></td>
           <td class="formField"> 
             <select id="accessMode">
-              <option value="<c:out value="<%= Alpha2PointLocatorVO.READ_ONLY %>"/>"><fmt:message key="dsEdit.alpha2.accessMode.readOnly"/></option>
-              <option value="<c:out value="<%= Alpha2PointLocatorVO.WRITE_ONLY %>"/>"><fmt:message key="dsEdit.alpha2.accessMode.writeOnly"/></option>
-              <option value="<c:out value="<%= Alpha2PointLocatorVO.READ_WRITE %>"/>"><fmt:message key="dsEdit.alpha2.accessMode.readWrite"/></option>
+              <option value="<c:out value="<%= Alpha2PointLocatorVO.READ_ONLY %>"/>"><spring:message code="dsEdit.alpha2.accessMode.readOnly"/></option>
+              <option value="<c:out value="<%= Alpha2PointLocatorVO.WRITE_ONLY %>"/>"><spring:message code="dsEdit.alpha2.accessMode.writeOnly"/></option>
+              <option value="<c:out value="<%= Alpha2PointLocatorVO.READ_WRITE %>"/>"><spring:message code="dsEdit.alpha2.accessMode.readWrite"/></option>
             </select>
           </td>
         </tr>

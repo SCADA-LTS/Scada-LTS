@@ -20,7 +20,6 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.mango.rt.event.type.AlarmLevelType;
 import com.serotonin.mango.rt.event.EventInstance;
-import org.scada_lts.login.ILoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
@@ -48,45 +47,44 @@ public class PendingEventService {
 	private final SystemSettingsService systemSettingsService;
 
 	private final IHighestAlarmLevelService highestAlarmLevelService;
-	private final ILoggedUsers loggedUsers;
 
 	public PendingEventService() {
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-		loggedUsers = ApplicationBeans.getLoggedUsersBean();
 		pendingEventsDAO = new PendingEventsDAO();
 		systemSettingsService = new SystemSettingsService();
 	}
 
 	public Map<Integer, List<EventInstance>> getPendingEvents() {
-
-		Set<Integer> users = loggedUsers.getUserIds();
-		Map<Integer, List<UserComment>> comments = getCacheUserComments(userCommentDAO.getEventComments());
-		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
-
-		Map<Integer,List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
-		for (int userId: users) {
-			Set<EventInstanceEqualsById> events = pendingEventsDAO.getPendingEvents(userId, comments, AlarmLevelType.NONE,
-							SystemSettingsUtils.getEventPendingUpdateLimit(), 0).stream()
-					.map(EventInstanceEqualsById::new)
-					.collect(Collectors.toSet());
-			if(!events.isEmpty()) {
-				int highestAlarmLevelForUser = highestAlarmLevelService.getAlarmLevel(User.onlyId(userId));
-				for (AlarmLevelType alarmLevelType : AlarmLevelType.getAlarmLevelsWithoutNone()) {
-					if(alarmLevelType.getCode() <= highestAlarmLevelForUser) {
-						long count = events.stream()
-								.filter(a -> a.getEventInstance().getAlarmLevel() >= alarmLevelType.getCode())
-								.count();
-						if (count < limit) {
-							events.addAll(pendingEventsDAO.getPendingEvents(userId, comments, alarmLevelType, limit, 0).stream()
-									.map(EventInstanceEqualsById::new)
-									.collect(Collectors.toSet()));
+		Map<Integer, List<EventInstance>> cacheEvents = new ConcurrentHashMap<>();
+		ApplicationBeans.Lazy.getLoggedUsersBean().ifPresent(loggedUsers -> {
+			Set<Integer> users = loggedUsers.getUserIds();
+			Map<Integer, List<UserComment>> comments = getCacheUserComments(userCommentDAO.getEventComments());
+			int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
+			for (int userId: users) {
+				Set<EventInstanceEqualsById> events = pendingEventsDAO.getPendingEvents(userId, comments, AlarmLevelType.NONE,
+								SystemSettingsUtils.getEventPendingUpdateLimit(), 0).stream()
+						.map(EventInstanceEqualsById::new)
+						.collect(Collectors.toSet());
+				if(!events.isEmpty()) {
+					int highestAlarmLevelForUser = highestAlarmLevelService.getAlarmLevel(User.onlyId(userId));
+					for (AlarmLevelType alarmLevelType : AlarmLevelType.getAlarmLevelsWithoutNone()) {
+						if(alarmLevelType.getCode() <= highestAlarmLevelForUser) {
+							long count = events.stream()
+									.filter(a -> a.getEventInstance().getAlarmLevel() >= alarmLevelType.getCode())
+									.count();
+							if (count < limit) {
+								events.addAll(pendingEventsDAO.getPendingEvents(userId, comments, alarmLevelType, limit, 0).stream()
+										.map(EventInstanceEqualsById::new)
+										.collect(Collectors.toSet()));
+							}
 						}
 					}
 				}
+				cacheEvents.put(userId, events.stream().map(EventInstanceEqualsById::getEventInstance).collect(Collectors.toList()));
 			}
-			cacheEvents.put(userId, events.stream().map(EventInstanceEqualsById::getEventInstance).collect(Collectors.toList()));
-		}
+		});
+
 		return cacheEvents;
 	}
 

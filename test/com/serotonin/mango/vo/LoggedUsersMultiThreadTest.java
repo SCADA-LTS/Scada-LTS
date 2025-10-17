@@ -1,7 +1,6 @@
 package com.serotonin.mango.vo;
 
-import br.org.scadabr.db.utils.TestUtils;
-import org.junit.After;
+import utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

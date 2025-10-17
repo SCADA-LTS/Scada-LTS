@@ -8,7 +8,6 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -16,6 +15,7 @@ import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -25,8 +25,9 @@ public class ScriptsDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(ScriptsDwr.class);
 
 
-	public List<DataPointVO> getPoints() {
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(
+	@Deprecated(since = "2.8.0")
+	public List<DataPointVO> getPoints1() {
+		List<DataPointVO> allPoints = new DataPointService().getDataPoints(
 				DataPointExtendedNameComparator.instance, false);
 		return allPoints;
 	}

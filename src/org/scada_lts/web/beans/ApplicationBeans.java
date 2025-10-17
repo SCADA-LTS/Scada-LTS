@@ -3,6 +3,7 @@ package org.scada_lts.web.beans;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
@@ -20,7 +21,6 @@ import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
-import org.scada_lts.web.ws.services.EventsServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -149,6 +149,10 @@ public class ApplicationBeans {
         return getBeanFromContext("loggedUsers", ILoggedUsers.class);
     }
 
+    public static ObjectMapper getObjectMapper() {
+        return getBeanFromContext("objectMapper", ObjectMapper.class);
+    }
+
     public static class Lazy {
 
         private Lazy() {}
@@ -156,6 +160,13 @@ public class ApplicationBeans {
         public static Optional<ILoggedUsers> getLoggedUsersBean() {
             return getBeanFromContext("loggedUsers", ILoggedUsers.class);
         }
+
+        public static Optional<IHighestAlarmLevelService> getHighestAlarmLevelServiceBean() {
+            boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCacheable.CACHE_ENABLED_KEY, true);
+            return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
+                    getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
+        }
+
         private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
             try {
                 return Optional.ofNullable(get(beanName, clazz));

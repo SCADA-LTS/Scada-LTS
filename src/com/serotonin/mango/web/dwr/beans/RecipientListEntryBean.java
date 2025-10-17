@@ -37,6 +37,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonRemoteEntity
 public class RecipientListEntryBean implements Serializable, JsonSerializable {
@@ -44,6 +45,7 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
 
     private int recipientType;
     private int referenceId;
+    @XssProtect
     private String referenceAddress;
 
     private static final Log LOG = LogFactory.getLog(RecipientListEntryBean.class);

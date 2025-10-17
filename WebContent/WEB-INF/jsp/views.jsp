@@ -238,12 +238,25 @@
    		keyListen(evnt);
 	}
 
-	
+	function copyCurrentView(viewId) {
+		ViewDwr.copyView(viewId, function(response) {
+			if (response.hasMessages) {
+				alert(response.messages.join("\n"));
+			} else {
+				var newView = response.data["viewCopy"];
+				if (newView && newView.id) {
+					window.location = 'view_edit.shtm?viewId=' + newView.id;
+				} else {
+					alert("Error: cannot copy current view");
+				}
+			}
+		});
+	}
 </script>
 
 	<table class="subPageHeader" id="graphical">
 		<tr>
-			<td class="smallTitle"><fmt:message key="views.title" /> <tag:help
+			<td class="smallTitle"><spring:message code="views.title" /> <tag:help
 					id="graphicalViews" /></td>
 			<td width="50"></td>
 			<c:if test="${fn:length(views) != 0}">
@@ -261,6 +274,7 @@
 						<c:when test="${owner}">
 							<a href="view_edit.shtm?viewId=${currentView.id}"><tag:img
 									png="icon_view_edit" title="viewEdit.editView" /> </a>
+							<a><tag:img png="icon_view_copy" title="viewEdit.copyView" onclick="copyCurrentView(${currentView.id})"/></a>
 						</c:when>
 						<c:otherwise>
 							<!-- Apenas Admin pode remover compartilhamento
@@ -277,7 +291,7 @@
 	<table id="fullScreenOut">
 		<tr>
 			<td class="smallTitle" id="fsOut">
-				<fmt:message key="fullScreenOut"/>
+				<spring:message code="fullScreenOut"/>
 			</td>
 		</tr>
 	</table>

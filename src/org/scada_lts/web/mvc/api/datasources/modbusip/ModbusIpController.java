@@ -9,12 +9,13 @@ import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
-import com.serotonin.modbus4j.SlaveIdLimit255ModbusMaster;
+import com.serotonin.modbus4j.FixedModbusMaster;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusInitException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.ip.IpParameters;
 import com.serotonin.modbus4j.locator.BaseLocator;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -67,7 +68,7 @@ public class ModbusIpController {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = ApplicationBeans.getObjectMapper();
                 ModbusIpDataSourceJson ds = mapper.convertValue(data.get("datasource"), ModbusIpDataSourceJson.class);
                 ModbusIpPointLocatorJson pl = mapper.convertValue(data.get("pointLocator"), ModbusIpPointLocatorJson.class);
                 ModbusPointLocatorVO pointLocator = pl.parsePointLocatorData();
@@ -106,7 +107,7 @@ public class ModbusIpController {
             modbusMaster = new ModbusFactory().createTcpMaster(params, transportType == ModbusIpDataSourceVO.TransportType.TCP_KEEP_ALIVE);
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retires);
-        return new SlaveIdLimit255ModbusMaster(modbusMaster);
+        return new FixedModbusMaster(modbusMaster);
     }
 
     private Map<String, Object> testModbusPointLocator(ModbusMaster modbusMaster, ModbusPointLocatorVO locator) {

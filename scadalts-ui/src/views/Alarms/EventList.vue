@@ -327,7 +327,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						<a :title="(item.message) | clearHtml">{{ (item.message) | clearHtml | truncate}}</a>
+						<a><span v-html="item.message"></span></a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -391,6 +391,10 @@
 						</v-badge>
 
     				</template>
+    				<template v-slot:item.xid="{ item }">
+    				    <span v-if="item.xid" v-html="item.xid"/>
+                        <span v-else> {{$t('event.list.reloadPage')}} </span>
+    				</template>
 			</v-data-table>
 		</v-container>
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
@@ -412,7 +416,7 @@ tbody tr:nth-of-type(odd) {
 import store from '../../store';
 import RangeChartComponent from '../../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import {getEventList} from '../../utils/common';
+import {getEventList, escapeHtml} from '../../utils/common';
 
 export default {
 	name: 'EventList',
@@ -619,9 +623,6 @@ export default {
 				return input.substring(0, 45) + '...';
 			}
 			return input;
-		},
-		clearHtml(str) {
-			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ')
 		}
 	},
 	
@@ -729,9 +730,13 @@ export default {
 			this.loading = false;
 		},
 		async fetchEventSelected() {
-			this.loading = true;
-			this.comments = await this.$store.dispatch('getCommentsByEventId', this.selectedEventId);
-			this.loading = false;
+      try {
+        this.loading = true;
+        this.comments = await this.$store.dispatch('getCommentsByEventId', this.selectedEventId);
+        this.loading = false;
+      } catch (error) {
+        console.error("Error acknowledging event:", error);
+      }
 		},
 		async acknowledgeEventSelected() {
 			this.loading = true;
@@ -755,8 +760,12 @@ export default {
 			await this.fetchEventList();
 		},
 		async acknowledgeEvent(event) {
-			await this.$store.dispatch('acknowledgeEvent', {eventId: event.id});
-			await this.fetchEventList();
+      try {
+			  await this.$store.dispatch('acknowledgeEvent', {eventId: event.id});
+			  await this.fetchEventList();
+      } catch (error) {
+        console.error("Error acknowledging event:", error);
+      }
 		},
 		async silenceEvent(event) {
 			await this.$store.dispatch('silenceEvent', {eventId: event.id});
@@ -795,6 +804,23 @@ export default {
         fetchEvent(message, searchFilters) {
             if(message) {
                 let event = JSON.parse(message.body);
+                event.message = escapeHtml(event.message);
+                event.shortMessage = escapeHtml(event.shortMessage);
+                event.assigneeUsername = escapeHtml(event.assigneeUsername);
+                event.ackMessage = escapeHtml(event.ackMessage);
+                event.acknowledgedByUsername = escapeHtml(event.acknowledgedByUsername);
+                event.action = escapeHtml(event.action);
+                event.assigneeMessage = escapeHtml(event.assigneeMessage);
+                event.exportAckMessage = escapeHtml(event.exportAckMessage);
+                event.assigneeUsername = escapeHtml(event.assigneeUsername);
+                event.ackMessage = escapeHtml(event.ackMessage);
+                event.fullPrettyAcknowledgedTimestamp = escapeHtml(event.fullPrettyAcknowledgedTimestamp);
+                event.fullPrettyActiveTimestamp = escapeHtml(event.fullPrettyActiveTimestamp);
+                event.fullPrettyRtnTimestamp = escapeHtml(event.fullPrettyRtnTimestamp);
+                event.prettyActiveTimestamp = escapeHtml(event.prettyActiveTimestamp);
+                event.prettyRtnTimestamp = escapeHtml(event.prettyRtnTimestamp);
+                event.rtnMessage = escapeHtml(event.rtnMessage);
+
                 let sortBy = searchFilters.sortBy;
                 let sortDesc = searchFilters.sortDesc;
 

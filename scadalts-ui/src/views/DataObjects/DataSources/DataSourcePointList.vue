@@ -23,23 +23,22 @@
 								<template v-slot:activator="{ on, attrs }">
 									<v-row v-bind="attrs" v-on="on">
 										<v-col cols="12" sm="9" lg="9" xl="6" class="text-main-primary">
-											{{ dp.name.length > 45 ? dp.name.substring(0, 45) + '...' : dp.name }}
+										    <span v-html="reduceName(dp.name)" ></span></br>
 										</v-col>
 										<v-col cols="2" sm="3" xl="2" v-show="$vuetify.breakpoint.sm || $vuetify.breakpoint.lg || $vuetify.breakpoint.xl" class="text-secondary">
-											{{ dp.xid }}
+											<span v-html="dp.xid"></span><br/>
 										</v-col>
 										<v-col cols="4" xl="4" v-show="$vuetify.breakpoint.xl" class="text-secondary">
-											{{ dp.description }}
+											<span v-html="dp.description" ></span>
 										</v-col>
 									</v-row>
 								</template>
 								<span>
 									<span v-if="dp.name.length > 45">
-										{{ dp.name }}</br>
+										<span v-html="dp.name" ></span></br>
 									</span>
-									<span>{{ dp.xid }}</span
-									><br />
-									<span>{{ dp.description }}</span>
+									<span v-html="dp.xid" ></span><br/>
+									<span v-html="dp.description" ></span>
 								</span>
 							</v-tooltip>
 						</v-col>
@@ -156,6 +155,9 @@ export default {
 			this.$router.push({ name: 'datapoint-details', params: { id: datapoint.id } });
 			this.$router.go();
 		},
+		reduceName(value) {
+		    return value.length > 45 ? value.substring(0, 45) + '...' : value;
+		}
 	},
 };
 </script>

@@ -31,12 +31,12 @@
         <form action="sql.shtm" method="post">
           <table>
             <tr>
-              <td colspan="2"><fmt:message key="sql.warning"/></td>
+              <td colspan="2"><span class="formError"><spring:message code="sql.warning.prefix"/></span> <spring:message code="sql.warning"/></td>
             </tr>
             <spring:bind path="form.sqlString">
               <tr>
                 <td class="formLabelRequired">
-                  <fmt:message key="sql.sql"/>
+                  <spring:message code="sql.sql"/>
                   <tag:help id="directQuerying"/>
                 </td>
                 <td><textarea id="sqlString" name="sqlString" rows="8" cols="80"><c:out value="${status.value}"/></textarea></td>
@@ -48,7 +48,7 @@
             
             <tr>
               <td colspan="2" align="center">
-                <input type="submit" value="<fmt:message key="sql.query"/>" name="query"/>
+                <input type="submit" value="<spring:message code="sql.query"/>" name="query"/>
               </td>
               <td></td>
             </tr>
@@ -75,7 +75,7 @@
         </c:if>
 
         <c:if test="${form.updateResult > -1}">
-          ${form.updateResult} <fmt:message key="sql.rowsUpdated"/>
+          ${form.updateResult} <spring:message code="sql.rowsUpdated"/>
         </c:if>
 
         <br/>

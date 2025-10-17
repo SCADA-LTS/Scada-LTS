@@ -62,7 +62,7 @@ import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
 public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO>,
-        ScadaValidation {
+        ScadaValidation, GetExtendedName {
     private static final long serialVersionUID = -1;
     public static final String XID_PREFIX = "DP_";
 
@@ -193,43 +193,28 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeValuesLimit;
 
     public DataPointVO(){
-        id = Common.NEW_ID;
-        loggingType = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE);
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = PurgeStrategy.PERIOD;
-        purgeValuesLimit = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
+        this(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT),
+                SystemSettingsDAO.getIntValue(SystemSettingsDAO.PURGE_POINT_VALUES_PERIOD_DEFAULT));
     }
 
-    public DataPointVO(int loggingType) {
-        id = Common.NEW_ID;
+    public DataPointVO(int loggingType, int purgeValuesPeriodType, int purgeValuesPeriod) {
+        this.id = Common.NEW_ID;
         this.loggingType = loggingType;
-        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
-        intervalLoggingPeriod = 15;
-        intervalLoggingType = IntervalLoggingTypes.INSTANT;
-        tolerance = 0;
-        purgeType = Common.TimePeriods.YEARS;
-        purgePeriod = 1;
-        defaultCacheSize = 1;
-        discardExtremeValues = false;
-        discardLowLimit = -Double.MAX_VALUE;
-        discardHighLimit = Double.MAX_VALUE;
-        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
-        eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = PurgeStrategy.PERIOD;
-        purgeValuesLimit = 100;
+        this.intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        this.intervalLoggingPeriod = 15;
+        this.intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        this.tolerance = 0;
+        this.purgeType = purgeValuesPeriodType;
+        this.purgePeriod = purgeValuesPeriod;
+        this.defaultCacheSize = 1;
+        this.discardExtremeValues = false;
+        this.discardLowLimit = -Double.MAX_VALUE;
+        this.discardHighLimit = Double.MAX_VALUE;
+        this.engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        this.eventTextRenderer = new NoneEventRenderer();
+        this.purgeStrategy = PurgeStrategy.PERIOD;
+        this.purgeValuesLimit = 100;
     }
 
 
@@ -272,6 +257,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         lastValue = pvt;
     }
 
+    @Override
     public String getExtendedName() {
         if (description != null) {
             if (!description.isEmpty())
@@ -659,7 +645,15 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     @Override
     public void validate(DwrResponseI18n response) {
+        validate(response, id);
+    }
 
+    @Override
+    public void validateForCreate(DwrResponseI18n response) {
+        validate(response, -1);
+    }
+
+    private void validate(DwrResponseI18n response, int id) {
         DataPointService dataPointService = new DataPointService();
         validateXid(response, dataPointService::isXidUnique, xid, id);
 
@@ -709,7 +703,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         if (purgeValuesLimit <= 1)
             response.addContextualMessage("purgeValuesLimit", "validate.greaterThanOne");
 
-        pointLocator.validate(response);
+        pointLocator.validate(response, this.getId());
 
         // Check text renderer type
         if (textRenderer != null && !textRenderer.getDef().supports(pointLocator.getDataTypeId()))

@@ -6,9 +6,7 @@
 					<h1>
 						<span v-if="creator"> Create </span>
 						<span v-else> Update </span>
-						<span>
-							{{ title }}
-						</span>
+						<span v-html="title"> </span>
 					</h1>
 				</v-col>
 				<v-col cols="4">
@@ -23,7 +21,7 @@
 					<v-col cols="12" :md="8" :sm="12" id="datasource-config--name">
 						<v-text-field
 							autofocus
-							v-model="datasource.name"
+							v-model="datasource.tempName"
 							label="DataSource Name"
 							:rules="[ruleNotNull]"
 							required
@@ -31,7 +29,7 @@
 					</v-col>
 					<v-col cols="12" :md="4" :sm="12" id="datasource-config--xid">
 						<v-text-field
-							v-model="datasource.xid"
+							v-model="datasource.tempXid"
 							label="DataSource Export Id"
 							@input="checkXidUnique"
 							:rules="[ruleNotNull, ruleXidUnique]"
@@ -127,8 +125,12 @@ export default {
 	mounted() {
 		if (this.creator) {
 			this.$store.dispatch('getUniqueDataSourceXid').then((resp) => {
-				this.datasource.xid = resp;
+				this.datasource.tempXid = resp;
+				this.datasource = JSON.parse(JSON.stringify(this.datasource));
 			});
+		} else {
+            this.datasource.tempName = this.datasource.name;
+            this.datasource.tempXid = this.datasource.xid;
 		}
 	},
 
@@ -138,7 +140,7 @@ export default {
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
-			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
+			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique')
 		};
 	},
 
@@ -149,8 +151,12 @@ export default {
 		},
 
 		accept() {
-			console.debug('datasources.DataSourceConfig.vue::accept()');
-			this.$emit('accept');
+		    let datasource = JSON.parse(JSON.stringify(this.datasource));
+        	datasource.name = this.datasource.tempName;
+        	datasource.xid = this.datasource.tempXid;
+
+        	console.debug('datasources.DataSourceConfig.vue::accept()');
+			this.$emit('accept', datasource);
 		},
 
 		onUpdatePeriodTypeUpdate(value) {
@@ -162,14 +168,14 @@ export default {
 				this.datasource.id = this.datasource.id || -1;
 				let resp = await this.$store.dispatch(
 					'requestGet',
-					`/datasource/validate?xid=${this.datasource.xid}&id=${this.datasource.id}`,
+					`/datasource/validate?xid=${this.datasource.tempXid}&id=${this.datasource.id}`,
 				);
 				this.xidUnique = resp.unique;
 				this.$refs.datasourceForm.validate();
 			} catch (e) {
 				console.error('Failed to fetch data');
 			}
-		},
+		}
 	},
 };
 </script>

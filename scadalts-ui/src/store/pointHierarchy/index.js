@@ -83,7 +83,7 @@ const gv = {
 		createPointHierarchyNode({ dispatch }, { parentNodeId, nodeName }) {
 			return new Promise((resolve, reject) => {
 				axios
-					.post(`.//pointHierarchy/new/${parentNodeId}/${nodeName}`, requestConfiguration)
+					.post(`./pointHierarchy/new/${parentNodeId}/${nodeName}`, requestConfiguration)
 					.then((resp) => {
 						resolve(resp.data);
 					})
@@ -97,7 +97,7 @@ const gv = {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(
-						`.//pointHierarchy/edit/${parentNodeId}/${nodeId}/${nodeName}`,
+						`./pointHierarchy/edit/${parentNodeId}/${nodeId}/${nodeName}`,
 						requestConfiguration,
 					)
 					.then((resp) => {
@@ -116,7 +116,7 @@ const gv = {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(
-						`.//pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`,
+						`./pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`,
 						requestConfiguration,
 					)
 					.then((resp) => {
@@ -132,7 +132,7 @@ const gv = {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(
-						`.//pointHierarchy/del/${parentNodeId}/${nodeId}/${isFolder}`,
+						`./pointHierarchy/del/${parentNodeId}/${nodeId}/${isFolder}`,
 						requestConfiguration,
 					)
 					.then((resp) => {

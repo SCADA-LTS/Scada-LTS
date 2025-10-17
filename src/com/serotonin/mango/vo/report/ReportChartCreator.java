@@ -36,8 +36,10 @@ import freemarker.template.Template;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.data.time.TimeSeries;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 import com.serotonin.mango.util.DateUtils;
+import org.scada_lts.web.security.XssProtectUtils;
 
 import java.awt.*;
 import java.io.*;
@@ -59,7 +61,6 @@ public class ReportChartCreator {
     private static final int IMAGE_HEIGHT_PIXELS = 400;
     private static final int POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS = 20;
     private static final int LINE_LENGTH_IN_LEGEND_LIMIT = 161;
-    private static final int DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT = 64;
     public static final String IMAGE_CONTENT_ID = "reportChart.png";
 
     public static final int POINT_IMAGE_WIDTH_PIXELS = 440;
@@ -77,8 +78,17 @@ public class ReportChartCreator {
 
     final ResourceBundle bundle;
 
+    private final SystemSettingsService systemSettingsService;
+
+    @Deprecated(since = "2.8.0")
     public ReportChartCreator(ResourceBundle bundle) {
         this.bundle = bundle;
+        this.systemSettingsService = new SystemSettingsService();
+    }
+
+    public ReportChartCreator(ResourceBundle bundle, SystemSettingsService systemSettingsService) {
+        this.bundle = bundle;
+        this.systemSettingsService = systemSettingsService;
     }
 
 	/**
@@ -114,6 +124,7 @@ public class ReportChartCreator {
         model.put("instance", reportInstance);
         model.put("points", pointStatistics);
         model.put("inline", inlinePrefix == null ? "" : "cid:");
+        model.put("security", new XssProtectUtils());
 
         model.put("ALPHANUMERIC", DataTypes.ALPHANUMERIC);
         model.put("BINARY", DataTypes.BINARY);
@@ -148,7 +159,7 @@ public class ReportChartCreator {
                 model.put("chartName", IMAGE_SERVLET + chartName);
             }
             int consolidatedChartHeight = ImageChartUtils.calculateHeightChart(pointStatistics, IMAGE_HEIGHT_PIXELS,
-                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT);
+                    POINT_LABEL_HEIGHT_IN_LEGEND_PIXELS, LINE_LENGTH_IN_LEGEND_LIMIT, systemSettingsService.getDataPointExtendedNameLengthInReportsLimit());
             imageData = ImageChartUtils.getChartData(ptsc, true, IMAGE_WIDTH_PIXELS, consolidatedChartHeight);
         }
 
@@ -259,8 +270,10 @@ public class ReportChartCreator {
         return pointStatistics;
     }
 
+    @Deprecated(since = "2.8.0")
     public static int getDataPointExtendedNameLengthLimit(){
-        return DATA_POINT_EXTENDED_NAME_LENGTH_LIMIT;
+        SystemSettingsService settings = new SystemSettingsService();
+        return settings.getDataPointExtendedNameLengthInReportsLimit();
     }
 
     public static int getLineLengthInLegendLimit() {

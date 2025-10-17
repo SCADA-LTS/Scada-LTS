@@ -55,6 +55,11 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Session;
+import org.apache.catalina.core.ApplicationContext;
+import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ContextFactory;
@@ -65,6 +70,7 @@ import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
+import org.scada_lts.quartz.EverySecondTool;
 import org.scada_lts.scripting.SandboxContextFactory;
 import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -76,6 +82,7 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +94,8 @@ import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
 
+	private boolean initialized;
+
 	@Override
 	public void contextInitialized(ServletContextEvent evt) {
 		try {
@@ -96,14 +105,22 @@ public class MangoContextListener implements ServletContextListener {
 					SystemEventType.TYPE_SYSTEM_STARTUP), System
 					.currentTimeMillis(), false, new LocalizableMessage(
 					"event.system.startup"));
+			initialized = true;
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
+			initialized = false;
 			throw ex;
 		}
 	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	private void initialized(ServletContextEvent evt) {
 		log.info("Scada-LTS context starting at: " + Common.getStartupTime());
+
+		sessionsInitialize(evt);
 
 		scriptContextInitialize();
 
@@ -337,6 +354,9 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.JMX.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
 				DataSourceVO.Type.MQTT.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.OPC_UA",
+				DataSourceVO.Type.OPC_UA.getId());
+
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",
 				Permissions.DataPointAccessTypes.NONE);
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.READ",
@@ -388,6 +408,14 @@ public class MangoContextListener implements ServletContextListener {
 				SystemEventType.TYPE_POINT_LINK_FAILURE);
 		ctx.setAttribute("constants.SystemEventType.TYPE_PROCESS_FAILURE",
 				SystemEventType.TYPE_PROCESS_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SMS_SEND_FAILURE",
+				SystemEventType.TYPE_SMS_SEND_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE",
+				SystemEventType.TYPE_SCRIPT_HANDLER_FAILURE);
+		ctx.setAttribute("constants.SystemEventType.TYPE_ASSIGNED_EVENT",
+				SystemEventType.TYPE_ASSIGNED_EVENT);
+		ctx.setAttribute("constants.SystemEventType.TYPE_UNASSIGNED_EVENT",
+				SystemEventType.TYPE_UNASSIGNED_EVENT);
 
 		ctx.setAttribute("constants.AuditEventType.TYPE_DATA_SOURCE",
 				AuditEventType.TYPE_DATA_SOURCE);
@@ -673,5 +701,41 @@ public class MangoContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+
+		try {
+			EverySecondTool.init();
+			log.info("Quartz EverySecondTool initialized");
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+
+	private void sessionsInitialize(ServletContextEvent evt) {
+		try {
+			Session[] sessions = getSessions(evt);
+			ApplicationBeans.getLoggedUsersBean().loadSessions(sessions);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+		}
+	}
+
+	private static Session[] getSessions(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		Manager manager = getManager(evt);
+		return manager.findSessions();
+	}
+
+	private static Manager getManager(ServletContextEvent evt) throws NoSuchFieldException, IllegalAccessException {
+		ApplicationContextFacade applicationContextFacade =  (ApplicationContextFacade) evt.getServletContext();
+
+		Field applicationContextField = applicationContextFacade.getClass().getDeclaredField("context");
+		applicationContextField.setAccessible(true);
+		ApplicationContext applicationContext = (ApplicationContext) applicationContextField.get(applicationContextFacade);
+		applicationContextField.setAccessible(false);
+
+		Field standardContextField = applicationContext.getClass().getDeclaredField("context");
+		standardContextField.setAccessible(true);
+		StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
+		standardContextField.setAccessible(false);
+		return standardContext.getManager();
 	}
 }

@@ -21,7 +21,7 @@
   point views with a BinaryTextRenderer.
 --%>
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
-<fmt:message key="common.chooseSetPoint"/>:<br/>
+<spring:message code="common.chooseSetPoint"/>:<br/>
 <input type="radio"${pointValue.booleanValue == false ? " checked=\"checked\"" : ""} name="rbChange${componentId}"
         id="rbChange${componentId}F" onclick="mango.view.setPoint(${point.id}, '${componentId}', 'false')"/>
 <label for="rbChange${componentId}F">${point.textRenderer.zeroLabel}</label>

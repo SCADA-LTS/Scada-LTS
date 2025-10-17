@@ -277,7 +277,7 @@
 
     function deleteViewComponent(viewComponentId) {
         closeEditors();
-        if(confirm('<fmt:message key="common.confirmDelete"/>')) {
+        if(confirm('<spring:message code="common.confirmDelete"/>')) {
             ViewDwr.deleteViewComponent(viewComponentId, viewId);
 
             var div = $("c"+ viewComponentId);
@@ -346,7 +346,7 @@
     if (search === -1) {
       // Image format invalid.
       document.getElementById("backgroundImageMP").value = null;
-      alert("<fmt:message key="validate.imageExtension"/>");
+      alert("<spring:message code="validate.imageExtension"/>");
     }
   }
 
@@ -467,14 +467,14 @@
               <tr>
                 <td colspan="3">
                   <tag:img png="icon_view" title="viewEdit.editView"/>
-                  <span class="smallTitle"><fmt:message key="viewEdit.viewProperties"/></span>
+                  <span class="smallTitle"><spring:message code="viewEdit.viewProperties"/></span>
                   <tag:help id="editingGraphicalViews"/>
                 </td>
               </tr>
 
               <spring:bind path="form.view.name">
                 <tr>
-                  <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.name"/></td>
+                  <td class="formLabelRequired" width="150"><spring:message code="viewEdit.name"/></td>
                   <td class="formField" width="250">
                     <input type="text" name="view.name" value="${status.value}"/>
                   </td>
@@ -486,7 +486,7 @@
 
               <spring:bind path="form.view.xid">
                 <tr>
-                  <td class="formLabelRequired" width="150"><fmt:message key="common.xid"/></td>
+                  <td class="formLabelRequired" width="150"><spring:message code="common.xid"/></td>
                   <td class="formField" width="250">
                     <input type="text" name="view.xid" value="${status.value}"/>
                   </td>
@@ -495,7 +495,7 @@
               </spring:bind>
               <spring:bind path="form.backgroundImageMP">
                 <tr>
-                  <td class="formLabelRequired"><fmt:message key="viewEdit.background"/></td>
+                  <td class="formLabelRequired"><spring:message code="viewEdit.background"/></td>
                   <td class="formField">
                     <input type="file" id="backgroundImageMP" name="backgroundImageMP" onchange="validateUploadImage()"/>
                   </td>
@@ -504,21 +504,21 @@
               </spring:bind>
               <tr>
                 <td colspan="2" align="center">
-                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
-                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="upload" value="<spring:message code="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="clearImage" value="<spring:message code="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
                 </td>
                 <td class="formError">${status.errorMessage}</td>
               </tr>
 
               <spring:bind path="form.view.anonymousAccess">
                 <tr>
-                  <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
+                  <td class="formLabelRequired" width="150"><spring:message code="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
                   <tag:help id="anonymousView"/>
                     <sst:select name="view.anonymousAccess" value="${status.value}">
-                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
-                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
-                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><fmt:message key="common.access.set"/></sst:option>
+                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><spring:message code="common.access.none"/></sst:option>
+                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><spring:message code="common.access.read"/></sst:option>
+                      <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><spring:message code="common.access.set"/></sst:option>
                     </sst:select>
                   </td>
                   <td class="formError">${status.errorMessage}</td>
@@ -527,7 +527,7 @@
 
               <spring:bind path="form.view.resolution">
                 <tr>
-                  <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
+                  <td id="sizeLabel" class="formLabelRequired" width="150"><spring:message code="viedEdit.viewSize" /></td>
                   <td class="formField" width="250">
                     <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)">
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
@@ -552,8 +552,8 @@
 
               <tr>
                 <td colspan="2" align="center">
-                  <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
-                  <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
+                  <input type="submit" name="save" value="<spring:message code="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="cancel" value="<spring:message code="common.cancel"/>"/>
                 </td>
               </tr>
 
@@ -572,7 +572,7 @@
     <table>
       <tr>
         <td>
-          <fmt:message key="viewEdit.viewComponents"/>:
+          <spring:message code="viewEdit.viewComponents"/>:
           <select id="componentList"></select>
           <tag:img png="plugin_add" title="viewEdit.addViewComponent" onclick="addViewComponent()"/>
         </td>
@@ -580,13 +580,13 @@
 
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
-          <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
+          <label for="iconifyCB"><spring:message code="viewEdit.iconify"/></label>
         </td>
 
-        <td class="formLabelRequired" width="350"><fmt:message key="viewEdit.viewDelete"/></td>
+        <td class="formLabelRequired" width="350"><spring:message code="viewEdit.viewDelete"/></td>
         <td class="formField" width="250">
           <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-          <input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
+          <input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<spring:message code="common.confirmDelete"/>')" value="<spring:message code="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
         </td>
 
       </tr>
@@ -706,7 +706,7 @@
             <div id="c_TEMPLATE_Content" style="display: none;"></div>
             <div id="c_TEMPLATE_Graph" class="enhancedImageChart"></div>
             <div id="c_TEMPLATE_LegendBox" class="enhancedImageChartLegend">
-            	<b><fmt:message key="graphic.enhancedImageChart.legend"/></b>
+            	<b><spring:message code="graphic.enhancedImageChart.legend"/></b>
 				<div id="c_TEMPLATE_Legend"></div>
             </div>
             <div id="c_TEMPLATE_Controls" class="controlsDiv">

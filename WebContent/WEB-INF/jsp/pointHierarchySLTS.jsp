@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -23,11 +24,6 @@
 
 <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
-
-<link
-	href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"
-    rel="stylesheet" type="text/css">
-
 
 <style type="text/css">
 
@@ -168,110 +164,110 @@ thead th {
 
 							<li role="presentation"><a href="watch_list.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.watchlists.tooltip"/>'><img
+								title='<spring:message code="menu.watchlists.tooltip"/>'><img
 									src="images/eye.png"></a></li>
 							<li role="presentation"><a href="views.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.graphicalviews.tooltip"/>'><img
+								title='<spring:message code="menu.graphicalviews.tooltip"/>'><img
 									src="images/icon_view.png"></a></li>
 							<li role="presentation"><a href="events.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.alarms.tooltip"/>'><img
+								title='<spring:message code="menu.alarms.tooltip"/>'><img
 									src="images/flag_white.png"></a></li>
 							<li role="presentation"><a href="reports.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.reports.tooltip"/>'><img
+								title='<spring:message code="menu.reports.tooltip"/>'><img
 									src="images/report.png"></a></li>
 
 							<c:if test="${sessionUser.dataSourcePermission}">
 								<span class="btn-separator"></span>
 								<li role="presentation"><a href="event_handlers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.event_handlers.tooltip"/>'><img
+									title='<spring:message code="menu.event_handlers.tooltip"/>'><img
 										src="images/cog.png" /></a></li>
 								<li role="presentation"><a href="data_sources.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.data_source.tooltip"/>'><img
+									title='<spring:message code="menu.data_source.tooltip"/>'><img
 										src="images/icon_ds.png" /></a></li>
 								<li role="presentation"><a href="scheduled_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.scheduled_events.tooltip"/>'><img
+									title='<spring:message code="menu.scheduled_events.tooltip"/>'><img
 										src="images/clock.png" /></a></li>
 								<li role="presentation"><a href="compound_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.compound_event_detectors.tooltip"/>'><img
+									title='<spring:message code="menu.compound_event_detectors.tooltip"/>'><img
 										src="images/multi_bell.png" /></a></li>
 								<li role="presentation"><a href="point_links.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_links.tooltip"/>'><img
+									title='<spring:message code="menu.point_links.tooltip"/>'><img
 										src="images/link.png" /></a></li>
 								<li role="presentation"><a href="scripting.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.scripting.tooltip"/>'><img
+									title='<spring:message code="menu.scripting.tooltip"/>'><img
 										src="images/script_gear.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="users.shtm"
 								data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.users.tooltip"/>'><img
+								title='<spring:message code="menu.users.tooltip"/>'><img
 									src="images/user.png" /></a></li>
 							<c:if test="${sessionUser.admin}">
 								<li role="presentation"><a href="usersProfiles.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.users_profiles.tooltip"/>'><img
+									title='<spring:message code="menu.users_profiles.tooltip"/>'><img
 										src="images/user_ds.png" /></a></li>
 								<li role="presentation" class="active"><a
 									href="pointHierarchySLTS" class='btn btn-xs'
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.tooltip"/>'><img
+									title='<spring:message code="menu.point_hierarchy.tooltip"/>'><img
 										src="images/folder_brick.png" /></a></li>
 								<li role="presentation"><a href="mailing_lists.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.mailing_lists.tooltip"/>'><img
+									title='<spring:message code="menu.mailing_lists.tooltip"/>'><img
 										src="images/book.png" /></a></li>
 								<li role="presentation"><a href="publishers.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.publishers.tooltip"/>'><img
+									title='<spring:message code="menu.publishers.tooltip"/>'><img
 										src="images/transmit.png" /></a></li>
 								<li role="presentation"><a href="maintenance_events.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.maintenance_events.tooltip"/>'><img
+									title='<spring:message code="menu.maintenance_events.tooltip"/>'><img
 										src="images/hammer.png" /></a></li>
 								<li role="presentation"><a href="system_settings.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.system_setings.tooltip"/>'><img
+									title='<spring:message code="menu.system_setings.tooltip"/>'><img
 										src="images/application_form.png" /></a></li>
 								<li role="presentation"><a href="emport.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.import_export.tooltip"/>'><img
+									title='<spring:message code="menu.import_export.tooltip"/>'><img
 										src="images/script_code.png" /></a></li>
 								<li role="presentation"><a href="sql.shtm"
 									class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.sql.tooltip"/>'><img
+									title='<spring:message code="menu.sql.tooltip"/>'><img
 										src="images/script.png" /></a></li>
 								<span class="btn-separator"></span>
 							</c:if>
 
 							<li role="presentation"><a href="logout.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.logout.tooltip"/>'><img
+								title='<spring:message code="menu.logout.tooltip"/>'><img
 									src="images/control_stop_blue.png"></a></li>
 							<li role="presentation"><a href="help.shtm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.help.tooltip"/>'><img
+								title='<spring:message code="menu.help.tooltip"/>'><img
 									src="images/help.png"></a></li>
 						</c:if>
 						<c:if test="${empty sessionUser}">
 							<li role="presentation"><a href="login.htm"
 								class='btn btn-xs' data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.login.tooltip"/>'><img
+								title='<spring:message code="menu.login.tooltip"/>'><img
 									src="images/control_play_blue.png"></a></li>
 						</c:if>
 						<div class="btn-group pull-right menu">
 							<button class="btn dropdown-toggle btn-xs" data-toggle="dropdown"
 								data-toggle="tooltip" data-placement="top"
-								title='<fmt:message key="menu.change_language.tooltip"/>'>
+								title='<spring:message code="menu.change_language.tooltip"/>'>
 								<img src="images/world.png" alt=""> <span
 									class="caret" />
 							</button>
@@ -291,8 +287,8 @@ thead th {
 						</div>
 						<div class="btn-group pull-right menu">
 							<c:if test="${!empty sessionUser}">
-								<a href="" class="btn btn-xs"><span><fmt:message
-											key="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
+								<a href="" class="btn btn-xs"><span><spring:message
+											code="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
 									</mark></span></a>
 
 								<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
@@ -362,33 +358,33 @@ thead th {
 
 					<div class="panel panel-default">
 						<div class="panel-heading help">
-							<b><fmt:message key="pointHierarchySLTS.pointHierarchy" /></b>
+							<b><spring:message code="pointHierarchySLTS.pointHierarchy" /></b>
 						</div>
 						<div class="menu panel-heading help">
 							<div class="btn-group">
 								<button id="addNode" class="btn btn-success"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.add.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.add.tooltip"/>'>
 									<span class="glyphicon glyphicon-plus"></span>
 								</button>
 								<button id="editNode" class="btn btn-warning"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.edit.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.edit.tooltip"/>'>
 									<span class="glyphicon glyphicon-pencil"></span>
 								</button>
 								<button id="deleteNode" class="btn btn-danger"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.delete.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.delete.tooltip"/>'>
 									<span class="glyphicon glyphicon-minus"></span>
 								</button>
 								<button id="reloadNode" class="btn btn-primary"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.refresh.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.refresh.tooltip"/>'>
 									<span class="glyphicon glyphicon-refresh"></span>
 								</button>
 								<button id="infoNode" class="btn btn-primary"
 									data-toggle="tooltip" data-placement="top"
-									title='<fmt:message key="menu.point_hierarchy.info.tooltip"/>'>
+									title='<spring:message code="menu.point_hierarchy.info.tooltip"/>'>
 									<span class="glyphicon glyphicon-info-sign"></span>
 								</button>
 							</div>
@@ -418,7 +414,7 @@ thead th {
              			<span class="glyphicon glyphicon-resize-small"></span>
              	</button>
              </div>
-                <div id=export-import-ph></div>
+                <div id="export-import-ph"></div>
             </div>
 		</div>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -426,12 +422,14 @@ thead th {
 				<td colspan="2">&nbsp;</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <fmt:message
-						key="footer.rightsReserved" /></td>
+				<td colspan="2" class="footer" align="center">&copy;2012-${toYear} Scada-LTS <spring:message
+						code="footer.rightsReserved" /></td>
 			</tr>
 		</table>
 	</div>
 	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
+
+    <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
@@ -450,7 +448,7 @@ thead th {
 <script src="resources/vue-components/export-import/export-import.js"></script>-->
 
 <script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.js"></script>
-<script src="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css"></script>
+<link href="resources/node_modules/vue-jsoneditor/dist/lib/vjsoneditor.min.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="resources/dojo/dojo.js"></script>
 <script type="text/javascript" src="dwr/engine.js"></script>
@@ -494,13 +492,13 @@ function setAlarmLevelText(alarmLevel, textNode) {
     if (alarmLevel == 0)
         textNode.innerHTML = "";
     else if (alarmLevel == 1)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.info"/>';
     else if (alarmLevel == 2)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.urgent"/>';
     else if (alarmLevel == 3)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.critical"/>';
     else if (alarmLevel == 4)
-        textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
+        textNode.innerHTML = '<spring:message code="common.alarmLevel.lifeSafety"/>';
     else
         textNode.innerHTML = "Unknown: "+ alarmLevel;
 }
@@ -523,41 +521,41 @@ function updateImg(imgNode, src, text, visible, styleType) {
 
 
 var messages = {
-  move: "<fmt:message key="pointHierarchySLTS.move"/>",
-  folderNotMove: "<fmt:message key="pointHierarchySLTS.folderNotMove"/>",
-  close: "<fmt:message key="pointHierarchySLTS.close"/>",
-  yes: "<fmt:message key="pointHierarchySLTS.yes"/>",
-  folder: "<fmt:message key="pointHierarchySLTS.folder"/>",
-  folderChange: "<fmt:message key="pointHierarchySLTS.folderChange"/>",
-  confirmDelete: "<fmt:message key="pointHierarchySLTS.confirmDelete"/>",
-  folderRemoved: "<fmt:message key="pointHierarchySLTS.folderRemoved"/>",
-  key: "<fmt:message key="pointHierarchySLTS.key"/>",
-  title: "<fmt:message key="pointHierarchySLTS.title"/>",
-  msg: "<fmt:message key="pointHierarchySLTS.msg"/>",
-  pleaseSelectElement: "<fmt:message key="pointHierarchySLTS.pleaseSelectElement"/>",
-  pleaseSelectElementFolder: "<fmt:message key="pointHierarchySLTS.pleaseSelectElementFolder"/>",
-  weOnlyEditFolder: "<fmt:message key="pointHierarchySLTS.weOnlyEditFolder"/>",
-  editFolder: "<fmt:message key="pointHierarchySLTS.editFolder"/>",
-  titleEdit: "<fmt:message key="pointHierarchySLTS.titleEdit"/>",
-  oldTitle: "<fmt:message key="pointHierarchySLTS.oldTitle"/>",
-  newTitle: "<fmt:message key="pointHierarchySLTS.newTitle"/>",
-  folderNotEdit: "<fmt:message key="pointHierarchySLTS.folderNotEdit"/>",
-  errorThrown: "<fmt:message key="pointHierarchySLTS.errorThrown"/>",
-  keyParent: "<fmt:message key="pointHierarchySLTS.keyParent"/>",
-  parent: "<fmt:message key="pointHierarchySLTS.parent"/>",
-  folderNotRemove: "<fmt:message key="pointHierarchySLTS.folderNotRemove"/>",
-  removeFolder: "<fmt:message key="pointHierarchySLTS.removeFolder"/>",
-  warning: "<fmt:message key="pointHierarchySLTS.warning"/>",
-  info: "<fmt:message key="pointHierarchySLTS.info"/>",
-  isFolder: "<fmt:message key="pointHierarchySLTS.isFolder"/>",
-  dataSource: "<fmt:message key="pointHierarchySLTS.dataSource"/>",
-  xid: "<fmt:message key="pointHierarchySLTS.xid"/>",
-  type: "<fmt:message key="pointHierarchySLTS.type"/>",
-  changeOfLanguageFailed: "<fmt:message key="pointHierarchySLTS.changeOfLanguageFailed"/>",
-  warningDontRemoveDataPointInRoot: "<fmt:message key="pointHierarchySLTS.warningDontRemoveDataPointInRoot"/>",
-  moveDataPointToRoot: "<fmt:message key="pointHierarchySLTS.moveDataPointToRoot"/>",
-  areYouSureToMoveElement: "<fmt:message key="pointHierarchySLTS.areYouSureToMoveElement"/>",
-  movedElement: "<fmt:message key="pointHierarchySLTS.movedElement"/>"
+  move: "<spring:message code="pointHierarchySLTS.move"/>",
+  folderNotMove: "<spring:message code="pointHierarchySLTS.folderNotMove"/>",
+  close: "<spring:message code="pointHierarchySLTS.close"/>",
+  yes: "<spring:message code="pointHierarchySLTS.yes"/>",
+  folder: "<spring:message code="pointHierarchySLTS.folder"/>",
+  folderChange: "<spring:message code="pointHierarchySLTS.folderChange"/>",
+  confirmDelete: "<spring:message code="pointHierarchySLTS.confirmDelete"/>",
+  folderRemoved: "<spring:message code="pointHierarchySLTS.folderRemoved"/>",
+  key: "<spring:message code="pointHierarchySLTS.key"/>",
+  title: "<spring:message code="pointHierarchySLTS.title"/>",
+  msg: "<spring:message code="pointHierarchySLTS.msg"/>",
+  pleaseSelectElement: "<spring:message code="pointHierarchySLTS.pleaseSelectElement"/>",
+  pleaseSelectElementFolder: "<spring:message code="pointHierarchySLTS.pleaseSelectElementFolder"/>",
+  weOnlyEditFolder: "<spring:message code="pointHierarchySLTS.weOnlyEditFolder"/>",
+  editFolder: "<spring:message code="pointHierarchySLTS.editFolder"/>",
+  titleEdit: "<spring:message code="pointHierarchySLTS.titleEdit"/>",
+  oldTitle: "<spring:message code="pointHierarchySLTS.oldTitle"/>",
+  newTitle: "<spring:message code="pointHierarchySLTS.newTitle"/>",
+  folderNotEdit: "<spring:message code="pointHierarchySLTS.folderNotEdit"/>",
+  errorThrown: "<spring:message code="pointHierarchySLTS.errorThrown"/>",
+  keyParent: "<spring:message code="pointHierarchySLTS.keyParent"/>",
+  parent: "<spring:message code="pointHierarchySLTS.parent"/>",
+  folderNotRemove: "<spring:message code="pointHierarchySLTS.folderNotRemove"/>",
+  removeFolder: "<spring:message code="pointHierarchySLTS.removeFolder"/>",
+  warning: "<spring:message code="pointHierarchySLTS.warning"/>",
+  info: "<spring:message code="pointHierarchySLTS.info"/>",
+  isFolder: "<spring:message code="pointHierarchySLTS.isFolder"/>",
+  dataSource: "<spring:message code="pointHierarchySLTS.dataSource"/>",
+  xid: "<spring:message code="pointHierarchySLTS.xid"/>",
+  type: "<spring:message code="pointHierarchySLTS.type"/>",
+  changeOfLanguageFailed: "<spring:message code="pointHierarchySLTS.changeOfLanguageFailed"/>",
+  warningDontRemoveDataPointInRoot: "<spring:message code="pointHierarchySLTS.warningDontRemoveDataPointInRoot"/>",
+  moveDataPointToRoot: "<spring:message code="pointHierarchySLTS.moveDataPointToRoot"/>",
+  areYouSureToMoveElement: "<spring:message code="pointHierarchySLTS.areYouSureToMoveElement"/>",
+  movedElement: "<spring:message code="pointHierarchySLTS.movedElement"/>"
 };
 	var glyph_opts = {
     	    map: {
@@ -601,7 +599,7 @@ var messages = {
     	$.ajax({
             type: "GET",
         	dataType: "json",
-        	url:myLocation+"/pointHierarchy/paths/"+key+"/"+folder,
+        	url:myLocation+"pointHierarchy/paths/"+key+"/"+folder,
         	success: function(msg){
         		var path="/";
         		if (msg.length>0) {
@@ -630,6 +628,7 @@ var messages = {
 
     var pageGlobal=1;
     var pageStart=0;
+	var draggedNodes = [];
 
 
     function pages(page) {
@@ -695,7 +694,7 @@ var messages = {
     	$("#tree").fancytree({
     	      extensions: ["dnd","glyph"],
     	      debugLevel: 0,
-    	      checkbox: false,
+    	      checkbox: true,
     	      autoScroll: false,
     	      autoActivate: true,
     	      activeVisible: false,
@@ -714,8 +713,13 @@ var messages = {
   	            preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
   	            preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
     	        dragStart: function(node, data) {
-      			    nodeDragAndDrop = data.node;
-    	        	return true;
+					var tree = data.tree;
+					var selectedNodes = tree.getSelectedNodes();
+					if ($.inArray(node, selectedNodes) < 0) {
+						selectedNodes = [node];
+					}
+					draggedNodes = selectedNodes;
+					return true;
     	        },
     	        dragEnter: function(node, data) {
     	        	if( data.node.isFolder() ) {
@@ -724,69 +728,53 @@ var messages = {
     	    	      return false;
     	    	    }
     	        },
-    	        dragDrop: function(node, data) {
-    	        	BootstrapDialog.show({
-    	 		       title: messages.move +':'+ nodeDragAndDrop.title,
-    	 		       message: function(dialog) {
-    	 		    	 var newNode = data.node;
-    	 		    	 toMove.key = nodeDragAndDrop.key;
-    	 		    	 toMove.oldParentId = getParentId(nodeDragAndDrop);
-    	 		    	 toMove.newParentId = newNode.key;
-					     var $content = $('<div><h3 id="title">'+messages.folder+':</h3>'+
-					    		 '<ul><li>'+messages.key+':'+nodeDragAndDrop.key+'</li><li>'+messages.title+':<b>'+nodeDragAndDrop.title+'</b></li><li>'+ messages.keyParent + ':'+nodeDragAndDrop.parent.key+'</li><li>'+messages.parent+':<b>'+nodeDragAndDrop.parent.title+'</b></li></ul>'+
-					    		 '<ul><li>'+messages.key+':'+newNode.key+'</li><li>'+messages.title+':<b>'+newNode.title+'</b></li><li>'+messages.keyParent+':'+newNode.parent.key+'</li><li>'+messages.parent+':<b>'+newNode.parent.title+'</b></li></ul>'
-					     );
-
-    	 		         dialog.setType(BootstrapDialog.TYPE_WARNING);
-    	 		         return $content;
-    	 		       },
-    	 		       buttons: [{
-    	 		         id: 'btn-Yes',
-    	 		         label: messages.yes,
-    	 		         cssClass: 'btn-warning',
-    	 		         action: function(dialog) {
-    	 		           dialog.getButton('btn-Close').disable();
-    	 		           var $button = this;
-    	 		           $button.disable();
-    	 		           $button.spin();
-    	 		           dialog.setClosable(false);
-                           $.ajax({
-    	 			            type: "POST",
-    	 			        	dataType: "json",
-    	 			        	url:myLocation+'/pointHierarchy/move/'+toMove.key+'/'+toMove.oldParentId+'/'+toMove.newParentId+'/'+nodeDragAndDrop.isFolder(),
-    	 			        	success: function(msg){
-    	 			        	  $button.hide();
-    	 			 		      $button.stopSpin();
-    	 			 		      dialog.setClosable(true);
-    	 			 		      dialog.getButton('btn-Close').enable();
-    	 			 		      dialog.close();
-    	 			 		      reload();
-    	 			        	},
-    	 			        	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-    	 			        	    dialog.getModalBody().html('<div><h3>'+messages.folderNotMove+'</h3><p>'+pointHierarchySLTS.errorThrown+':'+errorThrown+'</p></div>');
-    	 			        	    $button.hide();
-    	 				 		    $button.stopSpin();
-    	 				 		    dialog.setClosable(true);
-    	 				 		    dialog.getButton('btn-Close').enable();
-    	 			        	  }
-    	 			       });
-    	 		         }
-    	 		       },
-    	 		       {
-    	 		         id: 'btn-Close',
-    	 		         label:'Close',
-    	 		         action: function(dialog) {
-    	 		           dialog.close();
-    	 		         }
-    	 		       }]
-    	 		     });
-
+    	        dragDrop: function (targetNode, data) {
+    	        	var nodesToMove = draggedNodes.length ? draggedNodes : [data.dragNode];
+    	        	if (!targetNode.folder) {
+    	        		return;
+    	        	}
+    	        	BootstrapDialog.confirm({
+    	        		title: "Moving elements",
+    	        		message: function (dialog) {
+    	        			var list = $('<ul></ul>');
+    	        			nodesToMove.forEach(function (n) {
+    	        				list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+    	        			});
+    	        			return $('<div><h3>Move selected elements to: ' + targetNode.title + '?</h3></div>').append(list);
+    	        			},
+    	        		callback: function (result) {
+    	        			if (result) {
+    	        				var moveObjects = nodesToMove.map(function (n) {
+                                    return createObjectHierarchy(n.data);
+    	        			    });
+    	        				$.ajax({
+    	        					type: "PUT",
+    	        					url: myLocation + 'api/pointHierarchy/pointsMoveTo/',
+    	        					data: JSON.stringify({
+    	        						moveObjects: moveObjects,
+    	        						destinationFolderXid: targetNode.data.xid,
+    	        					}),
+    	        					contentType: "application/json; charset=utf-8",
+    	        					dataType: "json",
+    	        					success: function (msg) {
+    	        						BootstrapDialog.alert("Elements moved succesfully.");
+    	        						var tree = $("#tree").fancytree("getTree");
+    	        						tree.reload();
+    	        						refreshCache();
+    	        						},
+    	        					error: function (xhr, textStatus, errorThrown) {
+    	        						BootstrapDialog.alert("Error occured when moving elements: " + errorThrown);
+    	        					}
+    	        				});
+    	        			}
+    	        		}
+    	        	});
     	        }
     	      },
     	      glyph: glyph_opts,
     	      selectMode: 2,
     	      source: {
-    	        url: myLocation+"/pointHierarchy/0",
+    	        url: myLocation+"pointHierarchy/0",
     	        debugDelay: 0,
     	        cache: false},
     	      toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 100 },
@@ -802,7 +790,7 @@ var messages = {
     	      },
     	      lazyLoad: function(event, data) {
     	    	data.result = {
-    	    	 url: myLocation+"/pointHierarchy/"+data.node.key,
+    	    	 url: myLocation+"pointHierarchy/"+data.node.key,
     	         cache: false,
     	         debugDelay: 0
     	         };
@@ -832,7 +820,7 @@ var messages = {
  		          $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
+		        	url:myLocation+"pointHierarchy/new/0/"+dialog.getModalBody().find('input').val(),
 		        	success: function(msg){
 		        	  var titleNewNode = dialog.getModalBody().find('input').val();
 		        	  dialog.getModalBody().html('<div><h3>'+messages.folder+':</h3><ul><li>'+messages.key+':<b>'+msg+'</b></li><li>'+messages.title+':<b>'+titleNewNode+'</b></li></ul></div>');
@@ -862,136 +850,73 @@ var messages = {
  		      }]
  		    });
     	});
-    	$("button#deleteNode").click(()=>{
-    		if (nodeActivate != undefined) {
-    			if ( (getParentId(nodeActivate)==0) && (nodeActivate.isFolder()==false) ) {
+    	$("button#deleteNode").click(function(){
+    		var tree = $("#tree").fancytree("getTree");
+    		var selectedNodes = tree.getSelectedNodes();
+    			if(selectedNodes.length === 0) {
     				BootstrapDialog.show({
                         type: BootstrapDialog.TYPE_WARNING,
                         title: messages.warning,
-                        message: messages.warningDontRemoveDataPointInRoot,
+                        message: messages.pleaseSelectElement,
                         buttons: [{
-                            label: messages.close,
-           		           action: function(dialog) {
-           		             dialog.close();
+							label: messages.close,
+							action: function(dialog) {
+								dialog.close();
            		           }
                         }]
                     });
     				return;
-    			} else {
-    				if ( (nodeActivate != undefined) && (nodeActivate.isFolder()) ) {
-		 		      BootstrapDialog.show({
-				       title: messages.removeFolder +':'+nodeActivate.title,
-				       message: function(dialog) {
-				         var $content = $('<div><h3>'+ messages.confirmDelete+'</h3></div>');
-				         dialog.setType(BootstrapDialog.TYPE_DANGER);
-				         return $content;
-				       },
-				       buttons: [{
-				         id: 'btn-Yes',
-				         label: messages.yes,
-				         cssClass: 'btn-danger',
-				         action: function(dialog) {
-				           dialog.getButton('btn-Close').disable();
-				           var $button = this;
-				           $button.disable();
-				           $button.spin();
-				           dialog.setClosable(false);
-				           $.ajax({
-				        	   type: "POST",
-				        	   dataType: "json",
-				        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
-				        	   success: function(msg){
-				        		   dialog.getModalBody().html('<div><h3>'+messages.folderRemoved+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
-						           $button.hide();
-						           $button.stopSpin();
-						           dialog.setClosable(true);
-						           dialog.getButton('btn-Close').enable();
-						           dialog.close();
-						           reload();
-				        	   },
-				        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
-				        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
-					        	   $button.hide();
-						 		   $button.stopSpin();
-						 		   dialog.setClosable(true);
-						 		   dialog.getButton('btn-Close').enable();
-				        	   }
-				        	});
-				         }
-				       },
-				       {
-				         id: 'btn-Close',
-				         label:messages.close,
-				         action: function(dialog) {
-				           dialog.close();
-				         }
-				       }]
-				     });
-    				} else {
-    					// is not folder
-    					BootstrapDialog.show({
-    					       title: messages.moveDataPointToRoot +':'+nodeActivate.title,
-    					       message: function(dialog) {
-    					         var $content = $('<div><h3>'+ messages.areYouSureToMoveElement+'</h3></div>');
-    					         dialog.setType(BootstrapDialog.TYPE_DANGER);
-    					         return $content;
-    					       },
-    					       buttons: [{
-    					         id: 'btn-Yes',
-    					         label: messages.yes,
-    					         cssClass: 'btn-danger',
-    					         action: function(dialog) {
-    					           dialog.getButton('btn-Close').disable();
-    					           var $button = this;
-    					           $button.disable();
-    					           $button.spin();
-    					           dialog.setClosable(false);
-    					           $.ajax({
-    					        	   type: "POST",
-    					        	   dataType: "json",
-    					        	   url:myLocation+"/pointHierarchy/del/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+nodeActivate.isFolder(),
-    					        	   success: function(msg){
-    					        		   dialog.getModalBody().html('<div><h3>'+messages.movedElement+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.title+':<b>'+nodeActivate.title+'</b></li><li>'+messages.msg+':'+msg+'</li></ul></div>');
-    							           $button.hide();
-    							           $button.stopSpin();
-    							           dialog.setClosable(true);
-    							           dialog.getButton('btn-Close').enable();
-    							           dialog.close();
-    							           reload();
-    					        	   },
-    					        	   error: function(XMLHttpRequest, textStatus, errorThrown) {
-    					        		   dialog.getModalBody().html('<div><h3>'+messages.folderNotRemove+'</h3><p>'+messages.errorThrown+':'+errorThrown+'</p></div>');
-    						        	   $button.hide();
-    							 		   $button.stopSpin();
-    							 		   dialog.setClosable(true);
-    							 		   dialog.getButton('btn-Close').enable();
-    					        	   }
-    					        	});
-    					         }
-    					       },
-    					       {
-    					         id: 'btn-Close',
-    					         label:messages.close,
-    					         action: function(dialog) {
-    					           dialog.close();
-    					         }
-    					       }]
-    					     });
+    			}
+
+    		var moveObjects = [];
+
+    		var deleteObjects = selectedNodes.map(function(n) {
+    			return createObjectHierarchy(n.data);
+    		});
+
+    		selectedNodes.forEach(function(n) {
+    			if (n.children && n.children.length > 0) {
+    				n.children.forEach(function(child) {
+                        if (child.data && child.data.xid) {
+							moveObjects.push(createObjectHierarchy(child.data));
+                        }
+    				});
+    			}
+    		});
+
+    		BootstrapDialog.confirm({
+    			title: "Delete Folder / Move to Root",
+    			message: function(dialog) {
+    				var list = $('<ul></ul>');
+    				selectedNodes.forEach(function(n) {
+                        list.append('<li>' + n.title + " (XID: " + n.data.xid + ')</li>');
+    				});
+    				return $('<div><h3>Delete folder // move points to root folder?</h3></div>').append(list);
+    			},
+    			callback: function(result) {
+    				if(result) {
+                        $.ajax({
+                        	type: "DELETE",
+							url: myLocation + "api/pointHierarchy/deleteFolders",
+                        	data: JSON.stringify({
+                        		deleteObjects: deleteObjects,
+                        		moveObjects: moveObjects
+                        	}),
+
+                        	contentType: "application/json; charset=utf-8",
+                        	dataType: "json",
+                        	success: function(response) {
+                        		BootstrapDialog.alert("Operation successful.");
+                        		tree.reload();
+                        		refreshCache();
+                        	},
+                        	error: function(xhr, textStatus, errorThrown) {
+                        		BootstrapDialog.alert("Error occured: " + errorThrown);
+                        	}
+                        });
     				}
     			}
-    	   } else {
-    		   BootstrapDialog.show({
-                   type: BootstrapDialog.TYPE_WARNING,
-                   title: messages.warning,
-                   message: messages.pleaseSelectElement,
-                   buttons: [{
-                       label: messages.close,
-      		           action: function(dialog) {
-      		             dialog.close();
-      		           }
-                   }]
-               });
-    	   }
+    		});
 		});
     	$("button#editNode").click(()=>{
     		if ( (nodeActivate != undefined) && (!nodeActivate.isFolder())) {
@@ -1032,7 +957,7 @@ var messages = {
 		           $.ajax({
 			            type: "POST",
 			        	dataType: "json",
-			        	url:myLocation+"/pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
+			        	url:myLocation+"pointHierarchy/edit/"+getParentId(nodeActivate)+"/"+nodeActivate.key+"/"+newTitle,
 			        	success: function(msg){
 			        	  var titleNewNode = dialog.getModalBody().find('input').val();
 			        	  dialog.getModalBody().html('<div><h3>'+messages.folderChange+':</h3><ul><li>'+messages.key+':<b>'+nodeActivate.key+'</b></li><li>'+messages.oldTitle+':<b>'+nodeActivate.title+'</b></li><li>'+messages.newTitle+':<b>'+newTitle+'</b></li></ul></div>');
@@ -1140,7 +1065,7 @@ var messages = {
     		 $.ajax({
 		            type: "POST",
 		        	dataType: "json",
-		        	url:myLocation+"/viewutil/"+locale,
+		        	url:myLocation+"viewutil/"+locale,
 		        	success: function(msg){
 		        		location.reload();
 		        	},
@@ -1227,7 +1152,7 @@ var messages = {
         	$.ajax({
 	            type: "GET",
 	        	dataType: "json",
-	        	url:myLocation+"/pointHierarchy/find/"+queryGlobal+"/"+page,
+	        	url:myLocation+"pointHierarchy/find/"+queryGlobal+"/"+page,
 	        	success: function(msg){
 
 	        	  	if(msg !== undefined ) {
@@ -1299,6 +1224,10 @@ var messages = {
 
     });
     $('.jsoneditor-menu').prop('hidden', true);
+
+    function createObjectHierarchy(data) {
+        return {xid:data.xid, type:(data.pointHierarchyDataSource ? 'POINT': 'FOLDER')}
+    }
     </script>
 
 </html>

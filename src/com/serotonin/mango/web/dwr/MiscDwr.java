@@ -18,14 +18,10 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -43,9 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
-import org.scada_lts.mango.service.EventService;
-import org.scada_lts.mango.service.UserService;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.*;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
@@ -89,26 +83,28 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventService()
-					.toggleSilence(eventId, user.getId());
-			resetLastAlarmLevelChange();
-			response.addData("silenced", result);
-		} else
+			EventService eventService = new EventService();
+			EventInstance event = eventService.getEvent(eventId);
+			if(event != null) {
+				boolean result = eventService.toggleSilence(event, user);
+				resetLastAlarmLevelChange();
+				response.addData("silenced", result);
+			} else {
+				response.addData("silenced", false);
+			}
+		} else {
 			response.addData("silenced", false);
-
+		}
 		return response;
 	}
 
 	
 	public DwrResponseI18n silenceAll() {
-		List<Integer> silenced = new ArrayList<Integer>();
+		List<Integer> silenced = new ArrayList<>();
 		User user = Common.getUser();
-		MangoEvent eventService = new EventService();
-		for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
-			if (!evt.isSilenced()) {
-				eventService.toggleSilence(evt.getId(), user.getId());
-				silenced.add(evt.getId());
-			}
+		if (user != null) {
+			MangoEvent eventService = new EventService();
+			silenced = eventService.silenceEvents(user);
 		}
 
 		resetLastAlarmLevelChange();
@@ -124,23 +120,46 @@ public class MiscDwr extends BaseDwr {
 		if (user != null) {
 			EventInstance evt = eventService.getEvent(eventId);
 			if(evt != null && !evt.isActive()) {
-				eventService.ackEvent(evt.getId(), System.currentTimeMillis(),
-						user.getId(), 0);
+				eventService.ackEvent(evt, System.currentTimeMillis(), user, 0);
 				resetLastAlarmLevelChange();
 			}
 		}
 		return eventId;
 	}
 
+	public boolean assignEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		boolean result = false;
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				result = eventService.assignEvent(evt, user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return result;
+	}
+
+	public boolean unassignEvent(int eventId) {
+		User user = Common.getUser();
+		MangoEvent eventService = new EventService();
+		boolean result = false;
+		if (user != null) {
+			EventInstance evt = eventService.getEvent(eventId);
+			if(evt != null) {
+				result = eventService.unassignEvent(evt, user);
+				resetLastAlarmLevelChange();
+			}
+		}
+		return result;
+	}
+
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {
 			MangoEvent eventService = new EventService();
-			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventService.getPendingEvents(user.getId())) {
-				if(!evt.isActive())
-					eventService.ackEvent(evt.getId(), now, user.getId(), 0);
-			}
+			eventService.ackEvents(user);
 			resetLastAlarmLevelChange();
 		}
 	}
@@ -163,16 +182,15 @@ public class MiscDwr extends BaseDwr {
 			result.put("error", getMessage("dox.notFound"));
 		else {
 			// Read the content.
-			String filename = Common.getDocPath() + "/" + getMessage("dox.dir")
-					+ "/" + documentId + ".htm";
+			String filename = Common.getDocPath() + File.separator + getMessage("dox.dir")
+					+ File.separator + documentId + ".htm";
 			try {
-				Reader in = new FileReader(filename);
-				StringWriter out = new StringWriter();
-				StreamUtils.transfer(in, out);
-				in.close();
-
-				addDocumentationItem(result, item);
-				result.put("content", out.toString());
+				try (Reader in = new FileReader(filename, StandardCharsets.UTF_8);
+					 StringWriter out = new StringWriter()) {
+					StreamUtils.transfer(in, out);
+					addDocumentationItem(result, item);
+					result.put("content", out.toString());
+				}
 
 				List<Map<String, Object>> related = new ArrayList<Map<String, Object>>();
 				for (String relatedId : item.getRelated()) {
@@ -253,6 +271,7 @@ public class MiscDwr extends BaseDwr {
 
 	
 	public void setHomeUrl(String url) {
+		Permissions.ensureValidUser();
 		// Remove the scheme, domain, and context if there.
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -276,6 +295,10 @@ public class MiscDwr extends BaseDwr {
 			url = url.substring(1);
 
 		// Save the result
+		User user = Common.getUser();
+		user.setHomeUrl(url);
+		UserService userService = new UserService();
+		userService.saveHomeUrl(user.getId(), url);
 		new UserDao().saveHomeUrl(Common.getUser().getId(), url);
 	}
 
@@ -434,6 +457,9 @@ public class MiscDwr extends BaseDwr {
 				model.put("events", eventService.getPendingEvents(user.getId()));
 				model.put("pendingEvents", true);
 				model.put("noContentWhenEmpty", true);
+				SystemSettingsService service = new SystemSettingsService();
+				model.put("isEventAssignEnabled", service.isEventAssignEnabled());
+
 				String currentContent = generateContent(httpRequest,
 						"eventList.jsp", model);
 				currentContent = StringUtils.trimWhitespace(currentContent);

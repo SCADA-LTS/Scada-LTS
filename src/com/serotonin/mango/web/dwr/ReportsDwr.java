@@ -208,7 +208,7 @@ public class ReportsDwr extends BaseDwr {
         if (report != null) {
             GetReportsWithAccess.ensureReportOwnerPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
-            reportService.deleteReport(id);
+            reportService.deleteReport(report);
         }
     }
 
@@ -247,7 +247,7 @@ public class ReportsDwr extends BaseDwr {
 
         watchListService.populateWatchlistData(watchList);
         ReportVO report = new ReportVO();
-        report.setName(LocalizableMessage.getMessage(getResourceBundle(), "common.copyPrefix", watchList.getName()));
+        report.setName(watchList.getName());
         for (DataPointVO dp : watchList.getPointList()) {
             ReportPointVO rp = new ReportPointVO();
             rp.setPointId(dp.getId());

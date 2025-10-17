@@ -254,7 +254,6 @@ export default {
 	methods: {
 
 		updatePointWs(data) {
-			console.log("updatePointWs", data);
 			this.pointValue = JSON.parse(data.body).value;
 			this.fetchData();
 		},

@@ -31,7 +31,7 @@
 <head>
   <title><c:choose>
     <c:when test="${!empty instanceDescriptionHeader}">${instanceDescriptionHeader}</c:when>
-    <c:otherwise><fmt:message key="header.title"/></c:otherwise>
+    <c:otherwise><spring:message code="header.title"/></c:otherwise>
   </c:choose></title>
 
   <!-- Meta -->
@@ -164,13 +164,13 @@
             if (alarmLevel == 0)
                 textNode.innerHTML = "";
             else if (alarmLevel == 1)
-                textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.info"/>';
             else if (alarmLevel == 2)
-                textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.urgent"/>';
             else if (alarmLevel == 3)
-                textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.critical"/>';
             else if (alarmLevel == 4)
-                textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
+                textNode.innerHTML = '<spring:message code="common.alarmLevel.lifeSafety"/>';
             else
                 textNode.innerHTML = "Unknown: "+ alarmLevel;
         }
@@ -323,7 +323,7 @@
   <div class="flex-default">
     <div id="navbarUserInfo">
       <c:if test="${isLoggedToScadaUser}">
-        <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+        <span class="copyTitle"><spring:message code="header.user"/>:</span>
         <c:choose>
             <c:when test="${!empty sessionUser.firstName}">
               <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
@@ -362,7 +362,7 @@
   <jsp:doBody/>
 </div>
 <div id="sltsFooter" class="footer">
-    <span>&copy;2012-${toYear} Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+    <span>&copy;2012-${toYear} Scada-LTS <spring:message code="footer.rightsReserved"/><span>
 </div>
 
 <c:if test="${!!sessionUser.hideHeader}">

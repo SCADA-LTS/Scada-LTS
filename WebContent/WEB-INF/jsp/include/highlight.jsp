@@ -13,6 +13,12 @@ function updateCodeText(text, destination) {
     hljs.highlightElement(result_element);
 }
 
+function updateCodeTextEscaped(text, destination) {
+    let result_element = document.querySelector(destination);
+    result_element.innerHTML = text;
+    hljs.highlightElement(result_element);
+}
+
 function syncCodeScroll(element, destination) {
   let result_element = document.querySelector(destination);
   result_element.scrollTop = element.scrollTop;

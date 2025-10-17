@@ -33,6 +33,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.dataSource.DataSourceUtils;
 import com.serotonin.mango.rt.dataSource.bacnet.BACnetIPDataSourceRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
@@ -56,9 +57,10 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
                 "event.ds.initialization")));
         ets.add(createEventType(BACnetIPDataSourceRT.MESSAGE_EXCEPTION_EVENT,
                 new LocalizableMessage("event.ds.message")));
-        ets
-                .add(createEventType(BACnetIPDataSourceRT.DEVICE_EXCEPTION_EVENT, new LocalizableMessage(
+        ets.add(createEventType(BACnetIPDataSourceRT.DEVICE_EXCEPTION_EVENT, new LocalizableMessage(
                         "event.ds.device")));
+        ets.add(createEventType(BACnetIPDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT,
+                new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -66,6 +68,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
         EVENT_CODES.addElement(BACnetIPDataSourceRT.INITIALIZATION_EXCEPTION_EVENT, "INITIALIZATION_EXCEPTION");
         EVENT_CODES.addElement(BACnetIPDataSourceRT.MESSAGE_EXCEPTION_EVENT, "MESSAGE_EXCEPTION");
         EVENT_CODES.addElement(BACnetIPDataSourceRT.DEVICE_EXCEPTION_EVENT, "DEVICE_EXCEPTION");
+        EVENT_CODES.addElement(BACnetIPDataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override
@@ -75,7 +78,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        return new LocalizableMessage("dsEdit.bacnetIp.dsconn", deviceId);
+        return new LocalizableMessage("common.tp.description", Common.getPeriodDescription(updatePeriodType, updatePeriods), new LocalizableMessage("common.default", " / Device ID: " + getDeviceId() + " / " + getBroadcastAddress() + ":" + getPort()));
     }
 
     @Override
@@ -121,7 +124,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
         // Create a local device object from which to get default values.
         LocalDevice localDevice = new LocalDevice(0, null);
         broadcastAddress = "255.255.255.255";
-        port = localDevice.getPort();
+        port = 0;
         timeout = localDevice.getTimeout();
         segTimeout = localDevice.getSegTimeout();
         segWindow = localDevice.getSegWindow();

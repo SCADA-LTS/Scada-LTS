@@ -64,11 +64,14 @@ public class EBI25DataSourceVO extends DataSourceVO<EBI25DataSourceVO> {
     protected void addEventTypes(List<EventTypeVO> ets) {
         ets.add(createEventType(EBI25DataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage(
                 "event.ds.dataSource")));
+        ets.add(createEventType(EBI25DataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, new LocalizableMessage(
+                "event.ds.updateTimeExceededUpdatePeriod")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
         EVENT_CODES.addElement(EBI25DataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
+        EVENT_CODES.addElement(EBI25DataSourceRT.UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT, "UPDATE_EXECUTED_LONGER_UPDATE_PERIOD_EXCEPTION");
     }
 
     @Override

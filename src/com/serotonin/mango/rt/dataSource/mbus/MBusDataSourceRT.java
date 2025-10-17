@@ -50,6 +50,8 @@ public class MBusDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int POINT_READ_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
+
     private final MBusDataSourceVO vo;
     private final MBusMaster master = new MBusMaster();
 
@@ -61,13 +63,13 @@ public class MBusDataSourceRT extends PollingDataSource {
 
     @Override
     public void initialize() {
-        LOG.fatal("INITIALIZE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
+        LOG.debug("INITIALIZE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
         super.initialize();
     }
 
     @Override
     public void terminate() {
-        LOG.fatal("TERMINATE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
+        LOG.debug("TERMINATE MBusaDataSourceRT" + Thread.getAllStackTraces().get(Thread.currentThread()));
         super.terminate();
     }
 
@@ -184,6 +186,7 @@ public class MBusDataSourceRT extends PollingDataSource {
     private void closeConnection() {
         try {
             master.close();
+            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (IOException ex) {
             LOG.fatal("Close port", ex);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(
@@ -195,5 +198,10 @@ public class MBusDataSourceRT extends PollingDataSource {
         } finally {
             master.setConnection(null);
         }
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

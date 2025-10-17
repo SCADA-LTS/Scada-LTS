@@ -6,7 +6,7 @@ import org.junit.runners.Parameterized;
 
 import java.util.List;
 
-import static br.org.scadabr.db.utils.TestUtils.*;
+import static utils.TestUtils.*;
 
 @RunWith(Parameterized.class)
 public class CalculateLinesImageChartUtilsExceptionTest {

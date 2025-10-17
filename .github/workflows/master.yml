@@ -17,11 +17,11 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -36,6 +36,10 @@ jobs:
         run: mkdir -p /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz; tar xvzf apache-tomcat-9.0.86.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Build Scada-LTS WAR Application
@@ -50,11 +54,11 @@ jobs:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 22.9.0
       - name: Cache node modules
         id: nodeCache
         uses: actions/cache@v3
@@ -95,11 +99,11 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.86
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: 'adopt'
@@ -132,6 +136,10 @@ jobs:
       - name: Install static web-dependencies
         working-directory: ./WebContent/resources
         run: npm install
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
@@ -151,7 +159,7 @@ jobs:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
       - name: Deploy WAR artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Scada-LTS
           path: ./build/libs/Scada-LTS.war
@@ -161,7 +169,7 @@ jobs:
     needs: [ war ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx

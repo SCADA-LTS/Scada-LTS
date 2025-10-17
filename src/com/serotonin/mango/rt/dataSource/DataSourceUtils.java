@@ -162,6 +162,17 @@ public class DataSourceUtils {
 		return null;
 	}
 
+	public static void checkInitialized(DataSourceRT dataSource) {
+
+		if(!dataSource.isInitialized()) {
+			dataSource.initialize();
+		}
+
+		if(!dataSource.isInitialized()) {
+			throw new IllegalStateException("Data Source not initialized!");
+		}
+  }
+  
 	public static DataPointVO copyAndSaveDataPoint(DataSourceVO<?> dataSource, DataPointVO dataPoint, DataPointService dataPointService) {
 		DataPointVO dataPointCopy = dataPoint.copy();
 		dataPointCopy.setId(Common.NEW_ID);

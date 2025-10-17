@@ -30,6 +30,8 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.taglib.DateFunctions;
 
+import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
+
 public class Functions {
     public static String getHtmlText(DataPointVO point, PointValueTime pointValue) {
         if (point == null)
@@ -78,18 +80,17 @@ public class Functions {
         String result;
 
         if (text != null && detectOverflow && text.length() > 30) {
-            text = encodeDQuot(text);
             if (StringUtils.isEmpty(colour))
-                result = "<input type='text' readonly='readonly' class='ovrflw' value=\"" + text + "\"/>";
+                result = "<input type='text' readonly='readonly' class='ovrflw' value=\"" + escapeHtml(text) + "\"/>";
             else
-                result = "<input type='text' readonly='readonly' class='ovrflw' style='color:" + colour + ";' value=\""
-                        + text + "\"/>";
+                result = "<input type='text' readonly='readonly' class='ovrflw' style='color:" + escapeHtml(colour) + ";' value=\""
+                        + escapeHtml(text) + "\"/>";
         }
         else {
             if (StringUtils.isEmpty(colour))
-                result = text;
+                result = "<span>" + escapeHtml(text) + "</span>";
             else
-                result = "<span style='color:" + colour + ";'>" + text + "</span>";
+                result = "<span style='color:" + escapeHtml(colour) + ";'>" + escapeHtml(text) + "</span>";
         }
 
         return result;

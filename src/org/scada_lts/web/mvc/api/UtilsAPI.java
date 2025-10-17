@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -28,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Controller for API watchList
@@ -40,22 +38,22 @@ public class UtilsAPI {
 	
 	private static final Log LOG = LogFactory.getLog(UtilsAPI.class);
 
-	@Resource
-	private UtilsService utilsService;
+	private final UtilsService utilsService;
+
+	public UtilsAPI(UtilsService utilsService) {
+		this.utilsService = utilsService;
+	}
 
 	@RequestMapping(value = "/api/utils/getTs", method = RequestMethod.GET)
 	public ResponseEntity<String> getTs(HttpServletRequest request) {
 		LOG.info("/api/utils/getTs");
 		try {
-			String json = null;
-			ObjectMapper mapper = new ObjectMapper();
-			json = mapper.writeValueAsString(utilsService.getTS());
-				
-			return new ResponseEntity<String>(json,HttpStatus.OK);				
+			long ts = utilsService.getTS();
+			return new ResponseEntity<>(String.valueOf(ts),HttpStatus.OK);
 
 		} catch (Exception e) {
 			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 }

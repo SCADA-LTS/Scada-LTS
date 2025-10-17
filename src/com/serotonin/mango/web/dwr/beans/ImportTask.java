@@ -30,27 +30,11 @@ import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 import br.org.scadabr.vo.importer.UsersProfileImporter;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PointLinkDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
@@ -91,19 +75,20 @@ public class ImportTask extends ProgressiveTask {
 	private final ResourceBundle bundle;
 	private final User user;
 	private final DwrResponseI18n response;
-	private final UserDao userDao = new UserDao();
-	private final DataSourceDao dataSourceDao = new DataSourceDao();
+	private final UserService userDao = new UserService();
+	private final DataSourceService dataSourceDao = new DataSourceService();
 	private final DataPointService dataPointService = new DataPointService();
 	private final ViewService viewDao = new ViewService();
-	private final PointLinkDao pointLinkDao = new PointLinkDao();
-	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
-	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();
+	private final PointLinkService pointLinkDao = new PointLinkService();
+	private final ScheduledEventService scheduledEventDao = new ScheduledEventService();
+	private final CompoundEventDetectorService compoundEventDetectorDao = new CompoundEventDetectorService();
 	private final EventService eventService = new EventService();
-	private final MailingListDao mailingListDao = new MailingListDao();
-	private final PublisherDao publisherDao = new PublisherDao();
-	private final WatchListDao watchListDao = new WatchListDao();
-	private final MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
+	private final MailingListService mailingListDao = new MailingListService();
+	private final PublisherService publisherDao = new PublisherService();
+	private final WatchListService watchListDao = new WatchListService();
+	private final MaintenanceEventService maintenanceEventDao = new MaintenanceEventService();
 	private final ScriptService scriptService = new ScriptService();
+	private final PointValueService pointValueService = new PointValueService();
 
 	private final List<JsonValue> users;
 	private int userIndexPass1;
@@ -1064,19 +1049,18 @@ public class ImportTask extends ProgressiveTask {
 
 	private void importPointValues(JsonObject json) {
 		String pointXid = json.getString("pointXid");
-		DataPointVO dp = new DataPointDao().getDataPoint(pointXid);
+		DataPointVO dp = dataPointService.getDataPoint(pointXid);
 		if (dp == null) {
 			// response.addGenericMessage("emport.script.xid");
 			response.addGenericMessage("emport.pointValue.missingPoint",
 					pointXid);
 		} else {
-			long time = json.getLong("timestamp");
+			long time = json.getLong("timestamppointValueService");
 			String value = json.getString("value");
-			PointValueDao dao = new PointValueDao();
 			PointValueTime pointValue = new PointValueTime(
 					MangoValue.stringToValue(value, dp.getPointLocator()
 							.getDataTypeId()), time);
-			dao.savePointValue(dp.getId(), pointValue);
+			pointValueService.savePointValue(dp.getId(), pointValue);
 		}
 
 	}
@@ -1177,7 +1161,7 @@ public class ImportTask extends ProgressiveTask {
 		profileImporter.importUsersProfile(profileJson, response, reader, this);
 	}
 
-	public List<JsonValue> getUsers() {
+	public List<JsonValue> _getUsers() {
 		return users;
 	}
 

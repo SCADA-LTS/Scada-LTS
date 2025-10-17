@@ -56,6 +56,8 @@ public class MetaDataSourceVO extends DataSourceVO<MetaDataSourceVO> {
                 new LocalizableMessage("event.ds.scriptError")));
         ets.add(createEventType(MetaDataSourceRT.EVENT_TYPE_RESULT_TYPE_ERROR, new LocalizableMessage(
                 "event.ds.resultType")));
+        ets.add(createEventType(MetaDataSourceRT.EVENT_TYPE_RECURSIVE_ERROR, new LocalizableMessage(
+                "event.ds.recursiveError")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -63,6 +65,7 @@ public class MetaDataSourceVO extends DataSourceVO<MetaDataSourceVO> {
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_CONTEXT_POINT_DISABLED, "CONTEXT_POINT_DISABLED");
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_SCRIPT_ERROR, "SCRIPT_ERROR");
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_RESULT_TYPE_ERROR, "RESULT_TYPE_ERROR");
+        EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_RECURSIVE_ERROR, "RECURSIVE_ERROR");
     }
 
     @Override

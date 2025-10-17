@@ -62,6 +62,10 @@ mango.view.setMessages = function(state) {
     var warningNode = $("c"+ state.id +"Warning");
     if (warningNode && state.messages != null) {
         $set("c"+ state.id +"Messages", state.messages);
+        var warningIconNode = $("c"+ state.id +"WarningIcon");
+        if(warningIconNode) {
+            $set("c"+ state.id +"WarningIcon", state.warningIcon);
+        }
         if (state.messages)
             show(warningNode);
         else
@@ -96,10 +100,10 @@ mango.view.setContent = function(state) {
 };
 
 function extractSrcAttribute(string) {
-	string = string.replace("<img ","");
-	string = string.replace(string.match("alt=.*"),"");
-	string = string.replace("src=\"","");
-	return string.replace("\"","");
+	string = string.replaceAll("<img ","");
+	string = string.replaceAll(string.match("alt=.*"),"");
+	string = string.replaceAll("src=\"","");
+	return string.replaceAll("\"","");
 }
 
 mango.view.runScripts = function(node) { 

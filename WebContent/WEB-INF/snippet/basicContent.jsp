@@ -19,11 +19,11 @@
 <%@ include file="/WEB-INF/snippet/common.jsp" %>
 <c:set var="content"><%--
   --%><c:choose><%--
-    --%><c:when test="${displayPointName}">${pointComponent.name}:&nbsp;<b>${mango:htmlText(point, pointValue)}</b></c:when><%--
+    --%><c:when test="${displayPointName}"><c:out value="${pointComponent.name}"/>:&nbsp;<b>${mango:htmlText(point, pointValue)}</b></c:when><%--
     --%><c:otherwise>${mango:htmlText(point, pointValue)}</c:otherwise><%--
   --%></c:choose><%--
 --%></c:set>
-<c:if test="${!empty styleAttribute}"><div style="${styleAttribute}"></c:if>
+<c:if test="${!empty styleAttribute}"><div style="<c:out value="${styleAttribute}"/>"></c:if>
 <c:choose>
   <c:when test='${!empty viewComponent}'>
     <c:choose>
@@ -31,10 +31,10 @@
         <span class="simpleRenderer"/>${content}</span>
       </c:when>
       <c:when test='${viewComponent.bkgdColorOverride == "transparent"}'>
-        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}</span>
+        <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}/></span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${viewComponent.bkgdColorOverride};"/>${content}</span>
+        <span class="simpleRenderer" style="background-color:<c:out value="${viewComponent.bkgdColorOverride}"/>;"/>${content}</span>
       </c:otherwise>
     </c:choose>
   </c:when>
@@ -47,7 +47,7 @@
         <span class="simpleRenderer" style="background:transparent;border:0;"/>${content}</span>
       </c:when>
       <c:otherwise>
-        <span class="simpleRenderer" style="background-color:${pointComponent.bkgdColorOverride};"/>${content}</span>
+        <span class="simpleRenderer" style="background-color:<c:out value="${pointComponent.bkgdColorOverride}"/>;"/>${content}</span>
       </c:otherwise>
     </c:choose>
   </c:otherwise>

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class DataSourceAPI {
     }
 
     @PostMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> createDataSource(@RequestBody(required = false) DataSourceJson dataSource,
+    public ResponseEntity<DataSourceJson> createDataSource(@RequestBody(required = false) @Valid DataSourceJson dataSource,
                                                            HttpServletRequest request) {
         LOG.debug( request.getRequestURI());
 
@@ -112,7 +113,7 @@ public class DataSourceAPI {
     }
 
     @PutMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody(required = false) DataSourceJson dataSource,
+    public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody(required = false) @Valid DataSourceJson dataSource,
                                                            HttpServletRequest request) {
         LOG.debug( request.getRequestURI());
 

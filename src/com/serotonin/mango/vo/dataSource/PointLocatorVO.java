@@ -61,5 +61,9 @@ public interface PointLocatorVO extends Serializable, ChangeComparableObject {
      */
     public void validate(DwrResponseI18n response);
 
+    default void validate(DwrResponseI18n response, int dataPointId) {
+        validate(response);
+    }
+
     public DataPointSaveHandler getDataPointSaveHandler();
 }

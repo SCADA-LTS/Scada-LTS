@@ -115,7 +115,7 @@ public final class ApiUtils {
 
     public static UserInfo toUserInfo(User user) {
         JsonSettingsMisc jsonSettingsMisc = new SystemSettingsService().getMiscSettings();
-        return new UserInfo(user, jsonSettingsMisc.isEnableFullScreen(), jsonSettingsMisc.isHideShortcutDisableFullScreen());
+        return new UserInfo(user, jsonSettingsMisc.isViewForceFullScreenEnabled(), jsonSettingsMisc.isViewHideShortcutDisableFullScreenEnabled());
     }
 
     public static <T, R, S> Map<S, R> convertMap(Map<S, List<T>> map, Function<List<T>, R> converter) {
@@ -152,6 +152,15 @@ public final class ApiUtils {
     public static void validateObject(HttpServletRequest request, ScadaValidation toUpdate) {
         DwrResponseI18n responseI18n = new DwrResponseI18n();
         toUpdate.validate(responseI18n);
+        if(responseI18n.getHasMessages()) {
+            throw new BadRequestException(toMapMessages(responseI18n),
+                    request.getRequestURI());
+        }
+    }
+
+    public static void validateObjectForCreate(HttpServletRequest request, ScadaValidation toUpdate) {
+        DwrResponseI18n responseI18n = new DwrResponseI18n();
+        toUpdate.validateForCreate(responseI18n);
         if(responseI18n.getHasMessages()) {
             throw new BadRequestException(toMapMessages(responseI18n),
                     request.getRequestURI());

@@ -282,6 +282,12 @@ public class Permissions {
     // / Event access
     //
     public static boolean hasEventTypePermission(User user, EventType eventType) {
+
+        if(EventType.EventSources.DATA_SOURCE == eventType.getDataSourceId() && eventType.getReferenceId3() > 0) {
+            return hasDataSourcePermission(user, eventType.getDataSourceId())
+                    || hasDataPointReadPermission(user, eventType.getDataSourceId(), eventType.getDataPointId());
+        }
+
         switch (eventType.getEventSourceId()) {
         case EventType.EventSources.DATA_POINT:
             return hasDataPointReadPermission(user, eventType.getDataSourceId(), eventType.getDataPointId());

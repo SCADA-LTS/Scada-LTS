@@ -61,6 +61,7 @@ public class OneWireDataSourceRT extends PollingDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int POINT_READ_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+    public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
 
     private final OneWireDataSourceVO vo;
     private Network network;
@@ -300,7 +301,6 @@ public class OneWireDataSourceRT extends PollingDataSource {
 
                     // Update the data image with the new value.
                     point.updatePointValue(new PointValueTime(result, time));
-
                     // Remove this point from the list.
                     iter.remove();
                 }
@@ -375,9 +375,11 @@ public class OneWireDataSourceRT extends PollingDataSource {
 
             // Event handling.
             if (exceptionMessage != null)
-                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage);
-            else
+                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage, dataPoint);
+            else {
                 dataPoint.setPointValue(valueTime, source);
+                returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+            }
         }
     }
 
@@ -389,7 +391,6 @@ public class OneWireDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
         initializeNetwork();
-        super.initialize();
     }
 
     @Override
@@ -419,6 +420,7 @@ public class OneWireDataSourceRT extends PollingDataSource {
             terminateNetwork();
             return;
         }
+        super.initialize();
     }
 
     private void terminateNetwork() {
@@ -443,5 +445,10 @@ public class OneWireDataSourceRT extends PollingDataSource {
 
     private void updateNextRescan(long time) {
         nextRescan = time + Common.getMillis(vo.getRescanPeriodType(), vo.getRescanPeriods());
+    }
+
+    @Override
+    public int getUpdateTimeExceededUpdatePeriodEventId() {
+        return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
     }
 }

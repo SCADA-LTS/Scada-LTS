@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 final class AmqpChannelFactory {
 
     private AmqpChannelFactory() {}
 
-    static AmqpChannel createReceiver(DataPointRT dataPoint, AmqpConnection connection, Consumer<Exception> exceptionHandler,
-                                      String updateErrorKey) throws IOException {
+    static AmqpChannel createReceiver(DataPointRT dataPoint, AmqpConnection connection, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws IOException {
         AmqpChannel receive = configChannel(dataPoint, connection);
         if(receive == null)
             return null;
-        basicConsume(dataPoint, receive, exceptionHandler, updateErrorKey);
+        basicConsume(dataPoint, receive, exceptionHandler, returnToNormal);
         return receive;
     }
 
@@ -59,13 +59,11 @@ final class AmqpChannelFactory {
         channel.basicQos(vo.getQos());
     }
 
-    private static void basicConsume(DataPointRT dataPoint, AmqpChannel channel, Consumer<Exception> exceptionHandler,
-                                     String updateErrorKey) throws IOException {
+    private static void basicConsume(DataPointRT dataPoint, AmqpChannel channel, Consumer<Throwable> exceptionHandler, Supplier<Void> returnToNormal) throws IOException {
         AmqpPointLocatorRT locator = dataPoint.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
         boolean noAck = vo.getMessageAck() == MessageAckType.NO_ACK;
-        channel.basicConsume(vo.getQueueName(), noAck, new UpdatePointValueConsumer(dataPoint, vo::isWritable,
-                updateErrorKey, exceptionHandler));
+        channel.basicConsume(vo.getQueueName(), noAck, new UpdatePointValueConsumer(dataPoint, vo::isWritable, exceptionHandler, returnToNormal));
     }
 
     private static void declare(AmqpChannel channel, AmqpPointLocatorVO vo) throws IOException {

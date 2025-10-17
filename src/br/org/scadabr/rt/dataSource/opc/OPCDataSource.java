@@ -3,6 +3,7 @@ package br.org.scadabr.rt.dataSource.opc;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jinterop.dcom.common.JISystem;
@@ -26,6 +27,8 @@ public class OPCDataSource extends PollingDataSource {
 	public static final int POINT_READ_EXCEPTION_EVENT = 1;
 	public static final int DATA_SOURCE_EXCEPTION_EVENT = 2;
 	public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
+	public static final int UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT = 4;
+
 	private OPCMaster opcMaster;
 	private final OPCDataSourceVO<?> vo;
 	private int timeoutCount = 0;
@@ -36,14 +39,11 @@ public class OPCDataSource extends PollingDataSource {
 		this.vo = vo;
 		setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(),
 				vo.isQuantize());
-
-		this.opcMaster = new RealOPCMaster();
-		JISystem.getLogger().setLevel(Level.OFF);
 	}
 
 	@Override
 	protected void doPoll(long time) {
-		ArrayList<String> enabledTags = new ArrayList<String>();
+		ArrayList<String> enabledTags = new ArrayList<>();
 
 		for (DataPointRT dataPoint : dataPoints) {
 			OPCPointLocatorVO dataPointVO = dataPoint.getVO().getPointLocator();
@@ -53,7 +53,7 @@ public class OPCDataSource extends PollingDataSource {
 		try {
 
 			if (timeoutCount >= timeoutsToReconnect) {
-				System.out.println("[OPC] Trying to reconnect !");
+				LOG.error("[OPC] Trying to reconnect ! :" + LoggingUtils.dataSourceInfo(this));
 				timeoutCount = 0;
 				initialize();
 			} else {
@@ -62,7 +62,8 @@ public class OPCDataSource extends PollingDataSource {
 				returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			}
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			LOG.error("[OPC] Poll Failed ! :" + LoggingUtils.info(e, this));
 			raiseEvent(
 					DATA_SOURCE_EXCEPTION_EVENT,
 					time,
@@ -70,7 +71,7 @@ public class OPCDataSource extends PollingDataSource {
 					new LocalizableMessage("event.exception2", vo.getName(), e
 							.getMessage()));
 			timeoutCount++;
-			System.out.println("[OPC] Poll Failed !");
+			return;
 		}
 
 		for (DataPointRT dataPoint : dataPoints) {
@@ -85,10 +86,11 @@ public class OPCDataSource extends PollingDataSource {
 						dataPointVO.getDataTypeId());
 				dataPoint
 						.updatePointValue(new PointValueTime(mangoValue, time));
-			} catch (Exception e) {
+				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
+			} catch (Throwable e) {
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
 						new LocalizableMessage("event.exception2",
-								vo.getName(), e.getMessage()));
+								vo.getName(), e.getMessage()), dataPoint);
 			}
 		}
 	}
@@ -110,18 +112,28 @@ public class OPCDataSource extends PollingDataSource {
 
 		try {
 			opcMaster.write(tag, value);
-		} catch (Exception e) {
+			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+		} catch (Throwable e) {
+			LOG.error(LoggingUtils.info(e, this, dataPoint), e);
 			raiseEvent(
 					POINT_WRITE_EXCEPTION_EVENT,
 					System.currentTimeMillis(),
 					true,
 					new LocalizableMessage("event.exception2", vo.getName(), e
-							.getMessage()));
-			e.printStackTrace();
+							.getMessage()), dataPoint);
 		}
 	}
 
 	public void initialize() {
+		if(opcMaster != null) {
+            try {
+                opcMaster.terminate();
+            } catch (Exception e) {
+                LOG.warn(LoggingUtils.info(e, this));
+            }
+        }
+		this.opcMaster = new RealOPCMaster();
+		JISystem.getLogger().setLevel(Level.OFF);
 
 		opcMaster.setHost(vo.getHost());
 		opcMaster.setDomain(vo.getDomain());
@@ -134,7 +146,7 @@ public class OPCDataSource extends PollingDataSource {
 			opcMaster.init();
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
 					System.currentTimeMillis());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			String message = e.getMessage();
 			if(e.getMessage() != null && e.getMessage().contains("Unknown Error")) {
 				message = "The OPC DA Server for the data source settings may not be found. ";
@@ -155,8 +167,10 @@ public class OPCDataSource extends PollingDataSource {
 	public void terminate() {
 		super.terminate();
 		try {
-			opcMaster.terminate();
-		} catch (Exception e) {
+			if(opcMaster != null)
+				opcMaster.terminate();
+			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
+		} catch (Throwable e) {
 			String message = e.getMessage();
 			if(e instanceof NullPointerException) {
 				message = "The client may not have been properly initialized. ";
@@ -171,4 +185,8 @@ public class OPCDataSource extends PollingDataSource {
 		}
 	}
 
+	@Override
+	public int getUpdateTimeExceededUpdatePeriodEventId() {
+		return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
+	}
 }

@@ -27,10 +27,10 @@
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
-	  pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.iec101.iec101DataType"/>";
+	  pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.iec101.iec101DataType"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.iec101DataType; };
 
-      pointListColumnHeaders[pointListColumnHeaders.length] = "<fmt:message key="dsEdit.iec101.objectAddress"/>";
+      pointListColumnHeaders[pointListColumnHeaders.length] = "<spring:message code="dsEdit.iec101.objectAddress"/>";
       pointListColumnFunctions[pointListColumnFunctions.length] = function(p) { return p.pointLocator.objectAddress; };
   }
   
@@ -84,17 +84,17 @@
 
 <c:choose>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.IEC101_SERIAL']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.iec101.descSerial"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.iec101.descSerial"/></c:set>
     <c:set var="dsHelpId" value="iec101DS"/>
   </c:when>
   <c:when test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.IEC101_ETHERNET']}">
-    <c:set var="dsDesc"><fmt:message key="dsEdit.iec101.descEthernet"/></c:set>
+    <c:set var="dsDesc"><spring:message code="dsEdit.iec101.descEthernet"/></c:set>
     <c:set var="dsHelpId" value="iec101DS"/>
   </c:when>
 </c:choose>
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsHead.jspf" %>
 		<tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.linkLayerAddressSize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.linkLayerAddressSize"/></td>
           <td class="formField">
 	          <sst:select id="linkLayerAddressSize" value="${dataSource.linkLayerAddressSize}">
 			      <sst:option value="0">None</sst:option>
@@ -105,11 +105,11 @@
           
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.linkLayerAddress"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.linkLayerAddress"/></td>
           <td class="formField"><input type="text" id="linkLayerAddress" value="${dataSource.linkLayerAddress}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.asduAddressSize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.asduAddressSize"/></td>
           <td class="formField">
           	<sst:select id="asduAddressSize" value="${dataSource.asduAddressSize}">
 			      <sst:option value="1">1 byte</sst:option>
@@ -118,11 +118,11 @@
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.asduAddress"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.asduAddress"/></td>
           <td class="formField"><input type="text" id="asduAddress" value="${dataSource.asduAddress}"/></td>
         </tr>
          <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.cotSize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.cotSize"/></td>
           <td class="formField">
           	<sst:select id="cotSize" value="${dataSource.cotSize}">
 			      <sst:option value="1">1 byte</sst:option>
@@ -131,7 +131,7 @@
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.objectAddressSize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.objectAddressSize"/></td>
           <td class="formField">
           	<sst:select id="objectAddressSize" value="${dataSource.objectAddressSize}">
 			      <sst:option value="1">1 byte</sst:option>
@@ -142,7 +142,7 @@
         </tr>
         
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.updatePeriod"/></td>
           <td class="formField">
             <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
@@ -151,25 +151,25 @@
           </td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.giRelativePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.giRelativePeriod"/></td>
           <td class="formField"><input type="text" id="giRelativePeriod" value="${dataSource.giRelativePeriod}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.clockSynchRelativePeriod"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.iec101.clockSynchRelativePeriod"/></td>
           <td class="formField"><input type="text" id="clockSynchRelativePeriod" value="${dataSource.clockSynchRelativePeriod}"/></td>
         </tr>
              	 
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.timeout"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.timeout"/></td>
           <td class="formField"><input type="text" id="timeout" value="${dataSource.timeout}"/></td>
         </tr>
               
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.modbus.retries"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.modbus.retries"/></td>
           <td class="formField"><input type="text" id="retries" value="${dataSource.retries}"/></td>
         </tr>
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.quantize"/></td>
+          <td class="formLabelRequired"><spring:message code="dsEdit.quantize"/></td>
           <td class="formField"><sst:checkbox id="quantize" selectedValue="${dataSource.quantize}"/></td>
   		</tr>
               
@@ -190,21 +190,21 @@
 
 <tag:pointList pointHelpId="iec101PP">
 	<tr>
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.objectAddress"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.iec101.objectAddress"/></td>
 	    <td class="formField"><input type="text" id="objectAddress"/></td>
 	</tr>
 	<tr>
-	    <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.iec101DataType"/></td>
+	    <td class="formLabelRequired"><spring:message code="dsEdit.iec101.iec101DataType"/></td>
 	    <td class="formField">
 	      <select id="iec101DataType" onchange="settableChanged()">
-	        <option value="<c:out value="<%= IEC101Master.SINGLE_POINT_INFORMATION%>"/>"><fmt:message key="dsEdit.iec101.iec101DataType.singlePoint"/></option>
-	        <option value="<c:out value="<%= IEC101Master.DOUBLE_POINT_INFORMATION %>"/>"><fmt:message key="dsEdit.iec101.iec101DataType.doublePoint"/></option>
-	        <option value="<c:out value="<%= IEC101Master.NORMALIZED_MEASURE %>"/>"><fmt:message key="dsEdit.iec101.iec101DataType.normalizedMeasure"/></option>
+	        <option value="<c:out value="<%= IEC101Master.SINGLE_POINT_INFORMATION%>"/>"><spring:message code="dsEdit.iec101.iec101DataType.singlePoint"/></option>
+	        <option value="<c:out value="<%= IEC101Master.DOUBLE_POINT_INFORMATION %>"/>"><spring:message code="dsEdit.iec101.iec101DataType.doublePoint"/></option>
+	        <option value="<c:out value="<%= IEC101Master.NORMALIZED_MEASURE %>"/>"><spring:message code="dsEdit.iec101.iec101DataType.normalizedMeasure"/></option>
 	      </select>
 	    </td>
   	</tr>
   	<tr>
-    	<td class="formLabelRequired"><fmt:message key="dsEdit.settable"/></td>
+    	<td class="formLabelRequired"><spring:message code="dsEdit.settable"/></td>
     	<td class="formField"><input type="checkbox" id="settable" onchange="settableChanged()"/></td>
   	</tr>
   	<tbody id="commandFields">
@@ -212,13 +212,13 @@
 		    <td class="formLabelRequired">Control Mode</td>
 		    <td class="formField">
 		      <select id="controlMode">
-		        <option value="<c:out value="<%= IEC101Master.SELECT_AND_EXECUTE%>"/>"><fmt:message key="dsEdit.iec101.selectExecute"/></option>
-		        <option value="<c:out value="<%= IEC101Master.EXECUTE_ONLY%>"/>"><fmt:message key="dsEdit.iec101.execute"/></option>
+		        <option value="<c:out value="<%= IEC101Master.SELECT_AND_EXECUTE%>"/>"><spring:message code="dsEdit.iec101.selectExecute"/></option>
+		        <option value="<c:out value="<%= IEC101Master.EXECUTE_ONLY%>"/>"><spring:message code="dsEdit.iec101.execute"/></option>
 		      </select>
 		    </td>
   		</tr>
   		<tr>
-		    <td class="formLabelRequired"><fmt:message key="dsEdit.iec101.offset"/></td>
+		    <td class="formLabelRequired"><spring:message code="dsEdit.iec101.offset"/></td>
 		    <td class="formField"><input type="text" id="offset"/></td>
 		</tr>
   	</tbody>
@@ -227,10 +227,10 @@
 		    <td class="formLabelRequired">Qualifier</td>
 		    <td class="formField">
 		      <select id="qualifier">
-		        <option value="<c:out value="<%= IEC101Master.DEFAULT%>"/>"><fmt:message key="dsEdit.iec101.default"/></option>
-		        <option value="<c:out value="<%= IEC101Master.SHORT_PULSE%>"/>"><fmt:message key="dsEdit.iec101.shortPulse"/></option>
-		        <option value="<c:out value="<%= IEC101Master.LONG_PULSE%>"/>"><fmt:message key="dsEdit.iec101.longPulse"/></option>
-		        <option value="<c:out value="<%= IEC101Master.PERSISTENT%>"/>"><fmt:message key="dsEdit.iec101.persistent"/></option>
+		        <option value="<c:out value="<%= IEC101Master.DEFAULT%>"/>"><spring:message code="dsEdit.iec101.default"/></option>
+		        <option value="<c:out value="<%= IEC101Master.SHORT_PULSE%>"/>"><spring:message code="dsEdit.iec101.shortPulse"/></option>
+		        <option value="<c:out value="<%= IEC101Master.LONG_PULSE%>"/>"><spring:message code="dsEdit.iec101.longPulse"/></option>
+		        <option value="<c:out value="<%= IEC101Master.PERSISTENT%>"/>"><spring:message code="dsEdit.iec101.persistent"/></option>
 		      </select>
 		    </td>
   		</tr>

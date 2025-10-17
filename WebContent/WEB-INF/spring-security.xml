@@ -24,6 +24,7 @@
         <!-- Other -->
         <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
 
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none" />
     </http>
@@ -46,6 +47,7 @@
         <!-- Other -->
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_HTTPDS')" />
 
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none" />
     </http>
@@ -68,6 +70,7 @@
         <!-- Other -->
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HTTPDS')" requires-channel="https"/>
 
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none"/>
     </http>
@@ -90,6 +93,7 @@
         <!-- Other -->
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
 
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none"/>
     </http>
@@ -112,6 +116,7 @@
         <!-- Other -->
         <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN')" requires-channel="https"/>
 
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="none"/>
     </http>
@@ -181,6 +186,8 @@
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeAllPendingEvents.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.toggleSilence.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.acknowledgeEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.assignEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/MiscDwr.unassignEvent.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.silenceAll.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/MiscDwr.sendTestEmail.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
@@ -392,6 +399,9 @@
         <intercept-url pattern="/api/events/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="POST" />
         <intercept-url pattern="/api/events/highestUnsilencedLevelAlarm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
         <intercept-url pattern="/api/events/datapoint/{id}" access="@guard.hasDataPointReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/events/ack/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/events/assign/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/events/unassign/{id}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
 
         <!-- Alarm GET -->
         <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
@@ -435,13 +445,14 @@
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
                     password-parameter="password" username-parameter="username"
                     login-processing-url="/login.htm"/>
-
+        <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
         <session-management session-fixation-protection="none" />
         <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
-    <http-firewall ref="defaultHttpFirewall"/>
+    <http-firewall ref="strictHttpFirewall"/>
+    <!--http-firewall ref="defaultHttpFirewall"/-->
 
     <!-- Websocket -->
     <!--websocket-message-broker same-origin-disabled="true">
@@ -513,4 +524,14 @@
     </b:bean>
 
     <b:bean id="getSecurityBeans" class="org.scada_lts.web.beans.GetSecurityBeans"/>
+
+    <b:bean id="strictHttpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
+        <b:property name="allowSemicolon" value="false"/>
+        <b:property name="allowUrlEncodedSlash" value="false"/>
+        <b:property name="allowUrlEncodedPercent" value="false"/>
+        <b:property name="allowBackSlash" value="false"/>
+        <b:property name="allowUrlEncodedPeriod" value="false"/>
+    </b:bean>
+
+    <b:bean id="xssFilter" class="org.scada_lts.web.security.XssFilter"/>
 </b:beans>

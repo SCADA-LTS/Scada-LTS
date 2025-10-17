@@ -20,7 +20,6 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,6 +120,10 @@ public class SystemSettingsDAO {
 	// Purge with values limit
 	public static final String VALUES_LIMIT_FOR_PURGE = "valuesLimitForPurge";
 
+	// Values purging
+	public static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT = "purgePointValuesPeriodTypeDefault";
+	public static final String PURGE_POINT_VALUES_PERIOD_DEFAULT = "purgePointValuesPeriodDefault";
+
 	// Aggregation values
 	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
@@ -164,6 +167,11 @@ public class SystemSettingsDAO {
 	public static final String THREADS_NAME_ADDITIONAL_LENGTH = "threadsNameAdditionalLength";
 	public static final String WEB_RESOURCE_GRAPHICS_PATH = "webResourceGraphicsPath";
 	public static final String WEB_RESOURCE_UPLOADS_PATH = "webResourceUploadsPath";
+	public static final String EVENT_ASSIGN_ENABLED = "eventAssignEnabled";
+	public static final String TOP_DESCRIPTION_PREFIX = "topDescriptionPrefix";
+	public static final String TOP_DESCRIPTION = "topDescription";
+	public static final String CUSTOM_CSS_CONTENT = "customCssContent";
+	public static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT = "dataPointExtendedNameLengthInReportsLimit";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -413,7 +421,14 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(THREADS_NAME_ADDITIONAL_LENGTH, SystemSettingsUtils.getThreadsNameAdditionalLength());
 		DEFAULT_VALUES.put(WEB_RESOURCE_GRAPHICS_PATH, SystemSettingsUtils.getWebResourceGraphicsPath());
 		DEFAULT_VALUES.put(WEB_RESOURCE_UPLOADS_PATH, SystemSettingsUtils.getWebResourceUploadsPath());
-	}
+		DEFAULT_VALUES.put(EVENT_ASSIGN_ENABLED, SystemSettingsUtils.isEventAssignEnabled());
+		DEFAULT_VALUES.put(TOP_DESCRIPTION, "");
+		DEFAULT_VALUES.put(TOP_DESCRIPTION_PREFIX, "");
+        DEFAULT_VALUES.put(CUSTOM_CSS_CONTENT, SystemSettingsUtils.getCustomCssContent());
+		DEFAULT_VALUES.put(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT, SystemSettingsUtils.getDataPointExtendedNameLengthInReportsLimit());
+		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodTypeDefault());
+		DEFAULT_VALUES.put(PURGE_POINT_VALUES_PERIOD_DEFAULT, SystemSettingsUtils.getPurgePointValuesPeriodDefault());
+    }
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void resetDataBase() {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.config.ForkJoinConfig;
 import org.scada_lts.config.ScadaConfig;
 
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.scada_lts.config.ThreadPoolExecutorConfig.getKey;
 import static org.scada_lts.utils.CreateObjectUtils.parseObjects;
@@ -64,6 +66,31 @@ public final class SystemSettingsUtils {
     public static final String HTTP_PROTOCOL_MAX_REDIRECTS_KEY = "http.protocol.max-redirects";
     public static final String HTTP_PROTOCOL_ALLOW_CIRCULAR_REDIRECTS_KEY = "http.protocol.allow-circular-redirects";
     public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
+    public static final String OPC_UA_SEARCH_DEPTH_LIMIT_KEY = "scadalts.opcua.search-depth-limit";
+
+    public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
+
+    private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
+    private static final String SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.query.access.granted.regex";
+    private static final String SECURITY_HTTP_QUERY_LIMIT_KEY = "scadalts.security.http.query.limit";
+    private static final String SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY = "scadalts.security.http.query.protect.enabled";
+
+    private static final String CUSTOM_CSS_CONTENT_KEY = "systemsettings.custom.css.content";
+
+    private static final String SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.body.access.denied.regex";
+    private static final String SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY = "scadalts.security.http.body.access.granted.regex";
+    private static final String SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY = "scadalts.security.http.body.protect.enabled";
+    private static final String DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT_KEY = "systemsettings.reports.data-point-extended-name-length.limit";
+
+    private static final String DATA_TYPE_ALPHANUMERIC_SAVE_VALUE_AS_ESCAPED_KEY = "data-type.alphanumeric.save-value-as-escaped";
+
+    private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
+
+    private static final String PURGE_POINT_VALUES_PERIOD_DEFAULT_KEY = "systemsettings.purge-point-values.period-default";
+    private static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT_KEY = "systemsettings.purge-point-values.period-type-default";
+
+    private static final String DATA_POINT_UNRELIABLE_DEPTH_KEY = "scadalts.datapoint.unreliable.depth";
+    private static final String DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY = "scadalts.datapoint.unreliable.execute-in-pool-if-tasks-exceeds";
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
@@ -95,14 +122,26 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
+    @Deprecated(since = "2.8.0")
+    public static String serializeMap1(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
-    public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) throws IOException {
+    public static String serializeMap(Map<String, String> map, Supplier<ObjectMapper> getObjectMapper) throws JsonProcessingException {
+        return getObjectMapper.get().writerWithDefaultPrettyPrinter().writeValueAsString(map);
+    }
+
+    @Deprecated(since = "2.8.0")
+    public static Map<String, String> deserializeMap1(String value, ObjectMapper objectMapper) throws IOException {
         if(value == null || "null".equals(value))
             return Collections.emptyMap();
         return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
+    }
+
+    public static Map<String, String> deserializeMap(String value, Supplier<ObjectMapper> getObjectMapper) throws IOException {
+        if(value == null || "null".equals(value))
+            return Collections.emptyMap();
+        return getObjectMapper.get().readValue(value, new TypeReference<HashMap<String, String>>() {});
     }
 
     public static int getEmailTimeout() {
@@ -524,6 +563,255 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return 15001;
+        }
+    }
+
+    public static boolean isEventAssignEnabled() {
+        try {
+            String eventAssignEnabled = ScadaConfig.getInstance().getConf().getProperty(EVENT_ASSIGN_ENABLED_KEY, "true");
+            return Boolean.parseBoolean(eventAssignEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessDeniedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpQueryAccessGrantedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_ACCESS_GRANTED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static int getSecurityHttpQueryLimit() {
+        try {
+            String securityHttpQueryXssLimit = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_LIMIT_KEY, "4001");
+            return Integer.parseInt(securityHttpQueryXssLimit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 4002;
+        }
+    }
+
+    public static boolean isSecurityHttpQueryProtectEnabled() {
+        try {
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_QUERY_PROTECT_ENABLED_KEY, "false");
+            return Boolean.parseBoolean(securityHttpQueryXssEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static String getCustomCssContent() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(CUSTOM_CSS_CONTENT_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpBodyAccessDeniedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_ACCESS_DENIED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getSecurityHttpBodyAccessGrantedRegex() {
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_ACCESS_GRANTED_REGEX_KEY, "");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
+
+    public static boolean isSecurityHttpBodyProtectEnabled() {
+        try {
+            String securityHttpQueryXssEnabled = ScadaConfig.getInstance().getConf().getProperty(SECURITY_HTTP_BODY_PROTECT_ENABLED_KEY, "false");
+            return Boolean.parseBoolean(securityHttpQueryXssEnabled);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public static int getDataPointExtendedNameLengthInReportsLimit() {
+        try {
+            String config = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_EXTENDED_NAME_LENGTH_IN_REPORTS_LIMIT_KEY, "65");
+            return Integer.parseInt(config);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 66;
+        }
+    }
+
+    public static boolean isDataTypeAlphanumericSaveValueAsEscaped() {
+        try {
+            String dataPointTypeAlphanumericEscaped = ScadaConfig.getInstance().getConf().getProperty(DATA_TYPE_ALPHANUMERIC_SAVE_VALUE_AS_ESCAPED_KEY, "true");
+            return Boolean.parseBoolean(dataPointTypeAlphanumericEscaped);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return true;
+        }
+    }
+
+    public static int getRecursiveExecutorCorePoolSize() {
+        int defaultValue = 0;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.CORE_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getRecursiveExecutorMaximumPoolSize() {
+        int defaultValue = 1;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.MAXIMUM_POOL_SIZE), String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static long getRecursiveExecutorKeepAliveTime() {
+        long defaultValue = 0;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.KEEP_ALIVE_TIME), String.valueOf(defaultValue));
+            return Long.parseLong(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static String getRecursiveExecutorTimeUnitEnumValue() {
+        String defaultValue = "MILLISECONDS";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.TIME_UNIT_ENUM_VALUE), defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getRecursiveExecutorParallelism() {
+        int defaultValue = 1;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.PARALLELISM), String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getRecursiveExecutorMinimumRunnable() {
+        int defaultValue = 0;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.MINIMUM_RUNNABLE), String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean getRecursiveExecutorAsyncMode() {
+        boolean defaultValue = true;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(ForkJoinConfig.getKey(ForkJoinConfig.ASYNC_MODE), String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getOpcUaSearchDepthLimit() {
+        int defaultValue = 6;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(OPC_UA_SEARCH_DEPTH_LIMIT_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getValidationSearchCyclicDepth() {
+        int defaultValue = 100;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(VALIDATION_SEARCH_CYCLIC_DEPTH_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getPurgePointValuesPeriodDefault() {
+        int defaultValue = 1;
+        try {
+            String period = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_DEFAULT_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(period);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int getPurgePointValuesPeriodTypeDefault() {
+        int defaultValue = 7;
+        try {
+            String periodType = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(periodType);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+
+    public static int getDataPointUnreliableDepthNumber() {
+        int defaultValue = 10;
+        try {
+            String property = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_UNRELIABLE_DEPTH_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(property);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+
+    public static int getDataPointUnreliableExecuteInPoolIfTasksExceedsNumber() {
+        int defaultValue = 2;
+        try {
+            String property = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(property);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
         }
     }
 }

@@ -28,41 +28,34 @@
 
   <script type="text/javascript">
 
-  	var pathArray = location.href.split( '/' );
-  	var protocol = pathArray[0];
-  	var host = pathArray[2];
-  	var port = location.port;
-   	var appScada = pathArray[3];
-  	var url = protocol + '//' + host;
-  	var myLocation;
-  	if (!myLocation) {
-   		myLocation = location.protocol + "//" + location.host + "/" + appScada + "/";
-  	}
-    var urlGetDataPoints = "/api/datapoint/getAll";
+  	var myLocation = getAppLocation();
+    var urlGetDataPoints = "api/datapoint/getAll";
     function executeScript(){
     	var xid = jQuery("#xid");
     	// saveScript() nie zdarzy zapisac !!!
     	jQuery.ajax({
-    		url: myLocation+"/script/execute/"+xid[0].value,
+    		url: myLocation+"script/execute/"+xid[0].value,
     		type:"POST",
     		success: function(){
-              setUserMessage("<fmt:message key="script.execute.success"/> ")
+              setUserMessage("<spring:message code="script.execute.success"/> ")
         	},
         	error: function(XMLHttpRequest, textStatus, errorThrown) {
         		console.log(textStatus);
         		console.log(XMLHttpRequest);
-        		setUserMessage("<fmt:message key="script.execute.error"/> "+XMLHttpRequest.responseText);
+        		setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
         	}
     	});
     };
 
     var pointsArray = new Array();
-    var contextArray = new Array();
+    var scriptPointsContext;
     var objectsContextArray = new Array();
 
     function init() {
         ScriptsDwr.getScripts(initCB);
         getPointsCB();
+
+        createContextualMessageNode("contextContainer", "context");
 
         jQuery("#allPointsList").chosen({
        		allow_single_deselect: true,
@@ -106,11 +99,11 @@
     }
 
     function appendScript(seId) {
-        createFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
+        updateFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
     }
 
     function updateScript(se) {
-        $("se"+ se.id +"Name").innerHTML = se.name;
+        $("se"+ se.id +"Name").innerHTML = escapeHtml(se.name);
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
 
@@ -125,14 +118,12 @@
                  show($("scriptDetails"));
 
             editingScript = s;
-            $set("xid", s.xid);
-            $set("name", s.name);
-            $set("script", s.script);
+            setValueInNode('xid', s.xid);
+            setValueInNode('name', s.name);
+            setValueInNode('script', s.script);
 
-            contextArray.length = 0;
-            for (var i=0; i<s.pointsOnContext.length; i++)
-                addToContextArray(s.pointsOnContext[i].key, s.pointsOnContext[i].value);
-            writeContextArray();
+            let handlePointsContext = new ScriptPointsContext(s.pointsOnContext, pointsArray);
+            setPointsContext(handlePointsContext);
 
             clearObjectsTable();
 		 	for (var i=0; i<s.objectsOnContext.length; i++)
@@ -155,16 +146,20 @@
         		 executeScript();
         	 });
         }
+    }
 
+    function setPointsContext(scriptPointsContext) {
+        this.scriptPointsContext = scriptPointsContext;
     }
 
     function saveScript() {
         ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
-                $get("script"),createContextArray(),objectsContextArray,
+                $get("script"),this.scriptPointsContext.convertToSave(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
 		                showDwrMessages(response.messages);
 		            else {
+		                hideContextualMessages("scriptDetails");
 		                if (editingScript.id == ${NEW_ID}) {
 		                    stopImageFader($("se"+ editingScript.id +"Img"));
 		                    editingScript.id = response.data.seId;
@@ -176,8 +171,10 @@
 		                    	executeScript();
 		                	});
 		                }
-		                setUserMessage("<fmt:message key="scripts.saved"/>");
-		                ScriptsDwr.getScript(editingScript.id, updateScript);
+		                setUserMessage("<spring:message code="scripts.saved"/>");
+		                ScriptsDwr.getScripts(function(scripts) {
+		                    init(scripts);
+		                });
 		            }
         		}
         );
@@ -190,104 +187,6 @@
             hide($("scriptDetails"));
             editingScript = null;
         });
-    }
-
-    function addPointToContext() {
-        var pointId = $get("allPointsList");
-        addToContextArray(pointId, "p"+ pointId);
-        writeContextArray();
-    }
-
-    function addToContextArray(pointId, scriptVarName) {
-        var data = getElement(pointsArray, pointId);
-        if (data) {
-            // Missing names imply that the point was deleted, so ignore.
-            contextArray[contextArray.length] = {
-                pointId : pointId,
-                pointName : data.name,
-                pointType : data.type,
-                xid : data.xid,
-                scriptVarName : scriptVarName
-            };
-        }
-    }
-
-    function removeFromContextArray(pointId) {
-        for (var i=contextArray.length-1; i>=0; i--) {
-            if (contextArray[i].pointId == pointId)
-                contextArray.splice(i, 1);
-        }
-        writeContextArray();
-    }
-
-    function writeContextArray() {
-        dwr.util.removeAllRows("contextTable");
-        if (contextArray.length == 0) {
-            show($("contextTableEmpty"));
-            hide($("contextTableHeaders"));
-        }
-        else {
-            hide($("contextTableEmpty"));
-            show($("contextTableHeaders"));
-            dwr.util.addRows("contextTable", contextArray,
-                [
-                    function(data) { return data.pointName; },
-                    function(data) { return data.xid; },
-                    function(data) { return data.pointType; },
-                    function(data) {
-                            return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
-                                    "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
-                    },
-                    function(data) {
-                            return "<img src='images/bullet_delete.png' class='ptr' "+
-                                    "onclick='removeFromContextArray("+ data.pointId +")'/>";
-                    }
-                ],
-                {
-                    rowCreator:function(options) {
-                        var tr = document.createElement("tr");
-                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                        return tr;
-                    }
-                });
-        }
-        updatePointsList();
-    }
-
-    function updatePointsList() {
-        dwr.util.removeAllOptions("allPointsList");
-        var availPoints = new Array();
-        for (var i=0; i<pointsArray.length; i++) {
-            var found = false;
-            for (var j=0; j<contextArray.length; j++) {
-                if (contextArray[j].pointId == pointsArray[i].id) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                availPoints[availPoints.length] = pointsArray[i];
-        }
-        dwr.util.addOptions("allPointsList", availPoints, "id", "name");
-        jQuery("#allPointsList").trigger('chosen:updated');
-    }
-
-    function updateScriptVarName(pointId, scriptVarName) {
-        for (var i=contextArray.length-1; i>=0; i--) {
-            if (contextArray[i].pointId == pointId)
-                contextArray[i].scriptVarName = scriptVarName;
-        }
-    }
-
-    function createContextArray() {
-        var context = new Array();
-        for (var i=0; i<contextArray.length; i++) {
-            context[context.length] = {
-                key : contextArray[i].pointId,
-                value : contextArray[i].scriptVarName
-            };
-        }
-        return context;
     }
 
     function validateScript() {
@@ -317,7 +216,7 @@
         if(checked) {
 			varName = ""+objectNameField.value;
 			if(varName == null || varName.trim().length == 0){
-				alert('<fmt:message key="scripts.objectsContext.invalidVar"/>');
+				alert('<spring:message code="scripts.objectsContext.invalidVar"/>');
 				$(objectId+"ObjectAdd").checked = false;
 				return;
 			}
@@ -375,7 +274,7 @@
           <table width="100%">
             <tr>
               <td>
-                <span class="smallTitle"><fmt:message key="scripts.title"/></span>
+                <span class="smallTitle"><spring:message code="scripts.title"/></span>
                 <tag:help id="scripts"/>
               </td>
               <td align="right"><tag:img png="report_add" title="scripts.addSe"
@@ -397,7 +296,7 @@
         <div class="borderDiv">
           <table width="100%">
             <tr>
-              <td><span class="smallTitle"><fmt:message key="scripts.seDetails"/></span></td>
+              <td><span class="smallTitle"><spring:message code="scripts.seDetails"/></span></td>
               <td align="right">
                 <%-- <tag:img id="executeScriptImg" png="exclamation" title="common.run"/> --%>
                 <tag:img png="save" onclick="saveScript();" title="common.save"/>
@@ -408,31 +307,31 @@
 
           <table>
           	<tr>
-	            <td class="formLabelRequired"><fmt:message key="dsEdit.points.name"/></td>
+	            <td class="formLabelRequired"><spring:message code="dsEdit.points.name"/></td>
 	            <td class="formField"><input type="text" id="name"/></td>
           	</tr>
 
             <tr>
-              <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
+              <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
 
             <tr>
-			    <td class="formLabelRequired"><fmt:message key="scripts.pointsContext"/></td>
+			    <td class="formLabelRequired"><spring:message code="scripts.pointsContext"/></td>
 			    <td class="formField">
 			      <select id="allPointsList"></select>
-			      <tag:img png="add" onclick="addPointToContext();" title="common.add"/>
+			      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
 
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
-			          <tr><th colspan="4"><fmt:message key="dsEdit.meta.noPoints"/></th></tr>
+			          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
 			        </tbody>
 			        <tbody id="contextTableHeaders" style="display:none;">
 			          <tr class="smRowHeader">
-			            <td><fmt:message key="dsEdit.meta.pointName"/></td>
-			            <td><fmt:message key="pointHierarchySLTS.xid"/></td>
-			            <td><fmt:message key="dsEdit.pointDataType"/></td>
-			            <td><fmt:message key="dsEdit.meta.var"/></td>
+			            <td><spring:message code="dsEdit.meta.pointName"/></td>
+			            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+			            <td><spring:message code="dsEdit.pointDataType"/></td>
+			            <td><spring:message code="dsEdit.meta.var"/></td>
 			            <td></td>
 			          </tr>
 			        </tbody>
@@ -442,21 +341,21 @@
 			</tr>
 
 			<tr>
-			    <td class="formLabelRequired"><fmt:message key="scripts.objectsContext"/></td>
+			    <td class="formLabelRequired"><spring:message code="scripts.objectsContext"/></td>
 			    <td class="formField">
 
 			      <table cellspacing="1" id="objectsContextTable">
 				      <tbody id="objectsContextTable">
 				        		<tr class="smRowHeader">
-									<td> <fmt:message key="scripts.objectsContext.name"/> </td>
-									<td> <fmt:message key="scripts.objectsContext.var"/> </td>
-									<td> <fmt:message key="scripts.objectsContext.add"/> </td>
+									<td> <spring:message code="scripts.objectsContext.name"/> </td>
+									<td> <spring:message code="scripts.objectsContext.var"/> </td>
+									<td> <spring:message code="scripts.objectsContext.add"/> </td>
 									<td> &nbsp; </td>
 								</tr>
 				        		<c:forEach var="object" items="<%=br.org.scadabr.rt.scripting.context.ScriptContextObject.Type.values()%>">
 								<tr style="width: 100%;" class="smRow">
 									<td title="${object.id}" style="display: none;"> </td>
-									<td> <fmt:message key="${object.key}"/>  </td>
+									<td> <spring:message code="${object.key}"/>  </td>
 									<td> <input id="${object.id}ObjectVarName" type="text" value="var_${object.id}"/> </td>
 									<td> <input id="${object.id}ObjectAdd" type="checkbox" onchange="addObjectToContext(${object.id}, this.checked)"/> </td>
 									<td> <tag:help id="${object.help}"/> </td>
@@ -470,7 +369,7 @@
             <tr>
 
     			<td class="formLabelRequired">
-      				<fmt:message key="dsEdit.meta.script"/>
+      				<spring:message code="dsEdit.meta.script"/>
 
       				<tag:img id="executeScriptImg" png="cog_go" title="common.run"/>
       				<%-- <tag:img png="accept" onclick="validateScript();" title="dsEdit.meta.validate"/> --%>

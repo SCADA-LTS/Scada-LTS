@@ -24,6 +24,8 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
+import com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
@@ -50,6 +52,7 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static org.scada_lts.utils.PointValueStateUtils.isSetPoint;
 
 public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
@@ -127,32 +130,12 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	public List<PointValueTime> getPointValues(long since) {
 		List<PointValueTime> result = pointValueService.getPointValues(
 				vo.getId(), since);
-
-		for (PointValueTime pvt : valueCache.getCacheContents()) {
-			if (pvt.getTime() >= since) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
-				if (index < 0)
-					result.add(-index - 1, pvt);
-			}
-		}
-
 		return result;
 	}
 
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
 		List<PointValueTime> result = pointValueService
 				.getPointValuesBetween(vo.getId(), from, to);
-
-		for (PointValueTime pvt : valueCache.getCacheContents()) {
-			if (pvt.getTime() >= from && pvt.getTime() < to) {
-				int index = Collections.binarySearch(result, pvt,
-						pvtTimeComparator);
-				if (index < 0)
-					result.add(-index - 1, pvt);
-			}
-		}
-
 		return result;
 	}
 
@@ -165,6 +148,7 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	 */
 	public void updatePointValue(PointValueTime newValue) {
 		savePointValue(newValue, null, true);
+		resetUnreliableDataPoint(this);
 	}
 
 	public void updatePointValue(String newValue) {
@@ -172,10 +156,12 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 				new PointValueTime(MangoValue.stringToValue(newValue, getDataTypeId()),
 						System.currentTimeMillis());
 		savePointValue(pointValueTime, null, true);
+		resetUnreliableDataPoint(this);
 	}
 
 	public void updatePointValue(PointValueTime newValue, boolean async) {
 		savePointValue(newValue, null, async);
+		resetUnreliableDataPoint(this);
 	}
 
 	/**
@@ -194,6 +180,7 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 			savePointValue(newValue, source, true);
 		else
 			savePointValue(newValue, source, false);
+		resetUnreliableDataPoint(this);
 	}
 
 	protected void savePointValue(PointValueTime newValue, SetPointSource source,
@@ -624,6 +611,17 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		terminateIntervalLogging();
 	}
 
+	public boolean isUnreliable() {
+		DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(getDataSourceId());
+		if(dataSourceRT == null)
+			return true;
+		return !dataSourceRT.isInitialized() || isSetUnreliable();
+	}
+
+	public boolean isSetUnreliable() {
+		return DataPointUnreliableUtils.isSetUnreliable(this, true);
+  }
+  
 	public boolean isInitialized() {
 		return initialized;
 	}

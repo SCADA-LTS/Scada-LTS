@@ -148,6 +148,7 @@ public class ScadaConfig {
 	private static final String FILE_NAME_PROPERTIES="env.properties";
 	private static final String FILE_NAME_CUSTOM_CSS="common.css";
 	private static final String DIR_NAME_CUSTOM_CONFIG="assets";
+    private static final String FILE_NAME_USER_STYLESHEET="user_styles.css";
 	
 	private static ScadaConfig instance = null;
 	
@@ -424,6 +425,5 @@ public class ScadaConfig {
 		return path;
 		
 	}
-
 	
 }
