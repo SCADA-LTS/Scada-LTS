@@ -382,7 +382,6 @@ public class WatchListDwr extends BaseDwr {
 			return data;
 
 		List<DataPointVO> points = watchList.getPointList();
-		points.sort(GetExtendedNameComparator.instance);
 		List<Integer> pointIds = new ArrayList<Integer>(points.size());
 		for (DataPointVO point : points) {
 			if (Permissions.hasDataPointReadPermission(user, point))

@@ -32,7 +32,7 @@
         <Property name="quartzLoggingLevel">INFO</Property>
         <Property name="log4j.logger.org.apache.jsp">INFO</Property>
         <Property name="catalinaLoggingLevel">INFO</Property>
-        <Property name="recursiveLoggingLevel">INFO</Property>
+        <Property name="recursiveLoggingLevel">ERROR</Property>
 
         <!-- Functional Logging-->
         <Property name="scriptLoggingLevel">ERROR</Property>

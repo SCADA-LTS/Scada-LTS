@@ -74,9 +74,9 @@
 
   function checkFileCB(exists) {
 	  if(exists) {
-		  alert('Arquivo OK!');
+		  alert("<spring:message code="dsEdit.checkFile.found"/>");
 	  } else {
-		  alert('Arquivo n�o encontrado!');
+		  alert("<spring:message code="dsEdit.checkFile.notFound"/>");
 	  }
   }	
   
