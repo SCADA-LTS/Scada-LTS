@@ -12,8 +12,9 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -25,8 +26,8 @@ import java.util.function.BiConsumer;
 
 public final class SendUtils {
 
-    private static final Log LOG = LogFactory.getLog(SendUtils.class);
-    private static final String SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED = "Send email blocking, because application not started";
+    private static final Logger LOG = LogManager.getLogger(SendUtils.class);
+    private static final String SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED = "Send email blocking, because application not started for:  %s, details:  %s";
 
     private SendUtils() {}
 
@@ -144,7 +145,7 @@ public final class SendUtils {
         try {
 
             if(!Common.ctx.getRuntimeManager().isStarted()) {
-                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                notExecuted.workNotExecuted(new IllegalStateException(String.format(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED, LoggingUtils.eventInfo(evt), workItemDetails.getDetails())));
                 return;
             }
 
@@ -190,7 +191,7 @@ public final class SendUtils {
         try {
 
             if(!Common.ctx.getRuntimeManager().isStarted()) {
-                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                notExecuted.workNotExecuted(new IllegalStateException(String.format(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED, msgContent.getPlainContent(), workItemDetails.getDetails())));
                 return;
             }
 
@@ -233,7 +234,7 @@ public final class SendUtils {
         try {
 
             if(!Common.ctx.getRuntimeManager().isStarted()) {
-                LOG.error(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED);
+                notExecuted.workNotExecuted(new IllegalStateException(String.format(SEND_EMAIL_BLOCKING_BECAUSE_APPLICATION_NOT_STARTED, content.getPlainContent(), workItemDetails.getDetails())));
                 return;
             }
 

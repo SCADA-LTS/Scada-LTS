@@ -146,7 +146,7 @@ public class UserService implements MangoUser {
 			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
 				user.setUserProfileId(profile.getId());
 				user.setDataPointProfilePermissions(profile.getDataPointPermissions());
-				user.setDataSourcePermissions(profile.getDataSourcePermissions());
+				user.setDataSourceProfilePermissions(profile.getDataSourcePermissions());
 				user.setViewProfilePermissions(profile.getViewPermissions());
 				user.setWatchListProfilePermissions(profile.getWatchlistPermissions());
 			});

@@ -302,7 +302,7 @@
     }
     
     function deleteUserProfile() {
-        if (confirm("<sst:i18n key="userProfiles.deleteConfirm" escapeDQuotes="true"/>")) {
+        if (confirm("<spring:message code="userProfiles.deleteConfirm" />")) {
         	var profileId = editingUserProfileId;
             startImageFader("deleteButton");
             UsersProfilesDwr.deleteUsersProfile(profileId, function(response) {
