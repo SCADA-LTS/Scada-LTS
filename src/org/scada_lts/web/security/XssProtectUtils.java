@@ -2,31 +2,53 @@ package org.scada_lts.web.security;
 
 import org.springframework.web.util.HtmlUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class XssProtectUtils {
+
+    private static final Map<String,String> newLineAndWhitespaceCodes = new HashMap<>();
+
+    static {
+        newLineAndWhitespaceCodes.put("&#10;", "\n");
+        newLineAndWhitespaceCodes.put("&#13;", "\r");
+
+        newLineAndWhitespaceCodes.put("&emsp;", "\t");
+        newLineAndWhitespaceCodes.put("&#11;", "\u000B");
+        newLineAndWhitespaceCodes.put("&#12;", "\f");
+        newLineAndWhitespaceCodes.put("&#28;", "\u001C");
+        newLineAndWhitespaceCodes.put("&#29;", "\u001D");
+        newLineAndWhitespaceCodes.put("&#30;", "\u001E");
+        newLineAndWhitespaceCodes.put("&#31;", "\u001F");
+    }
 
     public XssProtectUtils() {}
 
     public static String escapeHtml(String value) {
         if(value == null)
             return "";
-        String content = HtmlUtils.htmlEscape(value);
-        return whiteSpaceHtmlCode(newLineHtmlCode(content));
+        return escapeNewLineAndWhitespace(HtmlUtils.htmlEscape(value));
     }
 
-    private static String newLineHtmlCode(String content) {
-        if(content.contains("\n")) {
-            return content.replace("\n", "&#10;").replace("\r", "");
+    public static String unescapeHtml(String value) {
+        if(value == null)
+            return "";
+        return HtmlUtils.htmlUnescape(unescapeNewLineAndWhitespace(value));
+    }
+
+    private static String escapeNewLineAndWhitespace(String content) {
+        String result = content;
+        for(Map.Entry<String, String> entry: newLineAndWhitespaceCodes.entrySet()) {
+            result = result.replace(entry.getValue(), entry.getKey());
         }
-        return content.replace("\r", "&#13;");
+        return content;
     }
 
-    private static String whiteSpaceHtmlCode(String content) {
-        return content.replace("\t", "&emsp;")
-                .replace("\u000B","&#11;")
-                .replace("\f", "&#12;")
-                .replace("\u001C", "&#28;")
-                .replace("\u001D", "&#29;")
-                .replace("\u001E", "&#30;")
-                .replace("\u001F", "&#31;");
+    private static String unescapeNewLineAndWhitespace(String content) {
+        String result = content;
+        for(Map.Entry<String, String> entry: newLineAndWhitespaceCodes.entrySet()) {
+            result = result.replace(entry.getKey(), entry.getValue());
+        }
+        return content;
     }
 }

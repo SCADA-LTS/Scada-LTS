@@ -20,18 +20,10 @@
 
 <dwr>
   <init>
-    <converter id="localizableMessage" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
-    <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
-    <!--
-    <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
-    <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
-    -->
-    <converter id="opcUaDataTypeConverter" class="com.serotonin.mango.web.dwr.OpcUaDataTypeConverter"/>
-
-    <!--<converter id="xssStringConverter" class="org.scada_lts.web.dwr.convert.XssStringConverter"/>-->
-
-    <converter id="xssBean" class="com.serotonin.mango.web.dwr.security.SelectiveXssBeanConverter"/>
-
+    <converter id="localizableMessageString" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
+    <converter id="protocolVersionEnum" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
+    <converter id="opcUaDataTypeEnum" class="com.serotonin.mango.web.dwr.OpcUaDataTypeConverter"/>
+    <converter id="xssBean" class="com.serotonin.mango.web.dwr.security.XssBeanConverter"/>
   </init>
   
   <allow>
@@ -118,7 +110,7 @@
     <convert converter="bean" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaItem" />
     <convert converter="bean" match="br.org.scadabr.api.vo.*" />
 
-    <convert converter="bean" match="com.serotonin.db.IntValuePair"/>
+    <convert converter="xssBean" match="com.serotonin.db.IntValuePair"/>
     <convert converter="bean" match="com.serotonin.db.KeyValuePair"/>
 
     <convert converter="bean" match="com.serotonin.mango.rt.dataSource.http.HttpReceiverPointSample"/>
@@ -164,14 +156,12 @@
     <convert converter="bean" match="com.serotonin.mango.vo.publish.pachube.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.persistent.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.report.*"/>
-    <!--
-    <convert converter="xssDataPointVoConverter" match="com.serotonin.mango.vo.DataPointVO">
+    <convert converter="xssBean" match="com.serotonin.mango.vo.DataPointVO">
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator,engineeringUnits"/>
     </convert>
-    <convert converter="xssDataPointBeanConverter" match="com.serotonin.mango.web.dwr.beans.DataPointBean">
+    <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.DataPointBean">
       <param name="include" value="id,xid,name,settable,dataType,dataTypeMessage,chartColour"/>
     </convert>
-    -->
     <convert converter="bean" match="com.serotonin.mango.vo.User">
       <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions,userProfile,homeUrl,hideMenu,theme,firstName,lastName,enableFullScreen,hideShortcutDisableFullScreen"/>
     </convert>
@@ -199,8 +189,8 @@
     <convert converter="bean" match="com.serotonin.web.dwr.DwrMessageI18n"/>
     <convert converter="bean" match="com.serotonin.web.dwr.DwrResponseI18n"/>
 
-    <convert converter="localizableMessage" match="com.serotonin.web.i18n.LocalizableMessage"/>
-    <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
+    <convert converter="localizableMessageString" match="com.serotonin.web.i18n.LocalizableMessage"/>
+    <convert converter="xssBean" match="br.org.scadabr.vo.scripting.ScriptVO">
     	<param name="exclude" value="type"/>
     </convert>
      <!-- MBus4J stuff-->
@@ -225,8 +215,8 @@
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.DurabilityType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.MessageAckType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion" />
-    <convert converter="protocolVersionConverter" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
-    <convert converter="opcUaDataTypeConverter" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType" />
+    <convert converter="protocolVersionEnum" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
+    <convert converter="opcUaDataTypeEnum" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType" />
     <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaIdentifierType" />
     <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType" />
     <convert converter="enum" match="org.scada_lts.ds.polling.protocol.opcua.security.OpcUaSecurityPolicyType" />
@@ -252,13 +242,14 @@
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.EventSourceBean"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.DataPointVO"/>
+
     <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.AddressEntry"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.MailingList"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.UserEntry"/>
+
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
     <convert converter="xssBean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportInstance"/>
-    <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.DataPointBean"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportVO"/>
 
     <convert converter="exception" match="java.lang.Exception">

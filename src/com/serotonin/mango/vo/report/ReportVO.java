@@ -32,7 +32,6 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.dwr.security.AllowHtml;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -49,6 +48,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.utils.PathSecureUtils;
 import org.scada_lts.web.mvc.api.dto.ReportDTO;
 
 /**
@@ -76,7 +76,7 @@ public class ReportVO implements Serializable, JsonSerializable, GetExtendedName
 
     private int userId;
     private String username;
-    @JsonRemoteProperty @AllowHtml
+    @JsonRemoteProperty
     private String name;
 
     private List<ReportPointVO> points = new ArrayList<ReportPointVO>();
@@ -874,6 +874,8 @@ public class ReportVO implements Serializable, JsonSerializable, GetExtendedName
             response.addContextualMessage("name", "reports.validate.required");
         if (StringUtils.isLengthGreaterThan(name, 100))
             response.addContextualMessage("name", "reports.validate.longerThan100");
+        if(!PathSecureUtils.ValidationPaths.validateFilename(name + ".csv") || name.contains(";"))
+            response.addContextualMessage("name", "validate.invalidValue");
         if (points.isEmpty())
             response.addContextualMessage("points", "reports.validate.needPoint");
         if (dateRangeType != ReportVO.DATE_RANGE_TYPE_RELATIVE && dateRangeType != ReportVO.DATE_RANGE_TYPE_SPECIFIC)
