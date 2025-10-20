@@ -18,7 +18,7 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.dwr.security.NoEscape;
+import org.scada_lts.web.dwr.security.NoEscape;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ScriptService;

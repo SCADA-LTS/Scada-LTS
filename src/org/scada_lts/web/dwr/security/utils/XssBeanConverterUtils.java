@@ -1,7 +1,9 @@
-package com.serotonin.mango.web.dwr.security;
+package org.scada_lts.web.dwr.security.utils;
 
-import org.directwebremoting.convert.BeanConverter;
-import org.directwebremoting.extend.*;
+import com.serotonin.mango.util.LoggingUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.scada_lts.web.dwr.security.NoEscape;
 import org.scada_lts.web.security.XssProtectUtils;
 
 import java.lang.reflect.Constructor;
@@ -10,31 +12,36 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class XssBeanConverter extends BeanConverter {
+import static java.lang.reflect.Modifier.isStatic;
 
-    @Override
-    public OutboundVariable convertOutbound(Object value, OutboundContext outctx) throws MarshallException {
-        convert(value, (object, noEscape) -> convertObject(object, noEscape, this::escapeIfString));
-        return super.convertOutbound(value, outctx);
+public final class XssBeanConverterUtils {
+
+    private XssBeanConverterUtils() {}
+
+    private static final Logger LOG = LogManager.getLogger(XssBeanConverterUtils.class);
+
+    public static void convertObjectEscaped(Object value) {
+        convert(value, (object, noEscape) -> convertObject(object, noEscape, XssBeanConverterUtils::escapeIfString));
     }
 
-    @Override
-    public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
-        convert(iv.getValue(), (object, noEscape) -> convertObject(object, noEscape, this::unescapeIfString));
-        return super.convertInbound(paramType, iv, inctx);
+    public static void convertObjectUnescaped(Object value) {
+        convert(value, (object, noEscape) -> convertObject(object, noEscape, XssBeanConverterUtils::unescapeIfString));
     }
 
-    private void convert(Object object, BiFunction<Object, Boolean, Object> convert) {
+    private static void convert(Object object, BiFunction<Object, Boolean, Object> convert) {
         Field[] declaredFields = object.getClass().getDeclaredFields();
         for(Field field: declaredFields) {
-            if(!java.lang.reflect.Modifier.isStatic(field.getModifiers()) && !java.lang.reflect.Modifier.isFinal(field.getModifiers())) {
+            if(!isStatic(field.getModifiers())) {
                 try {
                     field.setAccessible(true);
                     Object value = field.get(object);
-                    if(value != null)
-                        field.set(object, convert.apply(value, field.isAnnotationPresent(NoEscape.class)));
+                    if(value != null) {
+                        Object converted = convert.apply(value, field.isAnnotationPresent(NoEscape.class));
+                        if(converted != null)
+                            field.set(object, converted);
+                    }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    LOG.error(LoggingUtils.exceptionInfo(e));
                 } finally {
                     field.setAccessible(false);
                 }
@@ -42,7 +49,7 @@ public class XssBeanConverter extends BeanConverter {
         }
     }
 
-    private Object convertObject(Object object, boolean noConvert, Function<Object, Object> doConvert) {
+    private static Object convertObject(Object object, boolean noConvert, Function<Object, Object> doConvert) {
 
         if(noConvert)
             return object;
@@ -70,11 +77,11 @@ public class XssBeanConverter extends BeanConverter {
         return object;
     }
 
-    private Object convertStringObject(Object stringObject, Function<Object, Object> convert) {
+    private static Object convertStringObject(Object stringObject, Function<Object, Object> convert) {
         return convert.apply(stringObject);
     }
 
-    private Object convertMapObject(Object mapObject, Function<Object, Object> convert) {
+    private static Object convertMapObject(Object mapObject, Function<Object, Object> convert) {
         Map<?, ?> in = (Map<?, ?>) mapObject;
         Map<Object, Object> out = new HashMap<>();
 
@@ -87,11 +94,12 @@ public class XssBeanConverter extends BeanConverter {
             Constructor<?> ctor = mapObject.getClass().getConstructor(Map.class);
             return ctor.newInstance(out);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOG.error(LoggingUtils.exceptionInfo(e));
+            return null;
         }
     }
 
-    private Object convertSetObject(Object setObject, Function<Object, Object> convert) {
+    private static Object convertSetObject(Object setObject, Function<Object, Object> convert) {
         try {
             Collection<?> in = (Collection<?>) setObject;
             Collection<Object> out = new HashSet<>();
@@ -103,11 +111,12 @@ public class XssBeanConverter extends BeanConverter {
             Constructor<?> ctor = setObject.getClass().getConstructor(Collection.class);
             return ctor.newInstance(out);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOG.error(LoggingUtils.exceptionInfo(e));
+            return null;
         }
     }
 
-    private Object convertListObject(Object listObject, Function<Object, Object> convert) {
+    private static Object convertListObject(Object listObject, Function<Object, Object> convert) {
         try {
             Collection<?> in = (Collection<?>) listObject;
             Collection<Object> out = new ArrayList<>();
@@ -123,7 +132,7 @@ public class XssBeanConverter extends BeanConverter {
         }
     }
 
-    private Object convertArrayObject(Object arrayObject, Function<Object, Object> convert) {
+    private static Object convertArrayObject(Object arrayObject, Function<Object, Object> convert) {
         int len = java.lang.reflect.Array.getLength(arrayObject);
         Object out = java.lang.reflect.Array.newInstance(arrayObject.getClass().getComponentType(), len);
         for (int i = 0; i < len; i++) {
@@ -133,7 +142,7 @@ public class XssBeanConverter extends BeanConverter {
         return out;
     }
 
-    private Object escapeIfString(Object object) {
+    private static Object escapeIfString(Object object) {
         if(object instanceof String) {
             return XssProtectUtils.escapeHtml((String) object);
         } else {
@@ -141,7 +150,7 @@ public class XssBeanConverter extends BeanConverter {
         }
     }
 
-    private Object unescapeIfString(Object o) {
+    private static Object unescapeIfString(Object o) {
         if(o instanceof String) {
             return XssProtectUtils.unescapeHtml((String) o);
         } else {

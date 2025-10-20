@@ -249,6 +249,7 @@ test {
         includeTestsMatching "com.serotonin.mango.vo.EngineeringUnitsTypesTest"
         includeTestsMatching "org.scada_lts.cache.PointHierarchyCacheTestsSuite"
         includeTestsMatching "com.serotonin.mango.rt.dataImage.types.BinaryValueTestsSuite"
+        includeTestsMatching "org.scada_lts.web.dwr.security.utils.XssBeanConverterUtilsTest"
     }
 
     failFast = true

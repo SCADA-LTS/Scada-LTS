@@ -1,4 +1,4 @@
-package com.serotonin.mango.web.dwr.security;
+package org.scada_lts.web.dwr.security;
 
 import java.lang.annotation.*;
 
