@@ -253,6 +253,7 @@
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.RecipientListEntryBean"/>
     <convert converter="xssBean" match="com.serotonin.db.IntValuePair"/>
+    <convert converter="xssBean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO"/>
 
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>

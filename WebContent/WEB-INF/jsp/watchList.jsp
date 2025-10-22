@@ -120,14 +120,16 @@
       function addPointNames(folder) {
           var i;
           for (i=0; i<folder.points.length; i++)
-              pointNames[folder.points[i].key] = folder.points[i].value;
+              pointNames[folder.points[i].key] = unescapeHtml(folder.points[i].value);
           for (i=0; i<folder.subfolders.length; i++)
               addPointNames(folder.subfolders[i]);
       }
 
       function addFolder(folder, parent) {
+          const safe = document.createElement('span');
+          safe.textContent = unescapeHtml(folder.name);
           var folderNode = dojo.widget.createWidget("TreeNode", {
-                  title: "<img src='images/folder_brick.png'/> "+ folder.name,
+                  title: "<img src='images/folder_brick.png'/> "+ safe.innerHTML,
                   isFolder: "true",
                   lazyLoadData: folder
           });
@@ -154,7 +156,7 @@
       function addPoint(point, parent) {
           var spanNode = document.createElement("span");
           spanNode.id = 'ph'+ point.key +'Name';
-          spanNode.textContent = point.value;
+          spanNode.textContent = unescapeHtml(point.value);
           var pointNode = dojo.widget.createWidget("TreeNode", {
                   title: "<img src='images/icon_comp.png'/> " + spanNode.innerHTML +
                           "<img src='images/bullet_go.png' id='ph"+ point.key +"Image' title='<spring:message code="watchlist.addToWatchlist"/>'/>",
