@@ -30,7 +30,9 @@
 <html>
 <head>
   <title><c:choose>
-    <c:when test="${!empty instanceDescriptionHeader}">${instanceDescriptionHeader}</c:when>
+    <c:when test="${!empty instanceDescriptionHeader}">
+        <c:out value="${instanceDescriptionHeader}"/>
+    </c:when>
     <c:otherwise><spring:message code="header.title"/></c:otherwise>
   </c:choose></title>
 
@@ -218,7 +220,9 @@
 
   <div>
     <c:if test="${!empty instanceDescriptionHeader}">
-      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle"><a href="system_settings.shtm" style="text-decoration: none;color:grey">${instanceDescriptionHeader}</a></span>
+      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle">
+          <a href="system_settings.shtm" style="text-decoration: none;color:grey"><c:out value="${instanceDescriptionHeader}"/></a>
+      </span>
     </c:if>
   </div>
 </div>
