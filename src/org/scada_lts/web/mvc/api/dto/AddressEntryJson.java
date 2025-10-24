@@ -16,28 +16,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.vo.mailingList;
-
-import java.util.Map;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.joda.time.DateTime;
+package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.mailingList.AddressEntry;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.util.StringUtils;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.web.mvc.api.dto.AddressEntryJson;
-import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
-@JsonRemoteEntity
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class AddressEntry extends EmailRecipient {
+import java.util.Map;
+
+
+public class AddressEntryJson extends EmailRecipientJson {
+
+    @XssProtect
     private String address;
+
+    public AddressEntryJson() {
+    }
+
+    public AddressEntryJson(String address) {
+        this.address = address;
+    }
 
     public String getAddress() {
         return address;
@@ -45,27 +48,6 @@ public class AddressEntry extends EmailRecipient {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime) {
-        appendAllAddresses(addresses);
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses) {
-        addresses.add(address);
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
-        appendAllAddresses(addresses, type);
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type) {
-        if(type.validateAddress(address))
-            addresses.add(address);
     }
 
     @Override
@@ -104,7 +86,9 @@ public class AddressEntry extends EmailRecipient {
     }
 
     @Override
-    public EmailRecipientJson to() {
-        return new AddressEntryJson(address);
+    public EmailRecipient to() {
+        AddressEntry addressEntry = new AddressEntry();
+        addressEntry.setAddress(address);
+        return addressEntry;
     }
 }

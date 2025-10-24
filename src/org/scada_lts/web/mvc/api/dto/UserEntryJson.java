@@ -16,42 +16,35 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.vo.mailingList;
-
-import java.util.Map;
-import java.util.Set;
+package org.scada_lts.web.mvc.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
+import com.serotonin.mango.vo.mailingList.UserEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserIdentifier;
-import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
-import org.scada_lts.web.mvc.api.dto.UserEntryJson;
+import org.scada_lts.mango.service.UserService;
 
-@JsonRemoteEntity
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserEntry extends EmailRecipient {
+public class UserEntryJson extends EmailRecipientJson {
     private int userId;
-    private User user;
+    private UserIdentifier user;
 
-    private static final Log LOG = LogFactory.getLog(UserEntry.class);
+    private static final Log LOG = LogFactory.getLog(UserEntryJson.class);
 
-    public UserEntry() {
+    public UserEntryJson() {
     }
 
-    public UserEntry(int userId, User user) {
+    public UserEntryJson(int userId, UserIdentifier user) {
         this.userId = userId;
         this.user = user;
     }
@@ -79,42 +72,12 @@ public class UserEntry extends EmailRecipient {
         this.userId = userId;
     }
 
-    public User getUser() {
+    public UserIdentifier getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserIdentifier user) {
         this.user = user;
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime) {
-        appendAllAddresses(addresses);
-    }
-
-    @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
-        appendAllAddresses(addresses, type);
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses) {
-        if (user == null)
-            return;
-        if (!user.isDisabled())
-            addresses.add(user.getEmail());
-    }
-
-    @Override
-    public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type) {
-        if (user == null)
-            return;
-        if (!user.isDisabled()) {
-            if(type == CommunicationChannelType.EMAIL && !StringUtils.isEmpty(user.getEmail()))
-                addresses.add(user.getEmail());
-            if(type == CommunicationChannelType.SMS && !StringUtils.isEmpty(user.getPhone()))
-                addresses.add(user.getPhone());
-        }
     }
 
     @Override
@@ -127,8 +90,10 @@ public class UserEntry extends EmailRecipient {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        if (user == null)
-            user = new UserDao().getUser(userId);
+        if (user == null) {
+            User user1 = new UserService().getUser(userId);
+            user = new UserIdentifier(user1);
+        }
         setUsername(map);
     }
 
@@ -149,15 +114,17 @@ public class UserEntry extends EmailRecipient {
         if (username == null)
             throw new LocalizableJsonException("emport.error.recipient.missing.reference", "username");
 
-        user = new UserDao().getUser(username);
-        if (user == null)
+        User user1 = new UserService().getUser(username);
+        if (user1 == null)
             throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "username", username);
 
+        user = new UserIdentifier(user1);
         userId = user.getId();
     }
 
     @Override
-    public EmailRecipientJson to() {
-        return new UserEntryJson(userId, new UserIdentifier(user));
+    public UserEntry to() {
+        User user1 = new UserService().getUser(userId);
+        return new UserEntry(userId, user1);
     }
 }

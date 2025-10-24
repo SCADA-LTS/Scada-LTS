@@ -7,6 +7,7 @@ import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UpdateMailingList {
 
@@ -16,7 +17,7 @@ public class UpdateMailingList {
     @XssProtect
     private String name;
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
-    private List<EmailRecipient> entries;
+    private List<EmailRecipientJson> entries;
 
     @XssProtect
     private String cronPattern;
@@ -27,7 +28,8 @@ public class UpdateMailingList {
     public UpdateMailingList() {
     }
 
-    public UpdateMailingList(Integer id, String xid, String name, List<EmailRecipient> entries, String cronPattern, Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
+    public UpdateMailingList(Integer id, String xid, String name, List<EmailRecipientJson> entries, String cronPattern,
+                             Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
         this.id = id;
         this.xid = xid;
         this.name = name;
@@ -61,11 +63,15 @@ public class UpdateMailingList {
         this.name = name;
     }
 
-    public List<EmailRecipient> getEntries() {
+    public List<EmailRecipientJson> getEntriesJson() {
         return entries;
     }
 
-    public void setEntries(List<EmailRecipient> entries) {
+    public List<EmailRecipient> getEntries() {
+        return entries.stream().map(EmailRecipientJson::to).collect(Collectors.toList());
+    }
+
+    public void setEntries(List<EmailRecipientJson> entries) {
         this.entries = entries;
     }
 

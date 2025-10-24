@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
@@ -34,15 +35,17 @@ import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.UserIdentifier;
+import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
 
 import static com.serotonin.mango.util.LoggingUtils.mailingListInfo;
 import static com.serotonin.mango.util.LoggingUtils.userInfo;
@@ -56,20 +59,28 @@ public class MailingListsDwr extends BaseDwr {
 	public DwrResponseI18n init() {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("lists", new MailingListDao().getMailingLists());
-		response.addData("users", new UserDao().getUsers());
+		List<MailingListJson> mailingLists = new MailingListService().getMailingLists().stream()
+				.map(MailingListJson::new)
+				.collect(Collectors.toList());
+		response.addData("lists", mailingLists);
+		List<UserIdentifier> users = new UserService().getUsers().stream()
+				.map(UserIdentifier::new)
+				.collect(Collectors.toList());
+		response.addData("users", users);
 		return response;
 	}
 
-	public MailingList getMailingList(int id) {
+	public MailingListJson getMailingList(int id) {
 		if (id == Common.NEW_ID) {
-			MailingList ml = new MailingList();
+			MailingListJson ml = new MailingListJson();
 			ml.setId(Common.NEW_ID);
 			ml.setXid(new MailingListDao().generateUniqueXid());
-			ml.setEntries(new LinkedList<EmailRecipient>());
+			ml.setEntries(new LinkedList<>());
 			return ml;
 		}
-		return new MailingListDao().getMailingList(id);
+		MailingListService mailingListService = new MailingListService();
+		MailingList mailingList = mailingListService.getMailingList(id);
+		return new MailingListJson(mailingList);
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,
