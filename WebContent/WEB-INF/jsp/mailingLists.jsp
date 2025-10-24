@@ -195,7 +195,7 @@
     function appendUserEntry(userEntry) {
         var content = createFromTemplate("mleUser_TEMPLATE_", userEntry.referenceId, "mailingListEntriesTable");
         setUserImg(userEntry.user.admin, userEntry.user.disabled, $("mle"+ userEntry.referenceId +"Img"));
-        $("mle"+ userEntry.referenceId +"Username").innerHTML = userEntry.user.username;
+        $("mle"+ userEntry.referenceId +"Username").textContent = userEntry.user.username;
     }
 
     function deleteUserEntry(entryId) {

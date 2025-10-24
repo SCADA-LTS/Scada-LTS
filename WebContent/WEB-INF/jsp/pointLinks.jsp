@@ -28,17 +28,19 @@
     
     function init() {
         PointLinksDwr.init(function(response) {
+            const srcOpts = response.sourcePoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
+            const tgtOpts = response.targetPoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
             sourcePoints = response.sourcePoints;
             
             // Add points to source and target selects
-            dwr.util.addOptions("sourcePointId", response.sourcePoints, "key", "value");
+            dwr.util.addOptions("sourcePointId", srcOpts, "key", "value");
             jQuery("#sourcePointId").chosen({
                 allow_single_deselect: true,
                 placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
                 search_contains: true,
                 width: "100%"
             });
-            dwr.util.addOptions("targetPointId", response.targetPoints, "key", "value");
+            dwr.util.addOptions("targetPointId", tgtOpts, "key", "value");
             jQuery("#targetPointId").chosen({
               allow_single_deselect: true,
               placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",

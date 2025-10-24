@@ -53,7 +53,10 @@
             oncedays[oncedays.length] = new OptionData(i, i);
         
         MaintenanceEventsDwr.getMaintenanceEvents(function(response) {
-            dwr.util.addOptions("dataSourceId", response.data.dataSources, "key", "value");
+        	var ds = response.data.dataSources.map(function(o) {
+                return { key: o.key, value: unescapeHtml(o.value) };
+        	});
+        	dwr.util.addOptions("dataSourceId", ds, "key", "value");
         	
         	var events = response.data.events;
             for (var i=0; i<events.length; i++) {

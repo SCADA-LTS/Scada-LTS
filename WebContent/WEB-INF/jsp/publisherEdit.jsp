@@ -95,7 +95,7 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.name"/></td>
               <td class="formField">
-                <input type="text" id="name" value="${publisher.name}"/>
+                <input type="text" id="name" value="<c:out value='${publisher.name}'/>"/>
                 <div id="nameMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
