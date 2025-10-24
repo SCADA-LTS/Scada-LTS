@@ -142,7 +142,7 @@ public class MailingListAPI {
                     response.put("errors", "This XID is already in use");
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-                if (!usersExist(mailingList.getEntries(), userService)) {
+                if (!usersExist(mailingList.getEntriesJson(), userService)) {
                     response.put("errors", "user or users not found");
                     return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
                 }
@@ -211,7 +211,7 @@ public class MailingListAPI {
 
     private ResponseEntity<Map<String, String>> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
         Map<String, String> response = new HashMap<>();
-        if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntries(), userService)) {
+        if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntriesJson(), userService)) {
             response.put("errors", "user or users not found");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }

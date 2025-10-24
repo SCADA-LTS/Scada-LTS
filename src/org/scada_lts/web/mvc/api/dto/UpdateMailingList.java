@@ -3,18 +3,22 @@ package org.scada_lts.web.mvc.api.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.EmailRecipientDeserializer;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UpdateMailingList {
 
     private Integer id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
-    private List<EmailRecipient> entries;
-
+    private List<EmailRecipientJson> entries;
+    @XssProtect
     private String cronPattern;
     private Boolean collectInactiveEmails;
 
@@ -23,7 +27,8 @@ public class UpdateMailingList {
     public UpdateMailingList() {
     }
 
-    public UpdateMailingList(Integer id, String xid, String name, List<EmailRecipient> entries, String cronPattern, Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
+    public UpdateMailingList(Integer id, String xid, String name, List<EmailRecipientJson> entries, String cronPattern,
+                             Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
         this.id = id;
         this.xid = xid;
         this.name = name;
@@ -57,11 +62,15 @@ public class UpdateMailingList {
         this.name = name;
     }
 
-    public List<EmailRecipient> getEntries() {
+    public List<EmailRecipientJson> getEntriesJson() {
         return entries;
     }
 
-    public void setEntries(List<EmailRecipient> entries) {
+    public List<EmailRecipient> getEntries() {
+        return entries.stream().map(EmailRecipientJson::to).collect(Collectors.toList());
+    }
+
+    public void setEntries(List<EmailRecipientJson> entries) {
         this.entries = entries;
     }
 

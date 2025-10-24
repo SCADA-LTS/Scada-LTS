@@ -3,8 +3,6 @@ package org.scada_lts.utils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.ScadaValidation;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.mailingList.EmailRecipient;
-import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -13,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.mvc.api.dto.UserEntryJson;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 import org.scada_lts.web.mvc.api.user.UserInfo;
@@ -43,10 +43,10 @@ public final class ApiUtils {
         }
     }
 
-    public static boolean usersExist(List<EmailRecipient> entries, UserService userService) {
-        for (EmailRecipient recipient : entries) {
-            if (recipient != null && recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
-                    UserEntry userEntry = (UserEntry) recipient;
+    public static boolean usersExist(List<EmailRecipientJson> entries, UserService userService) {
+        for (EmailRecipientJson recipient : entries) {
+            if (recipient != null && recipient.getRecipientType() == EmailRecipientJson.TYPE_USER) {
+                    UserEntryJson userEntry = (UserEntryJson) recipient;
                     if (!userIdExists(userEntry.getUserId(), userService))
                         return false;
             }

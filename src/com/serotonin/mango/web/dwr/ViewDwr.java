@@ -390,7 +390,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 
 		// Users with which to share.
-		result.put("shareUsers", getShareUsers(user));
+		//result.put("shareUsers", getShareUsers(user));
 
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		// Users already sharing with.
