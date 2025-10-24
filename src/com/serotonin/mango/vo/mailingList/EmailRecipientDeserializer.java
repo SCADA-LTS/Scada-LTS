@@ -9,20 +9,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.mvc.api.dto.AddressEntryJson;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
+import org.scada_lts.web.mvc.api.dto.UserEntryJson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class EmailRecipientDeserializer extends JsonDeserializer<List<EmailRecipient>>
+public class EmailRecipientDeserializer extends JsonDeserializer<List<EmailRecipientJson>>
 {
-    private static ObjectMapper mapper = ApplicationBeans.getObjectMapper();
+    private ObjectMapper objectMapper;
+
+    public EmailRecipientDeserializer() {
+        this.objectMapper = ApplicationBeans.getObjectMapper();
+    }
 
     @Override
-    public List<EmailRecipient> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException
+    public List<EmailRecipientJson> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException
     {
-        List<EmailRecipient> listOfRecipients = new ArrayList<EmailRecipient>();
+        List<EmailRecipientJson> listOfRecipients = new ArrayList<>();
         ObjectCodec oc = jsonParser.getCodec();
         ArrayNode recipientListNode = oc.readTree(jsonParser);
         Iterator<JsonNode> entries = recipientListNode.elements();
@@ -30,16 +38,16 @@ public class EmailRecipientDeserializer extends JsonDeserializer<List<EmailRecip
             JsonNode entryNode = entries.next();
             int recipientType = entryNode.get("recipientType").asInt();
 
-            EmailRecipient recipient = null;
+            EmailRecipientJson recipient = null;
             if (recipientType == EmailRecipient.TYPE_MAILING_LIST) {
-                recipient = mapper.readValue(entryNode.toString(), MailingList.class);
+                recipient = objectMapper.readValue(entryNode.toString(), MailingListJson.class);
             } else if (recipientType == EmailRecipient.TYPE_USER)
             {
-                recipient = mapper.readValue(entryNode.toString(), UserEntry.class);
+                recipient = objectMapper.readValue(entryNode.toString(), UserEntryJson.class);
             }
             else if (recipientType == EmailRecipient.TYPE_ADDRESS)
             {
-                recipient = mapper.readValue(entryNode.toString(), AddressEntry.class);
+                recipient = objectMapper.readValue(entryNode.toString(), AddressEntryJson.class);
             }
 
             listOfRecipients.add(recipient);

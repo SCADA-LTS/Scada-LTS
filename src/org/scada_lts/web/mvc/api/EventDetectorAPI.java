@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,12 +79,12 @@ public class EventDetectorAPI {
     }
 
     @PostMapping(value = "/set/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> createEventDetector(@PathVariable Integer datapointId, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
+    public ResponseEntity<JsonPointEventDetector> createEventDetector(@PathVariable Integer datapointId, HttpServletRequest request, @RequestBody @Valid EventDetectorDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
     @PutMapping(value = "/update/{datapointId}/{id}", consumes = "application/json")
-    public ResponseEntity<String> updateEventDetector(@PathVariable Integer datapointId, @PathVariable Integer id, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
+    public ResponseEntity<String> updateEventDetector(@PathVariable Integer datapointId, @PathVariable Integer id, HttpServletRequest request, @RequestBody @Valid EventDetectorDTO body) {
         return updateEventDetectorType(datapointId, id, body, request);
     }
 

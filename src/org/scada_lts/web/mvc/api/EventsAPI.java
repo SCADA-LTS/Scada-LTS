@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -153,7 +154,7 @@ public class EventsAPI {
      * @return EventDTO List
      */
     @PostMapping(value = "/search")
-    public ResponseEntity<SQLPageWithTotal<EventDTO>> getEvents(@RequestBody JsonEventSearch query, HttpServletRequest request) {
+    public ResponseEntity<SQLPageWithTotal<EventDTO>> getEvents(@RequestBody @Valid JsonEventSearch query, HttpServletRequest request) {
 
             LOG.info("POST::/api/events/search/");
         try {
@@ -242,7 +243,7 @@ public class EventsAPI {
      * @return Response
      */
     @PostMapping(value = "/ackSelected")
-    public ResponseEntity<String> acknowledgeSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+    public ResponseEntity<String> acknowledgeSelectedEvents(@RequestBody @Valid JsonIdSelection query, HttpServletRequest request) {
         LOG.info("GET::/api/events/ackSelected");
         try {
             User user = Common.getUser(request);
@@ -270,7 +271,7 @@ public class EventsAPI {
      * @return Response
      */
     @PostMapping(value = "/silenceSelected")
-    public ResponseEntity<String> silenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+    public ResponseEntity<String> silenceSelectedEvents(@RequestBody @Valid JsonIdSelection query, HttpServletRequest request) {
         LOG.info("GET::/api/events/silenceSelectedEvents");
         try {
             User user = Common.getUser(request);
@@ -297,7 +298,7 @@ public class EventsAPI {
      * @return Response
      */
     @PostMapping(value = "/unsilenceSelected")
-    public ResponseEntity<String> unsilenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+    public ResponseEntity<String> unsilenceSelectedEvents(@RequestBody @Valid JsonIdSelection query, HttpServletRequest request) {
         LOG.info("GET::/api/events/unsilenceSelectedEvents");
         try {
             User user = Common.getUser(request);

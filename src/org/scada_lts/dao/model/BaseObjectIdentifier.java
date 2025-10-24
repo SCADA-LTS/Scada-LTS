@@ -1,8 +1,11 @@
 package org.scada_lts.dao.model;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 public class BaseObjectIdentifier {
 
     private int id;
+    @XssProtect
     private String xid;
 
     public BaseObjectIdentifier() {}
