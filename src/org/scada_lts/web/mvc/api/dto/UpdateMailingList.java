@@ -18,6 +18,7 @@ public class UpdateMailingList {
     private String name;
     @JsonDeserialize(using = EmailRecipientDeserializer.class)
     private List<EmailRecipientJson> entries;
+
     @XssProtect
     private String cronPattern;
     private Boolean collectInactiveEmails;

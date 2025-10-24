@@ -1,14 +1,20 @@
 package org.scada_lts.web.mvc.api.json;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.io.Serializable;
 
 public class JsonSettingsHttp implements Serializable {
 
     private boolean useProxy;
     private int port;
+    @XssProtect
     private String host;
+    @XssProtect
     private String username;
+    @XssProtect
     private String password;
+    @XssProtect
     private String httpResponseHeaders;
 
     public JsonSettingsHttp() {}

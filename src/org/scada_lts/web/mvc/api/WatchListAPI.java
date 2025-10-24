@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -175,7 +176,7 @@ public class WatchListAPI {
 
 	@PutMapping(value = "/order/")
 	public ResponseEntity<String> updatePointOrder(
-			@RequestBody JsonDataPointOrder orderData,
+			@RequestBody @Valid JsonDataPointOrder orderData,
 			HttpServletRequest request) {
 		try {
 			User user = Common.getUser(request);
@@ -199,7 +200,7 @@ public class WatchListAPI {
 
 	@PostMapping(value = "")
 	public ResponseEntity<JsonWatchListForUser> createWatchList(
-			@RequestBody JsonWatchList jsonWatchList,
+			@RequestBody @Valid JsonWatchList jsonWatchList,
 			HttpServletRequest request
 	) {
 		try {
@@ -219,7 +220,7 @@ public class WatchListAPI {
 
 	@PutMapping(value = "")
 	public ResponseEntity<JsonWatchListForUser> updateWatchList(
-			@RequestBody JsonWatchList jsonWatchList,
+			@RequestBody @Valid JsonWatchList jsonWatchList,
 			HttpServletRequest request
 	) {
 		try {

@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +133,7 @@ public class PointHierarchyAPI {
 
     @PostMapping(value = "/api/pointHierarchy/folderAdd")
     public ResponseEntity<String> folderAdd(
-            @RequestBody FolderPointHierarchy folderPointHierarchy,
+            @RequestBody @Valid FolderPointHierarchy folderPointHierarchy,
             HttpServletRequest request)  {
 
         LOG.info("/api/pointHierarchy/folderAdd folderPointHierarchy:" + folderPointHierarchy);
@@ -330,7 +331,7 @@ public class PointHierarchyAPI {
     }
 
     @PutMapping(value = "/api/pointHierarchy/pointsMoveTo")
-    public ResponseEntity<String> pointsMoveTo(@RequestBody MoveObjectHierarchyDTO moveObjectHierarchyDTO, HttpServletRequest request) {
+    public ResponseEntity<String> pointsMoveTo(@RequestBody @Valid MoveObjectHierarchyDTO moveObjectHierarchyDTO, HttpServletRequest request) {
         LOG.info("/api/pointHierarchy/pointsMoveTo newParentXidFolder: "
                 + moveObjectHierarchyDTO.getDestinationFolderXid() + " keys: " + moveObjectHierarchyDTO.getMoveObjects());
         try {

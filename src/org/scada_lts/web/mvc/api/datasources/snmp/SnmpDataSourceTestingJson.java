@@ -1,27 +1,40 @@
 package org.scada_lts.web.mvc.api.datasources.snmp;
 
-public class SnmpDataSourceTestingJson {
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
+public class SnmpDataSourceTestingJson {
+    @XssProtect
     private String oid;
 
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     private boolean enabled;
 
 
-
+    @XssProtect
     private String host;
     private int port;
     private int snmpVersion;
+    @XssProtect
     private String community;
+    @XssProtect
     private String engineId;
+    @XssProtect
     private String contextEngineId;
+    @XssProtect
     private String contextName;
+    @XssProtect
     private String securityName;
+    @XssProtect
     private String authProtocol;
+    @XssProtect
     private String authPassphrase;
+    @XssProtect
     private String privProtocol;
+    @XssProtect
     private String privPassphrase;
     private int securityLevel;
     private int retries;
@@ -30,6 +43,7 @@ public class SnmpDataSourceTestingJson {
     private int updatePeriods;
     private boolean trapEnabled;
     private int trapPort;
+    @XssProtect
     private String localAddress;
 
     public SnmpDataSourceTestingJson() {

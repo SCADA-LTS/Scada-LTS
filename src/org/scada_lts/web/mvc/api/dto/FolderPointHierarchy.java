@@ -17,6 +17,8 @@
  */
 package org.scada_lts.web.mvc.api.dto;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -27,11 +29,15 @@ import java.util.Objects;
  */
 public class FolderPointHierarchy {
 
+    @XssProtect
     private String name;
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String parentXid;
     private int parentId;
+    @XssProtect
     private List<String> pointXids;
 
     public FolderPointHierarchy() {

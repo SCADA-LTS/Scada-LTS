@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.component.deserializer.ImageSetComponentDeserializer;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.view.components.point.PointComponentDTO;
 
 @JsonDeserialize(using = ImageSetComponentDeserializer.class)
 public class ImageSetComponentDTO extends PointComponentDTO {
 
+    @XssProtect
     private String imageSetId;
     private Boolean displayText;
 
