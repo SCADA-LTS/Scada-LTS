@@ -172,7 +172,7 @@
      	<param name="include" value="id,permission"/>
     </convert>
     <convert converter="xssBean" match="com.serotonin.mango.view.View">
-      <param name="include" value="id,name"/>
+     	<param name="include" value="id,name"/>
     </convert>
     <convert converter="bean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO">
       <param name="include" value="id,name,dataSourcePermissions,dataPointPermissions, watchlistPermissions, viewPermissions"/>
