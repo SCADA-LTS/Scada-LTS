@@ -129,7 +129,7 @@
     <convert converter="bean" match="com.serotonin.mango.view.ImplDefinition"/>
     <convert converter="bean" match="com.serotonin.mango.view.ShareUser"/>
 
-    <convert converter="bean" match="com.serotonin.mango.vo.bean.*"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.bean.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO">
       <param name="exclude" value="dataPointSaveHandler"/>
     </convert>
@@ -137,14 +137,14 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.galil.PointTypeVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.virtual.*"/>
 
-    <convert converter="bean" match="com.serotonin.mango.vo.event.handlers.*"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.handlers.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.MaintenanceEventVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.PointEventDetectorVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.MaintenanceEventVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.PointEventDetectorVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
     <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
@@ -155,7 +155,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.publish.httpSender.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.pachube.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.persistent.*"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.report.*"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.report.*"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.DataPointVO">
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator,engineeringUnits"/>
     </convert>
@@ -180,7 +180,7 @@
     <convert converter="xssBean" match="com.serotonin.mango.vo.WatchList">
       <param name="include" value="id,name"/>
     </convert>
-    <convert converter="bean" match="com.serotonin.mango.vo.UserComment"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.UserComment"/>
 
     <convert converter="bean" match="com.serotonin.mango.web.dwr.beans.*"/>
     <convert converter="bean" match="com.serotonin.mango.web.dwr.longPoll.LongPollRequest"/>
@@ -241,30 +241,27 @@
 
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.EventSourceBean"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
 
     <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.AddressEntry"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.MailingList"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.UserEntry"/>
 
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
-    <convert converter="xssBean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportInstance"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.RecipientListEntryBean"/>
     <convert converter="xssBean" match="com.serotonin.db.IntValuePair"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.hierarchy.PointHierarchy"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.dataSource.DataSourceVO"/>
 
 
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>
     </convert>
 
-    <convert converter="bean" match="org.scada_lts.dao.model.UserIdentifier"/>
-    <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
-    <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.EmailRecipientJson"/>
+    <convert converter="xssBean" match="org.scada_lts.dao.model.UserIdentifier"/>
+    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
+    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.EmailRecipientJson"/>
   </allow>
   <signatures>
     <![CDATA[

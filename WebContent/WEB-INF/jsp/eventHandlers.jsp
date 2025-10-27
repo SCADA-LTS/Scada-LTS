@@ -79,8 +79,10 @@
         var pointNode, dataSourceNode, publisherNode, etNode, wid;
         
         allPoints = data.allPoints;
-        
-        emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
+        console.log("data.mailingLists:" + JSON.stringify(data.mailingLists));
+        console.log("data.users:" + JSON.stringify(data.users));
+
+      emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
                 "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         emailRecipients.write("emailRecipients", "emailRecipients", null,
@@ -206,11 +208,12 @@
 
     function createEventTypeNode(widgetId, eventType, parent) {
         var node = dojo.widget.createWidget("TreeNode", {
-                title: "<img id='" + widgetId + "Img'/> <span>" + eventType.description + "</span>",
+                title: "<img id='" + widgetId + "Img'/> <span id='" + widgetId + "Txt'></span>",
                 widgetId: widgetId,
                 object: eventType
         });
         parent.addChild(node);
+        $(widgetId + "Txt").textContent = eventType.description;
         setAlarmLevelImg(eventType.alarmLevel, $(widgetId +"Img"));
         addHandlerNodes(eventType.handlers, node);
     }
