@@ -1,14 +1,17 @@
 package org.scada_lts.web.mvc.api.dto.eventHandler;
 
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class EventHandlerPointDTO extends EventHandlerDTO {
 
     private int targetPointId;
     private int activeAction;
+    @XssProtect
     private String activeValueToSet;
     private int activePointId;
     private int inactiveAction;
+    @XssProtect
     private String inactiveValueToSet;
     private int inactivePointId;
 

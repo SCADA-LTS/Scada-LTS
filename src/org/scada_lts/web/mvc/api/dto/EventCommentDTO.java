@@ -1,15 +1,16 @@
 package org.scada_lts.web.mvc.api.dto;
 
-import com.serotonin.mango.vo.UserComment;
-
-import java.util.List;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class EventCommentDTO {
     private int userId;
+    @XssProtect
     private String username;
     private int commentType;
     private int typeKey;
+    @XssProtect
     private String ts;
+    @XssProtect
     private String commentText;
 
     public EventCommentDTO() {

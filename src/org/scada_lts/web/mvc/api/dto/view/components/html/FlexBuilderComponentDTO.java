@@ -4,10 +4,12 @@ import br.org.scadabr.view.component.FlexBuilderComponent;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class FlexBuilderComponentDTO extends HtmlComponentDTO {
     private Boolean projectDefined;
+    @XssProtect
     private String projectSource;
     private Integer projectId;
     private Boolean runtimeMode;

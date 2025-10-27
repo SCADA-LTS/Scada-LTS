@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.user;
 import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.Common;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class UserInfoPassword extends UserInfo {
 

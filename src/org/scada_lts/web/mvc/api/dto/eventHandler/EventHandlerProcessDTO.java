@@ -1,10 +1,13 @@
 package org.scada_lts.web.mvc.api.dto.eventHandler;
 
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class EventHandlerProcessDTO extends EventHandlerDTO {
 
+    @XssProtect
     private String activeProcessCommand;
+    @XssProtect
     private String inactiveProcessCommand;
 
     public EventHandlerProcessDTO() { }

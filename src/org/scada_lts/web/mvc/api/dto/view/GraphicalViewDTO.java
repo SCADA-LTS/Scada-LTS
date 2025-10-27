@@ -5,14 +5,18 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.component.deserializer.ViewComponentDeserializer;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 import java.util.List;
 
 public class GraphicalViewDTO {
     private Integer id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
+    @XssProtect
     private String backgroundFilename;
     private Integer width;
     private Integer height;

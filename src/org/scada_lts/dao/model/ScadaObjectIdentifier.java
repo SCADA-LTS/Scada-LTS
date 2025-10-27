@@ -1,6 +1,7 @@
 package org.scada_lts.dao.model;
 
 import com.serotonin.mango.vo.GetExtendedName;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * Scada Object Identifier
@@ -14,6 +15,7 @@ public class ScadaObjectIdentifier extends BaseObjectIdentifier implements GetEx
 
     private BaseObjectIdentifier baseObjectIdentifier;
 
+    @XssProtect
     private String name;
 
     public ScadaObjectIdentifier() {
