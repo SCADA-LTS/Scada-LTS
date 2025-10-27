@@ -79,10 +79,8 @@
         var pointNode, dataSourceNode, publisherNode, etNode, wid;
         
         allPoints = data.allPoints;
-        console.log("data.mailingLists:" + JSON.stringify(data.mailingLists));
-        console.log("data.users:" + JSON.stringify(data.users));
 
-      emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
+        emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
                 "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         emailRecipients.write("emailRecipients", "emailRecipients", null,
