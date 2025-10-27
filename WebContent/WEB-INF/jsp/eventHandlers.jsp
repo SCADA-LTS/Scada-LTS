@@ -205,7 +205,6 @@
     }
 
     function createEventTypeNode(widgetId, eventType, parent) {
-      console.log("eventType.description: " + eventType.description);
         var node = dojo.widget.createWidget("TreeNode", {
                 title: "<img id='" + widgetId + "Img'/> <span>" + eventType.description + "</span>",
                 widgetId: widgetId,

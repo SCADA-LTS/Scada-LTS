@@ -171,8 +171,14 @@
     <convert converter="bean" match="br.org.scadabr.vo.permission.ViewAccess">
      	<param name="include" value="id,permission"/>
     </convert>
+    <convert converter="xssBean" match="com.serotonin.mango.view.View">
+      <param name="include" value="id,name"/>
+    </convert>
     <convert converter="bean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO">
       <param name="include" value="id,name,dataSourcePermissions,dataPointPermissions, watchlistPermissions, viewPermissions"/>
+    </convert>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.WatchList">
+      <param name="include" value="id,name"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.UserComment"/>
 
@@ -250,8 +256,6 @@
     <convert converter="xssBean" match="com.serotonin.mango.vo.hierarchy.PointHierarchy"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.dataSource.DataSourceVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.WatchList"/>
-    <convert converter="xssBean" match="com.serotonin.mango.view.View"/>
 
 
     <convert converter="exception" match="java.lang.Exception">
