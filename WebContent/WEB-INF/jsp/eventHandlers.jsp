@@ -205,13 +205,13 @@
     }
 
     function createEventTypeNode(widgetId, eventType, parent) {
+      console.log("eventType.description: " + eventType.description);
         var node = dojo.widget.createWidget("TreeNode", {
-                title: "<img id='" + widgetId + "Img'/> <span id='" + widgetId + "Txt'></span>",
+                title: "<img id='" + widgetId + "Img'/> <span>" + eventType.description + "</span>",
                 widgetId: widgetId,
                 object: eventType
         });
         parent.addChild(node);
-        $(widgetId + "Txt").textContent = eventType.description;
         setAlarmLevelImg(eventType.alarmLevel, $(widgetId +"Img"));
         addHandlerNodes(eventType.handlers, node);
     }

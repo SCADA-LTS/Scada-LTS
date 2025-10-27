@@ -126,10 +126,8 @@
       }
 
       function addFolder(folder, parent) {
-          const safe = document.createElement('span');
-          safe.textContent = unescapeHtml(folder.name);
           var folderNode = dojo.widget.createWidget("TreeNode", {
-                  title: "<img src='images/folder_brick.png'/> "+ safe.innerHTML,
+                  title: "<img src='images/folder_brick.png'/> <span>" + folder.name + "</span>",
                   isFolder: "true",
                   lazyLoadData: folder
           });

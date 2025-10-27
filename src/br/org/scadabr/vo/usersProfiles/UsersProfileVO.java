@@ -14,14 +14,13 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.web.dwr.security.NoEscape;
 
 @JsonRemoteEntity
 public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	public static final String XID_PREFIX = "UP_";
 
-	@JsonRemoteProperty @NoEscape
+	@JsonRemoteProperty
 	private String name;
 
 	@JsonRemoteProperty

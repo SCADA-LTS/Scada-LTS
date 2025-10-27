@@ -86,7 +86,7 @@
 	        	   if(isUnnamedWatchList(keyTranslations, watchlists[i].name))
 	        	        continue;
 	        	   id = watchlists[i].id;
-	               wlhtml += '<label for="wllist'+ id +'"> '+ escapeHtml(watchlists[i].name) +'</label><br/>';
+	               wlhtml += '<label for="wllist'+ id +'"> '+ watchlists[i].name +'</label><br/>';
 	               wlhtml += '<div style="margin-left:25px;" id="wldiv'+ id +'">';
 	                   wlhtml +=   '<table cellspacing="0" cellpadding="1">';
 	                       wlhtml += '<tr>';
@@ -110,7 +110,7 @@
            if (views != null){
 	           for (i=0; i<views.length; i++) {
 	        	   id = views[i].id;
-	               vwhtml += '<label for="vvwist'+ id +'"> '+ escapeHtml(views[i].name) +'</label><br/>';
+	               vwhtml += '<label for="vvwist'+ id +'"> '+ views[i].name +'</label><br/>';
 	               vwhtml += '<div style="margin-left:25px;" id="vwdiv'+ id +'">';
 	                   vwhtml +=   '<table cellspacing="0" cellpadding="1">';
 	                       vwhtml += '<tr>';
