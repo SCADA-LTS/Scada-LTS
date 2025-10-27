@@ -25,7 +25,7 @@
   <script>
     var users = new Array();
     var editingMailingList;
-    var nextAddressEntryId = 1;
+    var nextAddressEntryId;
     
     function init() {
         MailingListsDwr.init(function(response) {
@@ -60,7 +60,7 @@
                 if (entry.recipientType == <c:out value="<%= EmailRecipient.TYPE_USER %>"/>)
                     appendUserEntry(entry);
                 else if (entry.recipientType == <c:out value="<%= EmailRecipient.TYPE_ADDRESS %>"/>) {
-                    entry.referenceId = nextAddressEntryId++;
+                    entry.referenceId = (nextAddressEntryId = nextInt());
                     appendAddressEntry(entry);
                 }
             }
@@ -222,7 +222,7 @@
         }
         var addressEntry = {
             recipientType : <c:out value="<%= EmailRecipient.TYPE_ADDRESS %>"/>,
-            referenceId : nextAddressEntryId++,
+            referenceId : (nextAddressEntryId = nextInt()),
             referenceAddress : addr
         };
         editingMailingList.entries[editingMailingList.entries.length] = addressEntry;
@@ -438,6 +438,16 @@
             document.getElementById('dailyLimitSentEmailsNumber').value = 1;
             hide("dailyLimitSentEmailsNumberTr");
         }
+    }
+
+    function nextInt() {
+        return getRandomInt(10000, 10000000);
+    }
+
+    function getRandomInt(min, max) {
+        let ceil = Math.ceil(min);
+        let floor = Math.floor(max);
+        return Math.floor(Math.random() * (floor - ceil) + ceil);
     }
   </script>
 

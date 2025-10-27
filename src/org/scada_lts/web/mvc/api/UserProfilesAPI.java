@@ -8,12 +8,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.mvc.api.user.UserProfile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -41,14 +43,14 @@ public class UserProfilesAPI {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UsersProfileVO> getUserProfile(
+    public ResponseEntity<UserProfile> getUserProfile(
             @PathVariable("id") Integer profileId,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
-                return new ResponseEntity<>(usersProfileService.getUserProfileById(profileId), HttpStatus.OK);
+                return new ResponseEntity<>(new UserProfile(usersProfileService.getUserProfileById(profileId)), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -74,13 +76,13 @@ public class UserProfilesAPI {
 
     @PostMapping(value = "/")
     public ResponseEntity<String> createUserProfile(
-            @RequestBody UsersProfileVO usersProfile,
+            @RequestBody @Valid UserProfile usersProfile,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
-                usersProfileService.saveUsersProfile(usersProfile);
+                usersProfileService.saveUsersProfile(usersProfile.toVo());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -94,13 +96,13 @@ public class UserProfilesAPI {
 
     @PutMapping(value = "/")
     public ResponseEntity<String> updateUserProfile(
-            @RequestBody UsersProfileVO usersProfile,
+            @RequestBody @Valid UserProfile usersProfile,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
-                usersProfileService.updateProfile(usersProfile);
+                usersProfileService.updateProfile(usersProfile.toVo());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

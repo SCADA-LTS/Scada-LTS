@@ -1,13 +1,20 @@
 package org.scada_lts.web.mvc.api.user;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 public class UserInfoSimple {
 
     private int id = Common.NEW_ID;
+    @XssProtect
     private String username;
+    @XssProtect
     private String firstName;
+    @XssProtect
     private String lastName;
+    @XssProtect
     private String phone;
+    @XssProtect
     private String email;
     private boolean admin;
     private boolean disabled;

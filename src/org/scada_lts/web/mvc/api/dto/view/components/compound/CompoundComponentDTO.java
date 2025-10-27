@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.view.component.CompoundChild;
 import com.serotonin.mango.view.component.deserializer.CompoundComponentDeserializer;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 import java.util.ArrayList;
@@ -12,7 +13,10 @@ import java.util.Map;
 
 @JsonDeserialize(using = CompoundComponentDeserializer.class)
 public class CompoundComponentDTO extends GraphicalViewComponentDTO {
+
+    @XssProtect
     private String name;
+    @XssProtect
     private Map<String, String> children;
 
     @JsonIgnore

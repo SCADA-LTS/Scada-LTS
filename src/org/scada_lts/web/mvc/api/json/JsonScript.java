@@ -1,16 +1,22 @@
 package org.scada_lts.web.mvc.api.json;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.util.List;
 
 public class JsonScript {
 
     private Integer id;
     private Integer userId;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     private String script;
     private List<ScriptPoint> pointsOnContext;
+    @XssProtect
     private String datapointContext;
+    @XssProtect
     private String datasourceContext;
 
     public JsonScript() {}

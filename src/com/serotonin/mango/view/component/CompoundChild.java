@@ -19,6 +19,7 @@
 package com.serotonin.mango.view.component;
 
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -27,6 +28,8 @@ import java.util.Objects;
  * @author Matthew Lohbihler
  */
 public class CompoundChild {
+
+    @XssProtect
     private final String id;
     private final LocalizableMessage description;
     private final ViewComponent viewComponent;

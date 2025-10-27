@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +128,7 @@ public class MailingListAPI {
     }
 
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<Map<String, String>> createMailingList(@RequestBody CreateMailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> createMailingList(@RequestBody @Valid CreateMailingList mailingList, HttpServletRequest request) {
         LOG.info("POST:/api/mailingList");
         try {
             User user = Common.getUser(request);
@@ -142,7 +143,7 @@ public class MailingListAPI {
                     response.put("errors", "This XID is already in use");
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-                if (!usersExist(mailingList.getEntries(), userService)) {
+                if (!usersExist(mailingList.getEntriesJson(), userService)) {
                     response.put("errors", "user or users not found");
                     return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
                 }
@@ -158,7 +159,7 @@ public class MailingListAPI {
     }
 
     @PutMapping(value = "/", produces = "application/json")
-    public ResponseEntity<Map<String, String>> updateMailingList(@RequestBody UpdateMailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateMailingList(@RequestBody @Valid UpdateMailingList mailingList, HttpServletRequest request) {
         LOG.info("PUT:/api/mailingList");
         try {
             User user = Common.getUser(request);
@@ -211,7 +212,7 @@ public class MailingListAPI {
 
     private ResponseEntity<Map<String, String>> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
         Map<String, String> response = new HashMap<>();
-        if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntries(), userService)) {
+        if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntriesJson(), userService)) {
             response.put("errors", "user or users not found");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }

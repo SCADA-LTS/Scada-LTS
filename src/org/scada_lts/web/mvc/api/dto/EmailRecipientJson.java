@@ -16,24 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.serotonin.mango.vo.mailingList;
+package org.scada_lts.web.mvc.api.dto;
+
+import com.serotonin.json.*;
+import com.serotonin.mango.util.ExportCodes;
+import com.serotonin.mango.vo.mailingList.EmailRecipient;
 
 import java.util.Map;
-import java.util.Set;
 
-import org.joda.time.DateTime;
-
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonSerializable;
-import com.serotonin.mango.util.ExportCodes;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
-
-@JsonRemoteEntity(typeFactory = EmailRecipientFactory.class)
-abstract public class EmailRecipient implements JsonSerializable {
+abstract public class EmailRecipientJson implements JsonSerializable {
     public static final int TYPE_MAILING_LIST = 1;
     public static final int TYPE_USER = 2;
     public static final int TYPE_ADDRESS = 3;
@@ -46,20 +37,9 @@ abstract public class EmailRecipient implements JsonSerializable {
     }
 
     abstract public int getRecipientType();
-
-    abstract public void appendAddresses(Set<String> addresses, DateTime sendTime);
-
-    abstract public void appendAllAddresses(Set<String> addresses);
-
-    abstract public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type);
-
-    abstract public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type);
-
     abstract public int getReferenceId();
-
     abstract public String getReferenceAddress();
-
-    abstract public EmailRecipientJson to();
+    abstract public EmailRecipient to();
 
     /**
      * @throws JsonException
@@ -72,9 +52,5 @@ abstract public class EmailRecipient implements JsonSerializable {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         map.put("recipientType", TYPE_CODES.getCode(getRecipientType()));
-    }
-
-    public static boolean validEmailRecipientType(int recipientType) {
-        return TYPE_CODES.isValidId(recipientType);
     }
 }
