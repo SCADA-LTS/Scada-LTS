@@ -28,8 +28,8 @@
     
     function init() {
         PointLinksDwr.init(function(response) {
-            const srcOpts = response.sourcePoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
-            const tgtOpts = response.targetPoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
+            let srcOpts = response.sourcePoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
+            let tgtOpts = response.targetPoints.map(p => ({ key: p.key, value: unescapeHtml(p.value) }));
             sourcePoints = response.sourcePoints;
             
             // Add points to source and target selects
