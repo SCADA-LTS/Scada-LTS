@@ -182,7 +182,7 @@
     </convert>
     <convert converter="xssBean" match="com.serotonin.mango.vo.UserComment"/>
 
-    <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.*"/>
+    <convert converter="bean" match="com.serotonin.mango.web.dwr.beans.*"/>
     <convert converter="bean" match="com.serotonin.mango.web.dwr.longPoll.LongPollRequest"/>
     <convert converter="bean" match="com.serotonin.mango.web.mvc.form.PointViewForm"/>
 
