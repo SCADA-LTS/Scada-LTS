@@ -146,7 +146,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
     <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.PublisherVO">
@@ -240,6 +240,9 @@
     <!- - Fhz4J stuff-->
 
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.EventSourceBean"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.AddressEntry"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.MailingList"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.UserEntry"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportInstance"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.RecipientListEntryBean"/>
