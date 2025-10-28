@@ -149,7 +149,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.PublisherVO">
+    <convert converter="bean" match="com.serotonin.mango.vo.publish.PublisherVO">
       <param name="exclude" value="type,eventCodes"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.httpSender.*"/>
