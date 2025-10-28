@@ -1,16 +1,16 @@
-package org.scada_lts.web.dwr.security.utils;
+package org.scada_lts.web.security.dwr;
 
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.scada_lts.web.dwr.security.NoEscape;
 import org.scada_lts.web.security.XssProtectUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.lang.reflect.Modifier.isStatic;
 
@@ -20,23 +20,42 @@ public final class XssBeanConverterUtils {
 
     private static final Logger LOG = LogManager.getLogger(XssBeanConverterUtils.class);
 
-    public static void convertObjectEscaped(Object value) {
-        convert(value, (object, noEscape) -> convertObject(object, noEscape, XssBeanConverterUtils::escapeIfString));
+    public static void convertObjectEscaped(Object value) throws ScadaMarshallException {
+        doConvertIf(value, isSimpleJavaType().negate(),
+                XssBeanConverterUtils::doConvert,
+                object -> convertObject(object, XssBeanConverterUtils::escapeIfString));
     }
 
-    public static void convertObjectUnescaped(Object value) {
-        convert(value, (object, noEscape) -> convertObject(object, noEscape, XssBeanConverterUtils::unescapeIfString));
+    public static void convertObjectUnescaped(Object value) throws ScadaMarshallException {
+        doConvertIf(value, isSimpleJavaType().negate(),
+                XssBeanConverterUtils::doConvert,
+                object -> convertObject(object, XssBeanConverterUtils::unescapeIfString));
     }
 
-    private static void convert(Object object, BiFunction<Object, Boolean, Object> convert) {
+    private static void doConvertIf(Object object, Predicate<Object> doIf,
+                                    BiConsumer<Object, Function<Object, Object>> doConvert,
+                                    Function<Object, Object> converter) throws ScadaMarshallException {
+        if(doIf.test(object)) {
+            doConvert.accept(object, converter);
+        } else {
+            throw new ScadaMarshallException(object.getClass());
+        }
+    }
+
+    public static Predicate<Object> isSimpleJavaType() {
+        return object -> object instanceof Boolean || object instanceof String || object instanceof Character
+                || object instanceof Number || object.getClass().isPrimitive();
+    }
+
+    private static void doConvert(Object object, Function<Object, Object> convert) {
         Field[] declaredFields = object.getClass().getDeclaredFields();
         for(Field field: declaredFields) {
-            if(!isStatic(field.getModifiers())) {
+            if(!isStatic(field.getModifiers()) && !field.isAnnotationPresent(NoEscape.class)) {
                 try {
                     field.setAccessible(true);
                     Object value = field.get(object);
                     if(value != null) {
-                        Object converted = convert.apply(value, field.isAnnotationPresent(NoEscape.class));
+                        Object converted = convert.apply(value);
                         if(converted != null)
                             field.set(object, converted);
                     }
@@ -49,10 +68,7 @@ public final class XssBeanConverterUtils {
         }
     }
 
-    private static Object convertObject(Object object, boolean noConvert, Function<Object, Object> doConvert) {
-
-        if(noConvert)
-            return object;
+    private static Object convertObject(Object object, Function<Object, Object> doConvert) {
 
         if (object instanceof String) {
             return convertStringObject(object, doConvert);

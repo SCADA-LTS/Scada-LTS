@@ -1,10 +1,10 @@
-package org.scada_lts.web.dwr.security;
+package org.scada_lts.web.security.dwr;
 
 import org.directwebremoting.convert.BeanConverter;
 import org.directwebremoting.extend.*;
 
-import static org.scada_lts.web.dwr.security.utils.XssBeanConverterUtils.convertObjectEscaped;
-import static org.scada_lts.web.dwr.security.utils.XssBeanConverterUtils.convertObjectUnescaped;
+import static org.scada_lts.web.security.dwr.XssBeanConverterUtils.convertObjectEscaped;
+import static org.scada_lts.web.security.dwr.XssBeanConverterUtils.convertObjectUnescaped;
 
 public class XssBeanConverter extends BeanConverter {
 

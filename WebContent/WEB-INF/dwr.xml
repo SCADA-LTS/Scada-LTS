@@ -23,7 +23,7 @@
     <converter id="localizableMessageString" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
     <converter id="protocolVersionEnum" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="opcUaDataTypeEnum" class="com.serotonin.mango.web.dwr.OpcUaDataTypeConverter"/>
-    <converter id="xssBean" class="org.scada_lts.web.dwr.security.XssBeanConverter"/>
+    <converter id="xssBean" class="org.scada_lts.web.security.dwr.XssBeanConverter"/>
   </init>
   
   <allow>
