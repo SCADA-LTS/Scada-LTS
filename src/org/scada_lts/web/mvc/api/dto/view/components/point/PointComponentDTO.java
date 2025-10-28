@@ -5,14 +5,18 @@ import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.deserializer.PointComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 @JsonDeserialize(using = PointComponentDeserializer.class)
 public class PointComponentDTO extends GraphicalViewComponentDTO {
 
+    @XssProtect
     private String dataPointXid;
+    @XssProtect
     private String nameOverride;
     private Boolean settableOverride;
+    @XssProtect
     private String bkgdColorOverride;
     private Boolean displayControls;
 

@@ -41,7 +41,7 @@ public final class XssProtectUtils {
         for(Map.Entry<String, String> entry: newLineAndWhitespaceCodes.entrySet()) {
             result = result.replace(entry.getValue(), entry.getKey());
         }
-        return content;
+        return result;
     }
 
     private static String unescapeNewLineAndWhitespace(String content) {
@@ -49,6 +49,6 @@ public final class XssProtectUtils {
         for(Map.Entry<String, String> entry: newLineAndWhitespaceCodes.entrySet()) {
             result = result.replace(entry.getKey(), entry.getValue());
         }
-        return content;
+        return result;
     }
 }

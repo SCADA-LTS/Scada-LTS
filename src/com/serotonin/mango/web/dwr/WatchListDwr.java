@@ -69,7 +69,7 @@ public class WatchListDwr extends BaseDwr {
 		user.setWatchList(watchList);
 
 		data.put("pointFolder", ph.getRoot());
-		data.put("shareUsers", getShareUsers(user));
+		//data.put("shareUsers", getShareUsers(user));
 		data.put("selectedWatchList", getWatchListData(user, watchList));
 		data.put("admin", user.isAdmin());
 		return data;

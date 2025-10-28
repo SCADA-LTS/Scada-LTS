@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.*;
 
 import static org.scada_lts.utils.MailingListApiUtils.isXidChanged;
@@ -105,7 +106,7 @@ public class ScriptsAPI {
     }
 
     @PostMapping(value = "/validateXid")
-    public ResponseEntity<Map<String, String>> validateScriptXid(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> validateScriptXid(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("POST::/api/scripts/validateXid");
         try {
             User user = Common.getUser(request);
@@ -123,7 +124,7 @@ public class ScriptsAPI {
     }
 
     @PostMapping(value = "/save")
-    public ResponseEntity<Map<String, Object>> saveScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> saveScript(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("POST::/api/scripts/save");
         try {
             User user = Common.getUser(request);
@@ -156,7 +157,7 @@ public class ScriptsAPI {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<Map<String, String>> updateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateScript(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("PUT::/api/scripts/update");
         try {
             User user = Common.getUser(request);

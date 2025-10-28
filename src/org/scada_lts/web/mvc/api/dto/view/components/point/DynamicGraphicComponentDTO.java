@@ -8,9 +8,12 @@ import com.serotonin.mango.view.component.DynamicGraphicComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class DynamicGraphicComponentDTO extends PointComponentDTO {
+
+    @XssProtect
     private String dynamicImageId;
     private Boolean displayText;
     private Double min;
