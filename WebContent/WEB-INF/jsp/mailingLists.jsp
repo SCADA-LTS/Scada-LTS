@@ -98,7 +98,10 @@
             if (!found)
                 availUsers[availUsers.length] = user;
         }
-        dwr.util.addOptions($("userList"), availUsers, "id", "username");
+        dwr.util.addOptions($("userList"), availUsers,
+                function(u) { return u.id; },
+                function(u) { return unescapeHtml(u.username); }
+        );
     }
 
     function saveMailingList() {
@@ -195,7 +198,7 @@
     function appendUserEntry(userEntry) {
         var content = createFromTemplate("mleUser_TEMPLATE_", userEntry.referenceId, "mailingListEntriesTable");
         setUserImg(userEntry.user.admin, userEntry.user.disabled, $("mle"+ userEntry.referenceId +"Img"));
-        $("mle"+ userEntry.referenceId +"Username").textContent = userEntry.user.username;
+        $("mle"+ userEntry.referenceId +"Username").innerHTML = userEntry.user.username;
     }
 
     function deleteUserEntry(entryId) {

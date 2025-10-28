@@ -248,8 +248,8 @@
       <param name="include" value="message"/>
     </convert>
 
-    <convert converter="bean" match="org.scada_lts.dao.model.UserIdentifier"/>
-    <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
+    <convert converter="xssBean" match="org.scada_lts.dao.model.UserIdentifier"/>
+    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
     <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.EmailRecipientJson"/>
   </allow>
   <signatures>
