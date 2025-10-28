@@ -137,7 +137,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.galil.PointTypeVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.virtual.*"/>
 
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.handlers.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.event.handlers.*"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
