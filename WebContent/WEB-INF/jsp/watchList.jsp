@@ -127,7 +127,7 @@
 
       function addFolder(folder, parent) {
           var folderNode = dojo.widget.createWidget("TreeNode", {
-                  title: "<img src='images/folder_brick.png'/> <span>" + folder.name + "</span>",
+                  title: "<img src='images/folder_brick.png'/> "+ folder.name,
                   isFolder: "true",
                   lazyLoadData: folder
           });

@@ -148,7 +148,7 @@
     function showUserProfileCB(userProfile) {
         //show($("deleteButton"));
         show($("userProfileDetails"));
-        $set("userProfileName", userProfile.name);
+        $set("userProfileName", unescapeHtml(userProfile.name));
 
         if (dataSources != null){
 	        var i, j, dscb, dp;
@@ -288,7 +288,7 @@
     }
     
     function updateUserProfile(userProfile) {
-        $("u"+ userProfile.id +"UserProfileName").textContent = userProfile.name;
+        $("u"+ userProfile.id +"UserProfileName").innerHTML = userProfile.name;
         setUserImg(true, userProfile.disabled, $("u"+ userProfile.id +"Img"));
         console.log("u"+ editingUserProfileId +"Img")
     }
