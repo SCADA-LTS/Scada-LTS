@@ -138,15 +138,15 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.virtual.*"/>
 
     <convert converter="bean" match="com.serotonin.mango.vo.event.handlers.*"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.MaintenanceEventVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.PointEventDetectorVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
     <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.PublisherVO">
@@ -174,7 +174,7 @@
     <convert converter="bean" match="com.serotonin.mango.view.View">
      	<param name="include" value="id,name"/>
     </convert>
-    <convert converter="bean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO">
+    <convert converter="xssBean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO">
       <param name="include" value="id,name,dataSourcePermissions,dataPointPermissions, watchlistPermissions, viewPermissions"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.WatchList">
@@ -240,19 +240,9 @@
     <!- - Fhz4J stuff-->
 
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.EventSourceBean"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
-
-    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.AddressEntry"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.MailingList"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.mailingList.UserEntry"/>
-
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.CompoundEventDetectorVO"/>
-    <convert converter="xssBean" match="br.org.scadabr.vo.usersProfiles.UsersProfileVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportInstance"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.report.ReportVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.web.dwr.beans.RecipientListEntryBean"/>
-    <convert converter="xssBean" match="com.serotonin.db.IntValuePair"/>
 
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>
