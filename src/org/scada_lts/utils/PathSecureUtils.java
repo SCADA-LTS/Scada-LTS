@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +56,12 @@ public final class PathSecureUtils {
     }
 
     public static Path normalizePath(String path) {
-        return Paths.get(normalizeSeparator(path)).toFile().getAbsoluteFile().toPath().normalize();
+        try {
+            return Paths.get(normalizeSeparator(path)).toFile().getAbsoluteFile().toPath().normalize();
+        } catch (Exception exception) {
+            LOG.error(LoggingUtils.exceptionInfo(exception));
+            return null;
+        }
     }
 
     private static Optional<Path> normalizePath(Path path, BinaryOperator<Path> reduce) {
@@ -65,7 +71,7 @@ public final class PathSecureUtils {
         }
 
         Path normalizedPath = getAbsoluteResourcePath(path.toString());
-        if (normalizedPath.toString().isEmpty()) {
+        if (normalizedPath == null || normalizedPath.toString().isEmpty()) {
             return Optional.empty();
         }
 
@@ -185,6 +191,9 @@ public final class PathSecureUtils {
 
         public static Path getAbsoluteResourcePath(String path) {
             Path normalizedPath = PathSecureUtils.normalizePath(path);
+            if(normalizedPath == null) {
+                return null;
+            }
             if (!path.equals(normalizedPath.toString())) {
                 Path basePath = getCatalinaHomePath();
                 return Path.of(basePath + File.separator + normalizeSeparator(path));
@@ -205,7 +214,8 @@ public final class PathSecureUtils {
             if (!StringUtils.isEmpty(normalizePath) && (normalizePath.endsWith(normalizeFolder)
                     || normalizePath.endsWith(normalizeFolder + File.separator))) {
                 Path path = getAbsoluteResourcePath(normalizePath);
-                createPath(path, notExistsPath(), paths::add);
+                if(path != null)
+                    createPath(path, notExistsPath(), paths::add);
             }
             Path path = getAppContextSystemFilePath(normalizeFolder);
             createPath(path, notExistsPath(), paths::add);
