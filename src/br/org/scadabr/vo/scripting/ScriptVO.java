@@ -18,7 +18,6 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.web.dwr.security.NoEscape;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ScriptService;
@@ -98,7 +97,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	private String xid;
 	@JsonRemoteProperty
 	private String name;
-	@JsonRemoteProperty @NoEscape
+	@JsonRemoteProperty
 	private String script;
 	private int userId;
 

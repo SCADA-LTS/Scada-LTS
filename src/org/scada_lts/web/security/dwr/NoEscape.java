@@ -1,4 +1,4 @@
-package org.scada_lts.web.dwr.security;
+package org.scada_lts.web.security.dwr;
 
 import java.lang.annotation.*;
 
