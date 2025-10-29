@@ -1,34 +1,61 @@
 package org.scada_lts.web.security.dwr;
 
-import com.serotonin.mango.vo.GetExtendedName;
+import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import utils.mock.TestGetExtendedName;
 
 public class XssBeanConverterUtilsEscapedTest {
 
-    private final GetExtendedName object = new TestGetExtendedName("<script>alert(1)</script>");
+    private ContextualizedScriptVO objectUnescaped;
+    private ContextualizedScriptVO objectEscaped;
 
-    private final GetExtendedName objectEscaped = new TestGetExtendedName("&lt;script&gt;alert(1)&lt;/script&gt;");
-
-    @Test
-    public void when_convertObjectEscaped_then_String_escaped() throws ScadaMarshallException {
-
-        //when:
-        XssBeanConverterUtils.convertObjectEscaped(object);
-
-        //then:
-        Assert.assertEquals(objectEscaped, object);
+    @Before
+    public void config() {
+        objectUnescaped = new ContextualizedScriptVO();
+        objectUnescaped.setScript("<script>alert(1)</script>");
+        objectEscaped = new ContextualizedScriptVO();
+        objectEscaped.setScript("&lt;script&gt;alert(1)&lt;/script&gt;");
     }
 
     @Test
-    public void when_convertObjectUnescaped_then_String_unescaped() throws ScadaMarshallException {
+    public void when_convertObjectEscaped_then_Object_escaped() throws ScadaMarshallException {
 
         //when:
-        XssBeanConverterUtils.convertObjectUnescaped(objectEscaped);
+        Object result = XssBeanConverterUtils.convertObjectEscaped(objectUnescaped);
 
         //then:
-        Assert.assertEquals(object, objectEscaped);
+        Assert.assertEquals(objectEscaped, result);
+    }
+
+    @Test
+    public void when_convertObjectUnescaped_then_Object_unescaped() throws ScadaMarshallException {
+
+        //when:
+        Object result = XssBeanConverterUtils.convertObjectUnescaped(objectEscaped);
+
+        //then:
+        Assert.assertEquals(objectUnescaped, result);
+    }
+
+    @Test
+    public void when_convertObjectUnescaped_then_not_same_arg() throws ScadaMarshallException {
+
+        //when:
+        Object result = XssBeanConverterUtils.convertObjectUnescaped(objectEscaped);
+
+        //then:
+        Assert.assertNotSame(objectEscaped, result);
+    }
+
+    @Test
+    public void when_convertObjectEscaped_then_not_same_arg() throws ScadaMarshallException {
+
+        //when:
+        Object result = XssBeanConverterUtils.convertObjectEscaped(objectUnescaped);
+
+        //then:
+        Assert.assertNotSame(objectUnescaped, result);
     }
 
 }

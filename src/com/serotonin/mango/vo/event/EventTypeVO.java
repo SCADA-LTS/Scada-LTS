@@ -31,8 +31,9 @@ import com.serotonin.mango.rt.event.type.ScheduledEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.security.EmptyInstance;
 
-public class EventTypeVO {
+public class EventTypeVO implements EmptyInstance {
     /**
      * The type of event. @see EventType.EventSources
      */
@@ -172,5 +173,10 @@ public class EventTypeVO {
 
     public void setEventDetectorKey(String eventDetectorKey) {
         this.eventDetectorKey = eventDetectorKey;
+    }
+
+    @Override
+    public EventTypeVO newInstanceEmpty() {
+        return new EventTypeVO(-1,-1,-1);
     }
 }

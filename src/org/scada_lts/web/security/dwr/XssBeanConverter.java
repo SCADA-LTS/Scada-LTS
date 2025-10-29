@@ -10,14 +10,14 @@ public class XssBeanConverter extends BeanConverter {
 
     @Override
     public OutboundVariable convertOutbound(Object value, OutboundContext outctx) throws MarshallException {
-        convertObjectEscaped(value);
-        return super.convertOutbound(value, outctx);
+        Object escaped = convertObjectEscaped(value);
+        return super.convertOutbound(escaped, outctx);
     }
 
     @Override
     public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
-        convertObjectUnescaped(iv.getValue());
-        return super.convertInbound(paramType, iv, inctx);
+        Object converted = super.convertInbound(paramType, iv, inctx);
+        return convertObjectUnescaped(converted);
     }
 
 }
