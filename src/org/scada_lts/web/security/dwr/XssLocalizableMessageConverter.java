@@ -17,15 +17,14 @@ public class XssLocalizableMessageConverter  extends StringConverter {
 
     public OutboundVariable convertOutbound(Object data, OutboundContext outctx) throws MarshallException {
         WebContext webctx = WebContextFactory.get();
-        LocalizableMessage lm = (LocalizableMessage)data;
-        convertObjectEscaped(data);
-        String s = lm.getLocalizedMessage(Common.getBundle(webctx.getHttpServletRequest()));
-        return super.convertOutbound(s, outctx);
+        LocalizableMessage lm = (LocalizableMessage)convertObjectEscaped(data);
+        String escaped = lm.getLocalizedMessage(Common.getBundle(webctx.getHttpServletRequest()));
+        return super.convertOutbound(escaped, outctx);
     }
 
     @Override
     public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
-        convertObjectUnescaped(iv.getValue());
-        return super.convertInbound(paramType, iv, inctx);
+        Object converted = super.convertInbound(paramType, iv, inctx);
+        return convertObjectUnescaped(converted);
     }
 }
