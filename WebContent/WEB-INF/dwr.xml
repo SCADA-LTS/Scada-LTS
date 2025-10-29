@@ -155,7 +155,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.publish.httpSender.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.pachube.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.persistent.*"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.report.*"/>
+    <convert converter="bean" match="com.serotonin.mango.vo.report.*"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.DataPointVO">
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator,engineeringUnits"/>
     </convert>
