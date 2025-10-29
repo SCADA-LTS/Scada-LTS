@@ -1,6 +1,7 @@
 package org.scada_lts.web.security.dwr;
 
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.scada_lts.web.security.EmptyInstance;
@@ -94,7 +95,9 @@ public final class XssBeanConverterUtils {
 
     private static Object newInstanceEmpty(Object originObject) throws Exception {
         Object object;
-        if(originObject instanceof EmptyInstance) {
+        if(originObject instanceof LocalizableMessage) {
+            object = new LocalizableMessage("");
+        } else if(originObject instanceof EmptyInstance) {
             object = ((EmptyInstance) originObject).newInstanceEmpty();
         } else {
             object = originObject.getClass().getConstructor().newInstance();
