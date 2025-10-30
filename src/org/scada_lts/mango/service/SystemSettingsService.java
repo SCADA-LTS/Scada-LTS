@@ -468,21 +468,29 @@ public class SystemSettingsService {
         }
     }
 
-    public String getWebResourceGraphicsPath(){
+    public String getWebResourceGraphicsPath() {
         String defaultValue = SystemSettingsUtils.getWebResourceGraphicsPath();
         try {
-            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
-        } catch (Exception e){
+            String path = SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
+            if(PathSecureUtils.ValidationPaths.validatePath(path, a -> true)) {
+                return path;
+            }
+            return defaultValue;
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;
         }
     }
 
-    public String getWebResourceUploadsPath(){
+    public String getWebResourceUploadsPath() {
         String defaultValue = SystemSettingsUtils.getWebResourceUploadsPath();
         try {
-            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
-        } catch (Exception e){
+            String path = SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
+            if(PathSecureUtils.ValidationPaths.validatePath(path, a -> true)) {
+                return path;
+            }
+            return defaultValue;
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;
         }
