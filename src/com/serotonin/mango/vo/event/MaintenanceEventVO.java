@@ -30,6 +30,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.mango.service.MaintenanceEventService;
 import org.scada_lts.utils.XidUtils;
+import org.scada_lts.web.security.dwr.NoEscape;
 
 @JsonRemoteEntity
 public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>, JsonSerializable {
@@ -60,6 +61,7 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     private String xid;
     private int dataSourceId;
     @JsonRemoteProperty
+    @NoEscape
     private String alias;
     private int alarmLevel = AlarmLevels.NONE;
     private int scheduleType = TYPE_MANUAL;

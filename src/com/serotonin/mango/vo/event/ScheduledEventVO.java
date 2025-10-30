@@ -45,6 +45,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.mango.service.ScheduledEventService;
 import org.scada_lts.utils.XidUtils;
+import org.scada_lts.web.security.dwr.NoEscape;
 
 /**
  * @author Matthew Lohbihler
@@ -85,6 +86,7 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     private int id = Common.NEW_ID;
     private String xid;
     @JsonRemoteProperty
+    @NoEscape
     private String alias;
     private int alarmLevel = AlarmLevels.NONE;
     private int scheduleType = TYPE_DAILY;

@@ -527,7 +527,7 @@
                 selectedHandlerNode.onTitleClick();
             }
             else
-                $set(handler.id +"Msg", handler.message);
+                $set(handler.id +"Msg", unescapeHtml(handler.message));
 
             setUserMessage("<spring:message code="eventHandlers.saved"/>");
             selectedHandlerNode.object = handler;
