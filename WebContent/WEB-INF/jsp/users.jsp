@@ -323,7 +323,7 @@
     
     function updateUser(response) {
         var user = response.data ? response.data.user : response.user;
-        $("u"+ user.id +"Username").textContent = user.username;
+        $("u"+ user.id +"Username").innerHTML = user.username;
         setUserImg(user.admin, user.disabled, $("u"+ user.id +"Img"));
     }
     
