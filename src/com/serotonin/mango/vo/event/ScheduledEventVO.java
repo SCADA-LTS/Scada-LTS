@@ -45,7 +45,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.mango.service.ScheduledEventService;
 import org.scada_lts.utils.XidUtils;
-import org.scada_lts.web.security.dwr.NoEscape;
+
+import static org.scada_lts.web.security.XssProtectUtils.unescapeHtml;
 
 /**
  * @author Matthew Lohbihler
@@ -86,7 +87,6 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     private int id = Common.NEW_ID;
     private String xid;
     @JsonRemoteProperty
-    @NoEscape
     private String alias;
     private int alarmLevel = AlarmLevels.NONE;
     private int scheduleType = TYPE_DAILY;
@@ -140,8 +140,8 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     public LocalizableMessage getDescription() {
         LocalizableMessage message;
 
-        if (!StringUtils.isEmpty(alias))
-            message = new LocalizableMessage("common.default", alias);
+        if (!StringUtils.isEmpty(unescapeHtml(alias)))
+            message = new LocalizableMessage("common.default", unescapeHtml(alias));
         else if (scheduleType == TYPE_ONCE) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.onceUntil", DateFunctions.getTime(new DateTime(
@@ -191,9 +191,9 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
         }
         else if (scheduleType == TYPE_CRON) {
             if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.cronUntil", activeCron, inactiveCron);
+                message = new LocalizableMessage("event.schedule.cronUntil", unescapeHtml(activeCron), unescapeHtml(inactiveCron));
             else
-                message = new LocalizableMessage("event.schedule.cronAt", activeCron);
+                message = new LocalizableMessage("event.schedule.cronAt", unescapeHtml(activeCron));
         }
         else
             throw new ShouldNeverHappenException("Unknown schedule type: " + scheduleType);
