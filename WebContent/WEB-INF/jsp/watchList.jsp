@@ -154,7 +154,7 @@
       function addPoint(point, parent) {
           var spanNode = document.createElement("span");
           spanNode.id = 'ph'+ point.key +'Name';
-          spanNode.textContent = unescapeHtml(point.value);
+          spanNode.innerHTML = point.value;
           var pointNode = dojo.widget.createWidget("TreeNode", {
                   title: "<img src='images/icon_comp.png'/> " + spanNode.innerHTML +
                           "<img src='images/bullet_go.png' id='ph"+ point.key +"Image' title='<spring:message code="watchlist.addToWatchlist"/>'/>",
