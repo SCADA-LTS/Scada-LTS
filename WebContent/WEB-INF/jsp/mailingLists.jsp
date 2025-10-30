@@ -229,6 +229,7 @@
             referenceAddress : addr
         };
         editingMailingList.entries[editingMailingList.entries.length] = addressEntry;
+        addressEntry.referenceAddress = escapeHtml(addressEntry.referenceAddress);
         appendAddressEntry(addressEntry);
         updateEmptyListMessage();
     }

@@ -255,8 +255,8 @@
 
     <convert converter="xssBean" match="org.scada_lts.dao.model.UserIdentifier"/>
     <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
-    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.EmailRecipientJson"/>
-
+    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.UserEntryJson"/>
+    <convert converter="xssBean" match="org.scada_lts.web.mvc.api.dto.AddressEntryJson"/>
   </allow>
   <signatures>
     <![CDATA[
