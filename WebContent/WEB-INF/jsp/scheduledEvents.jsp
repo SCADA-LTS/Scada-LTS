@@ -76,8 +76,8 @@
                 show($("scheduledEventDetails"));
             editingScheduledEvent = se;
             
-            $set("xid", se.xid);
-            $set("alias", se.alias);
+            $set("xid", unescapeHtml(se.xid));
+            $set("alias", unescapeHtml(se.alias));
             $set("alarmLevel", se.alarmLevel);
             updateAlarmLevelImage();
             $set("scheduleType", se.scheduleType);
@@ -91,14 +91,14 @@
             $set("activeHour", se.activeHour);
             $set("activeMinute", se.activeMinute);
             $set("activeSecond", se.activeSecond);
-            $set("activeCron", se.activeCron);
+            $set("activeCron", unescapeHtml(se.activeCron));
             $set("inactiveYear", se.inactiveYear);
             $set("inactiveMonth", se.inactiveMonth);
             $set("inactiveDay", se.inactiveDay);
             $set("inactiveHour", se.inactiveHour);
             $set("inactiveMinute", se.inactiveMinute);
             $set("inactiveSecond", se.inactiveSecond);
-            $set("inactiveCron", se.inactiveCron);
+            $set("inactiveCron", unescapeHtml(se.inactiveCron));
             
             setUserMessage();
         });
@@ -150,7 +150,7 @@
     }
     
     function updateScheduledEvent(se) {
-        $("se"+ se.id +"Name").textContent = se.description;
+        $("se"+ se.id +"Name").innerHTML = se.description;
         setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
     

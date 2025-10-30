@@ -39,7 +39,10 @@ public class UsersProfileDaoWithCache implements IUsersProfileDAO {
 
     @Override
     public List<UsersProfileVO> selectProfiles(int offset, int limit) {
-        return usersProfileCache.selectProfiles(offset, limit);
+        return usersProfileCache.selectProfiles(offset, limit)
+            .stream()
+            .map(UsersProfileVO::new)
+            .collect(Collectors.toList());
     }
 
     @Override

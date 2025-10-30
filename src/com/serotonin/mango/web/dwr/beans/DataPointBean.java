@@ -18,10 +18,17 @@
  */
 package com.serotonin.mango.web.dwr.beans;
 
+import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.security.EmptyInstance;
 
-public class DataPointBean {
+import java.util.List;
+
+public class DataPointBean implements EmptyInstance {
     private int id;
     private String xid;
     private String name;
@@ -86,5 +93,62 @@ public class DataPointBean {
 
     public void setXid(String xid) {
         this.xid = xid;
+    }
+
+    @Override
+    public DataPointBean newInstanceEmpty() {
+        DataPointVO dataPointVO = new DataPointVO(-1, -1, -1);
+        dataPointVO.setPointLocator(new PointLocatorVO() {
+            @Override
+            public int getDataTypeId() {
+                return 0;
+            }
+
+            @Override
+            public LocalizableMessage getDataTypeMessage() {
+                return null;
+            }
+
+            @Override
+            public LocalizableMessage getConfigurationDescription() {
+                return null;
+            }
+
+            @Override
+            public boolean isSettable() {
+                return false;
+            }
+
+            @Override
+            public boolean isRelinquishable() {
+                return false;
+            }
+
+            @Override
+            public PointLocatorRT createRuntime() {
+                return null;
+            }
+
+            @Override
+            public void validate(DwrResponseI18n response) {
+
+            }
+
+            @Override
+            public DataPointSaveHandler getDataPointSaveHandler() {
+                return null;
+            }
+
+            @Override
+            public void addProperties(List<LocalizableMessage> list) {
+
+            }
+
+            @Override
+            public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
+
+            }
+        });
+        return new DataPointBean(dataPointVO);
     }
 }

@@ -77,9 +77,9 @@
             
             updateToggle(response.data.activated);
             
-            $set("xid", me.xid);
+            $set("xid", unescapeHtml(me.xid));
             $set("dataSourceId", me.dataSourceId);
-            $set("alias", me.alias);
+            $set("alias", unescapeHtml(me.alias));
             $set("alarmLevel", me.alarmLevel);
             updateAlarmLevelImage();
             $set("scheduleType", me.scheduleType);
@@ -92,14 +92,14 @@
             $set("activeHour", me.activeHour);
             $set("activeMinute", me.activeMinute);
             $set("activeSecond", me.activeSecond);
-            $set("activeCron", me.activeCron);
+            $set("activeCron", unescapeHtml(me.activeCron));
             $set("inactiveYear", me.inactiveYear);
             $set("inactiveMonth", me.inactiveMonth);
             $set("inactiveDay", me.inactiveDay);
             $set("inactiveHour", me.inactiveHour);
             $set("inactiveMinute", me.inactiveMinute);
             $set("inactiveSecond", me.inactiveSecond);
-            $set("inactiveCron", me.inactiveCron);
+            $set("inactiveCron", unescapeHtml(me.inactiveCron));
             
             setUserMessage();
         });
@@ -156,7 +156,7 @@
     }
     
     function updateMaintenanceEvent(me) {
-        $("me"+ me.id +"Name").textContent = me.description;
+        $("me"+ me.id +"Name").innerHTML = me.description;
         if (me.disabled)
             updateImg("me"+ me.id +"Img", "images/hammer_disabled.png", "<spring:message code="maintenanceEvents.meDisabled" />", true);
         else

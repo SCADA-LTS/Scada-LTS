@@ -79,7 +79,7 @@
         var pointNode, dataSourceNode, publisherNode, etNode, wid;
         
         allPoints = data.allPoints;
-        
+
         emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
                 "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
@@ -228,7 +228,7 @@
             img = "images/cog_process.png";
 
         var node = dojo.widget.createWidget("TreeNode", {
-                title: "<img src='"+ img +"'/> <span id='"+ handler.id +"Msg'>"+ handler.message +"</span>",
+                title: "<img src='"+ img +"'/> <span id='"+ handler.id +"Msg'>"+ unescapeHtml(handler.message) +"</span>",
                 widgetId: "h"+ handler.id,
                 object: handler
         });
@@ -286,7 +286,7 @@
             $set("handlerTypeSelect", handler.handlerType);
             $("handlerTypeSelect").disabled = true;
             $set("xid", handler.xid);
-            $set("alias", handler.alias);
+            $set("alias", unescapeHtml(handler.alias));
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
                 $set("targetPointSelect", handler.targetPointId);
@@ -527,7 +527,7 @@
                 selectedHandlerNode.onTitleClick();
             }
             else
-                $set(handler.id +"Msg", handler.message);
+                $set(handler.id +"Msg", unescapeHtml(handler.message));
 
             setUserMessage("<spring:message code="eventHandlers.saved"/>");
             selectedHandlerNode.object = handler;
