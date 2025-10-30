@@ -307,12 +307,17 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
     public LocalizableMessage getDescription() {
         LocalizableMessage message;
 
-        if (!StringUtils.isEmpty(unescapeHtml(alias)))
-            message = new LocalizableMessage("common.default", unescapeHtml(alias));
+        String unescapedAlias = unescapeHtml(alias);
+        String unescapedDataSourceName = unescapeHtml(dataSourceName);
+        String unescapedActiveCron = unescapeHtml(activeCron);
+        String unescapedInactiveCron = unescapeHtml(inactiveCron);
+
+        if (!StringUtils.isEmpty(unescapedAlias))
+            message = new LocalizableMessage("common.default", unescapedAlias);
         else if (scheduleType == TYPE_MANUAL)
-            message = new LocalizableMessage("maintenanceEvents.schedule.manual", unescapeHtml(dataSourceName));
+            message = new LocalizableMessage("maintenanceEvents.schedule.manual", unescapedDataSourceName);
         else if (scheduleType == TYPE_ONCE) {
-            message = new LocalizableMessage("maintenanceEvents.schedule.onceUntil", unescapeHtml(dataSourceName),
+            message = new LocalizableMessage("maintenanceEvents.schedule.onceUntil", unescapedDataSourceName,
                     DateFunctions.getTime(new DateTime(activeYear, activeMonth, activeDay, activeHour, activeMinute,
                             activeSecond, 0).getMillis()), DateFunctions.getTime(new DateTime(inactiveYear,
                             inactiveMonth, inactiveDay, inactiveHour, inactiveMinute, inactiveSecond, 0).getMillis()));
@@ -320,25 +325,25 @@ public class MaintenanceEventVO implements ChangeComparable<MaintenanceEventVO>,
         else if (scheduleType == TYPE_HOURLY) {
             String activeTime = StringUtils.pad(Integer.toString(activeMinute), '0', 2) + ":"
                     + StringUtils.pad(Integer.toString(activeSecond), '0', 2);
-            message = new LocalizableMessage("maintenanceEvents.schedule.hoursUntil", unescapeHtml(dataSourceName), activeTime,
+            message = new LocalizableMessage("maintenanceEvents.schedule.hoursUntil", unescapedDataSourceName, activeTime,
                     StringUtils.pad(Integer.toString(inactiveMinute), '0', 2) + ":"
                             + StringUtils.pad(Integer.toString(inactiveSecond), '0', 2));
         }
         else if (scheduleType == TYPE_DAILY)
-            message = new LocalizableMessage("maintenanceEvents.schedule.dailyUntil", unescapeHtml(dataSourceName), activeTime(),
+            message = new LocalizableMessage("maintenanceEvents.schedule.dailyUntil", unescapedDataSourceName, activeTime(),
                     inactiveTime());
         else if (scheduleType == TYPE_WEEKLY)
-            message = new LocalizableMessage("maintenanceEvents.schedule.weeklyUntil", unescapeHtml(dataSourceName), weekday(true),
+            message = new LocalizableMessage("maintenanceEvents.schedule.weeklyUntil", unescapedDataSourceName, weekday(true),
                     activeTime(), weekday(false), inactiveTime());
         else if (scheduleType == TYPE_MONTHLY)
-            message = new LocalizableMessage("maintenanceEvents.schedule.monthlyUntil", unescapeHtml(dataSourceName), monthday(true),
+            message = new LocalizableMessage("maintenanceEvents.schedule.monthlyUntil", unescapedDataSourceName, monthday(true),
                     activeTime(), monthday(false), inactiveTime());
         else if (scheduleType == TYPE_YEARLY)
-            message = new LocalizableMessage("maintenanceEvents.schedule.yearlyUntil", unescapeHtml(dataSourceName), monthday(true),
+            message = new LocalizableMessage("maintenanceEvents.schedule.yearlyUntil", unescapedDataSourceName, monthday(true),
                     month(true), activeTime(), monthday(false), month(false), inactiveTime());
         else if (scheduleType == TYPE_CRON)
-            message = new LocalizableMessage("maintenanceEvents.schedule.cronUntil", unescapeHtml(dataSourceName), unescapeHtml(activeCron),
-                    unescapeHtml(inactiveCron));
+            message = new LocalizableMessage("maintenanceEvents.schedule.cronUntil", unescapedDataSourceName, unescapedActiveCron,
+                    unescapedInactiveCron);
         else
             throw new ShouldNeverHappenException("Unknown schedule type: " + scheduleType);
 

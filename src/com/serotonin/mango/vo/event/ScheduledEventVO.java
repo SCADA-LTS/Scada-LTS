@@ -140,8 +140,12 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     public LocalizableMessage getDescription() {
         LocalizableMessage message;
 
-        if (!StringUtils.isEmpty(unescapeHtml(alias)))
-            message = new LocalizableMessage("common.default", unescapeHtml(alias));
+        String unescapedAlias = unescapeHtml(alias);
+        String unescapedActiveCron = unescapeHtml(activeCron);
+        String unescapedInactiveCron = unescapeHtml(inactiveCron);
+
+        if (!StringUtils.isEmpty(unescapedAlias))
+            message = new LocalizableMessage("common.default", unescapedAlias);
         else if (scheduleType == TYPE_ONCE) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.onceUntil", DateFunctions.getTime(new DateTime(
@@ -191,9 +195,9 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
         }
         else if (scheduleType == TYPE_CRON) {
             if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.cronUntil", unescapeHtml(activeCron), unescapeHtml(inactiveCron));
+                message = new LocalizableMessage("event.schedule.cronUntil", unescapedActiveCron, unescapedInactiveCron);
             else
-                message = new LocalizableMessage("event.schedule.cronAt", unescapeHtml(activeCron));
+                message = new LocalizableMessage("event.schedule.cronAt", unescapedActiveCron);
         }
         else
             throw new ShouldNeverHappenException("Unknown schedule type: " + scheduleType);
