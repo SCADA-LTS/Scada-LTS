@@ -46,6 +46,8 @@ import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.mango.service.ScheduledEventService;
 import org.scada_lts.utils.XidUtils;
 
+import static org.scada_lts.web.security.XssProtectUtils.unescapeHtml;
+
 /**
  * @author Matthew Lohbihler
  * 
@@ -138,8 +140,12 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
     public LocalizableMessage getDescription() {
         LocalizableMessage message;
 
-        if (!StringUtils.isEmpty(alias))
-            message = new LocalizableMessage("common.default", alias);
+        String unescapedAlias = unescapeHtml(alias);
+        String unescapedActiveCron = unescapeHtml(activeCron);
+        String unescapedInactiveCron = unescapeHtml(inactiveCron);
+
+        if (!StringUtils.isEmpty(unescapedAlias))
+            message = new LocalizableMessage("common.default", unescapedAlias);
         else if (scheduleType == TYPE_ONCE) {
             if (returnToNormal)
                 message = new LocalizableMessage("event.schedule.onceUntil", DateFunctions.getTime(new DateTime(
@@ -189,9 +195,9 @@ public class ScheduledEventVO extends SimpleEventDetectorVO implements ChangeCom
         }
         else if (scheduleType == TYPE_CRON) {
             if (returnToNormal)
-                message = new LocalizableMessage("event.schedule.cronUntil", activeCron, inactiveCron);
+                message = new LocalizableMessage("event.schedule.cronUntil", unescapedActiveCron, unescapedInactiveCron);
             else
-                message = new LocalizableMessage("event.schedule.cronAt", activeCron);
+                message = new LocalizableMessage("event.schedule.cronAt", unescapedActiveCron);
         }
         else
             throw new ShouldNeverHappenException("Unknown schedule type: " + scheduleType);

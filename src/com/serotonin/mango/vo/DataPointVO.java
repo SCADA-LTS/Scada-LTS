@@ -50,6 +50,7 @@ import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.security.EmptyInstance;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,7 +63,7 @@ import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
 public class DataPointVO implements Serializable, Cloneable, JsonSerializable, ChangeComparable<DataPointVO>,
-        ScadaValidation, GetExtendedName {
+        ScadaValidation, GetExtendedName, EmptyInstance {
     private static final long serialVersionUID = -1;
     public static final String XID_PREFIX = "DP_";
 
@@ -1164,5 +1165,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 .description(getDescription())
                 .dataSourceName(getDataSourceName())
                 .build();
+    }
+
+    @Override
+    public DataPointVO newInstanceEmpty() {
+        return new DataPointVO(-1, -1, -1);
     }
 }
