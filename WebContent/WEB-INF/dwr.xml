@@ -142,8 +142,7 @@
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventHandlerVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.EventTypeVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.event.MaintenanceEventVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.PointEventDetectorVO"/>
-    <convert converter="xssBean" match="com.serotonin.mango.vo.event.ScheduledEventVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.event.SimpleEventDetectorVO"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.hierarchy.PointFolder"/>
     <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
