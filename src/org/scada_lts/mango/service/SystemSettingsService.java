@@ -23,6 +23,7 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.PathSecureUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -467,21 +468,29 @@ public class SystemSettingsService {
         }
     }
 
-    public String getWebResourceGraphicsPath(){
+    public String getWebResourceGraphicsPath() {
         String defaultValue = SystemSettingsUtils.getWebResourceGraphicsPath();
         try {
-            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
-        } catch (Exception e){
+            String path = SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, defaultValue);
+            if(PathSecureUtils.ValidationPaths.validatePath(path, a -> true)) {
+                return path;
+            }
+            return defaultValue;
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;
         }
     }
 
-    public String getWebResourceUploadsPath(){
+    public String getWebResourceUploadsPath() {
         String defaultValue = SystemSettingsUtils.getWebResourceUploadsPath();
         try {
-            return SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
-        } catch (Exception e){
+            String path = SystemSettingsDAO.getValue(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, defaultValue);
+            if(PathSecureUtils.ValidationPaths.validatePath(path, a -> true)) {
+                return path;
+            }
+            return defaultValue;
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;
         }
@@ -622,7 +631,10 @@ public class SystemSettingsService {
     }
 
     public void saveResourceGraphicsPathMisc(String webResourceGraphicsPath, DwrResponseI18n response) {
-        if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)
+        boolean validated = PathSecureUtils.ValidationPaths.validatePath(webResourceGraphicsPath, a -> true);
+        if(!validated) {
+            response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_GRAPHICS_PATH, "validate.invalidValue");
+        } else if (webResourceGraphicsPath != null && (StringUtils.isEmpty(webResourceGraphicsPath)
                 || (webResourceGraphicsPath.endsWith("graphics")
                 || webResourceGraphicsPath.endsWith("graphics" + File.separator)))) {
             saveResourceGraphicsPathMisc(webResourceGraphicsPath);
@@ -632,7 +644,10 @@ public class SystemSettingsService {
     }
 
     public void saveResourceUploadsPathMisc(String webResourceUploadsPath, DwrResponseI18n response) {
-        if (webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
+        boolean validated = PathSecureUtils.ValidationPaths.validatePath(webResourceUploadsPath, a -> true);
+        if(!validated) {
+            response.addContextualMessage(SystemSettingsDAO.WEB_RESOURCE_UPLOADS_PATH, "validate.invalidValue");
+        } else if(webResourceUploadsPath != null && (StringUtils.isEmpty(webResourceUploadsPath)
                 || (webResourceUploadsPath.endsWith("uploads")
                 || webResourceUploadsPath.endsWith("uploads" + File.separator)))) {
             saveResourceUploadsPathMisc(webResourceUploadsPath);
