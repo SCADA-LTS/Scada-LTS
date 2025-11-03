@@ -95,7 +95,7 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.name"/></td>
               <td class="formField">
-                <input type="text" id="name" value="${publisher.name}"/>
+                <input type="text" id="name" value="<c:out value='${publisher.name}'/>"/>
                 <div id="nameMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
@@ -103,20 +103,20 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="common.xid"/></td>
               <td class="formField">
-                <input type="text" id="xid" value="${publisher.xid}"/>
+                <input type="text" id="xid" value="<c:out value='${publisher.xid}'/>"/>
                 <div id="xidMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="common.enabled"/></td>
-              <td class="formField"><sst:checkbox id="enabled" selectedValue="${publisher.enabled}"/></td>
+              <td class="formField"><sst:checkbox id="enabled" selectedValue="<c:out value='${publisher.enabled}'/>"/></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.cacheWarning"/></td>
               <td class="formField">
-                <input type="text" id="cacheWarningSize" value="${publisher.cacheWarningSize}" class="formShort"/>
+                <input type="text" id="cacheWarningSize" value="<c:out value='${publisher.cacheWarningSize}'/>" class="formShort"/>
                 <div id="cacheWarningSizeMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
@@ -124,7 +124,7 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.updateEvent"/></td>
               <td class="formField">
-                <sst:select id="changesOnly" value="${publisher.changesOnly}">
+                <sst:select id="changesOnly" value="<c:out value='${publisher.changesOnly}'/>">
                   <sst:option value="false"><spring:message code="publisherEdit.updateEvent.all"/></sst:option>
                   <sst:option value="true"><spring:message code="publisherEdit.updateEvent.changes"/></sst:option>
                 </sst:select>
@@ -134,14 +134,14 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.snapshot"/></td>
               <td class="formField"><sst:checkbox id="sendSnapshot" onclick="sendSnapshotChanged()"
-                      selectedValue="${publisher.sendSnapshot}"/></td>
+                      selectedValue="<c:out value='${publisher.sendSnapshot}'/>"/></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="publisherEdit.snapshotPeriod"/></td>
               <td class="formField">
-                <input type="text" id="snapshotSendPeriods" value="${publisher.snapshotSendPeriods}" class="formShort"/>
-                <sst:select id="snapshotSendPeriodType" value="${publisher.snapshotSendPeriodType}">
+                <input type="text" id="snapshotSendPeriods" value="<c:out value='${publisher.snapshotSendPeriods}'/>" class="formShort"/>
+                <sst:select id="snapshotSendPeriodType" value="<c:out value='${publisher.snapshotSendPeriodType}'/>">
                   <tag:timePeriodOptions sst="true" s="true" min="true" h="true"/>
                 </sst:select>
                 <div id="snapshotSendPeriodsMsg" class="formError" style="display:none;"></div>

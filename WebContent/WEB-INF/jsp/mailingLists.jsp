@@ -98,7 +98,10 @@
             if (!found)
                 availUsers[availUsers.length] = user;
         }
-        dwr.util.addOptions($("userList"), availUsers, "id", "username");
+        dwr.util.addOptions($("userList"), availUsers,
+                function(u) { return u.id; },
+                function(u) { return unescapeHtml(u.username); }
+        );
     }
 
     function saveMailingList() {
@@ -226,6 +229,7 @@
             referenceAddress : addr
         };
         editingMailingList.entries[editingMailingList.entries.length] = addressEntry;
+        addressEntry.referenceAddress = escapeHtml(addressEntry.referenceAddress);
         appendAddressEntry(addressEntry);
         updateEmptyListMessage();
     }
