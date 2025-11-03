@@ -76,11 +76,7 @@
           hide("selectedPointsEmpty");
           dwr.util.addRows("selectedPoints", selectedPoints,
               [
-                  function(data) {
-                    const span = document.createElement('span');
-                    span.textContent = data.pointName;
-                    return span;
-                  },
+                  function(data) { return "<span>" + escapeHtml(data.pointName) + "</span>"; },
                   function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
                   function(data) { return data.pointType; },
                   function(data) { 
