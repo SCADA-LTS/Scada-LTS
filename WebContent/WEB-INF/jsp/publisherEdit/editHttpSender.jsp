@@ -35,22 +35,22 @@
       var list = response.data.allPoints;
       for (var i=0; i<list.length; i++)
           allPoints[allPoints.length] = {
-                  id: list[i].id, name: unescapeHtml(list[i].extendedName), enabled: list[i].enabled, type: list[i].dataTypeMessage};
+                  id: list[i].id, name: unescapeHtml(list[i].extendedName), enabled: list[i].enabled, type: unescapeHtml(list[i].dataTypeMessage)};
 
       staticHeaderList = new Array();
       list = response.data.publisher.staticHeaders;
       for (i=0; i<list.length; i++)
-          staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
+          staticHeaderList[staticHeaderList.length] = {key: unescapeHtml(list[i].key), value: unescapeHtml(list[i].value)};
       refreshStaticHeaderList();
       
       list = response.data.publisher.staticParameters;
       for (i=0; i<list.length; i++)
-          staticParameterList[staticParameterList.length] = {key: list[i].key, value: list[i].value};
+          staticParameterList[staticParameterList.length] = {key: unescapeHtml(list[i].key), value: unescapeHtml(list[i].value)};
       refreshStaticParameterList();
       
       list = response.data.publisher.points;
       for (i=0; i<list.length; i++)
-          addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
+          addToSelectedArray(list[i].dataPointId, unescapeHtml(list[i].parameterName), unescapeHtml(list[i].includeTimestamp));
       refreshSelectedPoints();
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
@@ -67,7 +67,7 @@
     var i;
     var list = response.data.staticHeaders;
     for (i=0; i<list.length; i++)
-      staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
+      staticHeaderList[staticHeaderList.length] = {key: unescapeHtml(list[i].key), value: unescapeHtml(list[i].value)};
     refreshStaticHeaderList();
     PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
   }
@@ -120,7 +120,7 @@
       else {
           hide("noStaticHeadersMsg");
           dwr.util.addRows("staticHeaderList", staticHeaderList, [
-                  function(data) { return data.key +"="+ data.value; },
+                  function(data) { return escapeHtml(data.key) +"="+ escapeHtml(data.value); },
                   function(data, options) {
                       return "<img src='images/bullet_delete.png' class='ptr' title='<spring:message code="publisherEdit.httpSender.removeHeader"/>' "+
                               "onclick='removeStaticHeader("+ options.rowIndex + ");'/>";
@@ -164,7 +164,7 @@
       else {
           hide("noStaticParametersMsg");
           dwr.util.addRows("staticParameterList", staticParameterList, [
-                  function(data) { return data.key +"="+ data.value; },
+                  function(data) { return escapeHtml(data.key) +"="+ escapeHtml(data.value); },
                   function(data, options) {
                       return "<img src='images/bullet_delete.png' class='ptr' title='<spring:message code="publisherEdit.httpSender.removeParam"/>' "+
                               "onclick='removeStaticParameter("+ options.rowIndex + ");'/>";
@@ -211,15 +211,11 @@
           hide("selectedPointsEmpty");
           dwr.util.addRows("selectedPoints", selectedPoints,
               [
-                  function(data) {
-                    const span = document.createElement('span');
-                    span.textContent = data.pointName;
-                    return span;
-                  },
+                  function(data) { return "<span>" + escapeHtml(data.pointName) + "</span>"; },
                   function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
-                  function(data) { return data.pointType; },
+                  function(data) { return "<span>" + data.pointType + "</span>"; },
                   function(data) {
-                          return "<input type='text' value='"+ data.parameterName +"' "+
+                          return "<input type='text' value='"+ escapeHtml(data.parameterName) +"' "+
                                   "onblur='updateParameterName("+ data.id +", this.value)'/>";
                   },
                   function(data) {

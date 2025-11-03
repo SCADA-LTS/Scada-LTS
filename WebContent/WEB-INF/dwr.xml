@@ -148,8 +148,8 @@
     <convert converter="bean" match="com.serotonin.mango.vo.link.PointLinkVO"/>
     <convert converter="bean" match="com.serotonin.mango.vo.mailingList.*"/>
     <convert converter="bean" match="com.serotonin.mango.vo.permission.DataPointAccess"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
-    <convert converter="bean" match="com.serotonin.mango.vo.publish.PublisherVO">
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.PublishedPointVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.PublisherVO">
       <param name="exclude" value="type,eventCodes"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.publish.httpSender.*"/>
@@ -249,6 +249,14 @@
     <convert converter="xssBean" match="com.serotonin.mango.vo.bean.PointHistoryCount"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.bean.ImageValueBean"/>
     <convert converter="xssBean" match="com.serotonin.mango.vo.publish.httpSender.HttpSenderVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.httpSender.HttpPointVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.pachube.PachubeSenderVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.pachube.PachubePointVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.persistent.PersistentSenderVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.publish.persistent.PersistentPointVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.util.ExportCodes"/>
+    <convert converter="xssBean" match="com.serotonin.mango.util.ExportCodes.Element"/>
+    <convert converter="enum" match="com.serotonin.mango.vo.publish.PublisherVO$Type"/>
 
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>
