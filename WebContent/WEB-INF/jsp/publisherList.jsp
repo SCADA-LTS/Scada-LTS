@@ -36,7 +36,7 @@
             [
                 function(p) {
                   let b = document.createElement("b");
-                  b.appendChild(document.createTextNode(p.name));
+                  b.appendChild(document.createTextNode(unescapeHtml(p.name)));
                   return b;
                 },
                 function(p) { return p.typeMessage; },
