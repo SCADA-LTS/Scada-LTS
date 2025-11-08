@@ -573,4 +573,202 @@ public class ScriptExecutorTest {
         String result = pointValueTime.getStringValue();
         Assert.assertEquals(expected, result);
     }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_method_start_in_ProcessBuilder_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ProcessBuilder(\"bash\",\"-c\",\"echo POC > /tmp/rce_should_not_be_possible\").start();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_ProcessBuilder_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ProcessBuilder(\"bash\",\"-c\",\"echo POC > /tmp/rce_should_not_be_possible\");" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test
+    public void test_execute_js_with_java_invoke_constructor_JdbcTemplate() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new org.springframework.jdbc.core.JdbcTemplate();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test
+    public void test_execute_js_with_java_invoke_constructor_ExtendedJdbcTemplate() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new com.serotonin.db.spring.ExtendedJdbcTemplate();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_Field_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.reflect.Field();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test
+    public void test_execute_js_with_java_invoke_constructor_Byte_with_123() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.Byte(123);" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test
+    public void test_execute_js_with_java_invoke_constructor_String_with_abc() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.String(\"abc\");" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_ClassLoader_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ClassLoader();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test
+    public void test_execute_js_with_java_invoke_constructor_Exception() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.Exception(\"abc\");" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_ProcessImpl_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ProcessImpl();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_Process_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.Process();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
 }
