@@ -771,4 +771,58 @@ public class ScriptExecutorTest {
                 "var t = new java.lang.Process();" +
                 "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_Thread_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.Thread();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_ThreadGroup_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ThreadGroup();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void test_execute_js_with_java_invoke_constructor_ThreadLocal_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ThreadLocal();" +
+                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
 }
