@@ -34,7 +34,7 @@
     	var xid = jQuery("#xid");
     	// saveScript() nie zdarzy zapisac !!!
     	jQuery.ajax({
-    		url: myLocation+"script/execute/"+xid[0].value,
+    		url: myLocation+"api/scripts/execute/"+xid[0].value,
     		type:"POST",
     		success: function(){
               setUserMessage("<spring:message code="script.execute.success"/> ")

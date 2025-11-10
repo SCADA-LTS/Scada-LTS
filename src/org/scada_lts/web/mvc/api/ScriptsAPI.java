@@ -10,6 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
+import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
+import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
+import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
+import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -57,15 +62,15 @@ public class ScriptsAPI {
             if (user != null && user.isAdmin()) {
                 return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
     @PostMapping(value = "/execute/{xid}")
-    public ResponseEntity<List<ScriptVO<?>>> executeScript(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<List<ScriptVO<?>>> executeScript(@PathVariable("xid") String xid, HttpServletRequest request, HttpServletResponse response) {
         LOG.info("GET::/api/scripts/execute");
         try {
             User user = Common.getUser(request);
@@ -75,13 +80,15 @@ public class ScriptsAPI {
                 if (script != null) {
                     ScriptRT rt = script.createScriptRT();
                     rt.execute();
+                } else {
+                    throw new NotFoundException(xid, request.getRequestURI());
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
@@ -93,15 +100,17 @@ public class ScriptsAPI {
             if (user != null && user.isAdmin()) {
                 String error = validateScriptDelete(id);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    Map<String, String> errors = new HashMap<>();
+                    errors.put("errors", error);
+                    throw new BadRequestException(errors, request.getRequestURI());
                 }
                 scriptService.deleteScript(id);
                 return new ResponseEntity<>(String.valueOf(id), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
@@ -116,10 +125,10 @@ public class ScriptsAPI {
                 return new ResponseEntity<>( response, HttpStatus.OK);
 
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
@@ -133,26 +142,26 @@ public class ScriptsAPI {
                 Map<String, Object> response = new HashMap<>();
                 if (!error.isEmpty()) {
                     response.put("errors", error);
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    throw new BadRequestException(request.getRequestURI(), response);
                 }
                 if (isScriptPresent(jsonBodyRequest.getXid(), scriptService)) {
                     response.put("errors", "This XID is already in use");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                    throw new BadRequestException(request.getRequestURI(), response);
                 }
                 String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService);
                 if (!pointsError.isEmpty()) {
                     response.put("errors", pointsError);
-                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                    throw new NotFoundException(response, request.getRequestURI());
                 }
                 ContextualizedScriptVO vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
                 scriptService.saveScript(vo);
                 response.put("scriptId", vo.getId());
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
@@ -170,10 +179,10 @@ public class ScriptsAPI {
                 }
                 return findAndUpdateScript(jsonBodyRequest);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 
@@ -184,10 +193,10 @@ public class ScriptsAPI {
             if(user != null && user.isAdmin()) {
                 return new ResponseEntity<>(scriptService.generateUniqueXid(), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException(request.getRequestURI());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e, request.getRequestURI());
         }
     }
 

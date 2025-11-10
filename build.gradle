@@ -193,7 +193,7 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueTimeTest"
         includeTestsMatching "org.scada_lts.dao.PointValueDAOTest"
         includeTestsMatching "com.serotonin.mango.view.component.ViewComponentTestsSuite"
-        includeTestsMatching "com.serotonin.mango.rt.dataSource.meta.ScriptExecutorTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.meta.ScriptExecutorTestsSuite"
         includeTestsMatching "com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
         includeTestsMatching "org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
         includeTestsMatching "com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
