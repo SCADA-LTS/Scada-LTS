@@ -257,6 +257,8 @@
     <convert converter="xssBean" match="com.serotonin.mango.util.ExportCodes"/>
     <convert converter="xssBean" match="com.serotonin.mango.util.ExportCodes.Element"/>
     <convert converter="enum" match="com.serotonin.mango.vo.publish.PublisherVO$Type"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.dataSource.http.HttpReceiverPointLocatorVO"/>
+    <convert converter="xssBean" match="com.serotonin.mango.vo.dataSource.sql.SqlPointLocatorVO"/>
 
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>

@@ -182,9 +182,9 @@
   }
   
   function editPointCBImpl(locator) {
-      $set("parameterName", locator.parameterName);
+      $set("parameterName", unescapeHtml(locator.parameterName));
       $set("dataTypeId", locator.dataTypeId);
-      $set("binary0Value", locator.binary0Value);
+      $set("binary0Value", unescapeHtml(locator.binary0Value));
       changeDataTypeId();
   }
   
