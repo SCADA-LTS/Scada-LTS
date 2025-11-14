@@ -18,12 +18,8 @@
 						<v-row>
 							<v-col class="d-flex justify-start align-center">
 								<div id="top-description-container" class="text-align-left">
-									<span id="top-description-prefix" class="custom-text">
-										{{ topDescriptionPrefix }}
-									</span>
-									<span id="top-description" class="custom-text">
-										{{ topDescription }}
-									</span>
+									<span id="top-description-prefix" class="custom-text" v-text="unescapeVueHtml(topDescriptionPrefix)"></span>
+									<span id="top-description" class="custom-text" v-text="unescapeVueHtml(topDescription)"></span>
 								</div>
 							</v-col>
 						</v-row>
@@ -89,7 +85,7 @@
 import NavigationBar from '../layout/NavigationBar.vue';
 import internetMixin from '@/utils/connection-status-utils';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
-import {unescapeHtml} from "@/utils/common";
+import {unescapeHtml, unescapeVueHtml} from "@/utils/common";
 
 export default {
 	name: 'app',
@@ -179,6 +175,7 @@ export default {
 	},
 
 	methods: {
+		unescapeVueHtml,
 
 		fetchCustomCss() {
 			let customCss = this.$store.state.systemSettings.customCss;

@@ -182,18 +182,22 @@
 						</v-col>
 					</v-row>
 					<v-col cols="12">
-						<v-text-field
+						<EscapedTextarea
 							v-model="systemInfoSettings.topDescriptionPrefix"
 							:label="$t('systemsettings.top.description.prefix')"
+							rows="1"
+							auto-grow
 							@focusout="saveSystemInfoSettings()"
-						></v-text-field>
+						></EscapedTextarea>
 					</v-col>
 					<v-col cols="12">
-						<v-text-field
+						<EscapedTextarea
 							v-model="systemInfoSettings.topDescription"
 							:label="$t('systemsettings.top.description')"
+							rows="1"
+							auto-grow
 							@focusout="saveSystemInfoSettings()"
-						></v-text-field>
+						></EscapedTextarea>
 					</v-col>
 
 					<data-base-info-component></data-base-info-component>
@@ -292,11 +296,13 @@ import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
 import AmChartSettingsComponent from './AmChartSettingsComponent';
 import DataBaseInfoComponent from './DataBaseInfoComponent';
+import EscapedTextarea from '@c/common/EscapedTextarea.vue';
 
 export default {
 	el: '#systemsettings',
 	name: 'systemsettings',
 	components: {
+		EscapedTextarea,
 		IsAlive,
 		AuditEventTypesComponent,
 		SystemEventTypesComponent,

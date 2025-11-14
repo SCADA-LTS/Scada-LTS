@@ -129,12 +129,12 @@
 									></v-text-field>
 								</v-col>
 							</v-row>
-							<v-textarea :rules="[ruleNotNull]"
+							<EscapedTextarea :rules="[ruleNotNull]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="scriptForm.script"
 								ref="scriptBodyTextarea"
-							></v-textarea>
+							></EscapedTextarea>
 						</v-form>
 					</v-card-text>
 					<v-card-actions>
@@ -192,10 +192,12 @@
  * @author sselvaggi
  */
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import EscapedTextarea from '@c/common/EscapedTextarea.vue';
+import { unescapeVueHtml } from '@/utils/common';
 
 export default {
 	name: 'scriptList',
-	components: { ConfirmationDialog },
+	components: { EscapedTextarea, ConfirmationDialog },
 	async mounted() {
 		this.fetchScriptList();
 		this.datapoints = await this.$store.dispatch('getAllDatapoints');
@@ -411,8 +413,13 @@ export default {
 
 		async saveScript(closeOnSaveConfirmation = true) {
 			if (this.$refs.editForm.validate()) {
+				const payload = {
+					...this.scriptForm,
+					script: unescapeVueHtml(this.scriptForm.script || ''),
+				};
+
 				let method = this.selectedScriptId != -1 ? 'updateScript' : 'createScript';
-				await this.$store.dispatch(method, this.scriptForm);
+				await this.$store.dispatch(method, payload);
 				this.fetchScriptList();
 				this.$store.dispatch('showSuccessNotification', this.$t('scriptList.scriptSaved'));
 				if (closeOnSaveConfirmation) this.dialog = false

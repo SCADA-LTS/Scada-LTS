@@ -316,7 +316,7 @@
 									</table>
 								</v-col>
 							</v-row>
-							<v-textarea :rules="[ruleNotNull, ruleValidScript]"
+							<EscapedTextarea :rules="[ruleNotNull, ruleValidScript]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="datapoint.pointLocator.script"
@@ -325,7 +325,7 @@
 								ref="scriptBodyTextarea"
 								required
 								error-count="0"
-							></v-textarea>
+							></EscapedTextarea>
 							<v-col>
 								<v-btn block color="primary" @click="validateScript"
 									>{{ $t('script.runScript') }}
@@ -384,8 +384,10 @@
 <script>
 import DataPointCreation from '../DataPointCreation';
 import { DataTypes, DataChangeTypes } from '@/store/dataSource/constants';
+import EscapedTextarea from '@c/common/EscapedTextarea.vue';
 export default {
 	components: {
+		EscapedTextarea,
 		DataPointCreation,
 	},
 	async mounted() {

@@ -63,6 +63,25 @@ export function unescapeHtml(value) {
    return div.textContent || div.innerText;
 }
 
+export function unescapeVueHtml(str) {
+  let s = String(str);
+
+  for (let i = 0; i < 3; i++) {
+    const prev = s;
+    s = s
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&#10;/g, '\n')
+      .replace(/&#13;/g, '\r')
+      .replace(/&amp;/g, '&');
+
+    if (s === prev) break;
+  }
+  return s;
+}
+
 export function escapeHtml(value) {
    let div = document.createElement("div");
    div.textContent = value;
