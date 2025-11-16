@@ -63,7 +63,56 @@
   
   function scanButtons(scanning) {
       setDisabled("scanBtn", scanning);
+      setDisabled("scanDetailsBtn", scanning);
       setDisabled("scanCancelBtn", !scanning);
+  }
+
+  function scanDetails() {
+      $set("scanMessage", "<spring:message code="dsEdit.modbus.startScan"/>");
+      dwr.util.removeAllOptions("scanNodes");
+      hide("scanDetails");
+      scanButtons(true);
+      scanDetailsImpl();
+  }
+
+  function scanDetailsCB(msg) {
+      if (msg)
+          alert(msg);
+      else
+          setTimeout(scanDetailsUpdate, 1000);
+  }
+
+  function scanDetailsUpdate() {
+      DataSourceEditDwr.modbusDeviceIdentificationScanUpdate(scanDetailsUpdateCB);
+  }
+
+  function scanDetailsUpdateCB(result) {
+      if (result) {
+          $set("scanMessage", result.message);
+
+          dwr.util.removeAllOptions("scanNodes");
+          var simpleNodes = [];
+          for (var i = 0; i < result.devices.length; i++) {
+              simpleNodes.push(result.devices[i].slaveId);
+          }
+          dwr.util.addOptions("scanNodes", simpleNodes);
+
+          if (result.devices.length > 0) {
+              show("scanDetails");
+              dwr.util.removeAllRows("scanDetailsContent");
+              dwr.util.addRows("scanDetailsContent", result.devices, [
+                  function(data) { return data.slaveId; },
+                  function(data) { return data.vendorName ? data.vendorName : ""; },
+                  function(data) { return data.productCode ? data.productCode : ""; },
+                  function(data) { return data.majorMinorRevision ? data.majorMinorRevision : ""; }
+              ]);
+          }
+
+          if (!result.finished)
+              scanDetailsCB();
+          else
+              scanButtons(false);
+      }
   }
 
   function validateLocatorTest(locator){
@@ -447,6 +496,7 @@
         <tr>
           <td colspan="2" align="center">
             <input id="scanBtn" type="button" value="<spring:message code="dsEdit.modbus.scanForNodes"/>" onclick="scan();"/>
+            <input id="scanDetailsBtn" type="button" value="<spring:message code="dsEdit.modbus.scanForDetails"/>" onclick="scanDetails();"/>
             <input id="scanCancelBtn" type="button" value="<spring:message code="common.cancel"/>" onclick="scanCancel();"/>
           </td>
         </tr>
@@ -457,6 +507,20 @@
           <td class="formLabel"><spring:message code="dsEdit.modbus.nodesFound"/></td>
           <td class="formField"><select id="scanNodes" size="8"></select></td>
         </tr>
+
+        <tbody id="scanDetails" style="display:none;">
+          <tr><td colspan="2">
+            <table cellspacing="1" cellpadding="0">
+              <tr class="rowHeader">
+                <td><spring:message code="dsEdit.modbus.slaveId"/></td>
+                <td><spring:message code="dsEdit.modbus.vendorName"/></td>
+                <td><spring:message code="dsEdit.modbus.productCode"/></td>
+                <td><spring:message code="dsEdit.modbus.revision"/></td>
+              </tr>
+              <tbody id="scanDetailsContent"></tbody>
+            </table>
+          </td></tr>
+        </tbody>
       </table>
     </div>
     

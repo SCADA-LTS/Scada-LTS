@@ -47,6 +47,11 @@
               $get("port"), $get("encapsulated"), scanCB);
   }
   
+  function scanDetailsImpl() {
+      DataSourceEditDwr.modbusIpDeviceIdentificationScan($get("timeout"), $get("retries"), $get("transportType"), $get("host"), $get("port"),
+              $get("encapsulated"), scanDetailsCB);
+  }
+
   function locatorTestImpl(locator) {
       DataSourceEditDwr.testModbusIpLocator($get("timeout"), $get("retries"), $get("transportType"), $get("host"), 
               $get("port"), $get("encapsulated"), locator, locatorTestCB);
