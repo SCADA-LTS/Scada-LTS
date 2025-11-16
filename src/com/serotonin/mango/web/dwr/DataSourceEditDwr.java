@@ -186,6 +186,7 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.dwr.beans.ModbusDeviceIdentificationListener;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.RegisterRange;
@@ -494,6 +495,20 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return result;
     }
 
+    public Map<String, Object> modbusDeviceIdentificationScanUpdate() {
+        Map<String, Object> result = new HashMap<>();
+        ModbusDeviceIdentificationListener scan = Common.getUser().getTestingUtility(
+                ModbusDeviceIdentificationListener.class);
+        if (scan == null)
+            return null;
+
+        result.put("devices", scan.getDevicesFound());
+        result.put("message", scan.getMessage());
+        result.put("finished", scan.isFinished());
+
+        return result;
+    }
+
     //
     public DwrResponseI18n saveModbusPointLocator(int id, String xid,
                                                   String name, ModbusPointLocatorVO locator) {
@@ -647,6 +662,33 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             return getMessage("dsEdit.modbus.scanError");
         }
         ModbusNodeScanListener scan = new ModbusNodeScanListener(
+                getResourceBundle(), modbusMaster, true);
+        Common.getUser().setTestingUtility(scan);
+        return null;
+    }
+
+    public String modbusIpDeviceIdentificationScan(int timeout, int retries, String transport,
+                               String host, int port, boolean encapsulated) {
+        ModbusMaster modbusMaster = createModbusIpMaster(timeout, retries,
+                transport, host, port, encapsulated);
+        ModbusDeviceIdentificationListener scan = new ModbusDeviceIdentificationListener(
+                getResourceBundle(), modbusMaster, false);
+        Common.getUser().setTestingUtility(scan);
+        return null;
+    }
+
+    public String modbusSerialDeviceIdentificationScan(int timeout, int retries, String commPortId,
+                                   int baudRate, int flowControlIn, int flowControlOut, int dataBits,
+                                   int stopBits, int parity, String encoding, int concurrency) {
+        ModbusMaster modbusMaster;
+        try {
+            modbusMaster = createModbusSerialMaster(timeout, retries,
+                    commPortId, baudRate, flowControlIn, flowControlOut,
+                    dataBits, stopBits, parity, encoding, concurrency);
+        } catch (Exception e) {
+            return getMessage("dsEdit.modbus.scanError");
+        }
+        ModbusDeviceIdentificationListener scan = new ModbusDeviceIdentificationListener(
                 getResourceBundle(), modbusMaster, true);
         Common.getUser().setTestingUtility(scan);
         return null;

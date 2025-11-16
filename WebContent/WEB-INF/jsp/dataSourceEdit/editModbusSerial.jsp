@@ -26,6 +26,12 @@
               $get("flowControlIn"), $get("flowControlOut"), $get("dataBits"), $get("stopBits"), $get("parity"), 
               $get("encoding"), $get("concurrency"), scanCB);
   }
+
+  function scanDetailsImpl() {
+      DataSourceEditDwr.modbusSerialDeviceIdentificationScan($get("timeout"), $get("retries"), $get("commPortId"), $get("baudRate"),
+              $get("flowControlIn"), $get("flowControlOut"), $get("dataBits"), $get("stopBits"), $get("parity"),
+              $get("encoding"), $get("concurrency"), scanDetailsCB);
+  }
   
   function locatorTestImpl(locator) {
       DataSourceEditDwr.testModbusSerialLocator($get("timeout"), $get("retries"), $get("commPortId"), $get("baudRate"),
