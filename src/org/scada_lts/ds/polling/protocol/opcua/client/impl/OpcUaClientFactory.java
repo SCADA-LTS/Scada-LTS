@@ -9,6 +9,7 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.security.DefaultClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType;
@@ -38,7 +39,7 @@ public final class OpcUaClientFactory {
     public static OpcUaClient createClient(OpcUaDataSourceVO dataSourceVO) throws Exception {
         OpcUaClient client;
         if(dataSourceVO.getMessageSecurity() != OpcUaMessageSecurityType.NONE) {
-            OpcUaTrustListManager trustListManager = ApplicationBeans.getBean("opcUaTrustListManager", OpcUaTrustListManager.class);
+            TrustListManager trustListManager = ApplicationBeans.getBean("opcUaTrustListManager", TrustListManager.class);
             client = createClientSecured(dataSourceVO, trustListManager);
         } else {
             client = createClientUnsecured(dataSourceVO);
@@ -53,7 +54,7 @@ public final class OpcUaClientFactory {
         return OpcUaClient.create(config);
     }
 
-    private static OpcUaClient createClientSecured(OpcUaDataSourceVO dataSourceVO, OpcUaTrustListManager trustListManager) throws Exception {
+    private static OpcUaClient createClientSecured(OpcUaDataSourceVO dataSourceVO, TrustListManager trustListManager) throws Exception {
         EndpointDescription applicationEndpoint = getEndpointDescription(dataSourceVO);
         IdentityProvider identityProvider = createIdentityProvider(dataSourceVO);
         OpcUaClientConfig config = createConfigSecured(dataSourceVO, applicationEndpoint, identityProvider, trustListManager);
@@ -110,7 +111,7 @@ public final class OpcUaClientFactory {
     private static OpcUaClientConfig createConfigSecured(OpcUaDataSourceVO dataSourceVO,
                                                          EndpointDescription endpoint,
                                                          IdentityProvider identityProvider,
-                                                         OpcUaTrustListManager trustListManager) throws Exception {
+                                                         TrustListManager trustListManager) throws Exception {
         KeyStoreLoader keyStore;
         try {
             File file = toSecurePath(Path.of(dataSourceVO.getKeyStoreFile())).orElseThrow(() -> new IllegalArgumentException("The path is invalid."));
