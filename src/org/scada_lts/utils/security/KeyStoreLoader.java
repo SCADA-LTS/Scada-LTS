@@ -26,7 +26,8 @@ public class KeyStoreLoader {
     private X509Certificate clientCertificate;
     private KeyPair clientKeyPair;
 
-    public KeyStoreLoader(String commonName, String keyStoreFile, KeyStoreType keyStoreType, String keyStorePassword, String host) throws Exception {
+    public KeyStoreLoader(String commonName, String keyStoreFile, KeyStoreType keyStoreType, String keyStorePassword,
+                          String host, String applicationUri) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType.getCode());
         char[] passwordChars = keyStorePassword.toCharArray();
 
@@ -43,11 +44,12 @@ public class KeyStoreLoader {
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
                     .setCommonName(commonName)
-                    .setOrganization("digitalpetri")
+                    .setOrganization("Scada-LTS")
                     .setOrganizationalUnit("dev")
-                    .setLocalityName("Folsom")
-                    .setStateName("CA")
-                    .setCountryCode("US");
+                    .setLocalityName("Krakow")
+                    .setStateName("Malopolska")
+                    .setCountryCode("PL")
+                    .setApplicationUri(applicationUri);
 
             if (IP_ADDR_PATTERN.matcher(host).matches()) {
                 builder.addIpAddress(host);

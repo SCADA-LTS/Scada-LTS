@@ -115,7 +115,7 @@ public final class OpcUaClientFactory {
         try {
             File file = toSecurePath(Path.of(dataSourceVO.getKeyStoreFile())).orElseThrow(() -> new IllegalArgumentException("The path is invalid."));
             keyStore = new KeyStoreLoader("Scada-LTS [OPC UA]", file.getAbsolutePath(), dataSourceVO.getKeyStoreType(),
-                    dataSourceVO.getKeyStorePassword(), dataSourceVO.getServerHost());
+                    dataSourceVO.getKeyStorePassword(), dataSourceVO.getServerHost(), endpoint.getServer().getApplicationUri());
         } catch (Exception ex) {
             throw new Exception(LoggingUtils.exceptionInfo(ex), ex);
         }
