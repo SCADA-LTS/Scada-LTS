@@ -103,7 +103,7 @@
     }
 
     function updateScript(se) {
-        $("se"+ se.id +"Name").innerHTML = escapeHtml(se.name);
+        $("se"+ se.id +"Name").innerHTML = se.name;
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
 
