@@ -1,97 +1,95 @@
 package org.scada_lts.utils.security;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.security.*;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.regex.Pattern;
-
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.regex.Pattern;
+
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 
 public class KeyStoreLoader {
 
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
             "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private static final String CLIENT_ALIAS = "scada-lts";
-
     private final static Logger LOG = LoggerFactory.getLogger(KeyStoreLoader.class);
 
-    private X509Certificate[] clientCertificateChain;
-    private X509Certificate clientCertificate;
-    private KeyPair clientKeyPair;
+    private final KeyStore keyStore;
 
-    public KeyStoreLoader(String commonName, String keyStoreFile, KeyStoreType keyStoreType, String keyStorePassword,
-                          String host, String applicationUri) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType.getCode());
-        char[] passwordChars = keyStorePassword.toCharArray();
+    public KeyStoreLoader(KeyStoreData keyStoreData, CertificateData certificateData, String clientAlias) throws Exception {
+         keyStore = loadKeyStore(keyStoreData, certificateData, clientAlias);
+    }
 
-        File serverKeyStorePath = new File(keyStoreFile);
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
 
-        LOG.info("Loading KeyStore at {}", serverKeyStorePath);
+    private static KeyStore loadKeyStore(KeyStoreData keyStoreData, CertificateData certificateData, String clientAlias) throws Exception {
 
-        if (Files.notExists(serverKeyStorePath.toPath())) {
-            if(Files.notExists(serverKeyStorePath.getParentFile().toPath())) {
-                serverKeyStorePath.getParentFile().mkdirs();
-            }
-            serverKeyStorePath.createNewFile();
-            keyStore.load(null, passwordChars);
-            KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
-            SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
-                    .setCommonName(commonName)
-                    .setOrganization("Scada-LTS")
-                    .setOrganizationalUnit("dev")
-                    .setLocalityName("Krakow")
-                    .setStateName("Malopolska")
-                    .setCountryCode("PL")
-                    .setApplicationUri(applicationUri);
-
-            if (IP_ADDR_PATTERN.matcher(host).matches()) {
-                builder.addIpAddress(host);
-            } else {
-                builder.addDnsName(host);
-            }
-
-            X509Certificate certificate = builder.build();
-
-            keyStore.setKeyEntry(CLIENT_ALIAS, keyPair.getPrivate(), passwordChars, new X509Certificate[]{certificate});
-            try (OutputStream out = Files.newOutputStream(serverKeyStorePath.toPath())) {
-                keyStore.store(out, passwordChars);
-            }
+        char[] passwordChars = keyStoreData.getKeyStorePassword().toCharArray();
+        File keyStoreFileSecured = toSecurePath(Path.of(keyStoreData.getKeyStoreFile())).orElseThrow(() -> new IllegalArgumentException("The path is invalid."));
+        File keyStorePath = new File(keyStoreFileSecured.getPath());
+        LOG.info("Loading KeyStore at {}", keyStorePath);
+        KeyStore keyStore = KeyStore.getInstance(keyStoreData.getKeyStoreType().getCode());
+        if (Files.notExists(keyStorePath.toPath())) {
+            doCreateFileKeyStore(certificateData, keyStorePath, keyStore, passwordChars, clientAlias);
         } else {
-            try (InputStream in = Files.newInputStream(serverKeyStorePath.toPath())) {
-                keyStore.load(in, passwordChars);
-            }
+            doLoadFileKeyStore(keyStorePath, keyStore, passwordChars);
         }
 
-        Key clientPrivateKey = keyStore.getKey(CLIENT_ALIAS, passwordChars);
-        if (clientPrivateKey instanceof PrivateKey) {
-            clientCertificate = (X509Certificate) keyStore.getCertificate(CLIENT_ALIAS);
+        return keyStore;
+    }
 
-            clientCertificateChain = Arrays.stream(keyStore.getCertificateChain(CLIENT_ALIAS))
-                    .map(X509Certificate.class::cast)
-                    .toArray(X509Certificate[]::new);
-
-            PublicKey serverPublicKey = clientCertificate.getPublicKey();
-            clientKeyPair = new KeyPair(serverPublicKey, (PrivateKey) clientPrivateKey);
+    private static void doLoadFileKeyStore(File serverKeyStorePath, KeyStore keyStore, char[] passwordChars) throws IOException, NoSuchAlgorithmException, CertificateException {
+        try (InputStream in = Files.newInputStream(serverKeyStorePath.toPath())) {
+            keyStore.load(in, passwordChars);
         }
     }
 
-    public X509Certificate getClientCertificate() {
-        return clientCertificate;
-    }
+    private static void doCreateFileKeyStore(CertificateData certificateData,
+                                             File serverKeyStorePath, KeyStore keyStore,
+                                             char[] passwordChars, String clientAlies) throws Exception {
 
-    public X509Certificate[] getClientCertificateChain() {
-        return clientCertificateChain;
-    }
+        if(Files.notExists(serverKeyStorePath.getParentFile().toPath())) {
+            serverKeyStorePath.getParentFile().mkdirs();
+        }
+        serverKeyStorePath.createNewFile();
+        keyStore.load(null, passwordChars);
+        KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+        SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
+                .setCommonName(certificateData.getCommonName())
+                .setOrganization(certificateData.getOrganization())
+                .setOrganizationalUnit(certificateData.getOrganizationalUnit())
+                .setLocalityName(certificateData.getLocalityName())
+                .setStateName(certificateData.getStateName())
+                .setCountryCode(certificateData.getCountryCode())
+                .setApplicationUri(certificateData.getApplicationUri())
+                .setValidityPeriod(certificateData.getValidityPeriod());
 
-    public KeyPair getClientKeyPair() {
-        return clientKeyPair;
-    }
+        if (IP_ADDR_PATTERN.matcher(certificateData.getHost()).matches()) {
+            builder.addIpAddress(certificateData.getHost());
+        } else {
+            builder.addDnsName(certificateData.getHost());
+        }
 
+        X509Certificate certificate = builder.build();
+
+        keyStore.setKeyEntry(clientAlies, keyPair.getPrivate(), passwordChars, new X509Certificate[]{certificate});
+        try (OutputStream out = Files.newOutputStream(serverKeyStorePath.toPath())) {
+            keyStore.store(out, passwordChars);
+        }
+    }
 }
