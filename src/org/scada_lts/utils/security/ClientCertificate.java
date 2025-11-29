@@ -19,10 +19,10 @@ public class ClientCertificate {
             certificateChain = getClientCertificateChain(keyStore, clientAlias);
             PublicKey serverPublicKey = certificate.getPublicKey();
             keyPair = crateKeyPairClient(serverPublicKey, (PrivateKey) clientPrivateKey);
-        } else if (clientPrivateKey == null){
-            throw new IllegalStateException("Keystore is null!");
+        } else if (clientPrivateKey == null) {
+            throw new IllegalStateException("There is no keystore for alias: " + clientAlias);
         } else {
-            throw new IllegalStateException("Keystore is invalid!");
+            throw new IllegalStateException("Keystore is invalid for alias: " + clientAlias + ", key: " + clientPrivateKey.getClass().getName());
         }
     }
 
