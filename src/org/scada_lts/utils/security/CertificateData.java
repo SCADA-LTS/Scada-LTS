@@ -20,4 +20,10 @@ public interface CertificateData {
         return new CertificateDataImpl(applicationUri, commonName, organization, organizationalUnit,
                 localityName, stateName, countryCode, host, validityPeriod);
     }
+
+    static CertificateData scadaLts(String applicationUri, String host, Period validityPeriod) {
+        return new CertificateDataImpl(applicationUri, "Scada-LTS [OPC UA]",
+                "Scada-LTS", "Scada-LTS team", "Krakow",
+                "Malopolska", "PL", host, validityPeriod);
+    }
 }

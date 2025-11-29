@@ -119,10 +119,11 @@ public final class OpcUaClientFactory {
                 new DefaultClientCertificateValidator(trustListManager);
 
         String applicationUri = endpoint.getServer().getApplicationUri();
+        String host = dataSourceVO.getServerHost();
+        Period certificateValidityPeriod = Period.ofYears(3);
 
-        CertificateData certificateData = CertificateData.newInstance(applicationUri, "Scada-LTS [OPC UA]",
-                "Scada-LTS", "Scada-LTS team", "Krakow",
-                "Malopolska", "PL", dataSourceVO.getServerHost(), Period.ofDays(0));
+        CertificateData certificateData = CertificateData.scadaLts(applicationUri, host, certificateValidityPeriod);
+
         ClientCertificate clientCertificate = ClientCertificate.newInstance(dataSourceVO, certificateData, "scada-lts");
 
         return OpcUaClientConfig.builder()
