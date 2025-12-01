@@ -235,8 +235,8 @@
 			        	    showDwrMessages(response.messages);
 					        else {
 						        staticEditor.close();
-						        tempContent = "<a> " + escapeHtml($get("linkText")) +"</a>";
-						        updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
+		                tempContent = "<a> " + escapeHtml($get("linkText")) +"</a>";
+		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
 					        }
 	              }
               );
@@ -320,7 +320,7 @@
             dwr.util.removeAllOptions("scriptsList");
             var sel = $("scriptsList");
             for (var i=0; i<scripts.length; i++) {
-                sel.options[i] = new Option(unescapeHtml(scripts[i].name), scripts[i].xid);
+                sel.options[i] = new Option(scripts[i].name, scripts[i].xid);
             }
         };
 

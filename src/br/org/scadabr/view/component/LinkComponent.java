@@ -44,18 +44,19 @@ public class LinkComponent extends HtmlComponent {
 	}
 
 	private void createLink() {
-		setContent(createLinkContent());
+		String content = createLinkContent();
+		setContent(content);
 	}
 
 	public String createLinkContent() {
-		String safeHref = escapeHtml(link == null ? "" : link);
-		String safeText = escapeHtml(text == null ? "" : text);
+		String escapedHref = link == null ? "" : escapeHtml(link);
+		String escapedText = text == null ? "" : escapeHtml(text);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href='")
-				.append(safeHref)
+				.append(escapedHref)
 				.append("'>")
-				.append(safeText)
+				.append(escapedText)
 				.append("</a>");
 		return sb.toString();
 	}
