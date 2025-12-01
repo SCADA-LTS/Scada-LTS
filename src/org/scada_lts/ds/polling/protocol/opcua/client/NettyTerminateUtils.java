@@ -1,4 +1,4 @@
-package org.scada_lts.ds.polling.protocol.opcua.client.impl;
+package org.scada_lts.ds.polling.protocol.opcua.client;
 
 public class NettyTerminateUtils {
 
