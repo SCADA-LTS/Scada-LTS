@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
@@ -44,7 +41,7 @@ public class AuthenticationAPI {
 		this.authenticationManager = authenticationManager;
 	}
 	
-	@RequestMapping(value = "/api/auth/{username}/{password}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/auth/{username}/{password}", method = RequestMethod.POST)
 	public ResponseEntity<String> setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password,
 													HttpServletRequest request, HttpServletResponse response) {
 		LOG.info("/api/auth/{username}/{password} username:" + username);
