@@ -103,7 +103,7 @@
     }
 
     function updateScript(se) {
-        $("se"+ se.id +"Name").innerHTML = escapeHtml(se.name);
+        $("se"+ se.id +"Name").innerHTML = se.name;
         //setScheduledEventImg(se.disabled, $("se"+ se.id +"Img"));
     }
 
@@ -118,9 +118,9 @@
                  show($("scriptDetails"));
 
             editingScript = s;
-            setValueInNode('xid', s.xid);
-            setValueInNode('name', s.name);
-            setValueInNode('script', s.script);
+            setValueInNode('xid', unescapeHtml(s.xid));
+            setValueInNode('name', unescapeHtml(s.name));
+            setValueInNode('script', unescapeHtml(s.script));
 
             let handlePointsContext = new ScriptPointsContext(s.pointsOnContext, pointsArray);
             setPointsContext(handlePointsContext);

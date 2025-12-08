@@ -96,7 +96,7 @@
             editingCompoundEvent = ced;
             
             $set("xid", ced.xid);
-            $set("name", ced.name);
+            $set("name", unescapeHtml(ced.name));
             $set("alarmLevel", ced.alarmLevel);
             $set("rtn", ced.returnToNormal);
             $set("condition", ced.condition);

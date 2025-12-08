@@ -49,7 +49,7 @@
       </td>
     </tr>
       
-    <spring:bind path="form.name">
+    <spring:bind path="form.name" htmlEscape="false">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.name"/></td>
         <div>
@@ -59,7 +59,7 @@
       </tr>
     </spring:bind>
 
-    <spring:bind path="form.description">
+    <spring:bind path="form.description" htmlEscape="false">
       <tr>
         <td class="formLabelRequired"><spring:message code="pointEdit.props.description"/></td>
         <td class="formField"><input type="text" class="formLong" name="description" value="<c:out value="${status.value}"/>"/></td>

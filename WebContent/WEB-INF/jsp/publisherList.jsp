@@ -34,9 +34,9 @@
         dwr.util.removeAllRows("publisherList");
         dwr.util.addRows("publisherList", publishers,
             [
-                function(p) { return "<b>"+ p.name +"</b>"; },
-                function(p) { return p.typeMessage; },
-                function(p) { return p.configDescription; },
+                function(p) { return "<b>" + p.name + "</b>"; },
+                function(p) { return "<span>" + unescapeHtml(p.typeMessage) + "</span>"; },
+                function(p) { return "<span>" + unescapeHtml(p.configDescription) + "</span>"; },
                 function(p) {
                     if (p.enabled)
                         return '<img src="images/transmit_go.png" title="<spring:message code="common.enabledToggle"/>" '+

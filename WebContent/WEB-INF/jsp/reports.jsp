@@ -142,7 +142,7 @@
             hide("noReportInstances");
             dwr.util.addRows("reportInstancesList", instanceArray,
                 [
-                    function(ri) { return "<span>" + escapeHtml(ri.name) + "</span>"; },
+                    function(ri) { return ri.name; },
                     function(ri) { return ri.prettyRunStartTime; },
                     function(ri) { return ri.prettyRunDuration; },
                     function(ri) { return ri.prettyReportStartTime; },
@@ -158,15 +158,15 @@
                             return "";
                             
                         var result = "<img src='images/bullet_down.png' class='ptr' title='<spring:message code="reports.export"/>' "+
-                                "onclick='exportData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
+                                "onclick='exportData(\""+ ri.name +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeEvents != <c:out value="<%= ReportVO.EVENTS_NONE %>"/>)
                             result += "<img src='images/flag_white.png' class='ptr' title='<spring:message code="reports.eventExport"/>' "+
-                                    "onclick='exportEventData(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
+                                    "onclick='exportEventData(\""+ ri.name +"\", "+ ri.id +")'/>";
                         
                         if (ri.includeUserComments)
                             result += "<img src='images/comment.png' class='ptr' title='<spring:message code="reports.userCommentExport"/>' "+
-                                    "onclick='exportUserComments(\""+ escapeHtml(ri.name) +"\", "+ ri.id +")'/>";
+                                    "onclick='exportUserComments(\""+ ri.name +"\", "+ ri.id +")'/>";
                         
                         result += "<img src='images/icon_chart.png' class='ptr' title='<spring:message code="reports.charts"/>' "+
                                 "onclick='viewChart("+ ri.id +")'/>"+
@@ -204,15 +204,15 @@
     }
     
     function exportData(name, instanceId) {
-        window.location = "export/"+ name +".csv?instanceId="+ instanceId;
+        window.location = "export/"+ encodeURIComponent(name) +".csv?instanceId="+ instanceId;
     }
     
     function exportEventData(name, instanceId) {
-        window.location = "eventExport/"+ name +"Events.csv?instanceId="+ instanceId;
+        window.location = "eventExport/"+ encodeURIComponent(name) +"Events.csv?instanceId="+ instanceId;
     }
     
     function exportUserComments(name, instanceId) {
-        window.location = "userCommentExport/"+ name +"Comments.csv?instanceId="+ instanceId;
+        window.location = "userCommentExport/"+ encodeURIComponent(name) +"Comments.csv?instanceId="+ instanceId;
     }
     
     function viewChart(instanceId) {
@@ -336,8 +336,7 @@
     }
     
     function updateReport(id, name) {
-        let escapedName = escapeHtml(name);
-        $("r"+ id +"Name").innerHTML = escapedName;
+        $("r"+ id +"Name").innerHTML = name;
     }
     
     function clearMessages() {

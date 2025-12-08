@@ -53,7 +53,10 @@
             oncedays[oncedays.length] = new OptionData(i, i);
         
         MaintenanceEventsDwr.getMaintenanceEvents(function(response) {
-            dwr.util.addOptions("dataSourceId", response.data.dataSources, "key", "value");
+        	var ds = response.data.dataSources.map(function(o) {
+                return { key: o.key, value: unescapeHtml(o.value) };
+        	});
+        	dwr.util.addOptions("dataSourceId", ds, "key", "value");
         	
         	var events = response.data.events;
             for (var i=0; i<events.length; i++) {
@@ -77,9 +80,9 @@
             
             updateToggle(response.data.activated);
             
-            $set("xid", me.xid);
+            $set("xid", unescapeHtml(me.xid));
             $set("dataSourceId", me.dataSourceId);
-            $set("alias", me.alias);
+            $set("alias", unescapeHtml(me.alias));
             $set("alarmLevel", me.alarmLevel);
             updateAlarmLevelImage();
             $set("scheduleType", me.scheduleType);
@@ -92,14 +95,14 @@
             $set("activeHour", me.activeHour);
             $set("activeMinute", me.activeMinute);
             $set("activeSecond", me.activeSecond);
-            $set("activeCron", me.activeCron);
+            $set("activeCron", unescapeHtml(me.activeCron));
             $set("inactiveYear", me.inactiveYear);
             $set("inactiveMonth", me.inactiveMonth);
             $set("inactiveDay", me.inactiveDay);
             $set("inactiveHour", me.inactiveHour);
             $set("inactiveMinute", me.inactiveMinute);
             $set("inactiveSecond", me.inactiveSecond);
-            $set("inactiveCron", me.inactiveCron);
+            $set("inactiveCron", unescapeHtml(me.inactiveCron));
             
             setUserMessage();
         });

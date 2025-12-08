@@ -148,7 +148,7 @@
     function showUserProfileCB(userProfile) {
         //show($("deleteButton"));
         show($("userProfileDetails"));
-        $set("userProfileName", userProfile.name);
+        $set("userProfileName", unescapeHtml(userProfile.name));
 
         if (dataSources != null){
 	        var i, j, dscb, dp;

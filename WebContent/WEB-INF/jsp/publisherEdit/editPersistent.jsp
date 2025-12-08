@@ -28,7 +28,7 @@
           var list = response.data.allPoints;
           for (var i=0; i<list.length; i++)
               allPoints[allPoints.length] = {
-                      id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
+                      id: list[i].id, name: unescapeHtml(list[i].extendedName), enabled: list[i].enabled, type: list[i].dataTypeMessage};
               
           list = response.data.publisher.points;
           for (i=0; i<list.length; i++)
@@ -76,7 +76,7 @@
           hide("selectedPointsEmpty");
           dwr.util.addRows("selectedPoints", selectedPoints,
               [
-                  function(data) { return data.pointName; },
+                  function(data) { return "<span>" + escapeHtml(data.pointName) + "</span>"; },
                   function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
                   function(data) { return data.pointType; },
                   function(data) { 

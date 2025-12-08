@@ -126,9 +126,9 @@
   }
   
   function editPointCBImpl(locator) {
-      $set("fieldName", locator.fieldName);
-      $set("timeOverrideName", locator.timeOverrideName);
-      $set("updateStatement", locator.updateStatement);
+      $set("fieldName", unescapeHtml(locator.fieldName));
+      $set("timeOverrideName", unescapeHtml(locator.timeOverrideName));
+      $set("updateStatement", unescapeHtml(locator.updateStatement));
       $set("dataTypeId", locator.dataTypeId);
   }
   
