@@ -71,7 +71,7 @@ public class AuthenticationAPI {
 		return new ResponseEntity<>(String.valueOf(ok),HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/api/auth/logout/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/auth/logout/{username}", method = RequestMethod.POST)
 	public ResponseEntity<String> setLogout(@PathVariable("username") String username, HttpServletRequest request) {
 		LOG.info("/api/auth/logout/{username} username:" + username);
 		User user = userService.getUser(username);
