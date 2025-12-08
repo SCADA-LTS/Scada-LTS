@@ -27,6 +27,10 @@
 					class="elevation-1"
 					@click:row="selectScript($event.id)"
 				>
+					<template v-slot:item.name="{ item }">
+						{{ decodeName(item.name) }}
+					</template>
+
 					<template v-slot:item.actions="{ item }">
 						<v-btn icon @click.stop="runScript(item.xid)">
 							<v-icon title="run">mdi-cog</v-icon>
@@ -81,7 +85,7 @@
 						<v-form ref="editForm">
 							<v-row>
 								<v-col cols="6">
-									<v-text-field :label="$t('common.name')" v-model="scriptForm.name" :rules="[ruleNotNull, ruleMaxLen40 ]"></v-text-field>
+									<EscapedTextarea :label="$t('common.name')" v-model="scriptForm.name" :rules="[ruleNotNull, ruleMaxLen40 ]"></EscapedTextarea>
 								</v-col>
 								<v-col cols="6">
 									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid" v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
@@ -132,6 +136,8 @@
 							<EscapedTextarea :rules="[ruleNotNull]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
+								:rows="8"
+								:autoGrow="true"
 								v-model="scriptForm.script"
 								ref="scriptBodyTextarea"
 							></EscapedTextarea>
@@ -442,6 +448,10 @@ export default {
 
 		onScriptDeleteConfirm(e) {
 			if(e) { this.deleteScript(this.operationQueue); }
+		},
+
+		decodeName(value) {
+			return unescapeVueHtml(value || '');
 		}
 	},
 };

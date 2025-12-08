@@ -2,6 +2,8 @@
 	<v-textarea
 		ref="inner"
 		:value="decoded"
+		:rows="rows"
+		:auto-grow="autoGrow"
 		v-bind="forwardAttrs"
 		v-on="listenersWithoutInput"
 		@input="onInput"
@@ -18,6 +20,8 @@ export default {
 	inheritAttrs: false,
 	props: {
 		value: { type: String, default: '' },
+		rows: { type: [Number, String], default: 1 },
+		autoGrow: { type: Boolean, default: false },
 	},
 	computed: {
 		decoded() {
