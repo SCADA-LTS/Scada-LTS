@@ -9,8 +9,8 @@ import org.scada_lts.ds.messaging.protocol.ProtocolVersion;
 public class ProtocolVersionConverter extends EnumConverter {
 
     @Override
-    public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
-        String value = LocalUtil.decode(iv.getValue());
+    public Object convertInbound(Class paramType, InboundVariable iv) throws MarshallException {
+        String value = LocalUtil.urlDecode(iv.getValue());
         try {
             return ProtocolVersion.protocolVersion(value);
         } catch (Exception var9) {

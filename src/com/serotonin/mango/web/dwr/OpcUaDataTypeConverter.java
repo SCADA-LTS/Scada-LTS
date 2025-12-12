@@ -9,8 +9,8 @@ import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
 public class OpcUaDataTypeConverter extends EnumConverter {
 
     @Override
-    public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
-        String value = LocalUtil.decode(iv.getValue());
+    public Object convertInbound(Class paramType, InboundVariable iv) throws MarshallException {
+        String value = LocalUtil.urlDecode(iv.getValue());
         try {
             return OpcUaDataType.valueByNameOf(value);
         } catch (Exception var9) {

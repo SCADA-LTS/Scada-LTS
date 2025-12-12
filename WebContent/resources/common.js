@@ -23,6 +23,25 @@ var mango = {};
 
 var lasTimeUpdate;
 
+// DWR 2 compatibility: global $() alias.
+(function () {
+    if (typeof window.$ === 'function') {
+        return;
+    }
+
+    if (window.dwr && dwr.util && typeof dwr.util.byId === 'function') {
+        window.$ = dwr.util.byId;
+        return;
+    }
+
+    window.$ = function (id) {
+        if (typeof id === 'string') {
+            return document.getElementById(id);
+        }
+        return id;
+    };
+})();
+
 //
 // String prototypes
 //
