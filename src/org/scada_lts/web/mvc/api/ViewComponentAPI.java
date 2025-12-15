@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/getAllComponentsFromView/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request) {
         LOG.info("/api/component/addComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<List<ViewComponentDTO>> result;
@@ -76,7 +77,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addHTMLComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addHTMLComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewHTMLComponentDTO viewHTMLComponentDTO) {
+    public ResponseEntity<String> addHTMLComponentToView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, @RequestBody @Valid ViewHTMLComponentDTO viewHTMLComponentDTO) {
         LOG.info("/api/component/addHTMLComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;

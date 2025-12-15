@@ -10,16 +10,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -34,7 +37,7 @@ import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
  *
  * @author Sergio Selvaggi <sselvaggi@softq.pl>
  */
-@Controller
+@RestController
 @RequestMapping(value = "/api/scripts")
 public class ScriptsAPI {
 
@@ -57,154 +60,157 @@ public class ScriptsAPI {
     @GetMapping(value = "/search")
     public ResponseEntity<List<ScriptVO<?>>> getScripts(HttpServletRequest request) {
         LOG.info("GET::/api/scripts/search");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+        if (user != null && user.isAdmin()) {
+            List<ScriptVO<?>> scripts;
+            try {
+                scripts = scriptService.getScripts();
+            } catch (Exception ex) {
+                throw new InternalServerErrorException(ex, request.getRequestURI());
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            return new ResponseEntity<>(scripts, HttpStatus.OK);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @PostMapping(value = "/execute/{xid}")
-    public ResponseEntity<List<ScriptVO<?>>> executeScript(@PathVariable("xid") String xid, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<ScriptVO<?>>> executeScript(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, HttpServletResponse response) {
         LOG.info("GET::/api/scripts/execute");
-        try {
-            User user = Common.getUser(request);
+        User user = Common.getUser(request);
 
-            if (user != null && user.isAdmin()) {
-                ScriptVO<?> script = scriptService.getScript(xid);
-                if (script != null) {
-                    ScriptRT rt = script.createScriptRT();
+        if (user != null && user.isAdmin()) {
+            ScriptVO<?> script = scriptService.getScript(xid);
+            if (script != null) {
+                ScriptRT rt = script.createScriptRT();
+                try {
                     rt.execute();
-                } else {
-                    throw new NotFoundException(xid, request.getRequestURI());
+                } catch (Exception ex) {
+                    throw new InternalServerErrorException(ex, request.getRequestURI());
                 }
-                return new ResponseEntity<>(HttpStatus.OK);
             } else {
-                throw new UnauthorizedException(request.getRequestURI());
+                throw new NotFoundException(xid, request.getRequestURI());
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteScript(@PathVariable Integer id, HttpServletRequest request) {
         LOG.info("DELETE::/api/scripts");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                String error = validateScriptDelete(id);
-                if (!error.isEmpty()) {
-                    Map<String, String> errors = new HashMap<>();
-                    errors.put("errors", error);
-                    throw new BadRequestException(errors, request.getRequestURI());
-                }
-                scriptService.deleteScript(id);
-                return new ResponseEntity<>(String.valueOf(id), HttpStatus.OK);
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+
+        if (user != null && user.isAdmin()) {
+            String error = validateScriptDelete(id);
+            if (!error.isEmpty()) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("errors", error);
+                throw new BadRequestException(errors, request.getRequestURI());
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            try {
+                scriptService.deleteScript(id);
+            } catch (Exception ex) {
+                throw new InternalServerErrorException(ex, request.getRequestURI());
+            }
+            return new ResponseEntity<>(String.valueOf(id), HttpStatus.OK);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @PostMapping(value = "/validateXid")
     public ResponseEntity<Map<String, String>> validateScriptXid(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("POST::/api/scripts/validateXid");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                Map<String, String> response = new HashMap<>();
-                response.put("xidRepeated", isScriptPresent(jsonBodyRequest.getXid(), scriptService)?"true":"false");
-                return new ResponseEntity<>( response, HttpStatus.OK);
-
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+        if (user != null && user.isAdmin()) {
+            Map<String, String> response = new HashMap<>();
+            boolean present;
+            try {
+                present = isScriptPresent(jsonBodyRequest.getXid(), scriptService);
+            } catch (Exception e) {
+                throw new InternalServerErrorException(e, request.getRequestURI());
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            response.put("xidRepeated", String.valueOf(present));
+            return new ResponseEntity<>( response, HttpStatus.OK);
+
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @PostMapping(value = "/save")
     public ResponseEntity<Map<String, Object>> saveScript(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("POST::/api/scripts/save");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                String error = ScriptsApiUtils.validateScriptBody(jsonBodyRequest);
-                Map<String, Object> response = new HashMap<>();
-                if (!error.isEmpty()) {
-                    response.put("errors", error);
-                    throw new BadRequestException(request.getRequestURI(), response);
-                }
-                if (isScriptPresent(jsonBodyRequest.getXid(), scriptService)) {
-                    response.put("errors", "This XID is already in use");
-                    throw new BadRequestException(request.getRequestURI(), response);
-                }
-                String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService);
-                if (!pointsError.isEmpty()) {
-                    response.put("errors", pointsError);
-                    throw new NotFoundException(response, request.getRequestURI());
-                }
-                ContextualizedScriptVO vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
-                scriptService.saveScript(vo);
-                response.put("scriptId", vo.getId());
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+        if (user != null && user.isAdmin()) {
+            String error = ScriptsApiUtils.validateScriptBody(jsonBodyRequest);
+            Map<String, Object> response = new HashMap<>();
+            if (!error.isEmpty()) {
+                response.put("errors", error);
+                throw new BadRequestException(request.getRequestURI(), response);
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            if (isScriptPresent(jsonBodyRequest.getXid(), scriptService)) {
+                response.put("errors", "This XID is already in use");
+                throw new BadRequestException(request.getRequestURI(), response);
+            }
+            String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService);
+            if (!pointsError.isEmpty()) {
+                response.put("errors", pointsError);
+                throw new NotFoundException(response, request.getRequestURI());
+            }
+            ContextualizedScriptVO vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
+            try {
+                scriptService.saveScript(vo);
+            } catch (Exception e) {
+                throw new InternalServerErrorException(e, request.getRequestURI());
+            }
+            response.put("scriptId", vo.getId());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @PutMapping(value = "/update")
     public ResponseEntity<Map<String, String>> updateScript(@RequestBody @Valid JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("PUT::/api/scripts/update");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                Map<String, String> response = new HashMap<>();
-                String error = validateScriptUpdate(jsonBodyRequest);
-                if (!error.isEmpty()) {
-                    response.put("errors", error);
-                    return ResponseEntity.badRequest().body(response);
-                }
-                return findAndUpdateScript(jsonBodyRequest);
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+        if (user != null && user.isAdmin()) {
+            Map<String, String> response = new HashMap<>();
+            String error = validateScriptUpdate(jsonBodyRequest);
+            if (!error.isEmpty()) {
+                response.put("errors", error);
+                return ResponseEntity.badRequest().body(response);
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            return findAndUpdateScript(jsonBodyRequest, request);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
     @GetMapping(value = "/generateXid")
     public ResponseEntity<String> getUniqueXid(HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
-                return new ResponseEntity<>(scriptService.generateUniqueXid(), HttpStatus.OK);
-            } else {
-                throw new UnauthorizedException(request.getRequestURI());
+        User user = Common.getUser(request);
+        if(user != null && user.isAdmin()) {
+            String xid;
+            try {
+                xid = scriptService.generateUniqueXid();
+            } catch (Exception e) {
+                throw new InternalServerErrorException(e, request.getRequestURI());
             }
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e, request.getRequestURI());
+            return new ResponseEntity<>(xid, HttpStatus.OK);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
         }
     }
 
-    private ResponseEntity<Map<String, String>> findAndUpdateScript(JsonScript body) {
+    private ResponseEntity<Map<String, String>> findAndUpdateScript(JsonScript body, HttpServletRequest request) {
         Map<String, String> errors = new HashMap<>();
         errors.put("errors", "Script not found");
         return getScript(body.getId(), scriptService).map(toUpdate -> updateScriptBody(toUpdate, body))
-                .orElse(new ResponseEntity<>(errors, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(request.getRequestURI(), errors));
     }
 
     private ResponseEntity<Map<String, String>> updateScriptBody(ContextualizedScriptVO toUpdate, JsonScript body) {

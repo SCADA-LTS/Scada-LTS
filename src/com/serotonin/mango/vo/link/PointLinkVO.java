@@ -38,6 +38,9 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.PointLinkService;
 import org.scada_lts.utils.XidUtils;
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * @author Matthew Lohbihler
@@ -56,10 +59,12 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
     }
 
     private int id = Common.NEW_ID;
+    @XssProtect
     private String xid;
     private int sourcePointId;
     private int targetPointId;
     @JsonRemoteProperty
+    @ScriptProtect
     private String script;
     private int event;
     @JsonRemoteProperty
@@ -141,6 +146,8 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
             response.addContextualMessage("targetPointId", "pointLinks.validate.targetRequired");
         if (sourcePointId == targetPointId)
             response.addContextualMessage("targetPointId", "pointLinks.validate.samePoint");
+        if(!ScriptValidatorUtils.validate(script))
+            response.addContextualMessage("script", "validate.invalidValue");
     }
 
     @Override

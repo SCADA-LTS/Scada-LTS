@@ -54,6 +54,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonRemoteEntity
 public class PointEventDetectorVO extends SimpleEventDetectorVO implements Cloneable, JsonSerializable,
@@ -112,8 +113,10 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     }
 
     private int id;
+    @XssProtect
     private String xid;
     @JsonRemoteProperty
+    @XssProtect
     private String alias;
     private DataPointVO dataPoint;
     private int detectorType;
@@ -124,6 +127,7 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
     private boolean binaryState;
     private int multistateState;
     private int changeCount = 2;
+    @XssProtect
     private String alphanumericState;
     private double weight;
 

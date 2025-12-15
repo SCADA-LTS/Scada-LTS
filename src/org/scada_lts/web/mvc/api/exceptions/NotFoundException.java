@@ -16,10 +16,19 @@ public class NotFoundException extends ScadaApiException {
     }
 
     public NotFoundException(Map<String, Object> detail, String instance) {
-        super(ScadaErrorMessage.builder(HttpStatus.BAD_REQUEST)
-                .type(API_EXCEPTIONS + BadRequestException.class.getSimpleName())
-                .title(HttpStatus.BAD_REQUEST.getReasonPhrase())
+        super(ScadaErrorMessage.builder(HttpStatus.NOT_FOUND)
+                .type(API_EXCEPTIONS + NotFoundException.class.getSimpleName())
+                .title(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .detailObj(detail)
+                .instance(instance)
+                .build());
+    }
+
+    public NotFoundException(String instance, Map<String, String> detail) {
+        super(ScadaErrorMessage.builder(HttpStatus.NOT_FOUND)
+                .type(API_EXCEPTIONS + NotFoundException.class.getSimpleName())
+                .title(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .detail(detail)
                 .instance(instance)
                 .build());
     }

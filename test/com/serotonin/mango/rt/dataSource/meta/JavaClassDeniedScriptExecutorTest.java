@@ -55,7 +55,7 @@ public class JavaClassDeniedScriptExecutorTest {
     }
 
     @Test(expected = ScriptException.class)
-    public void when_execute_js_with_java_invoke_constructor_ProcessBuilder_then_ScriptException() throws Exception {
+    public void when_execute_js_with_java_invoke_constructor_ProcessBuilder_for_linux_then_ScriptException() throws Exception {
 
         //given:
         ScriptExecutor scriptExecutor = new ScriptExecutor();
@@ -69,11 +69,29 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.ProcessBuilder(\"bash\",\"-c\",\"echo POC > /tmp/rce_should_not_be_possible\");" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
-    public void when_execute_js_with_java_invoke_method_ProcessBuilder_start_then_ScriptException() throws Exception {
+    public void when_execute_js_with_java_invoke_constructor_ProcessBuilder_for_linux_with_newline_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = new java.lang.ProcessBuilder(\"bash\",\"-c\",\"echo POC > /tmp/rce_should_not_be_possible\");\r\n" +
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_method_ProcessBuilder_start_for_linux_then_ScriptException() throws Exception {
 
         //given:
         ScriptExecutor scriptExecutor = new ScriptExecutor();
@@ -87,7 +105,61 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.ProcessBuilder(\"bash\",\"-c\",\"echo POC > /tmp/rce_should_not_be_possible\").start();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_constructor_ProcessBuilder_for_windows_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = java.lang.ProcessBuilder(\"cmd\",\"/c\",\"echo POC>%TEMP%\\rce_should_not_be_possible.txt\");" +
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_constructor_ProcessBuilder_for_windows_with_newline_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = java.lang.ProcessBuilder(\"cmd\",\"/c\",\"echo POC>%TEMP%\\rce_should_not_be_possible.txt\");\r\n" +
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_method_ProcessBuilder_start_for_windows_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = java.lang.ProcessBuilder(\"cmd\",\"/c\",\"echo POC>%TEMP%\\rce_should_not_be_possible.txt\").start();" +
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -105,7 +177,7 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.ClassLoader();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -123,7 +195,7 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.reflect.Field();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -141,7 +213,7 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.ProcessImpl();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -159,7 +231,7 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.Process();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -177,7 +249,7 @@ public class JavaClassDeniedScriptExecutorTest {
         //when:
         PointValueTime pointValueTime = scriptExecutor.execute("" +
                 "var t = new java.lang.Thread();" +
-                "return t", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+                "return t;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 
     @Test(expected = ScriptException.class)
@@ -308,5 +380,62 @@ public class JavaClassDeniedScriptExecutorTest {
                 "var t = java.lang.Runtime.getRuntime();" +
                 "t.exec(\"cmd dir\");" +
                 "return 0;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_method_Runtime_exec_for_linux_then_ScriptException() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = java.lang.Runtime.getRuntime();" +
+                "t.exec(\"bash ls\");" +
+                "return 0;", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_method_Runtime_gc_as_text_then_ok() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "var t = 'java.lang.Runtime.getRuntime()';" +
+                "var g = 't.gc()';" +
+                "return 0", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
+    }
+
+    @Test(expected = ScriptException.class)
+    public void when_execute_js_with_java_invoke_method_Runtime_gc_as_comment_then_ok() throws Exception {
+
+        //given:
+        ScriptExecutor scriptExecutor = new ScriptExecutor();
+        String userName = "user mock";
+
+        mockStatic(Common.class);
+        User user = new User();
+        user.setUsername(userName);
+        when(Common.getUser()).thenReturn(user);
+
+        //when:
+        PointValueTime pointValueTime = scriptExecutor.execute("" +
+                "//var t = java.lang.Runtime.getRuntime();" +
+                "//t.gc();" +
+                "return 0", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
     }
 }

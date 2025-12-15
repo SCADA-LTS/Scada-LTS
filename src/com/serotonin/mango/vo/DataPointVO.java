@@ -50,6 +50,7 @@ import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -148,13 +149,17 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     // Properties
     //
     private int id;
+    @XssProtect
     private String xid;
     @JsonRemoteProperty
+    @XssProtect
     private String name;
     @JsonRemoteProperty
+    @XssProtect
     private String description;
     private int dataSourceId;
     @JsonRemoteProperty
+    @XssProtect
     private String deviceName;
     @JsonRemoteProperty
     private boolean enabled;
@@ -187,6 +192,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private double discardHighLimit;
     private int engineeringUnits;
     @JsonRemoteProperty
+    @XssProtect
     private String chartColour;
     private int purgeStrategy;
     @JsonRemoteProperty
@@ -225,6 +231,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     // Convenience data from data source
     //
     private int dataSourceTypeId;
+    @XssProtect
     private String dataSourceName;
 
     //
@@ -232,6 +239,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     // Required for importing
     //
     @JsonRemoteProperty
+    @XssProtect
     private String dataSourceXid;
 
     //

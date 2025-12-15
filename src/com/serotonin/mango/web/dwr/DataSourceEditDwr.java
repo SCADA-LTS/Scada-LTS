@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -210,6 +209,7 @@ import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
 import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
@@ -1160,6 +1160,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n validateScript(String script,
                                           List<IntValuePair> context, int dataTypeId) {
         DwrResponseI18n response = new DwrResponseI18n();
+
+        if(!ScriptValidatorUtils.validate(script)) {
+            response.addContextualMessage("script", "validate.invalidValue");
+            return response;
+        }
 
         ScriptExecutor executor = new ScriptExecutor();
         try {
