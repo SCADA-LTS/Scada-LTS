@@ -31,7 +31,7 @@ public class BadRequestException extends ScadaApiException {
         super(ScadaErrorMessage.builder(HttpStatus.BAD_REQUEST)
                 .type(API_EXCEPTIONS + BadRequestException.class.getSimpleName())
                 .title(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .detail("exception", ex.getClass().getName() + " : " + ex.getMessage())
+                .detail("exception", ex.getClass().getName() + " : " + truncateMessage(ex.getMessage()))
                 .instance(instance)
                 .build());
     }

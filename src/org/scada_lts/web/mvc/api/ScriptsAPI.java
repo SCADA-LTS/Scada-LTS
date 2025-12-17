@@ -17,12 +17,9 @@ import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -30,7 +27,6 @@ import java.util.*;
 
 import static org.scada_lts.utils.MailingListApiUtils.isXidChanged;
 import static org.scada_lts.utils.ScriptsApiUtils.*;
-import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 
 /**
  * Simple controller for Scripts in Scada-LTS
@@ -82,14 +78,34 @@ public class ScriptsAPI {
         if (user != null && user.isAdmin()) {
             ScriptVO<?> script = scriptService.getScript(xid);
             if (script != null) {
-                ScriptRT rt = script.createScriptRT();
                 try {
+                    ScriptRT rt = script.createScriptRT();
                     rt.execute();
                 } catch (Exception ex) {
                     throw new InternalServerErrorException(ex, request.getRequestURI());
                 }
             } else {
                 throw new NotFoundException(xid, request.getRequestURI());
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new UnauthorizedException(request.getRequestURI());
+        }
+    }
+
+    @PostMapping(value = "/execute-test")
+    public ResponseEntity<List<ScriptVO<?>>> executeScriptTest(@RequestBody @Valid JsonScript scriptJson, HttpServletRequest request) {
+        LOG.info("GET::/api/scripts/execute-test");
+        User user = Common.getUser(request);
+
+        if (user != null && user.isAdmin()) {
+            ScriptRT rt;
+            try {
+                ScriptVO<?> script = createScriptFromBody(scriptJson, user, dataPointService);
+                rt = script.createScriptRT();
+                rt.execute();
+            } catch (Exception e) {
+                throw new InternalServerErrorException(e, request.getRequestURI());
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -160,8 +176,9 @@ public class ScriptsAPI {
                 response.put("errors", pointsError);
                 throw new NotFoundException(response, request.getRequestURI());
             }
-            ContextualizedScriptVO vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
+            ContextualizedScriptVO vo;
             try {
+                vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
                 scriptService.saveScript(vo);
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());

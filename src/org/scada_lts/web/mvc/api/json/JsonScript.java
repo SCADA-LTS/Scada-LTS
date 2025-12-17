@@ -6,6 +6,7 @@ import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JsonScript {
 
     private Integer id;
