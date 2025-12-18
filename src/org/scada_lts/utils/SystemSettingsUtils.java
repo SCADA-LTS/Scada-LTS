@@ -94,7 +94,7 @@ public final class SystemSettingsUtils {
 
     private static final String SECURITY_JS_EXECUTOR_JAVA_ENABLED_KEY = "scadalts.security.js.executor.java.enabled";
     private static final String SECURITY_JS_VALIDATOR_ENABLED_KEY = "scadalts.security.js.validator.enabled";
-
+    private static final String SECURITY_JS_FILTER_ENABLED_KEY = "scadalts.security.js.filter.enabled";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -833,6 +833,17 @@ public final class SystemSettingsUtils {
         boolean defaultValue = false;
         try {
             String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_VALIDATOR_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsFilterEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_FILTER_ENABLED_KEY, String.valueOf(defaultValue));
             return Boolean.parseBoolean(value);
         } catch (Exception e) {
             LOG.error(e.getMessage());

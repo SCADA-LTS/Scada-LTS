@@ -33,7 +33,7 @@ public class SandboxClassShutter implements ClassShutter {
 
     @Override
     public boolean visibleToScripts(String className) {
-        if(!SystemSettingsUtils.isSecurityJsValidatorEnabled())
+        if(!SystemSettingsUtils.isSecurityJsFilterEnabled())
             return true;
         for(Pattern pattern: securityJsAccessDeniedClassRegexes) {
             if (pattern.matcher(className).matches()) {
