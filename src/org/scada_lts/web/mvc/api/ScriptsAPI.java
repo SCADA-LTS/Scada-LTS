@@ -94,7 +94,7 @@ public class ScriptsAPI {
     }
 
     @PostMapping(value = "/execute-test")
-    public ResponseEntity<List<ScriptVO<?>>> executeScriptTest(@RequestBody @Valid JsonScript scriptJson, HttpServletRequest request) {
+    public ResponseEntity<String> executeScriptTest(@RequestBody @Valid JsonScript scriptJson, HttpServletRequest request) {
         LOG.info("GET::/api/scripts/execute-test");
         User user = Common.getUser(request);
 
@@ -107,7 +107,7 @@ public class ScriptsAPI {
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>("ok", HttpStatus.OK);
         } else {
             throw new UnauthorizedException(request.getRequestURI());
         }
