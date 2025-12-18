@@ -25,6 +25,9 @@ public final class ScriptValidatorUtils {
             .toArray(new Pattern[]{});
 
     public static boolean validate(String script) {
+        if(!SystemSettingsUtils.isSecurityJsValidatorEnabled()) {
+            return true;
+        }
         if(script == null) {
             return false;
         }

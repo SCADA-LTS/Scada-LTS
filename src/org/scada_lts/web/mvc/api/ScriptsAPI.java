@@ -34,7 +34,7 @@ import static org.scada_lts.utils.ScriptsApiUtils.*;
  * @author Sergio Selvaggi <sselvaggi@softq.pl>
  */
 @RestController
-@RequestMapping(value = "/api/scripts")
+@RequestMapping(value = {"/api/scripts", "/script"})
 public class ScriptsAPI {
 
     private static final Log LOG = LogFactory.getLog(ScriptsAPI.class);
@@ -71,7 +71,7 @@ public class ScriptsAPI {
     }
 
     @PostMapping(value = "/execute/{xid}")
-    public ResponseEntity<List<ScriptVO<?>>> executeScript(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> executeScript(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, HttpServletResponse response) {
         LOG.info("GET::/api/scripts/execute");
         User user = Common.getUser(request);
 
@@ -87,7 +87,7 @@ public class ScriptsAPI {
             } else {
                 throw new NotFoundException(xid, request.getRequestURI());
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>("", HttpStatus.OK);
         } else {
             throw new UnauthorizedException(request.getRequestURI());
         }
@@ -107,7 +107,7 @@ public class ScriptsAPI {
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());
             }
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>("", HttpStatus.OK);
         } else {
             throw new UnauthorizedException(request.getRequestURI());
         }

@@ -10,10 +10,6 @@ public class ScriptLocalizableException extends ScriptException {
         super(localizableMessage.getLocalizedMessage(Common.getBundle()));
     }
 
-    public ScriptLocalizableException(Exception e) {
-        super(e);
-    }
-
     public ScriptLocalizableException(LocalizableMessage localizableMessage, String fileName, int lineNumber) {
         super(localizableMessage.getLocalizedMessage(Common.getBundle()), fileName, lineNumber);
     }
