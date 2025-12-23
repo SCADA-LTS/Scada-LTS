@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScadaErrorMessage implements Serializable {
 
@@ -103,6 +104,11 @@ public class ScadaErrorMessage implements Serializable {
 
         public Builder detail(Map<String, String> detail) {
             this.detail.putAll(detail);
+            return this;
+        }
+
+        public Builder detailObj(Map<String, Object> detail) {
+            this.detail.putAll(detail.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, b -> String.valueOf(b.getValue()))));
             return this;
         }
 

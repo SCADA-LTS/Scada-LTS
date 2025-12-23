@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api.dto;
 
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
@@ -16,6 +17,7 @@ public class ViewScriptComponentDTO extends ViewComponentDTO {
     @XssProtect
     private String bkgdColorOverride;
     private boolean displayControls;
+    @ScriptProtect
     private String script;
 
     public ViewScriptComponentDTO() {

@@ -52,10 +52,15 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
 import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
+
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 
 /**
  * @author Matthew Lohbihler
@@ -81,12 +86,14 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     private List<IntValuePair> context = new ArrayList<IntValuePair>();
     @JsonRemoteProperty
+    @ScriptProtect
     private String script;
     private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
     private int updateEvent = UPDATE_EVENT_CONTEXT_CHANGE;
     @JsonRemoteProperty
+    @XssProtect
     private String updateCronPattern;
     @JsonRemoteProperty
     private int executionDelaySeconds;
@@ -246,6 +253,9 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         if (executionDelayPeriodType == TimePeriodType.MILLISECONDS && executionDelaySeconds != 0 && executionDelaySeconds < 100)
             response.addContextualMessage("executionDelaySeconds", "validate.invalidValue");
+
+        if(!ScriptValidatorUtils.validate(script))
+            response.addContextualMessage("script", "validate.invalidValue");
     }
 
     @Override

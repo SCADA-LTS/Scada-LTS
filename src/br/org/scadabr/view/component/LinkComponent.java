@@ -11,6 +11,7 @@ import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
@@ -20,9 +21,11 @@ public class LinkComponent extends HtmlComponent {
 			"LINK", "graphic.link", null);
 
 	@JsonRemoteProperty
+	@XssProtect
 	private String link;
 
 	@JsonRemoteProperty
+	@XssProtect
 	private String text;
 
 	public LinkComponent() {}

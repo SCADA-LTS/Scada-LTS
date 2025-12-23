@@ -24,9 +24,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class MultistateEventValue implements Serializable {
     private int key;
+    @XssProtect
     private String text;
 
     /**

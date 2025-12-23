@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.exceptions;
 
 
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.http.HttpStatus;
 
 public class ScadaApiException extends RuntimeException {
@@ -13,7 +14,7 @@ public class ScadaApiException extends RuntimeException {
         this(ScadaErrorMessage.builder(httpStatus)
                 .type("/api/exceptions/" + ScadaApiException.class.getSimpleName())
                 .title(httpStatus.getReasonPhrase())
-                .detail("exception", ex.getClass().getName() + " : " + ex.getMessage())
+                .detail("exception", ex.getClass().getName() + " : " + truncateMessage(ex.getMessage()))
                 .instance(instance)
                 .build());
     }
@@ -25,5 +26,13 @@ public class ScadaApiException extends RuntimeException {
 
     public ScadaErrorMessage getErrorMessage() {
         return errorMessage;
+    }
+
+    public static String truncateMessage(String message) {
+        try {
+            return StringUtils.truncate(message, "...", 255);
+        } catch (Exception ex) {
+            return message;
+        }
     }
 }
