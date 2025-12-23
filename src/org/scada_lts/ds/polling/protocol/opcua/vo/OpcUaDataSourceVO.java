@@ -17,6 +17,7 @@ import org.scada_lts.ds.polling.PollingDataSourceRT;
 import org.scada_lts.ds.polling.protocol.opcua.client.IOpcUaService;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaSecurityPolicyType;
+import org.scada_lts.utils.security.KeyStoreData;
 import org.scada_lts.utils.security.KeyStoreType;
 
 import java.io.File;
@@ -29,7 +30,7 @@ import java.util.Map;
 
 @JsonRemoteEntity
 public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
-		implements DataSourceUpdatable<OpcUaDataSourceVO> {
+		implements DataSourceUpdatable<OpcUaDataSourceVO>, KeyStoreData {
 
 	public static final Type TYPE = Type.OPC_UA;
 
@@ -285,6 +286,7 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 		this.messageSecurity = messageSecurity;
 	}
 
+	@Override
 	public String getKeyStoreFile() {
 		return keyStoreFile;
 	}
@@ -293,6 +295,7 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 		this.keyStoreFile = keyStoreFile;
 	}
 
+	@Override
 	public KeyStoreType getKeyStoreType() {
 		return keyStoreType;
 	}
@@ -301,6 +304,7 @@ public class OpcUaDataSourceVO extends DataSourceVO<OpcUaDataSourceVO>
 		this.keyStoreType = keyStoreType;
 	}
 
+	@Override
 	public String getKeyStorePassword() {
 		return keyStorePassword;
 	}
