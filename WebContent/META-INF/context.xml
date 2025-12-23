@@ -33,4 +33,7 @@
           connectionProperties="useSSL=false;allowPublicKeyRetrieval=true"
           url="jdbc:mysql://localhost:3306/scadalts"
          />
+    <CookieProcessor
+            className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
+            sameSiteCookies="Strict" />
 </Context>
