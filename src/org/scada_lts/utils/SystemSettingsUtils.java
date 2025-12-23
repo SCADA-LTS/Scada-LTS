@@ -97,6 +97,14 @@ public final class SystemSettingsUtils {
     private static final String SECURITY_JS_FILTER_ENABLED_KEY = "scadalts.security.js.filter.enabled";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
+    /**
+     * Retrieves the datapoint runtime synchronization mode from configuration.
+     *
+     * Reads the `DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY` property and maps it to a
+     * DataPointSyncMode (case-insensitive). If the property is not set, `NONE` is used.
+     *
+     * @return the configured DataPointSyncMode; `DataPointSyncMode.NONE` if the property is absent, `DataPointSyncMode.LOW` on error
+     */
     public static DataPointSyncMode getDataPointSynchronizedMode() {
         try {
             String mode = ScadaConfig.getInstance().getConf().getProperty(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY, "NONE");
@@ -807,6 +815,11 @@ public final class SystemSettingsUtils {
     }
 
 
+    /**
+     * Get the threshold of queued unreliable datapoint tasks that triggers execution in a thread pool.
+     *
+     * @return the configured threshold (number of tasks); defaults to 2 if the property is unset or cannot be parsed
+     */
     public static int getDataPointUnreliableExecuteInPoolIfTasksExceedsNumber() {
         int defaultValue = 2;
         try {
@@ -818,6 +831,14 @@ public final class SystemSettingsUtils {
         }
     }
 
+    /**
+     * Indicates whether the Java-based security JS executor is enabled.
+     *
+     * Reads the system configuration and interprets the related setting as a boolean.
+     * Defaults to `false` when the property is unset or an error occurs while reading it.
+     *
+     * @return `true` if the Java-based security JS executor is enabled, `false` otherwise.
+     */
     public static boolean isSecurityJsExecutorJavaEnabled() {
         boolean defaultValue = false;
         try {
@@ -829,6 +850,11 @@ public final class SystemSettingsUtils {
         }
     }
 
+    /**
+     * Determines whether the security JavaScript validator is enabled.
+     *
+     * @return `true` if the security JavaScript validator is enabled, `false` otherwise.
+     */
     public static boolean isSecurityJsValidatorEnabled() {
         boolean defaultValue = false;
         try {
@@ -840,6 +866,11 @@ public final class SystemSettingsUtils {
         }
     }
 
+    /**
+     * Checks whether the security JavaScript filter feature is enabled in system settings.
+     *
+     * @return `true` if the security JS filter is enabled, `false` otherwise (defaults to `false` when not set).
+     */
     public static boolean isSecurityJsFilterEnabled() {
         boolean defaultValue = false;
         try {

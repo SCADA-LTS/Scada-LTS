@@ -52,6 +52,15 @@ public class SandboxNativeJavaObject extends NativeJavaObject  {
 		super(scope, javaObject, staticType);
 	}
  
+	/**
+	 * Controls access to a Java object's member when accessed from script, allowing or denying based on configured security patterns.
+	 *
+	 * If the security JS filter is disabled, delegates to the superclass; otherwise, denies access when the method name matches any deny pattern, grants access when it matches a grant pattern, and denies access if it matches neither.
+	 *
+	 * @param methodName the name of the property or method being accessed from script
+	 * @param start the scriptable start object for the access operation
+	 * @return the value returned by the underlying Java object for the requested member, or `NOT_FOUND` when access is denied
+	 */
 	@Override
 	public Object get(String methodName, Scriptable start) {
 		if(!SystemSettingsUtils.isSecurityJsFilterEnabled())

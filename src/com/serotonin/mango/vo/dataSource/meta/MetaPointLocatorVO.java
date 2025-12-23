@@ -190,6 +190,15 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         validate(response, Common.NEW_ID);
     }
 
+    /**
+     * Validates this meta point locator configuration and populates the provided response with localized validation messages.
+     *
+     * Performs checks for required script, context variable correctness (presence, naming, duplicates, self-reference, cyclic dependencies),
+     * data type validity, update event and cron pattern correctness, execution delay bounds, and script syntax.
+     *
+     * @param response    the DwrResponseI18n used to collect contextual validation messages
+     * @param dataPointId the id of the data point being validated (use Common.NEW_ID for new points)
+     */
     @Override
     public void validate(DwrResponseI18n response, int dataPointId) {
         if (StringUtils.isEmpty(script))
@@ -258,6 +267,14 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             response.addContextualMessage("script", "validate.invalidValue");
     }
 
+    /**
+     * Appends localized audit/export messages describing this locator's configuration to the provided list.
+     *
+     * Adds messages for data type, settable flag, script context, script text, update event (and cron pattern when applicable),
+     * and the execution delay.
+     *
+     * @param list the list to receive the appended LocalizableMessage entries
+     */
     @Override
     public void addProperties(List<LocalizableMessage> list) {
         AuditEventType.addDataTypeMessage(list, "dsEdit.pointDataType", dataTypeId);

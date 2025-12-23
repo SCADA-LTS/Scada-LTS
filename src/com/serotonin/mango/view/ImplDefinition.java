@@ -37,6 +37,13 @@ public class ImplDefinition implements Serializable {
         return null;
     }
 
+    /**
+     * Finds an ImplDefinition in the provided list whose exportName matches the given value using case-insensitive comparison.
+     *
+     * @param list the list of ImplDefinition objects to search
+     * @param exportName the export name to match (case-insensitive)
+     * @return the first matching ImplDefinition whose exportName equals the provided exportName ignoring case, or null if no match
+     */
     public static ImplDefinition findByExportName(List<ImplDefinition> list, String exportName) {
         for (ImplDefinition def : list) {
             if (def.getExportName().equalsIgnoreCase(exportName))

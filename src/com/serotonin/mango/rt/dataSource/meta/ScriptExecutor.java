@@ -118,6 +118,21 @@ public class ScriptExecutor {
 		return converted;
 	}
 
+	/**
+	 * Executes the provided JavaScript in a Rhino runtime using the given context variables and returns the resulting PointValueTime.
+	 *
+	 * The script is executed with variables bound from {@code context} and a wrapper context initialized with {@code runtime}.
+	 * If the script assigns a numeric {@code TIMESTAMP} variable, that value overrides the provided {@code timestamp}.
+	 *
+	 * @param script the JavaScript source to execute
+	 * @param context mapping of variable names to data points exposed to the script
+	 * @param runtime runtime epoch/millis used to initialize the script wrapper context
+	 * @param dataTypeId expected data type id used to convert the script result into a MangoValue
+	 * @param timestamp fallback timestamp (in millis) for the returned PointValueTime; may be overwritten by the script's {@code TIMESTAMP}
+	 * @return a PointValueTime whose value is the script result converted to the requested data type and whose timestamp is the final timestamp used
+	 * @throws ScriptException if the script cannot be validated or evaluated, or if other script-related errors occur
+	 * @throws ResultTypeException if the script result cannot be converted to the requested {@code dataTypeId}
+	 */
 	public PointValueTime execute(String script,
 			Map<String, IDataPoint> context, long runtime, int dataTypeId,
 			long timestamp) throws ScriptException, ResultTypeException {

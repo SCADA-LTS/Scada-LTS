@@ -28,7 +28,10 @@ public class LinkComponent extends HtmlComponent {
 	@XssProtect
 	private String text;
 
-	public LinkComponent() {}
+	/**
+ * Constructs a LinkComponent with default property values.
+ */
+public LinkComponent() {}
 
 	private LinkComponent(LinkComponent linkComponent) {
 		super(linkComponent);

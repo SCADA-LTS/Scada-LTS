@@ -45,6 +45,17 @@ public class ContextualizedScriptRT extends ScriptRT {
 		super(vo);
 	}
 
+	/**
+	 * Execute the contextualized script within a Rhino JavaScript environment using the VO-provided context and objects.
+	 *
+	 * Sets up a Rhino Context and standard script scope, injects time-period constants and a wrapper CONTEXT, converts
+	 * configured data points into appropriate point wrapper objects and places them in the script scope, exposes any
+	 * configured ScriptContextObjects (with the action user), wraps the user script with the runtime wrapper, and
+	 * evaluates the resulting script.
+	 *
+	 * @throws ScriptException if script validation fails, if converting or reading data-point context fails, or if an
+	 *                         error occurs while evaluating the script (the thrown exception contains the execution stack trace).
+	 */
 	@Override
 	public void execute() throws ScriptException {
 

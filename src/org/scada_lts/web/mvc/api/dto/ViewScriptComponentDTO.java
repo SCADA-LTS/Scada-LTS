@@ -20,6 +20,9 @@ public class ViewScriptComponentDTO extends ViewComponentDTO {
     @ScriptProtect
     private String script;
 
+    /**
+     * Creates a new ViewScriptComponentDTO with default field values.
+     */
     public ViewScriptComponentDTO() {
     }
 

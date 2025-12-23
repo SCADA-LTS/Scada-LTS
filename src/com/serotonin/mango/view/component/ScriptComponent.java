@@ -64,7 +64,10 @@ public class ScriptComponent extends PointComponent {
 	@ScriptProtect
 	private String script;
 
-	public ScriptComponent() {}
+	/**
+ * Creates a new ScriptComponent with no script configured.
+ */
+public ScriptComponent() {}
 
 	protected ScriptComponent(ScriptComponent scriptComponent) {
 		super(scriptComponent);
@@ -91,6 +94,26 @@ public class ScriptComponent extends PointComponent {
 		return new ScriptComponent(this);
 	}
 
+	/**
+	 * Populate the provided model with the rendered script output for this component.
+	 *
+	 * <p>If the stored script is invalid, a pretty-printed script error message is placed
+	 * into the model under the key "scriptContent" and execution stops. If {@code value}
+	 * is {@code null}, the model receives the string "--". Otherwise the user script is
+	 * executed and its result (the script return value's {@code toString()}, or {@code null}
+	 * if the script returned {@code null}) is stored under the key "scriptContent".</p>
+	 *
+	 * <p>When executing the script, the following variables are made available to the
+	 * script scope: {@code value}, {@code htmlText}, {@code renderedText}, {@code time},
+	 * {@code pointComponent}, {@code point}, and the model attributes
+	 * {@code BaseDwr.MODEL_ATTR_EVENTS}, {@code BaseDwr.MODEL_ATTR_HAS_UNACKED_EVENT},
+	 * and {@code BaseDwr.MODEL_ATTR_RESOURCE_BUNDLE}. If the script evaluation throws an
+	 * exception or returns {@code Undefined}, a pretty-printed error message is stored
+	 * under "scriptContent" and a warning is logged.</p>
+	 *
+	 * @param model the model map to populate; the script result is placed at "scriptContent"
+	 * @param value the current point value, or {@code null} if no value is available
+	 */
 	@Override
 	public void addDataToModel(Map<String, Object> model, PointValueTime value) {
 		String result;

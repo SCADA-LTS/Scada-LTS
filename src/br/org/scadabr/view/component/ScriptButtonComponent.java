@@ -28,7 +28,12 @@ public class ScriptButtonComponent extends HtmlComponent {
 	@XssProtect
 	private String text;
 
-	public ScriptButtonComponent() {}
+	/**
+ * Creates a new ScriptButtonComponent with default properties.
+ *
+ * <p>Required for framework instantiation and object deserialization.</p>
+ */
+public ScriptButtonComponent() {}
 
 	public ScriptButtonComponent(ScriptButtonComponent scriptButtonComponent) {
 		super(scriptButtonComponent);

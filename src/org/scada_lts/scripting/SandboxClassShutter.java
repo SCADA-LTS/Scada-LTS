@@ -26,11 +26,23 @@ public class SandboxClassShutter implements ClassShutter {
     private final Pattern[] securityJsAccessDeniedClassRegexes;
     private final Pattern[] securityJsAccessGrantedClassRegexes;
 
+    /**
+     * Creates a SandboxClassShutter configured with the class-level security regex patterns.
+     *
+     * The instance's allow and deny pattern arrays are initialized from the class's
+     * precompiled security regex arrays obtained from system settings.
+     */
     public SandboxClassShutter() {
         this.securityJsAccessDeniedClassRegexes = SECURITY_JS_ACCESS_DENIED_CLASS_REGEXES;
         this.securityJsAccessGrantedClassRegexes = SECURITY_JS_ACCESS_GRANTED_CLASS_REGEXES;
     }
 
+    /**
+     * Determine whether a given class is visible to embedded scripts according to the security filter and configured allow/deny regex rules.
+     *
+     * @param className the fully-qualified name of the class to check
+     * @return `true` if access to the class is allowed for scripts, `false` otherwise
+     */
     @Override
     public boolean visibleToScripts(String className) {
         if(!SystemSettingsUtils.isSecurityJsFilterEnabled())

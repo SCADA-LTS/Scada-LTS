@@ -135,6 +135,18 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
         return "event.audit.pointLink";
     }
 
+    /**
+     * Validates this PointLinkVO's configuration and records any validation messages.
+     *
+     * Performs the following checks and adds contextual messages to the provided response when a check fails:
+     * - XID uniqueness
+     * - presence of a source point
+     * - presence of a target point
+     * - that the source and target are not the same
+     * - script content validity
+     *
+     * @param response the response object to receive contextual validation messages
+     */
     public void validate(DwrResponseI18n response) {
 
         PointLinkService pointLinkService = new PointLinkService();
@@ -150,6 +162,13 @@ public class PointLinkVO implements ChangeComparable<PointLinkVO>, JsonSerializa
             response.addContextualMessage("script", "validate.invalidValue");
     }
 
+    /**
+     * Adds this point link's audit properties to the provided list.
+     *
+     * Adds the XID, source and target point extended names, script, event code, and disabled flag as localized audit messages.
+     *
+     * @param list the list to which localized audit messages describing this object's properties will be added
+     */
     @Override
     public void addProperties(List<LocalizableMessage> list) {
         DataPointDao dataPointDao = new DataPointDao();

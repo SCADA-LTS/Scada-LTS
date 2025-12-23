@@ -37,11 +37,24 @@ public class ViewComponentAPI {
     private final ViewService viewService;
     private final DataPointService dataPointService;
 
+    /**
+     * Create a ViewComponentAPI controller wired with the services it requires.
+     *
+     * @param viewService service for retrieving and persisting View objects
+     * @param dataPointService service for resolving data points by XID
+     */
     public ViewComponentAPI(ViewService viewService, DataPointService dataPointService) {
         this.viewService = viewService;
         this.dataPointService = dataPointService;
     }
 
+    /**
+     * Retrieve all components from the view identified by the given XID.
+     *
+     * @param xid the view XID (external identifier)
+     * @return a ResponseEntity containing the list of ViewComponentDTO when authorized (HTTP 200),
+     *         HTTP 401 if the caller is not an admin, or HTTP 400 on error
+     */
     @RequestMapping(value = "/api/component/getAllComponentsFromView/{xid}", method = RequestMethod.GET)
     public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request) {
         LOG.info("/api/component/addComponentToView/{xid} xid:" + xid);
@@ -76,6 +89,13 @@ public class ViewComponentAPI {
 
     }
 
+    /**
+     * Adds an HTML component to the view identified by the given XID.
+     *
+     * @param xid the view XID to which the HTML component will be added
+     * @param viewHTMLComponentDTO DTO containing the component's properties and HTML content
+     * @return a ResponseEntity with HTTP status `OK` on success, `UNAUTHORIZED` if the caller is not an admin, and `BAD_REQUEST` if an error occurs
+     */
     @RequestMapping(value = "/api/component/addHTMLComponentToView/{xid}", method = RequestMethod.POST)
     public ResponseEntity<String> addHTMLComponentToView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, @RequestBody @Valid ViewHTMLComponentDTO viewHTMLComponentDTO) {
         LOG.info("/api/component/addHTMLComponentToView/{xid} xid:" + xid);

@@ -102,16 +102,34 @@ public class ScadaErrorMessage implements Serializable {
             return this;
         }
 
+        /**
+         * Merge the provided string detail entries into the builder's detail map, overwriting any existing entries with the same keys.
+         *
+         * @param detail map of detail entries to merge into the error message
+         * @return this Builder instance
+         */
         public Builder detail(Map<String, String> detail) {
             this.detail.putAll(detail);
             return this;
         }
 
+        /**
+         * Merges the given detail map into the builder's detail entries, converting each value to a string.
+         *
+         * @param detail map of detail keys to arbitrary objects; each value is converted to a string and merged into the builder's detail map
+         * @return this builder instance
+         */
         public Builder detailObj(Map<String, Object> detail) {
             this.detail.putAll(detail.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, b -> String.valueOf(b.getValue()))));
             return this;
         }
 
+        /**
+         * Adds or replaces the "message" entry in the builder's detail map.
+         *
+         * @param detail the message to store under the "message" key
+         * @return this Builder instance for method chaining
+         */
         public Builder detail(String detail) {
             this.detail.put("message", detail);
             return this;

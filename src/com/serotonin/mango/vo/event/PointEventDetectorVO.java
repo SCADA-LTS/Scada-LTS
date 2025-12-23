@@ -75,6 +75,12 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
 
 	private static List<ImplDefinition> definitions;
 
+    /**
+     * Get implementation definitions for detector types that support the specified data type.
+     *
+     * @param dataType an integer code from DataTypes identifying the data point type to filter by
+     * @return a list of ImplDefinition objects for detector implementations that support the provided data type
+     */
     public static List<ImplDefinition> getImplementations(int dataType) {
         if (definitions == null) {
             List<ImplDefinition> d = new ArrayList<ImplDefinition>();

@@ -31,6 +31,11 @@ public class AlphanumericValue extends MangoValue implements Comparable<Alphanum
     @XssProtect
     private final String value;
 
+    /**
+     * Create a new AlphanumericValue containing the specified string, with optional escaping of '<' characters based on system settings.
+     *
+     * @param value the string to store; if the system setting for alphanumeric escaping is enabled, any '<' characters will be escaped before storage
+     */
     public AlphanumericValue(String value) {
         this.value = SystemSettingsUtils.isDataTypeAlphanumericSaveValueAsEscaped() ? StringUtils.escapeLT(value) : value;
     }

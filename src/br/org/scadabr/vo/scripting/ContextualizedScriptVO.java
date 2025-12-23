@@ -36,6 +36,11 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		implements ChangeComparable<ContextualizedScriptVO> {
 	public static final Type TYPE = Type.CONTEXTUALIZED_SCRIPT;
 
+	/**
+	 * The VO type constant for contextualized scripts.
+	 *
+	 * @return the TYPE constant identifying this VO as a contextualized script.
+	 */
 	@Override
 	public br.org.scadabr.vo.scripting.ScriptVO.Type getType() {
 		return TYPE;
@@ -46,6 +51,15 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 	@XssProtect
 	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
 
+	/**
+	 * Validate variable names in pointsOnContext and objectsOnContext and record the first encountered validation error.
+	 *
+	 * <p>Checks each entry's varName for presence, valid script identifier syntax, and uniqueness across both context lists.
+	 * On the first violation it adds a localized contextual message to the provided response (including the escaped varName when applicable)
+	 * and stops further validation.</p>
+	 *
+	 * @param response the response object to which validation messages will be added
+	 */
 	public void validate(DwrResponseI18n response) {
 
 		List<String> varNameSpace = new ArrayList<String>();

@@ -64,6 +64,9 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
     @XssProtect
     private String oneLabel;
 
+    /**
+     * Creates a BinaryEventTextRenderer with default labels (both labels are initially null).
+     */
     public BinaryEventTextRenderer() {
         // no op
     }

@@ -15,11 +15,25 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ScadaExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     * Converts a ScadaApiException into an HTTP response containing its ScadaErrorMessage.
+     *
+     * @param ex      the ScadaApiException carrying the ScadaErrorMessage
+     * @param request the current web request
+     * @return        a ResponseEntity whose body is the exception's ScadaErrorMessage and whose HTTP status is taken from that message's status
+     */
     @ExceptionHandler({ScadaApiException.class})
     public ResponseEntity<ScadaErrorMessage> handleScadaApiException(ScadaApiException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getErrorMessage(), new HttpHeaders(), HttpStatus.valueOf(ex.getErrorMessage().getStatus()));
     }
 
+    /**
+     * Handle controller method argument validation failures and produce a structured ScadaErrorMessage response.
+     *
+     * @param ex      the exception containing validation results and field errors
+     * @param request the current web request (used to populate the error instance/context)
+     * @return a ResponseEntity whose body is a ScadaErrorMessage summarizing validation field errors; the HTTP status reflects the error message's status
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         BindingResult bindingResult = ex.getBindingResult();

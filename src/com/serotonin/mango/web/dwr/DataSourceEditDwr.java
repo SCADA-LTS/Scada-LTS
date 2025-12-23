@@ -1157,6 +1157,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     
+    /**
+     * Validates and executes a script against a provided context for the specified data type,
+     * returning localized test results or error messages suitable for UI display.
+     *
+     * The response contains contextual messages describing success (with value and optional timestamp)
+     * or any validation/execution errors encountered.
+     *
+     * @param script the script to validate and execute
+     * @param context a list of integer/value pairs representing variables available to the script
+     * @param dataTypeId the expected data type id for the script's result
+     * @return a DwrResponseI18n containing localized contextual messages for success or errors
+     */
     public DwrResponseI18n validateScript(String script,
                                           List<IntValuePair> context, int dataTypeId) {
         DwrResponseI18n response = new DwrResponseI18n();

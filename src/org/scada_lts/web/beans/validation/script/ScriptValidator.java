@@ -5,6 +5,12 @@ import org.scada_lts.web.beans.validation.ScadaValidatorException;
 
 public class ScriptValidator implements ScadaValidator<String> {
 
+    /**
+     * Validates the provided script source and throws an exception when it is invalid.
+     *
+     * @param input the script source to validate
+     * @throws ScadaValidatorException if the script is invalid
+     */
     @Override
     public void validate(String input) throws ScadaValidatorException {
         if(!ScriptValidatorUtils.validate(input)) {

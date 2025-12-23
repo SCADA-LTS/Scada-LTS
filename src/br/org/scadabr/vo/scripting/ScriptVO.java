@@ -133,6 +133,16 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		this.name = name;
 	}
 
+	/**
+	 * Validates this ScriptVO and records any field-specific errors on the provided response.
+	 *
+	 * Performs the following checks and adds contextual messages when a check fails:
+	 * - Validates XID uniqueness and adds a message for the xid field when not unique.
+	 * - Ensures name is present and not longer than 40 characters; adds messages for the name field using keys "validate.nameRequired" and "validate.nameTooLong".
+	 * - Validates the script content and adds a message for the script field using key "validate.invalidValue" when the script is invalid.
+	 *
+	 * @param response the response object to which validation messages will be added
+	 */
 	public void validate(DwrResponseI18n response) {
 
 		ScriptService scriptService = new ScriptService();

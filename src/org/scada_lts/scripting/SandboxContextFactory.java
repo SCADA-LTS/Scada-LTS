@@ -28,6 +28,14 @@ import org.mozilla.javascript.ContextFactory;
  */
 public class SandboxContextFactory extends ContextFactory {
 	
+	/**
+	 * Create and configure a Rhino Context that enforces the sandboxing rules.
+	 *
+	 * The returned context uses a SandboxWrapFactory and a SandboxClassShutter to
+	 * control object wrapping and class access within the scripting environment.
+	 *
+	 * @return a Context configured with a SandboxWrapFactory and a SandboxClassShutter
+	 */
 	@Override
 	protected Context makeContext() {
 		Context cx = super.makeContext();
