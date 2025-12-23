@@ -22,12 +22,7 @@ public class HeadersFromSystemSettingsWriter implements HeaderWriter {
         staticHeaders.forEach((key, value) -> {
             String unescapedKey = HtmlUtils.htmlUnescape(key);
             String unescapedValue = HtmlUtils.htmlUnescape(value);
-            if(httpServletResponse.getHeader(unescapedKey) == null) {
-                httpServletResponse.addHeader(unescapedKey, unescapedValue);
-            } else {
-                String headers = httpServletResponse.getHeader(unescapedKey);
-                httpServletResponse.setHeader(unescapedKey, headers + ";" + unescapedValue);
-            }
+            httpServletResponse.addHeader(unescapedKey, unescapedValue);
         });
     }
 }
