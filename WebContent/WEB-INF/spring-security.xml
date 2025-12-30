@@ -447,9 +447,7 @@
                     login-processing-url="/login.htm"/>
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
-        <session-management session-fixation-protection="newSession" >
-            <concurrency-control max-sessions="1" />
-        </session-management>
+        <session-management session-fixation-protection="newSession" />
         <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
