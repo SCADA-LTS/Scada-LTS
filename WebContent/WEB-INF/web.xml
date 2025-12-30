@@ -444,6 +444,10 @@
   </listener>
   <session-config>
     <session-timeout>30</session-timeout>
+    <cookie-config>
+      <http-only>true</http-only>
+      <secure>true</secure>
+    </cookie-config>
   </session-config>
   <welcome-file-list>
     <welcome-file>home.jsp</welcome-file>
