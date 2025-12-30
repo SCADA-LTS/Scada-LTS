@@ -25,11 +25,20 @@ public class V2_8_1__SynopticPanelChangeDataTypeForColumnVectorImage extends Bas
     }
 
     private void changeDataType(JdbcTemplate jdbcTmp) {
+        try {
+            String tableName = "synopticpanels";
+            updateTable(jdbcTmp, tableName);
+        } catch (Exception ex) {
+            String tableName = "synopticPanels";
+            updateTable(jdbcTmp, tableName);
+        }
 
-        String dataType = jdbcTmp.queryForObject("SELECT `DATA_TYPE` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`= DATABASE() AND `TABLE_NAME`='synopticpanels' AND `COLUMN_NAME`='vectorImage';", String.class);
+    }
 
-        if("text".equalsIgnoreCase(dataType))
-            jdbcTmp.update("ALTER TABLE synopticpanels MODIFY vectorImage MEDIUMTEXT;");
+    private void updateTable(JdbcTemplate jdbcTmp, String tableName) {
+        String dataType = jdbcTmp.queryForObject("SELECT `DATA_TYPE` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`= DATABASE() AND `TABLE_NAME`=? AND `COLUMN_NAME`='vectorImage';", new Object[] {tableName}, String.class);
 
+        if ("text".equalsIgnoreCase(dataType))
+            jdbcTmp.update("ALTER TABLE  " + tableName + " MODIFY vectorImage MEDIUMTEXT;");
     }
 }
