@@ -21,28 +21,11 @@
 <%@page import="com.serotonin.mango.Common"%>
 
 <script type="text/javascript">
-  var pointsArray = new Array();
+
   var scriptPointsContext;
   
   function initImpl() {
-      <c:forEach items="${userPoints}" var="dp">
-        pointsArray[pointsArray.length] = {
-            id : ${dp.id}, 
-            name : "<c:out value="${dp.extendedName}"/>",
-            xid : "<c:out value="${dp.xid}"/>",
-            type : "<sst:i18n message="${dp.dataTypeMessage}"/>"
-        };
-      </c:forEach>
-      
       createContextualMessageNode("contextContainer", "context");
-      
-	  jQuery("#allPointsList").chosen({
-      	allow_single_deselect: true,
-		placeholder_text_single: " ",
-		search_contains: true,
-		width: "400px"
-	  });       
-      
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -67,15 +50,20 @@
       DataSourceEditDwr.saveMetaDataSource($get("dataSourceName"), $get("dataSourceXid"), saveDataSourceCB);
   }
   
-  function editPointCBImpl(locator) {
-      if (this.scriptPointsContext) {
-         for (var i = 0; i < locator.context.length; i++) {
-             this.scriptPointsContext.addToContextArray(locator.context[i].key, locator.context[i].value);
-         }
-         this.scriptPointsContext.writeContextArray();
-      } else {
-         this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
-      }
+  function editPointCBImpl(locator, contextPoints) {
+
+      let ref = {}
+      ref.excludePointsArray = locator.context;
+      ref.limit = 500;
+      ref.selectHtmlId = "allPointsList";
+      ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+      ref.pointsArray = contextPoints;
+      ref.dataTypes = [];
+      ref.altKey = "id";
+      ref.altValue = "name";
+      ref.widthPx = "400px";
+
+      this.scriptPointsContext = new ScriptPointsContext(ref);
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);
@@ -146,7 +134,7 @@
     <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
       <select id="allPointsList"></select>
-      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
+      <tag:img png="add" onclick="scriptPointsContext.addPointToContext(this.value);" title="common.add"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">

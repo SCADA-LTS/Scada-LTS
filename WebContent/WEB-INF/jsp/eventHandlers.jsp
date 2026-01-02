@@ -38,12 +38,6 @@
         var tree = dojo.widget.manager.getWidgetById('eventTypeTree');
         dojo.event.topic.subscribe("eventTypeTree/titleClick", new TreeClickHandler(), 'handle');
 
-      jQuery("#targetPointSelect, #activePointId, #inactivePointId").chosen({
-        allow_single_deselect: true,
-        placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-        search_contains: true,
-        width: "400px"
-      });
     }
 
 	function getScriptsCB(scripts) {
@@ -263,21 +257,17 @@
         }
     }
 
+    var targetPointSelect;
+    var activePointIdSelect;
+    var inactivePointIdSelect;
+
     function showHandlerEdit() {
     	show("handlerEditDiv");
         setUserMessage("");
         // Set the target points.
         var pointSelect = $("targetPointSelect");
-        dwr.util.removeAllOptions(pointSelect);
-        for (var i=0; i<allPoints.length; i++) {
-            dp = allPoints[i];
-            if (dp.settable)
-                pointSelect.options[pointSelect.options.length] = new Option(dp.name, dp.id);
-        }
-      jQuery("#targetPointSelect").trigger("chosen:updated");
-      jQuery("#activePointId").trigger("chosen:updated");
-      jQuery("#inactivePointId").trigger("chosen:updated");
-      if (selectedHandlerNode) {
+
+        if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
 
@@ -289,10 +279,59 @@
             $set("alias", handler.alias);
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
-                $set("targetPointSelect", handler.targetPointId);
-                jQuery("#targetPointSelect").trigger("chosen:updated");
+
+                if(selectedHandlerNode.targetPointIdSelect) {
+                    selectedHandlerNode.targetPointIdSelect.clear();
+                }
+                if(selectedHandlerNode.activePointIdSelect) {
+                    selectedHandlerNode.activePointIdSelect.clear();
+                }
+                if(selectedHandlerNode.inactivePointIdSelect) {
+                    selectedHandlerNode.inactivePointIdSelect.clear();
+                }
+
+                let targetPointRef = {}
+                targetPointRef.excludePointsArray = [];
+                targetPointRef.limit = 500;
+                targetPointRef.selectHtmlId = "targetPointSelect";
+                targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                targetPointRef.pointsArray = allPoints.filter((point) => point.id == handler.targetPointId);
+                targetPointRef.dataTypes = [];
+                targetPointRef.altKey = "id";
+                targetPointRef.altValue = "name";
+                targetPointRef.widthPx = "400px";
+
+                let activePointRef = {}
+                activePointRef.excludePointsArray = allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.inactivePointId);
+                activePointRef.limit = 500;
+                activePointRef.selectHtmlId = "activePointId";
+                activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                activePointRef.pointsArray = allPoints.filter((point) => point.id == handler.activePointId);
+                activePointRef.dataTypes = [];
+                activePointRef.altKey = "id";
+                activePointRef.altValue = "name";
+                activePointRef.widthPx = "400px";
+
+                let inactivePointRef = {}
+                inactivePointRef.excludePointsArray = allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.activePointId);
+                inactivePointRef.limit = 500;
+                inactivePointRef.selectHtmlId = "inactivePointId";
+                inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                inactivePointRef.pointsArray = allPoints.filter((point) => point.id == handler.inactivePointId);
+                inactivePointRef.dataTypes = [];
+                inactivePointRef.altKey = "id";
+                inactivePointRef.altValue = "name";
+                inactivePointRef.widthPx = "400px";
+
+                selectedHandlerNode.targetPointIdSelect = new DataPointsSelect(targetPointRef);
+                selectedHandlerNode.activePointIdSelect = new DataPointsSelect(activePointRef);
+                selectedHandlerNode.inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
+
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
+                selectedHandlerNode.targetPointIdSelect.setPointId(handler.targetPointId);
+                selectedHandlerNode.activePointIdSelect.setPointId(handler.activePointId);
+                selectedHandlerNode.inactivePointIdSelect.setPointId(handler.inactivePointId);
             }
             else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
                 emailRecipients.updateRecipientList(handler.activeRecipients);
@@ -314,8 +353,53 @@
                 $set("activeScriptCommand", handler.activeScriptCommand);
                 $set("inactiveScriptCommand", handler.inactiveScriptCommand);
             }
-        }
-        else {
+        } else {
+            if(targetPointSelect) {
+                targetPointSelect.clear();
+            }
+            if(activePointIdSelect) {
+                activePointIdSelect.clear();
+            }
+            if(inactivePointIdSelect) {
+                inactivePointIdSelect.clear();
+            }
+
+            let targetPointRef = {}
+            targetPointRef.excludePointsArray = [];
+            targetPointRef.limit = 500;
+            targetPointRef.selectHtmlId = "targetPointSelect";
+            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            targetPointRef.pointsArray = [];
+            targetPointRef.dataTypes = [];
+            targetPointRef.altKey = "id";
+            targetPointRef.altValue = "name";
+            targetPointRef.widthPx = "400px";
+
+            let activePointRef = {}
+            activePointRef.excludePointsArray = [];
+            activePointRef.limit = 500;
+            activePointRef.selectHtmlId = "activePointId";
+            activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            activePointRef.pointsArray = [];
+            activePointRef.dataTypes = [];
+            activePointRef.altKey = "id";
+            activePointRef.altValue = "name";
+            activePointRef.widthPx = "400px";
+
+            let inactivePointRef = {}
+            inactivePointRef.excludePointsArray = [];
+            inactivePointRef.limit = 500;
+            inactivePointRef.selectHtmlId = "inactivePointId";
+            inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            inactivePointRef.pointsArray = [];
+            inactivePointRef.dataTypes = [];
+            inactivePointRef.altKey = "id";
+            inactivePointRef.altValue = "name";
+            inactivePointRef.widthPx = "400px";
+
+            targetPointSelect = new DataPointsSelect(targetPointRef);
+            activePointIdSelect = new DataPointsSelect(activePointRef);
+            inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
             $("saveImg").src = "images/save_add.png";
             hide("deleteImg");
             $("handlerTypeSelect").disabled = false;
@@ -370,10 +454,9 @@
         if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>") {
             show($(currentHandlerEditor.id + "Help"));
         }
-        console.log("handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>");
     }
 
-    function targetPointSelectChanged() {
+    function targetPointSelectChanged(pointIdForm, activeValue, inactiveValue, activePointId, inactivePointId) {
         var selectControl = $("targetPointSelect");
 
         // Make sure there are points in the list.
@@ -381,38 +464,82 @@
             return;
 
         // Get the content for the value to set section.
-        var targetPointId = selectControl.value;
+        var targetPointId = pointIdForm ? pointIdForm : selectControl.value;
         var activeValueStr = "";
         var inactiveValueStr = "";
-        if (selectedHandlerNode) {
-            activeValueStr = selectedHandlerNode.object.activeValueToSet;
-            inactiveValueStr = selectedHandlerNode.object.inactiveValueToSet;
-        }
-        EventHandlersDwr.createSetValueContent(targetPointId, activeValueStr, "Active",
-                function(content) { $("activeValueToSetContent").innerHTML = content; });
-        EventHandlersDwr.createSetValueContent(targetPointId, inactiveValueStr, "Inactive",
-                function(content) { $("inactiveValueToSetContent").innerHTML = content; });
 
-        // Update the source point lists.
-        var targetDataTypeId = getPoint(targetPointId).dataType;
-        var activeSourceSelect = $("activePointId");
-        dwr.util.removeAllOptions(activeSourceSelect);
-        var inactiveSourceSelect = $("inactivePointId");
-        dwr.util.removeAllOptions(inactiveSourceSelect);
-        for (var i=0; i<allPoints.length; i++) {
-            dp = allPoints[i];
-            if (dp.id != targetPointId && dp.dataType == targetDataTypeId) {
-                activeSourceSelect.options[activeSourceSelect.options.length] = new Option(dp.name, dp.id);
-                inactiveSourceSelect.options[inactiveSourceSelect.options.length] = new Option(dp.name, dp.id);
+        if(targetPointId && targetPointId > 0) {
+            let activeAction = document.getElementById('activeAction');
+            activeAction.disabled = false;
+            let inactiveAction = document.getElementById('inactiveAction');
+            inactiveAction.disabled = false;
+
+            if (selectedHandlerNode) {
+                activeValueStr = activeValue ? activeValue : selectedHandlerNode.object.activeValueToSet;
+                inactiveValueStr = inactiveValue ? inactiveValue : selectedHandlerNode.object.inactiveValueToSet;
+
+                EventHandlersDwr.createSetValueContent(targetPointId, activeValueStr, "Active",
+                        function(content) { $("activeValueToSetContent").innerHTML = content; });
+                EventHandlersDwr.createSetValueContent(targetPointId, inactiveValueStr, "Inactive",
+                        function(content) { $("inactiveValueToSetContent").innerHTML = content; });
+
+                let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
+                let activePoint = selectedHandlerNode.activePointIdSelect.getPoint();
+                let inactivePoint = selectedHandlerNode.inactivePointIdSelect.getPoint();
+
+                selectedHandlerNode.activePointIdSelect.setDataTypes([targetPoint.dataType]);
+                if(inactivePoint) {
+                    selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
+                } else {
+                    selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint]);
+                }
+
+                selectedHandlerNode.inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
+                if(activePoint) {
+                    selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
+                } else {
+                    selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint]);
+                }
+
+                activePointSelectChanged(activePointId ? activePointId : selectedHandlerNode.object.activePointId);
+                inactivePointSelectChanged(inactivePointId ? inactivePointId : selectedHandlerNode.object.inactivePointId);
+
+            } else {
+                EventHandlersDwr.createSetValueContent(targetPointId, "", "Active",
+                        function(content) { $("activeValueToSetContent").innerHTML = content; });
+                EventHandlersDwr.createSetValueContent(targetPointId, "", "Inactive",
+                        function(content) { $("inactiveValueToSetContent").innerHTML = content; });
+
+                let targetPoint = targetPointSelect.getPoint();
+                activePointIdSelect.setDataTypes([targetPoint.dataType]);
+                activePointIdSelect.updatePointsList([targetPoint]);
+
+                inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
+                inactivePointIdSelect.updatePointsList([targetPoint]);
+
+                activePointSelectChanged(activePointId ? activePointId : activePointIdSelect.getPointId());
+                inactivePointSelectChanged(inactivePointId ? inactivePointId : inactivePointIdSelect.getPointId());
             }
-        }
 
-        if (selectedHandlerNode) {
-            $set(activeSourceSelect, selectedHandlerNode.object.activePointId);
-            $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
+
+        } else {
+            let activeAction = document.getElementById('activeAction');
+            activeAction.disabled = true;
+            let inactiveAction = document.getElementById('inactiveAction');
+            inactiveAction.disabled = true;
         }
-        jQuery("#activePointId").trigger("chosen:updated");
-        jQuery("#inactivePointId").trigger("chosen:updated");
+    }
+
+    function activePointSelectChanged(value) {
+        if(selectedHandlerNode) {
+            selectedHandlerNode.activePointIdSelect.setPointId(value);
+        }
+    }
+
+    function inactivePointSelectChanged(value) {
+        if(selectedHandlerNode) {
+            selectedHandlerNode.inactivePointIdSelect.setPointId(value);
+        }
     }
 
     function activeActionChanged() {
@@ -458,10 +585,6 @@
         }
     }
 
-    function getPoint(id) {
-        return getElement(allPoints, id);
-    }
-
     function saveHandler() {
     	startImageFader("saveImg");
         setUserMessage();
@@ -496,11 +619,26 @@
             EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
           } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
+            let activePointId1 = $get("activePointId");
+            activePointId1 = activePointId1 == 'undefined' || !activePointId1 ? 0 : activePointId1;
+            let inactivePointId1 = $get("inactivePointId");
+            inactivePointId1 = inactivePointId1 == 'undefined' || !inactivePointId1 ? 0 : inactivePointId1;
+            let targetPointIdSelect = selectedHandlerNode && selectedHandlerNode.targetPointIdSelect ? selectedHandlerNode.targetPointIdSelect : targetPointSelect;
+
+            let object = this;
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
-                    disabled, $get("targetPointSelect"), $get("activeAction"), $get("setPointValueActive"),
-                    $get("activePointId"), $get("inactiveAction"), $get("setPointValueInactive"),
-                    $get("inactivePointId"), saveEventHandlerCB);
+                    disabled, targetPointIdSelect.getPointId(), $get("activeAction"), $get("setPointValueActive"),
+                    activePointId1, $get("inactiveAction"), $get("setPointValueInactive"),
+                    inactivePointId1, function(response) {
+                        if(!response.hasMessages) {
+                            object.setAllPoints(response.data.allPoints);
+                            let handler = response.data.handler;
+                            object.targetPointSelectChanged(targetPointIdSelect.getPointId(), handler.activeValueToSet,
+                            handler.inactiveValueToSet, handler.activePointId, handler.inactivePointId);
+                        }
+                        saveEventHandlerCB(response);
+                    });
           } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
             EventHandlersDwr.saveProcessEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid,
@@ -511,6 +649,10 @@
                     alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
           }
         }
+    }
+
+    function setAllPoints(allPoints) {
+        this.allPoints = allPoints;
     }
 
     function saveEventHandlerCB(response) {
@@ -662,7 +804,7 @@
                 <select id="targetPointSelect"
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
-                        onchange="targetPointSelectChanged()">
+                        onchange="targetPointSelectChanged(this.value)">
                 </select>
               </td>
             </tr>
@@ -670,7 +812,7 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="eventHandlers.activeAction"/></td>
               <td class="formField">
-                <select id="activeAction" onchange="activeActionChanged()">
+                <select id="activeAction" onchange="activeActionChanged()" disabled>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><spring:message code="eventHandlers.action.none"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><spring:message code="eventHandlers.action.point"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><spring:message code="eventHandlers.action.static"/></option>
@@ -683,7 +825,8 @@
               <td class="formField">
                 <select id="activePointId"
                         class="chzn-select"
-                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
+                        onchange="activePointSelectChanged(this.value)">
                 </select>
               </td>
             </tr>
@@ -696,7 +839,7 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="eventHandlers.inactiveAction"/></td>
               <td class="formField">
-                <select id="inactiveAction" onchange="inactiveActionChanged()">
+                <select id="inactiveAction" onchange="inactiveActionChanged()" disabled>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>"><spring:message code="eventHandlers.action.none"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>"><spring:message code="eventHandlers.action.point"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.SET_ACTION_STATIC_VALUE %>"/>"><spring:message code="eventHandlers.action.static"/></option>
@@ -709,7 +852,8 @@
               <td class="formField">
                 <select id="inactivePointId"
                         class="chzn-select"
-                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>">
+                        data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
+                        onchange="inactivePointSelectChanged(this.value)">
                 </select>
               </td>
             </tr>

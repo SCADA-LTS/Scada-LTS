@@ -21,8 +21,8 @@
 <script type="text/javascript">
   var staticHeaderList;
   var staticParameterList = new Array();
-  var allPoints = new Array();  
-  var selectedPoints = new Array();  
+  var allPoints = new Array();
+  var pointsContext;
   
   function init() {
       PublisherEditDwr.initSender(initCB);
@@ -31,35 +31,37 @@
   dojo.addOnLoad(init);
 
   function initCB(response) {
-      var i;
-      var list = response.data.allPoints;
-      for (var i=0; i<list.length; i++)
-          allPoints[allPoints.length] = {
-                  id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
+      let list;
 
       staticHeaderList = new Array();
       list = response.data.publisher.staticHeaders;
-      for (i=0; i<list.length; i++)
+      for (let i=0; i<list.length; i++)
           staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
       refreshStaticHeaderList();
       
       list = response.data.publisher.staticParameters;
-      for (i=0; i<list.length; i++)
+      for (let i=0; i<list.length; i++)
           staticParameterList[staticParameterList.length] = {key: list[i].key, value: list[i].value};
       refreshStaticParameterList();
-      
-      list = response.data.publisher.points;
-      for (i=0; i<list.length; i++)
-          addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
-      refreshSelectedPoints();
+
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
-      jQuery("#availablePoints").chosen({
-          allow_single_deselect: true,
-          placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-          search_contains: true,
-          width: "100%"
-      });
+
+      if(pointsContext) {
+          pointsContext.clear();
+      }
+
+      let ref = {}
+      ref.excludePointsArray = response.data.publisher.points;
+      ref.limit = 500;
+      ref.selectHtmlId = "availablePoints";
+      ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+      ref.pointsArray = response.data.selectedPoints;
+      ref.dataTypes = [];
+      ref.altKey = "id";
+      ref.altValue = "name";
+      ref.widthPx = "400px";
+      pointsContext = new SenderPointsContext(ref, "selectedPoints");
   }
 
   function initStaticHeaders(response) {
@@ -174,101 +176,7 @@
   }
   
   function selectPoint() {
-      var pointId = $get("availablePoints");
-      addToSelectedArray(pointId, null, true);
-      refreshSelectedPoints();
-  }
-  
-  function addToSelectedArray(pointId, parameterName, includeTimestamp) {
-      var data = getElement(allPoints, pointId);
-      
-      if (parameterName == null)
-          parameterName = data.name;
-      
-      if (data) {
-          // Missing names imply that the point was deleted, so ignore.
-          selectedPoints[selectedPoints.length] = {
-              id : pointId,
-              pointName : data.name,
-              enabled : data.enabled,
-              pointType : data.type,
-              parameterName: parameterName,
-              includeTimestamp: includeTimestamp
-          };
-      }
-  }
-  
-  function removeFromSelectedPoints(pointId) {
-      removeElement(selectedPoints, pointId);
-      refreshSelectedPoints();
-  }
-  
-  function refreshSelectedPoints() {
-      dwr.util.removeAllRows("selectedPoints");
-      if (selectedPoints.length == 0)
-          show("selectedPointsEmpty");
-      else {
-          hide("selectedPointsEmpty");
-          dwr.util.addRows("selectedPoints", selectedPoints,
-              [
-                  function(data) { return data.pointName; },
-                  function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
-                  function(data) { return data.pointType; },
-                  function(data) {
-                          return "<input type='text' value='"+ data.parameterName +"' "+
-                                  "onblur='updateParameterName("+ data.id +", this.value)'/>";
-                  },
-                  function(data) {
-                          return "<input type='checkbox' "+ (data.includeTimestamp ? "checked='checked' " : "") +
-                                  "onclick='updateIncludeTimestamp("+ data.id +", this.checked)'/>";
-                  },
-                  function(data) { 
-                          return "<img src='images/bullet_delete.png' class='ptr' "+
-                                  "onclick='removeFromSelectedPoints("+ data.id +")'/>";
-                  }
-              ],
-              {
-                  rowCreator: function(options) {
-                      var tr = document.createElement("tr");
-                      tr.className = "row"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                      return tr;
-                  },
-                  cellCreator: function(options) {
-                      var td = document.createElement("td");
-                      if (options.cellNum == 1 || options.cellNum == 4)
-                          td.align = "center";
-                      return td;
-                  } 
-              });
-      }
-      refreshAvailablePoints();
-  }
-  
-  function refreshAvailablePoints() {
-      dwr.util.removeAllOptions("availablePoints");
-      var availPoints = new Array();
-      for (var i=0; i<allPoints.length; i++) {
-          var found = false;
-          for (var j=0; j<selectedPoints.length; j++) {
-              if (selectedPoints[j].id == allPoints[i].id) {
-                  found = true;
-                  break;
-              }
-          }
-          
-          if (!found)
-              availPoints[availPoints.length] = allPoints[i];
-      }
-      dwr.util.addOptions("availablePoints", availPoints, "id", "name");
-      jQuery("#availablePoints").trigger("chosen:updated");
-  }
-  
-  function updateParameterName(pointId, parameterName) {
-      updateElement(selectedPoints, pointId, "parameterName", parameterName);
-  }
-  
-  function updateIncludeTimestamp(pointId, includeTimestamp) {
-      updateElement(selectedPoints, pointId, "includeTimestamp", includeTimestamp);
+      pointsContext.addPointToContext();
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -277,10 +185,7 @@
       hide("urlMsg");
       hide("pointsMsg");
       
-      var points = new Array();
-      for (var i=0; i<selectedPoints.length; i++)
-          points[points.length] = {dataPointId: selectedPoints[i].id, parameterName: selectedPoints[i].parameterName,
-                  includeTimestamp: selectedPoints[i].includeTimestamp};
+      let points = this.pointsContext.convertToSave();
 
       updateStaticHeadersList();
 
@@ -293,6 +198,10 @@
   function saveHttpSenderCB(response) {
     savePublisherCB(response);
     PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
+    if(!response.hasMessages) {
+        pointsContext.setPointsArray(response.data.selectedPoints);
+        pointsContext.init(response.data.publisher.points);
+    }
   }
   
   function httpSendTest() {
@@ -510,6 +419,7 @@
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
         <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.xid"/></td>
         <td><spring:message code="publisherEdit.point.status"/></td>
         <td><spring:message code="publisherEdit.point.type"/></td>
         <td><spring:message code="publisherEdit.httpSender.point.param"/></td>

@@ -135,18 +135,23 @@
 		constructor() {
 			this.component = null;
         	this.pointList = [];
+        	this.targetPointSelects = [];
 		}
 
 		open(compId) {
 			document.getElementById("compoundEditorPopup").firstElementChild.setAttribute("id", "compound" + compId);
-			ViewDwr.getViewComponent(compId, viewId, (comp) => {
-                this.component = comp;
+			ViewDwr.getViewComponentRes(compId, viewId, (response) => {
+                this.component = response.data.comp;
+                let comp = response.data.comp;
+
                 $set("compoundComponentName", comp.displayName);
 				$set("compoundPositionX", comp.x);
                 $set("compoundPositionY", comp.y);
                 
                 // Update the point lists
-                this.updatePointLists();
+                compoundEditor.setPointList(response.data.pointList);
+                //compoundEditor.setDataTypes(comp.supportedDataTypes);
+                compoundEditor.updatePointLists();
                 
                 // Update the data in the form.
                 $set("compoundName", comp.name);
@@ -198,11 +203,14 @@
             var pointChildren = this.getPointChildren();
             var childPointIds = new Array();
             var sel;
-            for (var i=0; i<pointChildren.length; i++)
+            for (let i=0; i<pointChildren.length; i++) {
+                let pointId = $get("compoundPointSelect"+ pointChildren[i].id);
                 childPointIds.push({
 					key: pointChildren[i].id, 
-					value: $get("compoundPointSelect"+ pointChildren[i].id)
+					value: pointId && pointId != 'undefined' ? pointId : 0
 				});
+			}
+			console.log('this.component: ',this.component);
 			switch(this.component.defName) {
 				case 'simpleCompound':
 					ViewDwr.saveSimpleCompoundComponent(this.component.id, 
@@ -258,7 +266,11 @@
 					);
                 	dygraphsCharts[compoundEditor.component.id].requestData();
                 }
-                
+                console.log('response: ', response);
+                compoundEditor.setPointList(response.data.pointList);
+                //compoundEditor.setDataTypes(response.data.comp.supportedDataTypes);
+                compoundEditor.updatePointLists();
+
                 compoundEditor.close();
                 MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
             }
@@ -297,8 +309,19 @@
             this.pointList = pointList;
         };
 
+        setDataTypes(supportedDataTypes) {
+			for (let i = 0; i < this.targetPointSelects.length; i++) {
+			    let targetPointSelect = this.targetPointSelects[i];
+			    if(targetPointSelect) {
+			        targetPointSelect.setDataTypes(supportedDataTypes);
+			        console.log('targetPointSelect: ', targetPointSelect);
+			    }
+			}
+        }
+
 		updatePointLists() {
             var pointChildren = this.getPointChildren();
+            console.log('pointChildren: ', pointChildren);
             
             var functions = [
                 (data) => { return data.description; },
@@ -338,34 +361,41 @@
 						}						
 					} else if (options.cellNum % 2 == 1)
 						td.className = "formField";
-						return td;
-					}
+                    return td;
+                }
 			});
 
 				// Add options to the controls.
-			var sel, p;
-			for (var i = 0; i < pointChildren.length; i++) {
-				sel = $("compoundPointSelect" + pointChildren[i].id);
-				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
-				sel = $(pointChildId);
-				sel.options[0] = new Option("", 0);
-				for (p = 0; p < this.pointList.length; p++) {
-					if (contains(pointChildren[i].dataTypes, this.pointList[p].dataType)) {
-						sel.options[sel.options.length] = new Option(
-							settingsEditor.pointList[p].name,
-							settingsEditor.pointList[p].id
-						);
-					}
-				}
+			for (let i = 0; i < this.targetPointSelects.length; i++) {
+			    let targetPointSelect = this.targetPointSelects[i];
+			    if(targetPointSelect) {
+			        targetPointSelect.clear();
+			    }
+			}
 
-				// Set the control default value.
-				$set(sel, pointChildren[i].viewComponent.dataPointId);
-				jQuery("#" + pointChildId).chosen({
-					allow_single_deselect: true,
-					placeholder_text_single: " ",
-					search_contains: true,
-					width: "400px"
-				});
+			this.targetPointSelects = [];
+
+			for (let i = 0; i < pointChildren.length; i++) {
+				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
+				var dataPointId = pointChildren[i].viewComponent.dataPointId;
+
+                let ref = {}
+                ref.excludePointsArray = [];
+                ref.limit = 500;
+                ref.selectHtmlId = pointChildId;
+                ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                ref.pointsArray = this.pointList.filter((point) => point.id == dataPointId);
+                ref.dataTypes = [];
+                ref.altKey = "id";
+                ref.altValue = "name";
+                ref.widthPx = "400px";
+
+                console.log('ref: ', ref);
+
+                let dataPointsSelect = new DataPointsSelect(ref);
+                console.log('dataPointsSelect: ', dataPointsSelect);
+				this.targetPointSelects[this.targetPointSelects.length] = dataPointsSelect;
+
 				if(this.component.defName === "enhancedImageChart") {	
 					jQuery("#compoundPointColor" + pointChildren[i].id).jPicker({
 						images: {

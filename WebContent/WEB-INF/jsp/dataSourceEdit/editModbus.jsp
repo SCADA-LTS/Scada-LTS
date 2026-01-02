@@ -217,8 +217,8 @@
   }
   
   function addPointImpl() {
-	  DataSourceEditDwr.getPoint(-1, function(point) {
-		  editPointCB(point);
+	  DataSourceEditDwr.getDataPoint(-1, function(response) {
+		  editPointCB(response.data.point);
 	      $set("slaveId", $get("test_slaveId"));
 	      $set("range", $get("test_range"));
 	      $set("modbusDataType", $get("test_modbusDataType"));

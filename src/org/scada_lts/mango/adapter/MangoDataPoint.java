@@ -22,9 +22,11 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DataPointService adapter
@@ -94,4 +96,20 @@ public interface MangoDataPoint {
 	List<DataPointVO> getDataPointsWithAccess(User user);
 
 	List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator);
+
+	List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData, Set<Integer> excludeIds, int offset, int limit);
+
+	List<DataPointVO> getDataPoints(Set<Integer> ids);
+
+	List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, int offset, int limit);
+
+	List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData);
+
+	int getDataPointIdWithAccessPrev(User user, String dataPointName);
+
+	int getDataPointIdWithAccessNext(User user, String dataPointName);
+
+	List<ScadaObjectIdentifier> getDataPointIdentifiersWithAccess(User user);
+
+	List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user);
 }

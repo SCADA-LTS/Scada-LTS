@@ -26,6 +26,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 
 import java.util.*;
@@ -204,6 +205,46 @@ public final class OnlyMigrationDataPointService implements MangoDataPoint {
 
 	@Override
 	public List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData, Set<Integer> excludeIds, int offset, int limit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, int offset, int limit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(Set<Integer> ids) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDataPointIdWithAccessPrev(User user, String startDataPointName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDataPointIdWithAccessNext(User user, String startDataPointName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getDataPointIdentifiersWithAccess(User user) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user) {
 		throw new UnsupportedOperationException();
 	}
 }

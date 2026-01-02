@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
+import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
@@ -11,6 +12,7 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.ApiUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
+import org.scada_lts.web.mvc.api.datasources.SearchDataPointJson;
 import org.scada_lts.web.mvc.api.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -231,6 +234,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return response;
     }
 
+    @Deprecated(since = "2.8.1")
     public List<DataPointIdentifier> searchDataPointIdentifiers(HttpServletRequest request, String searchText) {
         User user = Common.getUser(request);
         List<DataPointIdentifier> response;
@@ -256,6 +260,82 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     .collect(Collectors.toList());
         } catch (Exception ex) {
             throw new BadRequestException(ex, request.getRequestURI());
+        }
+        return response;
+    }
+
+    public List<DataPointBean> searchDataPointBean(HttpServletRequest request,
+                                                   SearchDataPointJson searchDataPointJson) {
+        return searchDataPoint(request, searchDataPointJson).stream().map(DataPointBean::new).collect(Collectors.toList());
+    }
+
+    public List<DataPointIdentifier> searchDataPointIdentifiers(HttpServletRequest request,
+                                                                SearchDataPointJson searchDataPointJson) {
+        return searchDataPoint(request, searchDataPointJson).stream().map(DataPointIdentifier::new).collect(Collectors.toList());
+    }
+
+    public List<DataPointVO> searchDataPoint(HttpServletRequest request,
+                                             SearchDataPointJson searchDataPointJson) {
+
+        checkIfLogoutThenUnauthorized(request);
+        checkArgsIfEmptyThenBadRequest(request, "keywordSearch cannot be empty.", searchDataPointJson.getKeywordSearch());
+
+        User user = Common.getUser(request);
+        List<DataPointVO> response = new ArrayList<>();
+        String keywordSearch = searchDataPointJson.getKeywordSearch();
+        Set<Integer> includeIds = searchDataPointJson.getIncludeIds();
+
+        if(!StringUtils.isEmpty(keywordSearch)) {
+            response = searchDataPoint(request, searchDataPointJson, user).stream()
+                    .filter(filterByDataTypes(searchDataPointJson))
+                    .collect(Collectors.toList());
+        }
+        if(includeIds != null && !includeIds.isEmpty()) {
+            if(response.isEmpty()) {
+                response = getDataPoint(request, includeIds, user);
+            } else {
+                response = filteredDataPoints(response, searchDataPointJson);
+            }
+        }
+        return response;
+    }
+
+    private static List<DataPointVO> filteredDataPoints(List<DataPointVO> response,
+                                                        SearchDataPointJson searchDataPointJson) {
+        return response.stream().limit(searchDataPointJson.getLimit())
+                .filter(filterByIncludeIds(searchDataPointJson))
+                .filter(filterByExcludeIds(searchDataPointJson))
+                .filter(filterByDataTypes(searchDataPointJson))
+                .collect(Collectors.toList());
+    }
+
+    private List<DataPointVO> searchDataPoint(HttpServletRequest request,
+                                              SearchDataPointJson searchDataPointJson,
+                                              User user) {
+        List<DataPointVO> response;
+        try {
+            if(user.isAdmin()) {
+                response = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
+                        searchDataPointJson.getExcludeIds(), 0, searchDataPointJson.getLimit());
+            } else {
+                response = dataPointService.getDataPointsWithAccess(user).stream()
+                        .limit(searchDataPointJson.getLimit())
+                        .filter(filterByKeywords(searchDataPointJson))
+                        .filter(filterByExcludeIds(searchDataPointJson))
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        return response;
+    }
+
+    private List<DataPointVO> getDataPoint(HttpServletRequest request, Set<Integer> includeIds, User user) {
+        List<DataPointVO> response;
+        try {
+            response = filteringByAccess(user, dataPointService.getDataPoints(includeIds));
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return response;
     }
@@ -311,5 +391,23 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         setIf(fromRequest.getName(), toUpdate::setName, a -> !StringUtils.isEmpty(a));
         setIf(fromRequest.isEnabled(), toUpdate::setEnabled, Objects::nonNull);
         setIf(fromRequest.isSettable(), toUpdate::setSettable, Objects::nonNull);
+    }
+
+    private static Predicate<DataPointVO> filterByKeywords(SearchDataPointJson searchDataPointJson) {
+        return point -> point.getName() != null && point.getName().contains(searchDataPointJson.getKeywordSearch());
+    }
+
+    private static Predicate<DataPointVO> filterByIncludeIds(SearchDataPointJson searchDataPointJson) {
+        return id -> searchDataPointJson.getIncludeIds().contains(id.getId());
+    }
+
+    private static Predicate<DataPointVO> filterByExcludeIds(SearchDataPointJson searchDataPointJson) {
+        Set<Integer> excludeIds = searchDataPointJson.getExcludeIds();
+        return id -> excludeIds == null || excludeIds.isEmpty() || !excludeIds.contains(id.getId());
+    }
+
+    private static Predicate<DataPointVO> filterByDataTypes(SearchDataPointJson searchDataPointJson) {
+        Set<Integer> dataTypes = searchDataPointJson.getDataTypes();
+        return dataPoint -> dataTypes == null || dataTypes.isEmpty() || (dataPoint.getPointLocator() == null || dataTypes.contains(dataPoint.getPointLocator().getDataTypeId()));
     }
 }

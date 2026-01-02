@@ -83,14 +83,20 @@
       <tr>
         <td>
             <script>
-                    function init() {
-                        jQuery("#selected_base_on_existing_point_chooser").chosen({
-                            allow_single_deselect: true,
-                            placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-                            search_contains: true,
-                            width: "400px"
-                        });
-                    }
+                   function init() {
+
+                       let ref = {}
+                       ref.excludePointsArray = [];
+                       ref.limit = 500;
+                       ref.selectHtmlId = "selected_base_on_existing_point_chooser";
+                       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                       ref.pointsArray = [];
+                       ref.dataTypes = [];
+                       ref.altKey = "id";
+                       ref.altValue = "name";
+                       ref.widthPx = "400px";
+                       let selectedBaseOnExistingPointChooser = new DataPointsSelect(ref);
+                   }
 
                    function checkGetAlertError() {
                      return jQuery("#checkGetAlertError").prop('checked');

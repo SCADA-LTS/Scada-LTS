@@ -5,10 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -18,9 +15,8 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.mango.service.DataPointService;
 
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
@@ -66,14 +62,16 @@ public class ChartComparatorComponent extends HtmlComponent {
 		StringBuilder sb = new StringBuilder();
 		// sb.append("<div style='width:" + width + "px; height:" + height
 		// + "px; border: 1px solid black;'>");
+		String dp1 = idPrefix + "_dp1";
+		String dp2 = idPrefix + "_dp2";
+		String dp3 = idPrefix + "_dp3";
+		String dp4 = idPrefix + "_dp4";
+
 		sb.append("<div>");
-		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(new DataPointDAO());
-		User user = Common.getUser();
-		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", dataPoints));
+		sb.append(createDataPointsSelectComponent(dp1, Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(dp2, Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(dp3, Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(dp4, Collections.emptyList()));
 		sb.append("<div style='float:right;'><input type='button' style='width: 100%;' value='Atualizar' onclick=\"updateChartComparatorComponent('"
 				+ idPrefix + "'," + width + "," + height + ");\" /> </div>");
 		sb.append("<div style='clear:both;'> </div>");
@@ -104,6 +102,28 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<div style='clear:both;'> </div>");
 
 		sb.append("</div>");
+
+		sb.append("<script>");
+		sb.append("function initPointsSelect(selectId) {");
+		sb.append("let ref = {};");
+		sb.append("ref.excludePointsArray = [];");
+		sb.append("ref.limit = 500;");
+		sb.append("ref.selectHtmlId = selectId;");
+		sb.append("ref.placeholderTextSingle = \"<spring:message code='chosen.selector.selectPoint'/>\";");
+		sb.append("ref.pointsArray = [];");
+		sb.append("ref.dataTypes = [];");
+		sb.append("ref.altKey = \"id\";");
+		sb.append("ref.altValue = \"name\";");
+		sb.append("ref.widthPx = \"400px\";");
+		sb.append("let pointsSelect = new DataPointsSelect(ref);");
+		sb.append("pointsSelect.clear();");
+		sb.append("pointsSelect = new DataPointsSelect(ref);");
+		sb.append("}");
+		sb.append("initPointsSelect(\"" + dp1 + "\");");
+		sb.append("initPointsSelect(\"" + dp2 + "\");");
+		sb.append("initPointsSelect(\"" + dp3 + "\");");
+		sb.append("initPointsSelect(\"" + dp4 + "\");");
+		sb.append("</script>");
 		return sb.toString();
 	}
 

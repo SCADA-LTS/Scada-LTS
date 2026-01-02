@@ -93,7 +93,9 @@
   }
 
   function addTags() {
-	  DataSourceEditDwr.getPoint(-1, addTagsImpl);
+	  DataSourceEditDwr.getDataPoint(-1, function(response) {
+          addTagsImpl(response.data.point);
+      });
   }
   
   function addTagsImpl(point) {
@@ -142,7 +144,9 @@
   }
   
   function btnAddTag() {
-	  DataSourceEditDwr.getPoint(-1, addTagsImplOPC);
+	  DataSourceEditDwr.getDataPoint(-1, function(response) {
+         addTagsImplOPC(response.data.point);
+      });
   }
 
   function addTagsImplOPC(point) {

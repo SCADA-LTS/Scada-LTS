@@ -45,6 +45,12 @@
     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
+    jQuery(document).ready(function(){
+      (function($) {
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
+      })(jQuery);
+    });
 
 	jQuery.noConflict();
 	

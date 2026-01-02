@@ -1162,6 +1162,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                     .enabled(isEnabled())
                     .description(getDescription())
                     .dataSourceName(getDataSourceName())
+                    .settable(isSettable())
                     .build();
         return DataPointIdentifier.builder(PointDataType.byCode(getPointLocator().getDataTypeId()))
                 .id(getId())
@@ -1171,6 +1172,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 .enabled(isEnabled())
                 .description(getDescription())
                 .dataSourceName(getDataSourceName())
+                .settable(getPointLocator().isSettable())
                 .build();
     }
 }

@@ -37,7 +37,7 @@
     <table>
       <tr>
         <td class="formLabelRequired"><spring:message code="viewEdit.settings.point"/></td>
-        <td class="formField"><select id="settingsPointList" onchange="settingsEditor.pointSelectChanged()"></select></td>
+        <td class="formField"><select id="settingsPointList" onchange="settingsEditor.pointSelectChanged(this.value)"></select></td>
       </tr>
       <tr>
         <td class="formLabel"><spring:message code="viewEdit.settings.nameOverride"/></td>
@@ -75,18 +75,36 @@
     function SettingsEditor() {
         this.componentId = null;
         this.pointList = [];
+
+        if(this.dataPointsSelect) {
+            this.dataPointsSelect.clear();
+        }
+
+        let ref = {}
+        ref.excludePointsArray = [];
+        ref.limit = 500;
+        ref.selectHtmlId = "settingsPointList";
+        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+        ref.pointsArray = [];
+        ref.dataTypes = [];
+        ref.altKey = "id";
+        ref.altValue = "name";
+        ref.widthPx = "400px";
+
+        this.dataPointsSelect = new DataPointsSelect(ref);
         
         this.open = function(compId) {
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
-            ViewDwr.getViewComponent(compId, viewId, function(comp) {
-            	
+            ViewDwr.getViewComponentRes(compId, viewId, function(response) {
+            	let comp = response.data.comp;
                 $set("settingsComponentName", comp.displayName);
                 
                 // Update the point list
-                settingsEditor.updatePointList(comp.supportedDataTypes);
-                
+                settingsEditor.setPointList(response.data.pointList);
+                settingsEditor.setDataTypes(comp.supportedDataTypes);
+
                 // Update the data in the form.
                 $set("settingsPointList", comp.dataPointId);
                 $set("settingsPointName", comp.nameOverride);
@@ -95,16 +113,8 @@
                 $set("settingsControls", comp.displayControls);                
                 $set("settingsPositionX", comp.x);
                 $set("settingsPositionY", comp.y);
-                
-                settingsEditor.pointSelectChanged();
-                
-                jQuery("#settingsPointList").chosen({
-            		placeholder_text_single: " ",
-            		search_contains: true,
-            		width: "600px"
-            	});
-                
-                jQuery("#settingsPointList").trigger('chosen:updated');
+
+                settingsEditor.pointSelectChanged(comp.dataPointId);
 
                 positionEditor(compId, "settingsEditorPopup");
                 show("settingsEditorPopup");
@@ -124,7 +134,7 @@
             updatePointPosition(settingsEditor.componentId,
               posX, posY, "settingsPositionX", "settingsPositionY"
             );
-            ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
+            ViewDwr.setPointComponentSettings(settingsEditor.componentId, this.dataPointsSelect.getPointId(),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
                     $get("settingsControls"), posX, posY, viewId, function(response) {
                 if (response.hasMessages) {
@@ -138,30 +148,33 @@
         };
         
         this.setPointList = function(pointList) {
-            settingsEditor.pointList = pointList;
+            this.dataPointsSelect.setPointsArray(pointList);
         };
-        
-        this.pointSelectChanged = function() {
-            var point = getElement(settingsEditor.pointList, $get("settingsPointList"));
-            if (!point || !point.settable) {
-                $set("settingsSettable", false);
-                $("settingsSettable").disabled = true;
+
+        this.setDataTypes = function(dataTypes) {
+            if(dataTypes) {
+                this.dataPointsSelect.setDataTypes(dataTypes);
             }
-            else
-                $("settingsSettable").disabled = false;
         };
         
-        this.updatePointList = function(dataTypes) {
-            dwr.util.removeAllOptions("settingsPointList");
-            		
-            for (i=0; i<settingsEditor.pointList.length; i++) {
-				if (contains(dataTypes, settingsEditor.pointList[i].dataType)) {
-				jQuery("#settingsPointList").append( new Option(
-							settingsEditor.pointList[i].name,
-							settingsEditor.pointList[i].id) );
-				}
-			}
-            jQuery("#settingsPointList").append( new Option('',-1) );
+        this.pointSelectChanged = function(dataPointId) {
+            if(dataPointId > 0) {
+                var point = this.dataPointsSelect.getPoint(dataPointId);
+                if (!point || !point.settable) {
+                    $set("settingsSettable", false);
+                    $("settingsSettable").disabled = true;
+                } else {
+                    $("settingsSettable").disabled = false;
+                }
+
+                if(point) {
+                    this.dataPointsSelect.setPointsArray([point]);
+                    this.dataPointsSelect.setPointId(point.id);
+                }
+            } else {
+                this.dataPointsSelect.setPointsArray([]);
+            }
+
         };
     }
     var settingsEditor = new SettingsEditor();

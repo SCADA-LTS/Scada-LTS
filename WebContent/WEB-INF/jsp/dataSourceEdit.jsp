@@ -87,8 +87,8 @@
         hide(dsStatus);
 
         if (typeof initImpl == 'function') initImpl();
-
-        DataSourceEditDwr.editInit(initCB);
+        let dataSourceId = '${dataSource.id}' ? '${dataSource.id}': '-1';
+        DataSourceEditDwr.editInit(dataSourceId, initCB);
         showMessage("dataSourceMessage");
         showMessage("pointMessage");
     }
@@ -209,23 +209,24 @@
             var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
             if (currentPoint.id!=-1) markRow(childs, false);
         }
-        DataSourceEditDwr.getPoint(pointId, editPointCB);
+        DataSourceEditDwr.getDataPoint(pointId, editPointCB);
         hideContextualMessages("pointProperties");
     }
 
-    function editPointCB(point) {
-        currentPoint = point;
-        display("pointDeleteImg", point.id != <c:out value="<%=Common.NEW_ID%>"/>);
-        var locator = currentPoint.pointLocator;
+    function editPointCB(response) {
+        currentPoint = response.data.point;
+        display("pointDeleteImg", currentPoint.id != <c:out value="<%=Common.NEW_ID%>"/>);
+        let locator = currentPoint.pointLocator;
+        let contextPoints = response.data.contextPoints;
 
         $set("name", unescapeHtml(currentPoint.name));
         $set("xid", unescapeHtml(currentPoint.xid));
         var cancel;
-        if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator);
+        if (typeof editPointCBImpl == 'function') cancel = editPointCBImpl(locator, contextPoints);
         if (!cancel) {
-            startImageFader("editImg"+ point.id);
-            if(point.id!=-1) {
-            	var childs = document.getElementById("editImg" + point.id).parentNode.parentNode.childNodes;
+            startImageFader("editImg"+ currentPoint.id);
+            if(currentPoint.id!=-1) {
+            	var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
 				markRow(childs, true);
             }
             show("pointDetails");

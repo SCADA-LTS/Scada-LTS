@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -214,6 +215,7 @@ import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
+import org.scada_lts.utils.GetDataPointsUtils;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.TimeLocker;
 
@@ -238,10 +240,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 	// Common methods
 	//
 	//
-	public DwrResponseI18n editInit() {
+	public DwrResponseI18n editInit(int dataSourceId) {
         Permissions.ensureAdmin();
+        User user = Common.getUser();
 		DwrResponseI18n response = new DwrResponseI18n();
-		response.addData("points", getPoints());
+		response.addData("points", GetDataPointsUtils.getDataPointsByDataSource(user, dataSourceId, new DataPointService()));
 		response.addData("alarms", getAlarms());
 		return response;
 	}
@@ -318,6 +321,27 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return getPoint(pointId, null);
     }
 
+    public DwrResponseI18n getDataPoint(int pointId) {
+        DataPointVO dataPoint = getPoint(pointId, null);
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("point", dataPoint);
+
+        if(dataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
+            MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+            User user = Common.getUser();
+            DataPointService dataPointService = new DataPointService();
+            List<DataPointBean> contextPoints = dataPointService.getDataPoints(metaPointLocatorVO.getContext().stream()
+                            .map(IntValuePair::getKey)
+                            .collect(Collectors.toSet()), user).stream()
+                    .map(DataPointBean::new)
+                    .collect(Collectors.toList());
+
+            response.addData("contextPoints", contextPoints);
+        }
+
+        return response;
+    }
+
     private DataPointVO getPoint(int pointId, DataPointDefaulter defaulter) {
         Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
@@ -360,7 +384,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
         UsersProfileService usersProfileService = new UsersProfileService();
         usersProfileService.updateDataPointPermissions();
-        return getPoints();
+        User user = Common.getUser();
+        return dp == null ? getPoints() : GetDataPointsUtils.getDataPointsByDataSource(user, dp.getDataSourceId(), new DataPointService());
     }
 
     //
@@ -373,8 +398,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     //
     public DwrResponseI18n togglePoint(int dataPointId) {
         Permissions.ensureAdmin();
-        DwrResponseI18n response = super.toggleDataPoint(dataPointId);
-        response.addData("points", getPoints());
+        User user = Common.getUser();
+        DataPointService dataPointService = new DataPointService();
+        DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
+        DwrResponseI18n response = super.toggleDataPoint(dataPoint);
+        response.addData("points", GetDataPointsUtils.getDataPointsByDataSource(user, dataPoint.getDataSourceId(), dataPointService));
         return response;
     }
 
@@ -1153,7 +1181,20 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     
     public DwrResponseI18n saveMetaPointLocator(int id, String xid,
                                                 String name, MetaPointLocatorVO locator) {
-        return validatePoint(id, xid, name, locator, null);
+
+        DwrResponseI18n response = validatePoint(id, xid, name, locator, null);
+
+        User user = Common.getUser();
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointBean> contextPoints = dataPointService.getDataPoints(locator.getContext().stream()
+                        .map(IntValuePair::getKey)
+                        .collect(Collectors.toSet()), user).stream()
+                .map(DataPointBean::new)
+                .collect(Collectors.toList());
+
+        response.addData("contextPoints", contextPoints);
+        response.addData("locator", locator);
+        return response;
     }
 
     
@@ -1786,7 +1827,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         if (reader.getErrorMessage() == null) {
             tryDataSourceSave(ds);
-            reader.setPoints(getPoints());
+            reader.setPoints(GetDataPointsUtils.getDataPointsByDataSource(user, ds.getId(), new DataPointService()));
         }
 
         return reader;
@@ -2999,12 +3040,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
         DwrResponseI18n response = new DwrResponseI18n();
         if(dataPoint != null) {
-            DataPointVO dataPointCopy = copyAndSaveDataPoint(dataSource, dataPoint, new DataPointService());
+            DataPointVO dataPointCopy = copyAndSaveDataPoint(dataSource, dataPoint, dataPointService);
             response.addData("id", dataPointCopy.getId());
         } else {
             response.addData("id", -1);
         }
-        response.addData("points", getPoints());
+        User user = Common.getUser();
+        response.addData("points", GetDataPointsUtils.getDataPointsByDataSource(user, dataSourceId, dataPointService));
         return response;
     }
     public String getObjectTypeName(int objectTypeId) {

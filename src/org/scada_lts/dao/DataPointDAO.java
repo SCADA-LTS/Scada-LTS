@@ -19,7 +19,10 @@ package org.scada_lts.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
@@ -161,12 +164,41 @@ public class DataPointDAO {
 	//userProfile
 	private static final String COLUMN_NAME_UP_DATA_SOURCE_ID = "dataSourceId";
 
-	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME = ""
+	public static final String ORDER_BY_NAME = ""
+			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
+
+	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
 			+ "dp.id in (select dpu." + COLUMN_NAME_DPU_DATA_POINT_ID + " from dataPointUsers dpu where dpu." + COLUMN_NAME_DPU_USER_ID + "=? and dpu." + COLUMN_NAME_DPU_ACCESS_TYPE +">?) or "
 			+ "dp.id in (select dpup." + COLUMN_NAME_UP_DATA_POINT_ID+" from dataPointUsersProfiles dpup where dpup." +COLUMN_NAME_UP_USER_PRFILE_ID + "=? and dpup."+COLUMN_NAME_UP_PERMISSION+">?) or "
 			+ "dp.dataSourceId in (select dsu." + COLUMN_NAME_DSU_DATA_SOURCE_ID + " from dataSourceUsers dsu where dsu." + COLUMN_NAME_DSU_USER_ID + "=?) or "
-			+ "dp.dataSourceId in (select dsup." + COLUMN_NAME_UP_DATA_SOURCE_ID + " from dataSourceUsersProfiles dsup where dsup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=?) "
-			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
+			+ "dp.dataSourceId in (select dsup." + COLUMN_NAME_UP_DATA_SOURCE_ID + " from dataSourceUsersProfiles dsup where dsup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=?) ";
+
+	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DP_NAME = ""
+			+ DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID
+			+ ORDER_BY_NAME;
+
+    private static final String DATA_POINT_SELECT_ONLY_ID = ""
+            + "select "
+            + "dp." + COLUMN_NAME_ID + " "
+            + "from dataPoints dp join dataSources ds on "
+            + "ds." + COLUMN_NAME_DS_ID + "="
+            + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+
+	public static final String DATA_POINT_NEXT = ""
+			+ " STRCMP(CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + "), ?) > 0 ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
+
+	public static final String DATA_POINT_PREV = ""
+			+ " STRCMP(CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + "), ?) < 0 ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
+
+
+	public static final String DATA_POINT_PREV_ON_USER_ID_USERS_PROFILE_ID = ""
+			+ DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + " AND "
+			+ DATA_POINT_PREV;
+
+	public static final String DATA_POINT_NEXT_ON_USER_ID_USERS_PROFILE_ID = ""
+			+ DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + " AND "
+			+ DATA_POINT_NEXT;
+
 
 	// @formatter:on
 
@@ -184,7 +216,7 @@ public class DataPointDAO {
 			dataPoint.setDataSourceXid( resultSet.getString("dsxid"));
 			dataPoint.setDataSourceName(resultSet.getString(COLUMN_NAME_DS_NAME));
 			dataPoint.setDataSourceTypeId(resultSet.getInt(COLUMN_NAME_DS_DATA_SOURCE_TYPE));
-			
+
 			return dataPoint;
 		}
 	}
@@ -277,6 +309,7 @@ public class DataPointDAO {
 		return dataPointList;
 	}
 
+	@Deprecated(since = "2.8.1")
 	public List<DataPointVO> getDataPointByKeyword(String[] keywords) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointByKeyword(String search) search:" + keywords.toString());
@@ -508,4 +541,105 @@ public class DataPointDAO {
 		String templateSelectWhereXid = DATA_POINT_SELECT + " where ds." + COLUMN_NAME_DS_XID + "=?";
 		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereXid, new Object[] {dataSourceXid}, new DataPointRowMapper());
 	}
+
+	public List<DataPointVO> getDataPointsWithLimit(Set<Integer> excludeIds, int offset, int limit) {
+		StringBuilder templateSelectWhereId = new StringBuilder(DATA_POINT_SELECT);
+		List<String> args = new ArrayList<>();
+		if(excludeIds != null && !excludeIds.isEmpty()) {
+			templateSelectWhereId.append(" AND").append(" dp.")
+					.append(COLUMN_NAME_ID)
+					.append(" NOT IN (")
+					.append("?, ".repeat(excludeIds.size() - 1))
+					.append("?").append(") ");
+
+			args.addAll(excludeIds.stream().map(Object::toString).collect(Collectors.toList()));
+		}
+
+		if(limit > 0) {
+			templateSelectWhereId.append(" LIMIT ").append(limit);
+			if (offset > 0)
+				templateSelectWhereId.append(" OFFSET ").append(offset);
+		}
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereId.toString(), new DataPointRowMapper(), args.toArray());
+	}
+
+	public List<DataPointVO> selectDataPoints(Set<Integer> ids) {
+		if(ids.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + " "
+						+ "dp." + COLUMN_NAME_ID + " in (" + "?,".repeat(ids.size() - 1) + "?) "
+						+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME,
+				ids.toArray(),
+				new DataPointRowMapper());
+	}
+
+	public List<DataPointVO> getDataPointByKeywords(Set<String> keywords, Set<Integer> excludeIds, int offset, int limit) {
+		if(keywords.isEmpty())
+			return Collections.emptyList();
+		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
+		List<String> args = new ArrayList<>();
+		for (String keyword : keywords) {
+			templateSelectWhereSearch.append(" AND CONCAT(ds.")
+					.append(COLUMN_NAME_DS_NAME)
+					.append(", ' - ', dp.")
+					.append(COLUMN_NAME_DATAPOINT_NAME)
+					.append(")")
+					.append(" LIKE ? ");
+			args.add("%"+keyword+"%");
+		}
+
+		if(excludeIds != null && !excludeIds.isEmpty()) {
+			templateSelectWhereSearch.append(" AND dp.")
+					.append(COLUMN_NAME_ID)
+					.append(" NOT IN (")
+					.append("?, ".repeat(excludeIds.size() - 1))
+					.append("?").append(") ");
+
+			args.addAll(excludeIds.stream().map(Object::toString).collect(Collectors.toList()));
+		}
+
+		if(limit > 0) {
+			templateSelectWhereSearch.append(" LIMIT ").append(limit);
+			if (offset > 0)
+				templateSelectWhereSearch.append(" OFFSET ").append(offset);
+		}
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch.toString(), new DataPointRowMapper(), args.toArray());
+	}
+
+    public int selectDataPointIdWithAccessPrev(int userId, int profileId, String name) {
+        try {
+            return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_SELECT_ONLY_ID + " where " + DATA_POINT_PREV_ON_USER_ID_USERS_PROFILE_ID,
+                    new Object[] { userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE, userId, profileId, name }, int.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return -1;
+        }
+    }
+
+    public int selectDataPointIdWithAccessNext(int userId, int profileId, String name) {
+        try {
+            return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_SELECT_ONLY_ID + " where " + DATA_POINT_NEXT_ON_USER_ID_USERS_PROFILE_ID,
+                    new Object[]{ userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE, userId, profileId, name }, int.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return -1;
+        }
+    }
+
+    public int selectDataPointIdWithAccessPrev(String name) {
+        try {
+            return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_SELECT_ONLY_ID + " where " + DATA_POINT_PREV,
+                    new Object[] { name }, int.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return -1;
+        }
+    }
+
+    public int selectDataPointIdWithAccessNext(String name) {
+        try {
+            return DAO.getInstance().getJdbcTemp().queryForObject(DATA_POINT_SELECT_ONLY_ID + " where " + DATA_POINT_NEXT,
+                    new Object[]{ name }, int.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return -1;
+        }
+    }
 }

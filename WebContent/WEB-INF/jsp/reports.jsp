@@ -23,15 +23,13 @@
 
 <tag:page dwr="ReportsDwr" js="emailRecipients" onload="init">
   <script type="text/javascript">
-    var allPointsArray = new Array();
-    var reportPointsContext;
+    var pointsContext;
     var selectedReport;
     var emailRecipients;
     
     function init() {
         ReportsDwr.init(function(response) {
             hide("hourglass");
-            allPointsArray = response.data.points;
             
             emailRecipients = new mango.erecip.EmailRecipients("recipients",
                     "<spring:message code="reports.recipTestEmailMessage"/>", response.data.mailingLists, response.data.users);
@@ -47,12 +45,6 @@
             <c:if test="${!empty param.wlid}">
               ReportsDwr.createReportFromWatchlist(${param.wlid}, loadReportCB);
             </c:if>
-        });
-        jQuery("#allPointsList").chosen({
-            allow_single_deselect: true,
-            placeholder_text_single: " ",
-            search_contains: true,
-            width: "400px"
         });
     }
     
@@ -70,7 +62,8 @@
         display("copyImg", reportId != <c:out value="<%= Common.NEW_ID %>"/>);
     }
     
-    function loadReportCB(report) {
+    function loadReportCB(response) {
+        let report = response.data.report;
         if (!report)
             return;
         if (!selectedReport)
@@ -78,7 +71,23 @@
         selectedReport = report;
         
         $set("name", report.name);
-        let handlePointsContext = new ReportPointsContext(report.points, allPointsArray);
+
+        let ref = {}
+        ref.excludePointsArray = report.points;
+        ref.limit = 500;
+        ref.selectHtmlId = "allPointsList";
+        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+        ref.pointsArray = response.data.points;
+        ref.dataTypes = [];
+        ref.altKey = "id";
+        ref.altValue = "name";
+        ref.widthPx = "400px";
+
+        if(pointsContext) {
+            pointsContext.clear();
+        }
+
+        let handlePointsContext = new ReportPointsContext(ref);
         setPointsContext(handlePointsContext);
 
         $set("includeEvents", report.includeEvents);
@@ -121,16 +130,8 @@
         updateEmailFields();
     }
 
-    function setPointsContext(reportPointsContext) {
-        this.reportPointsContext = reportPointsContext;
-    }
-    
-    function updatePointColour(pointId, colour) {
-        reportPointsContext.updatePoint(pointId, "colour", colour);
-    }
-    
-    function updatePointConsolidatedChart(pointId, consolidatedChart) {
-        reportPointsContext.updatePoint(pointId, "consolidatedChart", consolidatedChart);
+    function setPointsContext(pointsContext) {
+        this.pointsContext = pointsContext;
     }
 
     function updateReportInstancesList(instanceArray) {
@@ -301,7 +302,7 @@
     
     function saveReport() {
         startImageFader("saveImg");
-        ReportsDwr.saveReport(selectedReport.id, $get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
+        ReportsDwr.saveReport(selectedReport.id, $get("name"), this.pointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -372,7 +373,7 @@
         if (hasImageFader("runImg"))
             return;
         
-        ReportsDwr.runReport($get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
+        ReportsDwr.runReport($get("name"), this.pointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -487,7 +488,7 @@
               <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
                 <select id="allPointsList"></select>
-                <tag:img png="add" onclick="reportPointsContext.addPointToContext();" title="common.add"/>
+                <tag:img png="add" onclick="pointsContext.addPointToContext(this.value);" title="common.add"/>
                 
                 <table cellspacing="1">
                   <tbody id="contextTableEmpty" style="display:none;">

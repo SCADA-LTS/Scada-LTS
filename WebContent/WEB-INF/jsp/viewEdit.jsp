@@ -45,7 +45,7 @@
             //mango.share.writeSharedUsers(result.viewUsers);
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
-            compoundEditor.setPointList(result.pointList, viewId);
+            compoundEditor.setPointList(result.pointList);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
         

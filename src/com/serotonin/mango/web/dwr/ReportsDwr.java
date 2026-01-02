@@ -38,9 +38,9 @@ import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
 import org.scada_lts.web.mvc.api.dto.MailingListJson;
+import org.scada_lts.utils.GetDataPointsUtils;
 
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +52,7 @@ public class ReportsDwr extends BaseDwr {
         MangoReport reportService = new ReportService();
         User user = Common.getUser();
 
-        response.addData("points", getReadablePoints());
+
         MailingListService mailingListService = new MailingListService();
         List<MailingList> mailingListFromDatabase = mailingListService.getMailingLists();
         List<MailingListJson> mailingLists = mailingListFromDatabase.stream()
@@ -70,8 +70,9 @@ public class ReportsDwr extends BaseDwr {
         return response;
     }
 
-    public ReportVO getReport(int id, boolean copy) {
+    public DwrResponseI18n getReport(int id, boolean copy) {
         ReportVO report;
+        DwrResponseI18n response = new DwrResponseI18n();
         if (id == Common.NEW_ID) {
             report = new ReportVO();
             report.setName(getMessage("common.newName"));
@@ -84,9 +85,14 @@ public class ReportsDwr extends BaseDwr {
                 report.setName(LocalizableMessage.getMessage(getResourceBundle(), "common.copyPrefix", report.getName()));
             }
 
-            Permissions.ensureReportPermission(Common.getUser(), report);
+            User user = Common.getUser();
+            Permissions.ensureReportPermission(user, report);
+
+            DataPointService dataPointService = new DataPointService();
+            response.addData("points", GetDataPointsUtils.getDataPointsByReport(user, report, dataPointService));
         }
-        return report;
+        response.addData("report", report);
+        return response;
     }
 
     public DwrResponseI18n saveReport(int id, String name, List<ReportPointVO> points, int includeEvents,

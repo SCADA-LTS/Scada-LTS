@@ -22,6 +22,8 @@
   var dataTypeId = ${form.pointLocator.dataTypeId};
 </script>
 <script type="text/javascript">
+
+  var datPointDetailsPointSelect;
   function doSave(taskName) {
       $("taskName").name = taskName;
       textRendererEditor.save(doSaveEventTextRenderer);
@@ -46,12 +48,31 @@
 	  	})(jQuery);	  
   });
   window.onload = function() {
-	  jQuery("#allPointsList").chosen({
-	      	allow_single_deselect: true,
-			placeholder_text_single: " ",
-			search_contains: true,
-			width: "400px"
-	  });
+
+    if(this.datPointDetailsPointSelect) {
+        this.datPointDetailsPointSelect.clear();
+    }
+
+    let point = {
+        id : "<c:out value="${form.id}"/>",
+        name : "<c:out value="${form.extendedName}"/>",
+        xid : "<c:out value="${form.xid}"/>",
+        dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
+    }
+
+    let ref = {}
+    ref.excludePointsArray = [];
+    ref.limit = 500;
+    ref.selectHtmlId = "allPointsList";
+    ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+    ref.pointsArray = [point];
+    ref.dataTypes = [];
+    ref.altKey = "id";
+    ref.altValue = "name";
+    ref.widthPx = "400px";
+    ref.invisibleEmptyOption = true;
+
+    this.datPointDetailsPointSelect = new DataPointsSelect(ref);
   }
 </script>
 
@@ -68,12 +89,9 @@
     </td>
     <td valign="top" align="right">
       <spring:message code="pointEdit.name.goto"/>:&nbsp;
-      <sst:select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
-        <c:forEach items="${userPoints}" var="point">
-          <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
-        </c:forEach>
-      </sst:select>
-      
+      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" >
+      </select>
+
       <c:if test="${!empty prevId}">
         <tag:img png="bullet_go_left" title="pagination.previous"
                 onclick="window.location='data_point_edit.shtm?dpid=${prevId}'"/>
