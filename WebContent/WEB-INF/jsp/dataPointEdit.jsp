@@ -84,18 +84,7 @@
         <td>
             <script>
                    function init() {
-
-                       let ref = {}
-                       ref.excludePointsArray = [];
-                       ref.limit = 500;
-                       ref.selectHtmlId = "selected_base_on_existing_point_chooser";
-                       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                       ref.pointsArray = [];
-                       ref.dataTypes = [];
-                       ref.altKey = "id";
-                       ref.altValue = "name";
-                       ref.widthPx = "400px";
-                       let selectedBaseOnExistingPointChooser = new DataPointsSelect(ref);
+                       let selectedBaseOnExistingPointChooser = initPointsSelect("selected_base_on_existing_point_chooser", "<spring:message code='chosen.selector.selectPoint'/>");
                    }
 
                    function checkGetAlertError() {

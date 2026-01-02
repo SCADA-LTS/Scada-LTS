@@ -45,12 +45,9 @@
     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
 	<script type="text/javascript">
-    jQuery(document).ready(function(){
-      (function($) {
-        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-      })(jQuery);
-    });
+
+    loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
+    loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
 
 	jQuery.noConflict();
 	
@@ -258,6 +255,13 @@
 			}
 		});
 	}
+
+	function loadPointsSelects() {
+	  let pointsSelects = jQuery("select[id^=chartComparator]");
+      for(let i=0; i < pointsSelects.length; i++) {
+        initPointsSelect(pointsSelects[i].id, "<spring:message code='chosen.selector.selectPoint'/>", "200px");
+      }
+	}
 </script>
 
 	<table class="subPageHeader" id="graphical">
@@ -305,7 +309,11 @@
 	<script type="text/javascript">
 	
 		checkFullScreen();
-	
+
+        jQuery(document).ready(function(){
+            loadPointsSelects();
+        });
+
 	</script>
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />

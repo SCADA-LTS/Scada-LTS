@@ -280,52 +280,9 @@
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
 
-                if(selectedHandlerNode.targetPointIdSelect) {
-                    selectedHandlerNode.targetPointIdSelect.clear();
-                }
-                if(selectedHandlerNode.activePointIdSelect) {
-                    selectedHandlerNode.activePointIdSelect.clear();
-                }
-                if(selectedHandlerNode.inactivePointIdSelect) {
-                    selectedHandlerNode.inactivePointIdSelect.clear();
-                }
-
-                let targetPointRef = {}
-                targetPointRef.excludePointsArray = [];
-                targetPointRef.limit = 500;
-                targetPointRef.selectHtmlId = "targetPointSelect";
-                targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                targetPointRef.pointsArray = allPoints.filter((point) => point.id == handler.targetPointId);
-                targetPointRef.dataTypes = [];
-                targetPointRef.altKey = "id";
-                targetPointRef.altValue = "name";
-                targetPointRef.widthPx = "400px";
-
-                let activePointRef = {}
-                activePointRef.excludePointsArray = allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.inactivePointId);
-                activePointRef.limit = 500;
-                activePointRef.selectHtmlId = "activePointId";
-                activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                activePointRef.pointsArray = allPoints.filter((point) => point.id == handler.activePointId);
-                activePointRef.dataTypes = [];
-                activePointRef.altKey = "id";
-                activePointRef.altValue = "name";
-                activePointRef.widthPx = "400px";
-
-                let inactivePointRef = {}
-                inactivePointRef.excludePointsArray = allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.activePointId);
-                inactivePointRef.limit = 500;
-                inactivePointRef.selectHtmlId = "inactivePointId";
-                inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                inactivePointRef.pointsArray = allPoints.filter((point) => point.id == handler.inactivePointId);
-                inactivePointRef.dataTypes = [];
-                inactivePointRef.altKey = "id";
-                inactivePointRef.altValue = "name";
-                inactivePointRef.widthPx = "400px";
-
-                selectedHandlerNode.targetPointIdSelect = new DataPointsSelect(targetPointRef);
-                selectedHandlerNode.activePointIdSelect = new DataPointsSelect(activePointRef);
-                selectedHandlerNode.inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
+                selectedHandlerNode.targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], allPoints.filter((point) => point.id == handler.targetPointId));
+                selectedHandlerNode.activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.inactivePointId), allPoints.filter((point) => point.id == handler.activePointId));
+                selectedHandlerNode.inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.activePointId), allPoints.filter((point) => point.id == handler.inactivePointId));
 
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
@@ -354,52 +311,11 @@
                 $set("inactiveScriptCommand", handler.inactiveScriptCommand);
             }
         } else {
-            if(targetPointSelect) {
-                targetPointSelect.clear();
-            }
-            if(activePointIdSelect) {
-                activePointIdSelect.clear();
-            }
-            if(inactivePointIdSelect) {
-                inactivePointIdSelect.clear();
-            }
 
-            let targetPointRef = {}
-            targetPointRef.excludePointsArray = [];
-            targetPointRef.limit = 500;
-            targetPointRef.selectHtmlId = "targetPointSelect";
-            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            targetPointRef.pointsArray = [];
-            targetPointRef.dataTypes = [];
-            targetPointRef.altKey = "id";
-            targetPointRef.altValue = "name";
-            targetPointRef.widthPx = "400px";
+            targetPointSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>");
+            activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>");
+            inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>");
 
-            let activePointRef = {}
-            activePointRef.excludePointsArray = [];
-            activePointRef.limit = 500;
-            activePointRef.selectHtmlId = "activePointId";
-            activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            activePointRef.pointsArray = [];
-            activePointRef.dataTypes = [];
-            activePointRef.altKey = "id";
-            activePointRef.altValue = "name";
-            activePointRef.widthPx = "400px";
-
-            let inactivePointRef = {}
-            inactivePointRef.excludePointsArray = [];
-            inactivePointRef.limit = 500;
-            inactivePointRef.selectHtmlId = "inactivePointId";
-            inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            inactivePointRef.pointsArray = [];
-            inactivePointRef.dataTypes = [];
-            inactivePointRef.altKey = "id";
-            inactivePointRef.altValue = "name";
-            inactivePointRef.widthPx = "400px";
-
-            targetPointSelect = new DataPointsSelect(targetPointRef);
-            activePointIdSelect = new DataPointsSelect(activePointRef);
-            inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
             $("saveImg").src = "images/save_add.png";
             hide("deleteImg");
             $("handlerTypeSelect").disabled = false;

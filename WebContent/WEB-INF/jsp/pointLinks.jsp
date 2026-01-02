@@ -55,38 +55,8 @@
             $set("event", pl.event);
             $set("disabled", pl.disabled);
 
-            if(sourcePointId) {
-                sourcePointId.clear();
-            }
-
-            if(targetPointId) {
-                targetPointId.clear();
-            }
-
-            let sourcePointIdRef = {}
-            sourcePointIdRef.excludePointsArray = response.data.targetPoints;
-            sourcePointIdRef.limit = 500;
-            sourcePointIdRef.selectHtmlId = "sourcePointId";
-            sourcePointIdRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            sourcePointIdRef.pointsArray = response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId);
-            sourcePointIdRef.dataTypes = [];
-            sourcePointIdRef.altKey = "id";
-            sourcePointIdRef.altValue = "name";
-            sourcePointIdRef.widthPx = "400px";
-
-            let targetPointIdRef = {}
-            targetPointIdRef.excludePointsArray = response.data.sourcePoints;
-            targetPointIdRef.limit = 500;
-            targetPointIdRef.selectHtmlId = "targetPointId";
-            targetPointIdRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            targetPointIdRef.pointsArray = response.data.targetPoints.filter((point) => point.id == pl.targetPointId);
-            targetPointIdRef.dataTypes = [];
-            targetPointIdRef.altKey = "id";
-            targetPointIdRef.altValue = "name";
-            targetPointIdRef.widthPx = "400px";
-
-            sourcePointId = new DataPointsSelect(sourcePointIdRef);
-            targetPointId = new DataPointsSelect(targetPointIdRef);
+            sourcePointId = initPointsSelect("sourcePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.targetPoints, response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId));
+            targetPointId = initPointsSelect("targetPointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.sourcePoints, response.data.targetPoints.filter((point) => point.id == pl.targetPointId));
 
             setUserMessage();
         });

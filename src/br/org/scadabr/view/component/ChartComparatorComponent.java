@@ -9,14 +9,11 @@ import java.util.*;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
-import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.mango.service.DataPointService;
 
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
@@ -102,28 +99,6 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<div style='clear:both;'> </div>");
 
 		sb.append("</div>");
-
-		sb.append("<script>");
-		sb.append("function initPointsSelect(selectId) {");
-		sb.append("let ref = {};");
-		sb.append("ref.excludePointsArray = [];");
-		sb.append("ref.limit = 500;");
-		sb.append("ref.selectHtmlId = selectId;");
-		sb.append("ref.placeholderTextSingle = \"<spring:message code='chosen.selector.selectPoint'/>\";");
-		sb.append("ref.pointsArray = [];");
-		sb.append("ref.dataTypes = [];");
-		sb.append("ref.altKey = \"id\";");
-		sb.append("ref.altValue = \"name\";");
-		sb.append("ref.widthPx = \"400px\";");
-		sb.append("let pointsSelect = new DataPointsSelect(ref);");
-		sb.append("pointsSelect.clear();");
-		sb.append("pointsSelect = new DataPointsSelect(ref);");
-		sb.append("}");
-		sb.append("initPointsSelect(\"" + dp1 + "\");");
-		sb.append("initPointsSelect(\"" + dp2 + "\");");
-		sb.append("initPointsSelect(\"" + dp3 + "\");");
-		sb.append("initPointsSelect(\"" + dp4 + "\");");
-		sb.append("</script>");
 		return sb.toString();
 	}
 

@@ -1997,7 +1997,7 @@ class DataPointsSelect {
                         }
                     });
                 }
-            }, 500));
+            }, 1000));
         });
     }
 
@@ -2157,4 +2157,26 @@ class DataPointsSelect {
         clearTimeout(this.searchTimer);
         this.searchTimer = searchTimer;
     }
+}
+
+function initPointsSelect(selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption) {
+
+    console.log("[]", [selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption]);
+    let ref = {}
+    ref.excludePointsArray = excludePointsArray || [];
+    ref.limit = 500;
+    ref.selectHtmlId = selectHtmlId;
+    ref.placeholderTextSingle = placeholderTextSingle;
+    ref.pointsArray = pointsArray || [];
+    ref.dataTypes = dataTypes || [];
+    ref.altKey = "id";
+    ref.altValue = "name";
+    ref.widthPx = widthPx || "400px";
+    ref.invisibleEmptyOption = invisibleEmptyOption || false;
+
+    console.log("ref: ", ref);
+
+    let dataPointsSelect = new DataPointsSelect(ref);
+    dataPointsSelect.clear();
+    return new DataPointsSelect(ref);
 }

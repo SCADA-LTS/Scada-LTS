@@ -49,30 +49,13 @@
   });
   window.onload = function() {
 
-    if(this.datPointDetailsPointSelect) {
-        this.datPointDetailsPointSelect.clear();
-    }
-
     let point = {
         id : "<c:out value="${form.id}"/>",
         name : "<c:out value="${form.extendedName}"/>",
         xid : "<c:out value="${form.xid}"/>",
         dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
     }
-
-    let ref = {}
-    ref.excludePointsArray = [];
-    ref.limit = 500;
-    ref.selectHtmlId = "allPointsList";
-    ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-    ref.pointsArray = [point];
-    ref.dataTypes = [];
-    ref.altKey = "id";
-    ref.altValue = "name";
-    ref.widthPx = "400px";
-    ref.invisibleEmptyOption = true;
-
-    this.datPointDetailsPointSelect = new DataPointsSelect(ref);
+    this.datPointDetailsPointSelect = initPointsSelect("allPointsList", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [point], [], true);
   }
 </script>
 

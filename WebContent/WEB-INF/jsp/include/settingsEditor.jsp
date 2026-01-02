@@ -76,23 +76,8 @@
         this.componentId = null;
         this.pointList = [];
 
-        if(this.dataPointsSelect) {
-            this.dataPointsSelect.clear();
-        }
+        this.dataPointsSelect = initPointsSelect("settingsPointList", "<spring:message code='chosen.selector.selectPoint'/>");
 
-        let ref = {}
-        ref.excludePointsArray = [];
-        ref.limit = 500;
-        ref.selectHtmlId = "settingsPointList";
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-        ref.pointsArray = [];
-        ref.dataTypes = [];
-        ref.altKey = "id";
-        ref.altValue = "name";
-        ref.widthPx = "400px";
-
-        this.dataPointsSelect = new DataPointsSelect(ref);
-        
         this.open = function(compId) {
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;

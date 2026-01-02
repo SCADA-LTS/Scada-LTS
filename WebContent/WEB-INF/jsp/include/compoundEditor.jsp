@@ -365,36 +365,11 @@
                 }
 			});
 
-				// Add options to the controls.
-			for (let i = 0; i < this.targetPointSelects.length; i++) {
-			    let targetPointSelect = this.targetPointSelects[i];
-			    if(targetPointSelect) {
-			        targetPointSelect.clear();
-			    }
-			}
-
-			this.targetPointSelects = [];
-
 			for (let i = 0; i < pointChildren.length; i++) {
 				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
 				var dataPointId = pointChildren[i].viewComponent.dataPointId;
 
-                let ref = {}
-                ref.excludePointsArray = [];
-                ref.limit = 500;
-                ref.selectHtmlId = pointChildId;
-                ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                ref.pointsArray = this.pointList.filter((point) => point.id == dataPointId);
-                ref.dataTypes = [];
-                ref.altKey = "id";
-                ref.altValue = "name";
-                ref.widthPx = "400px";
-
-                console.log('ref: ', ref);
-
-                let dataPointsSelect = new DataPointsSelect(ref);
-                console.log('dataPointsSelect: ', dataPointsSelect);
-				this.targetPointSelects[this.targetPointSelects.length] = dataPointsSelect;
+				this.targetPointSelects[this.targetPointSelects.length] = initPointsSelect(pointChildId, "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], this.pointList.filter((point) => point.id == dataPointId));
 
 				if(this.component.defName === "enhancedImageChart") {	
 					jQuery("#compoundPointColor" + pointChildren[i].id).jPicker({
