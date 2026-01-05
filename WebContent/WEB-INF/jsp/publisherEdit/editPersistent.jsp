@@ -192,7 +192,7 @@
   </tr>
 </table>
 
-<table cellpadding="0" cellspacing="0"><tr><td>
+<table cellpadding="0" cellspacing="0" style="width:100%;"><tr><td style="width:100%;">
   <div class="borderDiv">
     <table width="100%">
       <tr>
@@ -211,7 +211,7 @@
         <td><spring:message code="publisherEdit.point.type"/></td>
         <td></td>
       </tr>
-      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
+      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="4"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
       <tbody id="selectedPoints"></tbody>
     </table>
     <div id="pointsMsg" class="formError" style="display:none;"></div>
