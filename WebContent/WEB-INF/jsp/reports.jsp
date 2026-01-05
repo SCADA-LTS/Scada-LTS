@@ -391,13 +391,6 @@
         });
         startImageFader("runImg");
     }
-
-    jQuery(document).ready(function(){
-        (function($) {
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-        })(jQuery);
-    });
   </script>
   
   <table cellpadding="0" cellspacing="0"><tr><td>
@@ -488,7 +481,7 @@
               <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
                 <select id="allPointsList"></select>
-                <tag:img png="add" onclick="pointsContext.addPointToContext(this.value);" title="common.add"/>
+                <tag:img png="add" onclick="pointsContext.addPointToContext();" title="common.add"/>
                 
                 <table cellspacing="1">
                   <tbody id="contextTableEmpty" style="display:none;">

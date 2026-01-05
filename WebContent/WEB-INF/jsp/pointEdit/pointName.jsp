@@ -23,7 +23,6 @@
 </script>
 <script type="text/javascript">
 
-  var datPointDetailsPointSelect;
   function doSave(taskName) {
       $("taskName").name = taskName;
       textRendererEditor.save(doSaveEventTextRenderer);
@@ -41,12 +40,6 @@
   function doSaveForm() {
       document.forms[0].submit();
   }
-  jQuery(document).ready(function(){
-	  (function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-	  	})(jQuery);	  
-  });
   window.onload = function() {
 
     let point = {
@@ -55,7 +48,7 @@
         xid : "<c:out value="${form.xid}"/>",
         dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
     }
-    this.datPointDetailsPointSelect = initPointsSelect("allPointsList", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [point], [], true);
+    let datPointDetailsPointSelect = initPointsSelect("allPointsList", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [point], [], true);
   }
 </script>
 

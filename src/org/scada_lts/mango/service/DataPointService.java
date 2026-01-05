@@ -238,6 +238,7 @@ public class DataPointService implements MangoDataPoint {
 		return pointsWithListData;
 	}
 
+	@Deprecated(since = "2.8.1")
 	public List<DataPointVO> searchDataPoints(String[] keywords) {
 		return dataPointDAO.getDataPointByKeyword(keywords);
 	}

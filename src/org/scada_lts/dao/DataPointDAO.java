@@ -543,7 +543,7 @@ public class DataPointDAO {
 	}
 
 	public List<DataPointVO> getDataPointsWithLimit(Set<Integer> excludeIds, int offset, int limit) {
-		StringBuilder templateSelectWhereId = new StringBuilder(DATA_POINT_SELECT);
+		StringBuilder templateSelectWhereId = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
 		List<String> args = new ArrayList<>();
 		if(excludeIds != null && !excludeIds.isEmpty()) {
 			templateSelectWhereId.append(" AND").append(" dp.")

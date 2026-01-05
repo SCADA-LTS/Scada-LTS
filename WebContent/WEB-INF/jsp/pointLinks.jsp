@@ -24,8 +24,8 @@
 <tag:page dwr="PointLinksDwr" onload="init">
   <script type="text/javascript">
     var editingPointLink;
-    var sourcePointId;
-    var targetPointId;
+    var sourcePointSelect;
+    var targetPointSelect;
     
     function init() {
         PointLinksDwr.init(function(response) {
@@ -55,10 +55,12 @@
             $set("event", pl.event);
             $set("disabled", pl.disabled);
 
-            sourcePointId = initPointsSelect("sourcePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.targetPoints, response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId));
-            targetPointId = initPointsSelect("targetPointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.sourcePoints, response.data.targetPoints.filter((point) => point.id == pl.targetPointId));
+            sourcePointSelect = initPointsSelect("sourcePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.targetPoints, response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId), [], false);
+            targetPointSelect = initPointsSelect("targetPointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.sourcePoints, response.data.targetPoints.filter((point) => point.id == pl.targetPointId), [], false);
 
             setUserMessage();
+            sourcePointSelect.setPointId(pl.sourcePointId);
+            targetPointSelect.setPointId(pl.targetPointId);
         });
         startImageFader($("pl"+ plId +"Img"));
         display("deletePointLinkImg", plId != ${NEW_ID});
@@ -147,12 +149,28 @@
             showDwrMessages(response.messages);
         });
     }
-    jQuery(document).ready(function(){
-        (function($) {
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-        })(jQuery);
-    });
+
+    function sourcePointSelectChanged() {
+        let sourcePoint = sourcePointSelect.getPoint();
+        let targetPointId = targetPointSelect.getPointId();
+
+        targetPointSelect.setDataTypes([sourcePoint.dataType]);
+        targetPointSelect.updatePointsList([sourcePoint]);
+        targetPointSelect.setPointId(targetPointId);
+
+        console.log("sourcePointSelectChanged: ",[targetPointId, sourcePoint, targetPointSelect]);
+    }
+
+    function targetPointSelectChanged() {
+        let sourcePointId = sourcePointSelect.getPointId();
+        let targetPoint = targetPointSelect.getPoint();
+
+        sourcePointSelect.setDataTypes([targetPoint.dataType]);
+        sourcePointSelect.updatePointsList([targetPoint]);
+        sourcePointSelect.setPointId(sourcePointId);
+
+        console.log("targetPointSelectChanged: ",[sourcePointId, targetPoint, sourcePointSelect]);
+    }
   </script>
   
   <table class="subPageHeader">
@@ -200,12 +218,12 @@
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.source"/></td>
-              <td class="formField"><select id="sourcePointId"></select></td>
+              <td class="formField"><select id="sourcePointId" onchange="sourcePointSelectChanged()"></select></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.target"/></td>
-              <td class="formField"><select id="targetPointId"></select></td>
+              <td class="formField"><select id="targetPointId" onchange="targetPointSelectChanged()"></select></td>
             </tr>
             
             <tr>

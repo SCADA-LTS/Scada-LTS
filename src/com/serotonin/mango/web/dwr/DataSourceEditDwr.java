@@ -224,6 +224,7 @@ import static com.serotonin.mango.rt.dataSource.bacnet.BACnetUtils.checkFreePort
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
+import static org.scada_lts.utils.GetDataPointsUtils.getContextPoints;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
@@ -326,16 +327,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DwrResponseI18n response = new DwrResponseI18n();
         response.addData("point", dataPoint);
 
-        if(dataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
-            MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+        if(dataPoint != null && dataPoint.getPointLocator() instanceof MetaPointLocatorVO) {
+            MetaPointLocatorVO locator = dataPoint.getPointLocator();
             User user = Common.getUser();
             DataPointService dataPointService = new DataPointService();
-            List<DataPointBean> contextPoints = dataPointService.getDataPoints(metaPointLocatorVO.getContext().stream()
-                            .map(IntValuePair::getKey)
-                            .collect(Collectors.toSet()), user).stream()
-                    .map(DataPointBean::new)
-                    .collect(Collectors.toList());
-
+            List<DataPointBean> contextPoints = getContextPoints(locator, user, dataPointService);
             response.addData("contextPoints", contextPoints);
         }
 
@@ -1186,12 +1182,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         User user = Common.getUser();
         DataPointService dataPointService = new DataPointService();
-        List<DataPointBean> contextPoints = dataPointService.getDataPoints(locator.getContext().stream()
-                        .map(IntValuePair::getKey)
-                        .collect(Collectors.toSet()), user).stream()
-                .map(DataPointBean::new)
-                .collect(Collectors.toList());
-
+        List<DataPointBean> contextPoints = getContextPoints(locator, user, dataPointService);
         response.addData("contextPoints", contextPoints);
         response.addData("locator", locator);
         return response;

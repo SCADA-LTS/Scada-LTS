@@ -119,7 +119,7 @@ public class DataPointEditController {
         user.setEditPoint(dataPoint);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
-        ControllerUtils.addPointListDataToModel(user, dataPoint, model);
+        ControllerUtils.addPointListDataToModel(model::addAttribute, user, dataPoint);
         model.addAttribute("form", dataPoint);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
 		model.addAttribute("eventTextRenderers", BaseEventTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
@@ -152,7 +152,7 @@ public class DataPointEditController {
         	executeUpdate(request, dataPoint, errors);
         }
         
-        ControllerUtils.addPointListDataToModel(user, dataPoint, model);
+        ControllerUtils.addPointListDataToModel(model::addAttribute, user, dataPoint);
         model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));

@@ -24,13 +24,6 @@
 
 <tag:page dwr="EventHandlersDwr,ScriptsDwr" js="emailRecipients" onload="init">
   <script>
-    jQuery(document).ready(function(){
-      (function($) {
-        loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-        loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-      })(jQuery);
-    });
-
     function init() {
     	ScriptsDwr.getScripts(getScriptsCB);
         EventHandlersDwr.getInitData(initCB);
@@ -257,7 +250,7 @@
         }
     }
 
-    var targetPointSelect;
+    var targetPointIdSelect;
     var activePointIdSelect;
     var inactivePointIdSelect;
 
@@ -280,15 +273,17 @@
             $set("disabled", handler.disabled);
             if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
 
-                selectedHandlerNode.targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], allPoints.filter((point) => point.id == handler.targetPointId));
-                selectedHandlerNode.activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.inactivePointId), allPoints.filter((point) => point.id == handler.activePointId));
-                selectedHandlerNode.inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", allPoints.filter((point) => point.id == handler.targetPointId || point.id == handler.activePointId), allPoints.filter((point) => point.id == handler.inactivePointId));
+                let targetPoint = allPoints.find((point) => point.id == handler.targetPointId);
+                let activePoint = allPoints.find((point) => point.id == handler.activePointId);
+                let inactivePoint = allPoints.find((point) => point.id == handler.inactivePointId);
+
+                selectedHandlerNode.targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [targetPoint], [], false, true);
+                selectedHandlerNode.activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", inactivePoint ? [targetPoint, inactivePoint] : [targetPoint], activePoint ? [activePoint] : [], [targetPoint.dataType], false, true);
+                selectedHandlerNode.inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", activePoint ? [targetPoint, activePoint] : [targetPoint], inactivePoint ? [inactivePoint] : [], [targetPoint.dataType], false, true);
 
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
-                selectedHandlerNode.targetPointIdSelect.setPointId(handler.targetPointId);
-                selectedHandlerNode.activePointIdSelect.setPointId(handler.activePointId);
-                selectedHandlerNode.inactivePointIdSelect.setPointId(handler.inactivePointId);
+                targetPointSelectChanged(handler.targetPointId, handler.activeValueToSet, handler.inactiveValueToSet, handler.activePointId, handler.inactivePointId);
             }
             else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>) {
                 emailRecipients.updateRecipientList(handler.activeRecipients);
@@ -312,7 +307,7 @@
             }
         } else {
 
-            targetPointSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>");
+            targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>");
             activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>");
             inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>");
 
@@ -400,22 +395,11 @@
                         function(content) { $("inactiveValueToSetContent").innerHTML = content; });
 
                 let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
-                let activePoint = selectedHandlerNode.activePointIdSelect.getPoint();
-                let inactivePoint = selectedHandlerNode.inactivePointIdSelect.getPoint();
-
                 selectedHandlerNode.activePointIdSelect.setDataTypes([targetPoint.dataType]);
-                if(inactivePoint) {
-                    selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
-                } else {
-                    selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint]);
-                }
+                selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint]);
 
                 selectedHandlerNode.inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
-                if(activePoint) {
-                    selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
-                } else {
-                    selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint]);
-                }
+                selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint]);
 
                 activePointSelectChanged(activePointId ? activePointId : selectedHandlerNode.object.activePointId);
                 inactivePointSelectChanged(inactivePointId ? inactivePointId : selectedHandlerNode.object.inactivePointId);
@@ -426,7 +410,7 @@
                 EventHandlersDwr.createSetValueContent(targetPointId, "", "Inactive",
                         function(content) { $("inactiveValueToSetContent").innerHTML = content; });
 
-                let targetPoint = targetPointSelect.getPoint();
+                let targetPoint = targetPointIdSelect.getPoint();
                 activePointIdSelect.setDataTypes([targetPoint.dataType]);
                 activePointIdSelect.updatePointsList([targetPoint]);
 
@@ -448,13 +432,57 @@
 
     function activePointSelectChanged(value) {
         if(selectedHandlerNode) {
-            selectedHandlerNode.activePointIdSelect.setPointId(value);
+            let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
+            let activePoint = selectedHandlerNode.activePointIdSelect.getPoint();
+            let inactiveId = selectedHandlerNode.inactivePointIdSelect.getPointId();
+
+            selectedHandlerNode.inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
+            if(activePoint) {
+                selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
+            } else {
+                selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint]);
+            }
+            selectedHandlerNode.inactivePointIdSelect.setPointId(inactiveId);
+        } else {
+            let targetPoint = targetPointIdSelect.getPoint();
+            let activePoint = activePointIdSelect.getPoint();
+            let inactiveId = inactivePointIdSelect.getPointId();
+
+            inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
+            if(activePoint) {
+                inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
+            } else {
+                inactivePointIdSelect.updatePointsList([targetPoint]);
+            }
+            inactivePointIdSelect.setPointId(inactiveId);
         }
     }
 
     function inactivePointSelectChanged(value) {
         if(selectedHandlerNode) {
-            selectedHandlerNode.inactivePointIdSelect.setPointId(value);
+            let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
+            let inactivePoint = selectedHandlerNode.inactivePointIdSelect.getPoint();
+            let activeId = selectedHandlerNode.activePointIdSelect.getPointId();
+
+            selectedHandlerNode.activePointIdSelect.setDataTypes([targetPoint.dataType]);
+            if(inactivePoint) {
+                selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
+            } else {
+                selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint]);
+            }
+            selectedHandlerNode.activePointIdSelect.setPointId(activeId);
+        } else {
+            let targetPoint = targetPointIdSelect.getPoint();
+            let inactivePoint = inactivePointIdSelect.getPoint();
+            let activeId = activePointIdSelect.getPointId();
+
+            activePointIdSelect.setDataTypes([targetPoint.dataType]);
+            if(inactivePoint) {
+                activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
+            } else {
+                activePointIdSelect.updatePointsList([targetPoint]);
+            }
+            activePointIdSelect.setPointId(activeId);
         }
     }
 
@@ -535,23 +563,25 @@
             EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
           } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
-            let activePointId1 = $get("activePointId");
-            activePointId1 = activePointId1 == 'undefined' || !activePointId1 ? 0 : activePointId1;
-            let inactivePointId1 = $get("inactivePointId");
-            inactivePointId1 = inactivePointId1 == 'undefined' || !inactivePointId1 ? 0 : inactivePointId1;
-            let targetPointIdSelect = selectedHandlerNode && selectedHandlerNode.targetPointIdSelect ? selectedHandlerNode.targetPointIdSelect : targetPointSelect;
 
-            let object = this;
+            let activePointId = $get("activePointId");
+            activePointId = activePointId == 'undefined' || !activePointId ? 0 : activePointId;
+
+            let inactivePointId = $get("inactivePointId");
+            inactivePointId = inactivePointId == 'undefined' || !inactivePointId ? 0 : inactivePointId;
+
+            let targetPointSelect = selectedHandlerNode && selectedHandlerNode.targetPointIdSelect ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
+
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
-                    disabled, targetPointIdSelect.getPointId(), $get("activeAction"), $get("setPointValueActive"),
-                    activePointId1, $get("inactiveAction"), $get("setPointValueInactive"),
-                    inactivePointId1, function(response) {
+                    disabled, targetPointSelect.getPointId(), $get("activeAction"), $get("setPointValueActive"),
+                    activePointId, $get("inactiveAction"), $get("setPointValueInactive"),
+                    inactivePointId, function(response) {
                         if(!response.hasMessages) {
-                            object.setAllPoints(response.data.allPoints);
+                            let allPoints = response.data.allPoints;
                             let handler = response.data.handler;
-                            object.targetPointSelectChanged(targetPointIdSelect.getPointId(), handler.activeValueToSet,
-                            handler.inactiveValueToSet, handler.activePointId, handler.inactivePointId);
+                            setAllPoints(allPoints);
+                            targetPointSelectChanged(handler.targetPointId, handler.activeValueToSet, handler.inactiveValueToSet, handler.activePointId, handler.inactivePointId);
                         }
                         saveEventHandlerCB(response);
                     });

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.serotonin.mango.util.SqlDataSourceUtils;
 import com.serotonin.mango.vo.CommPortProxy;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -49,6 +50,7 @@ public class DataSourceEditController extends ParameterizableViewController {
         Permissions.ensureAdmin(user);
 
         DataPointService dataPointService = new DataPointService();
+        DataSourceService dataSourceService = new DataSourceService();
 
         // Get the id.
         int id = Common.NEW_ID;
@@ -57,16 +59,7 @@ public class DataSourceEditController extends ParameterizableViewController {
         if (idStr == null) {
             // Check for a data point id
             String pidStr = request.getParameter("pid");
-            if (pidStr == null) {
-                // Adding a new data source? Get the type id.
-                int typeId = Integer.parseInt(request.getParameter("typeId"));
-
-                // A new data source
-                dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
-                dataSourceVO.setId(Common.NEW_ID);
-                dataSourceVO.setXid(dataPointService.generateUniqueXid());
-            }
-            else {
+            if (pidStr != null) {
                 int pid = Integer.parseInt(pidStr);
                 dp = dataPointService.getDataPoint(pid);
                 if (dp == null)
@@ -82,6 +75,14 @@ public class DataSourceEditController extends ParameterizableViewController {
             dataSourceVO = Common.ctx.getRuntimeManager().getDataSource(id);
             if (dataSourceVO == null)
                 throw new ShouldNeverHappenException("DataSource not found with id " + id);
+        } else {
+            // Adding a new data source? Get the type id.
+            int typeId = Integer.parseInt(request.getParameter("typeId"));
+
+            // A new data source
+            dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
+            dataSourceVO.setId(Common.NEW_ID);
+            dataSourceVO.setXid(dataSourceService.generateUniqueXid());
         }
 
         // Set the id of the data source in the user object for the DWR.

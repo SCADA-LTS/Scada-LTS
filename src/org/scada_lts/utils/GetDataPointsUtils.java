@@ -14,6 +14,7 @@ import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -94,6 +95,14 @@ public final class GetDataPointsUtils {
 
         List<EventHandlerVO> eventHandlers = eventService.getEventHandlers();
         return new HashSet<>(GetDataPointsUtils.getDataPointsByEventHandlers(user, eventHandlers, new DataPointService()));
+    }
+
+    public static List<DataPointBean> getContextPoints(MetaPointLocatorVO locator, User user, DataPointService dataPointService) {
+        return dataPointService.getDataPoints(locator.getContext().stream()
+                        .map(IntValuePair::getKey)
+                        .collect(Collectors.toSet()), user).stream()
+                .map(DataPointBean::new)
+                .collect(Collectors.toList());
     }
 
     private static Set<Integer> getDataPointIdsByViewComponents(View view) {

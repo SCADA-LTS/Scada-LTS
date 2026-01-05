@@ -1953,6 +1953,7 @@ class DataPointsSelect {
         this.altKey = dataPointsSelectDef.altKey || "id";
         this.altValue = dataPointsSelectDef.altValue || "name";
         this.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
+        this.lastEmptyOption = dataPointsSelectDef.lastEmptyOption || false;
         this.lastPoint = {};
 
         jQuery("#" + dataPointsSelectDef.selectHtmlId).chosen({
@@ -1989,7 +1990,6 @@ class DataPointsSelect {
                         dataType: "json",
                         url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + keywordSearch + "&limit=" + select.getLimit() + "&excludeIds=" + excludeIds + "&dataTypes=" + select.getDataTypes(),
                         success: function(points) {
-                            console.log([keywordSearch, select.getLimit(), excludeIds, select.getDataTypes(), points]);
                             select.setPointsArray(points, keywordSearch);
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -2101,7 +2101,10 @@ class DataPointsSelect {
        }
 
        if(!this.invisibleEmptyOption) {
-           this.#addEmptyOption(availPoints, false);
+          let single = {}
+          single[this.altKey] = undefined;
+          single[this.altValue] = this.placeholderTextSingle;
+          this.#addEmptyOption(availPoints, single, this.lastEmptyOption);
        }
 
        if(availPoints.length == 0 && this.lastPoint) {
@@ -2126,17 +2129,13 @@ class DataPointsSelect {
       }
     }
 
-    #addEmptyOption(availPoints, unshift) {
-       let object = {}
-       object[this.altKey] = undefined;
-       object[this.altValue] = this.placeholderTextSingle;
-
+    #addEmptyOption(availPoints, object, lastEmptyOption) {
        let emptyIndex = availPoints.indexOf(object);
        if(emptyIndex == -1) {
-          if(unshift) {
-              availPoints.unshift(object);
-          } else {
+          if(lastEmptyOption) {
               availPoints.push(object);
+          } else {
+              availPoints.unshift(object);
           }
        }
     }
@@ -2159,9 +2158,8 @@ class DataPointsSelect {
     }
 }
 
-function initPointsSelect(selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption) {
+function initPointsSelect(selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption, lastEmptyOption) {
 
-    console.log("[]", [selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption]);
     let ref = {}
     ref.excludePointsArray = excludePointsArray || [];
     ref.limit = 500;
@@ -2173,8 +2171,7 @@ function initPointsSelect(selectHtmlId, placeholderTextSingle, widthPx, excludeP
     ref.altValue = "name";
     ref.widthPx = widthPx || "400px";
     ref.invisibleEmptyOption = invisibleEmptyOption || false;
-
-    console.log("ref: ", ref);
+    ref.lastEmptyOption = lastEmptyOption || false;
 
     let dataPointsSelect = new DataPointsSelect(ref);
     dataPointsSelect.clear();

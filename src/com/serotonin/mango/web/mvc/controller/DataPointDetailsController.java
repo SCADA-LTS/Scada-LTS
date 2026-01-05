@@ -162,7 +162,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 		user.setEditPoint(point);
 
 		// Find accessible points for the goto list
-		ControllerUtils.addPointListDataToModel(user, point, model);
+		ControllerUtils.addPointListDataToModel(model::put, user, point);
 
 		return new ModelAndView(getViewName(), model);
 	}

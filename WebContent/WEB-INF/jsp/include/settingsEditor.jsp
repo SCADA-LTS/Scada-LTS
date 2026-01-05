@@ -16,8 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
-<link href="resources/jQuery/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css"/>	
-<script type="text/javascript" src="resources/jQuery/plugins/chosen/chosen.jquery.min.js"></script>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <div id="settingsEditorPopup" style="display:none;left:0px;top:0px;" class="windowDiv">
   <div>

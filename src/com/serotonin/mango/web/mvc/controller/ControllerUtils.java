@@ -19,6 +19,7 @@
 package com.serotonin.mango.web.mvc.controller;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.serotonin.db.IntValuePair;
@@ -88,38 +89,22 @@ public final class ControllerUtils {
             model.addAttribute("nextId", userPoints.get(pointIndex + 1).getId());
     }
 
-    public static void addPointListDataToModel(User user, DataPointVO point, Map<String, Object> model) {
+    public static void addPointListDataToModel(BiConsumer<String, Object> model, User user, DataPointVO point) {
+
+        if(point == null) {
+            acceptModel(model, Collections.emptyList(), -1, -1);
+            return;
+        }
+
         DataPointService dataPointService = new DataPointService();
 
         int prevId = dataPointService.getDataPointIdWithAccessPrev(user, point.getExtendedName());
         int nextId = dataPointService.getDataPointIdWithAccessNext(user, point.getExtendedName());
         List<DataPointVO> userPoints = new ArrayList<>();
-        if(GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
+        if (GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
             userPoints.add(point);
-        model.put("userPoints", userPoints);
 
-        // Determine next and previous ids
-        if (prevId > 0)
-            model.put("prevId", prevId);
-        if (nextId > 0)
-            model.put("nextId", nextId);
-    }
-
-    public static void addPointListDataToModel(User user, DataPointVO point, Model model){
-        DataPointService dataPointService = new DataPointService();
-
-        int prevId = dataPointService.getDataPointIdWithAccessPrev(user, point.getExtendedName());
-        int nextId = dataPointService.getDataPointIdWithAccessNext(user, point.getExtendedName());
-        List<DataPointVO> userPoints = new ArrayList<>();
-        if(GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
-            userPoints.add(point);
-        model.addAttribute("userPoints", userPoints);
-
-        // Determine next and previous ids
-        if (prevId > 0)
-            model.addAttribute("prevId", prevId);
-        if (nextId > 0)
-            model.addAttribute("nextId", nextId);
+        acceptModel(model, userPoints, prevId, nextId);
     }
 
     public static String getHomeUrl(User user) {
@@ -180,5 +165,16 @@ public final class ControllerUtils {
         if (GetDataPointsWithAccess.hasDataPointReadPermission(user, dp)) {
             userPoints.add(dp);
         }
+    }
+
+    private static void acceptModel(BiConsumer<String, Object> model, List<DataPointVO> userPoints, int prevId, int nextId) {
+
+        model.accept("userPoints", userPoints);
+
+        // Determine next and previous ids
+        if (prevId > 0)
+            model.accept("prevId", prevId);
+        if (nextId > 0)
+            model.accept("nextId", nextId);
     }
 }

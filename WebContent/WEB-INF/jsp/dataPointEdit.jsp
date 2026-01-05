@@ -887,13 +887,6 @@
                            					        	});
                   }
 
-                    jQuery(document).ready(function(){
-                        (function($) {
-                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-                        })(jQuery);
-                    });
-
                    jQuery(document).ready(function() {
                        function updateSuffixForEngineeringUnits() {
                            let value = jQuery("select[name='engineeringUnits']").val();

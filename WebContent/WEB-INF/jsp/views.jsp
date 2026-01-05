@@ -46,9 +46,6 @@
 
 	<script type="text/javascript">
 
-    loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-    loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {

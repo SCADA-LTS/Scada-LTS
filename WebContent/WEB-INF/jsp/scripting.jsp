@@ -266,15 +266,6 @@
         else
             hide($("userMessage"));
     }
-
-    jQuery(document).ready(function(){
-    	(function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-    	})(jQuery);
-    });
-
-
   </script>
 
   <style>body{ overflow:hidden;}</style>

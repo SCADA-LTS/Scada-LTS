@@ -101,13 +101,6 @@
   function updateEventChanged() {
       display("updateCronPatternRow", $get("updateEvent") == <%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>);
   }
-  
-  jQuery(document).ready(function(){    
-  	(function($) {
-		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
-		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-  	})(jQuery);
-  });
 </script>
 
 <c:set var="dsDesc"><spring:message code="dsEdit.meta.desc"/></c:set>

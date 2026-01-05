@@ -210,7 +210,6 @@
 					value: pointId && pointId != 'undefined' ? pointId : 0
 				});
 			}
-			console.log('this.component: ',this.component);
 			switch(this.component.defName) {
 				case 'simpleCompound':
 					ViewDwr.saveSimpleCompoundComponent(this.component.id, 
