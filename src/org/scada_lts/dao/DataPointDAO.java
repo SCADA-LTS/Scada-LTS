@@ -185,18 +185,18 @@ public class DataPointDAO {
             + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
 	public static final String DATA_POINT_NEXT = ""
-			+ " STRCMP(CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + "), ?) > 0 ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
+			+ " CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + ") > ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
 
 	public static final String DATA_POINT_PREV = ""
-			+ " STRCMP(CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + "), ?) < 0 ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
+			+ " CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + ") < ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
 
 
 	public static final String DATA_POINT_PREV_ON_USER_ID_USERS_PROFILE_ID = ""
-			+ DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + " AND "
+			+ "(" + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + ") AND "
 			+ DATA_POINT_PREV;
 
 	public static final String DATA_POINT_NEXT_ON_USER_ID_USERS_PROFILE_ID = ""
-			+ DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + " AND "
+			+ "(" + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + ") AND "
 			+ DATA_POINT_NEXT;
 
 
@@ -574,7 +574,7 @@ public class DataPointDAO {
 				new DataPointRowMapper());
 	}
 
-	public List<DataPointVO> getDataPointByKeywords(Set<String> keywords, Set<Integer> excludeIds, int offset, int limit) {
+	public List<DataPointVO> getDataPointByKeywords(Set<String> keywords, Set<Integer> excludeIds, boolean startsWith, int offset, int limit) {
 		if(keywords.isEmpty())
 			return Collections.emptyList();
 		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
@@ -586,7 +586,11 @@ public class DataPointDAO {
 					.append(COLUMN_NAME_DATAPOINT_NAME)
 					.append(")")
 					.append(" LIKE ? ");
-			args.add("%"+keyword+"%");
+			if(startsWith) {
+				args.add(keyword + "%");
+			} else {
+				args.add("%" + keyword + "%");
+			}
 		}
 
 		if(excludeIds != null && !excludeIds.isEmpty()) {

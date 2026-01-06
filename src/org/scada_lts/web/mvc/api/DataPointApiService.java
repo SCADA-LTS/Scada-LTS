@@ -316,7 +316,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         try {
             if(user.isAdmin()) {
                 response = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
-                        searchDataPointJson.getExcludeIds(), 0, searchDataPointJson.getLimit());
+                        searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(), 0, searchDataPointJson.getLimit());
             } else {
                 response = dataPointService.getDataPointsWithAccess(user).stream()
                         .limit(searchDataPointJson.getLimit())
@@ -394,7 +394,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     }
 
     private static Predicate<DataPointVO> filterByKeywords(SearchDataPointJson searchDataPointJson) {
-        return point -> point.getName() != null && point.getName().contains(searchDataPointJson.getKeywordSearch());
+        return point -> point.getName() != null && (searchDataPointJson.isStartsWith() ? point.getName().startsWith(searchDataPointJson.getKeywordSearch()) : point.getName().contains(searchDataPointJson.getKeywordSearch()));
     }
 
     private static Predicate<DataPointVO> filterByIncludeIds(SearchDataPointJson searchDataPointJson) {

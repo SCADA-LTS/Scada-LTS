@@ -36,7 +36,7 @@
         payload.id = -1;
         payload.script = $get("script");
 
-        let toSave = this.pointsContext.convertToSave();
+        let toSave = pointsContext.convertToSave();
         payload.pointsOnContext = convertPointsOnContext(toSave);
         payload.datapointContext = objectsContextArray[0] ? objectsContextArray[0].value : "";
         payload.datasourceContext = objectsContextArray[1] ? objectsContextArray[1].value : "";
@@ -74,8 +74,7 @@
         let pointsOnContext = [];
         for(let i = 0; i < toSave.length; i++) {
             let entry = toSave[i];
-            let dataPoint = this.pointsContext.getContextPointById(entry.key);
-            console.log('dataPoint: ',dataPoint);
+            let dataPoint = pointsContext.getContextPointById(entry.key);
             if(dataPoint) {
                 let dataPointXid = dataPoint.xid ? dataPoint.xid : dataPoint.pointXid;
                 let varName = entry.value;
@@ -140,7 +139,6 @@
             let handlePointsContext = new ScriptPointsContext(ref);
             setPointsContext(handlePointsContext);
 
-            console.log('editingScript.objectsOnContext: ', editingScript.objectsOnContext);
             clearObjectsTable();
 		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)
 		 		 objectsContextArray.push({key: editingScript.objectsOnContext[i].key, value: editingScript.objectsOnContext[i].value});
@@ -170,7 +168,7 @@
 
     function saveScript() {
         ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
-                $get("script"),this.pointsContext.convertToSave(),objectsContextArray,
+                $get("script"),pointsContext.convertToSave(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
 		                showDwrMessages(response.messages);

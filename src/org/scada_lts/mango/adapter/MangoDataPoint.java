@@ -101,7 +101,7 @@ public interface MangoDataPoint {
 
 	List<DataPointVO> getDataPoints(Set<Integer> ids);
 
-	List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, int offset, int limit);
+	List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean start, int offset, int limit);
 
 	List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData);
 

@@ -146,7 +146,7 @@ public final class GetDataPointsUtils {
     }
 
     private static <T> List<T> getDataPointsByChildren(User user, List<KeyValuePair> childPointIds, Function<DataPointVO, T> converter, DataPointService dataPointService) {
-        Set<Integer> ids = childPointIds.stream().map(pair -> Integer.parseInt(pair.getValue())).collect(Collectors.toSet());
+        Set<Integer> ids = childPointIds.stream().map(pair -> convertToInt(pair.getValue())).collect(Collectors.toSet());
         return dataPointService.getDataPoints(ids)
                 .stream()
                 .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
@@ -218,5 +218,13 @@ public final class GetDataPointsUtils {
                 .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
                 .map(converter)
                 .collect(Collectors.toList());
+    }
+
+    private static int convertToInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception ex) {
+            return 0;
+        }
     }
 }

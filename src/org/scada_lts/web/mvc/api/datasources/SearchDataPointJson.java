@@ -2,17 +2,20 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
-import java.util.List;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 public class SearchDataPointJson {
 
     @XssProtect
+    @NotEmpty
     private String keywordSearch;
     private Set<Integer> includeIds;
     private Set<Integer> excludeIds;
     private Set<Integer> dataTypes;
     private int limit;
+    private boolean startsWith;
 
     public String getKeywordSearch() {
         return keywordSearch;
@@ -52,5 +55,13 @@ public class SearchDataPointJson {
 
     public void setDataTypes(Set<Integer> dataTypes) {
         this.dataTypes = dataTypes;
+    }
+
+    public boolean isStartsWith() {
+        return startsWith;
+    }
+
+    public void setStartsWith(boolean startsWith) {
+        this.startsWith = startsWith;
     }
 }

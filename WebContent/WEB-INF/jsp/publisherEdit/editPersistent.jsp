@@ -52,7 +52,7 @@
       hide("portMsg");
       hide("pointsMsg");
       
-      let points = this.pointsContext.convertToSave();
+      let points = pointsContext.convertToSave();
       
       PublisherEditDwr.savePersistentSender(name, xid, enabled, points, $get("host"), $get("port"),
               $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,

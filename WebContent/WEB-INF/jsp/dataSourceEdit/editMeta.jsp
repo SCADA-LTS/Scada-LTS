@@ -63,7 +63,7 @@
       ref.altValue = "name";
       ref.widthPx = "400px";
 
-      this.pointsContext = new ScriptPointsContext(ref);
+      pointsContext = new ScriptPointsContext(ref);
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);
@@ -77,7 +77,7 @@
   }
   
   function savePointImpl(locator) {
-      locator.context = this.pointsContext.convertToSave();
+      locator.context = pointsContext.convertToSave();
       locator.script = $get("script");
       locator.dataTypeId = $get("dataTypeId");
       locator.settable = $get("settable");
@@ -91,7 +91,7 @@
 
   function validateScript() {
       hideContextualMessages("pointProperties");
-      DataSourceEditDwr.validateScript($get("script"), this.pointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
+      DataSourceEditDwr.validateScript($get("script"), pointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
   }
   
   function validateScriptCB(response) {
@@ -127,7 +127,7 @@
     <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
       <select id="allPointsList"></select>
-      <tag:img png="add" onclick="pointsContext.addPointToContext(this.value);" title="common.add"/>
+      <tag:img png="add" onclick="pointsContext.addPointToContext();" title="common.add"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">

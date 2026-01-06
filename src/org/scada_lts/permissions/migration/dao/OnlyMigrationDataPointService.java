@@ -214,7 +214,7 @@ public final class OnlyMigrationDataPointService implements MangoDataPoint {
 	}
 
 	@Override
-	public List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, int offset, int limit) {
+	public List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, boolean start, int offset, int limit) {
 		throw new UnsupportedOperationException();
 	}
 

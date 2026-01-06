@@ -185,7 +185,7 @@
       hide("urlMsg");
       hide("pointsMsg");
       
-      let points = this.pointsContext.convertToSave();
+      let points = pointsContext.convertToSave();
 
       updateStaticHeadersList();
 
