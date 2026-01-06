@@ -55,8 +55,20 @@
             $set("event", pl.event);
             $set("disabled", pl.disabled);
 
-            sourcePointSelect = initPointsSelect("sourcePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.targetPoints, response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId), [], false);
-            targetPointSelect = initPointsSelect("targetPointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", response.data.sourcePoints, response.data.targetPoints.filter((point) => point.id == pl.targetPointId), [], false);
+            let sourcePointRef = {};
+            sourcePointRef.selectHtmlId = "sourcePointId";
+            sourcePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            sourcePointRef.excludePointsArray = response.data.targetPoints;
+            sourcePointRef.pointsArray = response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId);
+
+            let targetPointRef = {};
+            targetPointRef.selectHtmlId = "targetPointId";
+            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            targetPointRef.excludePointsArray = response.data.sourcePoints;
+            targetPointRef.pointsArray = response.data.targetPoints.filter((point) => point.id == pl.targetPointId);
+
+            sourcePointSelect = new DataPointsSelect(sourcePointRef);
+            targetPointSelect = new DataPointsSelect(targetPointRef);
 
             setUserMessage();
             sourcePointSelect.setPointId(pl.sourcePointId);
@@ -157,8 +169,6 @@
         targetPointSelect.setDataTypes([sourcePoint.dataType]);
         targetPointSelect.updatePointsList([sourcePoint]);
         targetPointSelect.setPointId(targetPointId);
-
-        console.log("sourcePointSelectChanged: ",[targetPointId, sourcePoint, targetPointSelect]);
     }
 
     function targetPointSelectChanged() {
@@ -168,8 +178,6 @@
         sourcePointSelect.setDataTypes([targetPoint.dataType]);
         sourcePointSelect.updatePointsList([targetPoint]);
         sourcePointSelect.setPointId(sourcePointId);
-
-        console.log("targetPointSelectChanged: ",[sourcePointId, targetPoint, sourcePointSelect]);
     }
   </script>
   

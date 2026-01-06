@@ -256,7 +256,13 @@
 	function loadPointsSelects() {
 	  let pointsSelects = jQuery("select[id^=chartComparator]");
       for(let i=0; i < pointsSelects.length; i++) {
-        initPointsSelect(pointsSelects[i].id, "<spring:message code='chosen.selector.selectPoint'/>", "200px");
+
+        let ref = {};
+        ref.selectHtmlId = pointsSelects[i].id;
+        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+        ref.widthPx = "200px";
+
+        let dataPointsSelect = new DataPointsSelect(ref);
       }
 	}
 </script>

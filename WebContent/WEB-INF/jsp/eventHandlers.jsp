@@ -277,9 +277,31 @@
                 let activePoint = allPoints.find((point) => point.id == handler.activePointId);
                 let inactivePoint = allPoints.find((point) => point.id == handler.inactivePointId);
 
-                selectedHandlerNode.targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [targetPoint], [], false, true);
-                selectedHandlerNode.activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", inactivePoint ? [targetPoint, inactivePoint] : [targetPoint], activePoint ? [activePoint] : [], [targetPoint.dataType], false, true);
-                selectedHandlerNode.inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", activePoint ? [targetPoint, activePoint] : [targetPoint], inactivePoint ? [inactivePoint] : [], [targetPoint.dataType], false, true);
+                let targetPointRef = {}
+                targetPointRef.selectHtmlId = "targetPointSelect";
+                targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                targetPointRef.pointsArray = [targetPoint];
+                targetPointRef.lastEmptyOption = true;
+
+                let activePointRef = {}
+                activePointRef.selectHtmlId = "activePointId";
+                activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                activePointRef.excludePointsArray = inactivePoint ? [targetPoint, inactivePoint] : [targetPoint];
+                activePointRef.pointsArray = activePoint ? [activePoint] : [];
+                activePointRef.dataTypes = [targetPoint.dataType];
+                activePointRef.lastEmptyOption = true;
+
+                let inactivePointRef = {}
+                inactivePointRef.selectHtmlId = "inactivePointId";
+                inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                inactivePointRef.excludePointsArray = activePoint ? [targetPoint, activePoint] : [targetPoint];
+                inactivePointRef.pointsArray = inactivePoint ? [inactivePoint] : [];
+                inactivePointRef.dataTypes = [targetPoint.dataType];
+                inactivePointRef.lastEmptyOption = true;
+
+                selectedHandlerNode.targetPointIdSelect = new DataPointsSelect(targetPointRef);
+                selectedHandlerNode.activePointIdSelect = new DataPointsSelect(activePointRef);
+                selectedHandlerNode.inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
 
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
@@ -307,9 +329,24 @@
             }
         } else {
 
-            targetPointIdSelect = initPointsSelect("targetPointSelect", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [], [], false, true);
-            activePointIdSelect = initPointsSelect("activePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [], [], false, true);
-            inactivePointIdSelect = initPointsSelect("inactivePointId", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [], [], false, true);
+            let targetPointRef = {}
+            targetPointRef.selectHtmlId = "targetPointSelect";
+            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            targetPointRef.lastEmptyOption = true;
+
+            let activePointRef = {}
+            activePointRef.selectHtmlId = "activePointId";
+            activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            activePointRef.lastEmptyOption = true;
+
+            let inactivePointRef = {}
+            inactivePointRef.selectHtmlId = "inactivePointId";
+            inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            inactivePointRef.lastEmptyOption = true;
+
+            targetPointIdSelect = new DataPointsSelect(targetPointRef);
+            activePointIdSelect = new DataPointsSelect(activePointRef);
+            inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
 
             $("saveImg").src = "images/save_add.png";
             hide("deleteImg");
@@ -394,43 +431,31 @@
                 EventHandlersDwr.createSetValueContent(targetPointId, inactiveValueStr, "Inactive",
                         function(content) { $("inactiveValueToSetContent").innerHTML = content; });
 
-                let activePoint = selectedHandlerNode.activePointIdSelect.getPoint();
-                let inactivePoint = selectedHandlerNode.inactivePointIdSelect.getPoint();
-
-                if(activePoint && inactivePoint) {
-                    selectedHandlerNode.targetPointIdSelect.updatePointsList([activePoint, inactivePoint]);
-                } else if(activePoint) {
-                    selectedHandlerNode.targetPointIdSelect.updatePointsList([activePoint]);
-                } else if(inactivePoint) {
-                    selectedHandlerNode.targetPointIdSelect.updatePointsList([inactivePoint]);
-                }
-                selectedHandlerNode.targetPointIdSelect.setPointId(targetPointId);
-
-                activePointSelectChanged();
-                inactivePointSelectChanged();
-
             } else {
                 EventHandlersDwr.createSetValueContent(targetPointId, "", "Active",
                         function(content) { $("activeValueToSetContent").innerHTML = content; });
                 EventHandlersDwr.createSetValueContent(targetPointId, "", "Inactive",
                         function(content) { $("inactiveValueToSetContent").innerHTML = content; });
-
-                let activePoint = activePointIdSelect.getPoint();
-                let inactivePoint = inactivePointIdSelect.getPoint();
-
-                if(activePoint && inactivePoint) {
-                    targetPointIdSelect.updatePointsList([activePoint, inactivePoint]);
-                } else if(activePoint) {
-                    targetPointIdSelect.updatePointsList([activePoint]);
-                } else if(inactivePoint) {
-                    targetPointIdSelect.updatePointsList([inactivePoint]);
-                }
-                targetPointIdSelect.setPointId(targetPointId);
-
-                activePointSelectChanged();
-                inactivePointSelectChanged();
             }
 
+            let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
+            let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
+            let targetPointSelect = selectedHandlerNode ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
+
+            let activePoint = activePointSelect.getPoint();
+            let inactivePoint = inactivePointSelect.getPoint();
+
+            if(activePoint && inactivePoint) {
+                targetPointSelect.updatePointsList([activePoint, inactivePoint]);
+            } else if(activePoint) {
+                targetPointSelect.updatePointsList([activePoint]);
+            } else if(inactivePoint) {
+                targetPointSelect.updatePointsList([inactivePoint]);
+            }
+            targetPointSelect.setPointId(targetPointId);
+
+            activePointSelectChanged();
+            inactivePointSelectChanged();
 
         } else {
             let activeAction = document.getElementById('activeAction');
@@ -441,59 +466,39 @@
     }
 
     function activePointSelectChanged() {
-        if(selectedHandlerNode) {
-            let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
-            let activePoint = selectedHandlerNode.activePointIdSelect.getPoint();
-            let inactiveId = selectedHandlerNode.inactivePointIdSelect.getPointId();
+        let targetPointSelect = selectedHandlerNode ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
+        let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
+        let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
 
-            selectedHandlerNode.inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
-            if(activePoint) {
-                selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
-            } else {
-                selectedHandlerNode.inactivePointIdSelect.updatePointsList([targetPoint]);
-            }
-            selectedHandlerNode.inactivePointIdSelect.setPointId(inactiveId);
+        let targetPoint = targetPointSelect.getPoint();
+        let activePoint = activePointSelect.getPoint();
+        let inactiveId = inactivePointSelect.getPointId();
+
+        inactivePointSelect.setDataTypes([targetPoint.dataType]);
+        if(activePoint) {
+            inactivePointSelect.updatePointsList([targetPoint, activePoint]);
         } else {
-            let targetPoint = targetPointIdSelect.getPoint();
-            let activePoint = activePointIdSelect.getPoint();
-            let inactiveId = inactivePointIdSelect.getPointId();
-
-            inactivePointIdSelect.setDataTypes([targetPoint.dataType]);
-            if(activePoint) {
-                inactivePointIdSelect.updatePointsList([targetPoint, activePoint]);
-            } else {
-                inactivePointIdSelect.updatePointsList([targetPoint]);
-            }
-            inactivePointIdSelect.setPointId(inactiveId);
+            inactivePointSelect.updatePointsList([targetPoint]);
         }
+        inactivePointSelect.setPointId(inactiveId);
     }
 
     function inactivePointSelectChanged() {
-        if(selectedHandlerNode) {
-            let targetPoint = selectedHandlerNode.targetPointIdSelect.getPoint();
-            let inactivePoint = selectedHandlerNode.inactivePointIdSelect.getPoint();
-            let activeId = selectedHandlerNode.activePointIdSelect.getPointId();
+        let targetPointSelect = selectedHandlerNode ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
+        let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
+        let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
 
-            selectedHandlerNode.activePointIdSelect.setDataTypes([targetPoint.dataType]);
-            if(inactivePoint) {
-                selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
-            } else {
-                selectedHandlerNode.activePointIdSelect.updatePointsList([targetPoint]);
-            }
-            selectedHandlerNode.activePointIdSelect.setPointId(activeId);
+        let targetPoint = targetPointSelect.getPoint();
+        let inactivePoint = inactivePointSelect.getPoint();
+        let activeId = activePointSelect.getPointId();
+
+        activePointSelect.setDataTypes([targetPoint.dataType]);
+        if(inactivePoint) {
+            activePointSelect.updatePointsList([targetPoint, inactivePoint]);
         } else {
-            let targetPoint = targetPointIdSelect.getPoint();
-            let inactivePoint = inactivePointIdSelect.getPoint();
-            let activeId = activePointIdSelect.getPointId();
-
-            activePointIdSelect.setDataTypes([targetPoint.dataType]);
-            if(inactivePoint) {
-                activePointIdSelect.updatePointsList([targetPoint, inactivePoint]);
-            } else {
-                activePointIdSelect.updatePointsList([targetPoint]);
-            }
-            activePointIdSelect.setPointId(activeId);
+            activePointSelect.updatePointsList([targetPoint]);
         }
+        activePointSelect.setPointId(activeId);
     }
 
     function activeActionChanged() {

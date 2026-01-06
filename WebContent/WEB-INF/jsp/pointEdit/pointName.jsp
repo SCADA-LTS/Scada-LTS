@@ -48,7 +48,14 @@
         xid : "<c:out value="${form.xid}"/>",
         dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
     }
-    let datPointDetailsPointSelect = initPointsSelect("allPointsList", "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], [point], [], true);
+
+    let def = {};
+    def.selectHtmlId = "allPointsList";
+    def.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+    def.pointsArray = [point];
+    def.invisibleEmptyOption = true;
+
+    let datPointDetailsPointSelect = new DataPointsSelect(ref);
   }
 </script>
 

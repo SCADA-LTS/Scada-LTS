@@ -54,14 +54,10 @@
 
       let ref = {}
       ref.excludePointsArray = locator.context;
-      ref.limit = 500;
       ref.selectHtmlId = "allPointsList";
       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
       ref.pointsArray = contextPoints;
       ref.dataTypes = [];
-      ref.altKey = "id";
-      ref.altValue = "name";
-      ref.widthPx = "400px";
 
       pointsContext = new ScriptPointsContext(ref);
       $set("script", locator.script);

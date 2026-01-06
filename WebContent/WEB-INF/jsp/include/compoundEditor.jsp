@@ -150,7 +150,6 @@
                 
                 // Update the point lists
                 compoundEditor.setPointList(response.data.pointList);
-                //compoundEditor.setDataTypes(comp.supportedDataTypes);
                 compoundEditor.updatePointLists();
                 
                 // Update the data in the form.
@@ -265,9 +264,7 @@
 					);
                 	dygraphsCharts[compoundEditor.component.id].requestData();
                 }
-                console.log('response: ', response);
                 compoundEditor.setPointList(response.data.pointList);
-                //compoundEditor.setDataTypes(response.data.comp.supportedDataTypes);
                 compoundEditor.updatePointLists();
 
                 compoundEditor.close();
@@ -320,7 +317,6 @@
 
 		updatePointLists() {
             var pointChildren = this.getPointChildren();
-            console.log('pointChildren: ', pointChildren);
             
             var functions = [
                 (data) => { return data.description; },
@@ -368,7 +364,12 @@
 				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
 				var dataPointId = pointChildren[i].viewComponent.dataPointId;
 
-				this.targetPointSelects[this.targetPointSelects.length] = initPointsSelect(pointChildId, "<spring:message code='chosen.selector.selectPoint'/>", "400px", [], this.pointList.filter((point) => point.id == dataPointId));
+                let ref = {}
+                ref.selectHtmlId = pointChildId;
+                ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+                ref.pointsArray = this.pointList.filter((point) => point.id == dataPointId);
+
+				this.targetPointSelects[this.targetPointSelects.length] = new DataPointsSelect(ref);
 
 				if(this.component.defName === "enhancedImageChart") {	
 					jQuery("#compoundPointColor" + pointChildren[i].id).jPicker({

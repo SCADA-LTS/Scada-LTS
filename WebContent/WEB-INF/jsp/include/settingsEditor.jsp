@@ -74,7 +74,11 @@
         this.componentId = null;
         this.pointList = [];
 
-        this.dataPointsSelect = initPointsSelect("settingsPointList", "<spring:message code='chosen.selector.selectPoint'/>");
+        let ref = {};
+        ref.selectHtmlId = "settingsPointList";
+        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+
+        this.dataPointsSelect = new DataPointsSelect(ref);
 
         this.open = function(compId) {
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);

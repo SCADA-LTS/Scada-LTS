@@ -74,18 +74,10 @@
 
         let ref = {}
         ref.excludePointsArray = report.points;
-        ref.limit = 500;
         ref.selectHtmlId = "allPointsList";
         ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
         ref.pointsArray = response.data.points;
         ref.dataTypes = [];
-        ref.altKey = "id";
-        ref.altValue = "name";
-        ref.widthPx = "400px";
-
-        if(pointsContext) {
-            pointsContext.clear();
-        }
 
         let handlePointsContext = new ReportPointsContext(ref);
         setPointsContext(handlePointsContext);

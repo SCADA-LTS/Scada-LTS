@@ -47,20 +47,12 @@
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
 
-      if(pointsContext) {
-          pointsContext.clear();
-      }
-
       let ref = {}
       ref.excludePointsArray = response.data.publisher.points;
-      ref.limit = 500;
       ref.selectHtmlId = "availablePoints";
       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
       ref.pointsArray = response.data.selectedPoints;
       ref.dataTypes = [];
-      ref.altKey = "id";
-      ref.altValue = "name";
-      ref.widthPx = "400px";
       pointsContext = new SenderPointsContext(ref, "selectedPoints");
   }
 

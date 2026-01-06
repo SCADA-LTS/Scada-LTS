@@ -1386,17 +1386,13 @@ class PointsContext {
        this.init(dataPointsSelectDef.excludePointsArray);
     }
 
-    init(context) {
-        throw new Error("Not yet implemented");
-    }
+    init(context) {}
 
     convertToSave() {
        return null;
     }
 
-    writeContextArray(row) {
-        throw new Error("Not yet implemented");
-    }
+    writeContextArray(row) {}
 
     updatePointsList(contextArray, keywordSearch) {
         this.updatePointsArray.updatePointsList(contextArray, keywordSearch, this.updatePointsArray.isLastEmptyOption());
@@ -1415,42 +1411,11 @@ class PointsContext {
           let context = this.contextArray[i];
           let contextPointId = context.pointId;
           if (contextPointId == pointId) {
-              this.removeContextArray(context);
+              this.#removeContextArray(context);
           }
        }
        this.contextArray = this.contextArray.filter(a => a.pointId != pointId);
        this.updatePointsList(this.contextArray);
-    }
-
-    removeContextArray(row) {
-       let contextTableEmptyIdNode = $(this.contextTableEmptyId);
-       let contextTableHeadersIdNode = $(this.contextTableHeadersId);
-       if (this.contextArray.length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
-          show(contextTableEmptyIdNode);
-          hide(contextTableHeadersIdNode);
-       } else {
-          if(contextTableEmptyIdNode)
-            hide(contextTableEmptyIdNode);
-          if(contextTableHeadersIdNode)
-            show(contextTableHeadersIdNode);
-          this.removeRow(this.contextTableId, row, [1], ["pointXid"]);
-       }
-    }
-
-    removeRow(tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
-      let table = document.getElementById(tableId);
-      let rows = table.rows;
-      let toDeleteRows = new Array();
-      for (let i = 0; i < rows.length; i++) {
-          let row = rows[i];
-          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
-              toDeleteRows[toDeleteRows.length] = row;
-          }
-      }
-
-      for(let i = 0; i < toDeleteRows.length; i++) {
-          table.removeChild(toDeleteRows[i]);
-      }
     }
 
     updatePoint(pointId, key, value) {
@@ -1491,7 +1456,7 @@ class PointsContext {
         return this.allPointsListId;
     }
 
-    equalsByOptions(row, obj, rowOptions, objOptions) {
+    #equalsByOptions(row, obj, rowOptions, objOptions) {
       for (let i = 0; i < objOptions.length; i++) {
           let cellValue = row.cells[rowOptions[i]].textContent;
           let objectValue = obj[objOptions[i]];
@@ -1505,9 +1470,35 @@ class PointsContext {
       return true;
     }
 
-    clear() {
-        this.updatePointsArray.clear();
-        this.contextArray = [];
+    #removeContextArray(row) {
+       let contextTableEmptyIdNode = $(this.contextTableEmptyId);
+       let contextTableHeadersIdNode = $(this.contextTableHeadersId);
+       if (this.contextArray.length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
+          show(contextTableEmptyIdNode);
+          hide(contextTableHeadersIdNode);
+       } else {
+          if(contextTableEmptyIdNode)
+            hide(contextTableEmptyIdNode);
+          if(contextTableHeadersIdNode)
+            show(contextTableHeadersIdNode);
+          this.#removeRow(this.contextTableId, row, [1], ["pointXid"]);
+       }
+    }
+
+    #removeRow(tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+      let table = document.getElementById(tableId);
+      let rows = table.rows;
+      let toDeleteRows = new Array();
+      for (let i = 0; i < rows.length; i++) {
+          let row = rows[i];
+          if(this.#equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+              toDeleteRows[toDeleteRows.length] = row;
+          }
+      }
+
+      for(let i = 0; i < toDeleteRows.length; i++) {
+          table.removeChild(toDeleteRows[i]);
+      }
     }
 }
 
@@ -1948,12 +1939,12 @@ class DataPointsSelect {
     constructor (dataPointsSelectDef) {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray;
-        this.limit = dataPointsSelectDef.limit;
+        this.limit = dataPointsSelectDef.limit || 250;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
+        this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
         this.pointsArray = dataPointsSelectDef.pointsArray;
         this.dataTypes = dataPointsSelectDef.dataTypes;
-        this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.altKey = dataPointsSelectDef.altKey || "id";
         this.altValue = dataPointsSelectDef.altValue || "name";
         this.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
@@ -2006,12 +1997,13 @@ class DataPointsSelect {
                     dataType: "json",
                     url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.getLimit() + "&excludeIds=" + excludeIds + "&dataTypes=" + select.getDataTypes()+ "&startsWith=" + startsWith,
                     success: function(points) {
-                        if(point && !points.find(p => select.#getId(p) == select.#getId(point))) {
+                        let id = point ? select.#getId(point) : -1;
+                        if(id != -1 && point && !points.find(p => select.#getId(p) == id)) {
                             points.unshift(point);
                         }
                         select.setPointsArray(points, keywordSearch, false);
-                        if(point) {
-                            select.setPointId(select.#getId(point));
+                        if(id != -1) {
+                            select.setPointId(id);
                         }
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -2048,8 +2040,13 @@ class DataPointsSelect {
 
     getPointId() {
         let select = document.getElementById(this.selectHtmlId);
-        if(select && select.value && select.value != 'undefined')
-            return select.value;
+        if(select && select.value && select.value !== undefined) {
+            try {
+                return parseInt(select.value);
+            } catch (error) {
+                return 0;
+            }
+        }
         return 0;
     }
 
@@ -2105,8 +2102,9 @@ class DataPointsSelect {
        this.excludePointsArray = excludePoints;
        for (let i = 0; i < tempArray.length; i++) {
           let found = false;
+          let id = this.#getId(tempArray[i]);
           for (let j = 0; j < excludePoints.length; j++) {
-              if (this.#getId(excludePoints[j]) == this.#getId(tempArray[i])) {
+              if (id != -1 && this.#getId(excludePoints[j]) == id) {
                   found = true;
                   break;
               }
@@ -2175,22 +2173,4 @@ class DataPointsSelect {
         clearTimeout(this.searchTimer);
         this.searchTimer = searchTimer;
     }
-}
-
-function initPointsSelect(selectHtmlId, placeholderTextSingle, widthPx, excludePointsArray, pointsArray, dataTypes, invisibleEmptyOption, lastEmptyOption) {
-
-    let ref = {}
-    ref.excludePointsArray = excludePointsArray || [];
-    ref.limit = 500;
-    ref.selectHtmlId = selectHtmlId;
-    ref.placeholderTextSingle = placeholderTextSingle;
-    ref.pointsArray = pointsArray || [];
-    ref.dataTypes = dataTypes || [];
-    ref.altKey = "id";
-    ref.altValue = "name";
-    ref.widthPx = widthPx || "400px";
-    ref.invisibleEmptyOption = invisibleEmptyOption || false;
-    ref.lastEmptyOption = lastEmptyOption || false;
-
-    return new DataPointsSelect(ref);
 }

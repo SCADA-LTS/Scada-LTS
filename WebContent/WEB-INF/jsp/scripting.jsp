@@ -121,20 +121,12 @@
             setValueInNode('name', editingScript.name);
             setValueInNode('script', editingScript.script);
 
-            if(pointsContext) {
-                pointsContext.clear();
-            }
-
             let ref = {}
             ref.excludePointsArray = editingScript.pointsOnContext;
-            ref.limit = 500;
             ref.selectHtmlId = "allPointsList";
             ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
             ref.pointsArray = response.data.dataPoints;
             ref.dataTypes = [];
-            ref.altKey = "id";
-            ref.altValue = "name";
-            ref.widthPx = "400px";
 
             let handlePointsContext = new ScriptPointsContext(ref);
             setPointsContext(handlePointsContext);
