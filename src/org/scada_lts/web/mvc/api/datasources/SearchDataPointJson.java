@@ -9,7 +9,6 @@ import java.util.Set;
 public class SearchDataPointJson {
 
     @XssProtect
-    @NotEmpty
     private String keywordSearch;
     private Set<Integer> includeIds;
     private Set<Integer> excludeIds;

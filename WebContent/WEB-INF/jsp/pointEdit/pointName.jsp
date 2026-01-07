@@ -49,11 +49,11 @@
         dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
     }
 
-    let def = {};
-    def.selectHtmlId = "allPointsList";
-    def.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-    def.pointsArray = [point];
-    def.invisibleEmptyOption = true;
+    let ref = {};
+    ref.selectHtmlId = "allPointsList";
+    ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+    ref.pointsArray = [point];
+    ref.invisibleEmptyOption = true;
 
     let datPointDetailsPointSelect = new DataPointsSelect(ref);
   }

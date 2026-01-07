@@ -278,18 +278,12 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                                              SearchDataPointJson searchDataPointJson) {
 
         checkIfLogoutThenUnauthorized(request);
-        checkArgsIfEmptyThenBadRequest(request, "keywordSearch cannot be empty.", searchDataPointJson.getKeywordSearch());
-
         User user = Common.getUser(request);
-        List<DataPointVO> response = new ArrayList<>();
-        String keywordSearch = searchDataPointJson.getKeywordSearch();
         Set<Integer> includeIds = searchDataPointJson.getIncludeIds();
 
-        if(!StringUtils.isEmpty(keywordSearch)) {
-            response = searchDataPoint(request, searchDataPointJson, user).stream()
-                    .filter(filterByDataTypes(searchDataPointJson))
-                    .collect(Collectors.toList());
-        }
+        List<DataPointVO> response = searchDataPoint(request, searchDataPointJson, user).stream()
+                .filter(filterByDataTypes(searchDataPointJson))
+                .collect(Collectors.toList());
         if(includeIds != null && !includeIds.isEmpty()) {
             if(response.isEmpty()) {
                 response = getDataPoint(request, includeIds, user);

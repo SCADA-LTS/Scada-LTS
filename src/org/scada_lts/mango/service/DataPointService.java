@@ -721,8 +721,9 @@ public class DataPointService implements MangoDataPoint {
 		if (!StringUtils.isEmpty(keywordSearch)) {
 			Set<String> keywords = Set.of(keywordSearch);
 			return dataPointDAO.getDataPointByKeywords(keywords, excludeIds, startsWith, offset, limit);
+		} else {
+			return dataPointDAO.getDataPointByKeywords(Collections.emptySet(), excludeIds, startsWith, offset, limit);
 		}
-		return getDataPoints(Comparator.comparing(DataPointVO::getName), false, excludeIds, offset, limit);
 	}
 
 	@Override

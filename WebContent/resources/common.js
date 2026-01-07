@@ -1289,7 +1289,7 @@ function assignEvent(eventId) {
     MiscDwr.assignEvent(eventId, function(response) {
         if(response) {
             hide("assigneeImg"+ eventId);
-            var imgNode = $("assigneeImg"+ eventId);
+            let imgNode = $("assigneeImg"+ eventId);
             updateImg(imgNode, "images/user_delete.png", mango.i18n["events.unassign"], true, "inline");
             imgNode.onclick = function() {};
         }
@@ -1300,7 +1300,7 @@ function unassignEvent(eventId) {
     MiscDwr.unassignEvent(eventId, function(response) {
         if(response) {
             hide("unassigneeImg"+ eventId);
-            var imgNode = $("unassigneeImg"+ eventId);
+            let imgNode = $("unassigneeImg"+ eventId);
             updateImg(imgNode, "images/user_add.png", mango.i18n["events.assign"], true, "inline");
             imgNode.onclick = function() {};
         }
@@ -1395,11 +1395,11 @@ class PointsContext {
     writeContextArray(row) {}
 
     updatePointsList(contextArray, keywordSearch) {
-        this.updatePointsArray.updatePointsList(contextArray, keywordSearch, this.updatePointsArray.isLastEmptyOption());
+        this.updatePointsArray.updatePointsList(contextArray, keywordSearch);
     }
 
     setPointsArray(pointsArray) {
-        this.updatePointsArray.setPointsArray(pointsArray, "", this.updatePointsArray.isLastEmptyOption());
+        this.updatePointsArray.setPointsArray(pointsArray, "");
     }
 
     setAllPointsListId(allPointsListId) {
@@ -1938,17 +1938,16 @@ class DataPointsSelect {
 
     constructor (dataPointsSelectDef) {
 
-        this.excludePointsArray = dataPointsSelectDef.excludePointsArray;
+        this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
         this.limit = dataPointsSelectDef.limit || 250;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
-        this.pointsArray = dataPointsSelectDef.pointsArray;
-        this.dataTypes = dataPointsSelectDef.dataTypes;
+        this.pointsArray = dataPointsSelectDef.pointsArray || [];
+        this.dataTypes = dataPointsSelectDef.dataTypes || [];
         this.altKey = dataPointsSelectDef.altKey || "id";
         this.altValue = dataPointsSelectDef.altValue || "name";
         this.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
-        this.lastEmptyOption = dataPointsSelectDef.lastEmptyOption || false;
         this.widthPx = dataPointsSelectDef.widthPx || "400px";
         this.#init();
     }
@@ -1965,14 +1964,14 @@ class DataPointsSelect {
            case_sensitive_search: false
         });
 
-        this.updatePointsList(this.excludePointsArray, '', this.lastEmptyOption);
+        this.updatePointsList(this.excludePointsArray, '');
 
         if(this.pointsArray.length == 1) {
             this.setPointId(this.#getId(this.pointsArray[0]));
             this.lastPoint = this.getPoint();
         }
 
-        this.#loadPoints("A", 0, this.lastPoint, true);
+        this.#loadPoints("", 0, this.lastPoint, true);
 
         let select = this;
         jQuery("#" + this.inputHtmlId).on("input", function(evt) {
@@ -1990,27 +1989,25 @@ class DataPointsSelect {
                     excludeIds[excludeIds.length] = id;
                 }
             }
-            if(keywordSearch) {
-                jQuery.ajax({
-                    type: "GET",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.getLimit() + "&excludeIds=" + excludeIds + "&dataTypes=" + select.getDataTypes()+ "&startsWith=" + startsWith,
-                    success: function(points) {
-                        let id = point ? select.#getId(point) : -1;
-                        if(id != -1 && point && !points.find(p => select.#getId(p) == id)) {
-                            points.unshift(point);
-                        }
-                        select.setPointsArray(points, keywordSearch, false);
-                        if(id != -1) {
-                            select.setPointId(id);
-                        }
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("chosen-search-input error:", [XMLHttpRequest, textStatus, errorThrown]);
+            jQuery.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.getLimit() + "&excludeIds=" + excludeIds + "&startsWith=" + (startsWith ? true : false) + "&dataTypes=" + select.getDataTypes(),
+                success: function(points) {
+                    let id = point ? select.#getId(point) : -1;
+                    if(id != -1 && point && !points.find(p => select.#getId(p) == id)) {
+                        points.unshift(point);
                     }
-                });
-            }
+                    select.setPointsArray(points, keywordSearch);
+                    if(id != -1) {
+                        select.setPointId(id);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("chosen-search-input error:", [XMLHttpRequest, textStatus, errorThrown]);
+                }
+            });
         }, timeout));
     }
 
@@ -2074,13 +2071,9 @@ class DataPointsSelect {
         })
     }
 
-    isLastEmptyOption() {
-        return this.lastEmptyOption;
-    }
-
-    setPointsArray(pointsArray, keywordSearch, lastEmptyOption) {
+    setPointsArray(pointsArray, keywordSearch) {
         this.pointsArray = pointsArray;
-        this.updatePointsList(this.excludePointsArray, keywordSearch, lastEmptyOption);
+        this.updatePointsList(this.excludePointsArray, keywordSearch);
     }
 
     setDataTypes(dataTypes) {
@@ -2096,7 +2089,7 @@ class DataPointsSelect {
         this.lastPoint = this.getPoint();
     }
 
-    updatePointsList(excludePoints, keywordSearch, lastEmptyOption) {
+    updatePointsList(excludePoints, keywordSearch) {
        let tempArray = this.pointsArray;
        let availPoints = new Array();
        this.excludePointsArray = excludePoints;
@@ -2118,10 +2111,7 @@ class DataPointsSelect {
           let single = {}
           single[this.altKey] = undefined;
           single[this.altValue] = this.placeholderTextSingle;
-          if(lastEmptyOption === undefined)
-              this.#addEmptyOption(availPoints, single, this.lastEmptyOption);
-          else
-              this.#addEmptyOption(availPoints, single, lastEmptyOption);
+          this.#addEmptyOption(availPoints, single);
        }
 
        if(availPoints.length == 0 && this.lastPoint) {
@@ -2146,14 +2136,10 @@ class DataPointsSelect {
       }
     }
 
-    #addEmptyOption(availPoints, object, lastEmptyOption) {
+    #addEmptyOption(availPoints, object) {
        let emptyIndex = availPoints.indexOf(object);
        if(emptyIndex == -1) {
-          if(lastEmptyOption) {
-              availPoints.push(object);
-          } else {
-              availPoints.unshift(object);
-          }
+          availPoints.unshift(object);
        }
     }
 

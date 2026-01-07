@@ -277,11 +277,16 @@
                 let activePoint = allPoints.find((point) => point.id == handler.activePointId);
                 let inactivePoint = allPoints.find((point) => point.id == handler.inactivePointId);
 
+                if (!targetPoint) {
+                    console.error("Data integrity error: Target point not found for handler", handler.targetPointId);
+                    setUserMessage("<spring:message code='eventHandlers.errorInvalidHandler'/>");
+                    return;
+                }
+
                 let targetPointRef = {}
                 targetPointRef.selectHtmlId = "targetPointSelect";
                 targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
                 targetPointRef.pointsArray = [targetPoint];
-                targetPointRef.lastEmptyOption = true;
 
                 let activePointRef = {}
                 activePointRef.selectHtmlId = "activePointId";
@@ -289,7 +294,6 @@
                 activePointRef.excludePointsArray = inactivePoint ? [targetPoint, inactivePoint] : [targetPoint];
                 activePointRef.pointsArray = activePoint ? [activePoint] : [];
                 activePointRef.dataTypes = [targetPoint.dataType];
-                activePointRef.lastEmptyOption = true;
 
                 let inactivePointRef = {}
                 inactivePointRef.selectHtmlId = "inactivePointId";
@@ -297,7 +301,6 @@
                 inactivePointRef.excludePointsArray = activePoint ? [targetPoint, activePoint] : [targetPoint];
                 inactivePointRef.pointsArray = inactivePoint ? [inactivePoint] : [];
                 inactivePointRef.dataTypes = [targetPoint.dataType];
-                inactivePointRef.lastEmptyOption = true;
 
                 selectedHandlerNode.targetPointIdSelect = new DataPointsSelect(targetPointRef);
                 selectedHandlerNode.activePointIdSelect = new DataPointsSelect(activePointRef);
@@ -474,11 +477,17 @@
         let activePoint = activePointSelect.getPoint();
         let inactiveId = inactivePointSelect.getPointId();
 
-        inactivePointSelect.setDataTypes([targetPoint.dataType]);
-        if(activePoint) {
-            inactivePointSelect.updatePointsList([targetPoint, activePoint]);
+        if(targetPoint) {
+            inactivePointSelect.setDataTypes([targetPoint.dataType]);
+            if(activePoint) {
+                inactivePointSelect.updatePointsList([targetPoint, activePoint]);
+            } else {
+                inactivePointSelect.updatePointsList([targetPoint]);
+            }
         } else {
-            inactivePointSelect.updatePointsList([targetPoint]);
+            if(activePoint) {
+                inactivePointSelect.updatePointsList([activePoint]);
+            }
         }
         inactivePointSelect.setPointId(inactiveId);
     }
@@ -492,11 +501,18 @@
         let inactivePoint = inactivePointSelect.getPoint();
         let activeId = activePointSelect.getPointId();
 
-        activePointSelect.setDataTypes([targetPoint.dataType]);
-        if(inactivePoint) {
-            activePointSelect.updatePointsList([targetPoint, inactivePoint]);
+        if(targetPoint) {
+            activePointSelect.setDataTypes([targetPoint.dataType]);
+            if(inactivePoint) {
+                activePointSelect.updatePointsList([targetPoint, inactivePoint]);
+            } else {
+                activePointSelect.updatePointsList([targetPoint]);
+            }
+            activePointSelect.setPointId(activeId);
         } else {
-            activePointSelect.updatePointsList([targetPoint]);
+            if(inactivePoint) {
+                activePointSelect.updatePointsList([inactivePoint]);
+            }
         }
         activePointSelect.setPointId(activeId);
     }

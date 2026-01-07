@@ -185,10 +185,10 @@ public class DataPointDAO {
             + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
 	public static final String DATA_POINT_NEXT = ""
-			+ " CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + ") > ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
+			+ " CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - ', dp." + COLUMN_NAME_DATAPOINT_NAME + ") > ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
 
 	public static final String DATA_POINT_PREV = ""
-			+ " CONCAT_WS(' - ', ds." + COLUMN_NAME_DS_NAME + ", dp." + COLUMN_NAME_DATAPOINT_NAME + ") < ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
+			+ " CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - ', dp." + COLUMN_NAME_DATAPOINT_NAME + ") < ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
 
 
 	public static final String DATA_POINT_PREV_ON_USER_ID_USERS_PROFILE_ID = ""
@@ -198,6 +198,9 @@ public class DataPointDAO {
 	public static final String DATA_POINT_NEXT_ON_USER_ID_USERS_PROFILE_ID = ""
 			+ "(" + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + ") AND "
 			+ DATA_POINT_NEXT;
+
+	public static final String DATA_POINT_ORDER_BY = " ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC";
+
 
 
 	// @formatter:on
@@ -575,8 +578,6 @@ public class DataPointDAO {
 	}
 
 	public List<DataPointVO> getDataPointByKeywords(Set<String> keywords, Set<Integer> excludeIds, boolean startsWith, int offset, int limit) {
-		if(keywords.isEmpty())
-			return Collections.emptyList();
 		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
 		List<String> args = new ArrayList<>();
 		for (String keyword : keywords) {
@@ -602,6 +603,7 @@ public class DataPointDAO {
 
 			args.addAll(excludeIds.stream().map(Object::toString).collect(Collectors.toList()));
 		}
+		templateSelectWhereSearch.append(DATA_POINT_ORDER_BY);
 
 		if(limit > 0) {
 			templateSelectWhereSearch.append(" LIMIT ").append(limit);
