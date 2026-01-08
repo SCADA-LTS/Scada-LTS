@@ -598,10 +598,10 @@
           } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
 
             let activePointId = $get("activePointId");
-            activePointId = activePointId == 'undefined' || !activePointId ? 0 : activePointId;
+            activePointId = activePointId || 0;
 
             let inactivePointId = $get("inactivePointId");
-            inactivePointId = inactivePointId == 'undefined' || !inactivePointId ? 0 : inactivePointId;
+            inactivePointId = inactivePointId || 0;
 
             let targetPointSelect = selectedHandlerNode && selectedHandlerNode.targetPointIdSelect ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
 
