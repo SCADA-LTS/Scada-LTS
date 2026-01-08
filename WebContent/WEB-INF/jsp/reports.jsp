@@ -77,10 +77,8 @@
         ref.selectHtmlId = "allPointsList";
         ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
         ref.pointsArray = response.data.points;
-        ref.dataTypes = [];
 
-        let handlePointsContext = new ReportPointsContext(ref);
-        setPointsContext(handlePointsContext);
+        pointsContext = new ReportPointsContext(ref);
 
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);
@@ -120,10 +118,6 @@
         updateScheduleFields();
         updateSchedulePeriodFields();
         updateEmailFields();
-    }
-
-    function setPointsContext(pointsContext) {
-        this.pointsContext = pointsContext;
     }
 
     function updateReportInstancesList(instanceArray) {

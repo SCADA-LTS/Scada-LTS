@@ -57,7 +57,6 @@
       ref.selectHtmlId = "allPointsList";
       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
       ref.pointsArray = contextPoints;
-      ref.dataTypes = [];
 
       pointsContext = new ScriptPointsContext(ref);
       $set("script", locator.script);

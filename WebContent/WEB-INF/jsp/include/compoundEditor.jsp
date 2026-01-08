@@ -310,7 +310,6 @@
 			    let targetPointSelect = this.targetPointSelects[i];
 			    if(targetPointSelect) {
 			        targetPointSelect.setDataTypes(supportedDataTypes);
-			        console.log('targetPointSelect: ', targetPointSelect);
 			    }
 			}
         }

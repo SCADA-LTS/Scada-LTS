@@ -52,7 +52,7 @@
       ref.selectHtmlId = "availablePoints";
       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
       ref.pointsArray = response.data.selectedPoints;
-      ref.dataTypes = [];
+
       pointsContext = new SenderPointsContext(ref, "selectedPoints");
   }
 

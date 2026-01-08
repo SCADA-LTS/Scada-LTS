@@ -185,10 +185,10 @@ public class DataPointDAO {
             + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
 	public static final String DATA_POINT_NEXT = ""
-			+ " CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - ', dp." + COLUMN_NAME_DATAPOINT_NAME + ") > ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
+			+ " CONCAT(CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - '), dp." + COLUMN_NAME_DATAPOINT_NAME + ") > ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC LIMIT 1 ";
 
 	public static final String DATA_POINT_PREV = ""
-			+ " CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - ', dp." + COLUMN_NAME_DATAPOINT_NAME + ") < ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
+			+ " CONCAT(CONCAT(ds." + COLUMN_NAME_DS_NAME + ", ' - '), dp." + COLUMN_NAME_DATAPOINT_NAME + ") < ? ORDER BY ds." + COLUMN_NAME_DS_NAME + " DESC, dp." + COLUMN_NAME_DATAPOINT_NAME + " DESC LIMIT 1 ";
 
 
 	public static final String DATA_POINT_PREV_ON_USER_ID_USERS_PROFILE_ID = ""
@@ -581,9 +581,9 @@ public class DataPointDAO {
 		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
 		List<String> args = new ArrayList<>();
 		for (String keyword : keywords) {
-			templateSelectWhereSearch.append(" AND CONCAT(ds.")
+			templateSelectWhereSearch.append(" AND CONCAT(CONCAT(ds.")
 					.append(COLUMN_NAME_DS_NAME)
-					.append(", ' - ', dp.")
+					.append(", ' - '), dp.")
 					.append(COLUMN_NAME_DATAPOINT_NAME)
 					.append(")")
 					.append(" LIKE ? ");

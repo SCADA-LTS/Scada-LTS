@@ -1331,48 +1331,6 @@ function setValueInNode(id, text) {
    }
 }
 
-function sizingField(lengthLimit, target, initWidth) {
-    if(isSupportedFieldSizing()) {
-        return;
-    }
-    if(!target.style.width) {
-        initSizeField(target, initWidth);
-    }
-    if(target.value.length > lengthLimit) {
-        if(target.style.width) {
-            let step = Math.floor(Math.random() * 10);
-            let temp = Number.parseInt((target.style.width + "").replace('px', '')) + step;
-            target.style.width = temp + "px";
-        }
-    }
-    return true;
-}
-
-function initSizeField(target, initWidth) {
-    if(isSupportedFieldSizing()) {
-        return;
-    }
-    if(!initWidth) {
-        initWidth = target.value.length * 6;
-    }
-    target.style.width = initWidth + "px";
-}
-
-function isSupportedFieldSizing() {
-    return isSupported("Chrome", 123) || isSupported("Edg", 123) || isSupported("Opera", 109);
-}
-
-function isSupported(browser, minVersion) {
-    let userAgent = window.navigator.userAgent;
-    if(userAgent.includes(browser)) {
-        let version = userAgent.split(browser + "/")[1].split(" ")[0];
-        let major = version.split(".")[0];
-        console.log('major: ', major);
-        return major >= minVersion;
-    }
-    return false;
-}
-
 class PointsContext {
 
     constructor (dataPointsSelectDef, contextTableIdConstructor) {
@@ -1985,7 +1943,7 @@ class DataPointsSelect {
             let excludeIds = [];
             for(let i = 0; i < select.getExcludePointsArray().length; i++) {
                 let id = select.#getId(select.getExcludePointsArray()[i]);
-                if(id != -1) {
+                if(id != -1 && excludeIds.indexOf(id) == -1) {
                     excludeIds[excludeIds.length] = id;
                 }
             }
@@ -2072,12 +2030,16 @@ class DataPointsSelect {
     }
 
     setPointsArray(pointsArray, keywordSearch) {
-        this.pointsArray = pointsArray;
+        this.pointsArray = [...new Set(pointsArray)];
         this.updatePointsList(this.excludePointsArray, keywordSearch);
     }
 
     setDataTypes(dataTypes) {
-        this.dataTypes = dataTypes;
+        this.dataTypes = [...new Set(dataTypes)];
+    }
+
+    loadPointsList() {
+         this.#loadPoints("", 0, this.lastPoint);
     }
 
     setPointId(pointId) {
@@ -2092,10 +2054,11 @@ class DataPointsSelect {
     updatePointsList(excludePoints, keywordSearch) {
        let tempArray = this.pointsArray;
        let availPoints = new Array();
-       this.excludePointsArray = excludePoints;
+       this.excludePointsArray = [...new Set(excludePoints)];
        for (let i = 0; i < tempArray.length; i++) {
           let found = false;
           let id = this.#getId(tempArray[i]);
+          let dataType = this.#getDataType(tempArray[i]);
           for (let j = 0; j < excludePoints.length; j++) {
               if (id != -1 && this.#getId(excludePoints[j]) == id) {
                   found = true;
@@ -2155,8 +2118,58 @@ class DataPointsSelect {
         return -1;
     }
 
+    #getDataType(object) {
+        if(object.dataType)
+            return object.dataType;
+        if(object.dataTypeId)
+            return object.dataTypeId;
+        return -1;
+    }
+
     #setSearchTimer(searchTimer) {
         clearTimeout(this.searchTimer);
         this.searchTimer = searchTimer;
     }
+}
+
+function sizingField(lengthLimit, target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!target.style.width) {
+        initSizeField(target, initWidth);
+    }
+    if(target.value.length > lengthLimit) {
+        if(target.style.width) {
+            let step = 2 + Math.floor(Math.random() * 10);
+            let temp = Number.parseInt((target.style.width + "").replace('px', '')) + step;
+            target.style.width = temp + "px";
+        }
+    }
+    return true;
+}
+
+function initSizeField(target, initWidth) {
+    if(isSupportedFieldSizing()) {
+        return;
+    }
+    if(!initWidth) {
+        initWidth = target.value.length * 6;
+    }
+    target.style.width = initWidth + "px";
+}
+
+function isSupportedFieldSizing() {
+    return isSupported("Chrome", 123) || isSupported("Edg", 123) || isSupported("Opera", 109);
+}
+
+function isSupported(browser, minVersion) {
+    let userAgent = window.navigator.userAgent;
+    if(userAgent.includes(browser)) {
+        let version = userAgent.split(browser + "/")[1].split(" ")[0];
+        let major = version.split(".")[0];
+        console.log('major: ', major);
+        return major >= minVersion;
+    }
+    return false;
 }

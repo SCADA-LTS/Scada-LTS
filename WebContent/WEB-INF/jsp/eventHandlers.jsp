@@ -335,17 +335,14 @@
             let targetPointRef = {}
             targetPointRef.selectHtmlId = "targetPointSelect";
             targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            targetPointRef.lastEmptyOption = true;
 
             let activePointRef = {}
             activePointRef.selectHtmlId = "activePointId";
             activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            activePointRef.lastEmptyOption = true;
 
             let inactivePointRef = {}
             inactivePointRef.selectHtmlId = "inactivePointId";
             inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            inactivePointRef.lastEmptyOption = true;
 
             targetPointIdSelect = new DataPointsSelect(targetPointRef);
             activePointIdSelect = new DataPointsSelect(activePointRef);
@@ -481,15 +478,18 @@
             inactivePointSelect.setDataTypes([targetPoint.dataType]);
             if(activePoint) {
                 inactivePointSelect.updatePointsList([targetPoint, activePoint]);
+                targetPointSelect.getExcludePointsArray().push(activePoint);
             } else {
                 inactivePointSelect.updatePointsList([targetPoint]);
             }
         } else {
             if(activePoint) {
                 inactivePointSelect.updatePointsList([activePoint]);
+                targetPointSelect.getExcludePointsArray().push(activePoint);
             }
         }
         inactivePointSelect.setPointId(inactiveId);
+        inactivePointSelect.loadPointsList();
     }
 
     function inactivePointSelectChanged() {
@@ -505,16 +505,18 @@
             activePointSelect.setDataTypes([targetPoint.dataType]);
             if(inactivePoint) {
                 activePointSelect.updatePointsList([targetPoint, inactivePoint]);
+                targetPointSelect.getExcludePointsArray().push(inactivePoint);
             } else {
                 activePointSelect.updatePointsList([targetPoint]);
             }
-            activePointSelect.setPointId(activeId);
         } else {
             if(inactivePoint) {
                 activePointSelect.updatePointsList([inactivePoint]);
+                targetPointSelect.getExcludePointsArray().push(inactivePoint);
             }
         }
         activePointSelect.setPointId(activeId);
+        activePointSelect.loadPointsList();
     }
 
     function activeActionChanged() {
@@ -609,9 +611,8 @@
                     activePointId, $get("inactiveAction"), $get("setPointValueInactive"),
                     inactivePointId, function(response) {
                         if(!response.hasMessages) {
-                            let allPoints = response.data.allPoints;
+                            allPoints = response.data.allPoints;
                             let handler = response.data.handler;
-                            setAllPoints(allPoints);
                             targetPointSelectChanged(handler.targetPointId, handler.activeValueToSet, handler.inactiveValueToSet);
                         }
                         saveEventHandlerCB(response);
@@ -626,10 +627,6 @@
                     alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
           }
         }
-    }
-
-    function setAllPoints(allPoints) {
-        this.allPoints = allPoints;
     }
 
     function saveEventHandlerCB(response) {

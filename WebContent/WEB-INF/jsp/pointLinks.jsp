@@ -169,6 +169,7 @@
         targetPointSelect.setDataTypes([sourcePoint.dataType]);
         targetPointSelect.updatePointsList([sourcePoint]);
         targetPointSelect.setPointId(targetPointId);
+        targetPointSelect.loadPointsList();
     }
 
     function targetPointSelectChanged() {
@@ -178,6 +179,7 @@
         sourcePointSelect.setDataTypes([targetPoint.dataType]);
         sourcePointSelect.updatePointsList([targetPoint]);
         sourcePointSelect.setPointId(sourcePointId);
+        sourcePointSelect.loadPointsList();
     }
   </script>
   

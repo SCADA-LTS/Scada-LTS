@@ -126,10 +126,8 @@
             ref.selectHtmlId = "allPointsList";
             ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
             ref.pointsArray = response.data.dataPoints;
-            ref.dataTypes = [];
 
-            let handlePointsContext = new ScriptPointsContext(ref);
-            setPointsContext(handlePointsContext);
+            pointsContext = new ScriptPointsContext(ref);
 
             clearObjectsTable();
 		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)
@@ -152,10 +150,6 @@
         		 executeScript();
         	 });
         }
-    }
-
-    function setPointsContext(pointsContext) {
-        this.pointsContext = pointsContext;
     }
 
     function saveScript() {
