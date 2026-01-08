@@ -206,7 +206,7 @@
                 let pointId = $get("compoundPointSelect"+ pointChildren[i].id);
                 childPointIds.push({
 					key: pointChildren[i].id, 
-					value: pointId && pointId != 'undefined' ? pointId : 0
+					value: pointId || 0
 				});
 			}
 			switch(this.component.defName) {
