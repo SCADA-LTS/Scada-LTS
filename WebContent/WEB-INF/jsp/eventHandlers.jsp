@@ -410,8 +410,19 @@
     }
 
     function resetForm() {
-        let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
-        let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
+        let activePointSelect;
+        let inactivePointSelect;
+        if(selectedHandlerNode) {
+            activePointSelect = selectedHandlerNode.activePointIdSelect;
+            inactivePointSelect = selectedHandlerNode.inactivePointIdSelect;
+            if(selectedHandlerNode.object) {
+                selectedHandlerNode.object.activeValueToSet = "";
+                selectedHandlerNode.object.inactiveValueToSet = "";
+            }
+        } else {
+            activePointSelect = activePointIdSelect;
+            inactivePointSelect = inactivePointIdSelect
+        }
         activePointSelect.setPointId(undefined);
         inactivePointSelect.setPointId(undefined);
 
@@ -424,9 +435,6 @@
         hide("inactiveValueToSetRow");
         hide("escalationAddresses1");
         hide("escalationAddresses2");
-
-        selectedHandlerNode.object.activeValueToSet = "";
-        selectedHandlerNode.object.inactiveValueToSet = "";
     }
 
     function targetPointSelectChanged(pointIdForm, activeValue, inactiveValue) {

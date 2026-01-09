@@ -1897,7 +1897,7 @@ class DataPointsSelect {
     constructor (dataPointsSelectDef) {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
-        this.limit = dataPointsSelectDef.limit || 5;
+        this.limit = dataPointsSelectDef.limit || 500;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;

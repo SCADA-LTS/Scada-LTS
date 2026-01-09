@@ -359,6 +359,7 @@
                 }
 			});
 
+            this.targetPointSelects = [];
 			for (let i = 0; i < pointChildren.length; i++) {
 				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
 				var dataPointId = pointChildren[i].viewComponent.dataPointId;
