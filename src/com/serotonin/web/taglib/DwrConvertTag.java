@@ -11,11 +11,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.apache.logging.log4j.core.util.JsonUtils;
+import com.fasterxml.jackson.core.SerializableString;
+import com.fasterxml.jackson.core.io.CharacterEscapes;
+import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 public class DwrConvertTag extends TagSupport {
+
+    private static final ObjectMapper JSON_MAPPER = buildObjectMapper();
 
     private Object obj;
 
@@ -51,20 +56,20 @@ public class DwrConvertTag extends TagSupport {
         }
 
         if (value instanceof Boolean) {
-            return ((Boolean) value) ? "true" : "false";
+            return writeJsonValue(value);
         }
 
         if (value instanceof Number) {
-            return value.toString();
+            return numberToJson((Number) value);
         }
 
         if (value instanceof CharSequence) {
-            return quoteString(value.toString());
+            return writeJsonValue(value.toString());
         }
 
         if (value instanceof LocalizableMessage) {
             String localized = resolveLocalizableMessage((LocalizableMessage) value);
-            return quoteString(localized);
+            return writeJsonValue(localized);
         }
 
         if (value instanceof Map<?, ?>) {
@@ -79,7 +84,7 @@ public class DwrConvertTag extends TagSupport {
             return arrayToJson(value);
         }
 
-        return quoteString(String.valueOf(value));
+        return writeJsonValue(value);
     }
 
     private String resolveLocalizableMessage(LocalizableMessage lm) {
@@ -117,7 +122,7 @@ public class DwrConvertTag extends TagSupport {
             String key = String.valueOf(entry.getKey());
             Object val = entry.getValue();
 
-            sb.append(quoteString(key));
+            sb.append(writeJsonValue(key));
             sb.append(':');
             sb.append(toJson(val));
         }
@@ -157,11 +162,68 @@ public class DwrConvertTag extends TagSupport {
         return sb.toString();
     }
 
-    private String quoteString(String s) {
-        StringBuilder sb = new StringBuilder(s.length() + 16);
-        sb.append('\"');
-        JsonUtils.quoteAsString(s, sb);
-        sb.append('\"');
-        return sb.toString();
+    private String numberToJson(Number number) {
+        if (number instanceof Double) {
+            double value = (Double) number;
+            if (Double.isNaN(value) || Double.isInfinite(value)) {
+                return "null";
+            }
+        } else if (number instanceof Float) {
+            float value = (Float) number;
+            if (Float.isNaN(value) || Float.isInfinite(value)) {
+                return "null";
+            }
+        }
+        return writeJsonValue(number);
+    }
+
+    private String writeJsonValue(Object value) {
+        try {
+            return JSON_MAPPER.writeValueAsString(value);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to serialize value for DwrConvertTag", e);
+        }
+    }
+
+    private static ObjectMapper buildObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.getFactory().setCharacterEscapes(HtmlSafeCharacterEscapes.INSTANCE);
+        return mapper;
+    }
+
+    private static final class HtmlSafeCharacterEscapes extends CharacterEscapes {
+        private static final long serialVersionUID = 1L;
+        private static final HtmlSafeCharacterEscapes INSTANCE = new HtmlSafeCharacterEscapes();
+        private static final SerializableString ESC_LT = new SerializedString("\\u003c");
+        private static final SerializableString ESC_GT = new SerializedString("\\u003e");
+        private static final SerializableString ESC_AMP = new SerializedString("\\u0026");
+
+        private final int[] escapeCodes;
+
+        private HtmlSafeCharacterEscapes() {
+            escapeCodes = CharacterEscapes.standardAsciiEscapesForJSON();
+            escapeCodes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
+            escapeCodes['>'] = CharacterEscapes.ESCAPE_CUSTOM;
+            escapeCodes['&'] = CharacterEscapes.ESCAPE_CUSTOM;
+        }
+
+        @Override
+        public int[] getEscapeCodesForAscii() {
+            return escapeCodes;
+        }
+
+        @Override
+        public SerializableString getEscapeSequence(int ch) {
+            if (ch == '<') {
+                return ESC_LT;
+            }
+            if (ch == '>') {
+                return ESC_GT;
+            }
+            if (ch == '&') {
+                return ESC_AMP;
+            }
+            return null;
+        }
     }
 }
