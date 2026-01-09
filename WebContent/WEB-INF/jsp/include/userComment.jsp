@@ -30,19 +30,94 @@
   
   var commentTypeId;
   var commentReferenceId;
+
+  function ensureCommentDialog() {
+    var dlg = dojo.widget.byId && dojo.widget.byId("CommentDialog");
+    if (!dlg) {
+      try { dojo.widget.parse(); dlg = dojo.widget.byId && dojo.widget.byId("CommentDialog"); } catch(e) {}
+    }
+    return dlg;
+  }
+
+  function unhideCommentSource() {
+    var n = document.getElementById("CommentDialog");
+    if (!n) return n;
+    n.removeAttribute("hidden");
+    n.setAttribute("aria-hidden", "false");
+    n.style.visibility = "visible";
+    n.style.display = "";
+    n.style.float = "none";
+    return n;
+  }
+
+
+  function normalizeWrapper(dlg, srcNode) {
+    var w = (dlg && dlg.domNode) ? dlg.domNode : srcNode;
+    if (!w) return;
+
+    w.style.display = "block";
+    w.style.visibility = "visible";
+    w.style.opacity = "1";
+    w.style.position = "fixed";
+    w.style.top = "50%";
+    w.style.left = "50%";
+    w.style.transform = "translate(-50%, -50%)";
+    w.style.margin = "0";
+    w.style.zIndex = "20010";
+    w.style.overflow = "visible";
+  }
+
+  function normalizeUnderlay() {
+    var u = document.getElementById("dialogUnderlay");
+    if (!u) return;
+    u.style.position = "fixed";
+    u.style.top = "0"; u.style.left = "0"; u.style.right = "0"; u.style.bottom = "0";
+    u.style.width = "100%";
+    u.style.height = "100%";
+    u.style.zIndex = "20000";
+    u.style.display = "block";
+  }
+
+  function resetUnderlay() {
+    var u = document.getElementById("dialogUnderlay");
+    if (!u) return;
+    u.style.display = "none";
+    u.style.zIndex = "";
+    u.style.position = "";
+    u.style.top = "";
+    u.style.left = "";
+    u.style.right = "";
+    u.style.bottom = "";
+    u.style.width = "";
+    u.style.height = "";
+  }
+
   function openCommentDialog(typeId, referenceId) {
-      commentTypeId = typeId;
-      commentReferenceId = referenceId;
-      $set("commentText", "");
-      dojo.widget.byId("CommentDialog").show();
-      $("commentText").focus();
+    commentTypeId = typeId;
+    commentReferenceId = referenceId;
+
+    var ta = document.getElementById("commentText");
+    if (ta) ta.value = "";
+
+    var src = unhideCommentSource();
+    var dlg = ensureCommentDialog();
+    if (!dlg) return;
+
+    normalizeWrapper(dlg, src);
+    normalizeUnderlay();
+    if (dlg.show) dlg.show();
+    setTimeout(function(){
+      normalizeWrapper(dlg, src);
+      var ct = document.getElementById("commentText");
+      if (ct && ct.focus) try { ct.focus(); } catch(e){}
+    }, 0);
   }
   
   function saveComment() {
-      var comment = $get("commentText");
+      var comment = (document.getElementById("commentText") || {}).value || "";
       MiscDwr.addUserComment(commentTypeId, commentReferenceId, comment, saveCommentCB);
   }
-  
+
   function saveCommentCB(comment) {
       if (!comment)
           alert("<spring:message code="notes.enterComment"/>");
@@ -64,7 +139,9 @@
   }
   
   function closeCommentDialog() {
-      dojo.widget.byId("CommentDialog").hide();
+    var dlg = dojo.widget.byId && dojo.widget.byId("CommentDialog");
+    if (dlg && dlg.hide) dlg.hide();
+    resetUnderlay();
   }
 </script>
 <style type="text/css">
@@ -82,7 +159,10 @@
   }
 </style>
 
-<div dojoType="dialog" id="CommentDialog" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250">
+<div dojoType="dialog" id="CommentDialog" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250"
+     style="display:none; visibility:hidden;"
+     aria-hidden="true"
+     hidden>
   <span class="smallTitle"><spring:message code="notes.addNote"/></span>
   <table>
     <tr>
