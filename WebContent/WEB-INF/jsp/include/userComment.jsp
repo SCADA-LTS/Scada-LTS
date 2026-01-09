@@ -78,6 +78,20 @@
     u.style.display = "block";
   }
 
+  function resetUnderlay() {
+    var u = document.getElementById("dialogUnderlay");
+    if (!u) return;
+    u.style.display = "none";
+    u.style.zIndex = "";
+    u.style.position = "";
+    u.style.top = "";
+    u.style.left = "";
+    u.style.right = "";
+    u.style.bottom = "";
+    u.style.width = "";
+    u.style.height = "";
+  }
+
   function openCommentDialog(typeId, referenceId) {
     commentTypeId = typeId;
     commentReferenceId = referenceId;
@@ -127,6 +141,7 @@
   function closeCommentDialog() {
     var dlg = dojo.widget.byId && dojo.widget.byId("CommentDialog");
     if (dlg && dlg.hide) dlg.hide();
+    resetUnderlay();
   }
 </script>
 <style type="text/css">
