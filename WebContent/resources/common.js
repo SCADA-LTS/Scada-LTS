@@ -1897,7 +1897,7 @@ class DataPointsSelect {
     constructor (dataPointsSelectDef) {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
-        this.limit = dataPointsSelectDef.limit || 250;
+        this.limit = dataPointsSelectDef.limit || 5;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
@@ -1970,15 +1970,15 @@ class DataPointsSelect {
     }
 
     getExcludePointsArray() {
-        return this.excludePointsArray;
+        return [...new Set(this.excludePointsArray)];
     }
 
     getPointsArray() {
-        return this.pointsArray;
+        return [...new Set(this.pointsArray)];
     }
 
     getDataTypes() {
-        return this.dataTypes;
+        return [...new Set(this.dataTypes)];
     }
 
     getPlaceholderTextSingle() {
@@ -2172,4 +2172,24 @@ function isSupported(browser, minVersion) {
         return major >= minVersion;
     }
     return false;
+}
+
+function convertToInt(value) {
+    try {
+        return value == 'undefined' || !value ? 0 : parseInt(value);
+    } catch(error) {
+        return 0;
+    }
+}
+
+function loadPointsSelects(selector, placeholderTextSingle) {
+    let pointsSelects = jQuery(selector);
+    for(let i=0; i < pointsSelects.length; i++) {
+        let ref = {};
+        ref.selectHtmlId = pointsSelects[i].id;
+        ref.placeholderTextSingle = placeholderTextSingle;
+        ref.widthPx = "200px";
+
+        let dataPointsSelect = new DataPointsSelect(ref);
+    }
 }

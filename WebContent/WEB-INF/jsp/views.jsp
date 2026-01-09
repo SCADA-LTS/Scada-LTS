@@ -252,19 +252,6 @@
 			}
 		});
 	}
-
-	function loadPointsSelects() {
-	  let pointsSelects = jQuery("select[id^=chartComparator]");
-      for(let i=0; i < pointsSelects.length; i++) {
-
-        let ref = {};
-        ref.selectHtmlId = pointsSelects[i].id;
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-        ref.widthPx = "200px";
-
-        let dataPointsSelect = new DataPointsSelect(ref);
-      }
-	}
 </script>
 
 	<table class="subPageHeader" id="graphical">
@@ -314,7 +301,7 @@
 		checkFullScreen();
 
         jQuery(document).ready(function(){
-            loadPointsSelects();
+            loadPointsSelects("select[id^=chartComparator]", "<spring:message code='chosen.selector.selectPoint'/>");
         });
 
 	</script>

@@ -404,6 +404,31 @@
         }
     }
 
+    function doTargetPointSelectChanged(pointIdForm, activeValue, inactiveValue) {
+        resetForm();
+        targetPointSelectChanged(pointIdForm, activeValue, inactiveValue);
+    }
+
+    function resetForm() {
+        let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
+        let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
+        activePointSelect.setPointId(undefined);
+        inactivePointSelect.setPointId(undefined);
+
+        jQuery("#activeAction").val(<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>);
+        jQuery("#inactiveAction").val(<c:out value="<%= EventHandlerVO.SET_ACTION_NONE %>"/>);
+
+        hide("activePointIdRow");
+        hide("activeValueToSetRow");
+        hide("inactivePointIdRow");
+        hide("inactiveValueToSetRow");
+        hide("escalationAddresses1");
+        hide("escalationAddresses2");
+
+        selectedHandlerNode.object.activeValueToSet = "";
+        selectedHandlerNode.object.inactiveValueToSet = "";
+    }
+
     function targetPointSelectChanged(pointIdForm, activeValue, inactiveValue) {
         var selectControl = $("targetPointSelect");
 
@@ -478,14 +503,12 @@
             inactivePointSelect.setDataTypes([targetPoint.dataType]);
             if(activePoint) {
                 inactivePointSelect.updatePointsList([targetPoint, activePoint]);
-                targetPointSelect.getExcludePointsArray().push(activePoint);
             } else {
                 inactivePointSelect.updatePointsList([targetPoint]);
             }
         } else {
             if(activePoint) {
                 inactivePointSelect.updatePointsList([activePoint]);
-                targetPointSelect.getExcludePointsArray().push(activePoint);
             }
         }
         inactivePointSelect.setPointId(inactiveId);
@@ -505,14 +528,12 @@
             activePointSelect.setDataTypes([targetPoint.dataType]);
             if(inactivePoint) {
                 activePointSelect.updatePointsList([targetPoint, inactivePoint]);
-                targetPointSelect.getExcludePointsArray().push(inactivePoint);
             } else {
                 activePointSelect.updatePointsList([targetPoint]);
             }
         } else {
             if(inactivePoint) {
                 activePointSelect.updatePointsList([inactivePoint]);
-                targetPointSelect.getExcludePointsArray().push(inactivePoint);
             }
         }
         activePointSelect.setPointId(activeId);
@@ -598,10 +619,10 @@
           } else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
 
             let activePointId = $get("activePointId");
-            activePointId = activePointId || 0;
+            activePointId = convertToInt(activePointId);
 
             let inactivePointId = $get("inactivePointId");
-            inactivePointId = inactivePointId || 0;
+            inactivePointId = convertToInt(inactivePointId);
 
             let targetPointSelect = selectedHandlerNode && selectedHandlerNode.targetPointIdSelect ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
 
@@ -778,7 +799,7 @@
                 <select id="targetPointSelect"
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
-                        onchange="targetPointSelectChanged(this.value)">
+                        onchange="doTargetPointSelectChanged(this.value)">
                 </select>
               </td>
             </tr>

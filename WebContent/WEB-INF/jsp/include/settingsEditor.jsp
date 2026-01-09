@@ -155,11 +155,9 @@
                 }
 
                 if(point) {
-                    this.dataPointsSelect.setPointsArray([point]);
-                    this.dataPointsSelect.setPointId(point.id);
+                    this.dataPointsSelect.setPointId(dataPointId);
+                    this.dataPointsSelect.loadPointsList();
                 }
-            } else {
-                this.dataPointsSelect.setPointsArray([]);
             }
 
         };

@@ -206,7 +206,7 @@
                 let pointId = $get("compoundPointSelect"+ pointChildren[i].id);
                 childPointIds.push({
 					key: pointChildren[i].id, 
-					value: pointId || 0
+					value: convertToInt(pointId)
 				});
 			}
 			switch(this.component.defName) {
