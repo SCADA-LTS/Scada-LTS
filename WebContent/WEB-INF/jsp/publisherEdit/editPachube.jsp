@@ -23,14 +23,12 @@
   
   dojo.addOnLoad(function() {
       PublisherEditDwr.initSender(function(response) {
-
-        let ref = {}
-        ref.excludePointsArray = response.data.publisher.points;
-        ref.selectHtmlId = "availablePoints";
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-        ref.pointsArray = response.data.selectedPoints;
-
-        pointsContext = new PachubePointsContext(ref, "selectedPoints");
+          pointsContext = new PachubePointsContext({
+              selectHtmlId: "availablePoints",
+              placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+              excludePointsArray: response.data.publisher.points,
+              pointsArray: response.data.selectedPoints
+          }, "selectedPoints");
       });
   });
   

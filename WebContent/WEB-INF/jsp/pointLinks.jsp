@@ -55,20 +55,19 @@
             $set("event", pl.event);
             $set("disabled", pl.disabled);
 
-            let sourcePointRef = {};
-            sourcePointRef.selectHtmlId = "sourcePointId";
-            sourcePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            sourcePointRef.excludePointsArray = response.data.targetPoints;
-            sourcePointRef.pointsArray = response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId);
+            sourcePointSelect = new DataPointsSelect({
+                selectHtmlId: "sourcePointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                excludePointsArray: response.data.targetPoints,
+                pointsArray: response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId)
+            });
 
-            let targetPointRef = {};
-            targetPointRef.selectHtmlId = "targetPointId";
-            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            targetPointRef.excludePointsArray = response.data.sourcePoints;
-            targetPointRef.pointsArray = response.data.targetPoints.filter((point) => point.id == pl.targetPointId);
-
-            sourcePointSelect = new DataPointsSelect(sourcePointRef);
-            targetPointSelect = new DataPointsSelect(targetPointRef);
+            targetPointSelect = new DataPointsSelect({
+                selectHtmlId: "targetPointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                excludePointsArray: response.data.sourcePoints,
+                pointsArray: response.data.targetPoints.filter((point) => point.id == pl.targetPointId)
+            });
 
             setUserMessage();
             sourcePointSelect.setPointId(pl.sourcePointId);

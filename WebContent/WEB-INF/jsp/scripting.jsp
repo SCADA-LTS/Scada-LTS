@@ -84,7 +84,7 @@
                 };
                 pointsOnContext[pointsOnContext.length] = object;
             } else {
-                throw new Error();
+                throw new Error('dataPoint is undefined!');
             }
         }
         return pointsOnContext;
@@ -121,13 +121,12 @@
             setValueInNode('name', editingScript.name);
             setValueInNode('script', editingScript.script);
 
-            let ref = {}
-            ref.excludePointsArray = editingScript.pointsOnContext;
-            ref.selectHtmlId = "allPointsList";
-            ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-            ref.pointsArray = response.data.dataPoints;
-
-            pointsContext = new ScriptPointsContext(ref);
+            pointsContext = new ScriptPointsContext({
+                selectHtmlId: "allPointsList",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                excludePointsArray: editingScript.pointsOnContext,
+                pointsArray: response.data.dataPoints
+            });
 
             clearObjectsTable();
 		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)

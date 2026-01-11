@@ -46,13 +46,12 @@
             };
         </c:forEach>
 
-        let ref = {};
-        ref.selectHtmlId = "datPointDetailsPointSelect";
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-        ref.pointsArray = pointsArray.filter((point) => point.id == <c:out value="${point.id}" />);
-        ref.invisibleEmptyOption = true;
-
-        let datPointDetailsPointSelect = new DataPointsSelect(ref);
+        let datPointDetailsPointSelect = new DataPointsSelect({
+            selectHtmlId: "datPointDetailsPointSelect",
+            placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+            pointsArray: pointsArray.filter((point) => point.id == <c:out value="${point.id}" />),
+            invisibleEmptyOption: true
+        });
     }
     
     //

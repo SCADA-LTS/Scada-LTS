@@ -283,28 +283,27 @@
                     return;
                 }
 
-                let targetPointRef = {}
-                targetPointRef.selectHtmlId = "targetPointSelect";
-                targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                targetPointRef.pointsArray = [targetPoint];
+                selectedHandlerNode.targetPointIdSelect = new DataPointsSelect({
+                    selectHtmlId: "targetPointSelect",
+                    placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                    pointsArray: [targetPoint]
+                });
 
-                let activePointRef = {}
-                activePointRef.selectHtmlId = "activePointId";
-                activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                activePointRef.excludePointsArray = inactivePoint ? [targetPoint, inactivePoint] : [targetPoint];
-                activePointRef.pointsArray = activePoint ? [activePoint] : [];
-                activePointRef.dataTypes = [targetPoint.dataType];
+                selectedHandlerNode.activePointIdSelect = new DataPointsSelect({
+                    selectHtmlId: "activePointId",
+                    placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                    excludePointsArray: inactivePoint ? [targetPoint, inactivePoint] : [targetPoint],
+                    pointsArray: activePoint ? [activePoint] : [],
+                    dataTypes: [targetPoint.dataType]
+                });
 
-                let inactivePointRef = {}
-                inactivePointRef.selectHtmlId = "inactivePointId";
-                inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-                inactivePointRef.excludePointsArray = activePoint ? [targetPoint, activePoint] : [targetPoint];
-                inactivePointRef.pointsArray = inactivePoint ? [inactivePoint] : [];
-                inactivePointRef.dataTypes = [targetPoint.dataType];
-
-                selectedHandlerNode.targetPointIdSelect = new DataPointsSelect(targetPointRef);
-                selectedHandlerNode.activePointIdSelect = new DataPointsSelect(activePointRef);
-                selectedHandlerNode.inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
+                selectedHandlerNode.inactivePointIdSelect = new DataPointsSelect({
+                    selectHtmlId: "inactivePointId",
+                    placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                    excludePointsArray: activePoint ? [targetPoint, activePoint] : [targetPoint],
+                    pointsArray: inactivePoint ? [inactivePoint] : [],
+                    dataTypes: [targetPoint.dataType]
+                });
 
                 $set("activeAction", handler.activeAction);
                 $set("inactiveAction", handler.inactiveAction);
@@ -332,21 +331,20 @@
             }
         } else {
 
-            let targetPointRef = {}
-            targetPointRef.selectHtmlId = "targetPointSelect";
-            targetPointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            targetPointIdSelect = new DataPointsSelect({
+                selectHtmlId: "targetPointSelect",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>"
+            });
 
-            let activePointRef = {}
-            activePointRef.selectHtmlId = "activePointId";
-            activePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
+            activePointIdSelect = new DataPointsSelect({
+                selectHtmlId: "activePointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>"
+            });
 
-            let inactivePointRef = {}
-            inactivePointRef.selectHtmlId = "inactivePointId";
-            inactivePointRef.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-
-            targetPointIdSelect = new DataPointsSelect(targetPointRef);
-            activePointIdSelect = new DataPointsSelect(activePointRef);
-            inactivePointIdSelect = new DataPointsSelect(inactivePointRef);
+            inactivePointIdSelect = new DataPointsSelect({
+                selectHtmlId: "inactivePointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>"
+            });
 
             $("saveImg").src = "images/save_add.png";
             hide("deleteImg");

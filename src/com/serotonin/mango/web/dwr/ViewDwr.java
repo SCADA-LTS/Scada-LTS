@@ -1151,7 +1151,7 @@ public class ViewDwr extends BaseDwr {
 		return response;
 	}
 
-	public DwrResponseI18n getViewComponentRes(String viewComponentId, int viewId) {
+	public DwrResponseI18n getViewComponentResponse(String viewComponentId, int viewId) {
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		DwrResponseI18n response = new DwrResponseI18n();
 		User user = Common.getUser();

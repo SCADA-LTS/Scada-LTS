@@ -72,13 +72,12 @@
         
         $set("name", report.name);
 
-        let ref = {}
-        ref.excludePointsArray = report.points;
-        ref.selectHtmlId = "allPointsList";
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-        ref.pointsArray = response.data.points;
-
-        pointsContext = new ReportPointsContext(ref);
+        pointsContext = new ReportPointsContext({
+            selectHtmlId: "allPointsList",
+            placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+            excludePointsArray: report.points,
+            pointsArray: response.data.points
+        });
 
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);

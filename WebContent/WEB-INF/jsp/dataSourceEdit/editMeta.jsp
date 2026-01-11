@@ -52,13 +52,13 @@
   
   function editPointCBImpl(locator, contextPoints) {
 
-      let ref = {}
-      ref.excludePointsArray = locator.context;
-      ref.selectHtmlId = "allPointsList";
-      ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-      ref.pointsArray = contextPoints;
+      pointsContext = new ScriptPointsContext({
+          selectHtmlId: "allPointsList",
+          placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+          excludePointsArray: locator.context,
+          pointsArray: contextPoints
+      });
 
-      pointsContext = new ScriptPointsContext(ref);
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);

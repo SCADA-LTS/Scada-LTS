@@ -84,12 +84,12 @@
         <td>
             <script>
                    function init() {
-
-                       let ref = {};
-                       ref.selectHtmlId = "selected_base_on_existing_point_chooser";
-                       ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-
-                       let selectedBaseOnExistingPointChooser = new DataPointsSelect(ref);
+                       let dataTypeId = <c:out value="${form.pointLocator.dataTypeId}" />;
+                       let selectedBaseOnExistingPointChooser = new DataPointsSelect({
+                           selectHtmlId: "selected_base_on_existing_point_chooser",
+                           placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                           dataTypes: [dataTypeId]
+                       });
                    }
 
                    function checkGetAlertError() {

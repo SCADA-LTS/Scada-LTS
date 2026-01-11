@@ -1334,13 +1334,12 @@ function setValueInNode(id, text) {
 class PointsContext {
 
     constructor (dataPointsSelectDef, contextTableIdConstructor) {
-       this.updatePointsArray = new DataPointsSelect(dataPointsSelectDef);
+       this.dataPointsSelect = new DataPointsSelect(dataPointsSelectDef);
 
-       this.contextArray = new Array();
+       this.contextArray = [];
        this.contextTableId = contextTableIdConstructor || "contextTable";
        this.contextTableEmptyId = "contextTableEmpty";
        this.contextTableHeadersId = "contextTableHeaders";
-       this.allPointsListId = "allPointsList";
        this.init(dataPointsSelectDef.excludePointsArray);
     }
 
@@ -1352,16 +1351,12 @@ class PointsContext {
 
     writeContextArray(row) {}
 
-    updatePointsList(contextArray, keywordSearch) {
-        this.updatePointsArray.updatePointsList(contextArray, keywordSearch);
+    updatePointsList(contextArray) {
+        this.dataPointsSelect.updatePointsList(contextArray);
     }
 
     setPointsArray(pointsArray) {
-        this.updatePointsArray.setPointsArray(pointsArray, "");
-    }
-
-    setAllPointsListId(allPointsListId) {
-        this.allPointsListId = allPointsListId;
+        this.dataPointsSelect.setPointsArray(pointsArray);
     }
 
     removeFromContextArray(pointId) {
@@ -1382,20 +1377,28 @@ class PointsContext {
             item[key] = value;
     }
 
+    addContextPoint(point) {
+        this.contextArray[this.contextArray.length] = point;
+    }
+
+    clearContextArray() {
+        this.contextArray.length = 0;
+    }
+
     getPointsArray() {
-        return this.updatePointsArray.getPointsArray();
+        return this.dataPointsSelect.getPointsArray();
     }
 
     getSelectHtmlId() {
-        return this.updatePointsArray.getSelectHtmlId();
+        return this.dataPointsSelect.getSelectHtmlId();
     }
 
     getContextPointById(pointId) {
-        return this.updatePointsArray.getExcludePointById(pointId);
+        return this.dataPointsSelect.getExcludePointById(pointId);
     }
 
     getContextArray() {
-        return this.contextArray;
+        return [...new Set(this.contextArray)];
     }
 
     getContextTableId() {
@@ -1408,10 +1411,6 @@ class PointsContext {
 
     getContextTableHeadersId() {
         return this.contextTableHeadersId;
-    }
-
-    getAllPointsListId() {
-        return this.allPointsListId;
     }
 
     #equalsByOptions(row, obj, rowOptions, objOptions) {
@@ -1464,7 +1463,7 @@ class ScriptPointsContext extends PointsContext {
 
     init(context) {
        dwr.util.removeAllRows(super.getContextTableId());
-       super.getContextArray().length = 0;
+       super.clearContextArray();
        for (let i = 0; i < context.length; i++) {
             let row = this.addToContextArray(context[i].key, context[i].value);
             this.writeContextArray(row);
@@ -1472,11 +1471,12 @@ class ScriptPointsContext extends PointsContext {
     }
 
     convertToSave() {
-       let context = new Array();
-       for (let i = 0; i < super.getContextArray().length; i++) {
+       let context = [];
+       let contextArray = super.getContextArray();
+       for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-              key : super.getContextArray()[i].pointId,
-              value : super.getContextArray()[i].scriptVarName
+              key : contextArray[i].pointId,
+              value : contextArray[i].scriptVarName
           };
        }
        return context;
@@ -1493,7 +1493,7 @@ class ScriptPointsContext extends PointsContext {
        let points = super.getPointsArray();
        let data = getElement(points, pointId);
        if (data) {
-          super.getContextArray()[super.getContextArray().length] = {
+          let contextPoint = {
               pointId : data.id,
               pointName : data.extendName ? data.extendName : data.name,
               pointXid : data.xid,
@@ -1501,8 +1501,9 @@ class ScriptPointsContext extends PointsContext {
               pointTypeId : data.dataType,
               scriptVarName : scriptVarName
           };
+          super.addContextPoint(contextPoint);
           super.updatePointsList(super.getContextArray());
-          return super.getContextArray()[super.getContextArray().length - 1];
+          return contextPoint;
        }
        return null;
     }
@@ -1543,7 +1544,7 @@ class ReportPointsContext extends PointsContext {
 
     init(context) {
        dwr.util.removeAllRows(super.getContextTableId());
-       super.getContextArray().length = 0;
+       super.clearContextArray();
        for (let i = 0; i < context.length; i++) {
             let row = this.addToContextArray(context[i].pointId, context[i].colour, context[i].consolidatedChart);
             this.writeContextArray(row);
@@ -1551,13 +1552,14 @@ class ReportPointsContext extends PointsContext {
     }
 
     convertToSave() {
-       let context = new Array();
-       for (let i = 0; i < super.getContextArray().length; i++) {
+       let context = [];
+       let contextArray = super.getContextArray();
+       for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-                pointId: super.getContextArray()[i].pointId,
-                pointXid: super.getContextArray()[i].xid,
-                colour: super.getContextArray()[i].colour,
-                consolidatedChart: super.getContextArray()[i].consolidatedChart
+                pointId: contextArray[i].pointId,
+                pointXid: contextArray[i].xid,
+                colour: contextArray[i].colour,
+                consolidatedChart: contextArray[i].consolidatedChart
           };
        }
        return context;
@@ -1574,7 +1576,7 @@ class ReportPointsContext extends PointsContext {
        let points = super.getPointsArray();
        let data = getElement(points, pointId);
        if (data) {
-          super.getContextArray()[super.getContextArray().length] = {
+          let contextPoint = {
                 pointId: data.id,
                 pointXid: data.xid,
                 pointName : data.extendName ? data.extendName : data.name,
@@ -1583,8 +1585,9 @@ class ReportPointsContext extends PointsContext {
                 colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
                 consolidatedChart : consolidatedChart
           };
+          super.addContextPoint(contextPoint);
           super.updatePointsList(super.getContextArray());
-          return super.getContextArray()[super.getContextArray().length - 1];
+          return contextPoint;
        }
        return null;
     }
@@ -1635,7 +1638,7 @@ class SenderPointsContext extends PointsContext {
 
     init(context) {
        dwr.util.removeAllRows(super.getContextTableId());
-       super.getContextArray().length = 0;
+       super.clearContextArray();
        for (let i = 0; i < context.length; i++) {
             let row = this.addToContextArray(context[i].dataPointId, context[i].parameterName, context[i].includeTimestamp);
             this.writeContextArray(row);
@@ -1643,12 +1646,13 @@ class SenderPointsContext extends PointsContext {
     }
 
     convertToSave() {
-       let context = new Array();
-       for (let i = 0; i < super.getContextArray().length; i++) {
+       let context = [];
+       let contextArray = super.getContextArray();
+       for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-            dataPointId: super.getContextArray()[i].pointId,
-            parameterName: super.getContextArray()[i].parameterName,
-            includeTimestamp: super.getContextArray()[i].includeTimestamp
+            dataPointId: contextArray[i].pointId,
+            parameterName: contextArray[i].parameterName,
+            includeTimestamp: contextArray[i].includeTimestamp
           };
        }
        return context;
@@ -1669,7 +1673,7 @@ class SenderPointsContext extends PointsContext {
            parameterName = data.name;
 
        if (data) {
-           super.getContextArray()[super.getContextArray().length] = {
+          let contextPoint = {
                pointId : data.id,
                pointXid : data.xid,
                pointName : data.extendName ? data.extendName : data.name,
@@ -1679,8 +1683,9 @@ class SenderPointsContext extends PointsContext {
                parameterName: parameterName,
                includeTimestamp: includeTimestamp
            };
+           super.addContextPoint(contextPoint);
            super.updatePointsList(super.getContextArray());
-           return super.getContextArray()[super.getContextArray().length - 1];
+           return contextPoint;
        }
        return null;
    }
@@ -1728,7 +1733,7 @@ class PersistentPointsContext extends PointsContext {
 
     init(context) {
        dwr.util.removeAllRows(super.getContextTableId());
-       super.getContextArray().length = 0;
+       super.clearContextArray();
        for (let i = 0; i < context.length; i++) {
             let row = this.addToContextArray(context[i].dataPointId);
             this.writeContextArray(row);
@@ -1736,10 +1741,11 @@ class PersistentPointsContext extends PointsContext {
     }
 
     convertToSave() {
-       let context = new Array();
-       for (let i = 0; i < super.getContextArray().length; i++) {
+       let context = [];
+       let contextArray = super.getContextArray();
+       for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-            dataPointId: super.getContextArray()[i].pointId
+            dataPointId: contextArray[i].pointId
           };
        }
        return context;
@@ -1757,7 +1763,7 @@ class PersistentPointsContext extends PointsContext {
        let data = getElement(points, pointId);
 
        if (data) {
-           super.getContextArray()[super.getContextArray().length] = {
+          let contextPoint = {
                 pointId : data.id,
                 pointXid : data.xid,
                 pointName : data.extendName ? data.extendName : data.name,
@@ -1765,8 +1771,9 @@ class PersistentPointsContext extends PointsContext {
                 pointType : data.dataTypeMessage,
                 pointTypeId : data.dataType
            };
+           super.addContextPoint(contextPoint);
            super.updatePointsList(super.getContextArray());
-           return super.getContextArray()[super.getContextArray().length - 1];
+           return contextPoint;
        }
        return null;
    }
@@ -1806,7 +1813,7 @@ class PachubePointsContext extends PointsContext {
 
     init(context) {
        dwr.util.removeAllRows(super.getContextTableId());
-       super.getContextArray().length = 0;
+       super.clearContextArray();
        for (let i = 0; i < context.length; i++) {
             let row = this.addToContextArray(context[i].dataPointId, context[i].feedId, context[i].dataStreamId);
             this.writeContextArray(row);
@@ -1814,12 +1821,13 @@ class PachubePointsContext extends PointsContext {
     }
 
     convertToSave() {
-       let context = new Array();
-       for (let i = 0; i < super.getContextArray().length; i++) {
+       let context = [];
+       let contextArray = super.getContextArray();
+       for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-            dataPointId: super.getContextArray()[i].pointId,
-            feedId: super.getContextArray()[i].feedId,
-            dataStreamId: super.getContextArray()[i].dataStreamId
+            dataPointId: contextArray[i].pointId,
+            feedId: contextArray[i].feedId,
+            dataStreamId: contextArray[i].dataStreamId
           };
        }
        return context;
@@ -1837,7 +1845,7 @@ class PachubePointsContext extends PointsContext {
        let data = getElement(points, pointId);
 
        if (data) {
-           super.getContextArray()[super.getContextArray().length] = {
+          let contextPoint = {
               pointId : data.id,
               pointXid : data.xid,
               pointName : data.extendName ? data.extendName : data.name,
@@ -1847,8 +1855,9 @@ class PachubePointsContext extends PointsContext {
               feedId: feedId,
               dataStreamId: dataStreamId
            };
+           super.addContextPoint(contextPoint);
            super.updatePointsList(super.getContextArray());
-           return super.getContextArray()[super.getContextArray().length - 1];
+           return contextPoint;
        }
        return null;
     }
@@ -1910,83 +1919,12 @@ class DataPointsSelect {
         this.#init();
     }
 
-    #init() {
-        jQuery("#" + this.inputHtmlId).off('input');
-
-        jQuery("#" + this.selectHtmlId).chosen({
-           allow_single_deselect: true,
-           placeholder_text_single: this.placeholderTextSingle,
-           search_contains: true,
-           max_shown_results: this.limit,
-           width: this.widthPx,
-           case_sensitive_search: false
-        });
-
-        this.updatePointsList(this.excludePointsArray, '');
-
-        if(this.pointsArray.length == 1) {
-            this.setPointId(this.#getId(this.pointsArray[0]));
-            this.lastPoint = this.getPoint();
-        }
-
-        this.#loadPoints("", 0, this.lastPoint, true);
-
-        let select = this;
-        jQuery("#" + this.inputHtmlId).on("input", function(evt) {
-            select.#loadPoints(evt.target.value, 700, undefined, false);
-        });
-    }
-
-    #loadPoints(keywordSearch, timeout, point, startsWith) {
-        let select = this;
-        select.#setSearchTimer(setTimeout(() => {
-            let excludeIds = [];
-            for(let i = 0; i < select.getExcludePointsArray().length; i++) {
-                let id = select.#getId(select.getExcludePointsArray()[i]);
-                if(id != -1 && excludeIds.indexOf(id) == -1) {
-                    excludeIds[excludeIds.length] = id;
-                }
-            }
-            jQuery.ajax({
-                type: "GET",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.getLimit() + "&excludeIds=" + excludeIds + "&startsWith=" + (startsWith ? true : false) + "&dataTypes=" + select.getDataTypes(),
-                success: function(points) {
-                    let id = point ? select.#getId(point) : -1;
-                    if(id != -1 && point && !points.find(p => select.#getId(p) == id)) {
-                        points.unshift(point);
-                    }
-                    select.setPointsArray(points, keywordSearch);
-                    if(id != -1) {
-                        select.setPointId(id);
-                    }
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("chosen-search-input error:", [XMLHttpRequest, textStatus, errorThrown]);
-                }
-            });
-        }, timeout));
-    }
-
-    getExcludePointsArray() {
-        return [...new Set(this.excludePointsArray)];
-    }
-
     getPointsArray() {
         return [...new Set(this.pointsArray)];
     }
 
-    getDataTypes() {
-        return [...new Set(this.dataTypes)];
-    }
-
     getPlaceholderTextSingle() {
         return this.placeholderTextSingle;
-    }
-
-    getLimit() {
-        return this.limit;
     }
 
     getSelectHtmlId() {
@@ -1995,7 +1933,7 @@ class DataPointsSelect {
 
     getPointId() {
         let select = document.getElementById(this.selectHtmlId);
-        if(select && select.value && select.value !== undefined) {
+        if(select && select.value && select.value !== 'undefined') {
             try {
                 return parseInt(select.value);
             } catch (error) {
@@ -2029,9 +1967,9 @@ class DataPointsSelect {
         })
     }
 
-    setPointsArray(pointsArray, keywordSearch) {
+    setPointsArray(pointsArray) {
         this.pointsArray = [...new Set(pointsArray)];
-        this.updatePointsList(this.excludePointsArray, keywordSearch);
+        this.updatePointsList(this.excludePointsArray);
     }
 
     setDataTypes(dataTypes) {
@@ -2051,7 +1989,7 @@ class DataPointsSelect {
         this.lastPoint = this.getPoint();
     }
 
-    updatePointsList(excludePoints, keywordSearch) {
+    updatePointsList(excludePoints) {
        let tempArray = this.pointsArray;
        let availPoints = new Array();
        this.excludePointsArray = [...new Set(excludePoints)];
@@ -2083,9 +2021,69 @@ class DataPointsSelect {
 
        this.#addOptions(this.selectHtmlId, availPoints, "id", this.altKey, "extendName", this.altValue);
        jQuery("#" + this.selectHtmlId).trigger('chosen:updated');
-       if(keywordSearch) {
-            jQuery("#" + this.inputHtmlId).val(keywordSearch);
-       }
+    }
+
+    #init() {
+        jQuery("#" + this.inputHtmlId).off('input');
+
+        jQuery("#" + this.selectHtmlId).chosen({
+           allow_single_deselect: true,
+           placeholder_text_single: this.placeholderTextSingle,
+           search_contains: true,
+           max_shown_results: this.limit,
+           width: this.widthPx,
+           case_sensitive_search: false
+        });
+
+        this.updatePointsList(this.excludePointsArray);
+
+        if(this.pointsArray.length == 1) {
+            this.setPointId(this.#getId(this.pointsArray[0]));
+        }
+
+        this.#loadPoints("", 0, this.lastPoint);
+
+        let select = this;
+        jQuery("#" + this.inputHtmlId).on("input", function(evt) {
+            select.#loadPoints(evt.target.value, 700, select.lastPoint);
+        });
+    }
+
+    #loadPoints(keywordSearch, timeout, point) {
+        let select = this;
+        select.#setSearchTimer(setTimeout(() => {
+            let excludeIds = [];
+            let excludePoints = select.excludePointsArray;
+            for(let i = 0; i < excludePoints.length; i++) {
+                let id = select.#getId(excludePoints[i]);
+                if(id != -1 && excludeIds.indexOf(id) == -1) {
+                    excludeIds[excludeIds.length] = id;
+                }
+            }
+            jQuery.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes,
+                success: function(points) {
+                    let id = point ? select.#getId(point) : -1;
+                    if(id != -1 && point) {
+                        points = points.filter(p => select.#getId(p) != id);
+                        points.unshift(point);
+                    }
+                    select.setPointsArray(points);
+                    if(id != -1) {
+                        select.setPointId(id);
+                    }
+                    if(keywordSearch) {
+                        jQuery("#" + select.inputHtmlId).val(keywordSearch);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("chosen-search-input error:", [XMLHttpRequest, textStatus, errorThrown]);
+                }
+            });
+        }, timeout));
     }
 
     #addOptions(id, availPoints, key, altKey, value, altValue) {
@@ -2185,11 +2183,10 @@ function convertToInt(value) {
 function loadPointsSelects(selector, placeholderTextSingle) {
     let pointsSelects = jQuery(selector);
     for(let i=0; i < pointsSelects.length; i++) {
-        let ref = {};
-        ref.selectHtmlId = pointsSelects[i].id;
-        ref.placeholderTextSingle = placeholderTextSingle;
-        ref.widthPx = "200px";
-
-        let dataPointsSelect = new DataPointsSelect(ref);
+        let dataPointsSelect = new DataPointsSelect({
+            selectHtmlId: pointsSelects[i].id,
+            placeholderTextSingle: placeholderTextSingle,
+            widthPx: "200px"
+        });
     }
 }

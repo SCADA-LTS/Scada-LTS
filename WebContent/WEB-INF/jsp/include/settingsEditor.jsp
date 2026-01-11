@@ -73,24 +73,22 @@
     function SettingsEditor() {
         this.componentId = null;
         this.pointList = [];
-
-        let ref = {};
-        ref.selectHtmlId = "settingsPointList";
-        ref.placeholderTextSingle = "<spring:message code='chosen.selector.selectPoint'/>";
-
-        this.dataPointsSelect = new DataPointsSelect(ref);
+        this.dataPointsSelect;
 
         this.open = function(compId) {
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
-            ViewDwr.getViewComponentRes(compId, viewId, function(response) {
+            ViewDwr.getViewComponentResponse(compId, viewId, function(response) {
             	let comp = response.data.comp;
                 $set("settingsComponentName", comp.displayName);
-                
-                // Update the point list
-                settingsEditor.setPointList(response.data.pointList);
-                settingsEditor.setDataTypes(comp.supportedDataTypes);
+
+                settingsEditor.dataPointsSelect = new DataPointsSelect({
+                    selectHtmlId: "settingsPointList",
+                    placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                    pointsArray: response.data.pointList.filter((point) => point.id == comp.dataPointId),
+                    dataTypes: comp.supportedDataTypes
+                });
 
                 // Update the data in the form.
                 $set("settingsPointList", comp.dataPointId);
@@ -143,6 +141,10 @@
                 this.dataPointsSelect.setDataTypes(dataTypes);
             }
         };
+
+        this.loadPointsList = function() {
+            this.dataPointsSelect.loadPointsList();
+        }
         
         this.pointSelectChanged = function(dataPointId) {
             if(dataPointId > 0) {
