@@ -2067,7 +2067,7 @@ class DataPointsSelect {
                 url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes,
                 success: function(points) {
                     let id = point ? select.#getId(point) : -1;
-                    if(id != -1 && point) {
+                    if(id != -1 && point && select.invisibleEmptyOption) {
                         points = points.filter(p => select.#getId(p) != id);
                         points.unshift(point);
                     }
