@@ -84,6 +84,7 @@
                 };
                 pointsOnContext[pointsOnContext.length] = object;
             } else {
+                setUserMessage("<spring:message code="script.execute.error"/> ");
                 throw new Error('dataPoint is undefined!');
             }
         }
