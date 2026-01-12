@@ -498,7 +498,7 @@ public class PointValueAPI {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.GET)
+    @PutMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}")
     public ResponseEntity<String> setValueGet(
             @PathVariable("xid") String xid,
             @PathVariable("type") int type,
@@ -680,7 +680,7 @@ public class PointValueAPI {
         }
     }
 
-    @RequestMapping(value = "/api/point_value/updateMetaDataPointByScript/{xid}", method = RequestMethod.GET)
+    @PutMapping(value = "/api/point_value/updateMetaDataPointByScript/{xid}")
     public ResponseEntity<String> updateMetaDataPointByScript(@PathVariable("xid") String xid, HttpServletRequest request) {
 
         try {
@@ -703,7 +703,7 @@ public class PointValueAPI {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/point_value/updateMetaDataPointsByScript/{xid}", method = RequestMethod.GET)
+    @PutMapping(value = "/api/point_value/updateMetaDataPointsByScript/{xid}")
     public ResponseEntity<String> updateMetaDataPointsByScript(@PathVariable("xid") String xid, HttpServletRequest request) {
 
         try {
@@ -724,7 +724,7 @@ public class PointValueAPI {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/point_value/updateAllMetaDataPointsByScript/", method = RequestMethod.GET)
+    @PutMapping(value = "/api/point_value/updateAllMetaDataPointsByScript/")
     public ResponseEntity<String> updateAllMetaDataPointsByScript(HttpServletRequest request) {
 
         try {

@@ -50,7 +50,10 @@ const storeReports = {
 			.catch(() => { dispatch('showErrorNotification', 'Reports not loaded')});
 		},
 		setPreventPurge({ commit, dispatch }, payload) {
-			dispatch('requestGet', `/reports/instances/${payload.id}/preventPurge/${payload.preventPurge}`)
+			dispatch('requestPut', {
+				url: `/reports/instances/${payload.id}/preventPurge/${payload.preventPurge}`,
+				data: null,
+			})
 				.then((r) => { commit(TOGGLE_PURGE, r)})
 				.catch(() => { dispatch('showErrorNotification', 'Failed to save this property')});
 		},
@@ -67,7 +70,7 @@ const storeReports = {
 		},
 
 		runReport({ dispatch }, id) {
-			return dispatch('requestGet', `/reports/run/${id}`);
+			return dispatch('requestPost', { url: `/reports/run/${id}`, data: null });
 		},
 		fetchReports({ dispatch }, payload) {
 			return dispatch('requestPost', {

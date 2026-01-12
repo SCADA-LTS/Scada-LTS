@@ -84,9 +84,9 @@ public class ReportsAPI {
      * @param request     HTTP request with user data
      * @return ReportVO List
      */
-    @GetMapping(value = "/run/{id}")
+    @PostMapping(value = "/run/{id}")
     public ResponseEntity<String> runReport(@PathVariable("id") Integer id, HttpServletRequest request) {
-        LOG.info("GET::/api/reports/run");
+        LOG.info("POST::/api/reports/run");
         reportsApiService.runReport(request, null, id);
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
@@ -117,9 +117,9 @@ public class ReportsAPI {
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/instances/{id}/preventPurge/{preventPurge}")
+    @PutMapping(value = "/instances/{id}/preventPurge/{preventPurge}")
     public HttpEntity<Integer> setReportInstancePreventPurge(@PathVariable("id") Integer id, @PathVariable("preventPurge") Boolean preventPurge, HttpServletRequest request) {
-        LOG.info("GET::/api/reports/instances/"+id+"/preventPurge/"+preventPurge);
+        LOG.info("PUT::/api/reports/instances/"+id+"/preventPurge/"+preventPurge);
         reportsApiService.setReportInstancePreventPurge(request, id, preventPurge);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }

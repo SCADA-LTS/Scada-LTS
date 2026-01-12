@@ -51,7 +51,12 @@ Cypress.Commands.add('restLogin', (username = 'admin', password = 'admin') => {
 	log.snapshot('before');
 	cy.request({
 		log: false,
-		url: `/api/auth/${username}/${password}`,
+		method: 'POST',
+		url: '/api/auth',
+		body: {
+			username,
+			password,
+		},
 	})
 		.its('body', { log: false })
 		.should('include', 'true');

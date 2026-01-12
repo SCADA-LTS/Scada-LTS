@@ -302,7 +302,7 @@ public class SystemSettingsAPI {
         }
     }
 
-    @GetMapping(value = "/purgeNow", produces = "application/json")
+    @PostMapping(value = "/purgeNow", produces = "application/json")
     public ResponseEntity<Map<String, String>> purgeNow(HttpServletRequest request) {
         LOG.info("/api/systemSettings/purgeData");
         LOG.warn("Purging data!");
@@ -484,7 +484,7 @@ public class SystemSettingsAPI {
         }
     }
 
-    @GetMapping(value = "/purgeData", produces = "application/json")
+    @PostMapping(value = "/purgeData", produces = "application/json")
     public ResponseEntity<Map<String, String>> purgeData(HttpServletRequest request) {
         LOG.info("/api/systemSettings/purgeData");
         LOG.warn("Purging data!");

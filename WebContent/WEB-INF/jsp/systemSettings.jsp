@@ -497,7 +497,7 @@
         }
 
         jQuery.ajax({
-            type: 'GET',
+            type: 'POST',
             dataType: 'text',
             url:myLocation+"api/resources/imagesRefresh",
             success: function(msg){

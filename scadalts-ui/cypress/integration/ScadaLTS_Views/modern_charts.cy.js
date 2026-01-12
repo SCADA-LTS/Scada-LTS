@@ -10,7 +10,7 @@ context('Verify Modern Watch List Page and Modern Charts', () => {
 
 	describe('Chart with 1 datapoint', function () {
 		it('Create chart', function () {
-			cy.request('/api/auth/admin/admin');
+			cy.request('POST', '/api/auth', { username: 'admin', password: 'admin' });
 			cy.get('#watchListSelect').select('Test_WL_1');
 			cy.get('i[class="glyphicon glyphicon-refresh"]').click();
 			cy.get('.hello').find('svg');

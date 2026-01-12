@@ -11,7 +11,11 @@ var ExportImportHierarchiPoints = {
             try {
                 axios({
                     method: 'post',
-                    url: 'http://localhost:8080/ScadaBR/api/auth/admin/admin',
+                    url: 'http://localhost:8080/ScadaBR/api/auth',
+                    data: {
+                        username: 'admin',
+                        password: 'admin',
+                    },
                 }).then(function (response) {
                     alert(response.data);
                     alert(response.status);
