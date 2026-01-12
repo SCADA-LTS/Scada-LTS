@@ -279,7 +279,7 @@
 
                 if (!targetPoint) {
                     console.error("Data integrity error: Target point not found for handler", handler.targetPointId);
-                    setUserMessage("<spring:message code='eventHandlers.errorInvalidHandler'/>");
+                    setUserMessage("<spring:message code='validate.invalidValue'/>");
                     return;
                 }
 
