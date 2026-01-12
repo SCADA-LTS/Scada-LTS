@@ -167,7 +167,7 @@
   }
   
   function selectPoint() {
-      pointsContext.addPointToContext();
+      executeOn(function(context) {context.addPointToContext()}, pointsContext);
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -176,7 +176,7 @@
       hide("urlMsg");
       hide("pointsMsg");
       
-      let points = pointsContext.convertToSave();
+      let points = executeOn(function(context) {return context.convertToSave()}, pointsContext);
 
       updateStaticHeadersList();
 
@@ -190,8 +190,8 @@
     savePublisherCB(response);
     PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
     if(!response.hasMessages) {
-        pointsContext.setPointsArray(response.data.selectedPoints);
-        pointsContext.init(response.data.publisher.points);
+        executeOn(function(context, selectedPoints) {context.setPointsArray(selectedPoints)}, pointsContext, response.data.selectedPoints);
+        executeOn(function(context, points) {context.init(points)}, pointsContext, response.data.publisher.points);
     }
   }
   

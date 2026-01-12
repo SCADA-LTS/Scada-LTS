@@ -34,7 +34,7 @@
   });
   
   function selectPoint() {
-      pointsContext.addPointToContext();
+      executeOn(function(context) {context.addPointToContext()}, pointsContext);
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -44,7 +44,7 @@
       hide("portMsg");
       hide("pointsMsg");
       
-      let points = pointsContext.convertToSave();
+      let points = executeOn(function(context) {return context.convertToSave()}, pointsContext);
       
       PublisherEditDwr.savePersistentSender(name, xid, enabled, points, $get("host"), $get("port"),
               $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,
@@ -54,8 +54,8 @@
   function savePersistentCB(response) {
     savePublisherCB(response);
     if(!response.hasMessages) {
-      pointsContext.setPointsArray(response.data.selectedPoints);
-      pointsContext.init(response.data.publisher.points);
+        executeOn(function(context, selectedPoints) {context.setPointsArray(selectedPoints)}, pointsContext, response.data.selectedPoints);
+        executeOn(function(context, points) {context.init(points)}, pointsContext, response.data.publisher.points);
     }
   }
 </script>
