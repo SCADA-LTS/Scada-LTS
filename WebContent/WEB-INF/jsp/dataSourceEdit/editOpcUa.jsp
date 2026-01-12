@@ -147,7 +147,7 @@
   }
   
   function btnAddNode() {
-	  DataSourceEditDwr.getDataPoint(-1, function(response) {
+	  DataSourceEditDwr.getPointResponse(-1, function(response) {
          addNodesImplOpcUa(response.data.point);
       });
   }

@@ -121,12 +121,12 @@
             setValueInNode('name', editingScript.name);
             setValueInNode('script', editingScript.script);
 
-            pointsContext = new ScriptPointsContext({
+            pointsContext = new ScriptPointsContext(new DataPointsSelect({
                 selectHtmlId: "allPointsList",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
                 excludePointsArray: editingScript.pointsOnContext,
                 pointsArray: response.data.dataPoints
-            });
+            }));
 
             clearObjectsTable();
 		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)

@@ -58,17 +58,12 @@ public class ChartComparatorComponent extends HtmlComponent {
 
 		StringBuilder sb = new StringBuilder();
 		// sb.append("<div style='width:" + width + "px; height:" + height
-		// + "px; border: 1px solid black;'>");
-		String dp1 = idPrefix + "_dp1";
-		String dp2 = idPrefix + "_dp2";
-		String dp3 = idPrefix + "_dp3";
-		String dp4 = idPrefix + "_dp4";
-
+		// + "px; border: 1px solid black;'>")
 		sb.append("<div>");
-		sb.append(createDataPointsSelectComponent(dp1, Collections.emptyList()));
-		sb.append(createDataPointsSelectComponent(dp2, Collections.emptyList()));
-		sb.append(createDataPointsSelectComponent(dp3, Collections.emptyList()));
-		sb.append(createDataPointsSelectComponent(dp4, Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", Collections.emptyList()));
 		sb.append("<div style='float:right;'><input type='button' style='width: 100%;' value='Atualizar' onclick=\"updateChartComparatorComponent('"
 				+ idPrefix + "'," + width + "," + height + ");\" /> </div>");
 		sb.append("<div style='clear:both;'> </div>");

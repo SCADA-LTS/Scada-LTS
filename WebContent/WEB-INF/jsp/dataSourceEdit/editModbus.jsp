@@ -217,7 +217,7 @@
   }
   
   function addPointImpl() {
-	  DataSourceEditDwr.getDataPoint(-1, function(response) {
+	  DataSourceEditDwr.getPointResponse(-1, function(response) {
 		  editPointCB(response.data.point);
 	      $set("slaveId", $get("test_slaveId"));
 	      $set("range", $get("test_range"));

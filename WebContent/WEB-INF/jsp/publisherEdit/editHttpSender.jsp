@@ -47,12 +47,12 @@
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
 
-      pointsContext = new SenderPointsContext({
+      pointsContext = new SenderPointsContext(new DataPointsSelect({
            selectHtmlId: "availablePoints",
            placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
            excludePointsArray: response.data.publisher.points,
            pointsArray: response.data.selectedPoints
-      }, "selectedPoints");
+      }), "selectedPoints");
   }
 
   function initStaticHeaders(response) {

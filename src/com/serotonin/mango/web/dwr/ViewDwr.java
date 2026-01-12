@@ -574,10 +574,8 @@ public class ViewDwr extends BaseDwr {
 			c.tsetImageSet(imageSet);
 			resetPointComponent(c);
 			response.addData("pointList", getPointList(viewId, c, user));
-			//response.addData("comp", c);
 		} else {
 			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
 			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
 		return response;
@@ -606,10 +604,8 @@ public class ViewDwr extends BaseDwr {
 			c.setDisplayText(displayText);
 			resetPointComponent(c);
 			response.addData("pointList", getPointList(viewId, c, user));
-			//response.addData("comp", c);
 		} else {
 			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
 			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
 		return response;
@@ -635,10 +631,8 @@ public class ViewDwr extends BaseDwr {
 			c.tsetDynamicImage(dynamicImage);
 			resetPointComponent(c);
 			response.addData("pointList", getPointList(viewId, c, user));
-			//response.addData("comp", c);
 		} else {
 			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
 			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
 		return response;
@@ -661,12 +655,10 @@ public class ViewDwr extends BaseDwr {
 			c.setDisplayText(displayText);
 			c.tsetImageSet(imageSet);
 			resetPointComponent(c);
-			//response.addData("comp", c);
 			response.addData("pointList", getPointList(viewId, c, user));
 
 		} else {
 			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
 			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
 		return response;
@@ -699,7 +691,6 @@ public class ViewDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		response.addData("pointList", getPointList(viewId, c, user));
-		//response.addData("comp", c);
 		return response;
 	}
 
@@ -768,10 +759,7 @@ public class ViewDwr extends BaseDwr {
 			c.setDurationPeriods(durationPeriods);
 			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
-			//response.addData("comp", c);
-		} else {
-			//ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
+
 		}
 
 		response.addData("pointList", getPointListByChildren(childPointIds));
@@ -797,10 +785,6 @@ public class ViewDwr extends BaseDwr {
 			saveCompoundPoints(c, childPointIds);
 			saveEnhancedPoints(c, pointsPropsList);
 			c.setLocation(positionX, positionY);
-			//response.addData("comp", c);
-		} else {
-			//ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
-			//response.addData("comp", viewComponent);
 		}
 
 		response.addData("pointList", getPointListByChildren(childPointIds));

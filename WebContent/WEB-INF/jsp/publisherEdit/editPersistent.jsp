@@ -24,12 +24,12 @@
   
   dojo.addOnLoad(function() { 
       PublisherEditDwr.initSender(function(response) {
-          pointsContext = new PersistentPointsContext({
+          pointsContext = new PersistentPointsContext(new DataPointsSelect({
               selectHtmlId: "availablePoints",
               placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
               excludePointsArray: response.data.publisher.points,
               pointsArray: response.data.selectedPoints
-          }, "selectedPoints");
+          }), "selectedPoints");
       });
   });
   

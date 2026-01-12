@@ -142,7 +142,7 @@
 			document.getElementById("compoundEditorPopup").firstElementChild.setAttribute("id", "compound" + compId);
 			ViewDwr.getViewComponentResponse(compId, viewId, (response) => {
                 this.component = response.data.comp;
-                let comp = response.data.comp;
+                let comp = this.component;
 
                 $set("compoundComponentName", comp.displayName);
 				$set("compoundPositionX", comp.x);
@@ -304,15 +304,6 @@
         setPointList(pointList) {
             this.pointList = pointList;
         };
-
-        setDataTypes(supportedDataTypes) {
-			for (let i = 0; i < this.targetPointSelects.length; i++) {
-			    let targetPointSelect = this.targetPointSelects[i];
-			    if(targetPointSelect) {
-			        targetPointSelect.setDataTypes(supportedDataTypes);
-			    }
-			}
-        }
 
 		updatePointLists() {
             var pointChildren = this.getPointChildren();

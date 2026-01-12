@@ -1333,14 +1333,14 @@ function setValueInNode(id, text) {
 
 class PointsContext {
 
-    constructor (dataPointsSelectDef, contextTableIdConstructor) {
-       this.dataPointsSelect = new DataPointsSelect(dataPointsSelectDef);
+    constructor (dataPointsSelect, contextTableIdConstructor) {
+       this.dataPointsSelect = dataPointsSelect;
 
        this.contextArray = [];
        this.contextTableId = contextTableIdConstructor || "contextTable";
        this.contextTableEmptyId = "contextTableEmpty";
        this.contextTableHeadersId = "contextTableHeaders";
-       this.init(dataPointsSelectDef.excludePointsArray);
+       this.init(dataPointsSelect.getExcludePointsArray());
     }
 
     init(context) {}
@@ -1921,6 +1921,10 @@ class DataPointsSelect {
 
     getPointsArray() {
         return [...new Set(this.pointsArray)];
+    }
+
+    getExcludePointsArray() {
+        return [...new Set(this.excludePointsArray)];
     }
 
     getPlaceholderTextSingle() {

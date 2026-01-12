@@ -132,7 +132,6 @@
     }
     
     function updatePointLink(pl, data) {
-        console.log('pl: ', data.pl);
         $set("pl"+ pl.id +"Name", getPointName(pl.sourcePointId, data.sourcePoints) +' <tag:img png="bullet_go"/> '+ getPointName(pl.targetPointId, data.targetPoints));
         setPointLinkImg(pl.disabled, $("pl"+ pl.id +"Img"));
     }

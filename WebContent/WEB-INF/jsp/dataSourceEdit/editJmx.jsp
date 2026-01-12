@@ -139,7 +139,7 @@
   }
   
   function addPointImpl() {
-      DataSourceEditDwr.getDataPoint(-1, function(response) {
+      DataSourceEditDwr.getPointResponse(-1, function(response) {
           editPointCB(response.data.point);
           $set("objectName", addPointData.objectName);
           $set("attributeName", addPointData.attrName);

@@ -72,12 +72,12 @@
         
         $set("name", report.name);
 
-        pointsContext = new ReportPointsContext({
+        pointsContext = new ReportPointsContext(new DataPointsSelect({
             selectHtmlId: "allPointsList",
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             excludePointsArray: report.points,
             pointsArray: response.data.points
-        });
+        }));
 
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);

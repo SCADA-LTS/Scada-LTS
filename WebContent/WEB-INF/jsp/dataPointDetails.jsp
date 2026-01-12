@@ -169,7 +169,7 @@
     <tr>
       <td valign="top" align="right">
         <spring:message code="pointDetails.goto"/>:&nbsp;
-        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" />
+        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" ></select>
 
         <c:if test="${!empty prevId}">
           <tag:img png="bullet_go_left" title="pagination.previous"

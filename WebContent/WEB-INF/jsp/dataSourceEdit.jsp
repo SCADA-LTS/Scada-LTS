@@ -209,7 +209,7 @@
             var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
             if (currentPoint.id!=-1) markRow(childs, false);
         }
-        DataSourceEditDwr.getDataPoint(pointId, editPointCB);
+        DataSourceEditDwr.getPointResponse(pointId, editPointCB);
         hideContextualMessages("pointProperties");
     }
 

@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -322,7 +321,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return getPoint(pointId, null);
     }
 
-    public DwrResponseI18n getDataPoint(int pointId) {
+    public DwrResponseI18n getPointResponse(int pointId) {
         DataPointVO dataPoint = getPoint(pointId, null);
         DwrResponseI18n response = new DwrResponseI18n();
         response.addData("point", dataPoint);
