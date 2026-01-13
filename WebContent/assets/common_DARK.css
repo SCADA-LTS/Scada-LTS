@@ -254,7 +254,7 @@ html > body .dojoTreeNodeLabelTitle {
 #sltsFooter{
 	text-align: center;
 	position: fixed;
-	left: 260px;
+	left: var(--slts-sidebar-width, 0px);
 	right: 0;
 	bottom: 0;
 	z-index: 1000;
@@ -263,12 +263,15 @@ html > body .dojoTreeNodeLabelTitle {
 	align-items: center;
 	justify-content: center;
 	padding: 0 8px;
-	background: #fff;
-	border-top: 1px solid #e5e5e5;
+	background: var(--slts-color-background);
+	border-top: 1px solid var(--slts-color-secondary-lighter);
 	pointer-events: none;
 }
 
 @media screen and (max-width: 730px) {
+	#sltsFooter {
+		left: 0;
+	}
 	#subHeader {
 		flex-direction: column;
 

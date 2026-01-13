@@ -257,6 +257,7 @@ html > body .dojoTreeNodeLabelTitle {
 
 #sltsContent {
 	padding-top: 10px;
+	padding-bottom: 24px;
 }
 
 #sltsFooter{
@@ -273,7 +274,6 @@ html > body .dojoTreeNodeLabelTitle {
 	padding: 0 8px;
 	background: #fff;
 	border-top: 1px solid #e5e5e5;
-	pointer-events: none;
 }
 
 #viewContent button {
