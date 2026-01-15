@@ -1367,8 +1367,6 @@ class PointsContext {
               this.#removeContextArray(context);
           }
        }
-       this.contextArray = this.contextArray.filter(a => a.pointId != pointId);
-       this.updatePointsList(this.contextArray);
     }
 
     updatePoint(pointId, key, value) {
@@ -1439,6 +1437,8 @@ class PointsContext {
           if(contextTableHeadersIdNode)
             show(contextTableHeadersIdNode);
           this.#removeRow(this.contextTableId, row, [1], ["pointXid"]);
+          this.contextArray = this.contextArray.filter(context => context.pointId != row.pointId);
+          this.updatePointsList(this.contextArray);
        }
     }
 

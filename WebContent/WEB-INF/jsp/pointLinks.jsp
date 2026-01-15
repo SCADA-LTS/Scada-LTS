@@ -162,7 +162,6 @@
 
     function sourcePointSelectChanged() {
         let sourcePoint = sourcePointSelect.getPoint();
-        let targetPointId = targetPointSelect.getPointId();
 
         if (!sourcePoint) {
             console.error("Data integrity error: Source point not found for pointLink");
@@ -170,26 +169,10 @@
             return;
         }
 
+        targetPointSelect.setPointId(undefined);
         targetPointSelect.setDataTypes([sourcePoint.dataType]);
         targetPointSelect.updatePointsList([sourcePoint]);
-        targetPointSelect.setPointId(targetPointId);
         targetPointSelect.loadPointsList();
-    }
-
-    function targetPointSelectChanged() {
-        let sourcePointId = sourcePointSelect.getPointId();
-        let targetPoint = targetPointSelect.getPoint();
-
-        if (!targetPoint) {
-            console.error("Data integrity error: Target point not found for pointLink");
-            setUserMessage("<spring:message code='validate.invalidValue'/>");
-            return;
-        }
-
-        sourcePointSelect.setDataTypes([targetPoint.dataType]);
-        sourcePointSelect.updatePointsList([targetPoint]);
-        sourcePointSelect.setPointId(sourcePointId);
-        sourcePointSelect.loadPointsList();
     }
   </script>
   
@@ -243,7 +226,7 @@
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.target"/></td>
-              <td class="formField"><select id="targetPointId" onchange="targetPointSelectChanged()" style="display:none;"></select></td>
+              <td class="formField"><select id="targetPointId" style="display:none;"></select></td>
             </tr>
             
             <tr>

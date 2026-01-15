@@ -63,7 +63,8 @@
     }
     
     function loadReportCB(response) {
-        let report = response.data.report;
+        let data = response.data;
+        let report = data.report;
         if (!report)
             return;
         if (!selectedReport)
@@ -76,7 +77,7 @@
             selectHtmlId: "allPointsList",
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             excludePointsArray: report.points,
-            pointsArray: response.data.points
+            pointsArray: data.points
         }));
 
         $set("includeEvents", report.includeEvents);
