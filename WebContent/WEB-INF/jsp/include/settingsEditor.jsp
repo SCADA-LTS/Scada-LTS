@@ -148,17 +148,12 @@
         
         this.pointSelectChanged = function(dataPointId) {
             if(dataPointId > 0) {
-                var point = this.dataPointsSelect.getPoint(dataPointId);
+                var point = this.dataPointsSelect.getPointById(dataPointId);
                 if (!point || !point.settable) {
                     $set("settingsSettable", false);
                     $("settingsSettable").disabled = true;
                 } else {
                     $("settingsSettable").disabled = false;
-                }
-
-                if(point) {
-                    this.dataPointsSelect.setPointId(dataPointId);
-                    this.dataPointsSelect.loadPointsList();
                 }
             }
 
