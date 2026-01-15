@@ -35,7 +35,7 @@
     <table>
       <tr>
         <td class="formLabelRequired"><spring:message code="viewEdit.settings.point"/></td>
-        <td class="formField"><select id="settingsPointList" onchange="settingsEditor.pointSelectChanged(this.value)"></select></td>
+        <td class="formField"><select id="settingsPointList" onchange="settingsEditor.pointSelectChanged(this.value)" style="display:none;"></select></td>
       </tr>
       <tr>
         <td class="formLabel"><spring:message code="viewEdit.settings.nameOverride"/></td>

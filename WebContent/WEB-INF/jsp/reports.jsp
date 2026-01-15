@@ -465,8 +465,8 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
-                <select id="allPointsList"></select>
-                <tag:img png="add" onclick="pointsContext.addPointToContext();" title="common.add"/>
+                <select id="allPointsList" style="display:none;"></select>
+                <tag:img id="icon_add" png="add" onclick="pointsContext.addPointToContext();" title="common.add" style="display:none;"/>
                 
                 <table cellspacing="1">
                   <tbody id="contextTableEmpty" style="display:none;">

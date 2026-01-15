@@ -22,7 +22,6 @@
   var dataTypeId = ${form.pointLocator.dataTypeId};
 </script>
 <script type="text/javascript">
-
   function doSave(taskName) {
       $("taskName").name = taskName;
       textRendererEditor.save(doSaveEventTextRenderer);
@@ -53,7 +52,8 @@
         selectHtmlId: "allPointsList",
         placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
         pointsArray: [point],
-        invisibleEmptyOption: true
+        invisibleEmptyOption: true,
+        imgAddHtmlIds: ["bullet_go_left", "bullet_go"]
     });
   }
 </script>
@@ -71,17 +71,17 @@
     </td>
     <td valign="top" align="right">
       <spring:message code="pointEdit.name.goto"/>:&nbsp;
-      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" >
+      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" style="display:none;">
       </select>
 
       <c:if test="${!empty prevId}">
-        <tag:img png="bullet_go_left" title="pagination.previous"
-                onclick="window.location='data_point_edit.shtm?dpid=${prevId}'"/>
+        <tag:img id="bullet_go_left" png="bullet_go_left" title="pagination.previous"
+                onclick="window.location='data_point_edit.shtm?dpid=${prevId}'" style="display:none;"/>
       </c:if>
       
       <c:if test="${!empty nextId}">
-        <tag:img png="bullet_go" title="pagination.next"
-                onclick="window.location='data_point_edit.shtm?dpid=${nextId}'"/>
+        <tag:img id="bullet_go" png="bullet_go" title="pagination.next"
+                onclick="window.location='data_point_edit.shtm?dpid=${nextId}'" style="display:none;"/>
       </c:if>
     </td>
   </tr>

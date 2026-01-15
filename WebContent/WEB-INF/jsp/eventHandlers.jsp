@@ -805,7 +805,8 @@
                 <select id="targetPointSelect"
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
-                        onchange="doTargetPointSelectChanged(this.value)">
+                        onchange="doTargetPointSelectChanged(this.value)"
+                        style="display:none;">
                 </select>
               </td>
             </tr>
@@ -827,7 +828,8 @@
                 <select id="activePointId"
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
-                        onchange="activePointSelectChanged()">
+                        onchange="activePointSelectChanged()"
+                        style="display:none;">
                 </select>
               </td>
             </tr>
@@ -854,7 +856,8 @@
                 <select id="inactivePointId"
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
-                        onchange="inactivePointSelectChanged()">
+                        onchange="inactivePointSelectChanged()"
+                        style="display:none;">
                 </select>
               </td>
             </tr>

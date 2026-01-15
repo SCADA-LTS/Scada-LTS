@@ -1916,6 +1916,7 @@ class DataPointsSelect {
         this.altValue = dataPointsSelectDef.altValue || "name";
         this.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
         this.widthPx = dataPointsSelectDef.widthPx || "400px";
+        this.imgAddHtmlIds = dataPointsSelectDef.imgAddHtmlIds || ["icon_comp_add", "icon_add"];
         this.#init();
     }
 
@@ -2028,6 +2029,12 @@ class DataPointsSelect {
     }
 
     #init() {
+        for(let i = 0; i < this.imgAddHtmlIds.length; i++) {
+            let node = getNodeIfString(this.imgAddHtmlIds[i]);
+            if(node) {
+                show(node);
+            }
+        }
         jQuery("#" + this.inputHtmlId).off('input');
 
         jQuery("#" + this.selectHtmlId).chosen({

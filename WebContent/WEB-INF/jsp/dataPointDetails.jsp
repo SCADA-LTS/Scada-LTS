@@ -50,7 +50,8 @@
             selectHtmlId: "datPointDetailsPointSelect",
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             pointsArray: pointsArray.filter((point) => point.id == <c:out value="${point.id}" />),
-            invisibleEmptyOption: true
+            invisibleEmptyOption: true,
+            iconAddHtmlIds: ["bullet_go_left", "bullet_go"]
         });
     }
     
@@ -169,16 +170,16 @@
     <tr>
       <td valign="top" align="right">
         <spring:message code="pointDetails.goto"/>:&nbsp;
-        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" ></select>
+        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" style="display:none;"></select>
 
         <c:if test="${!empty prevId}">
-          <tag:img png="bullet_go_left" title="pagination.previous"
-                  onclick="window.location='data_point_details.shtm?dpid=${prevId}'"/>
+          <tag:img id="bullet_go_left" png="bullet_go_left" title="pagination.previous"
+                  onclick="window.location='data_point_details.shtm?dpid=${prevId}'" style="display:none;"/>
         </c:if>
         
         <c:if test="${!empty nextId}">
-          <tag:img png="bullet_go" title="pagination.next"
-                  onclick="window.location='data_point_details.shtm?dpid=${nextId}'"/>
+          <tag:img id="bullet_go" png="bullet_go" title="pagination.next"
+                  onclick="window.location='data_point_details.shtm?dpid=${nextId}'" style="display:none;"/>
         </c:if>
       </td>
     </tr>

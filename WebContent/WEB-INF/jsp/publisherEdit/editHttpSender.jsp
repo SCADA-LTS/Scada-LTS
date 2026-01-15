@@ -167,7 +167,7 @@
   }
   
   function selectPoint() {
-      executeOn(function(context) {context.addPointToContext()}, pointsContext);
+      pointsContext.addPointToContext();
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -176,7 +176,7 @@
       hide("urlMsg");
       hide("pointsMsg");
       
-      let points = executeOn(function(context) {return context.convertToSave()}, pointsContext);
+      let points = pointsContext.convertToSave();
 
       updateStaticHeadersList();
 
@@ -190,8 +190,8 @@
     savePublisherCB(response);
     PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
     if(!response.hasMessages) {
-        executeOn(function(context, selectedPoints) {context.setPointsArray(selectedPoints)}, pointsContext, response.data.selectedPoints);
-        executeOn(function(context, points) {context.init(points)}, pointsContext, response.data.publisher.points);
+        pointsContext.setPointsArray(response.data.selectedPoints);
+        pointsContext.init(response.data.publisher.points);
     }
   }
   
@@ -395,8 +395,8 @@
       <tr>
         <td class="smallTitle"><spring:message code="publisherEdit.points"/></td>
         <td align="right">
-          <select id="availablePoints"></select>
-          <tag:img png="icon_comp_add" onclick="selectPoint()"/>
+          <select id="availablePoints" style="display:none;"></select>
+          <tag:img id="icon_comp_add" png="icon_comp_add" onclick="selectPoint()" style="display:none;"/>
         </td>
       </tr>
     </table>
