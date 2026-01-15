@@ -1557,7 +1557,7 @@ class ReportPointsContext extends PointsContext {
        for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
                 pointId: contextArray[i].pointId,
-                pointXid: contextArray[i].xid,
+                pointXid: contextArray[i].pointXid,
                 colour: contextArray[i].colour,
                 consolidatedChart: contextArray[i].consolidatedChart
           };
@@ -1651,6 +1651,7 @@ class SenderPointsContext extends PointsContext {
        for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
             dataPointId: contextArray[i].pointId,
+            pointXid : contextArray[i].pointXid,
             parameterName: contextArray[i].parameterName,
             includeTimestamp: contextArray[i].includeTimestamp
           };
@@ -1745,7 +1746,8 @@ class PersistentPointsContext extends PointsContext {
        let contextArray = super.getContextArray();
        for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
-            dataPointId: contextArray[i].pointId
+            dataPointId: contextArray[i].pointId,
+            pointXid : contextArray[i].pointXid
           };
        }
        return context;
@@ -1826,6 +1828,7 @@ class PachubePointsContext extends PointsContext {
        for (let i = 0; i < contextArray.length; i++) {
           context[context.length] = {
             dataPointId: contextArray[i].pointId,
+            pointXid : contextArray[i].pointXid,
             feedId: contextArray[i].feedId,
             dataStreamId: contextArray[i].dataStreamId
           };
