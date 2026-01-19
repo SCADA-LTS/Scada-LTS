@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -239,7 +240,7 @@ public class ViewAPI {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<Map<String, String>> createView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> createView(@RequestBody @Valid GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
@@ -264,7 +265,7 @@ public class ViewAPI {
     }
 
     @PutMapping(value = "")
-    public ResponseEntity<Map<String, String>> updateView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateView(@RequestBody @Valid GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);

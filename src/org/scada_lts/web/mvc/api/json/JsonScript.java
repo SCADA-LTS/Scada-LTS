@@ -1,16 +1,26 @@
 package org.scada_lts.web.mvc.api.json;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JsonScript {
 
     private Integer id;
     private Integer userId;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
+    @ScriptProtect
     private String script;
     private List<ScriptPoint> pointsOnContext;
+    @XssProtect
     private String datapointContext;
+    @XssProtect
     private String datasourceContext;
 
     public JsonScript() {}

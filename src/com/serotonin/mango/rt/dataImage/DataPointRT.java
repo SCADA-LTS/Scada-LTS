@@ -615,7 +615,7 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(getDataSourceId());
 		if(dataSourceRT == null)
 			return true;
-		return !dataSourceRT.isInitialized() || isSetUnreliable();
+		return isSetUnreliable();
 	}
 
 	public boolean isSetUnreliable() {

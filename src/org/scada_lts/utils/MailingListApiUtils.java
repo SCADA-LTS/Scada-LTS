@@ -1,16 +1,13 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.mailingList.AddressEntry;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
-import com.serotonin.mango.vo.mailingList.UserEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.web.mvc.api.dto.CreateMailingList;
-import org.scada_lts.web.mvc.api.dto.UpdateMailingList;
+import org.scada_lts.web.mvc.api.dto.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
@@ -33,7 +30,7 @@ public final class MailingListApiUtils {
         String msg = msgIfNullOrInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
         msg += msgIfNullOrInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
         msg += msgIfNullOrInvalid("Correct entries;", body.getEntries(), a -> !hasEntries(a));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
+        msg += validateMailingListBody(body.getName(), body.getEntriesJson(), body.getInactiveIntervals());
         return msg;
     }
 
@@ -41,31 +38,31 @@ public final class MailingListApiUtils {
         String msg = msgIfNull("Correct id;", body.getId());
         msg += msgIfNonNullAndInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
         msg += msgIfNonNullAndInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
+        msg += validateMailingListBody(body.getName(), body.getEntriesJson(), body.getInactiveIntervals());
         return msg;
     }
 
-    private static String validateMailingListBody(String name, List<EmailRecipient> entries, Set<Integer> inactiveIntervals) {
+    private static String validateMailingListBody(String name, List<EmailRecipientJson> entries, Set<Integer> inactiveIntervals) {
         String msg = msgIfNull("Correct name;", name);
         msg += validateEntriesList(entries);
         msg += msgIfNonNullAndInvalid("Correct inactiveIntervals;", inactiveIntervals, a -> !validInactiveIntervals(a));
         return msg;
     }
 
-    private static String validateEntriesList(List<EmailRecipient> entries) {
+    private static String validateEntriesList(List<EmailRecipientJson> entries) {
         StringBuilder msg = new StringBuilder();
         if (entries != null) {
-            for (EmailRecipient recipient : entries) {
+            for (EmailRecipientJson recipient : entries) {
                 msg.append(msgIfNull("Correct recipient;", recipient));
                 if (recipient != null) {
                     msg.append(msgIfNullOrInvalid("Recipient does not exist for type {0};", recipient.getRecipientType(),
                             a -> !EmailRecipient.validEmailRecipientType(a)));
                     if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
-                        UserEntry userEntry = (UserEntry) recipient;
+                        UserEntryJson userEntry = (UserEntryJson) recipient;
                         msg.append(msgIfNullOrInvalid("Correct userId;", userEntry.getUserId(), a -> !validUserId(a)));
                     }
                     if (recipient.getRecipientType() == EmailRecipient.TYPE_ADDRESS) {
-                        AddressEntry addressEntry = (AddressEntry) recipient;
+                        AddressEntryJson addressEntry = (AddressEntryJson) recipient;
                         msg.append(msgIfNull("Correct address;", addressEntry.getAddress()));
                     }
                 }

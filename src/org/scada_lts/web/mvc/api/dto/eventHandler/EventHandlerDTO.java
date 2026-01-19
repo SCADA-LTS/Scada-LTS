@@ -1,11 +1,14 @@
 package org.scada_lts.web.mvc.api.dto.eventHandler;
 
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public abstract class EventHandlerDTO {
 
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String alias;
     private int handlerType;
     private boolean disabled;

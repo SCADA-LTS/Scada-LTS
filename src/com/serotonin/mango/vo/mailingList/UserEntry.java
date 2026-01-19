@@ -33,9 +33,12 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.mvc.api.dto.UserEntryJson;
 
 @JsonRemoteEntity
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -151,5 +154,10 @@ public class UserEntry extends EmailRecipient {
             throw new LocalizableJsonException("emport.error.recipient.invalid.reference", "username", username);
 
         userId = user.getId();
+    }
+
+    @Override
+    public EmailRecipientJson to() {
+        return new UserEntryJson(userId, new UserIdentifier(user));
     }
 }

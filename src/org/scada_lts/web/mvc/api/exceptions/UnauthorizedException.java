@@ -8,7 +8,7 @@ public class UnauthorizedException extends ScadaApiException {
         super(ScadaErrorMessage.builder(HttpStatus.UNAUTHORIZED)
                 .type(API_EXCEPTIONS + UnauthorizedException.class.getSimpleName())
                 .title(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .detail("Access only admin")
+                .detail("Access denied")
                 .instance(instance)
                 .build());
     }

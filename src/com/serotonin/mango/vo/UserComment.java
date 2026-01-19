@@ -19,6 +19,7 @@
 package com.serotonin.mango.vo;
 
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.Objects;
 
@@ -29,9 +30,11 @@ public class UserComment {
     // Configuration fields
     private int userId;
     private long ts;
+    @XssProtect
     private String comment;
 
     // Relational fields
+    @XssProtect
     private String username;
 
     private int typeKey;

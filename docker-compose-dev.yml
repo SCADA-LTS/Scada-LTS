@@ -78,7 +78,7 @@ services:
         expose: ["5000", "25", "143"]
     opcua:
         #Server OPC UA doc: https://learn.microsoft.com/en-us/samples/azure-samples/iot-edge-opc-plc/azure-iot-sample-opc-ua-server/
-        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        image: mcr.microsoft.com/iotedge/opc-plc:2.9.15
         ports:
             - 4840:50000
             - 8082:8080

@@ -1,13 +1,20 @@
 package org.scada_lts.web.mvc.api.json;
 
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 import java.io.Serializable;
 
 public class JsonSettingsSystemInfo implements Serializable {
 
+    @XssProtect
     private String newVersionNotificationLevel;
+    @XssProtect
     private String instanceDescription;
+    @XssProtect
     private String language;
+    @XssProtect
     private String topDescription;
+    @XssProtect
     private String topDescriptionPrefix;
 
     public JsonSettingsSystemInfo() {}

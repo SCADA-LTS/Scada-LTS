@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api.dto.eventHandler;
 
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.List;
 
@@ -8,7 +9,9 @@ public class EventHandlerPlcDTO {
 
 
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String alias;
     private int eventTypeId;
     private int eventTypeRef1;

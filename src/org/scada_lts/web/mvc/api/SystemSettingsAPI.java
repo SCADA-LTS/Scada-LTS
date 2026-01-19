@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +107,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveEmail", consumes = "application/json")
-    public ResponseEntity<String> saveEmail(HttpServletRequest request, @RequestBody JsonSettingsEmail jsonSettingsEmail) {
+    public ResponseEntity<String> saveEmail(HttpServletRequest request, @RequestBody @Valid JsonSettingsEmail jsonSettingsEmail) {
         LOG.info("/api/systemSettings/saveEmail");
         try {
             User user = Common.getUser(request);
@@ -163,7 +164,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveSMSDomain", consumes = {"text/plain", "application/*"})
-    public ResponseEntity<String> saveSMSDomainPost(HttpServletRequest request, @RequestBody JsonSettingsSmsDomain smsDomain) {
+    public ResponseEntity<String> saveSMSDomainPost(HttpServletRequest request, @RequestBody @Valid JsonSettingsSmsDomain smsDomain) {
         LOG.info("/api/systemSettings/saveSMSDomain");
         try {
             User user = Common.getUser(request);
@@ -217,7 +218,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveHttp", consumes = "application/json")
-    public ResponseEntity<String> saveHttp(HttpServletRequest request, @RequestBody JsonSettingsHttp jsonSettingsHttp) {
+    public ResponseEntity<String> saveHttp(HttpServletRequest request, @RequestBody @Valid JsonSettingsHttp jsonSettingsHttp) {
         LOG.info("/api/systemSettings/saveHttp");
         try {
             User user = Common.getUser(request);
@@ -250,7 +251,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveMisc", consumes = "application/json")
-    public ResponseEntity<String> saveMisc(HttpServletRequest request, @RequestBody JsonSettingsMisc jsonSettingsMisc) {
+    public ResponseEntity<String> saveMisc(HttpServletRequest request, @RequestBody @Valid JsonSettingsMisc jsonSettingsMisc) {
         LOG.info("/api/systemSettings/saveMisc");
         try {
             User user = Common.getUser(request);
@@ -343,7 +344,7 @@ public class SystemSettingsAPI {
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveAuditEventAlarmLevels", consumes = "application/json")
-    public ResponseEntity<String> saveAuditEventAlarmLevels(HttpServletRequest request, @RequestBody List<JsonSettingsEventLevels> eventAlarmLevels) {
+    public ResponseEntity<String> saveAuditEventAlarmLevels(HttpServletRequest request, @RequestBody @Valid List<JsonSettingsEventLevels> eventAlarmLevels) {
         LOG.info("/api/systemSettings/saveAuditEventAlarmLevels");
         try {
             User user = Common.getUser(request);
@@ -382,7 +383,7 @@ public class SystemSettingsAPI {
      * @return Response with HTTP status
      */
     @PostMapping(value = "/saveSystemEventAlarmLevels", consumes = "application/json")
-    public ResponseEntity<String> saveSystemEventAlarmLevels(HttpServletRequest request, @RequestBody List<JsonSettingsEventLevels> eventSystemLevels) {
+    public ResponseEntity<String> saveSystemEventAlarmLevels(HttpServletRequest request, @RequestBody @Valid List<JsonSettingsEventLevels> eventSystemLevels) {
         LOG.info("/api/systemSettings/saveSystemEventAlarmLevels");
         try {
             User user = Common.getUser(request);
@@ -414,7 +415,7 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveSystemInfo", consumes = "application/json")
-    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
+    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody @Valid JsonSettingsSystemInfo jsonSettingsSystemInfo) {
         LOG.info("/api/systemSettings/saveSystemInfo");
         try {
             User user = Common.getUser(request);

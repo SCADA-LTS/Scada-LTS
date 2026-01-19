@@ -1,13 +1,17 @@
 package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.mango.view.component.ViewComponent;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * @Author Arkadiusz Parafiniuk
  * arkadiusz.parafiniuk@gmail.com
  */
 public class ViewLinkComponentDTO extends ViewComponentDTO {
+
+    @XssProtect
     private String text;
+    @XssProtect
     private String link;
 
     public ViewLinkComponentDTO() {

@@ -40,8 +40,9 @@ public class OpcUaService implements IOpcUaService {
     private static final Logger LOG = LogManager.getLogger(OpcUaService.class);
 
     private final OpcUaDataSourceVO dataSource;
-    private UaClient client;
+    private OpcUaClient client;
     private DataTypeTree dataTypeTree;
+    private volatile boolean initialized = false;
 
     public OpcUaService(OpcUaDataSourceVO dataSource) {
         this.dataSource = dataSource;
@@ -51,9 +52,10 @@ public class OpcUaService implements IOpcUaService {
     public void initialize() throws PollingServiceException {
         this.terminate();
         try {
-            OpcUaClient opcUaClient = OpcUaClientFactory.createClient(dataSource);
-            this.client = opcUaClient.connect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
-            this.dataTypeTree = DataTypeTreeBuilder.build(opcUaClient);
+            this.client = OpcUaClientFactory.createClient(dataSource);
+            this.client.connect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
+            this.dataTypeTree = DataTypeTreeBuilder.build(this.client);
+            this.initialized = true;
         } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             this.terminate();
@@ -177,9 +179,6 @@ public class OpcUaService implements IOpcUaService {
     public void ping() throws PollingServiceException {
         try {
             UaClient client = getClient();
-            if (client == null) {
-                throw new IllegalStateException("No connected!");
-            }
             List<DataValue> result = sendReadServerStateAndTime(client);
         } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
@@ -196,7 +195,7 @@ public class OpcUaService implements IOpcUaService {
         int namespaceIndex = pointLocator.getNamespaceIndex();
         if(StringUtils.isEmpty(identifier) || identifierType == OpcUaIdentifierType.ALL || namespaceIndex == -1) {
             try {
-                if (client == null) {
+                if (isNotInitialized()) {
                     throw new IllegalStateException("No connected!");
                 }
                 Set<OpcUaPointLocatorVO> result = new CopyOnWriteArraySet<>();
@@ -230,6 +229,7 @@ public class OpcUaService implements IOpcUaService {
     @Override
     public void terminate() throws PollingServiceException {
         try {
+            this.initialized = false;
             doClose(client, dataSource);
         } catch (Throwable e) {
             throw new PollingServiceException(e.getMessage(), e);
@@ -262,12 +262,12 @@ public class OpcUaService implements IOpcUaService {
         return "[OPC UA] ";
     }
 
-    private static void doClose(UaClient client, OpcUaDataSourceVO dataSource) throws PollingServiceException {
+    private static void doClose(UaClient client, OpcUaDataSourceVO dataSource) {
         if(client != null) {
             WorkItem workItem = new ClosingWorkItem(new AutoCloseable() {
                 @Override
                 public void close() throws Exception {
-                    client.disconnect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
+                    client.disconnect().get(dataSource.getSessionTimeout(), TimeUnit.MILLISECONDS);
                 }
             }, "[OPC UA] Closed connection for: " + LoggingUtils.dataSourceInfo(dataSource));
             Common.ctx.getBackgroundProcessing().addWorkItem(workItem);
@@ -275,7 +275,7 @@ public class OpcUaService implements IOpcUaService {
     }
 
     private UaClient getClient() throws Exception {
-        if(client == null) {
+        if(isNotInitialized()) {
             throw new IllegalStateException("No init!");
         }
         return client;
@@ -305,5 +305,9 @@ public class OpcUaService implements IOpcUaService {
             throw new PollingServiceException(e.getMessage(), e);
         }
         return new PointValueTime(mangoValue, time);
+    }
+
+    private boolean isNotInitialized() {
+        return client == null || !initialized;
     }
 }

@@ -4,10 +4,14 @@ import br.org.scadabr.view.component.ScriptButtonComponent;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class ScriptButtonComponentDTO extends HtmlComponentDTO {
+
+    @XssProtect
     private String scriptXid;
+    @XssProtect
     private String text;
 
     public ScriptButtonComponentDTO() {

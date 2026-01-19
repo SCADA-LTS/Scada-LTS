@@ -8,7 +8,7 @@ public class ConflictException extends ScadaApiException {
         super(ScadaErrorMessage.builder(HttpStatus.CONFLICT)
                 .type(API_EXCEPTIONS +  ConflictException.class.getSimpleName())
                 .title(HttpStatus.CONFLICT.getReasonPhrase())
-                .detail("exception", ex.getClass().getName() + " : " + ex.getMessage())
+                .detail("exception", ex.getClass().getName() + " : " + truncateMessage(ex.getMessage()))
                 .instance(instance)
                 .build());
     }

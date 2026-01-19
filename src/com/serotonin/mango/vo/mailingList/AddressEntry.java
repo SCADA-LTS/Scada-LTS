@@ -31,7 +31,8 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.util.StringUtils;
 import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.web.mvc.api.dto.AddressEntryJson;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
 
 @JsonRemoteEntity
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -100,5 +101,10 @@ public class AddressEntry extends EmailRecipient {
         address = json.getString("address");
         if (StringUtils.isEmpty(address))
             throw new LocalizableJsonException("emport.error.recipient.missing.reference", "address");
+    }
+
+    @Override
+    public EmailRecipientJson to() {
+        return new AddressEntryJson(address);
     }
 }

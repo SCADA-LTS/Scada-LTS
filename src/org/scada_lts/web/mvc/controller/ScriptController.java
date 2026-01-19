@@ -46,7 +46,8 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu person
  *         supporting and coreecting translation Jerzy Piejko
  */
-@Controller
+//@Controller
+@Deprecated(since = "2.8.1")
 public class ScriptController {
 
 	private static final Log LOG = LogFactory.getLog(ScriptController.class);
