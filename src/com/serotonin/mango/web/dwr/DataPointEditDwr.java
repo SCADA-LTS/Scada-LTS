@@ -30,16 +30,7 @@ import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.view.chart.TableChartRenderer;
 import com.serotonin.mango.view.event.*;
-import com.serotonin.mango.view.text.AnalogRenderer;
-import com.serotonin.mango.view.text.BinaryTextRenderer;
-import com.serotonin.mango.view.text.MultistateRenderer;
-import com.serotonin.mango.view.text.MultistateValue;
-import com.serotonin.mango.view.text.NoneRenderer;
-import com.serotonin.mango.view.text.PlainRenderer;
-import com.serotonin.mango.view.text.RangeRenderer;
-import com.serotonin.mango.view.text.RangeValue;
-import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.view.text.TimeRenderer;
+import com.serotonin.mango.view.text.*;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -117,6 +108,10 @@ public class DataPointEditDwr extends BaseDwr {
             r.addRangeValues(v.getFrom(), v.getTo(), v.getText(), v.getColour());
         setTextRenderer(r);
     }
+
+    public void setHexadecimalRenderer() {setTextRenderer(new HexadecimalRenderer()); }
+
+    public void setBinaryRenderer(){setTextRenderer(new BinaryRenderer());}
 
     public void setTimeTextRenderer(String format, int conversionExponent) {
         setTextRenderer(new TimeRenderer(format, conversionExponent));

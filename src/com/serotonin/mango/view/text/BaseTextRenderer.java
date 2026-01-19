@@ -50,6 +50,8 @@ abstract public class BaseTextRenderer implements TextRenderer, JsonSerializable
             d.add(PlainRenderer.getDefinition());
             d.add(RangeRenderer.getDefinition());
             d.add(TimeRenderer.getDefinition());
+            d.add(BinaryRenderer.getDefinition());
+            d.add(HexadecimalRenderer.getDefinition());
             definitions = d;
         }
     }
@@ -212,6 +214,10 @@ abstract public class BaseTextRenderer implements TextRenderer, JsonSerializable
                 clazz = RangeRenderer.class;
             else if (def == TimeRenderer.getDefinition())
                 clazz = TimeRenderer.class;
+            else if (def == BinaryRenderer.getDefinition())
+                clazz = BinaryRenderer.class;
+            else if (def == HexadecimalRenderer.getDefinition())
+                clazz = HexadecimalRenderer.class;
             else
                 throw new ShouldNeverHappenException("What's this?: " + def.getName());
 
