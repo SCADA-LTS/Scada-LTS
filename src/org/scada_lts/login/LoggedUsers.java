@@ -6,8 +6,8 @@ import com.serotonin.mango.vo.User;
 import org.apache.catalina.Session;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -119,24 +119,18 @@ public class LoggedUsers implements ILoggedUsers {
 
     @Override
     public void loadSessions(Session[] sessions) {
+        MangoUser userService = new UserService();
         for(Session session: sessions) {
             HttpSession httpSession = session.getSession();
-            UserService userService = ApplicationBeans.getBean("userService", UserService.class);
-            SecurityContext securityContext = (SecurityContext)httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-            if(securityContext != null) {
-                Authentication authentication = securityContext.getAuthentication();
-                if(authentication != null) {
-                    String username = authentication.getName();
-                    User sessionUser = userService.getUser(username);
-                    if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
-                        int userId = sessionUser.getId();
-                        loggedSessions.putIfAbsent(userId, new ArrayList<>());
-                        loggedSessions.get(userId).add(httpSession);
-                        loggedUsers.put(userId, sessionUser);
-                        LOG.info("Loaded session for user: {}", username);
-                    }
-                }
-            }
+             try {
+                 boolean loadedSession = loadSession(httpSession, loggedUsers, loggedSessions, userService);
+                 if(!loadedSession) {
+                     httpSession.invalidate();
+                 }
+             } catch (Throwable ex) {
+                 LOG.error("Failed Load session: {}", ex.getMessage(), ex);
+                 httpSession.invalidate();
+             }
         }
     }
 
@@ -161,6 +155,34 @@ public class LoggedUsers implements ILoggedUsers {
         for(GrantedAuthority authority: authentication.getAuthorities()) {
             if("ROLE_ADMIN".equals(authority.getAuthority())) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean loadSession(HttpSession httpSession, Map<Integer, User> loggedUsers,
+                                       Map<Integer, List<HttpSession>> loggedSessions, MangoUser userService) {
+        SecurityContext securityContext = (SecurityContext) httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+        if(securityContext != null) {
+            Authentication authentication = securityContext.getAuthentication();
+            if(authentication != null) {
+                String username = authentication.getName();
+                User sessionUser = null;
+                try {
+                    sessionUser = userService.getUser(username);
+                } catch (Throwable ex) {
+                    LOG.error("Failed load session for user: {}", username, ex);
+                    return false;
+                }
+
+                if (sessionUser != null && (!sessionUser.isAdmin() || isAdmin(authentication))) {
+                    int userId = sessionUser.getId();
+                    loggedSessions.putIfAbsent(userId, new ArrayList<>());
+                    loggedSessions.get(userId).add(httpSession);
+                    loggedUsers.put(userId, sessionUser);
+                    LOG.info("Loaded session for user: {}", username);
+                    return true;
+                }
             }
         }
         return false;

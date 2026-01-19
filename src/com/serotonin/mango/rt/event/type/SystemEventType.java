@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.event.type;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.json.JsonException;
@@ -248,11 +249,7 @@ public class SystemEventType extends EventType {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + refId2;
-		result = prime * result + systemEventTypeId;
-		return result;
+		return Objects.hash(systemEventTypeId, refId2, getClass());
 	}
 
 	@Override

@@ -35,8 +35,8 @@ import com.serotonin.mango.util.StartStopDataPointsUtils;
 import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
@@ -72,11 +72,10 @@ import com.serotonin.util.LifecycleException;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static org.scada_lts.utils.MetaDataPointUtils.isDataPointInContext;
-import static org.scada_lts.utils.MetaDataPointUtils.isMetaDataPointRT;
+import static org.scada_lts.utils.MetaDataPointUtils.*;
 
 public class RuntimeManager {
-	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
+	private static final Logger LOG = LogManager.getLogger(RuntimeManager.class);
 
 	private final List<DataSourceRT> runningDataSources = new CopyOnWriteArrayList<DataSourceRT>();
 
@@ -363,9 +362,12 @@ public class RuntimeManager {
 	private boolean initializeDataSource(DataSourceVO<?> vo) {
 		synchronized (runningDataSources) {
 			// If the data source is already running, just quit.
-			if (isDataSourceRunning(vo.getId()))
+			if (isDataSourceRunning(vo.getId())) {
+				LOG.info("{} is already running!", LoggingUtils.dataSourceInfo(vo));
 				return false;
-
+			}
+			long start = System.currentTimeMillis();
+			LOG.info("{} initializing...", LoggingUtils.dataSourceInfo(vo));
 			// Ensure that the data source is enabled.
 			// Assert.isTrue(vo.isEnabled());
 
@@ -383,8 +385,7 @@ public class RuntimeManager {
 				if (dataPoint.isEnabled() && started)
 					startDataPointSafe(dataPoint);
 			}
-
-			LOG.info("Data source '" + vo.getName() + "' initialized");
+			LOG.info("{} initialized in {} [ms].", LoggingUtils.dataSourceInfo(vo), (System.currentTimeMillis() - start));
 
 			return true;
 		}
@@ -399,8 +400,12 @@ public class RuntimeManager {
 	public void stopDataSource(int id) {
 		synchronized (runningDataSources) {
 			DataSourceRT dataSource = getRunningDataSource(id);
-			if (dataSource == null)
+			if (dataSource == null) {
+				LOG.info("Data source with id: {} was not running.", id);
 				return;
+			}
+			long start = System.currentTimeMillis();
+			LOG.info("{} stopping...", LoggingUtils.dataSourceInfo(dataSource));
 			// Stop the data points.
 			for (DataPointRT p : dataPoints.values()) {
 				if (p.getDataSourceId() == id)
@@ -411,7 +416,7 @@ public class RuntimeManager {
 			dataSource.terminate();
 
 			dataSource.joinTermination();
-			LOG.info("Data source '" + dataSource.getName() + "' stopped");
+			LOG.info("{} stopped in {} [ms].", LoggingUtils.dataSourceInfo(dataSource), (System.currentTimeMillis() - start));
 		}
 	}
 
@@ -480,6 +485,9 @@ public class RuntimeManager {
 			// Only add the data point if its data source is enabled.
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
+				long start = System.currentTimeMillis();
+				LOG.info("Data point '{}' initializing...", vo.getExtendedName());
+
 				// Change the VO into a data point implementation.
 				DataPointRT dataPoint = createDataPointRT(vo);
 
@@ -497,7 +505,9 @@ public class RuntimeManager {
 
 				boolean unreliable = dataPoint.isUnreliable();
 
-				LOG.info("Data point '" + vo.getExtendedName() + "' initialized - unreliable: " + unreliable);
+				LOG.info("Data point '{}' initialized in {} [ms] - unreliable: {}", vo.getExtendedName(), (System.currentTimeMillis() - start), unreliable);
+			} else {
+				LOG.info("Data point '{}' was not initialized because {} is not running.", vo.getExtendedName(), LoggingUtils.dataSourceInfo(vo));
 			}
 		}
 	}
@@ -529,13 +539,18 @@ public class RuntimeManager {
 
 			// Remove it from the data source, and terminate it.
 			if (p != null) {
+				long start = System.currentTimeMillis();
+				LOG.info("Data point '{}' stopping...", p.getVO().getExtendedName());
+
 				getRunningDataSource(p.getDataSourceId()).removeDataPoint(p);
 				DataPointListener l = getDataPointListeners(dataPointId);
 				if (l != null)
 					l.pointTerminated();
 				p.terminate();
 				DataPointVO point = p.getVO();
-				LOG.info("Data point '" + point.getExtendedName() + "' stopped");
+				LOG.info("Data point '{}' stopped in {} [ms].", point.getExtendedName(), (System.currentTimeMillis() - start));
+			} else {
+				LOG.info("Data point with id: {} was not running.", dataPointId);
 			}
 		}
 	}
@@ -1091,18 +1106,23 @@ public class RuntimeManager {
 		StartStopDataPointsUtils.stopPoints(this.dataPoints.values(), this::stopDataPointSafe, this::getDataPoint);
 	}
 
-	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId) {
-		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> true);
-	}
-
 	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, boolean unreliable) {
-		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> dataPoint.isUnreliable() == unreliable);
+		return getRunningMetaDataPoints(dataPointInContextId, a -> a.isUnreliable() == unreliable, false);
 	}
 
-	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, Predicate<DataPointRT> condition) {
+	public List<DataPointRT> getRunningMetaDataPointsToReset(int dataPointInContextId) {
+		return getRunningMetaDataPoints(dataPointInContextId, DataPointRT::isUnreliable, true);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPointsToSet(int dataPointInContextId) {
+		return getRunningMetaDataPoints(dataPointInContextId, dataPoint -> !dataPoint.isUnreliable(), false);
+	}
+
+	public List<DataPointRT> getRunningMetaDataPoints(int dataPointInContextId, Predicate<DataPointRT> condition, boolean filteringCanReset) {
 		Map<Integer, DataPointRT> dataPoints = new HashMap<>(this.dataPoints);
 		return filterRunningDataPoints(dataPoints.values(), dataPoint -> isMetaDataPointRT(dataPoint)
 				&& isDataPointInContext(dataPoint, dataPointInContextId)
+				&& (!filteringCanReset || doResetUnreliableDataPoint(dataPoint, dataPointInContextId))
 				&& condition.test(dataPoint));
 	}
 

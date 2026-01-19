@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class ButtonComponentDTO extends ScriptBaseComponentDTO {
 
+    @XssProtect
     private String whenOffLabel;
+    @XssProtect
     private String whenOnLabel;
     private Integer width;
     private Integer height;

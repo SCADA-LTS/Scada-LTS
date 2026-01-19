@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ViewService;
@@ -107,7 +108,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 						point);
 				if (accessType != Permissions.DataPointAccessTypes.NONE) {
 					userData = new HashMap<String, Object>();
-					userData.put("user", mangoUser);
+					userData.put("user", new UserIdentifier(mangoUser));
 					userData.put("accessType", accessType);
 					users.add(userData);
 				}

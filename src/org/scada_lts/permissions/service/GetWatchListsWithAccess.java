@@ -1,6 +1,7 @@
 package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.vo.GetExtendedNameComparator;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import org.apache.commons.logging.Log;
@@ -10,6 +11,8 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.scada_lts.permissions.service.util.GetSortUtils.getAndSort;
 
 public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, User> {
 
@@ -31,9 +34,9 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return watchListDAO.findAll();
-        return watchListDAO.selectWatchListsWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, watchListDAO::findAll,
+                watchListDAO::selectWatchListsWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override
@@ -42,9 +45,9 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
             LOG.warn("user is null");
             return Collections.emptyList();
         }
-        if(user.isAdmin())
-            return watchListDAO.findIdentifiers();
-        return watchListDAO.selectWatchListIdentifiersWithAccess(user.getId(), user.getUserProfile());
+        return getAndSort(user, watchListDAO::findIdentifiers,
+                watchListDAO::selectWatchListIdentifiersWithAccess,
+                GetExtendedNameComparator.instance);
     }
 
     @Override

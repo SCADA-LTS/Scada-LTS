@@ -26,6 +26,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
@@ -40,7 +41,9 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		return TYPE;
 	}
 
+	@XssProtect
 	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
+	@XssProtect
 	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
 
 	public void validate(DwrResponseI18n response) {

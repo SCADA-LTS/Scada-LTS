@@ -29,6 +29,8 @@ import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -60,6 +62,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /**
  * @author Matthew Lohbihler
@@ -124,11 +127,23 @@ public class EmportDwr extends BaseDwr {
 
 	public static Map<String, Object> exportDataPointBy(String xid) {
 		Map<String, Object> data = new LinkedHashMap<>();
-		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
-		List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoints);
-		dataPoints.setEventDetectors(detectors);
-		data.put(DATA_POINTS, dataPoints == null?"In the database there is no data point with given xid "+xid:dataPoints);
-		return data;
+		DataPointService dataPointService = new DataPointService();
+		DataPointVO dataPoint = dataPointService.getDataPointByXid(xid);
+		if(dataPoint == null) {
+			data.put(DATA_POINTS, "In the database there is no data point with given xid ");
+		} else {
+			List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoint);
+			dataPoint.setEventDetectors(detectors);
+			data.put(DATA_POINTS, dataPoint);
+		}
+		JsonWriter writer = new JsonWriter();
+		try {
+			String content = writer.write(data);
+			ObjectMapper objectMapper = ApplicationBeans.getObjectMapper();
+			return objectMapper.readValue(content, new TypeReference<Map<String, Object>>() {});
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
 	}
 
 	public static String createExportJSON(int prettyIndent,

@@ -25,8 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
@@ -37,9 +35,11 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.taglib.DateFunctions;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 abstract public class PollingDataSource extends DataSourceRT implements TimeoutClient {
-    private final Log LOG = LogFactory.getLog(PollingDataSource.class);
+    private final Logger LOG = LogManager.getLogger(PollingDataSource.class);
 
     private final DataSourceVO<?> vo;
     protected List<DataPointRT> dataPoints = new ArrayList<DataPointRT>();
@@ -208,7 +208,12 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
             LOG.warn(msg.getLocalizedMessage(Common.getBundle()));
             raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
         } else {
-            _returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
+            returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
         }
+    }
+
+    @Override
+    public boolean doSetUnreliableDataPoint(int eventId) {
+        return eventId != getUpdateTimeExceededUpdatePeriodEventId();
     }
 }

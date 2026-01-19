@@ -4,16 +4,19 @@ import br.org.scadabr.view.component.*;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.view.components.compound.CompoundComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.html.HtmlBaseComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.PointComponentDTO;
 
 public class GraphicalViewComponentDTO implements ViewComponentCreate{
     private Integer index;
+    @XssProtect
     private String idSuffix;
     private Integer x;
     private Integer y;
     private Integer z;
+    @XssProtect
     private String defName;
 
     public GraphicalViewComponentDTO() {

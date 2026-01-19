@@ -54,6 +54,8 @@ public class SandboxNativeJavaObject extends NativeJavaObject  {
  
 	@Override
 	public Object get(String methodName, Scriptable start) {
+		if(!SystemSettingsUtils.isSecurityJsFilterEnabled())
+			return super.get(methodName, start);
 		for(Pattern pattern: SECURITY_JS_ACCESS_DENIED_METHOD_REGEXES) {
 			if (pattern.matcher(methodName).matches()) {
 				if(LOG.isWarnEnabled())

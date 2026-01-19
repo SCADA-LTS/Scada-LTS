@@ -41,4 +41,11 @@ public class ModbusPointLocatorRT extends PointLocatorRT {
     public ModbusPointLocatorVO getVO() {
         return vo;
     }
+
+    @Override
+    public String toString() {
+        return "ModbusPointLocatorRT{" +
+                "vo=" + vo +
+                '}';
+    }
 }

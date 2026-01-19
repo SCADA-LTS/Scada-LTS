@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.script.ScriptException;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataSource.meta.*;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -22,14 +24,10 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
-import com.serotonin.mango.rt.dataSource.meta.AlphanumericPointWrapper;
-import com.serotonin.mango.rt.dataSource.meta.BinaryPointWrapper;
-import com.serotonin.mango.rt.dataSource.meta.DataPointStateException;
-import com.serotonin.mango.rt.dataSource.meta.MultistatePointWrapper;
-import com.serotonin.mango.rt.dataSource.meta.NumericPointWrapper;
-import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
-import com.serotonin.mango.rt.dataSource.meta.WrapperContext;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.utils.ScriptContextUtils;
+
+import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.validateScript;
 
 public class ContextualizedScriptRT extends ScriptRT {
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
@@ -49,6 +47,9 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 	@Override
 	public void execute() throws ScriptException {
+
+		validateScript(getScript());
+
 		// ScriptEngineManager manager;
 		Context cx = Context.enter();
 		//cx.setLanguageVersion(Context.VERSION_DEFAULT);
@@ -60,7 +61,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 		 */
 
 		try {
-			Scriptable scope = cx.initStandardObjects();
+			Scriptable scope = ScriptContextUtils.initStandardObjects(cx);
 			// ScriptEngine engine = manager.getEngineByName("js");
 			// engine.getContext().setErrorWriter(new PrintWriter(System.err));
 			// engine.getContext().setWriter(new PrintWriter(System.out));
@@ -81,12 +82,12 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			try {
 				context = new ScriptExecutor().convertContext(((ContextualizedScriptVO) vo).getPointsOnContext());
-			} catch (Exception e1) {
-				LOG.error("Data Point State Exception " + e1.getMessage());
+			} catch (Throwable e1) {
+				LOG.error("Data Point State Exception: " + LoggingUtils.exceptionInfo(e1) + ", " + LoggingUtils.scriptInfo(vo));
 				if (vo != null) {
-					throw new ScriptException("xid:"+vo.getXid() +" script:"+vo.getScript()+" error:" + e1.getMessage());
+					throw new ScriptException("vo: " + LoggingUtils.scriptInfo(vo) + ", error: " + LoggingUtils.exceptionInfo(e1));
 				} else {
-					throw new ScriptException("vo: null,"+e1.getMessage());
+					throw new ScriptException("vo: null, "+ LoggingUtils.exceptionInfo(e1));
 				}
 			}
 

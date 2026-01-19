@@ -1,5 +1,8 @@
 package org.scada_lts.dao.model;
 
+import com.serotonin.mango.vo.GetExtendedName;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 /**
  * Scada Object Identifier
  *
@@ -8,10 +11,11 @@ package org.scada_lts.dao.model;
  * places among the project where user want
  * to list business object without details.
  */
-public class ScadaObjectIdentifier extends BaseObjectIdentifier {
+public class ScadaObjectIdentifier extends BaseObjectIdentifier implements GetExtendedName {
 
     private BaseObjectIdentifier baseObjectIdentifier;
 
+    @XssProtect
     private String name;
 
     public ScadaObjectIdentifier() {
@@ -25,6 +29,7 @@ public class ScadaObjectIdentifier extends BaseObjectIdentifier {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }

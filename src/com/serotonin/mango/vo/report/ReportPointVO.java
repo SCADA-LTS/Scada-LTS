@@ -141,6 +141,9 @@ public class ReportPointVO implements Serializable, JsonSerializable {
         Integer id = jsonObject.getInt("pointId");
         try {
             DataPointVO dataPoint = dataPointService.getDataPoint(id);
+            if(dataPoint == null) {
+                throw new EmptyResultDataAccessException(1);
+            }
             this.pointId = dataPoint.getId();
             this.pointXid = dataPoint.getXid();
         } catch (EmptyResultDataAccessException ex) {

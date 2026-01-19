@@ -86,9 +86,15 @@ public final class SystemSettingsUtils {
 
     private static final String VALIDATION_SEARCH_CYCLIC_DEPTH_KEY = "scadalts.validation.search-cyclic-depth";
 
-    private static final String PURGE_POINT_VALUES_PERIOD_DEFAULT = "systemsettings.purge-point-values.period-default";
-    private static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT = "systemsettings.purge-point-values.period-type-default";
+    private static final String PURGE_POINT_VALUES_PERIOD_DEFAULT_KEY = "systemsettings.purge-point-values.period-default";
+    private static final String PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT_KEY = "systemsettings.purge-point-values.period-type-default";
 
+    private static final String DATA_POINT_UNRELIABLE_DEPTH_KEY = "scadalts.datapoint.unreliable.depth";
+    private static final String DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY = "scadalts.datapoint.unreliable.execute-in-pool-if-tasks-exceeds";
+
+    private static final String SECURITY_JS_EXECUTOR_JAVA_ENABLED_KEY = "scadalts.security.js.executor.java.enabled";
+    private static final String SECURITY_JS_VALIDATOR_ENABLED_KEY = "scadalts.security.js.validator.enabled";
+    private static final String SECURITY_JS_FILTER_ENABLED_KEY = "scadalts.security.js.filter.enabled";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -769,7 +775,7 @@ public final class SystemSettingsUtils {
     public static int getPurgePointValuesPeriodDefault() {
         int defaultValue = 1;
         try {
-            String period = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_DEFAULT, "1");
+            String period = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_DEFAULT_KEY, String.valueOf(defaultValue));
             return Integer.parseInt(period);
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -780,8 +786,65 @@ public final class SystemSettingsUtils {
     public static int getPurgePointValuesPeriodTypeDefault() {
         int defaultValue = 7;
         try {
-            String periodType = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT, "7");
+            String periodType = ScadaConfig.getInstance().getConf().getProperty(PURGE_POINT_VALUES_PERIOD_TYPE_DEFAULT_KEY, String.valueOf(defaultValue));
             return Integer.parseInt(periodType);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+
+    public static int getDataPointUnreliableDepthNumber() {
+        int defaultValue = 10;
+        try {
+            String property = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_UNRELIABLE_DEPTH_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(property);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+
+    public static int getDataPointUnreliableExecuteInPoolIfTasksExceedsNumber() {
+        int defaultValue = 2;
+        try {
+            String property = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY, String.valueOf(defaultValue));
+            return Integer.parseInt(property);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsExecutorJavaEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_EXECUTOR_JAVA_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsValidatorEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_VALIDATOR_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsFilterEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_FILTER_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;

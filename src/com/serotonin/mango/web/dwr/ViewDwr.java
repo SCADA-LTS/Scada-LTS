@@ -390,7 +390,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 
 		// Users with which to share.
-		result.put("shareUsers", getShareUsers(user));
+		//result.put("shareUsers", getShareUsers(user));
 
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		// Users already sharing with.
@@ -1016,7 +1016,7 @@ public class ViewDwr extends BaseDwr {
 			DataPointService dataPointService = new DataPointService();
 			for (Integer dpId : dataPoints) {
 				DataPointVO dp = dataPointService.getDataPoint(dpId);
-				if(GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
+				if(dp != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, dp))
 					dps.add(dp);
 			}
 

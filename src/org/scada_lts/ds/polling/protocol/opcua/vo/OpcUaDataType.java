@@ -12,11 +12,11 @@ public interface OpcUaDataType {
 
     String getDescription();
 
-    Object convertToWrite(Object value) throws Exception;
+    Object convertToWrite(MangoValue value) throws Exception;
 
     MangoValue convertToRead(Object value) throws Exception;
 
-    boolean validate(Object value);
+    boolean validate(MangoValue value);
 
     boolean toJson();
 

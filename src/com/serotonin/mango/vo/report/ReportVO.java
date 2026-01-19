@@ -29,6 +29,8 @@ import java.util.Map;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.json.*;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
@@ -53,7 +55,7 @@ import org.scada_lts.web.mvc.api.dto.ReportDTO;
  */
 
 @JsonRemoteEntity
-public class ReportVO implements Serializable, JsonSerializable {
+public class ReportVO implements Serializable, JsonSerializable, GetExtendedName {
     public static final int DATE_RANGE_TYPE_RELATIVE = 1;
     public static final int DATE_RANGE_TYPE_SPECIFIC = 2;
 
@@ -211,6 +213,7 @@ public class ReportVO implements Serializable, JsonSerializable {
         this.userId = userId;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -884,8 +887,8 @@ public class ReportVO implements Serializable, JsonSerializable {
 
         DataPointService dataPointService = new DataPointService();
         for (ReportPointVO point : points) {
-
-            if(!GetDataPointsWithAccess.hasDataPointReadPermission(user, dataPointService.getDataPoint(point.getPointId())))
+            DataPointVO dataPoint =  dataPointService.getDataPoint(point.getPointId());
+            if(dataPoint == null || !GetDataPointsWithAccess.hasDataPointReadPermission(user, dataPoint))
                 response.addContextualMessage("points", "validate.illegalValue");
 
             try {

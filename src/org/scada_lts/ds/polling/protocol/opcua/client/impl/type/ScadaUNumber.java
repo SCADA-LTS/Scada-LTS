@@ -1,5 +1,6 @@
 package org.scada_lts.ds.polling.protocol.opcua.client.impl.type;
 
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 
@@ -7,9 +8,9 @@ import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaConverter
 
 public class ScadaUNumber extends UNumber {
 
-    private final Object value;
+    private final MangoValue value;
 
-    public ScadaUNumber(Object value) {
+    public ScadaUNumber(MangoValue value) {
         this.value = value;
     }
 
@@ -25,12 +26,12 @@ public class ScadaUNumber extends UNumber {
 
     @Override
     public float floatValue() {
-        return toFloat(value);
+        return toFloatFromString(value);
     }
 
     @Override
     public double doubleValue() {
-        return toDouble(value);
+        return toDoubleFromString(value);
     }
 
     public UNumber toUNumber() {

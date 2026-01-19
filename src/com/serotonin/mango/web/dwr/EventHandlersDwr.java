@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,11 +34,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -62,9 +61,13 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.PublisherService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
 
 
 public class EventHandlersDwr extends BaseDwr {
@@ -198,10 +201,16 @@ public class EventHandlersDwr extends BaseDwr {
 		}
 
 		// Get the mailing lists.
-		model.put("mailingLists", new MailingListDao().getMailingLists());
+		List<MailingListJson> mailingLists = new MailingListService().getMailingLists().stream()
+				.map(MailingListJson::new)
+				.collect(Collectors.toList());
+		model.put("mailingLists", mailingLists);
 
 		// Get the users.
-		model.put("users", new UserDao().getUsers());
+		List<UserIdentifier> users = new UserService().getUsers().stream()
+				.map(UserIdentifier::new)
+				.collect(Collectors.toList());
+		model.put("users", users);
 
 		model.put("allPoints", allPoints);
 		model.put("dataPoints", dataPoints);

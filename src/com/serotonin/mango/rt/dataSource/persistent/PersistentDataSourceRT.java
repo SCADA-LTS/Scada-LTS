@@ -47,8 +47,6 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 public class PersistentDataSourceRT extends EventDataSource implements Runnable {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
 
@@ -506,7 +504,6 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
 
                 // The point is disabled (because otherwise it would be in the RT list).
                 updatePoint(oldDpvo, newDpvo);
-                resetUnreliableDataPoint(dprt);
             }
             else {
                 if (StringUtils.isLengthGreaterThan(xid, 50))

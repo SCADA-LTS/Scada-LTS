@@ -48,7 +48,7 @@ import static org.scada_lts.utils.XidUtils.validateXid;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-public class WatchList implements JsonSerializable {
+public class WatchList implements JsonSerializable, GetExtendedName {
     public static final String XID_PREFIX = "WL_";
 
     private int id = Common.NEW_ID;
@@ -86,6 +86,7 @@ public class WatchList implements JsonSerializable {
         this.xid = xid;
     }
 
+    @Override
     public String getName() {
         return name;
     }

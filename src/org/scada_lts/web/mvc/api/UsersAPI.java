@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class UsersAPI {
     }
 
     @PutMapping(value = "/")
-    public ResponseEntity<String> updateUserDetails(@RequestBody UserInfo userInfo, HttpServletRequest request) {
+    public ResponseEntity<String> updateUserDetails(@RequestBody @Valid UserInfo userInfo, HttpServletRequest request) {
         usersApiService.update(request, userInfo);
         return new ResponseEntity<>(HttpStatus.OK);
     }

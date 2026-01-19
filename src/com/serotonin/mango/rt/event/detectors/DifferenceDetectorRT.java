@@ -73,11 +73,12 @@ abstract public class DifferenceDetectorRT extends TimeDelayedEventDetectorRT {
     @Override
     synchronized public void setEventActive(boolean b) {
         eventActive = b;
+        long time = lastChange + getDurationMS();
         if (eventActive)
             // Raise the event.
-            raiseEvent(lastChange + getDurationMS(), createEventContext());
+            raiseEvent(time, createEventContext());
         else
             // Deactivate the event.
-            returnToNormal(lastChange);
+            returnToNormal(time);
     }
 }

@@ -20,6 +20,7 @@ package com.serotonin.mango.vo.report;
 
 import java.util.ResourceBundle;
 
+import com.serotonin.mango.vo.GetExtendedName;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
@@ -30,7 +31,7 @@ import com.serotonin.web.taglib.DateFunctions;
 /**
  * @author Matthew Lohbihler
  */
-public class ReportInstance {
+public class ReportInstance implements GetExtendedName {
     public static final int STATE_NOT_STARTED = 1;
     public static final int STATE_STARTED = 2;
     public static final int STATE_FINISHED = 3;
@@ -171,6 +172,7 @@ public class ReportInstance {
         this.userId = userId;
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -30,6 +30,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonRemoteEntity
 public class AnalogRenderer extends BaseTextRenderer {
@@ -51,8 +52,10 @@ public class AnalogRenderer extends BaseTextRenderer {
     public static final String TYPE_NAME = "textRendererAnalog";
 
     @JsonRemoteProperty
+    @XssProtect
     private String format;
     @JsonRemoteProperty
+    @XssProtect
     private String suffix;
 
     private DecimalFormat formatInstance;

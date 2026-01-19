@@ -1,12 +1,15 @@
 package org.scada_lts.web.mvc.api.user;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class UserInfo extends UserInfoSimple {
 
+    @XssProtect
     private String homeUrl;
     private long lastLogin;
     private int receiveAlarmEmails;
     private boolean receiveOwnAuditEvents;
+    @XssProtect
     private String theme;
     private boolean hideMenu;
     private int userProfile;

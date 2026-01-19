@@ -50,6 +50,9 @@ import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.utils.ScriptContextUtils;
+
+import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.validateScript;
 
 /**
  * @author Matthew Lohbihler
@@ -105,7 +108,7 @@ public class ScriptExecutor {
 			for(DataPointStateException exception: exceptions) {
 				LocalizableMessage localizableMessage = exception.getLocalizableMessage();
 				String message = localizableMessage.getLocalizedMessage(Common.getBundle());
-				messages.append(message).append(";");
+				messages.append(message).append(" ; ");
 			}
 			throw new Exception(messages.toString());
 		}
@@ -118,6 +121,9 @@ public class ScriptExecutor {
 	public PointValueTime execute(String script,
 			Map<String, IDataPoint> context, long runtime, int dataTypeId,
 			long timestamp) throws ScriptException, ResultTypeException {
+
+		validateScript(script);
+
 		ensureFunctions();
 
 		// Create the script engine.
@@ -141,7 +147,7 @@ public class ScriptExecutor {
 
 		// Execute.
 		try {
-			scope = cx.initStandardObjects();
+			scope = ScriptContextUtils.initStandardObjects(cx);
 
 			// Create the wrapper object context.
 			WrapperContext wrapperContext = new WrapperContext(runtime);

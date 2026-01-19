@@ -138,4 +138,9 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
     public void setDatasourceName(String datasourceName) {
         this.datasourceName = datasourceName;
     }
+
+    @Override
+    public String getExtendedName() {
+        return this.getExtendName();
+    }
 }

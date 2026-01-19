@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 import org.scada_lts.web.mvc.api.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/getAllComponentsFromView/{xid}", method = RequestMethod.GET)
-    public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") String xid, HttpServletRequest request) {
+    public ResponseEntity<List<ViewComponentDTO>> getAllComponentsFromView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request) {
         LOG.info("/api/component/addComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<List<ViewComponentDTO>> result;
@@ -75,7 +77,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addHTMLComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addHTMLComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewHTMLComponentDTO viewHTMLComponentDTO) {
+    public ResponseEntity<String> addHTMLComponentToView(@PathVariable("xid") @Valid @XssProtect String xid, HttpServletRequest request, @RequestBody @Valid ViewHTMLComponentDTO viewHTMLComponentDTO) {
         LOG.info("/api/component/addHTMLComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -111,7 +113,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addSimplePointComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addSimplePointComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewSimplePointComponentDTO viewSimplePointComponentDTO) {
+    public ResponseEntity<String> addSimplePointComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewSimplePointComponentDTO viewSimplePointComponentDTO) {
         LOG.info("/api/component/addSimplePointComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -153,7 +155,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addLinkComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addLinkComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewLinkComponentDTO viewLinkComponentDTO) {
+    public ResponseEntity<String> addLinkComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewLinkComponentDTO viewLinkComponentDTO) {
         LOG.info("/api/component/addLinkComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -190,7 +192,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addScriptComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addScriptComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewScriptComponentDTO viewScriptComponentDTO) {
+    public ResponseEntity<String> addScriptComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewScriptComponentDTO viewScriptComponentDTO) {
         LOG.info("/api/component/addScriptComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -231,7 +233,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addMultistateGraphicComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addMultistateGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewMultistateGraphicComponentDTO viewMultistateGraphicComponentDTO) {
+    public ResponseEntity<String> addMultistateGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewMultistateGraphicComponentDTO viewMultistateGraphicComponentDTO) {
         LOG.info("/api/component/addMultistateGraphicComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;
@@ -275,7 +277,7 @@ public class ViewComponentAPI {
     }
 
     @RequestMapping(value = "/api/component/addBinaryGraphicComponentToView/{xid}", method = RequestMethod.POST)
-    public ResponseEntity<String> addBinaryGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody ViewBinaryGraphicComponentDTO viewBinaryGraphicComponentDTO) {
+    public ResponseEntity<String> addBinaryGraphicComponentToView(@PathVariable("xid") String xid, HttpServletRequest request, @RequestBody @Valid ViewBinaryGraphicComponentDTO viewBinaryGraphicComponentDTO) {
         LOG.info("/api/component/addBinaryGraphicComponentToView/{xid} xid:" + xid);
 
         ResponseEntity<String> result;

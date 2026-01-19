@@ -9,27 +9,27 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.security.DefaultClientCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.utils.security.KeyStoreLoader;
+import org.scada_lts.utils.security.CertificateData;
+import org.scada_lts.utils.security.ClientCertificate;
 import org.scada_lts.web.beans.ApplicationBeans;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Path;
+import java.io.*;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 
 public final class OpcUaClientFactory {
 
@@ -38,7 +38,7 @@ public final class OpcUaClientFactory {
     public static OpcUaClient createClient(OpcUaDataSourceVO dataSourceVO) throws Exception {
         OpcUaClient client;
         if(dataSourceVO.getMessageSecurity() != OpcUaMessageSecurityType.NONE) {
-            OpcUaTrustListManager trustListManager = ApplicationBeans.getBean("opcUaTrustListManager", OpcUaTrustListManager.class);
+            TrustListManager trustListManager = ApplicationBeans.getBean("opcUaTrustListManager", TrustListManager.class);
             client = createClientSecured(dataSourceVO, trustListManager);
         } else {
             client = createClientUnsecured(dataSourceVO);
@@ -53,7 +53,7 @@ public final class OpcUaClientFactory {
         return OpcUaClient.create(config);
     }
 
-    private static OpcUaClient createClientSecured(OpcUaDataSourceVO dataSourceVO, OpcUaTrustListManager trustListManager) throws Exception {
+    private static OpcUaClient createClientSecured(OpcUaDataSourceVO dataSourceVO, TrustListManager trustListManager) throws Exception {
         EndpointDescription applicationEndpoint = getEndpointDescription(dataSourceVO);
         IdentityProvider identityProvider = createIdentityProvider(dataSourceVO);
         OpcUaClientConfig config = createConfigSecured(dataSourceVO, applicationEndpoint, identityProvider, trustListManager);
@@ -110,40 +110,30 @@ public final class OpcUaClientFactory {
     private static OpcUaClientConfig createConfigSecured(OpcUaDataSourceVO dataSourceVO,
                                                          EndpointDescription endpoint,
                                                          IdentityProvider identityProvider,
-                                                         OpcUaTrustListManager trustListManager) throws Exception {
-        KeyStoreLoader keyStore;
-        try {
-            File file = toSecurePath(Path.of(dataSourceVO.getKeyStoreFile())).orElseThrow(() -> new IllegalArgumentException("The path is invalid."));
-            keyStore = new KeyStoreLoader("Scada-LTS [OPC UA]", file.getAbsolutePath(), dataSourceVO.getKeyStoreType(),
-                    dataSourceVO.getKeyStorePassword(), dataSourceVO.getServerHost());
-        } catch (Exception ex) {
-            throw new Exception(LoggingUtils.exceptionInfo(ex), ex);
-        }
+                                                         TrustListManager trustListManager) throws Exception {
 
-        byte[] serverCertificateBytes = endpoint.getServerCertificate().bytes();
-
-        if(serverCertificateBytes == null) {
-            throw new IllegalStateException("Downloading the certificate from the server is impossible. Check the server configuration.");
-        }
-
-        X509Certificate serverCertificate;
-        try(InputStream inputStream = new ByteArrayInputStream(serverCertificateBytes)) {
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            serverCertificate = (X509Certificate) certFactory.generateCertificate(inputStream);
-        }
+        X509Certificate serverCertificate = getServerCertificate(endpoint);
 
         trustListManager.setTrustedCertificates(Collections.singletonList(serverCertificate));
         DefaultClientCertificateValidator certificateValidator =
                 new DefaultClientCertificateValidator(trustListManager);
+
+        String applicationUri = endpoint.getServer().getApplicationUri();
+        String host = dataSourceVO.getServerHost();
+        Period certificateValidityPeriod = Period.ofYears(3);
+
+        CertificateData certificateData = CertificateData.scadaLts(applicationUri, host, certificateValidityPeriod);
+
+        ClientCertificate clientCertificate = ClientCertificate.newInstance(dataSourceVO, certificateData, "scada-lts");
 
         return OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)
                 .setApplicationName(LocalizedText.english("Scada-LTS OPC UA Client for device: " + dataSourceVO.getName()))
                 .setApplicationUri(endpoint.getServer().getApplicationUri())
 
-                .setKeyPair(keyStore.getClientKeyPair())
-                .setCertificate(keyStore.getClientCertificate())
-                .setCertificateChain(keyStore.getClientCertificateChain())
+                .setKeyPair(clientCertificate.getKeyPair())
+                .setCertificate(clientCertificate.getCertificate())
+                .setCertificateChain(clientCertificate.getCertificateChain())
                 .setCertificateValidator(certificateValidator)
                 .setIdentityProvider(identityProvider)
 
@@ -158,9 +148,24 @@ public final class OpcUaClientFactory {
                 .build();
     }
 
+    private static X509Certificate getServerCertificate(EndpointDescription endpoint) throws IOException, CertificateException {
+        byte[] serverCertificateBytes = endpoint.getServerCertificate().bytes();
+
+        if(serverCertificateBytes == null) {
+            throw new IllegalStateException("Downloading the certificate from the server is impossible. Check the server configuration.");
+        }
+
+        X509Certificate serverCertificate;
+        try(InputStream inputStream = new ByteArrayInputStream(serverCertificateBytes)) {
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            serverCertificate = (X509Certificate) certFactory.generateCertificate(inputStream);
+        }
+        return serverCertificate;
+    }
+
     private static OpcUaClientConfig createConfigUnsecured(OpcUaDataSourceVO dataSourceVO,
                                                            EndpointDescription endpoint,
-                                                           IdentityProvider identityProvider) throws Exception {
+                                                           IdentityProvider identityProvider) {
 
         return OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)

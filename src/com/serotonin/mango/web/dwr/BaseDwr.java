@@ -21,6 +21,8 @@ package com.serotonin.mango.web.dwr;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.serotonin.mango.vo.*;
 import org.joda.time.DateTime;
 import org.joda.time.IllegalFieldValueException;
 
@@ -35,10 +37,6 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.view.chart.ChartRenderer;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.BasePointState;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
@@ -48,12 +46,10 @@ import com.serotonin.util.ObjectUtils;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.permissions.service.GetDataPointsWithAccess;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.content.SnippetContentGenerator;
 
 abstract public class BaseDwr {
@@ -262,9 +258,8 @@ abstract public class BaseDwr {
 
     protected List<DataPointVO> getPoints() {
         User user = Common.getUser();
-        DataPointDAO dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
-        GetDataPointsWithAccess getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
-        return getDataPointsWithAccess.getObjectsWithAccess(user);
+        DataPointService dataPointService = new DataPointService();
+        return dataPointService.getDataPointsWithAccess(user);
     }
 
     public Map<String, Object> getDateRangeDefaults(int periodType, int period) {

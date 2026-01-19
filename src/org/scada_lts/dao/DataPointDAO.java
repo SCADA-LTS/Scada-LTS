@@ -214,8 +214,12 @@ public class DataPointDAO {
 
 		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
 
-		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
-		
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.warn("datapoint does not exist for id: " + id + ", msg: " + e.getMessage());
+			return null;
+		}
 	}
 
 	public DataPointVO getDataPoint(String xid) {

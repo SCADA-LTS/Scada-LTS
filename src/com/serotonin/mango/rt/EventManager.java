@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt;
 
+import com.google.common.collect.Sets;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -45,7 +46,6 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Matthew Lohbihler
@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventManager implements ILifecycle {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
-	private final Map<Integer, EventInstance> activeEvents = new ConcurrentHashMap<>();
+	private final Set<EventInstance> activeEvents = Sets.newConcurrentHashSet();
 	private MangoEvent eventService;
 	private MangoUser userService;
 	private long lastAlarmTimestamp = 0;
@@ -143,17 +143,17 @@ public class EventManager implements ILifecycle {
 		}
 
 		if (eventUserIds.size() > 0) {
-			if(evt.getAlarmLevel() != AlarmLevels.NONE)
+			if(evt.isAlarm())
 				eventService.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
 
 		if (evt.isRtnApplicable())
-			activeEvents.put(evt.getId(), evt);
+			addActiveEvent(evt);
 
 		if (suppressed) {
-			if(evt.getAlarmLevel() != AlarmLevels.NONE) {
+			if(evt.isAlarm()) {
 				User admin = userService.getUser("admin");
 				if(admin != null) {
 					eventService.ackEvent(
@@ -220,7 +220,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	private void deactivateEvent(EventInstance evt, long time, int inactiveCause) {
-		activeEvents.remove(evt.getId());
+		removeActiveEvent(evt);
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
@@ -228,7 +228,7 @@ public class EventManager implements ILifecycle {
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
 	}
-	
+
 	public void setLastAlarmTimestamp(long alarmTimestamp) {
 		this.lastAlarmTimestamp = alarmTimestamp;
 		notifyAlarmTimestampChange(alarmTimestamp);
@@ -239,7 +239,7 @@ public class EventManager implements ILifecycle {
 	// Canceling events.
 	//
 	public void cancelEventsForDataPoint(int dataPointId) {
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getDataPointId() == dataPointId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -247,7 +247,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForDataSource(int dataSourceId) {
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getDataSourceId() == dataSourceId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -255,7 +255,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForPublisher(int publisherId) {
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getPublisherId() == publisherId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -263,7 +263,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void cancelEventsForHandler(int handlerId) {
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getEventHandlerId() == handlerId)
 				deactivateEvent(e, System.currentTimeMillis(),
 						EventInstance.RtnCauses.SOURCE_DISABLED);
@@ -272,7 +272,7 @@ public class EventManager implements ILifecycle {
 
 	private void resetHighestAlarmLevel(long time, boolean init) {
 		int max = 0;
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getAlarmLevel() > max)
 				max = e.getAlarmLevel();
 		}
@@ -320,9 +320,7 @@ public class EventManager implements ILifecycle {
 		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 
 		// Get all active events from the database.
-		eventService.getActiveEvents().forEach(event -> {
-			activeEvents.put(event.getId(), event);
-		});
+		eventService.getActiveEvents().forEach(this::addActiveEvent);
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
@@ -348,7 +346,7 @@ public class EventManager implements ILifecycle {
 	 * none.
 	 */
 	private EventInstance get(EventType type) {
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().equals(type))
 				return e;
 		}
@@ -356,8 +354,8 @@ public class EventManager implements ILifecycle {
 	}
 
 	private List<EventInstance> getAll(EventType type) {
-		List<EventInstance> result = new ArrayList<EventInstance>();
-		for (EventInstance e : activeEvents.values()) {
+		List<EventInstance> result = new ArrayList<>();
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().equals(type))
 				result.add(e);
 		}
@@ -373,14 +371,14 @@ public class EventManager implements ILifecycle {
 	 */
 	private EventInstance remove(EventType type) {
 		EventInstance eventInstance = null;
-		for (EventInstance e : activeEvents.values()) {
+		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().equals(type)) {
 				eventInstance = e;
 				break;
 			}
 		}
 		if(eventInstance != null) {
-			activeEvents.remove(eventInstance.getId());
+			removeActiveEvent(eventInstance);
 			return eventInstance;
 		}
 		return null;
@@ -457,7 +455,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void notifyEventReset() {
-		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket);
+		NotifyEventUtils.notifyEventReset(highestAlarmLevelService, userEventServiceWebSocket, userService);
 	}
 
 	public int getHighestAlarmLevel(int userId) {
@@ -565,5 +563,17 @@ public class EventManager implements ILifecycle {
 				notifyEventToggle(event, user);
 			}
 		}
+	}
+
+	private Set<EventInstance> getActiveEvents() {
+		return activeEvents;
+	}
+
+	private void addActiveEvent(EventInstance event) {
+		activeEvents.add(event);
+	}
+
+	private void removeActiveEvent(EventInstance event) {
+		activeEvents.remove(event);
 	}
 }

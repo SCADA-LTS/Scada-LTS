@@ -144,7 +144,7 @@ mango.longPoll.pollCB = function(response, stopIntervalTimeoutId, pollStartTime,
     if(stopIntervalTimeoutId != -1) {
         clearTimeout(stopIntervalTimeoutId);
     }
-    let intervalTime = response.intervalTime < 300 ? 1000 : response.intervalTime;
+    let intervalTime = response.intervalTime < 100 ? 100 : response.intervalTime;
     let duration = new Date().getTime() - pollStartTime;
     if(duration > intervalTime) {
         if(from === 'fromPollCB' || from === 'start') {
@@ -513,6 +513,19 @@ function createFromTemplate(templateId, id, parentId) {
     var content = $(templateId).cloneNode(true);
     updateTemplateNode(content, id);
     content.mangoId = id;
+    $(parentId).appendChild(content);
+    show(content);
+    return content;
+}
+
+function updateFromTemplate(templateId, id, parentId) {
+    var content = $(templateId).cloneNode(true);
+    updateTemplateNode(content, id);
+    content.mangoId = id;
+    let child = $(parentId).children[content.id];
+    if(child) {
+        $(parentId).removeChild(child);
+    }
     $(parentId).appendChild(content);
     show(content);
     return content;

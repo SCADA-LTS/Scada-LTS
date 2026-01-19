@@ -81,27 +81,27 @@
         allPoints = data.allPoints;
         
         emailRecipients = new mango.erecip.EmailRecipients("emailRecipients",
-                "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         emailRecipients.write("emailRecipients", "emailRecipients", null,
-            "<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
+            "<spring:message code="eventHandlers.emailRecipients" />");
         smsRecipients = new mango.erecip.EmailRecipients("smsRecipients",
-                "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.recipTestEmailMessage" />",
                 data.mailingLists, data.users);
         smsRecipients.write("smsRecipients", "smsRecipients", "smsRecipients",
-        		"<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.emailRecipients" />");
         
         escalRecipients = new mango.erecip.EmailRecipients("escalRecipients",
-                "<sst:i18n key="eventHandlers.escalTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.escalTestEmailMessage" />",
                 data.mailingLists, data.users);
         escalRecipients.write("escalRecipients", "escalRecipients", "escalationAddresses2",
-        		"<sst:i18n key="eventHandlers.escalRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.escalRecipients" />");
         
         inactiveRecipients = new mango.erecip.EmailRecipients("inactiveRecipients",
-                "<sst:i18n key="eventHandlers.inactiveTestEmailMessage" escapeDQuotes="true"/>",
+                "<spring:message code="eventHandlers.inactiveTestEmailMessage" />",
                 data.mailingLists, data.users);
         inactiveRecipients.write("inactiveRecipients", "inactiveRecipients", "inactiveAddresses2",
-        		"<sst:i18n key="eventHandlers.inactiveRecipients" escapeDQuotes="true"/>");
+        		"<spring:message code="eventHandlers.inactiveRecipients" />");
         
         var pointRoot = dojo.widget.manager.getWidgetById('rootPoint');
         for (i=0; i<data.dataPoints.length; i++) {

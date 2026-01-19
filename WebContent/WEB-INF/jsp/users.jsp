@@ -353,7 +353,7 @@
     }
     
     function deleteUser() {
-        if (confirm("<sst:i18n key="users.deleteConfirm" escapeDQuotes="true"/>")) {
+        if (confirm("<spring:message code="users.deleteConfirm" />")) {
         	var userId = editingUserId;
             startImageFader("deleteImg");
             UsersDwr.deleteUser(userId, function(response) {

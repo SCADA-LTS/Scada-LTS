@@ -30,21 +30,33 @@
 
   	var myLocation = getAppLocation();
     var urlGetDataPoints = "api/datapoint/getAll";
-    function executeScript(){
-    	var xid = jQuery("#xid");
-    	// saveScript() nie zdarzy zapisac !!!
-    	jQuery.ajax({
-    		url: myLocation+"script/execute/"+xid[0].value,
-    		type:"POST",
-    		success: function(){
+    function executeScript() {
+
+        let payload = {}
+        payload.id = -1;
+        payload.script = $get("script");
+
+        let toSave = this.scriptPointsContext.convertToSave();
+        payload.pointsOnContext = convertPointsOnContext(toSave);
+        payload.datapointContext = objectsContextArray[0] ? objectsContextArray[0].value : "";
+        payload.datasourceContext = objectsContextArray[1] ? objectsContextArray[1].value : "";
+
+        jQuery.ajax({
+            url: myLocation+"api/scripts/execute-test",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(payload),
+            success: function() {
               setUserMessage("<spring:message code="script.execute.success"/> ")
-        	},
-        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        		console.log(textStatus);
-        		console.log(XMLHttpRequest);
-        		setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
-        	}
-    	});
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(XMLHttpRequest);
+                console.log(errorThrown);
+                setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
+            }
+        });
     };
 
     var pointsArray = new Array();
@@ -63,6 +75,35 @@
 			search_contains: true,
 			width: "400px"
 		});
+    }
+
+    function getDataPointById(id) {
+        for(let i = 0; i < pointsArray.length; i++) {
+            if(pointsArray[i].id === id) {
+                return pointsArray[i];
+            }
+        }
+        return null;
+    }
+
+    function convertPointsOnContext(toSave) {
+        let pointsOnContext = [];
+        for(let i = 0; i < toSave.length; i++) {
+            let entry = toSave[i];
+            let dataPoint = getDataPointById(entry.key);
+            if(dataPoint) {
+                let dataPointXid = dataPoint.xid;
+                let varName = entry.value;
+                let object = {
+                    dataPointXid: dataPointXid,
+                    varName: varName
+                };
+                pointsOnContext[pointsOnContext.length] = object;
+            } else {
+                throw new Error();
+            }
+        }
+        return pointsOnContext;
     }
 
     function getPointsCB()
@@ -99,7 +140,7 @@
     }
 
     function appendScript(seId) {
-        createFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
+        updateFromTemplate("se_TEMPLATE_", seId, "scriptsTable");
     }
 
     function updateScript(se) {
@@ -172,7 +213,9 @@
 		                	});
 		                }
 		                setUserMessage("<spring:message code="scripts.saved"/>");
-		                ScriptsDwr.getScript(editingScript.id, updateScript);
+		                ScriptsDwr.getScripts(function(scripts) {
+		                    init(scripts);
+		                });
 		            }
         		}
         );

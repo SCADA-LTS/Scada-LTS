@@ -16,16 +16,20 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
-		JsonSerializable {
+		JsonSerializable, GetExtendedName {
 	abstract public Type getType();
 
 	abstract public ScriptRT createScriptRT();
@@ -49,6 +53,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		@JsonRemoteProperty
 		private final int id;
 		@JsonRemoteProperty
+		@XssProtect
 		private final String key;
 		@JsonRemoteProperty
 		private final boolean display;
@@ -93,10 +98,13 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
+	@XssProtect
 	private String xid;
 	@JsonRemoteProperty
+	@XssProtect
 	private String name;
 	@JsonRemoteProperty
+	@ScriptProtect
 	private String script;
 	private int userId;
 
@@ -116,6 +124,7 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -133,6 +142,9 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 			response.addContextualMessage("name", "validate.nameRequired");
 		if (StringUtils.isLengthGreaterThan(name, 40))
 			response.addContextualMessage("name", "validate.nameTooLong");
+		if(!ScriptValidatorUtils.validate(script)) {
+			response.addContextualMessage("script", "validate.invalidValue");
+		}
 	}
 
 	//

@@ -90,7 +90,6 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
 
 /**
@@ -258,9 +257,9 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // If we still don't have the device, try to get it manually.
             try {
                 d = localDevice.findRemoteDevice(address, network, locator.getRemoteDeviceInstanceNumber());
-                resetUnreliableDataPoint(dataPoint);
             }
             catch (BACnetException e) {
+                setUnreliableDataPoint(dataPoint);
                 log.warn(LoggingUtils.info(e, this), e);
             }
             catch (PropertyValueException e) {
@@ -312,7 +311,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         synchronized (pointListChangeLock) {
             for (DataPointRT dp : dataPoints) {
                 BACnetIPPointLocatorRT locator = dp.getPointLocator();
-                if (locator.isUseCovSubscription() && dp.getPointValue() != null)
+                if (locator.isUseCovSubscription() && dp.getPointValue() != null && !dp.isUnreliable())
                     continue;
 
                 List<DataPointRT> points = devicePoints.get(locator.getRemoteDevice());

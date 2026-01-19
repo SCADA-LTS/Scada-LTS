@@ -13,10 +13,10 @@ import org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaIdentifierType;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 import static org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaUtils.createLocator;
@@ -70,7 +70,7 @@ public class SearchOpcUaNodesAction implements Callable<Void> {
         }
 
         int depth = --searchDepth;
-        List<Callable<Void>> tasks = new ArrayList<>();
+        List<Callable<Void>> tasks = new CopyOnWriteArrayList<>();
         for(ReferenceDescription referenceDescription: browseResult.getReferences()) {
 
             int namespaceIndex = referenceDescription.getNodeId().getNamespaceIndex().intValue();

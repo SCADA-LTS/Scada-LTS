@@ -40,8 +40,9 @@ public class OpcUaService implements IOpcUaService {
     private static final Logger LOG = LogManager.getLogger(OpcUaService.class);
 
     private final OpcUaDataSourceVO dataSource;
-    private UaClient client;
+    private OpcUaClient client;
     private DataTypeTree dataTypeTree;
+    private volatile boolean initialized = false;
 
     public OpcUaService(OpcUaDataSourceVO dataSource) {
         this.dataSource = dataSource;
@@ -51,10 +52,11 @@ public class OpcUaService implements IOpcUaService {
     public void initialize() throws PollingServiceException {
         this.terminate();
         try {
-            OpcUaClient opcUaClient = OpcUaClientFactory.createClient(dataSource);
-            this.client = opcUaClient.connect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
-            this.dataTypeTree = DataTypeTreeBuilder.build(opcUaClient);
-        } catch (Exception ex) {
+            this.client = OpcUaClientFactory.createClient(dataSource);
+            this.client.connect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
+            this.dataTypeTree = DataTypeTreeBuilder.build(this.client);
+            this.initialized = true;
+        } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             this.terminate();
             throw new PollingServiceException(ex.getMessage(), ex);
@@ -87,7 +89,7 @@ public class OpcUaService implements IOpcUaService {
         try {
             UaClient client = getClient();
             readResponse = OpcUaUtils.sendRead(client, nodeIds);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             throw new PollingServiceException(ex.getMessage(), ex);
         } finally {}
@@ -127,12 +129,13 @@ public class OpcUaService implements IOpcUaService {
     }
 
     @Override
-    public void write(DataPointVO dataPoint, Object value) throws PollingServiceException {
+    public void write(DataPointVO dataPoint, PointValueTime pointValueTime) throws PollingServiceException {
         OpcUaPointLocatorVO pointLocator = dataPoint.getPointLocator();
-        if(value == null) {
+        if(pointValueTime == null || pointValueTime.getValue() == null || pointValueTime.getValue().toValue() == null) {
             throw new PollingServiceException(getMessage("Write", pointLocator, null, "Value is null!"));
         }
-        if(value instanceof ImageValue) {
+        MangoValue value = pointValueTime.getValue();
+        if(value.toValue() instanceof ImageValue) {
             throw new PollingServiceException(getMessage("Write",pointLocator, value, value.getClass().getName() + " is not supported!"));
         }
         if(!pointLocator.getOpcDataType().validate(value)) {
@@ -141,7 +144,7 @@ public class OpcUaService implements IOpcUaService {
         Object valueToSend = null;
         try {
             valueToSend = pointLocator.getOpcDataType().convertToWrite(value);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new PollingServiceException(e.getMessage(), e);
         }
         try {
@@ -161,9 +164,13 @@ public class OpcUaService implements IOpcUaService {
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
-            throw new PollingServiceException(ex.getMessage(), ex);
+            if(ex instanceof PollingServiceException) {
+                throw (PollingServiceException)ex;
+            } else {
+                throw new PollingServiceException(ex.getMessage(), ex);
+            }
         } finally {
         }
     }
@@ -172,11 +179,8 @@ public class OpcUaService implements IOpcUaService {
     public void ping() throws PollingServiceException {
         try {
             UaClient client = getClient();
-            if (client == null) {
-                throw new IllegalStateException("No connected!");
-            }
             List<DataValue> result = sendReadServerStateAndTime(client);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             throw new PollingServiceException(ex.getMessage(), ex);
         } finally {
@@ -191,7 +195,7 @@ public class OpcUaService implements IOpcUaService {
         int namespaceIndex = pointLocator.getNamespaceIndex();
         if(StringUtils.isEmpty(identifier) || identifierType == OpcUaIdentifierType.ALL || namespaceIndex == -1) {
             try {
-                if (client == null) {
+                if (isNotInitialized()) {
                     throw new IllegalStateException("No connected!");
                 }
                 Set<OpcUaPointLocatorVO> result = new CopyOnWriteArraySet<>();
@@ -211,7 +215,7 @@ public class OpcUaService implements IOpcUaService {
                 List<OpcUaPointLocatorVO> items = new ArrayList<>(result);
                 items.sort(comparator);
                 return items;
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
                 return Collections.emptyList();
             } finally {
@@ -225,7 +229,8 @@ public class OpcUaService implements IOpcUaService {
     @Override
     public void terminate() throws PollingServiceException {
         try {
-            this.doClose(client);
+            this.initialized = false;
+            doClose(client, dataSource);
         } catch (Throwable e) {
             throw new PollingServiceException(e.getMessage(), e);
         }
@@ -245,7 +250,7 @@ public class OpcUaService implements IOpcUaService {
             if(readResponse.getResults()[0].getStatusCode() == null)
                 return false;
             return readResponse.getResults()[0].getStatusCode().isGood();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             LOG.warn(LoggingUtils.exceptionInfo(ex), ex);
             return false;
         } finally {
@@ -257,13 +262,12 @@ public class OpcUaService implements IOpcUaService {
         return "[OPC UA] ";
     }
 
-    private void doClose(UaClient client) throws PollingServiceException {
+    private static void doClose(UaClient client, OpcUaDataSourceVO dataSource) {
         if(client != null) {
-            UaClient client1 = this.client;
             WorkItem workItem = new ClosingWorkItem(new AutoCloseable() {
                 @Override
                 public void close() throws Exception {
-                    client1.disconnect().get(dataSource.getDefaultTimeout(), TimeUnit.MILLISECONDS);
+                    client.disconnect().get(dataSource.getSessionTimeout(), TimeUnit.MILLISECONDS);
                 }
             }, "[OPC UA] Closed connection for: " + LoggingUtils.dataSourceInfo(dataSource));
             Common.ctx.getBackgroundProcessing().addWorkItem(workItem);
@@ -271,7 +275,7 @@ public class OpcUaService implements IOpcUaService {
     }
 
     private UaClient getClient() throws Exception {
-        if(client == null) {
+        if(isNotInitialized()) {
             throw new IllegalStateException("No init!");
         }
         return client;
@@ -291,15 +295,19 @@ public class OpcUaService implements IOpcUaService {
         try {
             Variant variant = dataValue.getValue();
             Object valueRaw = variant.getValue();
-            if(valueRaw.getClass().isArray()) {
+            if(valueRaw == null || !valueRaw.getClass().isArray()) {
+                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
+            } else {
                 Object value = Array.get(valueRaw, 0);
                 mangoValue = pointLocator.getOpcDataType().convertToRead(value);
-            } else {
-                mangoValue = pointLocator.getOpcDataType().convertToRead(valueRaw);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            throw new PollingServiceException(e.getMessage(), e);
         }
         return new PointValueTime(mangoValue, time);
+    }
+
+    private boolean isNotInitialized() {
+        return client == null || !initialized;
     }
 }

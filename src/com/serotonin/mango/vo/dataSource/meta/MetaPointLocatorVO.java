@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
@@ -49,10 +51,16 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
 import static org.scada_lts.utils.ValidationUtils.isCyclicDependency;
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
+
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
 
 /**
  * @author Matthew Lohbihler
@@ -78,12 +86,14 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     private List<IntValuePair> context = new ArrayList<IntValuePair>();
     @JsonRemoteProperty
+    @ScriptProtect
     private String script;
     private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
-    private int updateEvent = UPDATE_EVENT_CONTEXT_UPDATE;
+    private int updateEvent = UPDATE_EVENT_CONTEXT_CHANGE;
     @JsonRemoteProperty
+    @XssProtect
     private String updateCronPattern;
     @JsonRemoteProperty
     private int executionDelaySeconds;
@@ -185,14 +195,17 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         if (StringUtils.isEmpty(script))
             response.addContextualMessage("script", "validate.required");
 
-
+        DataPointService dataPointService = new DataPointService();
+        List<DataPointVO> dataPoints = dataPointService.getDataPoints(null, false);
+        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
 
         List<String> varNameSpace = new ArrayList<>();
         for (IntValuePair point : context) {
             String varName = point.getValue();
             int pointId = point.getKey();
 
-            if(pointId != Common.NEW_ID && isCyclicDependency(pointId, dataPointId)) {
+            if(pointId != Common.NEW_ID && isCyclicDependency(pointId, dataPointId, dataPointsMap)) {
                 response.addContextualMessage("context", "validate.cyclicDependency", escapeHtml(varName));
                 break;
             }
@@ -240,6 +253,9 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
         if (executionDelayPeriodType == TimePeriodType.MILLISECONDS && executionDelaySeconds != 0 && executionDelaySeconds < 100)
             response.addContextualMessage("executionDelaySeconds", "validate.invalidValue");
+
+        if(!ScriptValidatorUtils.validate(script))
+            response.addContextualMessage("script", "validate.invalidValue");
     }
 
     @Override

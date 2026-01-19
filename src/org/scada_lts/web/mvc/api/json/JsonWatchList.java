@@ -4,6 +4,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,9 @@ import java.util.stream.Collectors;
 public class JsonWatchList {
 
     private int id;
+    @XssProtect
     private String xid;
+    @XssProtect
     private String name;
     private int userId;
     private List<ScadaObjectIdentifier> pointList;

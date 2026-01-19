@@ -43,6 +43,7 @@ import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.GetExtendedName;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -53,7 +54,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
 @JsonRemoteEntity
-public class View implements Serializable, JsonSerializable {
+public class View implements Serializable, JsonSerializable, GetExtendedName {
 	public static final String XID_PREFIX = "GV_";
 
 	private int id = Common.NEW_ID;
@@ -218,6 +219,7 @@ public class View implements Serializable, JsonSerializable {
 		this.xid = xid;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

@@ -1,5 +1,6 @@
 package org.scada_lts.ds.polling.service;
 
+import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.ds.polling.exception.PollingServiceException;
 
@@ -10,12 +11,20 @@ public interface PollingService extends AutoCloseable {
     void initialize() throws PollingServiceException;
     void ping() throws PollingServiceException;
     DataPointReadResponse read(List<DataPointVO> dataPoints, long time) throws PollingServiceException;
-    void write(DataPointVO dataPoint, Object value) throws PollingServiceException;
+    void write(DataPointVO dataPoint, PointValueTime value) throws PollingServiceException;
     void terminate() throws PollingServiceException;
 
     @Override
     default void close() throws PollingServiceException {
-        terminate();
+        try {
+            terminate();
+        } catch (Throwable throwable) {
+            if(throwable instanceof PollingServiceException) {
+                throw (PollingServiceException)throwable;
+            } else {
+                throw new PollingServiceException(throwable.getMessage(), throwable);
+            }
+        }
     }
 
     String getName();

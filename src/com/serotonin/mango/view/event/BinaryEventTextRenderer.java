@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.dataImage.types.BinaryValue;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * This class is called "binary" so that we can refer to values as 0 and 1, which is the actual representation in most
@@ -57,8 +58,10 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
     public static final String TYPE_NAME = "eventTextRendererBinary";
 
     @JsonRemoteProperty
+    @XssProtect
     private String zeroLabel;
     @JsonRemoteProperty
+    @XssProtect
     private String oneLabel;
 
     public BinaryEventTextRenderer() {

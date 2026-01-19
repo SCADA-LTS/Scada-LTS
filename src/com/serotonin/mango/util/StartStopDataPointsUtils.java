@@ -66,7 +66,7 @@ public final class StartStopDataPointsUtils {
     private static List<DataPointVO> getSequenceMetaDataPoints(Predicate<Integer> isExecute, List<DataPointVO> metaDataPoints) {
         List<DataPointVO> sequenceDataPoints = new CopyOnWriteArrayList<>();
         Set<Integer> toCheck = new CopyOnWriteArraySet<>();
-        int depth = 100;
+        int depth = 10;
         for(DataPointVO dataPoint: metaDataPoints) {
             collectMetaDataPointsFromContext(toCheck, sequenceDataPoints, dataPoint, depth, metaDataPoints, isExecute);
         }
@@ -98,13 +98,14 @@ public final class StartStopDataPointsUtils {
     private static void collectMetaDataPointsFromContext(Set<Integer> toCheck, List<DataPointVO> toRunning,
                                                          DataPointVO dataPoint, int depth, List<DataPointVO> dataPoints,
                                                          Predicate<Integer> isExecute) {
-
+        Map<Integer, DataPointVO> dataPointsMap = dataPoints.stream()
+                .collect(Collectors.toMap(DataPointVO::getId, Function.identity()));
         CollectMetaDataPointFromContextAction metaDataPointCollector =
-                new CollectMetaDataPointFromContextAction(toCheck, toRunning, dataPoint, depth, dataPoints, isExecute);
+                new CollectMetaDataPointFromContextAction(toCheck, toRunning, dataPoint, depth, dataPointsMap, isExecute);
         try {
             metaDataPointCollector.call();
         } catch (Exception e) {
-            LOG.error(LoggingUtils.exceptionInfo(e));
+            LOG.error(LoggingUtils.exceptionInfo(e), e);
         }
     }
 }

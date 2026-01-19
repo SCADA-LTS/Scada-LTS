@@ -1,13 +1,10 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.UserComment;
-import com.serotonin.web.i18n.LocalizableMessage;
-
-import java.util.List;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class JsonIdSelection {
+
+    @XssProtect
     private String ids;
 
     public JsonIdSelection() { }

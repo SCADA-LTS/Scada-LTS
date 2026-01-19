@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.modbus4j.ScadaExceptionResult;
 import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
@@ -56,6 +57,13 @@ public final class LoggingUtils {
         return MessageFormat.format(info, dataSource.getName(), String.valueOf(dataSource.getId()), dataSource.getXid(), dataSource.getType());
     }
 
+    public static String dataSourceInfo(DataPointVO dataPoint) {
+        if(dataPoint == null)
+            return "";
+        String info = "datasource: {0} (id: {1}, xid: {2}, type: {3})";
+        return MessageFormat.format(info, dataPoint.getDeviceName(), String.valueOf(dataPoint.getDataSourceId()), dataPoint.getDataSourceXid(), dataPoint.getDataSourceTypeId());
+    }
+
     public static String pointLinkInfo(PointLinkVO pointLink) {
         if(pointLink == null)
             return "";
@@ -77,6 +85,13 @@ public final class LoggingUtils {
             return "";
         String info = "exception: {0} (msg: {1})";
         return MessageFormat.format(info, ex.getClass().getSimpleName(), ex.getMessage());
+    }
+
+    public static String exceptionInfo(ScadaExceptionResult ex) {
+        if(ex == null)
+            return "";
+        String info = "exception: {0} (msg: {1})";
+        return MessageFormat.format(info, ex.getClass().getSimpleName(), ex.getExceptionMessage());
     }
 
     public static String scriptComponentInfo(ScriptComponent pointComponent) {

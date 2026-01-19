@@ -61,6 +61,9 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.utils.XidUtils;
 
+import static org.scada_lts.serorepl.utils.StringUtils.toDouble;
+import static org.scada_lts.serorepl.utils.StringUtils.toInt;
+
 @JsonRemoteEntity
 public class EventHandlerVO implements Serializable,
 		ChangeComparable<EventHandlerVO>, JsonSerializable {
@@ -405,7 +408,7 @@ public class EventHandlerVO implements Serializable,
 				if (activeAction == SET_ACTION_STATIC_VALUE
 						&& dataType == DataTypes.MULTISTATE) {
 					try {
-						Integer.parseInt(activeValueToSet);
+						Integer.parseInt(toInt(activeValueToSet));
 					} catch (NumberFormatException e) {
 						response
 								.addGenericMessage("eventHandlers.invalidActiveValue");
@@ -415,7 +418,7 @@ public class EventHandlerVO implements Serializable,
 				if (activeAction == SET_ACTION_STATIC_VALUE
 						&& dataType == DataTypes.NUMERIC) {
 					try {
-						Double.parseDouble(activeValueToSet);
+						Double.parseDouble(toDouble(activeValueToSet));
 					} catch (NumberFormatException e) {
 						response
 								.addGenericMessage("eventHandlers.invalidActiveValue");
@@ -439,7 +442,7 @@ public class EventHandlerVO implements Serializable,
 				if (inactiveAction == SET_ACTION_STATIC_VALUE
 						&& dataType == DataTypes.MULTISTATE) {
 					try {
-						Integer.parseInt(inactiveValueToSet);
+						Integer.parseInt(toInt(inactiveValueToSet));
 					} catch (NumberFormatException e) {
 						response
 								.addGenericMessage("eventHandlers.invalidInactiveValue");
@@ -449,7 +452,7 @@ public class EventHandlerVO implements Serializable,
 				if (inactiveAction == SET_ACTION_STATIC_VALUE
 						&& dataType == DataTypes.NUMERIC) {
 					try {
-						Double.parseDouble(inactiveValueToSet);
+						Double.parseDouble(toDouble(inactiveValueToSet));
 					} catch (NumberFormatException e) {
 						response
 								.addGenericMessage("eventHandlers.invalidInactiveValue");

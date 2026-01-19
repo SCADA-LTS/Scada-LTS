@@ -40,8 +40,7 @@ public enum EngineeringUnitsTypes implements EngineeringUnit {
     REVOLUTIONS_PER_MINUTE(104, "revolutions per minute", "rpm"),
     SQUARE_METERS_PER_NEWTON(185, "square meters perNewton", "m\u00B2/N"),
     WATTS_PER_METER_PER_DEGREE_KELVIN(189, "watts per meter per degree kelvin", "W/m\u00B7K"),
-    WATTS_PER_SQUARE_METER_DEGREE_KELVIN(141, "watts per square meter degree kelvin", "W/m\u00B2\u00B7K"),
-    KELVIN_MOJ(333, "moj kelvin", "moj W/m\u00B2\u00B7K");
+    WATTS_PER_SQUARE_METER_DEGREE_KELVIN(141, "watts per square meter degree kelvin", "W/m\u00B2\u00B7K");
 
     private final int value;
     private final String name;
@@ -510,8 +509,8 @@ public enum EngineeringUnitsTypes implements EngineeringUnit {
         CENTIMETERS(118, "centimeters", "cm"),
         METERS(31, "meters", "m"),
         INCHES(32, "inches", "in"),
-        FEET(33, "feet", "ft"),
-        KILOMETERS(190, "kilometers", "km");
+        FEET(33, "feet", "ft");
+        //KILOMETERS(190, "kilometers", "km");
 
         private final int value;
         private final String name;

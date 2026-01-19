@@ -34,8 +34,6 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -211,7 +209,6 @@ public class VMStatDataSourceRT extends EventDataSource implements Runnable {
                         String data = parts[position];
                         Double value = new Double(data);
                         dp.updatePointValue(new PointValueTime(value, time));
-                        resetUnreliableDataPoint(dp);
                     }
                     catch (NumberFormatException e) {
                         log.error("Weird. We couldn't parse the value " + parts[position]
