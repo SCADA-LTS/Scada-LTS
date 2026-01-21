@@ -384,6 +384,8 @@
         <intercept-url pattern="/api/datapoint" access="hasRole('ROLE_ADMIN')" method="PUT" />
         <intercept-url pattern="/api/datapoint/disabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
         <intercept-url pattern="/api/datapoint/enabled" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/datapoints" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
+        <intercept-url pattern="/api/datapoints/bean" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_PUBLIC')" method="GET" />
 
         <!-- DataSource GET -->
         <intercept-url pattern="/api/datasource" access="@guard.hasDataSourceReadPermission(request)" method="GET" />

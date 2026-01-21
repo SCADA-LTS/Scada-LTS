@@ -2,8 +2,6 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 public class SearchDataPointJson {
@@ -15,6 +13,7 @@ public class SearchDataPointJson {
     private Set<Integer> dataTypes;
     private int limit;
     private boolean startsWith;
+    private int page;
 
     public String getKeywordSearch() {
         return keywordSearch;
@@ -62,5 +61,13 @@ public class SearchDataPointJson {
 
     public void setStartsWith(boolean startsWith) {
         this.startsWith = startsWith;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 }

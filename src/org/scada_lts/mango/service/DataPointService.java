@@ -717,12 +717,12 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	@Override
-	public List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean startsWith, int offset, int limit) {
+	public List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean startsWith, int page, int limit) {
 		if (!StringUtils.isEmpty(keywordSearch)) {
 			Set<String> keywords = Set.of(keywordSearch);
-			return dataPointDAO.getDataPointByKeywords(keywords, excludeIds, startsWith, offset, limit);
+			return dataPointDAO.getDataPointByKeywords(keywords, excludeIds, startsWith, page * limit, limit);
 		} else {
-			return dataPointDAO.getDataPointByKeywords(Collections.emptySet(), excludeIds, startsWith, offset, limit);
+			return dataPointDAO.getDataPointByKeywords(Collections.emptySet(), excludeIds, startsWith, page * limit, limit);
 		}
 	}
 

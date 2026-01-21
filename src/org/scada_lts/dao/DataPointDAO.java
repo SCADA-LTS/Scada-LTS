@@ -199,7 +199,7 @@ public class DataPointDAO {
 			+ "(" + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID + ") AND "
 			+ DATA_POINT_NEXT;
 
-	public static final String DATA_POINT_ORDER_BY = " ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC";
+	public static final String DATA_POINT_ORDER_BY = " ORDER BY ds." + COLUMN_NAME_DS_NAME + " ASC, dp." + COLUMN_NAME_DATAPOINT_NAME + " ASC, dp." + COLUMN_NAME_ID + " DESC";
 
 
 
@@ -605,9 +605,9 @@ public class DataPointDAO {
 		}
 		templateSelectWhereSearch.append(DATA_POINT_ORDER_BY);
 
-		if(limit > 0) {
+		if(limit > -1) {
 			templateSelectWhereSearch.append(" LIMIT ").append(limit);
-			if (offset > 0)
+			if (offset > -1)
 				templateSelectWhereSearch.append(" OFFSET ").append(offset);
 		}
 		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch.toString(), new DataPointRowMapper(), args.toArray());

@@ -1912,6 +1912,7 @@ class DataPointsSelect {
         this.limit = dataPointsSelectDef.limit || 500;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
+        this.listHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
         this.pointsArray = dataPointsSelectDef.pointsArray || [];
         this.dataTypes = dataPointsSelectDef.dataTypes || [];
@@ -1920,6 +1921,9 @@ class DataPointsSelect {
         this.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
         this.widthPx = dataPointsSelectDef.widthPx || "400px";
         this.imgAddHtmlIds = dataPointsSelectDef.imgAddHtmlIds || ["icon_comp_add", "icon_add"];
+        this.nextPage = dataPointsSelectDef.nextPage || 1;
+        this.keywordSearchLast = dataPointsSelectDef.keywordSearch || '';
+        this.startAsEmpty = dataPointsSelectDef.startAsEmpty || false;
         this.#init();
     }
 
@@ -1976,6 +1980,7 @@ class DataPointsSelect {
     }
 
     setPointsArray(pointsArray) {
+        this.nextPage = 1;
         this.pointsArray = [...new Set(pointsArray)];
         this.updatePointsList(this.excludePointsArray);
     }
@@ -1985,7 +1990,10 @@ class DataPointsSelect {
     }
 
     loadPointsList() {
-         this.#loadPoints("", 0, this.lastPoint);
+        let select = this;
+        this.#loadPoints("", 0, this.lastPoint, 0, function(points) {
+            select.setPointsArray(points);
+        });
     }
 
     setPointId(pointId) {
@@ -2039,6 +2047,7 @@ class DataPointsSelect {
             }
         }
         jQuery("#" + this.inputHtmlId).off('input');
+        jQuery("#" + this.listHtmlId).off('scrollend');
 
         jQuery("#" + this.selectHtmlId).chosen({
            allow_single_deselect: true,
@@ -2055,15 +2064,47 @@ class DataPointsSelect {
             this.setPointId(this.#getId(this.pointsArray[0]));
         }
 
-        this.#loadPoints("", 0, this.lastPoint);
+        if(!this.startAsEmpty) {
+            this.loadPointsList();
+        }
 
         let select = this;
+
         jQuery("#" + this.inputHtmlId).on("input", function(evt) {
-            select.#loadPoints(evt.target.value, 700, select.lastPoint);
+            if(!evt.originalEvent.isTrusted) {
+                return;
+            }
+            select.#loadPoints(evt.target.value, 700, select.lastPoint, 0, function(points) {
+                select.setPointsArray(points);
+            });
+        });
+
+        jQuery("#" + this.listHtmlId).on('scrollend', function(evt) {
+            if(!evt.originalEvent.isTrusted) {
+                return;
+            }
+            let element = jQuery(evt.currentTarget);
+            if (element[0].scrollHeight - element.scrollTop() <= element.outerHeight()) {
+                select.#loadPoints(select.keywordSearchLast, 0, undefined, select.nextPage, function(points) {
+                    select.#addPointsArray(points);
+                });
+            }
+        });
+
+        jQuery("#" + this.listHtmlId).on('mousemove', function(evt) {
+            if(!evt.originalEvent.isTrusted) {
+                return;
+            }
+            if(evt.currentTarget.childElementCount < 10) {
+                select.#loadPoints(select.keywordSearchLast, 0, undefined, select.nextPage, function(points) {
+                    select.#addPointsArray(points);
+                });
+            }
         });
     }
 
-    #loadPoints(keywordSearch, timeout, point) {
+    #loadPoints(keywordSearch, timeout, point, page, doExecute) {
+        this.keywordSearchLast = keywordSearch;
         let select = this;
         select.#setSearchTimer(setTimeout(() => {
             let excludeIds = [];
@@ -2078,14 +2119,21 @@ class DataPointsSelect {
                 type: "GET",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes,
+                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes + "&page=" + page,
                 success: function(points) {
                     let id = point ? select.#getId(point) : -1;
-                    if(id != -1 && point && select.invisibleEmptyOption) {
-                        points = points.filter(p => select.#getId(p) != id);
-                        points.unshift(point);
+                    if(id != -1 && point) {
+                        if(select.invisibleEmptyOption) {
+                            points = points.filter(p => select.#getId(p) != id);
+                            points.unshift(point);
+                        } else {
+                            let find = points.find(p => select.#getId(p) == id);
+                            if(!find) {
+                                points.unshift(point);
+                            }
+                        }
                     }
-                    select.setPointsArray(points);
+                    doExecute(points);
                     if(id != -1) {
                         select.setPointId(id);
                     }
@@ -2141,6 +2189,16 @@ class DataPointsSelect {
     #setSearchTimer(searchTimer) {
         clearTimeout(this.searchTimer);
         this.searchTimer = searchTimer;
+    }
+
+    #addPointsArray(pointsArray) {
+        if(pointsArray && pointsArray.length > 0) {
+            this.nextPage = this.nextPage + 1;
+            let pointId = this.#getId(this.pointsArray[this.pointsArray.length - 1]);
+            this.pointsArray = [...new Set(this.pointsArray.concat(pointsArray))];
+            this.updatePointsList(this.excludePointsArray);
+            this.setPointId(pointId);
+        }
     }
 }
 
