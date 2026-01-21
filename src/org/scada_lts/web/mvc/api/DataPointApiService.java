@@ -340,12 +340,6 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                 .collect(Collectors.toList());
     }
 
-    private List<DataPointVO> filteringPoints(SearchDataPointJson searchDataPointJson, List<DataPointVO> points) {
-        return points.stream().sorted(DataPointExtendedNameComparator.instance)
-                .filter(filteringPoints(searchDataPointJson))
-                .collect(Collectors.toList());
-    }
-
     private Predicate<DataPointVO> filteringPoints(SearchDataPointJson searchDataPointJson) {
         return filterByDataTypes(searchDataPointJson)
                 .and(filterByExcludeIds(searchDataPointJson))

@@ -26,7 +26,6 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
 import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 
 import java.util.*;

@@ -22,7 +22,6 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Comparator;
 import java.util.List;
