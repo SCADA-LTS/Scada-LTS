@@ -97,8 +97,6 @@ public interface MangoDataPoint {
 
 	List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator);
 
-	List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData, Set<Integer> excludeIds, int offset, int limit);
-
 	List<DataPointVO> getDataPoints(Set<Integer> ids);
 
 	List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean start, int offset, int limit);
@@ -108,8 +106,6 @@ public interface MangoDataPoint {
 	int getDataPointIdWithAccessPrev(User user, String dataPointName);
 
 	int getDataPointIdWithAccessNext(User user, String dataPointName);
-
-	List<ScadaObjectIdentifier> getDataPointIdentifiersWithAccess(User user);
 
 	List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user);
 }

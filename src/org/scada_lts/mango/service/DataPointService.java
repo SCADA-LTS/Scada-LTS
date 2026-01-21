@@ -201,11 +201,6 @@ public class DataPointService implements MangoDataPoint {
 		return getDataPointsWithAccess.getObjectsWithAccess(user);
 	}
 
-	@Override
-	public List<ScadaObjectIdentifier> getDataPointIdentifiersWithAccess(User user) {
-		return getDataPointsWithAccess.getObjectIdentifiersWithAccess(user);
-	}
-
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
 
 		List<DataPointVO> listAllPoints = new LinkedList<>();
@@ -724,18 +719,6 @@ public class DataPointService implements MangoDataPoint {
 		} else {
 			return dataPointDAO.getDataPointByKeywords(Collections.emptySet(), excludeIds, startsWith, page * limit, limit);
 		}
-	}
-
-	@Override
-	public List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData, Set<Integer> excludeIds, int offset, int limit) {
-		List<DataPointVO> dpList = dataPointDAO.getDataPointsWithLimit(excludeIds, offset, limit);
-		if (includeRelationalData) {
-			setRelationalData(dpList);
-		}
-		if (comparator != null) {
-			Collections.sort(dpList, comparator);
-		}
-		return dpList;
 	}
 
 	@Override
