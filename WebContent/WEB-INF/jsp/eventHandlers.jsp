@@ -456,7 +456,7 @@
     function resetActiveStatic() {
         if(selectedHandlerNode) {
             if(selectedHandlerNode.object) {
-                selectedHandlerNode.object.activeValueToSet = "";selectedHandlerNode.object.inactiveValueToSet = "";
+                selectedHandlerNode.object.activeValueToSet = "";
             }
         }
     }
