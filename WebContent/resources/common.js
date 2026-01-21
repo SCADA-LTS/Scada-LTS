@@ -2071,7 +2071,7 @@ class DataPointsSelect {
         let select = this;
 
         jQuery("#" + this.inputHtmlId).on("input", function(evt) {
-            if(!evt.originalEvent.isTrusted) {
+            if(evt.originalEvent && !evt.originalEvent.isTrusted) {
                 return;
             }
             select.#loadPoints(evt.target.value, 700, select.lastPoint, 0, function(points) {
@@ -2080,7 +2080,7 @@ class DataPointsSelect {
         });
 
         jQuery("#" + this.listHtmlId).on('scrollend', function(evt) {
-            if(!evt.originalEvent.isTrusted) {
+            if(evt.originalEvent && !evt.originalEvent.isTrusted) {
                 return;
             }
             let element = jQuery(evt.currentTarget);
@@ -2092,7 +2092,7 @@ class DataPointsSelect {
         });
 
         jQuery("#" + this.listHtmlId).on('mousemove', function(evt) {
-            if(!evt.originalEvent.isTrusted) {
+            if(evt.originalEvent && !evt.originalEvent.isTrusted) {
                 return;
             }
             if(evt.currentTarget.childElementCount < 10) {
