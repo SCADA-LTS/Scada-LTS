@@ -319,7 +319,10 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     return filteringAnaPaginationPoints(searchDataPointJson, points);
                 }
 
-                return filteringAnaPaginationPoints(searchDataPointJson, reponse);
+                return reponse.stream()
+                        .sorted(DataPointExtendedNameComparator.instance)
+                        .limit(searchDataPointJson.getLimit())
+                        .collect(Collectors.toList());
             } else {
                 List<DataPointVO> points = dataPointService.getDataPointsWithAccess(user);
                 return filteringAnaPaginationPoints(searchDataPointJson, points);

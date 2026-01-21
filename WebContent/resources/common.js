@@ -2096,7 +2096,7 @@ class DataPointsSelect {
                 return;
             }
             if(evt.currentTarget.childElementCount < 10) {
-                select.#loadPoints(select.keywordSearchLast, 0, undefined, select.nextPage, function(points) {
+                select.#loadPoints(select.keywordSearchLast, 200, undefined, select.nextPage, function(points) {
                     select.#addPointsArray(points);
                 });
             }
