@@ -285,7 +285,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         List<DataPointVO> response = searchDataPoint(request, searchDataPointJson, user);
         if(includeIds != null && !includeIds.isEmpty()) {
             if(response.isEmpty()) {
-                return filteringAnaPaginationPoints(searchDataPointJson, getDataPoints(request, includeIds, user));
+                return filteringAndPaginationPoints(searchDataPointJson, getDataPoints(request, includeIds, user));
             } else {
                 return response;
             }
@@ -316,7 +316,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     points = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
                             searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                             -1, -1);
-                    return filteringAnaPaginationPoints(searchDataPointJson, points);
+                    return filteringAndPaginationPoints(searchDataPointJson, points);
                 }
 
                 return reponse.stream()
@@ -325,14 +325,14 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                         .collect(Collectors.toList());
             } else {
                 List<DataPointVO> points = dataPointService.getDataPointsWithAccess(user);
-                return filteringAnaPaginationPoints(searchDataPointJson, points);
+                return filteringAndPaginationPoints(searchDataPointJson, points);
             }
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
     }
 
-    private List<DataPointVO> filteringAnaPaginationPoints(SearchDataPointJson searchDataPointJson, List<DataPointVO> points) {
+    private List<DataPointVO> filteringAndPaginationPoints(SearchDataPointJson searchDataPointJson, List<DataPointVO> points) {
         return points.stream().sorted(DataPointExtendedNameComparator.instance)
                 .filter(filteringPoints(searchDataPointJson))
                 .skip((long) searchDataPointJson.getPage() * searchDataPointJson.getLimit())
