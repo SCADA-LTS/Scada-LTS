@@ -411,7 +411,11 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     }
 
     private static Predicate<DataPointVO> filterByKeywords(SearchDataPointJson searchDataPointJson) {
-        return dataPoint -> StringUtils.isEmpty(searchDataPointJson.getKeywordSearch()) || (dataPoint.getName() != null && (searchDataPointJson.isStartsWith() ? dataPoint.getName().startsWith(searchDataPointJson.getKeywordSearch()) : dataPoint.getName().contains(searchDataPointJson.getKeywordSearch())));
+        return dataPoint -> StringUtils.isEmpty(searchDataPointJson.getKeywordSearch())
+                || (dataPoint.getExtendedName() != null && (searchDataPointJson.isStartsWith()
+                ? toLowerCase(dataPoint.getExtendedName()).startsWith(toLowerCase(searchDataPointJson.getKeywordSearch()))
+                : toLowerCase(dataPoint.getExtendedName()).contains(toLowerCase(searchDataPointJson.getKeywordSearch())))
+        );
     }
 
     private static Predicate<DataPointVO> filterByIncludeIds(SearchDataPointJson searchDataPointJson) {
@@ -427,5 +431,12 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     private static Predicate<DataPointVO> filterByDataTypes(SearchDataPointJson searchDataPointJson) {
         Set<Integer> dataTypes = searchDataPointJson.getDataTypes();
         return dataPoint -> dataTypes == null || dataTypes.isEmpty() || (dataPoint.getPointLocator() == null || dataTypes.contains(dataPoint.getPointLocator().getDataTypeId()));
+    }
+
+    private static String toLowerCase(String word) {
+        if(StringUtils.isEmpty(word)) {
+            return "";
+        }
+        return word.toLowerCase();
     }
 }
