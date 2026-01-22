@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.serotonin.mango.view.ShareUser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -581,16 +582,19 @@ public class DataPointDAO {
 		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
 		List<String> args = new ArrayList<>();
 		for (String keyword : keywords) {
-			templateSelectWhereSearch.append(" AND CONCAT(CONCAT(ds.")
+			if(StringUtils.isEmpty(keyword)) {
+				continue;
+			}
+			templateSelectWhereSearch.append(" AND LOWER(CONCAT(CONCAT(ds.")
 					.append(COLUMN_NAME_DS_NAME)
 					.append(", ' - '), dp.")
 					.append(COLUMN_NAME_DATAPOINT_NAME)
-					.append(")")
+					.append("))")
 					.append(" LIKE ? ");
 			if(startsWith) {
-				args.add(keyword + "%");
+				args.add(keyword.toLowerCase() + "%");
 			} else {
-				args.add("%" + keyword + "%");
+				args.add("%" + keyword.toLowerCase() + "%");
 			}
 		}
 
