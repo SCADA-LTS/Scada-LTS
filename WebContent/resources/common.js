@@ -1909,7 +1909,7 @@ class DataPointsSelect {
     constructor (dataPointsSelectDef) {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
-        this.limit = dataPointsSelectDef.limit || 200;
+        this.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 200;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.listHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
@@ -2086,17 +2086,6 @@ class DataPointsSelect {
             let element = jQuery(evt.currentTarget);
             if (element[0].scrollHeight - element.scrollTop() <= element.outerHeight()) {
                 select.#loadPoints(select.keywordSearchLast, 0, undefined, select.nextPage, function(points) {
-                    select.#addPointsArray(points);
-                });
-            }
-        });
-
-        jQuery("#" + this.listHtmlId).on('mousemove', function(evt) {
-            if(!evt.originalEvent || !evt.originalEvent.isTrusted) {
-                return;
-            }
-            if(evt.currentTarget.childElementCount < 10) {
-                select.#loadPoints(select.keywordSearchLast, 200, undefined, select.nextPage, function(points) {
                     select.#addPointsArray(points);
                 });
             }
