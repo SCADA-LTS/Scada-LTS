@@ -170,7 +170,6 @@
         }
 
         targetPointSelect.setPointId(undefined);
-        targetPointSelect.setDataTypes([sourcePoint.dataType]);
         targetPointSelect.updatePointsList([sourcePoint]);
         targetPointSelect.loadPointsList();
     }
