@@ -209,15 +209,14 @@
             var childs = document.getElementById("editImg" + currentPoint.id).parentNode.parentNode.childNodes;
             if (currentPoint.id!=-1) markRow(childs, false);
         }
-        DataSourceEditDwr.getPointResponse(pointId, editPointCB);
+        DataSourceEditDwr.getPointResponse(pointId, function(response){editPointCB(response.data.point, response.data.contextPoints)});
         hideContextualMessages("pointProperties");
     }
 
-    function editPointCB(response) {
-        currentPoint = response.data.point;
+    function editPointCB(point, contextPoints) {
+        currentPoint = point;
         display("pointDeleteImg", currentPoint.id != <c:out value="<%=Common.NEW_ID%>"/>);
         let locator = currentPoint.pointLocator;
-        let contextPoints = response.data.contextPoints;
 
         $set("name", unescapeHtml(currentPoint.name));
         $set("xid", unescapeHtml(currentPoint.xid));
