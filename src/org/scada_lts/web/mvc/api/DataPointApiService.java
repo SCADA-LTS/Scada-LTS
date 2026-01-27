@@ -285,9 +285,11 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         List<DataPointVO> response = searchDataPoint(request, searchDataPointJson, user);
         if(includeIds != null && !includeIds.isEmpty()) {
             if(response.isEmpty()) {
-                return filteringAndPaginationPoints(searchDataPointJson, getDataPoints(request, includeIds, user));
+                return filteringAndPaginationPoints(user, searchDataPointJson, getDataPoints(request, includeIds, user));
             } else {
-                return response;
+                return response.stream()
+                        .filter(filterByIncludeIds(searchDataPointJson))
+                        .collect(Collectors.toList());
             }
         }
         return response;
@@ -306,7 +308,9 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     points = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
                                     searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                                     page++, searchDataPointJson.getLimit())
-                            .stream().filter(filterByDataTypes(searchDataPointJson))
+                            .stream()
+                            .filter(filterByDataTypes(searchDataPointJson))
+                            .filter(filterBySettable(searchDataPointJson))
                             .collect(Collectors.toList());
                     reponse.addAll(points);
                     safe--;
@@ -316,7 +320,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     points = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
                             searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                             -1, -1);
-                    return filteringAndPaginationPoints(searchDataPointJson, points);
+                    return filteringAndPaginationPoints(user, searchDataPointJson, points);
                 }
 
                 return reponse.stream()
@@ -325,26 +329,28 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                         .collect(Collectors.toList());
             } else {
                 List<DataPointVO> points = dataPointService.getDataPointsWithAccess(user);
-                return filteringAndPaginationPoints(searchDataPointJson, points);
+                return filteringAndPaginationPoints(user, searchDataPointJson, points);
             }
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
     }
 
-    private List<DataPointVO> filteringAndPaginationPoints(SearchDataPointJson searchDataPointJson, List<DataPointVO> points) {
+    private List<DataPointVO> filteringAndPaginationPoints(User user, SearchDataPointJson searchDataPointJson, List<DataPointVO> points) {
         return points.stream().sorted(DataPointExtendedNameComparator.instance)
-                .filter(filteringPoints(searchDataPointJson))
+                .filter(filteringPoints(searchDataPointJson, user))
                 .skip((long) searchDataPointJson.getPage() * searchDataPointJson.getLimit())
                 .limit(searchDataPointJson.getLimit())
                 .collect(Collectors.toList());
     }
 
-    private Predicate<DataPointVO> filteringPoints(SearchDataPointJson searchDataPointJson) {
+    private Predicate<DataPointVO> filteringPoints(SearchDataPointJson searchDataPointJson, User user) {
         return filterByDataTypes(searchDataPointJson)
                 .and(filterByExcludeIds(searchDataPointJson))
                 .and(filterByKeywords(searchDataPointJson))
-                .and(filterByIncludeIds(searchDataPointJson));
+                .and(filterByIncludeIds(searchDataPointJson))
+                .and(filterBySettable(searchDataPointJson))
+                .and(filterBySetPermission(searchDataPointJson, user));
     }
 
     private List<DataPointVO> getDataPoints(HttpServletRequest request, Set<Integer> includeIds, User user) {
@@ -431,6 +437,16 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     private static Predicate<DataPointVO> filterByDataTypes(SearchDataPointJson searchDataPointJson) {
         Set<Integer> dataTypes = searchDataPointJson.getDataTypes();
         return dataPoint -> dataTypes == null || dataTypes.isEmpty() || (dataPoint.getPointLocator() == null || dataTypes.contains(dataPoint.getPointLocator().getDataTypeId()));
+    }
+
+    private static Predicate<DataPointVO> filterBySettable(SearchDataPointJson searchDataPointJson) {
+        Boolean settable = searchDataPointJson.getSettable();
+        return dataPoint -> settable == null || (dataPoint.getPointLocator() != null && settable.equals(dataPoint.getPointLocator().isSettable()));
+    }
+
+    private static Predicate<DataPointVO> filterBySetPermission(SearchDataPointJson searchDataPointJson, User user) {
+        boolean setPermissionRequired = searchDataPointJson.isSetPermissionRequired();
+        return dataPoint -> !setPermissionRequired || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
     }
 
     private static String toLowerCase(String word) {

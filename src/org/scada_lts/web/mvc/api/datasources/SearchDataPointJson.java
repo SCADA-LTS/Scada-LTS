@@ -14,6 +14,8 @@ public class SearchDataPointJson {
     private int limit;
     private boolean startsWith;
     private int page;
+    private boolean setPermissionRequired;
+    private Boolean settable;
 
     public String getKeywordSearch() {
         return keywordSearch;
@@ -69,5 +71,21 @@ public class SearchDataPointJson {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public boolean isSetPermissionRequired() {
+        return setPermissionRequired;
+    }
+
+    public void setSetPermissionRequired(boolean setPermissionRequired) {
+        this.setPermissionRequired = setPermissionRequired;
+    }
+
+    public Boolean getSettable() {
+        return settable;
+    }
+
+    public void setSettable(Boolean settable) {
+        this.settable = settable;
     }
 }

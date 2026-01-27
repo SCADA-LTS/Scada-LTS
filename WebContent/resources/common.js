@@ -1924,6 +1924,8 @@ class DataPointsSelect {
         this.nextPage = dataPointsSelectDef.nextPage || 1;
         this.keywordSearchLast = dataPointsSelectDef.keywordSearch || '';
         this.startAsEmpty = dataPointsSelectDef.startAsEmpty || false;
+        this.setPermissionRequired = dataPointsSelectDef.setPermissionRequired || false;
+        this.pointSettable = dataPointsSelectDef.pointSettable;
         this.#init();
     }
 
@@ -2108,7 +2110,10 @@ class DataPointsSelect {
                 type: "GET",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch) + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes + "&page=" + page,
+                url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch)
+                + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes + "&page=" + page
+                + "&settable=" + (select.pointSettable ? select.pointSettable : "")
+                + "&setPermissionRequired=" + select.setPermissionRequired,
                 success: function(points) {
                     let id = point ? select.#getId(point) : -1;
                     if(id != -1 && point) {

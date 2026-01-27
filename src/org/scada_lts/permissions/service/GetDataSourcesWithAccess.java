@@ -20,11 +20,9 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
     private static final Log LOG = LogFactory.getLog(GetDataSourcesWithAccess.class);
 
     private final DataSourceDAO dataSourceDAO;
-    private final DataPointDAO dataPointDAO;
 
-    public GetDataSourcesWithAccess(DataSourceDAO dataSourceDAO, DataPointDAO dataPointDAO) {
+    public GetDataSourcesWithAccess(DataSourceDAO dataSourceDAO) {
         this.dataSourceDAO = dataSourceDAO;
-        this.dataPointDAO = dataPointDAO;
     }
 
     @Override
@@ -51,7 +49,7 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
 
     @Override
     public boolean hasReadPermission(User user, DataSourceVO<?> object) {
-        return GetDataSourcesWithAccess.hasDataSourceReadPermission(user, object, dataPointDAO);
+        return GetDataSourcesWithAccess.hasDataSourceReadPermission(user, object);
     }
 
     @Override
@@ -64,6 +62,19 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
         return user.isAdmin();
     }
 
+    public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataSource == null) {
+            LOG.warn("dataSource is null");
+            return false;
+        }
+        return Permissions.hasDataSourcePermission(user, dataSource.getId());
+    }
+
+    @Deprecated(since = "2.8.1")
     public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource, DataPointDAO dataPointDAO) {
         if(user == null) {
             LOG.warn("user is null");

@@ -71,7 +71,9 @@ public final class GetDataPointsUtils {
         Set<DataPointBean> dataPoints = new HashSet<>();
         for (PointLinkVO pointLinkVO : pointLinks) {
             DataPointVO targetDataPoint = dataPointService.getDataPoint(pointLinkVO.getTargetPointId());
-            if(targetDataPoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, targetDataPoint))
+            if(targetDataPoint != null && targetDataPoint.getPointLocator() != null
+                    && targetDataPoint.getPointLocator().isSettable()
+                    && GetDataPointsWithAccess.hasDataPointSetPermission(user, targetDataPoint))
                 dataPoints.add(new DataPointBean(targetDataPoint));
         }
         return dataPoints;
@@ -124,20 +126,20 @@ public final class GetDataPointsUtils {
         return ids;
     }
 
-    private static Set<DataPointVO> getDataPointsByEventHandlers(List<EventHandlerVO> eventHandlers, DataPointService dataPointService) {
+    private static Set<DataPointVO> getDataPointsByEventHandlers(List<EventHandlerVO> eventHandlers, DataPointService dataPointService, User user) {
         Set<DataPointVO> dataPoints = new HashSet<>();
         for (EventHandlerVO eventHandler : eventHandlers) {
             if(eventHandler.createRuntime() instanceof SetPointHandlerRT) {
                 DataPointVO targetPoint = dataPointService.getDataPoint(eventHandler.getTargetPointId());
                 DataPointVO activePoint = dataPointService.getDataPoint(eventHandler.getActivePointId());
                 DataPointVO inactivePoint = dataPointService.getDataPoint(eventHandler.getInactivePointId());
-                if (targetPoint != null) {
+                if (targetPoint != null && GetDataPointsWithAccess.hasDataPointSetPermission(user, targetPoint)) {
                     dataPoints.add(targetPoint);
                 }
-                if (activePoint != null) {
+                if (activePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, activePoint)) {
                     dataPoints.add(activePoint);
                 }
-                if (inactivePoint != null) {
+                if (inactivePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, inactivePoint)) {
                     dataPoints.add(inactivePoint);
                 }
             }
@@ -214,8 +216,7 @@ public final class GetDataPointsUtils {
         if(eventHandlers.isEmpty()) {
             return Collections.emptyList();
         }
-        return getDataPointsByEventHandlers(eventHandlers, dataPointService).stream()
-                .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
+        return getDataPointsByEventHandlers(eventHandlers, dataPointService, user).stream()
                 .map(converter)
                 .collect(Collectors.toList());
     }

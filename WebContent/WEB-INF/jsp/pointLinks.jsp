@@ -58,15 +58,15 @@
             sourcePointSelect = new DataPointsSelect({
                 selectHtmlId: "sourcePointId",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
-                excludePointsArray: response.data.targetPoints,
                 pointsArray: response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId)
             });
 
             targetPointSelect = new DataPointsSelect({
                 selectHtmlId: "targetPointId",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
-                excludePointsArray: response.data.sourcePoints,
-                pointsArray: response.data.targetPoints.filter((point) => point.id == pl.targetPointId)
+                pointsArray: response.data.targetPoints.filter((point) => point.id == pl.targetPointId),
+                pointSettable: true,
+                setPermissionRequired: true
             });
 
             setUserMessage();
