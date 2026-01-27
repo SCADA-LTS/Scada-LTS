@@ -2,6 +2,8 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import java.util.Set;
 
 public class SearchDataPointJson {
@@ -11,8 +13,10 @@ public class SearchDataPointJson {
     private Set<Integer> includeIds;
     private Set<Integer> excludeIds;
     private Set<Integer> dataTypes;
+    @Min(10)
     private int limit;
     private boolean startsWith;
+    @Positive
     private int page;
     private boolean setPermissionRequired;
     private Boolean settable;

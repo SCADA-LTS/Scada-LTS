@@ -547,7 +547,7 @@ public class DataPointDAO {
 	}
 
 	public List<DataPointVO> getDataPointsWithLimit(Set<Integer> excludeIds, int offset, int limit) {
-		StringBuilder templateSelectWhereId = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
+		StringBuilder templateSelectWhereId = new StringBuilder(DATA_POINT_SELECT + " WHERE 1=1 ");
 		List<String> args = new ArrayList<>();
 		if(excludeIds != null && !excludeIds.isEmpty()) {
 			templateSelectWhereId.append(" AND").append(" dp.")
@@ -579,7 +579,7 @@ public class DataPointDAO {
 	}
 
 	public List<DataPointVO> getDataPointByKeywords(Set<String> keywords, Set<Integer> excludeIds, boolean startsWith, int offset, int limit) {
-		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE true ");
+		StringBuilder templateSelectWhereSearch = new StringBuilder(DATA_POINT_SELECT + " WHERE 1=1 ");
 		List<String> args = new ArrayList<>();
 		for (String keyword : keywords) {
 			if(StringUtils.isEmpty(keyword)) {
