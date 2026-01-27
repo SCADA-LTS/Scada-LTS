@@ -1909,7 +1909,7 @@ class DataPointsSelect {
     constructor (dataPointsSelectDef) {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
-        this.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 200;
+        this.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 500;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
         this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.listHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
