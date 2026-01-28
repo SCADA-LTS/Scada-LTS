@@ -18,7 +18,7 @@ public class SearchDataPointJson {
     private boolean startsWith;
     @PositiveOrZero
     private int page;
-    private Boolean settable;
+    private Boolean pointSettable;
 
     public String getKeywordSearch() {
         return keywordSearch;
@@ -76,11 +76,11 @@ public class SearchDataPointJson {
         this.page = page;
     }
 
-    public Boolean getSettable() {
-        return settable;
+    public Boolean getPointSettable() {
+        return pointSettable;
     }
 
-    public void setSettable(Boolean settable) {
-        this.settable = settable;
+    public void setPointSettable(Boolean pointSettable) {
+        this.pointSettable = pointSettable;
     }
 }

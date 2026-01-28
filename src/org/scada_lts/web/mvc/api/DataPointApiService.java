@@ -310,7 +310,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                                     page++, searchDataPointJson.getLimit())
                             .stream()
                             .filter(filterByDataTypes(searchDataPointJson))
-                            .filter(filterBySettable(searchDataPointJson))
+                            .filter(filterByPointSettable(searchDataPointJson))
                             .collect(Collectors.toList());
                     reponse.addAll(points);
                     safe--;
@@ -349,7 +349,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                 .and(filterByExcludeIds(searchDataPointJson))
                 .and(filterByKeywords(searchDataPointJson))
                 .and(filterByIncludeIds(searchDataPointJson))
-                .and(filterBySettable(searchDataPointJson))
+                .and(filterByPointSettable(searchDataPointJson))
                 .and(filterByPermissionSet(searchDataPointJson, user));
     }
 
@@ -439,13 +439,13 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return dataPoint -> dataTypes == null || dataTypes.isEmpty() || (dataPoint.getPointLocator() == null || dataTypes.contains(dataPoint.getPointLocator().getDataTypeId()));
     }
 
-    private static Predicate<DataPointVO> filterBySettable(SearchDataPointJson searchDataPointJson) {
-        Boolean settable = searchDataPointJson.getSettable();
+    private static Predicate<DataPointVO> filterByPointSettable(SearchDataPointJson searchDataPointJson) {
+        Boolean settable = searchDataPointJson.getPointSettable();
         return dataPoint -> settable == null || (dataPoint.getPointLocator() != null && settable.equals(dataPoint.getPointLocator().isSettable()));
     }
 
     private static Predicate<DataPointVO> filterByPermissionSet(SearchDataPointJson searchDataPointJson, User user) {
-        return dataPoint -> searchDataPointJson.getSettable() == null || searchDataPointJson.getSettable() == Boolean.FALSE || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
+        return dataPoint -> searchDataPointJson.getPointSettable() == null || Boolean.FALSE.equals(searchDataPointJson.getPointSettable()) || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
     }
 
     private static String toLowerCase(String word) {

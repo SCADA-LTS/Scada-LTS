@@ -2111,7 +2111,7 @@ class DataPointsSelect {
                 dataType: "json",
                 url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch)
                 + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes + "&page=" + page
-                + "&settable=" + select.pointSettable,
+                + "&pointSettable=" + select.pointSettable,
                 success: function(points) {
                     let id = point ? select.#getId(point) : -1;
                     if(id != -1 && point) {
