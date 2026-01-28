@@ -2135,8 +2135,8 @@ class DataPointsSelect {
                         jQuery("#" + select.inputHtmlId).val(keywordSearch);
                     }
                 },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("chosen-search-input error:", [XMLHttpRequest, textStatus, errorThrown]);
+                error: function(request, textStatus, errorThrown) {
+                    console.log("chosen-search-input error:", [request, textStatus, errorThrown]);
                 }
             });
         }, timeout));
