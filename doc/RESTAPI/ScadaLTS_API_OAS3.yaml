@@ -14,30 +14,41 @@ info:
   license:
     name: 'GPL-2.0'
 paths:
-  /auth:
+  /auth/{username}/{password}:
     post:
       tags:
         - AuthenticationAPI
       summary: 'Authenticate to the Scada-LTS'
       description: 'Login user to the ScadaLTS'
       operationId: 'loginUser'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthenticationRequest'
+      parameters:
+        - name: username
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'password'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       responses:
         '200':
           description: 'Logged successful'
           headers: {}
-  /auth/logout:
+  /auth/logout/{username}:
     post:
       tags:
         - AuthenticationAPI
       summary: 'Logout from Scada-LTS'
       description: 'Logout user from Scada-LTS'
       operationId: 'logoutUser'
+      parameters:
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       responses:
         '200':
           description: 'Logged out succesful'
@@ -769,30 +780,6 @@ paths:
       tags:
         - PointValueAPI
       deprecated: true
-      parameters:
-        - name: 'xid'
-          in: 'path'
-          required: true
-          schema:
-            type: string
-        - name: 'type'
-          description: 'Type 0 -> unknown, 1 -> binary, 2 -> Multistate, 3 -> Double, 4 -> String'
-          in: 'path'
-          required: true
-          schema:
-            type: string
-        - name: 'value'
-          description: 'For binary data acceptable only 0 or 1 value'
-          in: 'path'
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-    put:
-      tags:
-        - PointValueAPI
       parameters:
         - name: 'xid'
           in: 'path'
@@ -1803,7 +1790,7 @@ paths:
       responses:
         '200':
           description: ''
-  /view_hierarchy/getFirsViewId:
+  /view_hierarchy/getFirstViewId:
     get:
       tags:
         - ViewHierarchyAPI
@@ -2511,18 +2498,43 @@ paths:
         '200':
           description: ''
 
+  /v2/auth:
+    post:
+      tags:
+        - AuthenticationAPI
+      summary: 'Authenticate to the Scada-LTS'
+      description: 'Login user to the ScadaLTS'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: 'Logged successful'
+          headers: {}
+  /v2/auth/logout:
+    post:
+      tags:
+        - AuthenticationAPI
+      summary: 'Logout from Scada-LTS'
+      description: 'Logout user from Scada-LTS'
+      responses:
+        '200':
+          description: 'Logged out succesful'
+          headers: {}
+
 components:
   schemas:
-    AuthenticationRequest:
-      type: object
-      required:
-        - username
-        - password
-      properties:
-        username:
-          type: string
-        password:
-          type: string
     JsonDataPoint:
       type: object
       properties:

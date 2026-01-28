@@ -11,7 +11,7 @@ var ExportImportHierarchiPoints = {
             try {
                 axios({
                     method: 'post',
-                    url: 'http://localhost:8080/ScadaBR/api/auth',
+                    url: 'http://localhost:8080/ScadaBR/api/v2/auth',
                     data: {
                         username: 'admin',
                         password: 'admin',

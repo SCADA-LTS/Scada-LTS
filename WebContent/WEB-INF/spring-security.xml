@@ -341,6 +341,7 @@
         <!-- REST API User -->
         <!-- Auth -->
         <intercept-url pattern="/api/auth/**" access="permitAll" />
+        <intercept-url pattern="/api/v2/auth/**" access="permitAll" />
 
         <!-- WatchList POST/PUT/GET -->
         <intercept-url pattern="/api/watch-lists" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />

@@ -52,7 +52,7 @@ Cypress.Commands.add('restLogin', (username = 'admin', password = 'admin') => {
 	cy.request({
 		log: false,
 		method: 'POST',
-		url: '/api/auth',
+		url: '/api/v2/auth',
 		body: {
 			username,
 			password,
