@@ -288,8 +288,7 @@
                     placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
                     pointsArray: [targetPoint],
                     startAsEmpty: true,
-                    settablePoint: true,
-                    setPermissionRequired: true
+                    pointSettable: true
                 });
 
                 selectedHandlerNode.activePointIdSelect = new DataPointsSelect({
@@ -339,8 +338,7 @@
             targetPointIdSelect = new DataPointsSelect({
                 selectHtmlId: "targetPointSelect",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
-                settablePoint: true,
-                setPermissionRequired: true
+                pointSettable: true
             });
 
             activePointIdSelect = new DataPointsSelect({
@@ -409,7 +407,7 @@
             show($(currentHandlerEditor.id + "Help"));
         }
 
-        if(option && option.value == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
+        if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>") {
             targetPointSelectChanged();
         }
     }

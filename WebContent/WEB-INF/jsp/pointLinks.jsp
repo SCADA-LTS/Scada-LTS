@@ -65,8 +65,7 @@
                 selectHtmlId: "targetPointId",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
                 pointsArray: response.data.targetPoints.filter((point) => point.id == pl.targetPointId),
-                pointSettable: true,
-                setPermissionRequired: true
+                pointSettable: true
             });
 
             setUserMessage();

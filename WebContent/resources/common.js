@@ -1911,8 +1911,8 @@ class DataPointsSelect {
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
         this.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 500;
         this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
-        this.inputHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
-        this.listHtmlId = dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
+        this.inputSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
+        this.listSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
         this.pointsArray = dataPointsSelectDef.pointsArray || [];
         this.dataTypes = dataPointsSelectDef.dataTypes || [];
@@ -1924,8 +1924,7 @@ class DataPointsSelect {
         this.nextPage = dataPointsSelectDef.nextPage || 1;
         this.keywordSearchLast = dataPointsSelectDef.keywordSearch || '';
         this.startAsEmpty = dataPointsSelectDef.startAsEmpty || false;
-        this.setPermissionRequired = dataPointsSelectDef.setPermissionRequired || false;
-        this.pointSettable = dataPointsSelectDef.pointSettable;
+        this.pointSettable = dataPointsSelectDef.pointSettable ? dataPointsSelectDef.pointSettable : "";
         this.#init();
     }
 
@@ -2048,8 +2047,8 @@ class DataPointsSelect {
                 show(node);
             }
         }
-        jQuery("#" + this.inputHtmlId).off('input');
-        jQuery("#" + this.listHtmlId).off('scrollend');
+        jQuery(this.inputSelector).off('input');
+        jQuery(this.listSelector).off('scrollend');
 
         jQuery("#" + this.selectHtmlId).chosen({
            allow_single_deselect: true,
@@ -2072,7 +2071,7 @@ class DataPointsSelect {
 
         let select = this;
 
-        jQuery("#" + this.inputHtmlId).on("input", function(evt) {
+        jQuery(this.inputSelector).on("input", function(evt) {
             if(!evt.originalEvent || !evt.originalEvent.isTrusted) {
                 return;
             }
@@ -2081,7 +2080,7 @@ class DataPointsSelect {
             });
         });
 
-        jQuery("#" + this.listHtmlId).on('scrollend', function(evt) {
+        jQuery(this.listSelector).on('scrollend', function(evt) {
             if(!evt.originalEvent || !evt.originalEvent.isTrusted) {
                 return;
             }
@@ -2112,8 +2111,7 @@ class DataPointsSelect {
                 dataType: "json",
                 url: getAppLocation() + "api/datapoints/bean?keywordSearch=" + encodeURIComponent(keywordSearch)
                 + "&limit=" + select.limit + "&excludeIds=" + excludeIds + "&dataTypes=" + select.dataTypes + "&page=" + page
-                + "&settable=" + (select.pointSettable ? select.pointSettable : "")
-                + "&setPermissionRequired=" + select.setPermissionRequired,
+                + "&settable=" + select.pointSettable,
                 success: function(points) {
                     let id = point ? select.#getId(point) : -1;
                     if(id != -1 && point) {
@@ -2132,7 +2130,7 @@ class DataPointsSelect {
                         select.setPointId(id);
                     }
                     if(keywordSearch) {
-                        jQuery("#" + select.inputHtmlId).val(keywordSearch);
+                        jQuery(select.inputSelector).val(keywordSearch);
                     }
                 },
                 error: function(request, textStatus, errorThrown) {

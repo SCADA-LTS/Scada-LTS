@@ -350,7 +350,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                 .and(filterByKeywords(searchDataPointJson))
                 .and(filterByIncludeIds(searchDataPointJson))
                 .and(filterBySettable(searchDataPointJson))
-                .and(filterBySetPermission(searchDataPointJson, user));
+                .and(filterByPermissionSet(searchDataPointJson, user));
     }
 
     private List<DataPointVO> getDataPoints(HttpServletRequest request, Set<Integer> includeIds, User user) {
@@ -444,9 +444,8 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return dataPoint -> settable == null || (dataPoint.getPointLocator() != null && settable.equals(dataPoint.getPointLocator().isSettable()));
     }
 
-    private static Predicate<DataPointVO> filterBySetPermission(SearchDataPointJson searchDataPointJson, User user) {
-        boolean setPermissionRequired = searchDataPointJson.isSetPermissionRequired();
-        return dataPoint -> !setPermissionRequired || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
+    private static Predicate<DataPointVO> filterByPermissionSet(SearchDataPointJson searchDataPointJson, User user) {
+        return dataPoint -> searchDataPointJson.getSettable() == null || searchDataPointJson.getSettable() == Boolean.FALSE || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
     }
 
     private static String toLowerCase(String word) {
