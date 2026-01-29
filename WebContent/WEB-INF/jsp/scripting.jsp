@@ -113,7 +113,7 @@
             stopImageFader($("se"+ editingScript.id +"Img"));
         hideContextualMessages("scriptDetails");
 
-        ScriptsDwr.getScript(seId, function(response) {
+        ScriptsDwr.getScriptResponse(seId, function(response) {
         	 if (!editingScript)
                  show($("scriptDetails"));
 

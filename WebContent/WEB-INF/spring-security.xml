@@ -232,8 +232,10 @@
         <!-- Reports -->
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.init.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.getReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.getReportResponse.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.getReportInstances.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.createReportFromWatchlist.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+        <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.createReportFromWatchlistResponse.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.runReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.saveReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
         <intercept-url pattern="/dwr/call/plaincall/ReportsDwr.deleteReport.dwr" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />

@@ -267,7 +267,7 @@ public class UsersDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
 			userDao.updateUserScadaTheme(updateUser);
-			Common.updateUserInSession(request, updateUser);
+			ApplicationBeans.getLoggedUsersBean().updateUser(updateUser);
 		}
 
 		return response;

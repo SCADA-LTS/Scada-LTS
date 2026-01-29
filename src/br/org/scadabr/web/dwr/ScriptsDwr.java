@@ -41,27 +41,14 @@ public class ScriptsDwr extends BaseDwr {
 		return scripts;
 	}
 
-	public DwrResponseI18n getScript(int id) {
-		DwrResponseI18n response = new DwrResponseI18n();
-
-		User user = Common.getUser();
-		ScriptService scriptService = new ScriptService();
-
-		ScriptVO<?> scriptVO;
+	public ScriptVO<?> getScript(int id) {
 		if (id == Common.NEW_ID) {
-			scriptVO = new ContextualizedScriptVO();
-			scriptVO.setXid(scriptService.generateUniqueXid());
-		} else {
-			scriptVO = scriptService.getScript(id);
+			ContextualizedScriptVO vo = new ContextualizedScriptVO();
+			vo.setXid(new ScriptService().generateUniqueXid());
+			return vo;
 		}
 
-		List<DataPointBean> dataPoints = new ArrayList<>();
-		if(scriptVO instanceof ContextualizedScriptVO) {
-			dataPoints.addAll(GetDataPointsUtils.getDataPointsByScript(user, (ContextualizedScriptVO) scriptVO, new DataPointService()));
-		}
-		response.addData("script",scriptVO);
-		response.addData("dataPoints", dataPoints);
-		return response;
+		return new ScriptService().getScript(id);
 	}
 
 	public DwrResponseI18n saveScript(int id, String xid, String name,
@@ -107,5 +94,20 @@ public class ScriptsDwr extends BaseDwr {
 		}
 
 		return false;
+	}
+
+	public DwrResponseI18n getScriptResponse(int id) {
+		DwrResponseI18n response = new DwrResponseI18n();
+
+		User user = Common.getUser();
+		ScriptVO<?> scriptVO = getScript(id);
+
+		List<DataPointBean> dataPoints = new ArrayList<>();
+		if(scriptVO instanceof ContextualizedScriptVO) {
+			dataPoints.addAll(GetDataPointsUtils.getDataPointsByScript(user, (ContextualizedScriptVO) scriptVO, new DataPointService()));
+		}
+		response.addData("script",scriptVO);
+		response.addData("dataPoints", dataPoints);
+		return response;
 	}
 }

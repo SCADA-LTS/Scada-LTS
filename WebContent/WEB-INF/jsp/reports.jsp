@@ -43,7 +43,7 @@
             }
             
             <c:if test="${!empty param.wlid}">
-              ReportsDwr.createReportFromWatchlist(${param.wlid}, loadReportCB);
+              ReportsDwr.createReportFromWatchlistResponse(${param.wlid}, function(response) {loadReportCB(response.data.report, response.data.points)});
             </c:if>
         });
     }
@@ -52,7 +52,7 @@
         if (selectedReport)
             stopImageFader("r"+ selectedReport.id +"Img");
         
-        ReportsDwr.getReport(reportId, copy, loadReportCB);
+        ReportsDwr.getReportResponse(reportId, copy, function(response) {loadReportCB(response.data.report, response.data.points)});
         
         if (copy)
             reportId = <c:out value="<%= Common.NEW_ID %>"/>;
@@ -62,9 +62,7 @@
         display("copyImg", reportId != <c:out value="<%= Common.NEW_ID %>"/>);
     }
     
-    function loadReportCB(response) {
-        let data = response.data;
-        let report = data.report;
+    function loadReportCB(report, points) {
         if (!report)
             return;
         if (!selectedReport)
@@ -77,7 +75,7 @@
             selectHtmlId: "allPointsList",
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             excludePointsArray: report.points,
-            pointsArray: data.points
+            pointsArray: points
         }));
 
         $set("includeEvents", report.includeEvents);

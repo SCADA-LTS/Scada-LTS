@@ -70,14 +70,15 @@ public class ReportsDwr extends BaseDwr {
         return response;
     }
 
-    public DwrResponseI18n getReport(int id, boolean copy) {
+    public ReportVO getReport(int id, boolean copy) {
         ReportVO report;
-        DwrResponseI18n response = new DwrResponseI18n();
+        User user = Common.getUser();
         if (id == Common.NEW_ID) {
             report = new ReportVO();
             report.setName(getMessage("common.newName"));
-        }
-        else {
+            report.setUserId(user.getId());
+            report.setUsername(user.getUsername());
+        } else {
             report = new ReportService().getReport(id);
 
             if (copy) {
@@ -85,14 +86,9 @@ public class ReportsDwr extends BaseDwr {
                 report.setName(LocalizableMessage.getMessage(getResourceBundle(), "common.copyPrefix", report.getName()));
             }
 
-            User user = Common.getUser();
             Permissions.ensureReportPermission(user, report);
-
-            DataPointService dataPointService = new DataPointService();
-            response.addData("points", GetDataPointsUtils.getDataPointsByReport(user, report, dataPointService));
         }
-        response.addData("report", report);
-        return response;
+        return report;
     }
 
     public DwrResponseI18n saveReport(int id, String name, List<ReportPointVO> points, int includeEvents,
@@ -275,6 +271,30 @@ public class ReportsDwr extends BaseDwr {
             report.getPoints().add(rp);
         }
 
+        User user = Common.getUser();
+        report.setUserId(user.getId());
+        report.setUsername(user.getUsername());
         return report;
+    }
+
+    public DwrResponseI18n createReportFromWatchlistResponse(int watchListId) {
+        ReportVO report = createReportFromWatchlist(watchListId);
+        return getReportResponse(report);
+    }
+
+    public DwrResponseI18n getReportResponse(int id, boolean copy) {
+        ReportVO report = getReport(id, copy);
+        return getReportResponse(report);
+    }
+
+    private static DwrResponseI18n getReportResponse(ReportVO report) {
+        User user = Common.getUser();
+        Permissions.ensureReportPermission(user, report);
+        DataPointService dataPointService = new DataPointService();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("report", report);
+        response.addData("points", GetDataPointsUtils.getDataPointsByReport(user, report, dataPointService));
+        return response;
     }
 }
