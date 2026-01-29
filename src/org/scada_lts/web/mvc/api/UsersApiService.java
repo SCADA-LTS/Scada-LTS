@@ -82,7 +82,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         if(userInfo.getId() == user.getId()) {
-            ApplicationBeans.getLoggedUsersBean().updateUser(user);
+            ApplicationBeans.getLoggedUsersBean().updateUser(userToSave);
         }
         return toUserInfo(userToSave);
     }
