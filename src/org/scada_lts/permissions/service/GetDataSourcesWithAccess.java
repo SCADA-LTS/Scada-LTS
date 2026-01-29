@@ -64,7 +64,6 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
         return user.isAdmin();
     }
 
-
     public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource, DataPointDAO dataPointDAO) {
         if(user == null) {
             LOG.warn("user is null");
