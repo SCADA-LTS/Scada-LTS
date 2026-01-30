@@ -49,7 +49,6 @@
     }
 
     let datPointDetailsPointSelect = new DataPointsSelect({
-        selectHtmlId: "allPointsList",
         placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
         pointsArray: [point],
         invisibleEmptyOption: true,

@@ -149,7 +149,8 @@
                 $set("compoundPositionY", comp.y);
                 
                 // Update the point lists
-                compoundEditor.updatePointLists(response.data.pointList, comp.supportedDataTypes);
+                compoundEditor.setPointList(response.data.pointList);
+                compoundEditor.updatePointLists();
                 
                 // Update the data in the form.
                 $set("compoundName", comp.name);
@@ -263,7 +264,9 @@
 					);
                 	dygraphsCharts[compoundEditor.component.id].requestData();
                 }
-                compoundEditor.updatePointLists(response.data.pointList, compoundEditor.component.supportedDataTypes);
+
+                compoundEditor.setPointList(response.data.pointList);
+                compoundEditor.updatePointLists();
 
                 compoundEditor.close();
                 MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
@@ -303,8 +306,7 @@
             this.pointList = pointList;
         };
 
-		updatePointLists(pointList, supportedDataTypes) {
-		    this.setPointList(pointList);
+		updatePointLists() {
             var pointChildren = this.getPointChildren();
             
             var functions = [
@@ -357,8 +359,8 @@
 				this.targetPointSelects[this.targetPointSelects.length] = new DataPointsSelect({
                     selectHtmlId: pointChildId,
                     placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
-                    pointsArray: pointList.filter((point) => point.id == dataPointId),
-                    dataTypes: supportedDataTypes || []
+                    pointsArray: this.pointList.filter((point) => point.id == dataPointId),
+                    dataTypes: this.component ? (this.component.supportedDataTypes || []) : []
                 });
 
 				if(this.component.defName === "enhancedImageChart") {	

@@ -1910,7 +1910,7 @@ class DataPointsSelect {
 
         this.excludePointsArray = dataPointsSelectDef.excludePointsArray || [];
         this.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 500;
-        this.selectHtmlId = dataPointsSelectDef.selectHtmlId;
+        this.selectHtmlId = dataPointsSelectDef.selectHtmlId || "allPointsList";
         this.inputSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
         this.listSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
         this.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
@@ -1922,7 +1922,7 @@ class DataPointsSelect {
         this.widthPx = dataPointsSelectDef.widthPx || "400px";
         this.imgAddHtmlIds = dataPointsSelectDef.imgAddHtmlIds || ["icon_comp_add", "icon_add"];
         this.nextPage = dataPointsSelectDef.nextPage || 1;
-        this.keywordSearchLast = dataPointsSelectDef.keywordSearch || '';
+        this.keywordSearchLast = dataPointsSelectDef.keywordSearch || "";
         this.startAsEmpty = dataPointsSelectDef.startAsEmpty || false;
         this.pointSettable = dataPointsSelectDef.pointSettable ? dataPointsSelectDef.pointSettable : "";
         this.#init();
@@ -2141,21 +2141,21 @@ class DataPointsSelect {
     }
 
     #addOptions(id, availPoints, key, altKey, value, altValue) {
-      document.getElementById(id).options.length = 0;
-      let select = document.getElementById(id);
-      for (let i = 0; i < availPoints.length; i++) {
-          let opt = document.createElement('option');
-          opt.value = availPoints[i][key] ? availPoints[i][key] : availPoints[i][altKey];
-          opt.innerHTML = availPoints[i][value] ? availPoints[i][value] : availPoints[i][altValue] ;
-          select.appendChild(opt);
-      }
+        document.getElementById(id).options.length = 0;
+        let select = document.getElementById(id);
+        for (let i = 0; i < availPoints.length; i++) {
+            let opt = document.createElement('option');
+            opt.value = availPoints[i][key] ? availPoints[i][key] : availPoints[i][altKey];
+            opt.innerHTML = availPoints[i][value] ? availPoints[i][value] : availPoints[i][altValue] ;
+            select.appendChild(opt);
+        }
     }
 
     #addEmptyOption(availPoints, object) {
-       let emptyIndex = availPoints.indexOf(object);
-       if(emptyIndex == -1) {
-          availPoints.unshift(object);
-       }
+        let emptyIndex = availPoints.indexOf(object);
+        if(emptyIndex == -1) {
+           availPoints.unshift(object);
+        }
     }
 
     #getId(object) {

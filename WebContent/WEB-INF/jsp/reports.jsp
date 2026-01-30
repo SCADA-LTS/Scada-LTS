@@ -72,7 +72,6 @@
         $set("name", report.name);
 
         pointsContext = new ReportPointsContext(new DataPointsSelect({
-            selectHtmlId: "allPointsList",
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             excludePointsArray: report.points,
             pointsArray: points

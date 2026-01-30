@@ -123,7 +123,6 @@
             setValueInNode('script', editingScript.script);
 
             pointsContext = new ScriptPointsContext(new DataPointsSelect({
-                selectHtmlId: "allPointsList",
                 placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
                 excludePointsArray: editingScript.pointsOnContext,
                 pointsArray: response.data.dataPoints

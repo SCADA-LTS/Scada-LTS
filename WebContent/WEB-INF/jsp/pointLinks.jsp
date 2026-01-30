@@ -44,7 +44,7 @@
     function showPointLink(plId) {
         if (editingPointLink)
             stopImageFader($("pl"+ editingPointLink.id +"Img"));
-        PointLinksDwr.getPointLink(plId, function(response) {
+        PointLinksDwr.getPointLinkResponse(plId, function(response) {
             let pl = response.data.pointLink;
             if (!editingPointLink)
                 show("pointLinkDetails");
@@ -112,7 +112,7 @@
                 }
                 else
                     setUserMessage("<spring:message code="pointLinks.pointLinkSaved"/>");
-                PointLinksDwr.getPointLink(editingPointLink.id, function(response) {updatePointLink(response.data.pointLink, response.data)});
+                PointLinksDwr.getPointLinkResponse(editingPointLink.id, function(response) {updatePointLink(response.data.pointLink, response.data)});
             }
         });
     }

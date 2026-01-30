@@ -20,7 +20,7 @@
 
 <dwr>
   <init>
-    <converter id="localizableMessage" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
+    <converter id="localizableMessageConverter" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
     <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
     <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
@@ -190,7 +190,7 @@
     <convert converter="bean" match="com.serotonin.web.dwr.DwrMessageI18n"/>
     <convert converter="bean" match="com.serotonin.web.dwr.DwrResponseI18n"/>
 
-    <convert converter="localizableMessage" match="com.serotonin.web.i18n.LocalizableMessage"/>
+    <convert converter="localizableMessageConverter" match="com.serotonin.web.i18n.LocalizableMessage"/>
     <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
     	<param name="exclude" value="type"/>
     </convert>

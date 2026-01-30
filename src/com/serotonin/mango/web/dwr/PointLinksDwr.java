@@ -88,7 +88,7 @@ public class PointLinksDwr extends BaseDwr {
         return false;
     }
 
-    public DwrResponseI18n getPointLink(int id) {
+    public PointLinkVO getPointLink(int id) {
         PointLinkVO vo;
         PointLinkDao pointLinkDao = new PointLinkDao();
         if (id == Common.NEW_ID) {
@@ -97,16 +97,7 @@ public class PointLinksDwr extends BaseDwr {
         }
         else
             vo = pointLinkDao.getPointLink(id);
-        DwrResponseI18n response = new DwrResponseI18n();
-        response.addData("pointLink", vo);
-
-        DataPointService dataPointService = new DataPointService();
-        User user = Common.getUser();
-        Set<DataPointBean> sourcePoints = getSourceDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
-        Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
-        response.addData("sourcePoints", sourcePoints);
-        response.addData("targetPoints", targetPoints);
-        return response;
+        return vo;
     }
 
     public DwrResponseI18n savePointLink(int id, String xid, int sourcePointId, int targetPointId, String script,
@@ -179,6 +170,20 @@ public class PointLinksDwr extends BaseDwr {
         }
 
         response.addMessage("script", message);
+        return response;
+    }
+
+    public DwrResponseI18n getPointLinkResponse(int id) {
+        PointLinkVO vo = getPointLink(id);
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("pointLink", vo);
+
+        DataPointService dataPointService = new DataPointService();
+        User user = Common.getUser();
+        Set<DataPointBean> sourcePoints = getSourceDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
+        Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
+        response.addData("sourcePoints", sourcePoints);
+        response.addData("targetPoints", targetPoints);
         return response;
     }
 }

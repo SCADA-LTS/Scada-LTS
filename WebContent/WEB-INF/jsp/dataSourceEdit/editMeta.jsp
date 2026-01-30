@@ -53,7 +53,6 @@
   function editPointCBImpl(locator, contextPoints) {
 
       pointsContext = new ScriptPointsContext(new DataPointsSelect({
-          selectHtmlId: "allPointsList",
           placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
           excludePointsArray: locator.context,
           pointsArray: contextPoints
