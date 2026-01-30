@@ -440,12 +440,12 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
     }
 
     private static Predicate<DataPointVO> filterByPointSettable(SearchDataPointJson searchDataPointJson) {
-        Boolean settable = searchDataPointJson.getPointSettable();
+        Boolean settable = searchDataPointJson.getSettable();
         return dataPoint -> settable == null || (dataPoint.getPointLocator() != null && settable.equals(dataPoint.getPointLocator().isSettable()));
     }
 
     private static Predicate<DataPointVO> filterByPermissionSet(SearchDataPointJson searchDataPointJson, User user) {
-        return dataPoint -> searchDataPointJson.getPointSettable() == null || Boolean.FALSE.equals(searchDataPointJson.getPointSettable()) || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
+        return dataPoint -> searchDataPointJson.getSettable() == null || Boolean.FALSE.equals(searchDataPointJson.getSettable()) || GetDataPointsWithAccess.hasDataPointSetPermission(user, dataPoint);
     }
 
     private static String toLowerCase(String word) {

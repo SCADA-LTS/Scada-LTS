@@ -48,15 +48,7 @@
       
       PublisherEditDwr.savePachubeSender(name, xid, enabled, points, $get("apiKey"), $get("timeoutSeconds"),
               $get("retries"), cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
-              savePachubeCB);
-  }
-
-  function savePachubeCB(response) {
-    savePublisherCB(response);
-    if(!response.hasMessages) {
-        pointsContext.setPointsArray(response.data.selectedPoints);
-        pointsContext.init(response.data.publisher.points);
-    }
+              savePublisherCB);
   }
 </script>
 

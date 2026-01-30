@@ -48,15 +48,7 @@
       
       PublisherEditDwr.savePersistentSender(name, xid, enabled, points, $get("host"), $get("port"),
               $get("authorizationKey"), xid, $get("syncType"), cacheWarningSize, changesOnly, sendSnapshot,
-              snapshotSendPeriods, snapshotSendPeriodType, savePersistentCB);
-  }
-
-  function savePersistentCB(response) {
-    savePublisherCB(response);
-    if(!response.hasMessages) {
-        pointsContext.setPointsArray(response.data.selectedPoints);
-        pointsContext.init(response.data.publisher.points);
-    }
+              snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
 </script>
 

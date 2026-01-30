@@ -189,10 +189,6 @@
   function saveHttpSenderCB(response) {
     savePublisherCB(response);
     PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
-    if(!response.hasMessages) {
-        pointsContext.setPointsArray(response.data.selectedPoints);
-        pointsContext.init(response.data.publisher.points);
-    }
   }
   
   function httpSendTest() {

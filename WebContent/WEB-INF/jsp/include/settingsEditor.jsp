@@ -141,10 +141,6 @@
                 this.dataPointsSelect.setDataTypes(dataTypes);
             }
         };
-
-        this.loadPointsList = function() {
-            this.dataPointsSelect.loadPointsList();
-        }
         
         this.pointSelectChanged = function(dataPointId) {
             if(dataPointId > 0) {
