@@ -1162,15 +1162,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	private static boolean isSupportType(DataPointBean dataPointBean, ViewComponent viewComponent) {
-		if(viewComponent instanceof PointComponent) {
-			for(int type: ((PointComponent) viewComponent).getSupportedDataTypes()) {
-				if(dataPointBean.getDataType() == type) {
-					return true;
-				}
-			}
-			return false;
-		}
-		return true;
+		return viewComponent.definition().getSupportedDataTypes() == null || viewComponent.definition().supports(dataPointBean.getDataType());
 	}
 
 }

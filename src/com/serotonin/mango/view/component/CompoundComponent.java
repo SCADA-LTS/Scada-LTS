@@ -347,4 +347,8 @@ abstract public class CompoundComponent extends ViewComponent {
                 ", visible=" + visible +
                 "} " + super.toString();
     }
+
+    public int[] getSupportedDataTypes() {
+        return definition().getSupportedDataTypes() == null ? new int[]{} : definition().getSupportedDataTypes();
+    }
 }
