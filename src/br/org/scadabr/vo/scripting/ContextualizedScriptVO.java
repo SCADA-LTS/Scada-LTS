@@ -26,7 +26,6 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import static org.scada_lts.utils.ValidationDwrUtils.validateVarNameScript;
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
