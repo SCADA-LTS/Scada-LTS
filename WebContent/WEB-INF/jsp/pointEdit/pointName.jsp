@@ -70,7 +70,7 @@
     </td>
     <td valign="top" align="right">
       <spring:message code="pointEdit.name.goto"/>:&nbsp;
-      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;" style="display:none;">
+      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid=' + encodeURIComponent(this.value);" style="display:none;">
       </select>
 
       <c:if test="${!empty prevId}">

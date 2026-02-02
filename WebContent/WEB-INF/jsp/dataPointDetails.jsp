@@ -170,7 +170,7 @@
     <tr>
       <td valign="top" align="right">
         <spring:message code="pointDetails.goto"/>:&nbsp;
-        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;" style="display:none;"></select>
+        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid=' + encodeURIComponent(this.value);" style="display:none;"></select>
 
         <c:if test="${!empty prevId}">
           <tag:img id="bullet_go_left" png="bullet_go_left" title="pagination.previous"
@@ -269,8 +269,7 @@
           </table>
         </div>
       </td>
-      
-      <td valign="top">
+            <td valign="top">
         <div class="borderDiv marB">
           <table width="100%">
             <tr>
@@ -285,8 +284,7 @@
         </div>
       </td>
     </tr>
-    
-    <c:if test="${!empty periodType}">
+        <c:if test="${!empty periodType}">
       <tr>
         <td colspan="3">
           <!--  chart with editable properties and annotations -->
