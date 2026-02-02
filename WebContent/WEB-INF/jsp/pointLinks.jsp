@@ -28,7 +28,7 @@
     var targetPointSelect;
     
     function init() {
-        PointLinksDwr.init(function(response) {
+        PointLinksDwr.initResponse(function(response) {
 
             for (var i=0; i<response.data.pointLinks.length; i++) {
                 appendPointLink(response.data.pointLinks[i].id);

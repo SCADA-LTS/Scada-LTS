@@ -31,6 +31,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.meta.ResultTypeException;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.link.PointLinkRT;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -52,7 +53,7 @@ import static org.scada_lts.utils.GetDataPointsUtils.getTargetDataPointsByPointL
  */
 public class PointLinksDwr extends BaseDwr {
     private static final Log LOG = LogFactory.getLog(PointLinksDwr.class);
-    public DwrResponseI18n init() {
+    public Map<String, Object> init() {
         User user = Common.getUser();
         Permissions.ensureAdmin(user);
         Map<String, Object> data = new HashMap<>();
@@ -63,22 +64,26 @@ public class PointLinksDwr extends BaseDwr {
         Set<DataPointBean> sourcePoints = getSourceDataPointsByPointLinks(user, pointLinks, dataPointService);
         Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, pointLinks, dataPointService);
 
+        data.put("sourcePoints", sourcePoints);
+        data.put("targetPoints", targetPoints);
+
         // Get the existing point links.
-        List<PointLinkVO> existPointLinks = new ArrayList<>();
-        for (PointLinkVO pointLink : new PointLinkDao().getPointLinks()) {
-            if (containsPoint(sourcePoints, pointLink.getSourcePointId())
-                    && containsPoint(targetPoints, pointLink.getTargetPointId()))
-                existPointLinks.add(pointLink);
+        for (PointLinkVO pointLink : pointLinks) {
+            boolean existSourcePoint = containsPoint(sourcePoints, pointLink.getSourcePointId());
+            boolean existTargetPoint = containsPoint(targetPoints, pointLink.getTargetPointId());
+
+            if(!existSourcePoint) {
+                LOG.error("Problem PointLinks with Source Point: " + LoggingUtils.pointLinkInfo(pointLink));
+            }
+            if(!existTargetPoint) {
+                LOG.error("Problem PointLinks with Target Point: " + LoggingUtils.pointLinkInfo(pointLink));
+            }
         }
 
-        DwrResponseI18n response = new DwrResponseI18n();
-        response.addData("sourcePoints", sourcePoints);
-        response.addData("targetPoints", targetPoints);
-        response.addData("pointLinks", existPointLinks);
-        return response;
+        data.put("pointLinks", pointLinks);
+
+        return data;
     }
-
-
 
     private boolean containsPoint(Set<DataPointBean> pointList, int pointId) {
         for (DataPointBean ivp : pointList) {
@@ -184,6 +189,17 @@ public class PointLinksDwr extends BaseDwr {
         Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
         response.addData("sourcePoints", sourcePoints);
         response.addData("targetPoints", targetPoints);
+        return response;
+    }
+
+    public DwrResponseI18n initResponse() {
+        Map<String, Object> initMap = init();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+
+        for(Map.Entry<String, Object> entry: initMap.entrySet()) {
+            response.addData(entry.getKey(), entry.getValue());
+        }
         return response;
     }
 }
