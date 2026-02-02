@@ -41,9 +41,7 @@ public class ContextualizedScriptVO extends ScriptVO<ContextualizedScriptVO>
 		return TYPE;
 	}
 
-	@XssProtect
 	private List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
-	@XssProtect
 	private List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
 
 	public void validate(DwrResponseI18n response) {
