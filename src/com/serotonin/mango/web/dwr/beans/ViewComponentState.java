@@ -73,7 +73,7 @@ public class ViewComponentState extends BasePointState {
 
 	@Override
 	public boolean isEmpty() {
-		return content == null && info == null && super.isEmpty();
+		return content == null && info == null && data == null && super.isEmpty();
 	}
 
 	public boolean isGraph() {

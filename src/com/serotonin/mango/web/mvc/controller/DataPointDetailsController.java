@@ -29,14 +29,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.chart.ImageChartRenderer;
 import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
@@ -54,7 +54,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 		User user = Common.getUser(request);
 
 		int id;
-		DataPointDao dataPointDao = new DataPointDao();
+		DataPointService dataPointDao = new DataPointService();
 		String idStr = request.getParameter("dpid");
 		DataPointVO point = null;
 
@@ -99,7 +99,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("views", views);
 
 			// Get the users that have access to this point.
-			List<User> allUsers = new UserDao().getUsers();
+			List<User> allUsers = new UserService().getUsers();
 			List<Map<String, Object>> users = new LinkedList<Map<String, Object>>();
 			Map<String, Object> userData;
 			int accessType;
@@ -162,7 +162,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 		user.setEditPoint(point);
 
 		// Find accessible points for the goto list
-		ControllerUtils.addPointListDataToModel(user, id, model);
+		ControllerUtils.addPointListDataToModel(model::put, user, point);
 
 		return new ModelAndView(getViewName(), model);
 	}

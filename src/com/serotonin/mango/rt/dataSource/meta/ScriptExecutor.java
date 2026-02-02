@@ -211,7 +211,7 @@ public class ScriptExecutor {
 					}
 
 				} catch (Exception e) {
-					LOG.error("Error evaluating string (script): "
+					LOG.warn("Error evaluating string (script): "
 							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
 				}
@@ -274,7 +274,7 @@ public class ScriptExecutor {
 				try {
 					result = cx.evaluateString(scope, script, "<cmd>", 1, null);
 				} catch (Exception e) {
-					LOG.error("Error evaluating string (script): "
+					LOG.warn("Error evaluating string (script): "
 							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
 				}

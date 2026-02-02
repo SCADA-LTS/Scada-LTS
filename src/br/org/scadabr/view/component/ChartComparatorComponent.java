@@ -5,22 +5,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.view.component.ViewComponent;
-import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 
 import static org.scada_lts.web.security.XssProtectUtils.escapeHtml;
 
@@ -65,15 +58,12 @@ public class ChartComparatorComponent extends HtmlComponent {
 
 		StringBuilder sb = new StringBuilder();
 		// sb.append("<div style='width:" + width + "px; height:" + height
-		// + "px; border: 1px solid black;'>");
+		// + "px; border: 1px solid black;'>")
 		sb.append("<div>");
-		GetDataPointsWithAccess dataPointsWithAccess = new GetDataPointsWithAccess(new DataPointDAO());
-		User user = Common.getUser();
-		List<ScadaObjectIdentifier> dataPoints = dataPointsWithAccess.getObjectIdentifiersWithAccess(user);
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", dataPoints));
-		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", dataPoints));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp1", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp2", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp3", Collections.emptyList()));
+		sb.append(createDataPointsSelectComponent(idPrefix + "_dp4", Collections.emptyList()));
 		sb.append("<div style='float:right;'><input type='button' style='width: 100%;' value='Atualizar' onclick=\"updateChartComparatorComponent('"
 				+ idPrefix + "'," + width + "," + height + ");\" /> </div>");
 		sb.append("<div style='clear:both;'> </div>");

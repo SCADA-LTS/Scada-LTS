@@ -262,6 +262,7 @@ public class Common {
 		request.getSession().setAttribute(SESSION_USER, user);
 	}
 
+	@Deprecated(since = "2.8.1")
 	public static void updateUserInSession(HttpServletRequest request, User user) {
 		User loggedUser = getUser(request);
 		List<GrantedAuthority> roles = loggedUser.getAttribute("roles");

@@ -297,7 +297,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             handleRecursiveError(runtime, dataPoint, new LocalizableMessage("event.meta.recursionFailure"));
             String msg = MessageFormat.format("Recursion failure: exceeded MAX_RECURSION: expected <= {0} but was {1}, Context: {2}",
                     String.valueOf(MAX_RECURSION), count, generateContext(dataPoint, dataSource));
-            LOG.warn(msg);
+            LOG.error(msg);
             return;
         } else {
             returnToNormalRecursive(runtime, dataPoint);
@@ -318,13 +318,13 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                     doUpdate(valueTime, dataPoint);
             } catch (ScriptException e) {
                 handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getLocalizedMessage()));
-                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (ResultTypeException e) {
                 handleTypeError(runtime, dataPoint, e.getLocalizableMessage());
-                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (Exception e) {
                 handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
-                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
         }
         finally {
@@ -340,7 +340,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             returnToNormalContext(System.currentTimeMillis(), dataPoint);
             return context;
         } catch (Exception e) {
-            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+            LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
             return null;
         }
     }

@@ -19,122 +19,21 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <script type="text/javascript">
   var allPoints = new Array();  
-  var selectedPoints = new Array();  
+  var pointsContext;
   
-  dojo.addOnLoad(function() { 
+  dojo.addOnLoad(function() {
       PublisherEditDwr.initSender(function(response) {
-          var i;
-          var list = response.data.allPoints;
-          for (var i=0; i<list.length; i++)
-              allPoints[allPoints.length] = {
-                      id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
-              
-          list = response.data.publisher.points;
-          for (i=0; i<list.length; i++)
-              addToSelectedArray(list[i].dataPointId, list[i].feedId, list[i].dataStreamId);
-          refreshSelectedPoints();
-          jQuery("#availablePoints").chosen({
-              allow_single_deselect: true,
-              placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-              search_contains: true,
-              width: "100%"
-          });
+          pointsContext = new PachubePointsContext(new DataPointsSelect({
+              selectHtmlId: "availablePoints",
+              placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+              excludePointsArray: response.data.publisher.points,
+              pointsArray: response.data.selectedPoints
+          }), "selectedPoints");
       });
   });
   
   function selectPoint() {
-      var pointId = $get("availablePoints");
-      addToSelectedArray(pointId, "", "");
-      refreshSelectedPoints();
-  }
-  
-  function addToSelectedArray(pointId, feedId, dataStreamId) {
-      var data = getElement(allPoints, pointId);
-      
-      if (data) {
-          // Missing names imply that the point was deleted, so ignore.
-          selectedPoints[selectedPoints.length] = {
-              id : pointId,
-              pointName : data.name,
-              enabled : data.enabled,
-              pointType : data.type,
-              feedId: feedId,
-              dataStreamId: dataStreamId
-          };
-      }
-  }
-  
-  function removeFromSelectedPoints(pointId) {
-      removeElement(selectedPoints, pointId);
-      refreshSelectedPoints();
-  }
-  
-  function refreshSelectedPoints() {
-      dwr.util.removeAllRows("selectedPoints");
-      if (selectedPoints.length == 0)
-          show("selectedPointsEmpty");
-      else {
-          hide("selectedPointsEmpty");
-          dwr.util.addRows("selectedPoints", selectedPoints,
-              [
-                  function(data) { return data.pointName; },
-                  function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
-                  function(data) { return data.pointType; },
-                  function(data) {
-                          return "<input type='text' value='"+ data.feedId +"' "+
-                                  "onblur='updateFeedId("+ data.id +", this.value)'/>";
-                  },
-                  function(data) {
-                	      return "<input type='text' value='"+ data.dataStreamId +"' "+
-                                  "onblur='updateDataStreamId("+ data.id +", this.value)'/>";
-                  },
-                  function(data) { 
-                          return "<img src='images/bullet_delete.png' class='ptr' "+
-                                  "onclick='removeFromSelectedPoints("+ data.id +")'/>";
-                  }
-              ],
-              {
-                  rowCreator: function(options) {
-                      var tr = document.createElement("tr");
-                      tr.className = "row"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
-                      return tr;
-                  },
-                  cellCreator: function(options) {
-                      var td = document.createElement("td");
-                      if (options.cellNum == 1 || options.cellNum == 4)
-                          td.align = "center";
-                      return td;
-                  } 
-              });
-      }
-      refreshAvailablePoints();
-  }
-  
-  function refreshAvailablePoints() {
-      dwr.util.removeAllOptions("availablePoints");
-      var availPoints = new Array();
-      for (var i=0; i<allPoints.length; i++) {
-          var found = false;
-          for (var j=0; j<selectedPoints.length; j++) {
-              if (selectedPoints[j].id == allPoints[i].id) {
-                  found = true;
-                  break;
-              }
-          }
-          
-          if (!found)
-              availPoints[availPoints.length] = allPoints[i];
-      }
-      dwr.util.addOptions("availablePoints", availPoints, "id", "name");
-      jQuery("#availablePoints").trigger("chosen:updated");
-  }
-  
-  function updateFeedId(pointId, feedId) {
-      updateElement(selectedPoints, pointId, "feedId", feedId);
-  }
-  
-  function updateDataStreamId(pointId, dataStreamId) {
-      updateElement(selectedPoints, pointId, "dataStreamId", dataStreamId);
+      pointsContext.addPointToContext();
   }
   
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
@@ -145,21 +44,12 @@
       hide("retriesMsg");
       hide("pointsMsg");
       
-      var points = new Array();
-      for (var i=0; i<selectedPoints.length; i++)
-          points[points.length] = {dataPointId: selectedPoints[i].id, feedId: selectedPoints[i].feedId,
-                  dataStreamId: selectedPoints[i].dataStreamId};
+      let points = pointsContext.convertToSave();
       
       PublisherEditDwr.savePachubeSender(name, xid, enabled, points, $get("apiKey"), $get("timeoutSeconds"),
               $get("retries"), cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
               savePublisherCB);
   }
-  jQuery(document).ready(function(){
-    (function($) {
-      loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-      loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-    })(jQuery);
-  });
 </script>
 
 <table cellpadding="0" cellspacing="0">
@@ -206,8 +96,8 @@
       <tr>
         <td class="smallTitle"><spring:message code="publisherEdit.points"/></td>
         <td align="right">
-          <select id="availablePoints"></select>
-          <tag:img png="icon_comp_add" onclick="selectPoint()"/>
+          <select id="availablePoints" style="display:none;"></select>
+          <tag:img id="icon_comp_add" png="icon_comp_add" onclick="selectPoint()" style="display:none;"/>
         </td>
       </tr>
     </table>
@@ -215,6 +105,7 @@
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
         <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.xid"/></td>
         <td><spring:message code="publisherEdit.point.status"/></td>
         <td><spring:message code="publisherEdit.point.type"/></td>
         <td><spring:message code="publisherEdit.pachube.point.feedId"/></td>

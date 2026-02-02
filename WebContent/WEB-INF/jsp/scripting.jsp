@@ -36,7 +36,7 @@
         payload.id = -1;
         payload.script = $get("script");
 
-        let toSave = this.scriptPointsContext.convertToSave();
+        let toSave = pointsContext.convertToSave();
         payload.pointsOnContext = convertPointsOnContext(toSave);
         payload.datapointContext = objectsContextArray[0] ? objectsContextArray[0].value : "";
         payload.datasourceContext = objectsContextArray[1] ? objectsContextArray[1].value : "";
@@ -59,40 +59,24 @@
         });
     };
 
-    var pointsArray = new Array();
-    var scriptPointsContext;
+    var pointsContext;
     var objectsContextArray = new Array();
 
     function init() {
         ScriptsDwr.getScripts(initCB);
-        getPointsCB();
-
         createContextualMessageNode("contextContainer", "context");
 
-        jQuery("#allPointsList").chosen({
-       		allow_single_deselect: true,
-			placeholder_text_single: " ",
-			search_contains: true,
-			width: "400px"
-		});
-    }
-
-    function getDataPointById(id) {
-        for(let i = 0; i < pointsArray.length; i++) {
-            if(pointsArray[i].id === id) {
-                return pointsArray[i];
-            }
-        }
-        return null;
+        document.getElementById("loader").style.display = "none";
+                    document.body.style.overflow="visible";
     }
 
     function convertPointsOnContext(toSave) {
         let pointsOnContext = [];
         for(let i = 0; i < toSave.length; i++) {
             let entry = toSave[i];
-            let dataPoint = getDataPointById(entry.key);
+            let dataPoint = pointsContext.getContextPointById(entry.key);
             if(dataPoint) {
-                let dataPointXid = dataPoint.xid;
+                let dataPointXid = dataPoint.xid ? dataPoint.xid : dataPoint.pointXid;
                 let varName = entry.value;
                 let object = {
                     dataPointXid: dataPointXid,
@@ -100,36 +84,11 @@
                 };
                 pointsOnContext[pointsOnContext.length] = object;
             } else {
-                throw new Error();
+                setUserMessage("<spring:message code="script.execute.error"/> ");
+                throw new Error('dataPoint is undefined!');
             }
         }
         return pointsOnContext;
-    }
-
-    function getPointsCB()
-    {
-        jQuery.ajax({
-            type: "GET",
-        	dataType: "text",
-        	url:myLocation+urlGetDataPoints,
-        	success: function(points){
-            points = JSON.parse(points);
-            for(i = 0; i < points.length; i++) {
-                point = points[i];
-                pointsArray[i] = {
-                        "id":point.id,
-                        "name":point.extendName,
-                        "xid":point.xid,
-                        "type":point.dataType,
-                        };
-            }
-            document.getElementById("loader").style.display = "none";
-            document.body.style.overflow="visible";
-        	},
-        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        	  console.log(textStatus);
-        	}
-        });
     }
 
     function initCB(scripts) {
@@ -154,21 +113,24 @@
             stopImageFader($("se"+ editingScript.id +"Img"));
         hideContextualMessages("scriptDetails");
 
-        ScriptsDwr.getScript(seId, function(s) {
+        ScriptsDwr.getScriptResponse(seId, function(response) {
         	 if (!editingScript)
                  show($("scriptDetails"));
 
-            editingScript = s;
-            setValueInNode('xid', s.xid);
-            setValueInNode('name', s.name);
-            setValueInNode('script', s.script);
+            editingScript = response.data.script;
+            setValueInNode('xid', editingScript.xid);
+            setValueInNode('name', editingScript.name);
+            setValueInNode('script', editingScript.script);
 
-            let handlePointsContext = new ScriptPointsContext(s.pointsOnContext, pointsArray);
-            setPointsContext(handlePointsContext);
+            pointsContext = new ScriptPointsContext(new DataPointsSelect({
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                excludePointsArray: editingScript.pointsOnContext,
+                pointsArray: response.data.dataPoints
+            }));
 
             clearObjectsTable();
-		 	for (var i=0; i<s.objectsOnContext.length; i++)
-		 		 objectsContextArray.push({key: s.objectsOnContext[i].key, value: s.objectsOnContext[i].value});
+		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)
+		 		 objectsContextArray.push({key: editingScript.objectsOnContext[i].key, value: editingScript.objectsOnContext[i].value});
 
 	        writeObjectsContextArray();
 	        setUserMessage();
@@ -189,13 +151,9 @@
         }
     }
 
-    function setPointsContext(scriptPointsContext) {
-        this.scriptPointsContext = scriptPointsContext;
-    }
-
     function saveScript() {
         ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
-                $get("script"),this.scriptPointsContext.convertToSave(),objectsContextArray,
+                $get("script"),pointsContext.convertToSave(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
 		                showDwrMessages(response.messages);
@@ -291,15 +249,6 @@
         else
             hide($("userMessage"));
     }
-
-    jQuery(document).ready(function(){
-    	(function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-    	})(jQuery);
-    });
-
-
   </script>
 
   <style>body{ overflow:hidden;}</style>
@@ -360,8 +309,8 @@
             <tr>
 			    <td class="formLabelRequired"><spring:message code="scripts.pointsContext"/></td>
 			    <td class="formField">
-			      <select id="allPointsList"></select>
-			      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
+			      <select id="allPointsList" style="display:none;"></select>
+			      <tag:img id="icon_add" png="add" onclick="pointsContext.addPointToContext();" title="common.add" style="display:none;"/>
 
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">

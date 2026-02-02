@@ -135,18 +135,22 @@
 		constructor() {
 			this.component = null;
         	this.pointList = [];
+        	this.targetPointSelects = [];
 		}
 
 		open(compId) {
 			document.getElementById("compoundEditorPopup").firstElementChild.setAttribute("id", "compound" + compId);
-			ViewDwr.getViewComponent(compId, viewId, (comp) => {
-                this.component = comp;
+			ViewDwr.getViewComponentResponse(compId, viewId, (response) => {
+                this.component = response.data.comp;
+                let comp = this.component;
+
                 $set("compoundComponentName", comp.displayName);
 				$set("compoundPositionX", comp.x);
                 $set("compoundPositionY", comp.y);
                 
                 // Update the point lists
-                this.updatePointLists();
+                compoundEditor.setPointList(response.data.pointList);
+                compoundEditor.updatePointLists();
                 
                 // Update the data in the form.
                 $set("compoundName", comp.name);
@@ -198,11 +202,13 @@
             var pointChildren = this.getPointChildren();
             var childPointIds = new Array();
             var sel;
-            for (var i=0; i<pointChildren.length; i++)
+            for (let i=0; i<pointChildren.length; i++) {
+                let pointId = $get("compoundPointSelect"+ pointChildren[i].id);
                 childPointIds.push({
 					key: pointChildren[i].id, 
-					value: $get("compoundPointSelect"+ pointChildren[i].id)
+					value: convertToInt(pointId)
 				});
+			}
 			switch(this.component.defName) {
 				case 'simpleCompound':
 					ViewDwr.saveSimpleCompoundComponent(this.component.id, 
@@ -258,7 +264,10 @@
 					);
                 	dygraphsCharts[compoundEditor.component.id].requestData();
                 }
-                
+
+                compoundEditor.setPointList(response.data.pointList);
+                compoundEditor.updatePointLists();
+
                 compoundEditor.close();
                 MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
             }
@@ -338,34 +347,22 @@
 						}						
 					} else if (options.cellNum % 2 == 1)
 						td.className = "formField";
-						return td;
-					}
+                    return td;
+                }
 			});
 
-				// Add options to the controls.
-			var sel, p;
-			for (var i = 0; i < pointChildren.length; i++) {
-				sel = $("compoundPointSelect" + pointChildren[i].id);
+            this.targetPointSelects = [];
+			for (let i = 0; i < pointChildren.length; i++) {
 				var pointChildId = "compoundPointSelect"+ pointChildren[i].id;
-				sel = $(pointChildId);
-				sel.options[0] = new Option("", 0);
-				for (p = 0; p < this.pointList.length; p++) {
-					if (contains(pointChildren[i].dataTypes, this.pointList[p].dataType)) {
-						sel.options[sel.options.length] = new Option(
-							settingsEditor.pointList[p].name,
-							settingsEditor.pointList[p].id
-						);
-					}
-				}
+				var dataPointId = pointChildren[i].viewComponent.dataPointId;
 
-				// Set the control default value.
-				$set(sel, pointChildren[i].viewComponent.dataPointId);
-				jQuery("#" + pointChildId).chosen({
-					allow_single_deselect: true,
-					placeholder_text_single: " ",
-					search_contains: true,
-					width: "400px"
-				});
+				this.targetPointSelects[this.targetPointSelects.length] = new DataPointsSelect({
+                    selectHtmlId: pointChildId,
+                    placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                    pointsArray: this.pointList.filter((point) => point.id == dataPointId),
+                    dataTypes: this.component ? (this.component.supportedDataTypes || []) : []
+                });
+
 				if(this.component.defName === "enhancedImageChart") {	
 					jQuery("#compoundPointColor" + pointChildren[i].id).jPicker({
 						images: {

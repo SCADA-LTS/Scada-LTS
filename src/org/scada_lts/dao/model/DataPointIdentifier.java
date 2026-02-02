@@ -1,5 +1,6 @@
 package org.scada_lts.dao.model;
 
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.PointDataType;
 
 public class DataPointIdentifier extends ScadaObjectIdentifier {
@@ -11,9 +12,22 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
     private int type;
     private int typeId;
     private String datasourceName;
+    private boolean settable;
+
+    public DataPointIdentifier(DataPointVO dataPoint) {
+        super(dataPoint.getId(), dataPoint.getXid(), dataPoint.getName());
+        this.extendName = dataPoint.getExtendedName();
+        this.dataType = PointDataType.byCode(dataPoint.getPointLocator().getDataTypeId());
+        this.enabled = dataPoint.isEnabled();
+        this.description = dataPoint.getDescription();
+        this.type = dataType.getCode();
+        this.typeId = dataType.getCode();
+        this.datasourceName = dataPoint.getDataSourceName();
+        this.settable = dataPoint.getPointLocator().isSettable();
+    }
 
     private DataPointIdentifier(int id, String xid, String name, String extendName, PointDataType dataType,
-                               boolean enabled, String description, String datasourceName) {
+                               boolean enabled, String description, String datasourceName, boolean settable) {
         super(id, xid, name);
         this.extendName = extendName;
         this.dataType = dataType;
@@ -22,6 +36,7 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
         this.type = dataType.getCode();
         this.typeId = dataType.getCode();
         this.datasourceName = datasourceName;
+        this.settable = settable;
     }
 
     public static Builder builder(PointDataType dataType) {
@@ -38,6 +53,7 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
         private boolean enabled;
         private String description;
         private String datasourceName;
+        private boolean settable;
 
         public Builder(PointDataType dataType) {
             this.dataType = dataType;
@@ -78,8 +94,13 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
             return this;
         }
 
+        public Builder settable(boolean settable) {
+            this.settable = settable;
+            return this;
+        }
+
         public DataPointIdentifier build() {
-            return new DataPointIdentifier(id, xid, name, extendName, dataType, enabled, description, datasourceName);
+            return new DataPointIdentifier(id, xid, name, extendName, dataType, enabled, description, datasourceName, settable);
         }
     }
 
@@ -137,6 +158,14 @@ public class DataPointIdentifier extends ScadaObjectIdentifier {
 
     public void setDatasourceName(String datasourceName) {
         this.datasourceName = datasourceName;
+    }
+
+    public boolean isSettable() {
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
     }
 
     @Override

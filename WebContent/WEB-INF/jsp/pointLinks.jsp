@@ -23,33 +23,16 @@
 
 <tag:page dwr="PointLinksDwr" onload="init">
   <script type="text/javascript">
-    var sourcePoints;
     var editingPointLink;
+    var sourcePointSelect;
+    var targetPointSelect;
     
     function init() {
         PointLinksDwr.init(function(response) {
-            sourcePoints = response.sourcePoints;
-            
-            // Add points to source and target selects
-            dwr.util.addOptions("sourcePointId", response.sourcePoints, "key", "value");
-            jQuery("#sourcePointId").chosen({
-                allow_single_deselect: true,
-                placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-                search_contains: true,
-                width: "100%"
-            });
-            dwr.util.addOptions("targetPointId", response.targetPoints, "key", "value");
-            jQuery("#targetPointId").chosen({
-              allow_single_deselect: true,
-              placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-              search_contains: true,
-              width: "100%"
-            });
 
-          // Create the list of existing links
-            for (var i=0; i<response.pointLinks.length; i++) {
-                appendPointLink(response.pointLinks[i].id);
-                updatePointLink(response.pointLinks[i]);
+            for (var i=0; i<response.data.pointLinks.length; i++) {
+                appendPointLink(response.data.pointLinks[i].id);
+                updatePointLink(response.data.pointLinks[i], response.data);
             }
             
             <c:if test="${!empty param.plid}">
@@ -61,22 +44,33 @@
     function showPointLink(plId) {
         if (editingPointLink)
             stopImageFader($("pl"+ editingPointLink.id +"Img"));
-        PointLinksDwr.getPointLink(plId, function(pl) {
+        PointLinksDwr.getPointLinkResponse(plId, function(response) {
+            let pl = response.data.pointLink;
             if (!editingPointLink)
                 show("pointLinkDetails");
             editingPointLink = pl;
             
             $set("xid", pl.xid);
-            $set("sourcePointId", pl.sourcePointId);
-            $set("targetPointId", pl.targetPointId);
             $set("script", pl.script);
             $set("event", pl.event);
             $set("disabled", pl.disabled);
 
-          jQuery("#sourcePointId").trigger("chosen:updated");
-          jQuery("#targetPointId").trigger("chosen:updated");
+            sourcePointSelect = new DataPointsSelect({
+                selectHtmlId: "sourcePointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                pointsArray: response.data.sourcePoints.filter((point) => point.id == pl.sourcePointId)
+            });
 
-          setUserMessage();
+            targetPointSelect = new DataPointsSelect({
+                selectHtmlId: "targetPointId",
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                pointsArray: response.data.targetPoints.filter((point) => point.id == pl.targetPointId),
+                pointSettable: true
+            });
+
+            setUserMessage();
+            sourcePointSelect.setPointId(pl.sourcePointId);
+            targetPointSelect.setPointId(pl.targetPointId);
         });
         startImageFader($("pl"+ plId +"Img"));
         display("deletePointLinkImg", plId != ${NEW_ID});
@@ -84,7 +78,25 @@
     
     function savePointLink() {
         setUserMessage();
-        hideContextualMessages("pointLinkDetails")
+        hideContextualMessages("pointLinkDetails");
+        let sourcePointId = $get("sourcePointId");
+        let targetPointId = $get("targetPointId");
+
+        let sourcePointIdUndefined = !sourcePointId || sourcePointId == 'undefined';
+        let targetPointIdUndefined = !targetPointId || targetPointId == 'undefined';
+
+        if(sourcePointIdUndefined || targetPointIdUndefined) {
+            if(sourcePointIdUndefined) {
+                let message = createValidationMessage("sourcePointId","<spring:message code="pointLinks.validate.sourceRequired"/>");
+                showDwrMessages([message]);
+            }
+            if(targetPointIdUndefined) {
+                let message = createValidationMessage("targetPointId","<spring:message code="pointLinks.validate.targetRequired"/>");
+                showDwrMessages([message]);
+            }
+            return;
+        }
+
         PointLinksDwr.savePointLink(editingPointLink.id, $get("xid"), $get("sourcePointId"), $get("targetPointId"),
                 $get("script"), $get("event"), $get("disabled"), function(response) {
             if (response.hasMessages)
@@ -100,7 +112,7 @@
                 }
                 else
                     setUserMessage("<spring:message code="pointLinks.pointLinkSaved"/>");
-                PointLinksDwr.getPointLink(editingPointLink.id, updatePointLink);
+                PointLinksDwr.getPointLinkResponse(editingPointLink.id, function(response) {updatePointLink(response.data.pointLink, response.data)});
             }
         });
     }
@@ -118,15 +130,15 @@
         createFromTemplate("pl_TEMPLATE_", plId, "pointLinksTable");
     }
     
-    function updatePointLink(pl) {
-        $set("pl"+ pl.id +"Name", getPointName(pl.sourcePointId) +' <tag:img png="bullet_go"/> '+ getPointName(pl.targetPointId));
+    function updatePointLink(pl, data) {
+        $set("pl"+ pl.id +"Name", getPointName(pl.sourcePointId, data.sourcePoints) +' <tag:img png="bullet_go"/> '+ getPointName(pl.targetPointId, data.targetPoints));
         setPointLinkImg(pl.disabled, $("pl"+ pl.id +"Img"));
     }
     
-    function getPointName(pointId) {
+    function getPointName(pointId, sourcePoints) {
         for (var i=0; i<sourcePoints.length; i++) {
-            if (sourcePoints[i].key == pointId)
-                return sourcePoints[i].value;
+            if (sourcePoints[i].id == pointId)
+                return sourcePoints[i].name;
         }
         return null;
     }
@@ -146,12 +158,20 @@
             showDwrMessages(response.messages);
         });
     }
-    jQuery(document).ready(function(){
-        (function($) {
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-        })(jQuery);
-    });
+
+    function sourcePointSelectChanged() {
+        let sourcePoint = sourcePointSelect.getPoint();
+
+        if (!sourcePoint) {
+            console.error("Data integrity error: Source point not found for pointLink");
+            setUserMessage("<spring:message code='validate.invalidValue'/>");
+            return;
+        }
+
+        targetPointSelect.setPointId(undefined);
+        targetPointSelect.updatePointsList([sourcePoint]);
+        targetPointSelect.loadPointsList();
+    }
   </script>
   
   <table class="subPageHeader">
@@ -199,12 +219,12 @@
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.source"/></td>
-              <td class="formField"><select id="sourcePointId"></select></td>
+              <td class="formField"><select id="sourcePointId" onchange="sourcePointSelectChanged()" style="display:none;"></select></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.target"/></td>
-              <td class="formField"><select id="targetPointId"></select></td>
+              <td class="formField"><select id="targetPointId" style="display:none;"></select></td>
             </tr>
             
             <tr>

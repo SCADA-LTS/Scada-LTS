@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
         return user.isAdmin();
     }
 
-    public static List<DataPointVO> filteringByAccess(User user, List<DataPointVO> dataPoints) {
+    public static List<DataPointVO> filteringByAccess(User user, Collection<DataPointVO> dataPoints) {
         return dataPoints.stream()
                 .filter(point -> Permissions.hasDataPointReadPermission(user, point))
                 .collect(Collectors.toList());

@@ -39,19 +39,21 @@
   function doSaveForm() {
       document.forms[0].submit();
   }
-  jQuery(document).ready(function(){
-	  (function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-	  	})(jQuery);	  
-  });
   window.onload = function() {
-	  jQuery("#allPointsList").chosen({
-	      	allow_single_deselect: true,
-			placeholder_text_single: " ",
-			search_contains: true,
-			width: "400px"
-	  });
+
+    let point = {
+        id : "<c:out value="${form.id}"/>",
+        name : "<c:out value="${form.extendedName}"/>",
+        xid : "<c:out value="${form.xid}"/>",
+        dataType : "<sst:i18n message="${form.dataTypeMessage}"/>"
+    }
+
+    let datPointDetailsPointSelect = new DataPointsSelect({
+        placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+        pointsArray: [point],
+        invisibleEmptyOption: true,
+        imgAddHtmlIds: ["bullet_go_left", "bullet_go"]
+    });
   }
 </script>
 
@@ -68,20 +70,17 @@
     </td>
     <td valign="top" align="right">
       <spring:message code="pointEdit.name.goto"/>:&nbsp;
-      <sst:select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;">
-        <c:forEach items="${userPoints}" var="point">
-          <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
-        </c:forEach>
-      </sst:select>
-      
+      <select id="allPointsList" value="${form.id}" onchange="window.location='data_point_edit.shtm?dpid='+ this.value;" style="display:none;">
+      </select>
+
       <c:if test="${!empty prevId}">
-        <tag:img png="bullet_go_left" title="pagination.previous"
-                onclick="window.location='data_point_edit.shtm?dpid=${prevId}'"/>
+        <tag:img id="bullet_go_left" png="bullet_go_left" title="pagination.previous"
+                onclick="window.location='data_point_edit.shtm?dpid=${prevId}'" style="display:none;"/>
       </c:if>
       
       <c:if test="${!empty nextId}">
-        <tag:img png="bullet_go" title="pagination.next"
-                onclick="window.location='data_point_edit.shtm?dpid=${nextId}'"/>
+        <tag:img id="bullet_go" png="bullet_go" title="pagination.next"
+                onclick="window.location='data_point_edit.shtm?dpid=${nextId}'" style="display:none;"/>
       </c:if>
     </td>
   </tr>

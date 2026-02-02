@@ -18,30 +18,28 @@
  */
 package com.serotonin.mango.web.mvc.controller;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.util.SqlDataSourceUtils;
 import com.serotonin.mango.vo.CommPortProxy;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.util.CommPortConfigException;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
+
+import static com.serotonin.mango.web.mvc.controller.ControllerUtils.*;
 
 public class DataSourceEditController extends ParameterizableViewController {
     @Override
@@ -51,24 +49,19 @@ public class DataSourceEditController extends ParameterizableViewController {
         User user = Common.getUser(request);
         Permissions.ensureAdmin(user);
 
+        DataPointService dataPointService = new DataPointService();
+        DataSourceService dataSourceService = new DataSourceService();
+
         // Get the id.
         int id = Common.NEW_ID;
         String idStr = request.getParameter("dsid");
+        DataPointVO dp = null;
         if (idStr == null) {
             // Check for a data point id
             String pidStr = request.getParameter("pid");
-            if (pidStr == null) {
-                // Adding a new data source? Get the type id.
-                int typeId = Integer.parseInt(request.getParameter("typeId"));
-
-                // A new data source
-                dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
-                dataSourceVO.setId(Common.NEW_ID);
-                dataSourceVO.setXid(new DataSourceDao().generateUniqueXid());
-            }
-            else {
+            if (pidStr != null) {
                 int pid = Integer.parseInt(pidStr);
-                DataPointVO dp = new DataPointDao().getDataPoint(pid);
+                dp = dataPointService.getDataPoint(pid);
                 if (dp == null)
                     throw new ShouldNeverHappenException("DataPoint not found with id " + pid);
                 id = dp.getDataSourceId();
@@ -82,6 +75,14 @@ public class DataSourceEditController extends ParameterizableViewController {
             dataSourceVO = Common.ctx.getRuntimeManager().getDataSource(id);
             if (dataSourceVO == null)
                 throw new ShouldNeverHappenException("DataSource not found with id " + id);
+        } else {
+            // Adding a new data source? Get the type id.
+            int typeId = Integer.parseInt(request.getParameter("typeId"));
+
+            // A new data source
+            dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
+            dataSourceVO.setId(Common.NEW_ID);
+            dataSourceVO.setXid(dataSourceService.generateUniqueXid());
         }
 
         // Set the id of the data source in the user object for the DWR.
@@ -101,17 +102,17 @@ public class DataSourceEditController extends ParameterizableViewController {
             model.put("commPortError", e.getMessage());
         }
 
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        List<DataPointVO> userPoints = new LinkedList<DataPointVO>();
-        List<DataPointVO> analogPoints = new LinkedList<DataPointVO>();
-        for (DataPointVO dp : allPoints) {
-            if (Permissions.hasDataPointReadPermission(user, dp)) {
-                userPoints.add(dp);
-                if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC)
-                    analogPoints.add(dp);
-            }
-        }
+        List<DataPointVO> allPoints = dataPointService.getDataPoints(dataSourceVO.getId(), null);
+
+        List<DataPointVO> userPoints = getUserPoints(user, allPoints, DataPointExtendedNameComparator.instance);
+        List<DataPointVO> contextPoints = getContextPoints(user, dp == null ? allPoints : Arrays.asList(dp), dataPointService, DataPointExtendedNameComparator.instance);
+        List<DataPointVO> points = new ArrayList<>();
+        points.addAll(userPoints);
+        points.addAll(contextPoints);
+        List<DataPointVO> analogPoints = getAnalogPoints(user, points, DataPointExtendedNameComparator.instance);
+
         model.put("userPoints", userPoints);
+        model.put("contextPoints", contextPoints);
         model.put("analogPoints", analogPoints);
         model.put("selectWithLimitLowerCaseRegex", SqlDataSourceUtils.selectWithLimitLowerCaseEscape());
         return new ModelAndView(getViewName(), model);

@@ -98,7 +98,7 @@ public class ScriptComponent extends PointComponent {
 		if(!ScriptValidatorUtils.validate(script)) {
 			ScriptException scriptException = new ScriptException("Script no valid");
 			result = ScriptExecutor.prettyScriptMessage(scriptException).getMessage();
-			LOG.warn(infoErrorExecutionScript(scriptException, model, this));
+			LOG.error(infoErrorExecutionScript(scriptException, model, this));
 			model.put("scriptContent", result);
 			return;
 		}
@@ -149,11 +149,11 @@ public class ScriptComponent extends PointComponent {
 						result = o.toString();
 
 					if(o instanceof Undefined) {
-						LOG.warn(infoErrorExecutionScript(model, this));
+						LOG.error(infoErrorExecutionScript(model, this));
 					}
 				} catch (Exception e) {
 					result = ScriptExecutor.prettyScriptMessage(new ScriptException(e)).getMessage();
-					LOG.warn(infoErrorExecutionScript(e, model, this));
+					LOG.error(infoErrorExecutionScript(e, model, this));
 				}
 			} finally {
 				Context.exit();

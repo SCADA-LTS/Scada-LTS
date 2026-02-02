@@ -134,6 +134,13 @@ public final class ValidationUtils {
         }
     }
 
+    public static void checkIfLogoutThenUnauthorized(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if (user == null) {
+            throw new UnauthorizedException(request.getRequestURI());
+        }
+    }
+
     public static boolean isCyclicDependency(int starDataPointId, int findDataPointId, Map<Integer, DataPointVO> dataPoints) {
         int validationSearchCyclicDepth = SystemSettingsUtils.getValidationSearchCyclicDepth();
         return isCyclicDependency(starDataPointId, findDataPointId, validationSearchCyclicDepth, dataPoints);

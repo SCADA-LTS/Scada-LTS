@@ -19,11 +19,7 @@
 package com.serotonin.mango.web.dwr;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -31,18 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.ProcessWorkItem;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -55,7 +44,6 @@ import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
-import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.mango.web.dwr.beans.EventSourceBean;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
@@ -68,7 +56,9 @@ import org.scada_lts.mango.service.PublisherService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.MailingListJson;
+import org.scada_lts.mango.service.*;
 
+import static org.scada_lts.utils.GetDataPointsUtils.getDataPointsByEventHandlers;
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
@@ -80,61 +70,59 @@ public class EventHandlersDwr extends BaseDwr {
 		User user = Common.getUser();
 		Permissions.ensureAdmin(user);
 
-		EventService eventDao = new EventService();
+		EventService eventService = new EventService();
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		// Get the data points
-		List<DataPointBean> allPoints = new ArrayList<DataPointBean>();
-		List<EventSourceBean> dataPoints = new ArrayList<EventSourceBean>();
-		List<DataPointVO> dps = new DataPointDao().getDataPoints(
-				DataPointExtendedNameComparator.instance, true);
-		for (DataPointVO dp : dps) {
+		DataPointService dataPointService = new DataPointService();
+		List<EventSourceBean> eventSource = new ArrayList<>();
+
+		List<DataPointVO> dataPoints = dataPointService.getDataPointsWithAccess(user, true);
+		for (DataPointVO dp : dataPoints) {
 			if (!Permissions
 					.hasDataSourcePermission(user, dp.getDataSourceId()))
 				continue;
 
-			allPoints.add(new DataPointBean(dp));
-
-			if (dp.getEventDetectors().size() > 0) {
+			if (dp.getEventDetectors() != null && !dp.getEventDetectors().isEmpty()) {
 				EventSourceBean source = new EventSourceBean();
 				source.setId(dp.getId());
 				source.setName(dp.getExtendedName());
 
 				for (PointEventDetectorVO ped : dp.getEventDetectors()) {
 					EventTypeVO dpet = ped.getEventType();
-					dpet.setHandlers(eventDao.getEventHandlers(dpet));
+					dpet.setHandlers(eventService.getEventHandlers(dpet));
 					source.getEventTypes().add(dpet);
 				}
 
-				dataPoints.add(source);
+				eventSource.add(source);
 			}
 		}
 
 		// Get the scheduled events
 		List<EventTypeVO> scheduledEvents = new ArrayList<EventTypeVO>();
-		List<ScheduledEventVO> ses = new ScheduledEventDao()
+		List<ScheduledEventVO> ses = new ScheduledEventService()
 				.getScheduledEvents();
 		for (ScheduledEventVO se : ses) {
 			EventTypeVO et = se.getEventType();
-			et.setHandlers(eventDao.getEventHandlers(et));
+			et.setHandlers(eventService.getEventHandlers(et));
 			scheduledEvents.add(et);
 		}
 		model.put("scheduledEvents", scheduledEvents);
 
 		// Get the compound event detectors
 		List<EventTypeVO> compoundEvents = new ArrayList<EventTypeVO>();
-		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorDao()
+		List<CompoundEventDetectorVO> ceds = new CompoundEventDetectorService()
 				.getCompoundEventDetectors();
 		for (CompoundEventDetectorVO ced : ceds) {
 			EventTypeVO et = ced.getEventType();
-			et.setHandlers(eventDao.getEventHandlers(et));
+			et.setHandlers(eventService.getEventHandlers(et));
 			compoundEvents.add(et);
 		}
 		model.put("compoundEvents", compoundEvents);
 
 		// Get the data sources
 		List<EventSourceBean> dataSources = new ArrayList<EventSourceBean>();
-		for (DataSourceVO<?> ds : new DataSourceDao().getDataSources()) {
+		for (DataSourceVO<?> ds : new DataSourceService().getDataSources()) {
 			if (!Permissions.hasDataSourcePermission(user, ds.getId()))
 				continue;
 
@@ -144,7 +132,7 @@ public class EventHandlersDwr extends BaseDwr {
 				source.setName(ds.getName());
 
 				for (EventTypeVO dset : ds.getEventTypes()) {
-					dset.setHandlers(eventDao.getEventHandlers(dset));
+					dset.setHandlers(eventService.getEventHandlers(dset));
 					source.getEventTypes().add(dset);
 				}
 
@@ -155,7 +143,7 @@ public class EventHandlersDwr extends BaseDwr {
 		if (Permissions.hasAdmin(user)) {
 			// Get the publishers
 			List<EventSourceBean> publishers = new ArrayList<EventSourceBean>();
-			for (PublisherVO<? extends PublishedPointVO> p : new PublisherDao()
+			for (PublisherVO<? extends PublishedPointVO> p : new PublisherService()
 					.getPublishers(new PublisherService.PublisherNameComparator())) {
 				if (p.getEventTypes().size() > 0) {
 					EventSourceBean source = new EventSourceBean();
@@ -163,7 +151,7 @@ public class EventHandlersDwr extends BaseDwr {
 					source.setName(p.getName());
 
 					for (EventTypeVO pet : p.getEventTypes()) {
-						pet.setHandlers(eventDao.getEventHandlers(pet));
+						pet.setHandlers(eventService.getEventHandlers(pet));
 						source.getEventTypes().add(pet);
 					}
 
@@ -174,11 +162,11 @@ public class EventHandlersDwr extends BaseDwr {
 
 			// Get the maintenance events
 			List<EventTypeVO> maintenanceEvents = new ArrayList<EventTypeVO>();
-			List<MaintenanceEventVO> mes = new MaintenanceEventDao()
+			List<MaintenanceEventVO> mes = new MaintenanceEventService()
 					.getMaintenanceEvents();
 			for (MaintenanceEventVO me : mes) {
 				EventTypeVO et = me.getEventType();
-				et.setHandlers(eventDao.getEventHandlers(et));
+				et.setHandlers(eventService.getEventHandlers(et));
 				maintenanceEvents.add(et);
 			}
 			model.put("maintenanceEvents", maintenanceEvents);
@@ -186,7 +174,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the system events
 			List<EventTypeVO> systemEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO sets : SystemEventType.getSystemEventTypes()) {
-				sets.setHandlers(eventDao.getEventHandlers(sets));
+				sets.setHandlers(eventService.getEventHandlers(sets));
 				systemEvents.add(sets);
 			}
 			model.put("systemEvents", systemEvents);
@@ -194,7 +182,7 @@ public class EventHandlersDwr extends BaseDwr {
 			// Get the audit events
 			List<EventTypeVO> auditEvents = new ArrayList<EventTypeVO>();
 			for (EventTypeVO aets : AuditEventType.getAuditEventTypes()) {
-				aets.setHandlers(eventDao.getEventHandlers(aets));
+				aets.setHandlers(eventService.getEventHandlers(aets));
 				auditEvents.add(aets);
 			}
 			model.put("auditEvents", auditEvents);
@@ -212,8 +200,8 @@ public class EventHandlersDwr extends BaseDwr {
 				.collect(Collectors.toList());
 		model.put("users", users);
 
-		model.put("allPoints", allPoints);
-		model.put("dataPoints", dataPoints);
+		model.put("allPoints", getDataPointsByEventHandlers());
+		model.put("dataPoints", eventSource);
 		model.put("dataSources", dataSources);
 
 		return model;
@@ -221,7 +209,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public String createSetValueContent(int pointId, String valueStr,
 			String idSuffix) {
-		DataPointVO pointVO = new DataPointDao().getDataPoint(pointId);
+		DataPointVO pointVO = new DataPointService().getDataPoint(pointId);
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				pointVO.getDataSourceId());
 
@@ -345,6 +333,8 @@ public class EventHandlersDwr extends BaseDwr {
 			EventHandlerVO handler = eventService.saveEventHandler(type, vo);
 			response.addData("handler", handler);
 		}
+
+		response.getData().put("allPoints", getDataPointsByEventHandlers());
 
 		return response;
 	}

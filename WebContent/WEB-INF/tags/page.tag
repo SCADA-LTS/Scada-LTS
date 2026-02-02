@@ -45,6 +45,7 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <link href="resources/jQuery/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css"/>
   <c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
   <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
   <c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
@@ -92,6 +93,7 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
+  <script type="text/javascript" src="resources/jQuery/plugins/chosen/chosen.jquery.min.js"></script>
   <c:if test="${isLoggedToScadaUser}">
       <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
       <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>

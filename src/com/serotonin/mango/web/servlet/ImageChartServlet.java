@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.scada_lts.utils.GetDataPointValuesUtils.getDataPointValues;
+
 public class ImageChartServlet extends BaseInfoServlet {
     private static final long serialVersionUID = -1;
     private static final long CACHE_PURGE_INTERVAL = 1000 * 60 * 10; // 10 minutes
@@ -139,16 +141,7 @@ public class ImageChartServlet extends BaseInfoServlet {
                     }
 
                     // Get the data.
-                    PointValueFacade pointValueFacade = new PointValueFacade(dataPointId);
-                    List<PointValueTime> data;
-                    if (from == -1 && to == -1)
-                        data = pointValueFacade.getPointValues(0);
-                    else if (from == -1)
-                        data = pointValueFacade.getPointValuesBetween(0, to);
-                    else if (to == -1)
-                        data = pointValueFacade.getPointValues(from);
-                    else
-                        data = pointValueFacade.getPointValuesBetween(from, to);
+                    List<PointValueTime> data = getDataPointValues(from, to, dataPointId);
 
                     DataPointVO dp = new DataPointDao().getDataPoint(dataPointId);
                     if (dp == null || dp.getName() == null)

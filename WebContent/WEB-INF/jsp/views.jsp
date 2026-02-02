@@ -299,7 +299,11 @@
 	<script type="text/javascript">
 	
 		checkFullScreen();
-	
+
+        jQuery(document).ready(function(){
+            loadPointsSelects("select[id^=chartComparator]", "<spring:message code='chosen.selector.selectPoint'/>");
+        });
+
 	</script>
 
 	<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />

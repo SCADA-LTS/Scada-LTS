@@ -223,7 +223,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
         // Check if the remote device is in the local list yet.
         RemoteDevice d = localDevice.getRemoteDevice(address, network);
-        if (d == null) {
+        if (!isReadyDevice(d)) {
             // Send a whois to get remote device data.
             try {
                 localDevice.sendUnconfirmed(address, null, new WhoIsRequest());
@@ -248,12 +248,12 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
                 // Check again for the device
                 d = localDevice.getRemoteDevice(address, network);
-                if (d != null)
+                if (isReadyDevice(d))
                     break;
             }
         }
 
-        if (d == null) {
+        if (!isReadyDevice(d)) {
             // If we still don't have the device, try to get it manually.
             try {
                 d = localDevice.findRemoteDevice(address, network, locator.getRemoteDeviceInstanceNumber());
@@ -269,7 +269,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             }
         }
 
-        if (d == null) {
+        if (!isReadyDevice(d)) {
             // If we still don't have the device, call it in.
             fireDeviceExceptionEvent(dataPoint,"event.bacnet.deviceError", address.toIpString());
             disablePoint(dataPoint);
@@ -818,5 +818,9 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     @Override
     public int getUpdateTimeExceededUpdatePeriodEventId() {
         return UPDATE_TIME_EXCEEDED_UPDATE_PERIOD_EXCEPTION_EVENT;
+    }
+
+    private boolean isReadyDevice(RemoteDevice d) {
+        return d != null && d.getSegmentationSupported() != null;
     }
 }

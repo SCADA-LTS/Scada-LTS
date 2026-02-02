@@ -28,7 +28,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
-import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -41,14 +40,15 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.Tuple;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.scada_lts.dao.*;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -59,7 +59,6 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -234,6 +233,7 @@ public class DataPointService implements MangoDataPoint {
 		return pointsWithListData;
 	}
 
+	@Deprecated(since = "2.8.1")
 	public List<DataPointVO> searchDataPoints(String[] keywords) {
 		return dataPointDAO.getDataPointByKeyword(keywords);
 	}
@@ -634,19 +634,17 @@ public class DataPointService implements MangoDataPoint {
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(getPointIds(dataPoints), startTs, endTs);
 	}
 
+	@Override
     public List<DataPointVO> getDataPoints(Set<Integer> pointIds) {
-        return pointIds.stream()
-                .map(a -> getDataPointOpt(a))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.peek(a -> {
-					if(a.getPointLocator() == null) {
-						LOG.warn(LoggingUtils.dataPointInfo(a));
-					}
-				})
-				.filter(a -> a.getPointLocator() != null)
-                .collect(Collectors.toList());
+		return dataPointDAO.selectDataPoints(pointIds);
     }
+
+	@Override
+	public List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user) {
+		return dataPointDAO.selectDataPoints(pointIds).stream()
+				.filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
+				.collect(Collectors.toList());
+	}
 
 	public List<DataPointVO> getDataPointsByXid(Set<String> xids) {
 		List<DataPointVO> pointIds = new ArrayList<>();
@@ -695,17 +693,6 @@ public class DataPointService implements MangoDataPoint {
 				.collect(Collectors.toList());
 	}
 
-	private Optional<DataPointVO> getDataPointOpt(Integer a) {
-		if(a == null)
-			return Optional.empty();
-		try {
-			return Optional.ofNullable(getDataPoint(a));
-		} catch (Exception ex) {
-			LOG.error(ex.getMessage());
-			return Optional.empty();
-		}
-	}
-
 	public DataPointVO createDataPoint(DataPointVO dataPoint) {
 		dataPoint.setEventDetectors(new ArrayList<>());
 		dataPoint.setTextRenderer(new NoneRenderer());
@@ -715,12 +702,46 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.1")
 	public List<DataPointVO> searchDataPointsBy(String searchText) {
 		if (searchText != null) {
 			String[] keywords = searchText.split("\\s+");
 			return searchDataPoints(keywords);
 		}
 		return getDataPoints(Comparator.comparing(DataPointVO::getName), false);
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean startsWith, int page, int limit) {
+		if (!StringUtils.isEmpty(keywordSearch)) {
+			Set<String> keywords = Set.of(keywordSearch);
+			return dataPointDAO.getDataPointByKeywords(keywords, excludeIds, startsWith, page * limit, limit);
+		} else {
+			return dataPointDAO.getDataPointByKeywords(Collections.emptySet(), excludeIds, startsWith, page * limit, limit);
+		}
+	}
+
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData) {
+		List<DataPointVO> dps = getDataPointsWithAccess(user);
+		if(includeRelationalData) {
+			setRelationalData(dps);
+		}
+		return dps;
+	}
+
+	@Override
+	public int getDataPointIdWithAccessPrev(User user, String startDataPointName) {
+		if(user.isAdmin())
+			return dataPointDAO.selectDataPointIdWithAccessPrev(startDataPointName);
+		return dataPointDAO.selectDataPointIdWithAccessPrev(user.getId(), user.getUserProfile(), startDataPointName);
+	}
+
+	@Override
+	public int getDataPointIdWithAccessNext(User user, String startDataPointName) {
+		if(user.isAdmin())
+			return dataPointDAO.selectDataPointIdWithAccessNext(startDataPointName);
+		return dataPointDAO.selectDataPointIdWithAccessNext(user.getId(), user.getUserProfile(), startDataPointName);
 	}
 
 	private void save(User user, String value, DataPointVO point, SetPointSource source) {

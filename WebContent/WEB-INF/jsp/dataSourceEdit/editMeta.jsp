@@ -21,28 +21,11 @@
 <%@page import="com.serotonin.mango.Common"%>
 
 <script type="text/javascript">
-  var pointsArray = new Array();
-  var scriptPointsContext;
+
+  var pointsContext;
   
   function initImpl() {
-      <c:forEach items="${userPoints}" var="dp">
-        pointsArray[pointsArray.length] = {
-            id : ${dp.id}, 
-            name : "<c:out value="${dp.extendedName}"/>",
-            xid : "<c:out value="${dp.xid}"/>",
-            type : "<sst:i18n message="${dp.dataTypeMessage}"/>"
-        };
-      </c:forEach>
-      
       createContextualMessageNode("contextContainer", "context");
-      
-	  jQuery("#allPointsList").chosen({
-      	allow_single_deselect: true,
-		placeholder_text_single: " ",
-		search_contains: true,
-		width: "400px"
-	  });       
-      
   }
   
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -67,15 +50,14 @@
       DataSourceEditDwr.saveMetaDataSource($get("dataSourceName"), $get("dataSourceXid"), saveDataSourceCB);
   }
   
-  function editPointCBImpl(locator) {
-      if (this.scriptPointsContext) {
-         for (var i = 0; i < locator.context.length; i++) {
-             this.scriptPointsContext.addToContextArray(locator.context[i].key, locator.context[i].value);
-         }
-         this.scriptPointsContext.writeContextArray();
-      } else {
-         this.scriptPointsContext = new ScriptPointsContext(locator.context, pointsArray);
-      }
+  function editPointCBImpl(locator, contextPoints) {
+
+      pointsContext = new ScriptPointsContext(new DataPointsSelect({
+          placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+          excludePointsArray: locator.context,
+          pointsArray: contextPoints
+      }));
+
       $set("script", locator.script);
       $set("dataTypeId", locator.dataTypeId);
       $set("settable", locator.settable);
@@ -89,7 +71,7 @@
   }
   
   function savePointImpl(locator) {
-      locator.context = this.scriptPointsContext.convertToSave();
+      locator.context = pointsContext.convertToSave();
       locator.script = $get("script");
       locator.dataTypeId = $get("dataTypeId");
       locator.settable = $get("settable");
@@ -103,7 +85,7 @@
 
   function validateScript() {
       hideContextualMessages("pointProperties");
-      DataSourceEditDwr.validateScript($get("script"), this.scriptPointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
+      DataSourceEditDwr.validateScript($get("script"), pointsContext.convertToSave(), $get("dataTypeId"), validateScriptCB);
   }
   
   function validateScriptCB(response) {
@@ -113,13 +95,6 @@
   function updateEventChanged() {
       display("updateCronPatternRow", $get("updateEvent") == <%= MetaPointLocatorVO.UPDATE_EVENT_CRON %>);
   }
-  
-  jQuery(document).ready(function(){    
-  	(function($) {
-		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
-		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-  	})(jQuery);
-  });
 </script>
 
 <c:set var="dsDesc"><spring:message code="dsEdit.meta.desc"/></c:set>
@@ -145,8 +120,8 @@
   <tr>
     <td class="formLabelRequired"><spring:message code="dsEdit.meta.scriptContext"/></td>
     <td class="formField">
-      <select id="allPointsList"></select>
-      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
+      <select id="allPointsList" style="display:none;"></select>
+      <tag:img id="icon_add" png="add" onclick="pointsContext.addPointToContext();" title="common.add" style="display:none;"/>
       
       <table cellspacing="1" id="contextContainer">
         <tbody id="contextTableEmpty" style="display:none;">
