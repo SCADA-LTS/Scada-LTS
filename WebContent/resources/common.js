@@ -1882,9 +1882,9 @@ class ObjectsSelect {
         this.excludeObjectsArray = objectsSelectDef.excludeObjectsArray || [];
         this.limit = objectsSelectDef.limit ? (objectsSelectDef.limit < 10 ? 10 : objectsSelectDef.limit) : 500;
         this.selectHtmlId = objectsSelectDef.selectHtmlId || "allObjectsList";
-        this.inputSelector = "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-search input";
-        this.listSelector = "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-results";
-        this.placeholderTextSingle = objectsSelectDef.placeholderTextSingle;
+        this.inputSelector = objectsSelectDef.inputSelector || "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-search input";
+        this.listSelector = objectsSelectDef.listSelector || "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-results";
+        this.placeholderTextSingle = objectsSelectDef.placeholderTextSingle || "Enter name point...";
         this.objectsArray = objectsSelectDef.objectsArray || [];
         this.dataTypes = objectsSelectDef.dataTypes || [];
         this.altKey = objectsSelectDef.altKey || "id";
@@ -1895,7 +1895,7 @@ class ObjectsSelect {
         this.nextPage = objectsSelectDef.nextPage || 1;
         this.keywordSearchLast = objectsSelectDef.keywordSearch || "";
         this.startAsEmpty = objectsSelectDef.startAsEmpty || false;
-        this.settable = objectsSelectDef.settable ? objectsSelectDef.settable : "";
+        this.settable = objectsSelectDef.settable || "";
         this.endpoint = objectsSelectDef.endpoint || "api/objects/bean";
         this.idNames = objectsSelectDef.idNames || ["id", "key", "objectId"];
         this.#init();
