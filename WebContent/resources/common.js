@@ -2267,14 +2267,3 @@ function loadPointsSelects(selector, placeholderTextSingle) {
         });
     }
 }
-
-function executeOn(apply, arg1, arg2) {
-  if(arg1 && arg2) {
-    return apply(arg1, arg2);
-  } else if(arg1) {
-    return apply(arg1);
-  } else {
-    console.warn("Args not initialized for: ", [apply]);
-    return null;
-  }
-}
