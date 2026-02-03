@@ -20,11 +20,7 @@ package com.serotonin.mango.web.mvc.controller;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
-import com.serotonin.db.IntValuePair;
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,59 +108,6 @@ public final class ControllerUtils {
             return "/watch_list.shtm";
         }
         return user.getHomeUrl().startsWith("/") ? user.getHomeUrl() : "/" + user.getHomeUrl();
-    }
-
-    public static List<DataPointVO> getUserPoints(User user, List<DataPointVO> allPoints, Comparator<DataPointVO> comparator) {
-
-        List<DataPointVO> userPoints = new ArrayList<>();
-        for (DataPointVO dp : allPoints) {
-            addPointIfHasPermission(dp, user, userPoints);
-        }
-        if(comparator != null) {
-            userPoints.sort(comparator);
-        }
-        return userPoints;
-    }
-
-    public static List<DataPointVO> getContextPoints(User user, List<DataPointVO> allPoints,
-                                                     DataPointService dataPointService,
-                                                     Comparator<DataPointVO> comparator) {
-
-        List<DataPointVO> contextPoints = new ArrayList<>();
-        for (DataPointVO dp : allPoints) {
-            if(dp.getPointLocator() instanceof MetaPointLocatorVO) {
-                MetaPointLocatorVO pointLocatorVO = dp.getPointLocator();
-                Set<Integer> ids = pointLocatorVO.getContext().stream().map(IntValuePair::getKey).collect(Collectors.toSet());
-                List<DataPointVO> dataPoints = dataPointService.getDataPoints(ids);
-                for(DataPointVO dataPoint: dataPoints) {
-                    addPointIfHasPermission(dataPoint, user, contextPoints);
-                }
-            }
-        }
-        if(comparator != null) {
-            contextPoints.sort(comparator);
-        }
-        return contextPoints;
-    }
-
-    public static List<DataPointVO> getAnalogPoints(User user, List<DataPointVO> allPoints,
-                                                    Comparator<DataPointVO> comparator) {
-        List<DataPointVO> analogPoints = new ArrayList<>();
-        for (DataPointVO dp : allPoints) {
-            if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
-                addPointIfHasPermission(dp, user, analogPoints);
-            }
-        }
-        if(comparator != null) {
-            analogPoints.sort(comparator);
-        }
-        return analogPoints;
-    }
-
-    private static void addPointIfHasPermission(DataPointVO dp, User user, List<DataPointVO> userPoints) {
-        if (GetDataPointsWithAccess.hasDataPointReadPermission(user, dp)) {
-            userPoints.add(dp);
-        }
     }
 
     private static void acceptModel(BiConsumer<String, Object> model, List<DataPointVO> userPoints, int prevId, int nextId) {

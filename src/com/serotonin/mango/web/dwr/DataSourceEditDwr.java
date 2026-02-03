@@ -223,7 +223,7 @@ import static com.serotonin.mango.rt.dataSource.bacnet.BACnetUtils.checkFreePort
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
-import static org.scada_lts.utils.GetDataPointsUtils.getContextPoints;
+import static org.scada_lts.utils.GetDataPointsUtils.getDataPointsByContext;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.XidUtils.validateXid;
 
@@ -330,7 +330,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             MetaPointLocatorVO locator = dataPoint.getPointLocator();
             User user = Common.getUser();
             DataPointService dataPointService = new DataPointService();
-            List<DataPointBean> contextPoints = getContextPoints(locator, user, dataPointService);
+            List<DataPointBean> contextPoints = getDataPointsByContext(locator, user, dataPointService);
             response.addData("contextPoints", contextPoints);
         }
 
@@ -1181,7 +1181,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         User user = Common.getUser();
         DataPointService dataPointService = new DataPointService();
-        List<DataPointBean> contextPoints = getContextPoints(locator, user, dataPointService);
+        List<DataPointBean> contextPoints = getDataPointsByContext(locator, user, dataPointService);
         response.addData("contextPoints", contextPoints);
         response.addData("locator", locator);
         return response;

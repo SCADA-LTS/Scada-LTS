@@ -27,10 +27,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -99,12 +96,65 @@ public final class GetDataPointsUtils {
         return new HashSet<>(GetDataPointsUtils.getDataPointsByEventHandlers(user, eventHandlers, new DataPointService()));
     }
 
-    public static List<DataPointBean> getContextPoints(MetaPointLocatorVO locator, User user, DataPointService dataPointService) {
+    public static List<DataPointBean> getDataPointsByContext(MetaPointLocatorVO locator, User user, DataPointService dataPointService) {
+        return getDataPointsByContext(locator, user, dataPointService, DataPointBean::new);
+    }
+
+    public static <T> List<T> getDataPointsByContext(MetaPointLocatorVO locator, User user, DataPointService dataPointService, Function<DataPointVO, T> converter) {
         return dataPointService.getDataPoints(locator.getContext().stream()
                         .map(IntValuePair::getKey)
                         .collect(Collectors.toSet()), user).stream()
-                .map(DataPointBean::new)
+                .map(converter)
                 .collect(Collectors.toList());
+    }
+
+    public static List<DataPointVO> getDataPointsByContext(User user, List<DataPointVO> allPoints,
+                                                           DataPointService dataPointService,
+                                                           Comparator<DataPointVO> comparator) {
+
+        List<DataPointVO> contextPoints = new ArrayList<>();
+        for (DataPointVO dp : allPoints) {
+            if(dp.getPointLocator() instanceof MetaPointLocatorVO) {
+                MetaPointLocatorVO pointLocatorVO = dp.getPointLocator();
+                contextPoints.addAll(getDataPointsByContext(pointLocatorVO, user, dataPointService, a -> a));
+            }
+        }
+        if(comparator != null) {
+            contextPoints.sort(comparator);
+        }
+        return contextPoints;
+    }
+
+    public static List<DataPointVO> filteringDataPointsByUser(User user, List<DataPointVO> allPoints, Comparator<DataPointVO> comparator) {
+
+        List<DataPointVO> userPoints = new ArrayList<>();
+        for (DataPointVO dp : allPoints) {
+            addPointIfHasPermission(dp, user, userPoints);
+        }
+        if(comparator != null) {
+            userPoints.sort(comparator);
+        }
+        return userPoints;
+    }
+
+    public static List<DataPointVO> filteringDataPointsByNumericType(User user, List<DataPointVO> allPoints,
+                                                                     Comparator<DataPointVO> comparator) {
+        List<DataPointVO> analogPoints = new ArrayList<>();
+        for (DataPointVO dp : allPoints) {
+            if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
+                addPointIfHasPermission(dp, user, analogPoints);
+            }
+        }
+        if(comparator != null) {
+            analogPoints.sort(comparator);
+        }
+        return analogPoints;
+    }
+
+    private static void addPointIfHasPermission(DataPointVO dp, User user, List<DataPointVO> userPoints) {
+        if (GetDataPointsWithAccess.hasDataPointReadPermission(user, dp)) {
+            userPoints.add(dp);
+        }
     }
 
     private static Set<Integer> getDataPointIdsByViewComponents(View view) {

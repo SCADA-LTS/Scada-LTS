@@ -39,7 +39,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 
-import static com.serotonin.mango.web.mvc.controller.ControllerUtils.*;
+import static org.scada_lts.utils.GetDataPointsUtils.*;
 
 public class DataSourceEditController extends ParameterizableViewController {
     @Override
@@ -104,12 +104,12 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         List<DataPointVO> allPoints = dataPointService.getDataPoints(dataSourceVO.getId(), null);
 
-        List<DataPointVO> userPoints = getUserPoints(user, allPoints, DataPointExtendedNameComparator.instance);
-        List<DataPointVO> contextPoints = getContextPoints(user, dp == null ? allPoints : Arrays.asList(dp), dataPointService, DataPointExtendedNameComparator.instance);
+        List<DataPointVO> userPoints = filteringDataPointsByUser(user, allPoints, DataPointExtendedNameComparator.instance);
+        List<DataPointVO> contextPoints = getDataPointsByContext(user, allPoints, dataPointService, DataPointExtendedNameComparator.instance);
         List<DataPointVO> points = new ArrayList<>();
         points.addAll(userPoints);
         points.addAll(contextPoints);
-        List<DataPointVO> analogPoints = getAnalogPoints(user, points, DataPointExtendedNameComparator.instance);
+        List<DataPointVO> analogPoints = filteringDataPointsByNumericType(user, points, DataPointExtendedNameComparator.instance);
 
         model.put("userPoints", userPoints);
         model.put("contextPoints", contextPoints);
