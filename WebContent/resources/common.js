@@ -1882,8 +1882,8 @@ class ObjectsSelect {
         this.excludeObjectsArray = objectsSelectDef.excludeObjectsArray || [];
         this.limit = objectsSelectDef.limit ? (objectsSelectDef.limit < 10 ? 10 : objectsSelectDef.limit) : 500;
         this.selectHtmlId = objectsSelectDef.selectHtmlId || "allObjectsList";
-        this.inputSelector = objectsSelectDef.inputSelector || "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-search input";
-        this.listSelector = objectsSelectDef.listSelector || "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-results";
+        this.inputSelector = objectsSelectDef.inputSelector || "#" + this.selectHtmlId + "_chosen .chosen-search input";
+        this.listSelector = objectsSelectDef.listSelector || "#" + this.selectHtmlId + "_chosen .chosen-results";
         this.placeholderTextSingle = objectsSelectDef.placeholderTextSingle || "Enter name point...";
         this.objectsArray = objectsSelectDef.objectsArray || [];
         this.dataTypes = objectsSelectDef.dataTypes || [];
@@ -1898,6 +1898,7 @@ class ObjectsSelect {
         this.settable = objectsSelectDef.settable || "";
         this.endpoint = objectsSelectDef.endpoint || "api/objects/bean";
         this.idNames = objectsSelectDef.idNames || ["id", "key", "objectId"];
+        this.instancesCached = objectsSelectDef.instancesCached || {};
         this.#init();
     }
 
@@ -1939,7 +1940,7 @@ class ObjectsSelect {
 
     loadObjectsList() {
         let select = this;
-        this.#loadObjects("", 0, this.lastObject, 0, function(objects) {
+        this.#loadObjects("", 200, this.objectLast, 0, function(objects) {
             select.#setObjectsArray(objects);
         });
     }
@@ -1950,10 +1951,11 @@ class ObjectsSelect {
             option.selected = true;
         }
         jQuery("#" + this.selectHtmlId).trigger('chosen:updated');
-        this.lastObject = this.getObject();
+        this.objectLast = this.getObject();
     }
 
     updateObjectsList(excludeObjects) {
+       let objectId = this.getObjectId();
        let tempArray = this.objectsArray;
        let availObjects = new Array();
        this.excludeObjectsArray = [...new Set(excludeObjects)];
@@ -1979,23 +1981,24 @@ class ObjectsSelect {
           this.#addEmptyOption(availObjects, single);
        }
 
-       if(availObjects.length == 0 && this.lastObject) {
-           availObjects.push(this.lastObject);
+       if(availObjects.length == 0 && this.objectLast) {
+           availObjects.push(this.objectLast);
        }
 
        this.#addOptions(this.selectHtmlId, availObjects, "id", this.altKey, "extendName", this.altValue);
        jQuery("#" + this.selectHtmlId).trigger('chosen:updated');
+       this.setObjectId(objectId);
     }
 
     #init() {
+        this.#clear();
+        this.#cached();
         for(let i = 0; i < this.imgAddHtmlIds.length; i++) {
             let node = getNodeIfString(this.imgAddHtmlIds[i]);
             if(node) {
                 show(node);
             }
         }
-        jQuery(this.inputSelector).off('input');
-        jQuery(this.listSelector).off('scrollend');
 
         jQuery("#" + this.selectHtmlId).chosen({
            allow_single_deselect: true,
@@ -2022,7 +2025,7 @@ class ObjectsSelect {
             if(!evt.originalEvent || !evt.originalEvent.isTrusted) {
                 return;
             }
-            select.#loadObjects(evt.target.value, 700, select.lastObject, 0, function(objects) {
+            select.#loadObjects(evt.target.value, 700, select.objectLast, 0, function(objects) {
                 select.#setObjectsArray(objects);
             });
         });
@@ -2033,11 +2036,42 @@ class ObjectsSelect {
             }
             let element = jQuery(evt.currentTarget);
             if (element[0].scrollHeight - element.scrollTop() <= element.outerHeight()) {
-                select.#loadObjects(select.keywordSearchLast, 0, undefined, select.nextPage, function(objects) {
+                select.#loadObjects(select.keywordSearchLast, 200, undefined, select.nextPage, function(objects) {
                     select.#addObjectsArray(objects);
                 });
             }
         });
+    }
+
+    clearList() {
+        this.objectsArray = [];
+        this.setObjectId(undefined);
+        this.updateObjectsList(this.excludeObjectsArray);
+        this.nextPage = 1;
+    }
+
+    #clear() {
+        jQuery(this.inputSelector).off('input');
+        jQuery(this.listSelector).off('scrollend');
+        this.#stopCommunication();
+    }
+
+    #stopCommunication() {
+        if(this.searchTimer) {
+            clearTimeout(this.searchTimer);
+        }
+        if(this.requestLast) {
+            this.requestLast.abort();
+        }
+    }
+
+    #cached() {
+        if(this.instancesCached) {
+            if(this.instancesCached[this.selectHtmlId]) {
+                this.instancesCached[this.selectHtmlId].#clear();
+            }
+            this.instancesCached[this.selectHtmlId] = this;
+        }
     }
 
     #setObjectsArray(objectsArray) {
@@ -2058,7 +2092,7 @@ class ObjectsSelect {
                     excludeIds[excludeIds.length] = id;
                 }
             }
-            jQuery.ajax({
+            select.requestLast = jQuery.ajax({
                 type: "GET",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -2129,7 +2163,7 @@ class ObjectsSelect {
     }
 
     #setSearchTimer(searchTimer) {
-        clearTimeout(this.searchTimer);
+        this.#stopCommunication();
         this.searchTimer = searchTimer;
     }
 
@@ -2144,15 +2178,20 @@ class ObjectsSelect {
     }
 }
 
-class DataPointsSelect extends ObjectsSelect {
+scadalts.cache = {};
+scadalts.cache.select = {};
+scadalts.cache.select.points = {};
+scadalts.cache.select.points.instances = {};
+
+class DataPointsSelect {
 
     constructor (dataPointsSelectDef) {
         let objectsSelectDef = {};
         objectsSelectDef.excludeObjectsArray = dataPointsSelectDef.excludePointsArray || [];
         objectsSelectDef.limit = dataPointsSelectDef.limit ? (dataPointsSelectDef.limit < 10 ? 10 : dataPointsSelectDef.limit) : 500;
         objectsSelectDef.selectHtmlId = dataPointsSelectDef.selectHtmlId || "allPointsList";
-        objectsSelectDef.inputSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-search input";
-        objectsSelectDef.listSelector = "#" + dataPointsSelectDef.selectHtmlId + "_chosen .chosen-results";
+        objectsSelectDef.inputSelector = "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-search input";
+        objectsSelectDef.listSelector = "#" + objectsSelectDef.selectHtmlId + "_chosen .chosen-results";
         objectsSelectDef.placeholderTextSingle = dataPointsSelectDef.placeholderTextSingle;
         objectsSelectDef.objectsArray = dataPointsSelectDef.pointsArray || [];
         objectsSelectDef.dataTypes = dataPointsSelectDef.dataTypes || [];
@@ -2167,43 +2206,48 @@ class DataPointsSelect extends ObjectsSelect {
         objectsSelectDef.settable = dataPointsSelectDef.pointSettable ? dataPointsSelectDef.pointSettable : "";
         objectsSelectDef.endpoint = dataPointsSelectDef.endpoint || "api/datapoints/bean";
         objectsSelectDef.idNames = dataPointsSelectDef.idNames || ["id", "dataPointId", "pointId", "key"];
-        super(objectsSelectDef);
+        objectsSelectDef.instancesCached = scadalts.cache.select.points.instances || {};
+        this.objectsSelect = new ObjectsSelect(objectsSelectDef);
     }
 
     getExcludePointsArray() {
-        return super.getExcludeObjectsArray();
+        return this.objectsSelect.getExcludeObjectsArray();
     }
 
     getSelectHtmlId() {
-        return super.getSelectHtmlId();
+        return this.objectsSelect.getSelectHtmlId();
     }
 
     getPointId() {
-        return super.getObjectId();
+        return this.objectsSelect.getObjectId();
     }
 
     getPoint() {
-        return super.getObject();
+        return this.objectsSelect.getObject();
     }
 
     getPointById(objectId) {
-        return super.getObjectById(objectId);
+        return this.objectsSelect.getObjectById(objectId);
     }
 
     setDataTypes(dataTypes) {
-        return super.setDataTypes(dataTypes);
+        this.objectsSelect.setDataTypes(dataTypes);
     }
 
     loadPointsList() {
-        return super.loadObjectsList();
+        this.objectsSelect.loadObjectsList();
     }
 
     setPointId(objectId) {
-        return super.setObjectId(objectId);
+        this.objectsSelect.setObjectId(objectId);
     }
 
     updatePointsList(excludeObjects) {
-        return super.updateObjectsList(excludeObjects);
+        this.objectsSelect.updateObjectsList(excludeObjects);
+    }
+
+    clearList() {
+        this.objectsSelect.clearList();
     }
 }
 

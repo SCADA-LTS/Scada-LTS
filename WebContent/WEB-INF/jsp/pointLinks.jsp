@@ -69,8 +69,6 @@
             });
 
             setUserMessage();
-            sourcePointSelect.setPointId(pl.sourcePointId);
-            targetPointSelect.setPointId(pl.targetPointId);
         });
         startImageFader($("pl"+ plId +"Img"));
         display("deletePointLinkImg", plId != ${NEW_ID});
@@ -168,7 +166,7 @@
             return;
         }
 
-        targetPointSelect.setPointId(undefined);
+        targetPointSelect.clearList();
         targetPointSelect.updatePointsList([sourcePoint]);
         targetPointSelect.loadPointsList();
     }
