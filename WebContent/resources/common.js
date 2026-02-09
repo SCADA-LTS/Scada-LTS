@@ -1899,7 +1899,7 @@ class ObjectsSelect {
         this.endpoint = objectsSelectDef.endpoint || "api/objects/bean";
         this.idNames = objectsSelectDef.idNames || ["id", "key", "objectId"];
         this.instancesCached = objectsSelectDef.instancesCached || {};
-        this.allowSingleDeselect = objectsSelectDef.allowSingleDeselect != undefined ? objectsSelectDef.allowSingleDeselect : true;
+        this.allowSingleDeselect = objectsSelectDef.allowSingleDeselect !== undefined ? objectsSelectDef.allowSingleDeselect : true;
         this.#init();
     }
 
@@ -2216,7 +2216,7 @@ class DataPointsSelect {
         objectsSelectDef.endpoint = dataPointsSelectDef.endpoint || "api/datapoints/bean";
         objectsSelectDef.idNames = dataPointsSelectDef.idNames || ["id", "dataPointId", "pointId", "key"];
         objectsSelectDef.instancesCached = scadalts.cache.select.points.instances || {};
-        objectsSelectDef.allowSingleDeselect = dataPointsSelectDef.allowSingleDeselect != undefined ? dataPointsSelectDef.allowSingleDeselect : true;
+        objectsSelectDef.allowSingleDeselect = dataPointsSelectDef.allowSingleDeselect !== undefined ? dataPointsSelectDef.allowSingleDeselect : true;
         this.objectsSelect = new ObjectsSelect(objectsSelectDef);
     }
 
