@@ -103,7 +103,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<select style='float:left;'  id='" + idPrefix + "'>");
 
-		sb.append("<option value='0'> &nbsp; </option>");
+		sb.append("<option value='0'></option>");
 
 		for (ScadaObjectIdentifier dp : dataPoints) {
 			sb.append("<option value='" + dp.getId() + "'> " + escapeHtml(dp.getName())

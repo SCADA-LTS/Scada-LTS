@@ -217,12 +217,12 @@
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.source"/></td>
-              <td class="formField"><select id="sourcePointId" onchange="sourcePointSelectChanged()" style="display:none;"></select></td>
+              <td class="formField"><select id="sourcePointId" onchange="sourcePointSelectChanged()" style="display:none;"><option></option></select></td>
             </tr>
             
             <tr>
               <td class="formLabelRequired"><spring:message code="pointLinks.target"/></td>
-              <td class="formField"><select id="targetPointId" style="display:none;"></select></td>
+              <td class="formField"><select id="targetPointId" style="display:none;"><option></option></select></td>
             </tr>
             
             <tr>

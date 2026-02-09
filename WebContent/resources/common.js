@@ -1975,10 +1975,7 @@ class ObjectsSelect {
        }
 
        if(!this.invisibleEmptyOption) {
-          let single = {}
-          single[this.altKey] = undefined;
-          single[this.altValue] = this.placeholderTextSingle;
-          this.#addEmptyOption(availObjects, single);
+          this.#addEmptyOption(availObjects);
        }
 
        if(availObjects.length == 0 && this.objectLast) {
@@ -2132,16 +2129,21 @@ class ObjectsSelect {
         let select = document.getElementById(id);
         for (let i = 0; i < availObjects.length; i++) {
             let opt = document.createElement('option');
-            opt.value = availObjects[i][key] ? availObjects[i][key] : availObjects[i][altKey];
-            opt.innerHTML = availObjects[i][value] ? availObjects[i][value] : availObjects[i][altValue] ;
+            if(availObjects[i][key] || availObjects[i][altKey]) {
+                opt.value = availObjects[i][key] ? availObjects[i][key] : availObjects[i][altKey];
+                opt.innerHTML = availObjects[i][value] ? availObjects[i][value] : availObjects[i][altValue];
+            }
             select.appendChild(opt);
         }
     }
 
-    #addEmptyOption(availObjects, object) {
-        let emptyIndex = availObjects.indexOf(object);
+    #addEmptyOption(availObjects) {
+        let single = {}
+        single[this.altKey] = undefined;
+        single[this.altValue] = this.placeholderTextSingle;
+        let emptyIndex = availObjects.indexOf(single);
         if(emptyIndex == -1) {
-           availObjects.unshift(object);
+           availObjects.unshift(single);
         }
     }
 

@@ -820,6 +820,7 @@
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         onchange="doTargetPointSelectChanged(this.value)"
                         style="display:none;">
+                        <option></option>
                 </select>
               </td>
             </tr>
@@ -842,6 +843,7 @@
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         style="display:none;">
+                        <option></option>
                 </select>
               </td>
             </tr>
@@ -869,6 +871,7 @@
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         style="display:none;">
+                        <option></option>
                 </select>
               </td>
             </tr>
