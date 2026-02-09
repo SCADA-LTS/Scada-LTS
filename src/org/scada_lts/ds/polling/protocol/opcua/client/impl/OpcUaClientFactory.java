@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.*;
 import org.scada_lts.ds.polling.protocol.opcua.security.OpcUaMessageSecurityType;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataSourceVO;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.utils.security.CertificateData;
 import org.scada_lts.utils.security.ClientCertificate;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -124,7 +125,8 @@ public final class OpcUaClientFactory {
 
         CertificateData certificateData = CertificateData.scadaLts(applicationUri, host, certificateValidityPeriod);
 
-        ClientCertificate clientCertificate = ClientCertificate.newInstance(dataSourceVO, certificateData, "scada-lts");
+        String clientAlias = SystemSettingsUtils.getOpcUaClientAlias();
+        ClientCertificate clientCertificate = ClientCertificate.newInstance(dataSourceVO, certificateData, clientAlias);
 
         return OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)

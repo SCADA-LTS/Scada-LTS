@@ -68,6 +68,8 @@ public final class SystemSettingsUtils {
     public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
     public static final String OPC_UA_SEARCH_DEPTH_LIMIT_KEY = "scadalts.opcua.search-depth-limit";
 
+    public static final String OPC_UA_CLIENT_ALIAS_KEY = "scadalts.opcua.client-alias";
+
     public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
 
     private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
@@ -845,6 +847,16 @@ public final class SystemSettingsUtils {
         try {
             String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_FILTER_ENABLED_KEY, String.valueOf(defaultValue));
             return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static String getOpcUaClientAlias() {
+        String defaultValue = "scada-lts";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(OPC_UA_CLIENT_ALIAS_KEY, defaultValue);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;
