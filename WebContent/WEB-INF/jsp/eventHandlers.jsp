@@ -510,7 +510,6 @@
                         function(content) { $("inactiveValueToSetContent").innerHTML = content; });
             }
 
-            let targetPointSelect = selectedHandlerNode ? selectedHandlerNode.targetPointIdSelect : targetPointIdSelect;
             let activePointSelect = selectedHandlerNode ? selectedHandlerNode.activePointIdSelect : activePointIdSelect;
             let inactivePointSelect = selectedHandlerNode ? selectedHandlerNode.inactivePointIdSelect : inactivePointIdSelect;
 
@@ -542,6 +541,7 @@
             activeAction.disabled = true;
             let inactiveAction = document.getElementById('inactiveAction');
             inactiveAction.disabled = true;
+            targetPointSelect.setPointId(undefined);
         }
         targetPointSelect.loadPointsList();
     }
@@ -820,7 +820,6 @@
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         onchange="doTargetPointSelectChanged(this.value)"
                         style="display:none;">
-                        <option></option>
                 </select>
               </td>
             </tr>
@@ -843,7 +842,6 @@
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         style="display:none;">
-                        <option></option>
                 </select>
               </td>
             </tr>
@@ -871,7 +869,6 @@
                         class="chzn-select"
                         data-placeholder="<spring:message code='chosen.selector.selectPoint'/>"
                         style="display:none;">
-                        <option></option>
                 </select>
               </td>
             </tr>

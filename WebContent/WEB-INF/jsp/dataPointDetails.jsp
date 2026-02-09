@@ -51,6 +51,7 @@
             placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
             pointsArray: pointsArray.filter((point) => point.id == <c:out value="${point.id}" />),
             invisibleEmptyOption: true,
+            allowSingleDeselect: false,
             imgAddHtmlIds: ["bullet_go_left", "bullet_go"]
         });
     }

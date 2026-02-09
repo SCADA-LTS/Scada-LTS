@@ -311,12 +311,12 @@
             
             var functions = [
                 (data) => { return data.description; },
-                (data) => { return '<select id="compoundPointSelect'+ data.id +'"><option></option></select>'; }
+                (data) => { return '<select id="compoundPointSelect'+ data.id +'"></select>'; }
             ];
             if(this.component.defName === "enhancedImageChart") {
             	functions = [
                     (data) => { return data.description; },
-                    (data) => { return '<select id="compoundPointSelect'+ data.id +'"><option></option></select></br></br>' +
+                    (data) => { return '<select id="compoundPointSelect'+ data.id +'"></select></br></br>' +
                     	'<label for="compoundPointColor'+ data.id +'"><span><spring:message code="viewEdit.compound.point.color"/></span></label>' +
                     	'<input id="compoundPointColor'+ data.id +'" type="hidden" value="' + data.viewComponent.color + '"/>' +
                     	'<label for="compoundPointStrokeWidth'+ data.id +'"><span><spring:message code="viewEdit.compound.point.strokeWidth"/></span></label>' +

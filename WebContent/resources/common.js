@@ -1899,6 +1899,7 @@ class ObjectsSelect {
         this.endpoint = objectsSelectDef.endpoint || "api/objects/bean";
         this.idNames = objectsSelectDef.idNames || ["id", "key", "objectId"];
         this.instancesCached = objectsSelectDef.instancesCached || {};
+        this.allowSingleDeselect = objectsSelectDef.allowSingleDeselect != undefined ? objectsSelectDef.allowSingleDeselect : true;
         this.#init();
     }
 
@@ -1975,7 +1976,7 @@ class ObjectsSelect {
        }
 
        if(!this.invisibleEmptyOption) {
-          this.#addEmptyOption(availObjects);
+          this.#addEmptyObject(availObjects);
        }
 
        if(availObjects.length == 0 && this.objectLast) {
@@ -1997,8 +1998,14 @@ class ObjectsSelect {
             }
         }
 
+        if(this.allowSingleDeselect) {
+            let options = [];
+            this.#addEmptyObject(options);
+            this.#addOptions(this.selectHtmlId, options, "id", this.altKey, "extendName", this.altValue);
+        }
+
         jQuery("#" + this.selectHtmlId).chosen({
-           allow_single_deselect: true,
+           allow_single_deselect: this.allowSingleDeselect,
            placeholder_text_single: this.placeholderTextSingle,
            search_contains: true,
            max_shown_results: this.limit,
@@ -2137,7 +2144,7 @@ class ObjectsSelect {
         }
     }
 
-    #addEmptyOption(availObjects) {
+    #addEmptyObject(availObjects) {
         let single = {}
         single[this.altKey] = undefined;
         single[this.altValue] = this.placeholderTextSingle;
@@ -2209,6 +2216,7 @@ class DataPointsSelect {
         objectsSelectDef.endpoint = dataPointsSelectDef.endpoint || "api/datapoints/bean";
         objectsSelectDef.idNames = dataPointsSelectDef.idNames || ["id", "dataPointId", "pointId", "key"];
         objectsSelectDef.instancesCached = scadalts.cache.select.points.instances || {};
+        objectsSelectDef.allowSingleDeselect = dataPointsSelectDef.allowSingleDeselect != undefined ? dataPointsSelectDef.allowSingleDeselect : true;
         this.objectsSelect = new ObjectsSelect(objectsSelectDef);
     }
 

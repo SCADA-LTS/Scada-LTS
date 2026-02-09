@@ -52,6 +52,7 @@
         placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
         pointsArray: [point],
         invisibleEmptyOption: true,
+        allowSingleDeselect: false,
         imgAddHtmlIds: ["bullet_go_left", "bullet_go"]
     });
   }
