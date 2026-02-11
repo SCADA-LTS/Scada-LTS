@@ -1941,7 +1941,7 @@ class ObjectsSelect {
 
     loadObjectsList() {
         let select = this;
-        this.#loadObjects("", 200, this.objectLast, 0, function(objects) {
+        this.#loadObjects("", 200, this.objectLast, 1, function(objects) {
             select.#setObjectsArray(objects);
         });
     }
