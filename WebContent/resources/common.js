@@ -1892,9 +1892,9 @@ class ObjectsSelect {
         this.invisibleEmptyOption = objectsSelectDef.invisibleEmptyOption || false;
         this.widthPx = objectsSelectDef.widthPx || "400px";
         this.imgAddHtmlIds = objectsSelectDef.imgAddHtmlIds || ["icon_comp_add", "icon_add"];
-        this.nextPage = objectsSelectDef.nextPage || 1;
         this.keywordSearchLast = objectsSelectDef.keywordSearch || "";
         this.startAsEmpty = objectsSelectDef.startAsEmpty || false;
+        this.nextPage = this.startAsEmpty ? (objectsSelectDef.nextPage || 1) : (objectsSelectDef.nextPage || 2);
         this.settable = objectsSelectDef.settable || "";
         this.endpoint = objectsSelectDef.endpoint || "api/objects/bean";
         this.idNames = objectsSelectDef.idNames || ["id", "key", "objectId"];
@@ -2029,7 +2029,7 @@ class ObjectsSelect {
             if(!evt.originalEvent || !evt.originalEvent.isTrusted) {
                 return;
             }
-            select.#loadObjects(evt.target.value, 700, select.objectLast, 0, function(objects) {
+            select.#loadObjects(evt.target.value, 700, select.objectLast, 1, function(objects) {
                 select.#setObjectsArray(objects);
             });
         });
@@ -2079,7 +2079,7 @@ class ObjectsSelect {
     }
 
     #setObjectsArray(objectsArray) {
-        this.nextPage = 1;
+        this.nextPage = 2;
         this.objectsArray = [...new Set(objectsArray)];
         this.updateObjectsList(this.excludeObjectsArray);
     }
@@ -2209,9 +2209,9 @@ class DataPointsSelect {
         objectsSelectDef.invisibleEmptyOption = dataPointsSelectDef.invisibleEmptyOption || false;
         objectsSelectDef.widthPx = dataPointsSelectDef.widthPx || "400px";
         objectsSelectDef.imgAddHtmlIds = dataPointsSelectDef.imgAddHtmlIds || ["icon_comp_add", "icon_add"];
-        objectsSelectDef.nextPage = dataPointsSelectDef.nextPage || 1;
         objectsSelectDef.keywordSearchLast = dataPointsSelectDef.keywordSearch || "";
         objectsSelectDef.startAsEmpty = dataPointsSelectDef.startAsEmpty || false;
+        objectsSelectDef.nextPage = objectsSelectDef.startAsEmpty ? (dataPointsSelectDef.nextPage || 1) : (dataPointsSelectDef.nextPage || 2);
         objectsSelectDef.settable = dataPointsSelectDef.pointSettable ? dataPointsSelectDef.pointSettable : "";
         objectsSelectDef.endpoint = dataPointsSelectDef.endpoint || "api/datapoints/bean";
         objectsSelectDef.idNames = dataPointsSelectDef.idNames || ["id", "dataPointId", "pointId", "key"];
