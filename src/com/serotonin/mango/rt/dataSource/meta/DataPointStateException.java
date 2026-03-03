@@ -28,13 +28,32 @@ public class DataPointStateException extends LocalizableException {
     static final long serialVersionUID = -1;
 
     private final int dataPointId;
+    private final String dataPointXid;
+    private final String dataPointName;
 
     public DataPointStateException(int dataPointId, LocalizableMessage message) {
         super(message);
         this.dataPointId = dataPointId;
+        this.dataPointXid = "";
+        this.dataPointName = "";
+    }
+
+    public DataPointStateException(int dataPointId, String dataPointXid, String dataPointName, LocalizableMessage message) {
+        super(message);
+        this.dataPointId = dataPointId;
+        this.dataPointXid = dataPointXid;
+        this.dataPointName = dataPointName;
     }
 
     public int getDataPointId() {
         return dataPointId;
+    }
+
+    public String getDataPointXid() {
+        return dataPointXid;
+    }
+
+    public String getDataPointName() {
+        return dataPointName;
     }
 }

@@ -206,7 +206,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
             LocalizableMessage msg = new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriodAttention",
                     executedMillis, pollingPeriodMillis, LoggingUtils.dataSourceInfo(vo));
             LOG.warn(msg.getLocalizedMessage(Common.getBundle()));
-            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
+            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg, false);
         } else {
             returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
         }

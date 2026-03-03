@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.dataSource.meta.DataPointStateException;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.view.View;
@@ -30,6 +31,7 @@ import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 import org.scada_lts.mango.service.PointValueService;
 
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 public final class LoggingUtils {
 
@@ -257,7 +259,7 @@ public final class LoggingUtils {
 
     public static String dataPointInfo(DataPointRT dataPoint) {
         if(dataPoint == null)
-            return "";
+            return "datapointrt: unknown (id: -1, xid: null, dataSourceId: -1)";
         DataPointVO dataPointVO = dataPoint.getVO();
         if(dataPointVO == null) {
             String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
@@ -292,6 +294,16 @@ public final class LoggingUtils {
         String info =  "locator: {0} (dataTypeId: {1}, dataType: {2})";
         return MessageFormat.format(info, pointLocator.getConfigurationDescription().getLocalizedMessage(Common.getBundle()), pointLocator.getDataTypeId(), pointLocator.getDataTypeMessage().getLocalizedMessage(Common.getBundle()));
 
+    }
+
+    public static String intValuePairInfo(IntValuePair contextEntry) {
+        String info =  "value: {0} (key: {1})";
+        return MessageFormat.format(info, contextEntry.getValue(), contextEntry.getKey());
+    }
+
+    public static String dataPointStateExceptionInfo(DataPointStateException exception, ResourceBundle resourceBundle) {
+        String info =  "message: {0} for datapoint: {1} (id: {2}, xid: {3})";
+        return MessageFormat.format(info, exception.getLocalizableMessage().getLocalizedMessage(resourceBundle), exception.getDataPointName(), exception.getDataPointId(), exception.getDataPointXid());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

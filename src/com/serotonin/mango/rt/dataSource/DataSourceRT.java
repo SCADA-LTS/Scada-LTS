@@ -160,6 +160,10 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+        raiseEvent(eventId, time, rtn, message, dataPointId, true);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId, boolean doUnreadable) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
         Map<String, Object> context = new HashMap<>();
@@ -167,7 +171,7 @@ abstract public class DataSourceRT implements ILifecycle {
 
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
 
-        if(doSetUnreliableDataPoint(eventId)) {
+        if(doUnreadable && doSetUnreliableDataPoint(eventId)) {
             if (dataPointId == -1) {
                 setUnreliableDataPoints(getDataPoints());
             } else {
@@ -187,7 +191,12 @@ abstract public class DataSourceRT implements ILifecycle {
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
-        raiseEvent(eventId, time, rtn, message, -1);
+        raiseEvent(eventId, time, rtn, message, -1, true);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean doUnreadable) {
+        message = new LocalizableMessage("event.ds", vo.getName(), message);
+        raiseEvent(eventId, time, rtn, message, -1, doUnreadable);
     }
 
     protected void returnToNormal(int eventId, long time) {
@@ -196,7 +205,7 @@ abstract public class DataSourceRT implements ILifecycle {
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
         message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
-        raiseEvent(eventId, time, rtn, message, dataPoint.getId());
+        raiseEvent(eventId, time, rtn, message, dataPoint.getId(), true);
     }
 
     protected void returnToNormal(int eventId, long time, DataPointRT dataPoint) {
