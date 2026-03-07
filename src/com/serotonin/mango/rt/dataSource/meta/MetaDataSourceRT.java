@@ -41,6 +41,7 @@ public class MetaDataSourceRT extends DataSourceRT {
     public static final int EVENT_TYPE_SCRIPT_ERROR = 2;
     public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
     public static final int EVENT_TYPE_RECURSIVE_ERROR = 4;
+    public static final int EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE = 5;
 
     private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
     @Deprecated(since = "2.8.0")
@@ -103,24 +104,29 @@ public class MetaDataSourceRT extends DataSourceRT {
         }
     }
 
-    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
         if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
+            if(doReadable) {
+                setUnreliableDataPoint(dataPoint);
+            }
             return;
         }
         raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, true, new LocalizableMessage("event.meta.scriptError", dataPoint
-                .getVO().getName(), message), dataPoint);
+                .getVO().getName(), message), dataPoint, doReadable);
     }
 
-    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
         if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
+            if(doReadable) {
+                setUnreliableDataPoint(dataPoint);
+            }
             return;
         }
         raiseEvent(EVENT_TYPE_RECURSIVE_ERROR, runtime, true, new LocalizableMessage("event.meta.recursiveError", dataPoint
-                .getVO().getName(), message), dataPoint);
+                .getVO().getName(), message), dataPoint, doReadable);
     }
 
+    @Deprecated(since = "2.8.1")
     public void raiseContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
             setUnreliableDataPoint(dataPoint);
@@ -143,6 +149,7 @@ public class MetaDataSourceRT extends DataSourceRT {
         returnToNormal(EVENT_TYPE_RECURSIVE_ERROR, runtime, dataPoint);
     }
 
+    @Deprecated(since = "2.8.1")
     public void returnToNormalContext(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
             return;
@@ -150,13 +157,15 @@ public class MetaDataSourceRT extends DataSourceRT {
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
     }
 
-    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
         if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
+            if(doReadable) {
+                setUnreliableDataPoint(dataPoint);
+            }
             return;
         }
         raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, true, new LocalizableMessage("event.meta.typeError",
-                dataPoint.getVO().getName(), message), dataPoint);
+                dataPoint.getVO().getName(), message), dataPoint, doReadable);
     }
 
     public void returnToNormalType(long runtime, DataPointRT dataPoint) {
@@ -176,5 +185,60 @@ public class MetaDataSourceRT extends DataSourceRT {
     @Override
     protected List<DataPointRT> getDataPoints() {
         return points;
+    }
+
+    public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseContextErrorPointDisabled(runtime, dataPoint, message, true);
+    }
+
+    public void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseContextErrorPointUnavailable(runtime, dataPoint, message, true);
+    }
+
+    public void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
+            return;
+        }
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
+    }
+
+    public void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE)) {
+            return;
+        }
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint);
+    }
+
+    public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
+            if(doReadable) {
+                setUnreliableDataPoint(dataPoint);
+            }
+            return;
+        }
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint, doReadable);
+    }
+
+
+    public void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+        if(isNone(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE)) {
+            if(doReadable) {
+                setUnreliableDataPoint(dataPoint);
+            }
+            return;
+        }
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, true, message, dataPoint, doReadable);
+    }
+
+    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseScriptError(runtime, dataPoint, message, true);
+    }
+
+    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseRecursiveError(runtime, dataPoint, message, true);
+    }
+
+    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseResultTypeError(runtime, dataPoint, message, true);
     }
 }

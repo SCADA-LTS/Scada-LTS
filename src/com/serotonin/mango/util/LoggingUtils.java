@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.dataSource.meta.DataPointStateException;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.view.View;
@@ -30,6 +31,7 @@ import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 import org.scada_lts.mango.service.PointValueService;
 
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 public final class LoggingUtils {
 
@@ -85,6 +87,13 @@ public final class LoggingUtils {
             return "";
         String info = "exception: {0} (msg: {1})";
         return MessageFormat.format(info, ex.getClass().getSimpleName(), ex.getMessage());
+    }
+
+    public static String exceptionOnlyMessageInfo(Throwable ex) {
+        if(ex == null)
+            return "";
+        String info = "{0}";
+        return MessageFormat.format(info, ex.getMessage());
     }
 
     public static String exceptionInfo(ScadaExceptionResult ex) {
@@ -260,7 +269,7 @@ public final class LoggingUtils {
             return "";
         DataPointVO dataPointVO = dataPoint.getVO();
         if(dataPointVO == null) {
-            String info = "datapointrt: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
+            String info = "datapoint: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
             return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
         }
         return dataPointInfo(dataPointVO);
@@ -280,6 +289,13 @@ public final class LoggingUtils {
         return MessageFormat.format(info, pair.getValue(), pair.getKey());
     }
 
+    public static String varPointInfo(IntValuePair pair) {
+        if(pair == null)
+            return "";
+        String info =  "{0} (id: {1})";
+        return MessageFormat.format(info, pair.getValue(), pair.getKey());
+    }
+
     public static String pointLocatorInfo(PointLocatorVO pointLocator) {
         if(pointLocator == null)
             return "";
@@ -292,6 +308,18 @@ public final class LoggingUtils {
         String info =  "locator: {0} (dataTypeId: {1}, dataType: {2})";
         return MessageFormat.format(info, pointLocator.getConfigurationDescription().getLocalizedMessage(Common.getBundle()), pointLocator.getDataTypeId(), pointLocator.getDataTypeMessage().getLocalizedMessage(Common.getBundle()));
 
+    }
+
+    public static String intValuePairInfo(IntValuePair contextEntry) {
+        String info =  "value: {0} (key: {1})";
+        return MessageFormat.format(info, contextEntry.getValue(), contextEntry.getKey());
+    }
+
+    public static String dataPointStateExceptionInfo(DataPointStateException exception, ResourceBundle resourceBundle, DataPointVO from) {
+        if(from == null) {
+            return MessageFormat.format("{0}", exception.getLocalizableMessage().getLocalizedMessage(resourceBundle));
+        }
+        return MessageFormat.format("{0} from datapoint: {1} (id: {2}, xid: {3})", exception.getLocalizableMessage().getLocalizedMessage(resourceBundle), from.getExtendedName(), from.getId(), from.getXid());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

@@ -159,7 +159,7 @@ abstract public class DataSourceRT implements ILifecycle {
         }
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId, boolean doSetUnreliable) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
         Map<String, Object> context = new HashMap<>();
@@ -167,7 +167,7 @@ abstract public class DataSourceRT implements ILifecycle {
 
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
 
-        if(doSetUnreliableDataPoint(eventId)) {
+        if(doSetUnreliable && doSetUnreliableDataPoint(eventId)) {
             if (dataPointId == -1) {
                 setUnreliableDataPoints(getDataPoints());
             } else {
@@ -260,5 +260,19 @@ abstract public class DataSourceRT implements ILifecycle {
 
     public boolean doSetUnreliableDataPoint(int eventId) {
         return true;
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean doUnreadable) {
+        message = new LocalizableMessage("event.ds", vo.getName(), message);
+        raiseEvent(eventId, time, rtn, message, -1, doUnreadable);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint, boolean doUnreadable) {
+        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
+        raiseEvent(eventId, time, rtn, message, dataPoint.getId(), doUnreadable);
+    }
+
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
+        raiseEvent(eventId, time, rtn, message, dataPointId, true);
     }
 }

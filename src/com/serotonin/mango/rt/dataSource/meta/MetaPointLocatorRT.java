@@ -36,6 +36,7 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.DateUtils;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.AbstractTimer;
@@ -323,7 +324,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 handleTypeError(runtime, dataPoint, e.getLocalizableMessage());
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (Exception e) {
-                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", LoggingUtils.exceptionInfo(e)));
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
         }
@@ -337,10 +338,19 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
-            returnToNormalContext(System.currentTimeMillis(), dataPoint);
+            returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
             return context;
+        } catch (PointDisabledException e) {
+            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+            raiseContextErrorPointDisabled(System.currentTimeMillis(), dataPoint, e.getLocalizableMessage());
+            return null;
+        } catch (DataPointStateException e) {
+            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+            raiseContextErrorPointUnavailable(System.currentTimeMillis(), dataPoint, e.getLocalizableMessage());
+            return null;
         } catch (Exception e) {
-            LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
+            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+            raiseContextErrorPointUnavailable(System.currentTimeMillis(), dataPoint, new LocalizableMessage("common.default", LoggingUtils.exceptionInfo(e)));
             return null;
         }
     }
@@ -384,6 +394,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         dataSource.raiseScriptError(runtime, dataPoint, message);
     }
 
+    @Deprecated(since = "2.8.1")
     protected void handleContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         dataSource.raiseContextError(runtime, dataPoint, message);
     }
@@ -396,6 +407,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         dataSource.returnToNormalRecursive(runtime, dataPoint);
     }
 
+    @Deprecated(since = "2.8.1")
     protected void returnToNormalContext(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalContext(runtime, dataPoint);
     }
@@ -406,6 +418,18 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void returnToNormalType(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalType(runtime, dataPoint);
+    }
+
+    protected void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseContextErrorPointDisabled(runtime, dataPoint, message);
+    }
+
+    protected void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        dataSource.raiseContextErrorPointUnavailable(runtime, dataPoint, message);
+    }
+
+    protected void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalContextPointUnavailable(runtime, dataPoint);
     }
 
     private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {

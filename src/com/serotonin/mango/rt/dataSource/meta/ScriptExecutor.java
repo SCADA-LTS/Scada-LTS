@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.script.ScriptException;
 
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -72,7 +73,8 @@ public class ScriptExecutor {
 		return convertContext(context, null, null);
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
+	@Deprecated(since = "2.8.1")
+	public Map<String, IDataPoint> convertContext2(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		Map<String, IDataPoint> converted = new HashMap<>();
@@ -115,6 +117,64 @@ public class ScriptExecutor {
 		if(dataPoint != null && metaDataSource != null)
 			metaDataSource.returnToNormalContext(System.currentTimeMillis(), dataPoint);
 
+		return converted;
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSourceRT) throws Exception {
+		RuntimeManager rtm = Common.ctx.getRuntimeManager();
+		return convert(context, rtm, dataPoint, metaDataSourceRT);
+	}
+
+	private Map<String, IDataPoint> convert(List<IntValuePair> context, RuntimeManager rtm, DataPointRT dataPoint, MetaDataSourceRT metaDataSourceRT) throws Exception {
+		Map<String, IDataPoint> converted = new HashMap<>();
+		List<DataPointStateException> pointDisabledExceptions = new ArrayList<>();
+		List<DataPointStateException> pointUnavailableExceptions = new ArrayList<>();
+
+		for (IntValuePair contextEntry : context) {
+			if(dataPoint == null || dataPoint.getId() == Common.NEW_ID || dataPoint.getId() != contextEntry.getKey()) {
+				DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
+
+				if (point == null) {
+					LOG.error("Error DataPointRT in " + LoggingUtils.varInfo(contextEntry) + " from: " + LoggingUtils.dataPointInfo(dataPoint));
+					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry);
+					pointDisabledExceptions.add(dataPointStateException);
+
+				} else if (point.isUnreliable()) {
+					LOG.warn("Error DataPointRT unavailable in " + LoggingUtils.varInfo(contextEntry) + " (" + LoggingUtils.dataPointInfo(point) + ") from: " + LoggingUtils.dataPointInfo(dataPoint));
+					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry, point);
+					pointUnavailableExceptions.add(dataPointStateException);
+
+				} else {
+					converted.put(contextEntry.getValue(), point);
+				}
+			}
+		}
+		if(!pointDisabledExceptions.isEmpty()) {
+			StringBuilder messages = new StringBuilder();
+			for(DataPointStateException exception: pointDisabledExceptions) {
+				messages.append(" ")
+						.append(LoggingUtils.dataPointStateExceptionInfo(exception, Common.getBundle(), null))
+						.append(" ; ");
+			}
+			if(pointUnavailableExceptions.isEmpty() && isRuntimeContext(dataPoint, metaDataSourceRT)) {
+				metaDataSourceRT.returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
+			}
+			throw new PointDisabledException(-1, new LocalizableMessage("common.default", messages.toString()));
+		} else if (isRuntimeContext(dataPoint, metaDataSourceRT)) {
+			metaDataSourceRT.returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint);
+		}
+
+		if(!pointUnavailableExceptions.isEmpty()) {
+			StringBuilder messages = new StringBuilder();
+			for(DataPointStateException exception: pointUnavailableExceptions) {
+				messages.append(" ")
+						.append(LoggingUtils.dataPointStateExceptionInfo(exception, Common.getBundle(), null))
+						.append(" ; ");
+			}
+			throw new PointUnavailableException(-1, new LocalizableMessage("common.default", messages.toString()));
+		} else if (isRuntimeContext(dataPoint, metaDataSourceRT)) {
+			metaDataSourceRT.returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
+		}
 		return converted;
 	}
 
@@ -375,12 +435,17 @@ public class ScriptExecutor {
 	}
 
 	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
-		return new DataPointStateException(contextEntry.getKey(),
-				new LocalizableMessage("event.meta.pointUnavailable", point.getVO().getExtendedName()));
+		DataPointVO dataPoint = point.getVO();
+		return new DataPointStateException(contextEntry.getKey(), dataPoint.getXid(), dataPoint.getExtendedName(),
+				new LocalizableMessage("event.meta.pointUnavailable", dataPoint.getExtendedName()));
 	}
 
 	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
 		return new DataPointStateException(contextEntry.getKey(),
-				new LocalizableMessage("validate.invalidVariable", LoggingUtils.varInfo(contextEntry)));
+				new LocalizableMessage("event.meta.pointDisabledOrMissing", LoggingUtils.varPointInfo(contextEntry)));
+	}
+
+	private static boolean isRuntimeContext(DataPointRT dataPointVO, MetaDataSourceRT metaDataSourceRT) {
+		return metaDataSourceRT != null && dataPointVO != null;
 	}
 }

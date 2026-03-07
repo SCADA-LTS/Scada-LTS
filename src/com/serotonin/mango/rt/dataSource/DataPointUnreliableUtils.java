@@ -9,6 +9,7 @@ import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class DataPointUnreliableUtils {
 
@@ -20,9 +21,7 @@ public final class DataPointUnreliableUtils {
 
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            setUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints.stream().filter(a -> !a.isUnreliable()).collect(Collectors.toList()), true);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
@@ -32,9 +31,7 @@ public final class DataPointUnreliableUtils {
     }
 
     public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            resetUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints.stream().filter(DataPointRT::isUnreliable).collect(Collectors.toList()), false);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
