@@ -139,7 +139,7 @@ public final class ScadaLocaleUtils {
         return getLocaleResolver(request).resolveLocale(request);
     }
 
-    private static ResourceBundle getResourceBundleByLocale(Locale locale) {
+    public static ResourceBundle getResourceBundleByLocale(Locale locale) {
         return ResourceBundle.getBundle("messages", locale);
     }
 

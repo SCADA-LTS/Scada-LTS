@@ -31,7 +31,6 @@ import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaPointLocatorVO;
 import org.scada_lts.mango.service.PointValueService;
 
 import java.text.MessageFormat;
-import java.util.ResourceBundle;
 
 public final class LoggingUtils {
 
@@ -315,11 +314,11 @@ public final class LoggingUtils {
         return MessageFormat.format(info, contextEntry.getValue(), contextEntry.getKey());
     }
 
-    public static String dataPointStateExceptionInfo(DataPointStateException exception, ResourceBundle resourceBundle, DataPointVO from) {
+    public static String dataPointStateExceptionInfo(DataPointStateException exception, DataPointVO from) {
         if(from == null) {
-            return MessageFormat.format("{0}", exception.getLocalizableMessage().getLocalizedMessage(resourceBundle));
+            return MessageFormat.format("{0}", exception.getMessage());
         }
-        return MessageFormat.format("{0} from datapoint: {1} (id: {2}, xid: {3})", exception.getLocalizableMessage().getLocalizedMessage(resourceBundle), from.getExtendedName(), from.getId(), from.getXid());
+        return MessageFormat.format("{0} from datapoint: {1} (id: {2}, xid: {3})", exception.getMessage(), from.getExtendedName(), from.getId(), from.getXid());
     }
 
     private static String msg(EventHandlerVO eventHandler) {

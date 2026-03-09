@@ -18,8 +18,13 @@
  */
 package com.serotonin.mango.rt.dataSource.meta;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author Matthew Lohbihler
@@ -30,19 +35,23 @@ public class DataPointStateException extends LocalizableException {
     private final int dataPointId;
     private final String dataPointXid;
     private final String dataPointName;
+    private final ResourceBundle resourceBundle;
 
-    public DataPointStateException(int dataPointId, LocalizableMessage message) {
+    public DataPointStateException(int dataPointId, LocalizableMessage message, ResourceBundle resourceBundle) {
         super(message);
         this.dataPointId = dataPointId;
         this.dataPointXid = "";
         this.dataPointName = "";
+        this.resourceBundle = Common.getBundle();
     }
 
-    public DataPointStateException(int dataPointId, String dataPointXid, String dataPointName, LocalizableMessage message) {
+    public DataPointStateException(int dataPointId, String dataPointXid, String dataPointName,
+                                   LocalizableMessage message, ResourceBundle resourceBundle) {
         super(message);
         this.dataPointId = dataPointId;
         this.dataPointXid = dataPointXid;
         this.dataPointName = dataPointName;
+        this.resourceBundle = resourceBundle;
     }
 
     public int getDataPointId() {
@@ -55,5 +64,17 @@ public class DataPointStateException extends LocalizableException {
 
     public String getDataPointName() {
         return dataPointName;
+    }
+
+    @Override
+    public String getMessage() {
+        Locale en = Locale.ENGLISH;
+        ResourceBundle resourceBundleEn = ScadaLocaleUtils.getResourceBundleByLocale(en);
+        return super.getLocalizableMessage().getLocalizedMessage(resourceBundleEn);
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return super.getLocalizableMessage().getLocalizedMessage(resourceBundle);
     }
 }

@@ -318,7 +318,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 else if(isUpdatePoint(initializeMode, valueTime, previousValueTime, vo))
                     doUpdate(valueTime, dataPoint);
             } catch (ScriptException e) {
-                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getLocalizedMessage()));
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (ResultTypeException e) {
                 handleTypeError(runtime, dataPoint, e.getLocalizableMessage());
