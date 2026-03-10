@@ -61,7 +61,6 @@ public class EventManager implements ILifecycle {
 	private int highestActiveAlarmLevel = 0;
 	private IHighestAlarmLevelService highestAlarmLevelService;
 	private UserEventServiceWebSocket userEventServiceWebSocket;
-	private final ReentrantReadWriteLock activeEventsLock = new ReentrantReadWriteLock();
 
 	//
 	//
@@ -568,29 +567,14 @@ public class EventManager implements ILifecycle {
 	}
 
 	private Set<EventInstance> getActiveEvents() {
-		activeEventsLock.readLock().lock();
-		try {
-			return activeEvents;
-		} finally {
-			activeEventsLock.readLock().unlock();
-		}
+		return activeEvents;
 	}
 
 	private void addActiveEvent(EventInstance event) {
-		activeEventsLock.writeLock().lock();
-		try {
-			activeEvents.add(event);
-		} finally {
-			activeEventsLock.writeLock().unlock();
-		}
+		activeEvents.add(event);
 	}
 
 	private void removeActiveEvent(EventInstance event) {
-		activeEventsLock.writeLock().lock();
-		try {
-			activeEvents.remove(event);
-		} finally {
-			activeEventsLock.writeLock().unlock();
-		}
+		activeEvents.remove(event);
 	}
 }

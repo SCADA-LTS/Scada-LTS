@@ -339,6 +339,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
             returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
+            returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint);
             return context;
         } catch (PointDisabledException e) {
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
@@ -430,6 +431,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalContextPointUnavailable(runtime, dataPoint);
+    }
+
+    protected void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint) {
+        dataSource.returnToNormalContextPointDisabled(runtime, dataPoint);
     }
 
     private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {

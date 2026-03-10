@@ -268,7 +268,7 @@ public final class LoggingUtils {
             return "";
         DataPointVO dataPointVO = dataPoint.getVO();
         if(dataPointVO == null) {
-            String info = "datapoint: {0} (id: {0}, xid: {1}, dataSourceId: {2})";
+            String info = "datapoint: {0} (dataSourceId: {1})";
             return MessageFormat.format(info, String.valueOf(dataPoint.getId()), dataPoint.getDataSourceId());
         }
         return dataPointInfo(dataPointVO);
@@ -299,9 +299,9 @@ public final class LoggingUtils {
         if(pointLocator == null)
             return "";
         if(pointLocator instanceof OpcUaPointLocatorVO) {
-            String info =  "locator: {0} (nodeId: {4}, namespaceIndex: {1}, identifier: {2}, identifierType: {3}, dataTypeId: {4}, dataType: {5}, opcDataType: {6})";
+            String info =  "locator: {0} (nodeId: {1}, namespaceIndex: {2}, identifier: {3}, identifierType: {4}, dataTypeId: {5}, dataType: {6}, opcDataType: {7})";
             OpcUaPointLocatorVO opcUa = (OpcUaPointLocatorVO) pointLocator;
-            return MessageFormat.format(info, opcUa.getNodeName(), opcUa.getNodeId(), opcUa.getNamespaceIndex(),
+            return MessageFormat.format(info, opcUa.getNodeName(), opcUa.getNodeId(), opcUa.getNamespaceIndex(), opcUa.getIdentifier(),
                     opcUa.getIdentifierType(), opcUa.getDataTypeId(), opcUa.getDataTypeMessage().getLocalizedMessage(Common.getBundle()), opcUa.getOpcDataType());
         }
         String info =  "locator: {0} (dataTypeId: {1}, dataType: {2})";
