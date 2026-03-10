@@ -314,13 +314,6 @@ public final class LoggingUtils {
         return MessageFormat.format(info, contextEntry.getValue(), contextEntry.getKey());
     }
 
-    public static String dataPointStateExceptionInfo(DataPointStateException exception, DataPointVO from) {
-        if(from == null) {
-            return MessageFormat.format("{0}", exception.getMessage());
-        }
-        return MessageFormat.format("{0} from datapoint: {1} (id: {2}, xid: {3})", exception.getMessage(), from.getExtendedName(), from.getId(), from.getXid());
-    }
-
     private static String msg(EventHandlerVO eventHandler) {
         return StringUtils.isEmpty(eventHandler.getAlias()) && eventHandler.getMessage() != null ? eventHandler.getMessage().getLocalizedMessage(Common.getBundle()) : eventHandler.getAlias();
     }

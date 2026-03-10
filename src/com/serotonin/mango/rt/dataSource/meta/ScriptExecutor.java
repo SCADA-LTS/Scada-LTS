@@ -153,7 +153,7 @@ public class ScriptExecutor {
 			StringBuilder messages = new StringBuilder();
 			for(DataPointStateException exception: pointDisabledExceptions) {
 				messages.append(" ")
-						.append(LoggingUtils.dataPointStateExceptionInfo(exception, null))
+						.append(exception.getLocalizedMessage())
 						.append(" ; ");
 			}
 			if(pointUnavailableExceptions.isEmpty() && isRuntimeContext(dataPoint, metaDataSourceRT)) {
@@ -168,7 +168,7 @@ public class ScriptExecutor {
 			StringBuilder messages = new StringBuilder();
 			for(DataPointStateException exception: pointUnavailableExceptions) {
 				messages.append(" ")
-						.append(LoggingUtils.dataPointStateExceptionInfo(exception, null))
+						.append(exception.getLocalizedMessage())
 						.append(" ; ");
 			}
 			throw new PointUnavailableException(-1, new LocalizableMessage("common.default", messages.toString()), resourceBundle);
