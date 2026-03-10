@@ -42,7 +42,7 @@ public class DataPointStateException extends LocalizableException {
         this.dataPointId = dataPointId;
         this.dataPointXid = "";
         this.dataPointName = "";
-        this.resourceBundle = Common.getBundle();
+        this.resourceBundle = resourceBundle;
     }
 
     public DataPointStateException(int dataPointId, String dataPointXid, String dataPointName,
