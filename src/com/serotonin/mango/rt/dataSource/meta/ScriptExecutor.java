@@ -60,7 +60,7 @@ public class ScriptExecutor {
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptExecutor__();";
 	private static String SCRIPT_FUNCTION_PATH;
 	private static String FUNCTIONS;
-	private Log LOG = LogFactory.getLog(ScriptExecutor.class);
+	private static Log LOG = LogFactory.getLog(ScriptExecutor.class);
 
 	public static void setScriptFunctionPath(String path) {
 		SCRIPT_FUNCTION_PATH = path;
@@ -434,15 +434,11 @@ public class ScriptExecutor {
 		}
 	}
 
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
-		return createPointUnavailableException(contextEntry, point, Common.getBundle());
-	}
-
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
-		return createPointUnavailableException(contextEntry, Common.getBundle());
-	}
-
 	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point, ResourceBundle resourceBundle) {
+		if(point == null) {
+			LOG.warn("Point is null!");
+			return createPointUnavailableException(contextEntry, resourceBundle);
+		}
 		DataPointVO dataPoint = point.getVO();
 		return new DataPointStateException(contextEntry.getKey(), dataPoint.getXid(), dataPoint.getExtendedName(),
 				new LocalizableMessage("event.meta.pointUnavailable", dataPoint.getExtendedName()), resourceBundle);
@@ -454,7 +450,15 @@ public class ScriptExecutor {
 						LoggingUtils.varPointInfo(contextEntry)), resourceBundle);
 	}
 
-	private static boolean isRuntimeContext(DataPointRT dataPointVO, MetaDataSourceRT metaDataSourceRT) {
-		return metaDataSourceRT != null && dataPointVO != null;
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
+		return createPointUnavailableException(contextEntry, point, Common.getBundle());
+	}
+
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
+		return createPointUnavailableException(contextEntry, Common.getBundle());
+	}
+
+	private static boolean isRuntimeContext(DataPointRT dataPointRT, MetaDataSourceRT metaDataSourceRT) {
+		return metaDataSourceRT != null && dataPointRT != null;
 	}
 }
