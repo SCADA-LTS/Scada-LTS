@@ -21,7 +21,7 @@ public final class DataPointUnreliableUtils {
 
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        unreliable(dataPoints.stream().filter(a -> !a.isUnreliable()).collect(Collectors.toList()), true);
+        unreliable(dataPoints.stream().filter(dataPoint -> !dataPoint.isUnreliable()).collect(Collectors.toList()), true);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
