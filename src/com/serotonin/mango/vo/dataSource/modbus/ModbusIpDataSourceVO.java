@@ -92,7 +92,7 @@ public class ModbusIpDataSourceVO extends
 		return new ModbusIpDataSource(this);
 	}
 
-	private TransportType transportType;
+	private TransportType transportType = TransportType.TCP_KEEP_ALIVE;
 	@JsonRemoteProperty
 	private String host;
 	@JsonRemoteProperty
