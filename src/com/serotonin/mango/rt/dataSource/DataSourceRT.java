@@ -262,14 +262,14 @@ abstract public class DataSourceRT implements ILifecycle {
         return true;
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean doUnreadable) {
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean doSetUnreliable) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
-        raiseEvent(eventId, time, rtn, message, -1, doUnreadable);
+        raiseEvent(eventId, time, rtn, message, -1, doSetUnreliable);
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint, boolean doUnreadable) {
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint, boolean doSetUnreliable) {
         message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
-        raiseEvent(eventId, time, rtn, message, dataPoint.getId(), doUnreadable);
+        raiseEvent(eventId, time, rtn, message, dataPoint.getId(), doSetUnreliable);
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {

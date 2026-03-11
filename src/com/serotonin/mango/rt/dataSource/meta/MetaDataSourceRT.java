@@ -104,26 +104,26 @@ public class MetaDataSourceRT extends DataSourceRT {
         }
     }
 
-    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+    public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {
         if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
-            if(doReadable) {
+            if(doSetUnreliable) {
                 setUnreliableDataPoint(dataPoint);
             }
             return;
         }
         raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, true, new LocalizableMessage("event.meta.scriptError", dataPoint
-                .getVO().getName(), message), dataPoint, doReadable);
+                .getVO().getName(), message), dataPoint, doSetUnreliable);
     }
 
-    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+    public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {
         if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
-            if(doReadable) {
+            if(doSetUnreliable) {
                 setUnreliableDataPoint(dataPoint);
             }
             return;
         }
         raiseEvent(EVENT_TYPE_RECURSIVE_ERROR, runtime, true, new LocalizableMessage("event.meta.recursiveError", dataPoint
-                .getVO().getName(), message), dataPoint, doReadable);
+                .getVO().getName(), message), dataPoint, doSetUnreliable);
     }
 
     @Deprecated(since = "2.8.1")
@@ -157,15 +157,15 @@ public class MetaDataSourceRT extends DataSourceRT {
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
     }
 
-    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+    public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {
         if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
-            if(doReadable) {
+            if(doSetUnreliable) {
                 setUnreliableDataPoint(dataPoint);
             }
             return;
         }
         raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, true, new LocalizableMessage("event.meta.typeError",
-                dataPoint.getVO().getName(), message), dataPoint, doReadable);
+                dataPoint.getVO().getName(), message), dataPoint, doSetUnreliable);
     }
 
     public void returnToNormalType(long runtime, DataPointRT dataPoint) {
@@ -209,25 +209,25 @@ public class MetaDataSourceRT extends DataSourceRT {
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint);
     }
 
-    public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+    public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
-            if(doReadable) {
+            if(doSetUnreliable) {
                 setUnreliableDataPoint(dataPoint);
             }
             return;
         }
-        raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint, doReadable);
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint, doSetUnreliable);
     }
 
 
-    public void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doReadable) {
+    public void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE)) {
-            if(doReadable) {
+            if(doSetUnreliable) {
                 setUnreliableDataPoint(dataPoint);
             }
             return;
         }
-        raiseEvent(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, true, message, dataPoint, doReadable);
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, true, message, dataPoint, doSetUnreliable);
     }
 
     public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
