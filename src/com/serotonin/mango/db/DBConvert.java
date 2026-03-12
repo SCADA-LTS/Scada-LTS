@@ -46,7 +46,7 @@ public class DBConvert {
     }
 
     public void execute() throws SQLException {
-        LOG.warn("Running database conversion from " + source.getType().name() + " to " + target.getType().name());
+        LOG.warn("Running database conversion from " + source.getTypeKey() + " to " + target.getTypeKey());
 
         // Create the connections
         Connection sourceConn = source.getDataSource().getConnection();

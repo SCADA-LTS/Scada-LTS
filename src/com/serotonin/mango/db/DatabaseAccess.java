@@ -26,7 +26,9 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -43,6 +45,7 @@ import com.serotonin.util.StringUtils;
 abstract public class DatabaseAccess {
 	private final static Log log = LogFactory.getLog(DatabaseAccess.class);
 
+	@Deprecated
 	public enum DatabaseType {
 		DERBY {
 			@Override
@@ -78,6 +81,7 @@ abstract public class DatabaseAccess {
 		abstract DatabaseAccess getImpl();
 	}
 
+	@Deprecated
 	public static DatabaseAccess createDatabaseAccess() {
 
 		String type = Common.getEnvironmentProfile().getString("db.type",
@@ -115,13 +119,17 @@ abstract public class DatabaseAccess {
 
 				if (!StringUtils.isEmpty(convertTypeStr)) {
 					// Found a database type from which to convert.
-					DatabaseType convertType = DatabaseType
-							.valueOf(convertTypeStr.toUpperCase());
-					if (convertType == null)
+					String convertKey = normalizeDbKey(convertTypeStr);
+					if (StringUtils.isEmpty(convertKey)) {
 						throw new IllegalArgumentException(
-								"Unknown convert database type: " + convertType);
+								"Unknown convert database type: " + convertTypeStr);
+					}
 
-					DatabaseAccess sourceAccess = convertType.getImpl();
+					DatabaseAccess sourceAccess = resolveDatabaseAccess(convertKey);
+					if (sourceAccess == this) {
+						throw new IllegalStateException(
+								"convert.db.type must be different from db.type.");
+					}
 					sourceAccess.initializeImpl("convert.");
 
 					DBConvert convert = new DBConvert();
@@ -150,7 +158,8 @@ abstract public class DatabaseAccess {
 					new UserDao().saveUser(user);
 
 					// Record the current version.
-					new SystemSettingsDAO().setValue(
+					ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+					systemSettingsDAO.setValue(
 							SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 							Common.getVersion());
 				}
@@ -165,7 +174,7 @@ abstract public class DatabaseAccess {
 			}
 		} catch (CannotGetJdbcConnectionException e) {
 			log.fatal("Unable to connect to database of type "
-					+ getType().name(), e);
+					+ getTypeKey(), e);
 			throw e;
 		}
 
@@ -184,7 +193,11 @@ abstract public class DatabaseAccess {
 		}
 	}
 
-	abstract public DatabaseType getType();
+	abstract public String getTypeKey();
+
+	public String getIdQuery() {
+		return "SELECT @@identity";
+	}
 
 	abstract public void terminate();
 
@@ -260,6 +273,31 @@ abstract public class DatabaseAccess {
 	public PreparedStatement prepareStatement(Connection connection,
 			String sql, String generatedKey) throws SQLException {
 		return connection.prepareStatement(sql, 1);
+	}
+
+	private static DatabaseAccess resolveDatabaseAccess(String dbKey) {
+		String normalized = normalizeDbKey(dbKey);
+		String beanName = "databaseAccess-" + normalized;
+		DatabaseAccess access = ApplicationBeans.getBean(beanName, DatabaseAccess.class);
+		if (access == null) {
+			throw new IllegalStateException("DB plugin not found for db.type=" + normalized
+					+ ". Expected bean '" + beanName + "'.");
+		}
+		return access;
+	}
+
+	private static String normalizeDbKey(String dbType) {
+		if (dbType == null) {
+			return "";
+		}
+		String normalized = dbType.trim().toLowerCase();
+		if ("postgresql".equals(normalized) || "pgsql".equals(normalized) || "pg".equals(normalized)) {
+			return "postgres";
+		}
+		if ("sqlserver".equals(normalized) || "sql-server".equals(normalized)) {
+			return "mssql";
+		}
+		return normalized;
 	}
 
 }

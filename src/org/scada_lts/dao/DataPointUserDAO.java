@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataPointUserDAO {
+public class DataPointUserDAO implements IDataPointUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataPointUserDAO.class);
 

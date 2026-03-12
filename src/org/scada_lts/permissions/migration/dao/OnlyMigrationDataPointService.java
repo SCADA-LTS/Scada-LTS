@@ -25,16 +25,16 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
-import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 
 import java.util.*;
 
 public final class OnlyMigrationDataPointService implements MangoDataPoint {
 
-	private DataPointDAO dataPointDAO;
+	private IDataPointDAO dataPointDAO;
 
-	public OnlyMigrationDataPointService(DataPointDAO dataPointDAO) {
+	public OnlyMigrationDataPointService(IDataPointDAO dataPointDAO) {
 		this.dataPointDAO = dataPointDAO;
 	}
 

@@ -46,7 +46,7 @@ import br.org.scadabr.api.vo.FlexProject;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
-public class FlexProjectDAO {
+public class FlexProjectDAO implements IFlexProjectDAO {
 
 	private static final Log LOG = LogFactory.getLog(FlexProjectDAO.class);
 

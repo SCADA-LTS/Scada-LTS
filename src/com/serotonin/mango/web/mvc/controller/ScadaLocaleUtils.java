@@ -9,7 +9,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestAttributes;
@@ -79,7 +81,8 @@ public final class ScadaLocaleUtils {
         if (locale == null)
             throw new IllegalArgumentException(
                     "Locale for given language not found: " + language);
-        new SystemSettingsDAO().setValue(SystemSettingsDAO.LANGUAGE, language);
+        ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+        systemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, language);
     }
 
     public static List<KeyValuePair> getLanguages() {

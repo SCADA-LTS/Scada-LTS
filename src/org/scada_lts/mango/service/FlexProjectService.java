@@ -19,8 +19,9 @@ package org.scada_lts.mango.service;
 
 import br.org.scadabr.api.vo.FlexProject;
 import com.serotonin.mango.Common;
-import org.scada_lts.dao.FlexProjectDAO;
+import org.scada_lts.dao.IFlexProjectDAO;
 import org.scada_lts.mango.adapter.MangoFlexProject;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public class FlexProjectService implements MangoFlexProject {
 
-	private FlexProjectDAO flexProjectDAO = new FlexProjectDAO();
+	private final IFlexProjectDAO flexProjectDAO = ApplicationBeans.getFlexProjectDAOBean();
 
 	@Override
 	public int saveFlexProject(int id, String name, String description, String xmlConfig) {

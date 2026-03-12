@@ -2,13 +2,13 @@ package org.scada_lts.web.mvc.api.dto;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyXidDAO;
 
 public enum ObjectHierarchyType {
 
     FOLDER {
         @Override
-        public boolean move(String moveObjectXid, String destinationFolderXid, PointHierarchyXidDAO pointHierarchyXidDAO) {
+        public boolean move(String moveObjectXid, String destinationFolderXid, IPointHierarchyXidDAO pointHierarchyXidDAO) {
             boolean res = false;
             try {
                 res = pointHierarchyXidDAO.updateFolder(moveObjectXid, destinationFolderXid);
@@ -20,7 +20,7 @@ public enum ObjectHierarchyType {
     },
     POINT {
         @Override
-        public boolean move(String moveObjectXid, String destinationFolderXid, PointHierarchyXidDAO pointHierarchyXidDAO) {
+        public boolean move(String moveObjectXid, String destinationFolderXid, IPointHierarchyXidDAO pointHierarchyXidDAO) {
             boolean res = false;
             try {
                 res = pointHierarchyXidDAO.updateParentPoint(moveObjectXid, destinationFolderXid);
@@ -33,6 +33,6 @@ public enum ObjectHierarchyType {
 
     private static final Log LOG = LogFactory.getLog(ObjectHierarchyType.class);
 
-    public abstract boolean move(String moveObjectXid, String destinationFolderXid, PointHierarchyXidDAO pointHierarchyXidDAO);
+    public abstract boolean move(String moveObjectXid, String destinationFolderXid, IPointHierarchyXidDAO pointHierarchyXidDAO);
 
 }

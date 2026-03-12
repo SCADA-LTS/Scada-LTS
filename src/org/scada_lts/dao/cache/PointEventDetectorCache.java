@@ -4,7 +4,7 @@ import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.IPointEventDetectorDAO;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ public class PointEventDetectorCache implements PointEventDetectorCacheable {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(PointEventDetectorCache.class);
 
-    private final PointEventDetectorDAO pointEventDetectorDAO;
+    private final IPointEventDetectorDAO pointEventDetectorDAO;
 
-    public PointEventDetectorCache(PointEventDetectorDAO pointEventDetectorDAO) {
+    public PointEventDetectorCache(IPointEventDetectorDAO pointEventDetectorDAO) {
         this.pointEventDetectorDAO = pointEventDetectorDAO;
     }
 

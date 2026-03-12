@@ -49,7 +49,7 @@ public class EventDetectorTemplateDaoTest extends TestDAO{
 		// end papulate data
 		
 		// CRUD start
-		EventDetectorTemplateDAO eventDetectorTemplateDAO = new EventDetectorTemplateDAO();
+		IEventDetectorTemplateDAO eventDetectorTemplateDAO = new EventDetectorTemplateDAO();
 	    
 		//insert
 		int id = eventDetectorTemplateDAO.insertEventDetectorTemplate(eventDetectorTempVO);

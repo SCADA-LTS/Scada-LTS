@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import org.junit.Test;
+import org.scada_lts.dao.report.IReportInstanceDAO;
 import org.scada_lts.dao.report.ReportInstanceDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class SystemSettingsDaoTest extends TestDAO {
 
-	private static final SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+	private static final ISystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
 
 	private static final String SETTING_NAME = "settingName";
 	private static final String SETTING_VALUE = "/ScadaLTS";
@@ -116,7 +117,7 @@ public class SystemSettingsDaoTest extends TestDAO {
 		assertTrue(sizeWithRecords >= emptySize);
 
 
-		ReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
+		IReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
 		reportInstanceDAO.getReportInstance(1);
 
 		systemSettingsDAO.resetDataBase();

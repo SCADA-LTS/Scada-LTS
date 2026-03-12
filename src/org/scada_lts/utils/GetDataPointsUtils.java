@@ -5,7 +5,6 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.CompoundChild;
 import com.serotonin.mango.view.component.CompoundComponent;
@@ -26,6 +25,7 @@ import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.*;
 import java.util.function.Function;
@@ -67,7 +67,7 @@ public final class GetDataPointsUtils {
     public static Set<DataPointBean> getTargetDataPointsByPointLinks(User user, List<PointLinkVO> pointLinks, DataPointService dataPointService) {
         Set<DataPointBean> dataPoints = new HashSet<>();
         for (PointLinkVO pointLinkVO : pointLinks) {
-            DataPointVO targetDataPoint = dataPointService.getDataPoint(pointLinkVO.getTargetPointId());
+            DataPointVO targetDataPoint = safeGetDataPoint(dataPointService, pointLinkVO.getTargetPointId());
             if(targetDataPoint != null && targetDataPoint.getPointLocator() != null
                     && targetDataPoint.getPointLocator().isSettable()
                     && GetDataPointsWithAccess.hasDataPointSetPermission(user, targetDataPoint))
@@ -79,7 +79,7 @@ public final class GetDataPointsUtils {
     public static Set<DataPointBean> getSourceDataPointsByPointLinks(User user, List<PointLinkVO> pointLinks, DataPointService dataPointService) {
         Set<DataPointBean> dataPoints = new HashSet<>();
         for (PointLinkVO pointLinkVO : pointLinks) {
-            DataPointVO sourceDataPoint = dataPointService.getDataPoint(pointLinkVO.getSourcePointId());
+            DataPointVO sourceDataPoint = safeGetDataPoint(dataPointService, pointLinkVO.getSourcePointId());
             if(sourceDataPoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, sourceDataPoint))
                 dataPoints.add(new DataPointBean(sourceDataPoint));
         }
@@ -176,21 +176,38 @@ public final class GetDataPointsUtils {
         return ids;
     }
 
+    private static DataPointVO safeGetDataPoint(DataPointService dataPointService, int pointId) {
+        if(pointId < 1) {
+            return null;
+        }
+        try {
+            return dataPointService.getDataPoint(pointId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     private static Set<DataPointVO> getDataPointsByEventHandlers(List<EventHandlerVO> eventHandlers, DataPointService dataPointService, User user) {
         Set<DataPointVO> dataPoints = new HashSet<>();
         for (EventHandlerVO eventHandler : eventHandlers) {
-            if(eventHandler.createRuntime() instanceof SetPointHandlerRT) {
+            if(eventHandler.getHandlerType() == EventHandlerVO.TYPE_SET_POINT) {
                 DataPointVO targetPoint = dataPointService.getDataPoint(eventHandler.getTargetPointId());
-                DataPointVO activePoint = dataPointService.getDataPoint(eventHandler.getActivePointId());
-                DataPointVO inactivePoint = dataPointService.getDataPoint(eventHandler.getInactivePointId());
                 if (targetPoint != null && GetDataPointsWithAccess.hasDataPointSetPermission(user, targetPoint)) {
                     dataPoints.add(targetPoint);
                 }
-                if (activePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, activePoint)) {
-                    dataPoints.add(activePoint);
+
+                if (eventHandler.getActiveAction() == EventHandlerVO.SET_ACTION_POINT_VALUE) {
+                    DataPointVO activePoint = dataPointService.getDataPoint(eventHandler.getActivePointId());
+                    if (activePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, activePoint)) {
+                        dataPoints.add(activePoint);
+                    }
                 }
-                if (inactivePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, inactivePoint)) {
-                    dataPoints.add(inactivePoint);
+
+                if (eventHandler.getInactiveAction() == EventHandlerVO.SET_ACTION_POINT_VALUE) {
+                    DataPointVO inactivePoint = dataPointService.getDataPoint(eventHandler.getInactivePointId());
+                    if (inactivePoint != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, inactivePoint)) {
+                        dataPoints.add(inactivePoint);
+                    }
                 }
             }
         }

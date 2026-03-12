@@ -7,6 +7,7 @@ import com.serotonin.mango.vo.WatchList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.Collections;
@@ -18,13 +19,13 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
 
     private static final Log LOG = LogFactory.getLog(GetWatchListsWithAccess.class);
 
-    private final WatchListDAO watchListDAO;
+    private final IWatchListDAO watchListDAO;
 
     public GetWatchListsWithAccess() {
         this.watchListDAO = new WatchListDAO();
     }
 
-    public GetWatchListsWithAccess(WatchListDAO watchListDAO) {
+    public GetWatchListsWithAccess(IWatchListDAO watchListDAO) {
         this.watchListDAO = watchListDAO;
     }
 

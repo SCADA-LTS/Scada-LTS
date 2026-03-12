@@ -23,9 +23,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -44,6 +46,7 @@ import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
 import org.scada_lts.web.mvc.api.json.JsonSettingsScadaConfig;
@@ -242,14 +245,19 @@ public class SystemSettingsDwr extends BaseDwr {
 		data.put("totalSize",
 				DirectoryUtils.bytesDescription(dbSize + filedataSize));
 
-		if (checkTypeDB().equals("mysql")) {
-			double size = new SystemSettingsDAO().getDataBaseSize();
-			data.put("databaseSize", size + " MB");
-			data.put("filedataCount", 0);
-			data.put("filedataSize", 0);
-			data.put("totalSize", size + " MB");
-			data.put("filedataCount", 0);
-			data.put("filedataCount", 0);
+		String dbType = checkTypeDB();
+		if (dbType.equalsIgnoreCase("mysql") || dbType.equalsIgnoreCase("postgres")) {
+			double size = ApplicationBeans.getSystemSettingsDAOBean().getDataBaseSize();
+			if (size >= 0) {
+				data.put("databaseSize", size + " MB");
+				data.put("filedataCount", 0);
+				data.put("filedataSize", 0);
+				data.put("totalSize", size + " MB");
+				data.put("filedataCount", 0);
+				data.put("filedataCount", 0);
+			} else {
+				data.put("databaseSize", "(" + getMessage("common.unknown") + ")");
+			}
 		}
 
 		// Point history counts.
@@ -272,19 +280,19 @@ public class SystemSettingsDwr extends BaseDwr {
 			String name, boolean auth, String username, String password,
 			boolean tls, int contentType) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT, port);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS, from);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_NAME, name);
-		SystemSettingsDAO.setBooleanValue(
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT, port);
+		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS, from);
+		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_NAME, name);
+		systemSettingsDAO.setBooleanValue(
 				SystemSettingsDAO.EMAIL_AUTHORIZATION, auth);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME,
+		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME,
 				username);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD,
+		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD,
 				password);
-		SystemSettingsDAO.setBooleanValue(SystemSettingsDAO.EMAIL_TLS, tls);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE,
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.EMAIL_TLS, tls);
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE,
 				contentType);
 	}
 
@@ -395,7 +403,7 @@ public class SystemSettingsDwr extends BaseDwr {
 								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
 							     int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
 		systemSettingsDAO
 				.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
 						eventPurgePeriodType);
@@ -457,14 +465,14 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-			SystemSettingsDAO.setValue(
+			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+			systemSettingsDAO.setValue(
 					SystemSettingsDAO.CHART_BACKGROUND_COLOUR,
 					chartBackgroundColour);
-			SystemSettingsDAO.setValue(
+			systemSettingsDAO.setValue(
 					SystemSettingsDAO.PLOT_BACKGROUND_COLOUR,
 					plotBackgroundColour);
-			SystemSettingsDAO.setValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR,
+			systemSettingsDAO.setValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR,
 					plotGridlineColour);
 		}
 
@@ -475,7 +483,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription,String topDescriptionPrefix, String topDescription) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
 		systemSettingsDAO.setValue(
 				SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
 				newVersionNotificationLevel);
@@ -546,7 +554,15 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	
 	public String checkTypeDB() {
-		return Common.getEnvironmentProfile().getString("db.type", "derby");
+		try {
+			DatabaseAccess databaseAccess = DatabaseAccess.getDatabaseAccess();
+			if (databaseAccess != null) {
+				return databaseAccess.getTypeKey();
+			}
+		} catch (Exception ignore) {
+			// fallback to env.properties
+		}
+		return Common.getEnvironmentProfile().getString("db.type", "mysql");
 	}
 
 	

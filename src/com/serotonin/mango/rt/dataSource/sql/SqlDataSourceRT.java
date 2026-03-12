@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -46,6 +45,7 @@ import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import com.serotonin.mango.vo.dataSource.sql.SqlPointLocatorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.*;
 
 import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
@@ -282,12 +282,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 				return new NumericValue(rs.getDouble(fieldName));
 			else if (dataType == DataTypes.IMAGE) {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
-                                    StreamUtils.transfer(rs.getBinaryStream(fieldName),out);
-                                }
-                                else{
-                                    StreamUtils.transfer(rs.getBlob(fieldName).getBinaryStream(),out);
-                                }
+                                StreamUtils.transfer(ApplicationBeans.getBinaryDataHandler().getBinaryStream(rs, fieldName), out);
 				return new ImageValue(out.toByteArray(), ImageValue.TYPE_JPG);
 			} else
 				throw new ShouldNeverHappenException("What's this?: "

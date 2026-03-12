@@ -21,9 +21,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.service.ViewHierarchyService;
 import org.scada_lts.service.model.ViewHierarchyJSON;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /** 
  * Class responsible for buffering data of ViewHierarchy
@@ -45,7 +45,9 @@ public class ViewHierarchyCache {
 	
 	private void initial() {
 		LOG.info("Initial ViewHierarchyCache");
-		cache =  new ViewHierarchyService().getAll();
+		ViewHierarchyService service = ApplicationBeans.getViewHierarchyServiceBean();
+
+		cache = service.getAll();
 	}
 	
 	public static ViewHierarchyCache getInstance() {
@@ -62,7 +64,7 @@ public class ViewHierarchyCache {
 	}
 	
 	public void refresh() {
-		cache =  new ViewHierarchyService().getAll();
+		cache = ApplicationBeans.getViewHierarchyServiceBean().getAll();
 	}
 	
 }

@@ -40,6 +40,6 @@ public interface AlarmsService {
 
     @Deprecated
     static AlarmsService plcAlarmsService() {
-        return new PlcAlarmsService(AlarmsDAO.getInstance(), new DataPointService());
+        return new PlcAlarmsService(IAlarmsDAO.getInstance(), new DataPointService());
     }
 }

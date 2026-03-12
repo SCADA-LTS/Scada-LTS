@@ -32,7 +32,7 @@ public class SerializationHelperTest {
 
     public SerializationHelperTest(String file, String encoding) throws IOException {
         this.toWrite = Files.readString(Path.of(FileTestUtils.getResourcesPath("encoding", file)), Charset.forName(encoding));
-        this.utf8Expected = new String(toWrite.getBytes(), StandardCharsets.UTF_8);
+        this.utf8Expected = toWrite;
     }
 
     @Test
@@ -50,8 +50,8 @@ public class SerializationHelperTest {
         try(ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
             String result = SerializationHelper.readSafeUTF(inputStream);
 
-            byte[] bytesExpected = utf8Expected.getBytes();
-            byte[] bytesResult = result.getBytes();
+            byte[] bytesExpected = utf8Expected.getBytes(StandardCharsets.UTF_8);
+            byte[] bytesResult = result.getBytes(StandardCharsets.UTF_8);
 
             Assert.assertEquals(bytesExpected.length, bytesResult.length);
 

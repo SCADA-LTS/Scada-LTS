@@ -48,7 +48,7 @@ import com.serotonin.mango.Common;
 import static org.scada_lts.utils.PathSecureUtils.FileSystemPaths.getAbsoluteResourcePath;
 
 public class DerbyAccess extends DatabaseAccess {
-    private final Log log = LogFactory.getLog(DerbyAccess.class);
+    private static final Log log = LogFactory.getLog(DerbyAccess.class);
 
     private static final double LARGEST_POSITIVE = 1.79769E+308;
     private static final double SMALLEST_POSITIVE = 2.225E-307;
@@ -58,8 +58,8 @@ public class DerbyAccess extends DatabaseAccess {
     private EmbeddedXADataSource40 dataSource;
 
     @Override
-    public DatabaseType getType() {
-        return DatabaseType.DERBY;
+    public String getTypeKey() {
+        return "derby";
     }
 
     @Override

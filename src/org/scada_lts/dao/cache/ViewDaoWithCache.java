@@ -6,11 +6,11 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IViewDAO;
-import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,17 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public void init() {
-        List<View> views = new ViewDAO().findAll();
+        IViewDAO viewDao = ApplicationBeans.getBean("viewDAO", IViewDAO.class);
+        List<View> views = viewDao.findAll();
         for(View view: views) {
             applyShareUsers(view);
             viewCache.put(view);
         }
+    }
+
+    @Override
+    public List<View> filtered(String filter, String order, Object[] argsFilter, long limit) {
+        return ApplicationBeans.getBean("viewDAO", IViewDAO.class).filtered(filter, order, argsFilter, limit);
     }
 
     @Override
@@ -41,6 +47,13 @@ public class ViewDaoWithCache implements IViewDAO {
     @Override
     public void update(View view) {
         viewCache.update(view);
+    }
+
+    @Override
+    public void delete(View entity) {
+        if (entity != null) {
+            delete(entity.getId());
+        }
     }
 
     @Override
@@ -60,6 +73,11 @@ public class ViewDaoWithCache implements IViewDAO {
             }
         }
         return views;
+    }
+
+    @Override
+    public void batchUpdateInfoUsers(View view) {
+        ApplicationBeans.getBean("viewDAO", IViewDAO.class).batchUpdateInfoUsers(view);
     }
 
     @Override
@@ -144,6 +162,11 @@ public class ViewDaoWithCache implements IViewDAO {
         return findAll().stream()
                 .filter(view -> GetViewsWithAccess.hasViewReadPermission(User.onlyIdAndProfile(userId, profileId), view))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteViewForUser(int viewId) {
+        ApplicationBeans.getBean("viewDAO", IViewDAO.class).deleteViewForUser(viewId);
     }
 
     @Override

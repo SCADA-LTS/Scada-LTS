@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.event.UserEvent;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserEventDAO implements GenericDaoCR<UserEvent> {
+public class UserEventDAO implements IUserEventDAO {
 	
 	private static final Log LOG = LogFactory.getLog(UserEventDAO.class);
 	

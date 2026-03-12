@@ -3,9 +3,8 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.IPointEventDetectorDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,8 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
     @Override
     public void init() {
-        List<DataPointVO> dataPoints = new DataPointDAO().getDataPoints();
+        IDataPointDAO dao = ApplicationBeans.getDataPointDAOBean();
+        List<DataPointVO> dataPoints = dao.getDataPoints();
         Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = new PointEventDetectorDAO()
                 .getPointEventDetectors(Integer.MAX_VALUE, 0)
                 .stream()
@@ -45,6 +45,25 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
                 .map(PointEventDetectorVO::copy)
                 .peek(a -> a.njbSetDataPoint(dataPoint))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Deprecated
+    public int getId(String pointEventDetectorXid, int dataPointId) {
+        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(pointEventDetectorXid, dataPointId);
+        return pointEventDetectorVO == null ? -1 : pointEventDetectorVO.getId();
+    }
+
+    @Override
+    @Deprecated
+    public String getXid(int pointEventDetectorId) {
+        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(pointEventDetectorId);
+        return pointEventDetectorVO == null ? null : pointEventDetectorVO.getXid();
+    }
+
+    @Override
+    public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
+        return new PointEventDetectorDAO().getPointEventDetectors(limit, offset);
     }
 
     @Override

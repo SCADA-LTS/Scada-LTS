@@ -38,6 +38,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.ISystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.ds.polling.protocol.opcua.vo.OpcUaDataType;
 
 @JsonRemoteEntity
@@ -105,8 +107,8 @@ public class AuditEventType extends EventType {
         EventTypeVO et = getEventType(type);
         et.setAlarmLevel(alarmLevel);
 
-        SystemSettingsDAO dao = new SystemSettingsDAO();
-        dao.setIntValue(AUDIT_SETTINGS_PREFIX + type, alarmLevel);
+        ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+        systemSettingsDAO.setIntValue(AUDIT_SETTINGS_PREFIX + type, alarmLevel);
     }
 
     static void raiseAddedEvent(int auditEventTypeId, ChangeComparable<?> o) {

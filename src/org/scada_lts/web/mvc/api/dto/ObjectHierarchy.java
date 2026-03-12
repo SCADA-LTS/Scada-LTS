@@ -1,6 +1,6 @@
 package org.scada_lts.web.mvc.api.dto;
 
-import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyXidDAO;
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.io.Serializable;
@@ -42,7 +42,7 @@ public class ObjectHierarchy implements Serializable {
         return "type=" + type + ", xid='" + xid;
     }
 
-    public boolean move(String destinationFolderXid, PointHierarchyXidDAO pointHierarchyXidDAO) {
+    public boolean move(String destinationFolderXid, IPointHierarchyXidDAO pointHierarchyXidDAO) {
         return type.move(xid, destinationFolderXid, pointHierarchyXidDAO);
     }
 }

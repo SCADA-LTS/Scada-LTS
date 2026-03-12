@@ -12,6 +12,8 @@ import java.util.Optional;
 @Component
 public interface IUsersProfileDAO extends GenerateXid {
 
+    String generateUniqueXid(String prefix);
+
     Optional<UsersProfileVO> selectProfileById(int profileId);
     Optional<UsersProfileVO> selectProfileByXid(String profileXid);
 

@@ -2,15 +2,15 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.scada_lts.dao.DataPointUserDAO;
+import org.scada_lts.dao.IDataPointUserDAO;
 
 import java.util.List;
 
 public class DataPointUserPermissionsService implements PermissionsService<DataPointAccess, User> {
 
-    private final DataPointUserDAO dataPointUserDAO;
+    private final IDataPointUserDAO dataPointUserDAO;
 
-    public DataPointUserPermissionsService(DataPointUserDAO dataPointUserDAO) {
+    public DataPointUserPermissionsService(IDataPointUserDAO dataPointUserDAO) {
         this.dataPointUserDAO = dataPointUserDAO;
     }
 

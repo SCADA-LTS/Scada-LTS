@@ -28,13 +28,13 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,11 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Deprecated
-public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnotation> {
+public class PointValueAdnnotationsDAO implements IPointValueAdnnotationsDAO {
 	
 	private static final Log LOG = LogFactory.getLog(PointValueAdnnotationsDAO.class);
-	
-	private static PointValueAdnnotationsDAO instance;
 	
 	private final static String  COLUMN_NAME_POINT_VALUE_ID = "pointValueId";
 	private final static String  COLUMN_NAME_TEXT_POINT_VALUE_SHORT = "textPointValueShort";
@@ -133,11 +131,8 @@ public class PointValueAdnnotationsDAO implements GenericDaoCR<PointValueAdnnota
 		}
 	}
 
-	public static PointValueAdnnotationsDAO getInstance() {
-		if (instance == null) {
-			instance = new PointValueAdnnotationsDAO();
-		}
-		return instance;
+	public static IPointValueAdnnotationsDAO getInstance() {
+		return ApplicationBeans.getPointValueAdnnotationsDAOBean();
 	}
 
 	@Override

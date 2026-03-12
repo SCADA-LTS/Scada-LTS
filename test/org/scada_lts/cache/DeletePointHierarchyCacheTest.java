@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -14,16 +15,19 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyComparator;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
-@PrepareForTest({PointHierarchyCache.class})
+@PrepareForTest({PointHierarchyCache.class, ApplicationBeans.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
@@ -204,13 +208,20 @@ public class DeletePointHierarchyCacheTest {
         when(hierarchyDAOMock.getHierarchy()).thenReturn(pointHierarchy);
         when(pointHierarchyDAOMock.getPointsHierarchy()).thenReturn(folderHierarchy);
 
-        whenNew(HierarchyDAO.class)
+        PowerMockito.whenNew(HierarchyDAO.class)
                 .withAnyArguments()
                 .thenReturn(hierarchyDAOMock);
 
-        whenNew(PointHierarchyDAO.class)
+        PowerMockito.whenNew(PointHierarchyDAO.class)
                 .withAnyArguments()
                 .thenReturn(pointHierarchyDAOMock);
+
+        PowerMockito.mockStatic(ApplicationBeans.class);
+
+        when(ApplicationBeans.getBean(eq("pointHierarchyDAO"), any(Class.class)))
+                .thenReturn(pointHierarchyDAOMock);
+        when(ApplicationBeans.getHierarchyDAOBean())
+                .thenReturn(hierarchyDAOMock);
 
         this.pointHierarchyCache = new PointHierarchyCache(true);
     }

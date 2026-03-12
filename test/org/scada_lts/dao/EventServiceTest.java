@@ -28,6 +28,7 @@ import com.serotonin.mango.vo.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.event.IUserEventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.UserEvent;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -222,7 +223,7 @@ public class EventServiceTest extends TestDAO {
 		dataPoint.setDataSourceXid(DATA_SOURCE_XID);
 		dataPoint.setDataSourceTypeId(DATA_SOURCE_TYPE_ID);
 		
-		DataPointDAO dataPointDAO = new DataPointDAO();
+		IDataPointDAO dataPointDAO = new DataPointDAO();
 		int id = dataPointDAO.insert(dataPoint);
 		dataPoint.setId(id);
 		
@@ -241,7 +242,7 @@ public class EventServiceTest extends TestDAO {
 		pointEventDetector.setAlphanumericState(ALPHANUMERIC_STATE);
 		pointEventDetector.setWeight(WEIGHT);
 		
-		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
+		IPointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 		int idPointEventDetector = pointEventDetectorDAO.insert(dataPoint.getId(), pointEventDetector);
 		
 		EventType type = new DataPointEventType(id,idPointEventDetector);
@@ -257,7 +258,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 		List<EventInstance> eventsForDataPoint = eventService.getEventsForDataPoint(id, ADMIN_USER_ID);
 		boolean checkEventsForDataPoint = eventsForDataPoint.size() == 1;
@@ -279,7 +280,7 @@ public class EventServiceTest extends TestDAO {
 		dataPoint.setDataSourceXid(DATA_SOURCE_XID);
 		dataPoint.setDataSourceTypeId(DATA_SOURCE_TYPE_ID);
 		
-		DataPointDAO dataPointDAO = new DataPointDAO();
+		IDataPointDAO dataPointDAO = new DataPointDAO();
 		int id = dataPointDAO.insert(dataPoint);
 		dataPoint.setId(id);
 		
@@ -298,7 +299,7 @@ public class EventServiceTest extends TestDAO {
 		pointEventDetector.setAlphanumericState(ALPHANUMERIC_STATE);
 		pointEventDetector.setWeight(WEIGHT);
 		
-		PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
+		IPointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 		int idPointEventDetector = pointEventDetectorDAO.insert(pointEventDetector);
 		
 		EventType type = new DataPointEventType(id,idPointEventDetector);
@@ -316,7 +317,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 		List<EventInstance> eventsPendingForDataPoint = eventService.getPendingEventsForDataPoint(id, ADMIN_USER_ID);
 		boolean checkEventsForPendingDataPoint = eventsPendingForDataPoint.size() == 1;
@@ -392,7 +393,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 		
 		List<EventInstance> events = eventService.searchOld(e.getId(),EventType.EventSources.DATA_SOURCE,"*",alarmLevel,null,0,ADMIN_USER_ID,null);
@@ -421,7 +422,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 
 		List<EventInstance> events = eventService.search(0, -1, null, -1, null, 1, null, 0, 5000, null);
@@ -450,7 +451,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 
 		eventService.search(0, -1, null, -1, null, 1, null, 0, 5000, null);
@@ -546,7 +547,7 @@ public class EventServiceTest extends TestDAO {
 		userEvent.setSilenced(false);
 		userEvent.setUserId(ADMIN_USER_ID);
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		userEventDAO.create(userEvent);
 
 		User user = new User();

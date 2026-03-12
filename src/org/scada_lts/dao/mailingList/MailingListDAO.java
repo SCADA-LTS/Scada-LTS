@@ -48,7 +48,7 @@ import java.util.Set;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class MailingListDAO {
+public class MailingListDAO implements IMailingListDAO {
 
 	private static final Log LOG = LogFactory.getLog(MailingListDAO.class);
 
@@ -131,6 +131,7 @@ public class MailingListDAO {
 		}
 	}
 
+	@Override
 	public MailingList getMailingList(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -142,6 +143,7 @@ public class MailingListDAO {
 		return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[] {id}, new MailingListRowMapper());
 	}
 
+	@Override
 	public MailingList getMailingList(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -160,6 +162,7 @@ public class MailingListDAO {
 		return mailingList;
 	}
 
+	@Override
 	public List<MailingList> getMailingLists() {
 
 		if (LOG.isTraceEnabled()) {
@@ -171,12 +174,14 @@ public class MailingListDAO {
 		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new MailingListRowMapper());
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> getSimpleMailingLists() {
 		String templateSelectOrderBy = MAILING_LIST_SELECT + "order by name";
 		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, ScadaObjectIdentifierRowMapper.withDefaultNames());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final MailingList mailingList) {
 
 		if (LOG.isTraceEnabled()) {
@@ -199,7 +204,8 @@ public class MailingListDAO {
 		return keyHolder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(MailingList mailingList) {
 
 		if (LOG.isTraceEnabled()) {
@@ -211,7 +217,8 @@ public class MailingListDAO {
                 mailingList.isCollectInactiveEmails(), mailingList.getCronPattern(), mailingList.getId()});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -222,6 +229,7 @@ public class MailingListDAO {
 	}
 
 	@Transactional(readOnly = true)
+	@Override
 	public List<MailingList> getMailingLists(Set<Integer> ids) {
 		if(ids.isEmpty())
 			return Collections.emptyList();

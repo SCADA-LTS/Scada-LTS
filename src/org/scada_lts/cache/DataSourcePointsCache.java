@@ -4,7 +4,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.IDataPointDAO;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.beans.ApplicationBeans;
 
@@ -69,8 +69,10 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 
 	@Override
 	public void cacheInitialize() {
-		
-		List<DataPointVO> dps = new DataPointDAO().getDataPoints();
+
+		IDataPointDAO dao = ApplicationBeans.getBean("dataPointDAO", IDataPointDAO.class);
+
+		List<DataPointVO> dps = dao.getDataPoints();
 		
 		dss = composeCashData(dps);
 		

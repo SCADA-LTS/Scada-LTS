@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportInstanceUserCommentDAO {
+public class ReportInstanceUserCommentDAO implements IReportInstanceUserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportInstanceUserCommentDAO.class);
 

@@ -17,23 +17,16 @@
  */
 package org.scada_lts.dao;
 
-import java.sql.Statement;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -44,7 +37,7 @@ import java.util.List;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class PointLinkDAO {
+public class PointLinkDAO implements IPointLinkDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointLinkDAO.class);
 
@@ -78,7 +71,7 @@ public class PointLinkDAO {
 				+ COLUMN_NAME_EVENT_TYPE + ", "
 				+ COLUMN_NAME_DISABLED
 			+ ") "
-			+ "values (?,?,?,?,?,?) ";
+			+ "values (?,?,?,?,?,?) RETURNING id";
 
 	private static final String POINT_LINK_UPDATE = ""
 			+ "update pointLinks set "
@@ -121,6 +114,7 @@ public class PointLinkDAO {
 		}
 	}
 
+	@Override
 	public PointLinkVO getPointLink(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -138,6 +132,7 @@ public class PointLinkDAO {
 		return pointLinkVO;
 	}
 
+	@Override
 	public PointLinkVO getPointLink(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -155,6 +150,7 @@ public class PointLinkDAO {
 		return pointLinkVO;
 	}
 
+	@Override
 	public List<PointLinkVO> getPointLinks() {
 
 		if (LOG.isTraceEnabled()) {
@@ -164,6 +160,7 @@ public class PointLinkDAO {
 		return DAO.getInstance().getJdbcTemp().query(POINT_LINK_SELECT, new PointLinkRowMapper());
 	}
 
+	@Override
 	public List<PointLinkVO> getPointLinksForPoint(int datapointId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -173,35 +170,30 @@ public class PointLinkDAO {
 		return DAO.getInstance().getJdbcTemp().query(POINT_LINK_SELECT_WHERE, new Object[]{datapointId, datapointId}, new PointLinkRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final PointLinkVO pointLink) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPointLink(PointLinkVO pointLink) pointLink:" + pointLink.toString());
 		}
 
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement(POINT_LINK_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[] {
-					pointLink.getXid(),
-					pointLink.getSourcePointId(),
-					pointLink.getTargetPointId(),
-					pointLink.getScript(),
-					pointLink.getEvent(),
-					DAO.boolToChar(pointLink.isDisabled())}
-				).setValues(ps);
-				return ps;
-			}
-		}, keyHolder);
-
-		return keyHolder.getKey().intValue();
+        return DAO.getInstance().getJdbcTemp().queryForObject(
+                POINT_LINK_INSERT,
+                new Object[]{
+                        pointLink.getXid(),
+                        pointLink.getSourcePointId(),
+                        pointLink.getTargetPointId(),
+                        pointLink.getScript(),
+                        pointLink.getEvent(),
+                        DAO.boolToChar(pointLink.isDisabled())
+                },
+                Integer.class
+        );
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(PointLinkVO pointLink) {
 
 		if (LOG.isTraceEnabled()) {
@@ -219,7 +211,8 @@ public class PointLinkDAO {
 		});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {

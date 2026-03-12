@@ -25,6 +25,10 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.scada_lts.dao.report.IReportInstanceDAO;
+import org.scada_lts.dao.report.IReportInstanceDataDAO;
+import org.scada_lts.dao.report.IReportInstancePointDAO;
+import org.scada_lts.dao.report.IReportInstanceUserCommentDAO;
 import org.scada_lts.dao.report.ReportInstanceDAO;
 import org.scada_lts.dao.report.ReportInstanceDataDAO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
@@ -79,7 +83,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 	private AnalogRenderer analogRenderer;
 	private DataPointVO dataPointVO;
 	private MangoValue startValue;
-	private ReportInstancePointDAO.PointInfo pointInfo;
+	private IReportInstancePointDAO.PointInfo pointInfo;
 
 	@Before
 	public void beforeTest() {
@@ -98,7 +102,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 		startValue = mock(MangoValue.class);
 		when(startValue.toString()).thenReturn("mValString").thenReturn("secondMVal");
 
-		pointInfo = mock(ReportInstancePointDAO.PointInfo.class);
+		pointInfo = mock(IReportInstancePointDAO.PointInfo.class);
 		when(pointInfo.getColour()).thenReturn("blue").thenReturn("red");
 		when(pointInfo.isConsolidatedChart()).thenReturn(true);
 	}
@@ -129,7 +133,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 		secondReportInstance.setRecordCount(SECOND_RECORD_COUNT);
 		secondReportInstance.setPreventPurge(SECOND_PREVENT_PURGE);
 
-		ReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
+		IReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
 
 		//Insert
 		int firstId = reportInstanceDAO.insert(reportInstance);
@@ -204,10 +208,10 @@ public class ReportInstanceDaoTest extends TestDAO {
 				+ "runEndTime, recordCount, preventPurge) " + "  values (" + USER_ID + ", '" + NAME + "', " + INCLUDE_EVENTS + ", " + INCLUDE_USER_COMMENT
 				+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
 
-		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
+		IReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
 		reportInstancePointDAO.insert(reportInstance, DATA_TYPE, startValue, pointInfo);
 
-		ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
+		IReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
 
 		ReportInstance reportInst = new ReportInstance();
 		reportInst.setReportStartTime(1);
@@ -263,7 +267,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 				+ "runEndTime, recordCount, preventPurge) " + "  values (" + USER_ID + ", '" + NAME + "', " + INCLUDE_EVENTS + ", " + INCLUDE_USER_COMMENT
 						+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
 
-		ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
+		IReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
 
 		//Insert objects
 		int firstId = reportInstancePointDAO.insert(reportInstance, DATA_TYPE, startValue, pointInfo);
@@ -297,7 +301,7 @@ public class ReportInstanceDaoTest extends TestDAO {
 				+ ", " + REPORT_START_TIME + ", " + REPORT_END_TIME + "," + RUN_START_TIME + "," + RUN_END_TIME + "," + RECORD_COUNT + "," + PREVENT_PURGE + ")");
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO reportinstanceusercomments (reportInstanceId, username, commentType, typeKey, ts, commentText) values (1, 'fName', 1, 1, 20, 'fCom')");
 
-		ReportInstanceUserCommentDAO reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
+		IReportInstanceUserCommentDAO reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
 
 		//Insert objects
 		List<ReportUserComment> reportUserCommentList = reportInstanceUserCommentDAO.getReportUserComments(INSTANCE_ID);

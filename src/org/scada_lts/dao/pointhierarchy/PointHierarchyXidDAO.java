@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author grzegorz.bylica@gmail.com
  */
-public class PointHierarchyXidDAO extends PointHierarchyDAO {
+public class PointHierarchyXidDAO extends PointHierarchyDAO implements IPointHierarchyXidDAO {
 
     private static final String ROOT = "_";
     private static final int ROOT_PARENT_ID = 0;

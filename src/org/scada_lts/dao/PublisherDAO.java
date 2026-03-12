@@ -37,8 +37,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -46,7 +44,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class PublisherDAO {
+public class PublisherDAO implements IPublisherDAO {
 
 	private static final Log LOG = LogFactory.getLog(PublisherDAO.class);
 
@@ -101,6 +99,7 @@ public class PublisherDAO {
 		}
 	}
 
+	@Override
 	public PublisherVO<? extends PublishedPointVO> getPublisher(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -118,6 +117,7 @@ public class PublisherDAO {
 		return publisher;
 	}
 
+	@Override
 	public PublisherVO<? extends PublishedPointVO> getPublisher(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -135,6 +135,7 @@ public class PublisherDAO {
 		return publisher;
 	}
 
+	@Override
 	public List<PublisherVO<? extends PublishedPointVO>> getPublishers() {
 
 		if (LOG.isTraceEnabled()) {
@@ -144,7 +145,8 @@ public class PublisherDAO {
 		return DAO.getInstance().getJdbcTemp().query(PUBLISHER_SELECT, new PublisherRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final PublisherVO<? extends PublishedPointVO> publisher) {
 
 		if (LOG.isTraceEnabled()) {
@@ -164,7 +166,8 @@ public class PublisherDAO {
 		return keyHolder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(PublisherVO<? extends PublishedPointVO> publisher) {
 
 		if (LOG.isTraceEnabled()) {
@@ -174,7 +177,8 @@ public class PublisherDAO {
 		DAO.getInstance().getJdbcTemp().update(PUBLISHER_UPDATE, new Object[] {publisher.getXid(), new SerializationData().writeObject(publisher), publisher.getId()});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {

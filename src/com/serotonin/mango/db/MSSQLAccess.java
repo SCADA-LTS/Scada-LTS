@@ -29,8 +29,8 @@ import com.serotonin.db.spring.ExtendedJdbcTemplate;
 public class MSSQLAccess extends BasePooledAccess {
 
     @Override
-    public DatabaseType getType() {
-        return DatabaseType.MSSQL;
+    public String getTypeKey() {
+        return "mssql";
     }
 
     @Override

@@ -37,7 +37,7 @@ import java.util.Optional;
  *
  */
 
-class PlcAlarmsDAO implements AlarmsDAO {
+class PlcAlarmsDAO implements IAlarmsDAO {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsDAO.class);
 

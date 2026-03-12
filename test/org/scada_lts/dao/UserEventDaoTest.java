@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.junit.Test;
+import org.scada_lts.dao.event.IUserEventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.dao.model.event.UserEvent;
 
@@ -75,7 +76,7 @@ public class UserEventDaoTest extends TestDAO {
 		
 		// end populate data
 		
-		UserEventDAO userEventDAO = new UserEventDAO();
+		IUserEventDAO userEventDAO = new UserEventDAO();
 		
 		//CR
 		

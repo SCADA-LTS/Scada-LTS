@@ -9,7 +9,9 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 @JsonRemoteEntity
 public class SystemSettingsJSONWrapper implements JsonSerializable {
@@ -22,15 +24,14 @@ public class SystemSettingsJSONWrapper implements JsonSerializable {
 
 		Set<Entry<String, Object>> defaultValues = SystemSettingsDAO.DEFAULT_VALUES
 				.entrySet();
-		SystemSettingsDAO dao = new SystemSettingsDAO();
 
 		for (Entry<String, Object> entry : defaultValues) {
 			if (entry.getValue() instanceof Integer) {
-				map.put(entry.getKey(), dao.getIntValue(entry.getKey()));
+				map.put(entry.getKey(), SystemSettingsDAO.getIntValue(entry.getKey()));
 			} else if (entry.getValue() instanceof Boolean) {
-				map.put(entry.getKey(), dao.getBooleanValue(entry.getKey()));
+				map.put(entry.getKey(), SystemSettingsDAO.getBooleanValue(entry.getKey()));
 			} else if (entry.getValue() instanceof String) {
-				map.put(entry.getKey(), dao.getValue(entry.getKey()));
+				map.put(entry.getKey(), SystemSettingsDAO.getValue(entry.getKey()));
 			}
 		}
 
@@ -42,17 +43,17 @@ public class SystemSettingsJSONWrapper implements JsonSerializable {
 
 		Set<Entry<String, Object>> defaultValues = SystemSettingsDAO.DEFAULT_VALUES
 				.entrySet();
-		SystemSettingsDAO dao = new SystemSettingsDAO();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
 
 		for (Entry<String, Object> entry : defaultValues) {
 			String key = entry.getKey();
 
 			if (entry.getValue() instanceof Integer) {
-				dao.setIntValue(key, json.getInt(key));
+				systemSettingsDAO.setIntValue(key, json.getInt(key));
 			} else if (entry.getValue() instanceof Boolean) {
-				dao.setBooleanValue(key, json.getBoolean(key));
+				systemSettingsDAO.setBooleanValue(key, json.getBoolean(key));
 			} else if (entry.getValue() instanceof String) {
-				dao.setValue(key, json.getString(key));
+				systemSettingsDAO.setValue(key, json.getString(key));
 			}
 		}
 	}

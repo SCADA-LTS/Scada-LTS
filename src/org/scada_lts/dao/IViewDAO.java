@@ -3,6 +3,7 @@ package org.scada_lts.dao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
@@ -11,9 +12,33 @@ public interface IViewDAO extends ScadaRepository<View, Integer> {
 
     default void init() {}
 
-    View findByName(String name);
+    List<View> findAll();
+
+    List<View> filtered(String filter, String order, Object[] argsFilter, long limit);
+
+    void update(View entity);
+
+    void delete(View entity);
+
+    void deleteViewForUser(int viewId);
 
     void deleteViewForUser(int viewId, int userId);
+
+    void batchUpdateInfoUsers(View view);
+
+    List<ScadaObjectIdentifier> findIdentifiers();
+
+    List<BaseObjectIdentifier> findBaseIdentifiers();
+
+    View save(View entity);
+
+    void delete(Integer id);
+
+    View findById(Integer id);
+
+    View findByName(String name);
+
+    View findByXid(String xid);
 
     List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId, int profileId);
 

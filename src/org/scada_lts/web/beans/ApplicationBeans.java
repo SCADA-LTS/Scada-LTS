@@ -7,19 +7,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.login.ILoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.db.BinaryDataHandler;
 import org.scada_lts.dao.*;
+import org.scada_lts.dao.alarms.IAlarmsDAO;
 import org.scada_lts.dao.cache.*;
+import org.scada_lts.dao.event.IUserEventDAO;
+import org.scada_lts.dao.mailingList.IMailingListInactiveDAO;
+import org.scada_lts.dao.mailingList.IMailingListMemberDAO;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyXidDAO;
+import org.scada_lts.dao.pointvalues.IPointValueAdnnotationsDAO;
+import org.scada_lts.dao.pointvalues.IPointValueAmChartDAO;
 import org.scada_lts.mango.service.UserCommentService;
 
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.dao.report.IReportInstanceUserCommentDAO;
 import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.service.ViewHierarchyService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -36,6 +47,10 @@ public class ApplicationBeans {
 
     public static <T> T getBean(String beanName, Class<T> type) {
         return getBeanFromContext(beanName, type);
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return getBeansContext();
     }
 
     public static IUserDAO getUserDaoBean() {
@@ -153,6 +168,14 @@ public class ApplicationBeans {
         return getBeanFromContext("objectMapper", ObjectMapper.class);
     }
 
+    public static BinaryDataHandler getBinaryDataHandler() {
+        BinaryDataHandler handler = getBeanFromContext("binaryDataHandler", BinaryDataHandler.class);
+        if (handler == null) {
+            throw new IllegalStateException("binaryDataHandler bean is missing.");
+        }
+        return handler;
+    }
+
     public static class Lazy {
 
         private Lazy() {}
@@ -203,4 +226,74 @@ public class ApplicationBeans {
     private static ApplicationContext getBeansApplication() {
         return GetApplicationBeans.context() == null ? null : GetApplicationBeans.context();
     }
+
+    public static ViewHierarchyService getViewHierarchyServiceBean() {
+        return getBean("viewHierarchyService", ViewHierarchyService.class);
+    }
+
+    public static IDataPointDAO getDataPointDAOBean(){
+        return getBean("dataPointDAO", IDataPointDAO.class);
+    }
+
+    public static IPointValueDAO getPointValueDAOBean(){
+        return getBean("pointValueDAO", IPointValueDAO.class);
+    }
+
+    public static IDataPointUserDAO getDataPointUserDAOBean() {
+        return getBean("dataPointUserDAO", IDataPointUserDAO.class);
+    }
+
+    public static IEventDetectorTemplateDAO getEventDetectorTemplateDAOBean() {
+        return getBean("eventDetectorTemplateDAO", IEventDetectorTemplateDAO.class);
+    }
+
+    public static IFlexProjectDAO getFlexProjectDAOBean() {
+        return getBean("flexProjectDAO", IFlexProjectDAO.class);
+    }
+
+    public static IHierarchyDAO getHierarchyDAOBean() {
+        return getBean("hierarchyDAO", IHierarchyDAO.class);
+    }
+
+    public static IPendingEventsDAO getPendingEventsDAOBean() {
+        return getBean("pendingEventsDAO", IPendingEventsDAO.class);
+    }
+
+    public static ISystemSettingsDAO getSystemSettingsDAOBean() {
+        return getBean("systemSettingsDAO", ISystemSettingsDAO.class);
+    }
+
+    public static IUserEventDAO getUserEventDAOBean() {
+        return getBean("userEventDAO", IUserEventDAO.class);
+    }
+
+    public static IMailingListInactiveDAO getMailingListInactiveDAOBean() {
+        return getBean("mailingListInactiveDAO", IMailingListInactiveDAO.class);
+    }
+
+    public static IMailingListMemberDAO getMailingListMemberDAOBean() {
+        return getBean("mailingListMemberDAO", IMailingListMemberDAO.class);
+    }
+
+    public static IPointHierarchyXidDAO getPointHierarchyXidDAOBean() {
+        return getBean("pointHierarchyXidDAO", IPointHierarchyXidDAO.class);
+    }
+
+    public static IPointValueAdnnotationsDAO getPointValueAdnnotationsDAOBean() {
+        return getBean("pointValueAdnnotationsDAO", IPointValueAdnnotationsDAO.class);
+    }
+
+    public static IPointValueAmChartDAO getPointValueAmChartDAOBean() {
+        return getBean("pointValueAmChartDAO", IPointValueAmChartDAO.class);
+    }
+
+    public static IReportInstanceUserCommentDAO getReportInstanceUserCommentDAOBean() {
+        return getBean("reportInstanceUserCommentDAO", IReportInstanceUserCommentDAO.class);
+    }
+
+    public static IAlarmsDAO getAlarmsDAOBean() {
+        return getBean("alarmsDAO", IAlarmsDAO.class);
+    }
+
+
 }

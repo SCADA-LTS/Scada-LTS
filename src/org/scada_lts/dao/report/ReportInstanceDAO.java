@@ -49,7 +49,7 @@ import com.serotonin.mango.vo.report.ReportInstance;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportInstanceDAO {
+public class ReportInstanceDAO implements IReportInstanceDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportInstanceDAO.class);
 
@@ -167,6 +167,7 @@ public class ReportInstanceDAO {
 		}
 	}
 
+	@Override
 	public ReportInstance getReportInstance(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -182,6 +183,7 @@ public class ReportInstanceDAO {
 		return reportInstance;
 	}
 
+	@Override
 	public List<ReportInstance> getReportInstances(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -191,7 +193,8 @@ public class ReportInstanceDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_SELECT_WHERE_USER_ID_ORDER, new Object[]{userId}, new ReportInstanceRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final ReportInstance reportInstance) {
 
 		if (LOG.isTraceEnabled()) {
@@ -221,7 +224,8 @@ public class ReportInstanceDAO {
 		return keyholder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void updateTime(ReportInstance reportInstance) {
 
 		if (LOG.isTraceEnabled()) {
@@ -238,7 +242,8 @@ public class ReportInstanceDAO {
 		});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void updatePreventPurge(int id, boolean preventPurge, int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -252,7 +257,8 @@ public class ReportInstanceDAO {
 		});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id, int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -262,7 +268,8 @@ public class ReportInstanceDAO {
 		DAO.getInstance().getJdbcTemp().update(REPORT_INSTANCE_DELETE, new Object[]{id, userId});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int deleteReportBefore(final long time) {
 
 		if (LOG.isTraceEnabled()) {
@@ -312,10 +319,12 @@ public class ReportInstanceDAO {
 				+ COLUMN_NAME_E_ACTIVE_TS;
 
 
+	@Override
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new ReportEventRowMapper());
 	}
 
+	@Override
 	public List<ReportInstance> getReportInstances() {
 
 		if (LOG.isTraceEnabled()) {
@@ -325,7 +334,8 @@ public class ReportInstanceDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_SELECT, new ReportInstanceRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void updatePreventPurge(int id, boolean preventPurge) {
 
 		if (LOG.isTraceEnabled()) {
