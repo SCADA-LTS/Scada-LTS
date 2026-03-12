@@ -48,25 +48,6 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     }
 
     @Override
-    @Deprecated
-    public int getId(String pointEventDetectorXid, int dataPointId) {
-        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(pointEventDetectorXid, dataPointId);
-        return pointEventDetectorVO == null ? -1 : pointEventDetectorVO.getId();
-    }
-
-    @Override
-    @Deprecated
-    public String getXid(int pointEventDetectorId) {
-        PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(pointEventDetectorId);
-        return pointEventDetectorVO == null ? null : pointEventDetectorVO.getXid();
-    }
-
-    @Override
-    public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
-        return new PointEventDetectorDAO().getPointEventDetectors(limit, offset);
-    }
-
-    @Override
     public boolean isEventDetectorXidUnique(int dataPointId, String xid, int excludeId) {
         PointEventDetectorVO pointEventDetectorVO = pointEventDetectorCache.selectPointEventDetector(xid, dataPointId);
         if(pointEventDetectorVO == null)
