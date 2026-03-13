@@ -337,21 +337,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         Map<String, IDataPoint> context;
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
-            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
-            returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
-            returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint);
+            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, dataSource);
             return context;
-        } catch (PointDisabledException e) {
-            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
-            raiseContextErrorPointDisabled(System.currentTimeMillis(), dataPoint, e.getLocalizableMessage());
-            return null;
-        } catch (DataPointStateException e) {
-            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
-            raiseContextErrorPointUnavailable(System.currentTimeMillis(), dataPoint, e.getLocalizableMessage());
-            return null;
         } catch (Exception e) {
-            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
-            raiseContextErrorPointUnavailable(System.currentTimeMillis(), dataPoint, new LocalizableMessage("common.default", LoggingUtils.exceptionInfo(e)));
+            LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
             return null;
         }
     }
@@ -419,22 +408,6 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void returnToNormalType(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalType(runtime, dataPoint);
-    }
-
-    protected void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        dataSource.raiseContextErrorPointDisabled(runtime, dataPoint, message);
-    }
-
-    protected void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        dataSource.raiseContextErrorPointUnavailable(runtime, dataPoint, message);
-    }
-
-    protected void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint) {
-        dataSource.returnToNormalContextPointUnavailable(runtime, dataPoint);
-    }
-
-    protected void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint) {
-        dataSource.returnToNormalContextPointDisabled(runtime, dataPoint);
     }
 
     private static boolean isUpdatePoint(boolean initializeMode, PointValueTime valueTime, PointValueTime previousValueTime, MetaPointLocatorVO metaPointLocator) {

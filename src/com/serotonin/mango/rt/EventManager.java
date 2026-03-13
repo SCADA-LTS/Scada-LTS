@@ -61,6 +61,7 @@ public class EventManager implements ILifecycle {
 	private int highestActiveAlarmLevel = 0;
 	private IHighestAlarmLevelService highestAlarmLevelService;
 	private UserEventServiceWebSocket userEventServiceWebSocket;
+	private final ReentrantReadWriteLock activeEventsLock = new ReentrantReadWriteLock(true);
 
 	//
 	//
@@ -96,10 +97,9 @@ public class EventManager implements ILifecycle {
 				// Ignore only if the message is the same. There may be events
 				// of this type with different messages,
 				// so look through them all for a match.
-				for (EventInstance e : getAll(type)) {
-					if (e.getMessage().equals(message))
-						return;
-				}
+				if (isIgnoreSameMessage(type, message))
+					return;
+
 			}
 
 			// Otherwise we just continue...
@@ -199,7 +199,7 @@ public class EventManager implements ILifecycle {
 		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL);
 	}
 
-	public void returnToNormal(EventType type, long time, int cause) {
+	public void returnToNormalNonSync(EventType type, long time, int cause) {
 		EventInstance evt = remove(type);
 
 		// Loop in case of multiples
@@ -239,7 +239,7 @@ public class EventManager implements ILifecycle {
 	//
 	// Canceling events.
 	//
-	public void cancelEventsForDataPoint(int dataPointId) {
+	private void cancelEventsForDataPointNonSync(int dataPointId) {
 		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getDataPointId() == dataPointId)
 				deactivateEvent(e, System.currentTimeMillis(),
@@ -247,7 +247,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void cancelEventsForDataSource(int dataSourceId) {
+	private void cancelEventsForDataSourceNonSync(int dataSourceId) {
 		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getDataSourceId() == dataSourceId)
 				deactivateEvent(e, System.currentTimeMillis(),
@@ -255,7 +255,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void cancelEventsForPublisher(int publisherId) {
+	private void cancelEventsForPublisherNonSync(int publisherId) {
 		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getPublisherId() == publisherId)
 				deactivateEvent(e, System.currentTimeMillis(),
@@ -263,7 +263,7 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void cancelEventsForHandler(int handlerId) {
+	private void cancelEventsForHandlerNonSync(int handlerId) {
 		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().getEventHandlerId() == handlerId)
 				deactivateEvent(e, System.currentTimeMillis(),
@@ -272,11 +272,7 @@ public class EventManager implements ILifecycle {
 	}
 
 	private void resetHighestAlarmLevel(long time, boolean init) {
-		int max = 0;
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getAlarmLevel() > max)
-				max = e.getAlarmLevel();
-		}
+		int max = getMax();
 
 		if (!init) {
 			if (max > highestActiveAlarmLevel) {
@@ -346,7 +342,7 @@ public class EventManager implements ILifecycle {
 	 * Returns the first event instance with the given type, or null is there is
 	 * none.
 	 */
-	private EventInstance get(EventType type) {
+	private EventInstance getNonSync(EventType type) {
 		for (EventInstance e : getActiveEvents()) {
 			if (e.getEventType().equals(type))
 				return e;
@@ -571,10 +567,109 @@ public class EventManager implements ILifecycle {
 	}
 
 	private void addActiveEvent(EventInstance event) {
+		activeEventsLock.writeLock().lock();
+		try {
+			addActiveEventNonSync(event);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	private void addActiveEventNonSync(EventInstance event) {
 		activeEvents.add(event);
 	}
 
 	private void removeActiveEvent(EventInstance event) {
 		activeEvents.remove(event);
+	}
+
+	private EventInstance get(EventType type) {
+		activeEventsLock.readLock().lock();
+		try {
+			return getNonSync(type);
+		} finally {
+			activeEventsLock.readLock().unlock();
+		}
+	}
+
+	private int getMax() {
+		activeEventsLock.readLock().lock();
+		try {
+			int max = 0;
+			for (EventInstance e : getActiveEvents()) {
+				if (e.getAlarmLevel() > max)
+					max = e.getAlarmLevel();
+			}
+			return max;
+		} finally {
+			activeEventsLock.readLock().unlock();
+		}
+	}
+
+	private boolean isIgnoreSameMessage(EventType type, LocalizableMessage message) {
+		activeEventsLock.writeLock().lock();
+		try {
+			boolean isIgnoreSameMessage = false;
+			for (EventInstance e : getAll(type)) {
+				if (e.getMessage().equals(message))
+					isIgnoreSameMessage = true;
+				else {
+					removeActiveEvent(e);
+					e.setMessage(message);
+					e.setShortMessage(message);
+					eventService.saveEvent(e);
+					addActiveEventNonSync(e);
+					isIgnoreSameMessage = true;
+				}
+			}
+			return isIgnoreSameMessage;
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	public void cancelEventsForDataPoint(int dataPointId) {
+		activeEventsLock.writeLock().lock();
+		try {
+			cancelEventsForDataPointNonSync(dataPointId);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	public void cancelEventsForDataSource(int dataSourceId) {
+		activeEventsLock.writeLock().lock();
+		try {
+			cancelEventsForDataSourceNonSync(dataSourceId);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	public void cancelEventsForPublisher(int publisherId) {
+		activeEventsLock.writeLock().lock();
+		try {
+			cancelEventsForPublisherNonSync(publisherId);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	public void cancelEventsForHandler(int handlerId) {
+		activeEventsLock.writeLock().lock();
+		try {
+			cancelEventsForHandlerNonSync(handlerId);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
+	}
+
+	public void returnToNormal(EventType type, long time, int cause) {
+		activeEventsLock.writeLock().lock();
+		try {
+			returnToNormalNonSync(type, time, cause);
+		} finally {
+			activeEventsLock.writeLock().unlock();
+		}
 	}
 }

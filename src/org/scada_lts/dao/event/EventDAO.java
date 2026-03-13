@@ -221,7 +221,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "update "
 				+ "events e set "
 				+ "e."+COLUMN_NAME_RTN_TS+"=?,"
-				+ "e."+COLUMN_NAME_RTN_CAUSE+"=? "
+				+ "e."+COLUMN_NAME_RTN_CAUSE+"=?, "
+				+ "e."+COLUMN_NAME_MESSAGE+"=?, "
+				+ "e."+COLUMN_NAME_SHORT_MESSAGE+"=? "
 			+ "where "
 				+ "e."+COLUMN_NAME_ID+"=?";
 	
@@ -1023,7 +1025,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			LOG.trace(event);
 		}
 		
-		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE, new Object[]{event.getRtnTimestamp(), event.getRtnCause(), event.getId()});
+		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE, new Object[]{event.getRtnTimestamp(), event.getRtnCause(), event.getMessage().serialize(), event.getShortMessage().serialize(), event.getId()});
 		
 	}
 	

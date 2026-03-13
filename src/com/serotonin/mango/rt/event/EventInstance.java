@@ -83,8 +83,8 @@ public class EventInstance {
     /**
      * Configuration field. The messages associated with the event.
      */
-    private final LocalizableMessage message;
-    private final LocalizableMessage shortMessage;
+    private LocalizableMessage message;
+    private LocalizableMessage shortMessage;
 
     /**
      * User comments on the event. Added in the events interface after the event has been raised.
@@ -389,6 +389,14 @@ public class EventInstance {
     @Override
     public int hashCode() {
         return Objects.hash(id, eventType, activeTimestamp, rtnApplicable, rtnTimestamp, rtnCause, alarmLevel, message, shortMessage, eventComments, handlers, acknowledgedTimestamp, acknowledgedByUserId, acknowledgedByUsername, alternateAckSource, assigneeTimestamp, assigneeUsername, userNotified, silenced, context);
+    }
+
+    public void setMessage(LocalizableMessage message) {
+        this.message = message;
+    }
+
+    public void setShortMessage(LocalizableMessage shortMessage) {
+        this.shortMessage = shortMessage;
     }
 
     @Override
