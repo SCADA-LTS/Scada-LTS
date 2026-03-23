@@ -11,7 +11,7 @@ public interface IDataPointsCacheWhenStart {
 	void cacheInitialize();
 	 
 	void cacheFinalized();
-	
-	
+
+	DataPointVO getDataPoint(int dataPointId);
 	
 }
