@@ -5,11 +5,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 
@@ -18,9 +22,10 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	private boolean cacheEnabled = false;
 	
 	private static DataSourcePointsCache instance = null;
+	private final DataPointService dataPointService = new DataPointService();
 	
-	private Map<Long, List<DataPointVO>> dss = new TreeMap<>();
-	
+	private Map<Long, List<DataPointVO>> dss = new ConcurrentHashMap<>();
+
 	private DataSourcePointsCache() {
 		
 	}
@@ -44,6 +49,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		}
 	}
 
+	@Deprecated(since = "2.8.1")
 	public void setData(Map<Long, List<DataPointVO>> dss) {
 		this.dss = dss;
 	}
@@ -70,7 +76,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	@Override
 	public void cacheInitialize() {
 		
-		List<DataPointVO> dps = new DataPointDAO().getDataPoints();
+		List<DataPointVO> dps = dataPointService.getDataPoints(null, true);
 		
 		dss = composeCashData(dps);
 		
@@ -79,12 +85,12 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	
 	public Map<Long, List<DataPointVO>> composeCashData(List<DataPointVO> dps) {
 		
-		Map<Long, List<DataPointVO>> dss = new TreeMap<>();
-		if (dps != null && dps.size()>0) {
+		Map<Long, List<DataPointVO>> dss = new ConcurrentHashMap<>();
+		if (dps != null && !dps.isEmpty()) {
 			for (DataPointVO dp : dps) {
 				List<DataPointVO> cacheDs = dss.get((long)dp.getDataSourceId()); 
 				if (cacheDs==null) {
-					cacheDs = new ArrayList<>();
+					cacheDs = new CopyOnWriteArrayList<>();
 					cacheDs.add(dp);
 					dss.put((long) dp.getDataSourceId(), cacheDs);			
 				} else {
@@ -93,6 +99,18 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 			}
 		}
 		return dss;
+	}
+
+	@Override
+	public DataPointVO getDataPoint(int dataPointId) {
+		if (cacheEnabled) {
+			return getPoints(this.dss).stream()
+					.filter(point -> point.getId() == dataPointId)
+					.findFirst()
+					.orElse(null);
+		} else {
+			return null;
+		}
 	}
 
 	private void cronInitialize() throws java.io.IOException {
@@ -104,4 +122,9 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		ApplicationBeans.getBean("updateDataSourcesPointsScheduler", CronTriggerScheduler.class).schedule(cronExpression);
 	}
 
+	private static List<DataPointVO> getPoints(Map<Long, List<DataPointVO>> pointsBySource) {
+		return pointsBySource.values().stream()
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
 }

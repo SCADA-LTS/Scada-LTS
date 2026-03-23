@@ -5,6 +5,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.CompoundChild;
@@ -14,15 +15,16 @@ import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
-import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.DataPointBean;
+import com.serotonin.web.dwr.DwrResponseI18n;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
@@ -97,15 +99,8 @@ public final class GetDataPointsUtils {
     }
 
     public static List<DataPointBean> getDataPointsByContext(MetaPointLocatorVO locator, User user, DataPointService dataPointService) {
-        return getDataPointsByContext(locator, user, dataPointService, DataPointBean::new);
-    }
-
-    public static <T> List<T> getDataPointsByContext(MetaPointLocatorVO locator, User user, DataPointService dataPointService, Function<DataPointVO, T> converter) {
-        return dataPointService.getDataPoints(locator.getContext().stream()
-                        .map(IntValuePair::getKey)
-                        .collect(Collectors.toSet()), user).stream()
-                .map(converter)
-                .collect(Collectors.toList());
+        List<IntValuePair> context = locator.getContext();
+        return getPointsByContext(context, user, dataPointService).stream().map(DataPointBean::new).collect(Collectors.toList());
     }
 
     public static List<DataPointVO> getDataPointsByContext(User user, List<DataPointVO> allPoints,
@@ -116,7 +111,7 @@ public final class GetDataPointsUtils {
         for (DataPointVO dp : allPoints) {
             if(dp.getPointLocator() instanceof MetaPointLocatorVO) {
                 MetaPointLocatorVO pointLocatorVO = dp.getPointLocator();
-                contextPoints.addAll(getDataPointsByContext(pointLocatorVO, user, dataPointService, a -> a));
+                contextPoints.addAll(getPointsByContext(pointLocatorVO.getContext(), user, dataPointService));
             }
         }
         if(comparator != null) {
@@ -215,8 +210,11 @@ public final class GetDataPointsUtils {
     }
 
     private static <T> List<T> getDataPointsByReport(User user, ReportVO report, Function<DataPointVO, T> converter, DataPointService dataPointService) {
-        Set<Integer> ids = report.getPoints().stream().map(ReportPointVO::getPointId).collect(Collectors.toSet());
-        return dataPointService.getDataPoints(ids).stream()
+        List<IntValuePair> context = report.getPoints()
+                .stream()
+                .map(reportPointVO -> new IntValuePair(reportPointVO.getPointId(), ""))
+                .collect(Collectors.toList());
+        return getPointsByContext(context, user, dataPointService).stream()
                 .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
                 .map(converter)
                 .collect(Collectors.toList());
@@ -224,11 +222,7 @@ public final class GetDataPointsUtils {
 
     private static <T> List<T> getDataPointsByScript(User user, ContextualizedScriptVO contextualizedScriptVO,
                                                     Function<DataPointVO, T> converter, DataPointService dataPointService) {
-        Set<Integer> ids = new HashSet<>();
-        for(IntValuePair pair : contextualizedScriptVO.getPointsOnContext()) {
-            ids.add(pair.getKey());
-        }
-        return dataPointService.getDataPoints(ids).stream()
+        return getPointsByContext(contextualizedScriptVO.getPointsOnContext(), user, dataPointService).stream()
                 .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
                 .map(converter)
                 .collect(Collectors.toList());
@@ -245,15 +239,11 @@ public final class GetDataPointsUtils {
     }
 
     private static <T> List<T> getDataPointsByPublishers(User user, List<PublisherVO<?>> publishers, Function<DataPointVO, T> converter, DataPointService dataPointService) {
-        Set<Integer> ids = new HashSet<>();
-
-        for (PublisherVO<?> publisher: publishers) {
-            List<PublishedPointVO> points = (List<PublishedPointVO>) publisher.getPoints();
-            for(PublishedPointVO point: points) {
-                ids.add(point.getDataPointId());
-            }
-        }
-        return dataPointService.getDataPoints(ids).stream()
+        List<IntValuePair> context = publishers.stream()
+                .flatMap(a -> a.getPoints().stream())
+                .map(a -> new IntValuePair(a.getDataPointId(), ""))
+                .collect(Collectors.toList());
+        return getPointsByContext(context, user, dataPointService).stream()
                 .filter(dp -> dp.getPointLocator().getDataTypeId() != DataTypes.IMAGE)
                 .filter(point -> GetDataPointsWithAccess.hasDataPointReadPermission(user, point))
                 .sorted(DataPointExtendedNameComparator.instance)
@@ -277,5 +267,69 @@ public final class GetDataPointsUtils {
         } catch (Exception ex) {
             return 0;
         }
+    }
+
+    private static List<DataPointVO> getPointsByContext(List<IntValuePair> context, User user, DataPointService dataPointService) {
+        Set<Integer> ids = context.stream()
+                .map(IntValuePair::getKey)
+                .collect(Collectors.toSet());
+
+        List<DataPointVO> points = dataPointService.getDataPoints(ids, user);
+        List<DataPointVO> notExist = findNotExists(context, points);
+        points.addAll(notExist);
+        return points;
+    }
+
+    private static List<DataPointVO> findNotExists(List<IntValuePair> context, List<DataPointVO> points) {
+        Set<Integer> fromDatabaseIds = points.stream()
+                .map(DataPointVO::getId)
+                .collect(Collectors.toSet());
+        List<DataPointVO> notExist = new ArrayList<>();
+        for(IntValuePair id: context) {
+            if(!fromDatabaseIds.contains(id.getKey())) {
+                DataPointVO dataPoint = new DataPointVO(-1,-1,-1);
+                dataPoint.setId(id.getKey());
+                dataPoint.setName("Unknown");
+                dataPoint.setXid("Unknown");
+                dataPoint.setPointLocator(new AbstractPointLocatorVO() {
+                    @Override
+                    public int getDataTypeId() {
+                        return 0;
+                    }
+
+                    @Override
+                    public LocalizableMessage getConfigurationDescription() {
+                        return super.getDataTypeMessage();
+                    }
+
+                    @Override
+                    public boolean isSettable() {
+                        return false;
+                    }
+
+                    @Override
+                    public PointLocatorRT createRuntime() {
+                        return null;
+                    }
+
+                    @Override
+                    public void validate(DwrResponseI18n response) {
+
+                    }
+
+                    @Override
+                    public void addProperties(List<LocalizableMessage> list) {
+
+                    }
+
+                    @Override
+                    public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
+
+                    }
+                });
+                notExist.add(dataPoint);
+            }
+        }
+        return notExist;
     }
 }

@@ -174,6 +174,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.0")
 	public void ackAllPending(long time, int userId, int alternateAckSource) {
 		MangoEvent eventService = new EventService();
 		UserService userEvent = new UserService();
@@ -185,6 +186,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.0")
 	public void silenceAll(int userId) {
 		eventDAO.silenceEvents(userId);
 	}

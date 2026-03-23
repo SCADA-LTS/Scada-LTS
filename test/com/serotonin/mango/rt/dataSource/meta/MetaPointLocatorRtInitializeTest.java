@@ -6,6 +6,7 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.RealTimeTimer;
@@ -95,6 +96,7 @@ public class MetaPointLocatorRtInitializeTest {
         PowerMockUtils.configMock(runtimeManagerMock, user);
         DataPointRT fromContextDataPoint = mock(DataPointRT.class);
         when(fromContextDataPoint.getDataTypeId()).thenReturn(1);
+        when(fromContextDataPoint.getVO()).thenReturn(mock(DataPointVO.class));
         when(runtimeManagerMock.getDataPoint(eq(1))).thenReturn(fromContextDataPoint);
 
         when(dataPoint.isInitialized()).thenReturn(true);

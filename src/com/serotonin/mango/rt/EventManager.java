@@ -18,8 +18,8 @@
  */
 package com.serotonin.mango.rt;
 
-import com.google.common.collect.Sets;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.ActiveEvents;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
@@ -46,15 +46,15 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 
 /**
  * @author Matthew Lohbihler
  */
 public class EventManager implements ILifecycle {
-	private final Log log = LogFactory.getLog(EventManager.class);
+	private static final Log LOG = LogFactory.getLog(EventManager.class);
 
-	private final Set<EventInstance> activeEvents = Sets.newConcurrentHashSet();
+	private final ActiveEvents activeEvents = ActiveEvents.newInstance();
 	private MangoEvent eventService;
 	private MangoUser userService;
 	private long lastAlarmTimestamp = 0;
@@ -76,40 +76,15 @@ public class EventManager implements ILifecycle {
 						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
 						   Map<String, Object> context) {
 		// Check if there is an event for this type already active.
-		EventInstance dup = get(type);
-		if (dup != null) {
-			// Check the duplicate handling.
-			int dh = type.getDuplicateHandling();
-			if (dh == EventType.DuplicateHandling.DO_NOT_ALLOW) {
-				// Create a log error...
-				log.error("An event was raised for a type that is already active: type="
-						+ type + ", message=" + message.getKey());
-				// ... but ultimately just ignore the thing.
-				return;
-			}
+		EventInstance evt = new EventInstance(type, time, rtnApplicable,
+				alarmLevel, message, shortMessage, context);
 
-			if (dh == EventType.DuplicateHandling.IGNORE)
-				// Safely return.
-				return;
-
-			if (dh == EventType.DuplicateHandling.IGNORE_SAME_MESSAGE) {
-				// Ignore only if the message is the same. There may be events
-				// of this type with different messages,
-				// so look through them all for a match.
-				for (EventInstance e : getAll(type)) {
-					if (e.getMessage().equals(message))
-						return;
-				}
-			}
-
-			// Otherwise we just continue...
+		if(activeEvents.isIgnoreIfNotThenAddActiveEvent(evt)) {
+			return;
 		}
 
 		// Determine if the event should be suppressed.
 		boolean suppressed = isSuppressed(type);
-
-		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -143,15 +118,12 @@ public class EventManager implements ILifecycle {
 			}
 		}
 
-		if (eventUserIds.size() > 0) {
+		if (!eventUserIds.isEmpty()) {
 			if(evt.isAlarm())
 				eventService.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
-
-		if (evt.isRtnApplicable())
-			addActiveEvent(evt);
 
 		if (suppressed) {
 			if(evt.isAlarm()) {
@@ -167,7 +139,7 @@ public class EventManager implements ILifecycle {
 						notifyEventAck(evt, user);
 					}
 				} else {
-					log.warn("The username admin does not exist! " + LoggingUtils.eventInfo(evt) + " is not acknowledged!");
+					LOG.warn("The username admin does not exist! " + LoggingUtils.eventInfo(evt) + " is not acknowledged!");
 				}
 			}
 		} else {
@@ -189,39 +161,36 @@ public class EventManager implements ILifecycle {
 			// Call raiseEvent handlers.
 			handleRaiseEvent(evt, emailUsers);
 
-			if (log.isDebugEnabled())
-				log.debug("Event raised: type=" + type + ", message="
+			if (LOG.isDebugEnabled())
+				LOG.debug("Event raised: type=" + type + ", message="
 						+ message.getLocalizedMessage(Common.getBundle()));
 		}
 	}
 
 	public void returnToNormal(EventType type, long time) {
-		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL);
+		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, null);
 	}
 
-	public void returnToNormal(EventType type, long time, int cause) {
-		EventInstance evt = remove(type);
+	public void returnToNormal(EventType type, long time, int cause, LocalizableMessage onlyWithThisMessage) {
+		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(type, onlyWithThisMessage);
 
-		// Loop in case of multiples
-		while (evt != null) {
-			resetHighestAlarmLevel(time, false);
+		if(removedEvents != null) {
+			for (EventInstance evt : removedEvents) {
+				resetHighestAlarmLevel(time, false);
 
-			evt.returnToNormal(time, cause);
-			eventService.saveEvent(evt);
-			notifyEventRtn(evt);
-			// Call inactiveEvent handlers.
-			handleInactiveEvent(evt);
-
-			// Check for another
-			evt = remove(type);
+				evt.returnToNormal(time, cause);
+				eventService.saveEvent(evt);
+				notifyEventRtn(evt);
+				// Call inactiveEvent handlers.
+				handleInactiveEvent(evt);
+			}
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("Event returned to normal: type=" + type);
+		if (LOG.isDebugEnabled())
+			LOG.debug("Event returned to normal: type=" + type);
 	}
 
 	private void deactivateEvent(EventInstance evt, long time, int inactiveCause) {
-		removeActiveEvent(evt);
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
 		eventService.saveEvent(evt);
@@ -240,43 +209,23 @@ public class EventManager implements ILifecycle {
 	// Canceling events.
 	//
 	public void cancelEventsForDataPoint(int dataPointId) {
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().getDataPointId() == dataPointId)
-				deactivateEvent(e, System.currentTimeMillis(),
-						EventInstance.RtnCauses.SOURCE_DISABLED);
-		}
+		cancelEventsFor(type -> type.getDataPointId() == dataPointId);
 	}
 
 	public void cancelEventsForDataSource(int dataSourceId) {
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().getDataSourceId() == dataSourceId)
-				deactivateEvent(e, System.currentTimeMillis(),
-						EventInstance.RtnCauses.SOURCE_DISABLED);
-		}
+		cancelEventsFor(type -> type.getDataSourceId() == dataSourceId);
 	}
 
 	public void cancelEventsForPublisher(int publisherId) {
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().getPublisherId() == publisherId)
-				deactivateEvent(e, System.currentTimeMillis(),
-						EventInstance.RtnCauses.SOURCE_DISABLED);
-		}
+		cancelEventsFor(type -> type.getPublisherId() == publisherId);
 	}
 
 	public void cancelEventsForHandler(int handlerId) {
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().getEventHandlerId() == handlerId)
-				deactivateEvent(e, System.currentTimeMillis(),
-						EventInstance.RtnCauses.SOURCE_DISABLED);
-		}
+		cancelEventsFor(type -> type.getEventHandlerId() == handlerId);
 	}
 
 	private void resetHighestAlarmLevel(long time, boolean init) {
-		int max = 0;
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getAlarmLevel() > max)
-				max = e.getAlarmLevel();
-		}
+		int max = activeEvents.calculateGlobalHighestAlarmLevel();
 
 		if (!init) {
 			if (max > highestActiveAlarmLevel) {
@@ -321,7 +270,7 @@ public class EventManager implements ILifecycle {
 		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 
 		// Get all active events from the database.
-		eventService.getActiveEvents().forEach(this::addActiveEvent);
+		activeEvents.initActiveEvents(eventService.getActiveEvents());
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
@@ -342,48 +291,6 @@ public class EventManager implements ILifecycle {
 	//
 	// Convenience
 	//
-	/**
-	 * Returns the first event instance with the given type, or null is there is
-	 * none.
-	 */
-	private EventInstance get(EventType type) {
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().equals(type))
-				return e;
-		}
-		return null;
-	}
-
-	private List<EventInstance> getAll(EventType type) {
-		List<EventInstance> result = new ArrayList<>();
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().equals(type))
-				result.add(e);
-		}
-		return result;
-	}
-
-	/**
-	 * Finds and removes the first event instance with the given type. Returns
-	 * null if there is none.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	private EventInstance remove(EventType type) {
-		EventInstance eventInstance = null;
-		for (EventInstance e : getActiveEvents()) {
-			if (e.getEventType().equals(type)) {
-				eventInstance = e;
-				break;
-			}
-		}
-		if(eventInstance != null) {
-			removeActiveEvent(eventInstance);
-			return eventInstance;
-		}
-		return null;
-	}
 
 	private void setHandlers(EventInstance evt) {
 		List<EventHandlerVO> vos = eventService
@@ -566,15 +473,18 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	private Set<EventInstance> getActiveEvents() {
-		return activeEvents;
+	public void returnToNormal(EventType type, long time, int cause) {
+		returnToNormal(type, time, cause, null);
 	}
 
-	private void addActiveEvent(EventInstance event) {
-		activeEvents.add(event);
+	public void returnToNormal(EventType type, long time, LocalizableMessage onlyWithThisMessage) {
+		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, onlyWithThisMessage);
 	}
 
-	private void removeActiveEvent(EventInstance event) {
-		activeEvents.remove(event);
+	private void cancelEventsFor(Predicate<EventType> cancelIf) {
+		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(cancelIf);
+		for (EventInstance event : removedEvents) {
+			deactivateEvent(event, System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED);
+		}
 	}
 }

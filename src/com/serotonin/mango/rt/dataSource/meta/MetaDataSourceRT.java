@@ -195,18 +195,18 @@ public class MetaDataSourceRT extends DataSourceRT {
         raiseContextErrorPointUnavailable(runtime, dataPoint, message, true);
     }
 
-    public void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint) {
+    public void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
             return;
         }
-        returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint);
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint, onlyWithThisMessage);
     }
 
-    public void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint) {
+    public void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE)) {
             return;
         }
-        returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint);
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint, onlyWithThisMessage);
     }
 
     public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message, boolean doSetUnreliable) {

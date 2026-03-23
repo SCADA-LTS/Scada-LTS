@@ -47,7 +47,9 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ScriptContextUtils;
 
 import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.validateScript;
@@ -56,11 +58,13 @@ import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.val
  * @author Matthew Lohbihler
  */
 public class ScriptExecutor {
+
+	private final DataPointService dataPointService = new DataPointService();
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptExecutor__();";
 	private static String SCRIPT_FUNCTION_PATH;
 	private static String FUNCTIONS;
-	private static Log LOG = LogFactory.getLog(ScriptExecutor.class);
+	private static final Log LOG = LogFactory.getLog(ScriptExecutor.class);
 
 	public static void setScriptFunctionPath(String path) {
 		SCRIPT_FUNCTION_PATH = path;
@@ -117,64 +121,66 @@ public class ScriptExecutor {
 		return converted;
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSourceRT) throws Exception {
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 		ResourceBundle resourceBundle = Common.getBundle();
-		return convert(context, rtm, dataPoint, metaDataSourceRT, resourceBundle);
-	}
-
-	private Map<String, IDataPoint> convert(List<IntValuePair> context, RuntimeManager rtm,
-											DataPointRT dataPoint, MetaDataSourceRT metaDataSourceRT,
-											ResourceBundle resourceBundle) throws Exception {
 		Map<String, IDataPoint> converted = new HashMap<>();
-		List<DataPointStateException> pointDisabledExceptions = new ArrayList<>();
-		List<DataPointStateException> pointUnavailableExceptions = new ArrayList<>();
-
+		List<DataPointStateException> exceptions = new ArrayList<>();
 		for (IntValuePair contextEntry : context) {
 			if(dataPoint == null || dataPoint.getId() == Common.NEW_ID || dataPoint.getId() != contextEntry.getKey()) {
 				DataPointRT point = rtm.getDataPoint(contextEntry.getKey());
 
-				if (point == null) {
-					LOG.error("Error DataPointRT in " + LoggingUtils.varInfo(contextEntry) + " from: " + LoggingUtils.dataPointInfo(dataPoint));
-					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry, resourceBundle);
-					pointDisabledExceptions.add(dataPointStateException);
+				DataPointVO dataPointVO;
+				boolean unreliable;
 
-				} else if (point.isUnreliable()) {
-					LOG.warn("Error DataPointRT unavailable in " + LoggingUtils.varInfo(contextEntry) + " (" + LoggingUtils.dataPointInfo(point) + ") from: " + LoggingUtils.dataPointInfo(dataPoint));
-					DataPointStateException dataPointStateException = createPointUnavailableException(contextEntry, point, resourceBundle);
-					pointUnavailableExceptions.add(dataPointStateException);
+				if(point == null) {
+					unreliable = false;
+					dataPointVO = DataSourcePointsCache.getInstance().getDataPoint(contextEntry.getKey());
+					if(dataPointVO == null) {
+						dataPointVO = dataPointService.getDataPoint(contextEntry.getKey());
+					}
+ 				} else {
+					unreliable = point.isUnreliable();
+					dataPointVO = point.getVO();
+				}
 
+				LocalizableMessage pointDisabledMessage = createPointDisabledMessage(contextEntry);
+				LocalizableMessage pointMissingMessage = createPointMissingMessage(contextEntry);
+				LocalizableMessage unavailablePointMessage = createUnavailablePointMessage(contextEntry);
+
+				if (point == null && dataPointVO == null) {
+					raiseEvent(dataPoint, metaDataSource, contextEntry, pointMissingMessage, resourceBundle, exceptions);
+				} else if(isRuntimeContext(dataPoint, metaDataSource)) {
+					metaDataSource.returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint, pointMissingMessage);
+				}
+
+				if (point == null && dataPointVO != null) {
+					raiseEvent(dataPoint, metaDataSource, contextEntry, pointDisabledMessage, resourceBundle, exceptions);
+				} else if(isRuntimeContext(dataPoint, metaDataSource)) {
+					metaDataSource.returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint, pointDisabledMessage);
+				}
+
+				if (unreliable) {
+					raiseEvent(dataPoint, metaDataSource, contextEntry, point, unavailablePointMessage, resourceBundle, exceptions);
 				} else {
+					if (isRuntimeContext(dataPoint, metaDataSource)) {
+						metaDataSource.returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint, unavailablePointMessage);
+					}
 					converted.put(contextEntry.getValue(), point);
 				}
 			}
 		}
-		if(!pointDisabledExceptions.isEmpty()) {
-			StringBuilder messages = new StringBuilder();
-			for(DataPointStateException exception: pointDisabledExceptions) {
+
+		StringBuilder messages = new StringBuilder();
+		if(!exceptions.isEmpty()) {
+			for(DataPointStateException exception: exceptions) {
 				messages.append(" ")
 						.append(exception.getLocalizedMessage())
 						.append(" ; ");
 			}
-			if(pointUnavailableExceptions.isEmpty() && isRuntimeContext(dataPoint, metaDataSourceRT)) {
-				metaDataSourceRT.returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
-			}
-			throw new PointDisabledException(-1, new LocalizableMessage("common.default", messages.toString()), resourceBundle);
-		} else if (isRuntimeContext(dataPoint, metaDataSourceRT)) {
-			metaDataSourceRT.returnToNormalContextPointDisabled(System.currentTimeMillis(), dataPoint);
+			throw new Exception(messages.toString());
 		}
 
-		if(!pointUnavailableExceptions.isEmpty()) {
-			StringBuilder messages = new StringBuilder();
-			for(DataPointStateException exception: pointUnavailableExceptions) {
-				messages.append(" ")
-						.append(exception.getLocalizedMessage())
-						.append(" ; ");
-			}
-			throw new PointUnavailableException(-1, new LocalizableMessage("common.default", messages.toString()), resourceBundle);
-		} else if (isRuntimeContext(dataPoint, metaDataSourceRT)) {
-			metaDataSourceRT.returnToNormalContextPointUnavailable(System.currentTimeMillis(), dataPoint);
-		}
 		return converted;
 	}
 
@@ -434,31 +440,69 @@ public class ScriptExecutor {
 		}
 	}
 
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point, ResourceBundle resourceBundle) {
-		if(point == null) {
-			LOG.warn("Point is null!");
-			return createPointUnavailableException(contextEntry, resourceBundle);
-		}
-		DataPointVO dataPoint = point.getVO();
-		return new DataPointStateException(contextEntry.getKey(), dataPoint.getXid(), dataPoint.getExtendedName(),
-				new LocalizableMessage("event.meta.pointUnavailable", dataPoint.getExtendedName()), resourceBundle);
-	}
-
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, ResourceBundle resourceBundle) {
-		return new DataPointStateException(contextEntry.getKey(),
-				new LocalizableMessage("event.meta.pointDisabledOrMissing",
-						LoggingUtils.varPointInfo(contextEntry)), resourceBundle);
-	}
-
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
-		return createPointUnavailableException(contextEntry, point, Common.getBundle());
-	}
-
+	@Deprecated(since = "2.8.1")
 	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
-		return createPointUnavailableException(contextEntry, Common.getBundle());
+		return createDataPointStateException(contextEntry, createPointProblemMessage(contextEntry, null), Common.getBundle());
+	}
+
+	@Deprecated(since = "2.8.1")
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
+		return createDataPointStateException(contextEntry, createPointProblemMessage(contextEntry, point), Common.getBundle());
 	}
 
 	private static boolean isRuntimeContext(DataPointRT dataPointRT, MetaDataSourceRT metaDataSourceRT) {
 		return metaDataSourceRT != null && dataPointRT != null;
+	}
+
+	private static LocalizableMessage createUnavailablePointMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointUnavailable", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+	private static LocalizableMessage createPointMissingMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointMissingX", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+	private static LocalizableMessage createPointDisabledMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointDisabled", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+
+	private static DataPointStateException createDataPointStateException(IntValuePair contextEntry, LocalizableMessage message, ResourceBundle resourceBundle) {
+		return createDataPointStateException(contextEntry, message, null, resourceBundle);
+	}
+
+	private static LocalizableMessage createPointProblemMessage(IntValuePair contextEntry, DataPointRT dataPoint) {
+		if(dataPoint == null || dataPoint.getVO() == null)
+			return createPointDisabledMessage(contextEntry);
+		return createUnavailablePointMessage(contextEntry);
+	}
+
+	private static DataPointStateException createDataPointStateException(IntValuePair contextEntry, LocalizableMessage message, DataPointRT point, ResourceBundle resourceBundle) {
+		if(point == null || point.getVO() == null) {
+			LOG.warn("Point is null!");
+			return new DataPointStateException(contextEntry.getKey(), message, resourceBundle);
+		}
+		DataPointVO dataPoint = point.getVO();
+		return new DataPointStateException(contextEntry.getKey(), dataPoint.getXid(), dataPoint.getExtendedName(), message, resourceBundle);
+	}
+
+	private static void raiseEvent(DataPointRT dataPoint, MetaDataSourceRT metaDataSource, IntValuePair contextEntry,
+								   LocalizableMessage pointMissingMessage, ResourceBundle resourceBundle,
+								   List<DataPointStateException> exceptions) {
+		LOG.error("Error DataPointRT in " + LoggingUtils.varInfo(contextEntry) + " from: " + LoggingUtils.dataPointInfo(dataPoint));
+		DataPointStateException dataPointStateException = createDataPointStateException(contextEntry, pointMissingMessage, resourceBundle);
+		exceptions.add(dataPointStateException);
+		if(isRuntimeContext(dataPoint, metaDataSource))
+			metaDataSource.raiseContextErrorPointDisabled(System.currentTimeMillis(), dataPoint, pointMissingMessage);
+	}
+
+	private static void raiseEvent(DataPointRT dataPoint, MetaDataSourceRT metaDataSource, IntValuePair contextEntry,
+								   DataPointRT point, LocalizableMessage unavailablePointMessage,
+								   ResourceBundle resourceBundle, List<DataPointStateException> exceptions) {
+		LOG.warn("Error DataPointRT unavailable in " + LoggingUtils.varInfo(contextEntry) + " (" + LoggingUtils.dataPointInfo(point) + ") from: " + LoggingUtils.dataPointInfo(dataPoint));
+		DataPointStateException dataPointStateException = createDataPointStateException(contextEntry, unavailablePointMessage, resourceBundle);
+		exceptions.add(dataPointStateException);
+		if (isRuntimeContext(dataPoint, metaDataSource))
+			metaDataSource.raiseContextErrorPointUnavailable(System.currentTimeMillis(), dataPoint, unavailablePointMessage);
 	}
 }

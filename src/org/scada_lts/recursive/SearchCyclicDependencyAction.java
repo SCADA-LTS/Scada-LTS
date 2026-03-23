@@ -47,6 +47,10 @@ public class SearchCyclicDependencyAction implements Callable<Void> {
         }
 
         DataPointVO dataPoint = dataPoints.get(starDataPointId);
+        if(dataPoint == null) {
+            result.add(false);
+            return null;
+        }
         PointLocatorVO pointLocator = dataPoint.getPointLocator();
         if(pointLocator instanceof MetaPointLocatorVO) {
             MetaPointLocatorVO metaPointLocator = (MetaPointLocatorVO) pointLocator;
