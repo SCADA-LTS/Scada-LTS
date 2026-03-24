@@ -71,10 +71,8 @@ class ActiveEventsImpl implements ActiveEvents {
                 if(events == null)
                     return null;
                 for (EventInstance event : events) {
-                    EventType eventType = event.getEventType();
                     LocalizableMessage eventMessage = event.getMessage();
-                    if (eventType.getDuplicateHandling() == EventType.DuplicateHandling.IGNORE_SAME_MESSAGE
-                            && eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
+                    if (eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
                         toRemove.add(event);
                     }
                 }
@@ -94,8 +92,9 @@ class ActiveEventsImpl implements ActiveEvents {
         try {
             List<EventInstance> toRemove = new ArrayList<>();
             for(EventInstance event: getActiveEvents()) {
-                if(removeIf.test(event.getEventType())) {
-                    List<EventInstance> events = activeEvents.get(event.getEventType());
+                EventType eventType = event.getEventType();
+                if(removeIf.test(eventType)) {
+                    List<EventInstance> events = activeEvents.get(eventType);
                     if(events != null) {
                         events.remove(event);
                     }
