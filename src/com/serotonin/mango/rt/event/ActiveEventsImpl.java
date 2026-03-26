@@ -71,16 +71,17 @@ class ActiveEventsImpl implements ActiveEvents {
                 if(events == null)
                     return null;
                 for (EventInstance event : events) {
-                    EventType eventType = event.getEventType();
                     LocalizableMessage eventMessage = event.getMessage();
-                    if (eventType.getDuplicateHandling() == EventType.DuplicateHandling.IGNORE_SAME_MESSAGE
-                            && eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
+                    if (eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
                         toRemove.add(event);
                     }
                 }
                 if(toRemove.isEmpty())
                     return null;
                 events.removeAll(toRemove);
+                if(events.isEmpty()) {
+                    activeEvents.remove(type);
+                }
                 return toRemove;
             }
         } finally {
@@ -93,14 +94,24 @@ class ActiveEventsImpl implements ActiveEvents {
         activeEventsLock.writeLock().lock();
         try {
             List<EventInstance> toRemove = new ArrayList<>();
+            List<EventType> toRemoveKeys = new ArrayList<>();
             for(EventInstance event: getActiveEvents()) {
-                if(removeIf.test(event.getEventType())) {
-                    List<EventInstance> events = activeEvents.get(event.getEventType());
+                EventType eventType = event.getEventType();
+                if(removeIf.test(eventType)) {
+                    List<EventInstance> events = activeEvents.get(eventType);
                     if(events != null) {
                         events.remove(event);
+                        if(events.isEmpty()) {
+                            toRemoveKeys.add(eventType);
+                        }
                     }
                     toRemove.add(event);
                 }
+            }
+            if(toRemove.isEmpty())
+                return null;
+            for(EventType type: toRemoveKeys) {
+                activeEvents.remove(type);
             }
             return toRemove;
         } finally {

@@ -81,7 +81,10 @@ public class PendingEventService {
 						}
 					}
 				}
-				cacheEvents.put(userId, events.stream().map(EventInstanceEqualsById::getEventInstance).collect(Collectors.toList()));
+				cacheEvents.put(userId, events.stream()
+						.sorted(Comparator.comparing(EventInstanceEqualsById::getId))
+						.map(EventInstanceEqualsById::getEventInstance)
+						.collect(Collectors.toList()));
 			}
 		});
 
@@ -114,6 +117,10 @@ public class PendingEventService {
 
 		public EventInstance getEventInstance() {
 			return eventInstance;
+		}
+
+		public int getId() {
+			return eventInstance.getId();
 		}
 
 		@Override

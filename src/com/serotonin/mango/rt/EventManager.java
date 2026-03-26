@@ -483,8 +483,10 @@ public class EventManager implements ILifecycle {
 
 	private void cancelEventsFor(Predicate<EventType> cancelIf) {
 		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(cancelIf);
-		for (EventInstance event : removedEvents) {
-			deactivateEvent(event, System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED);
+		if(removedEvents != null) {
+			for (EventInstance event : removedEvents) {
+				deactivateEvent(event, System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED);
+			}
 		}
 	}
 }
