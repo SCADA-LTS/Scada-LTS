@@ -18,7 +18,9 @@
  */
 package com.serotonin.mango.rt.dataSource.meta;
 
-import com.serotonin.mango.Common;
+import com.serotonin.db.IntValuePair;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.mvc.controller.ScadaLocaleUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -76,5 +78,13 @@ public class DataPointStateException extends LocalizableException {
     @Override
     public String getLocalizedMessage() {
         return super.getLocalizableMessage().getLocalizedMessage(resourceBundle);
+    }
+
+    public static DataPointStateException newInstance(IntValuePair contextEntry, LocalizableMessage message, DataPointRT point, ResourceBundle resourceBundle) {
+        if(point == null || point.getVO() == null) {
+            return new DataPointStateException(contextEntry.getKey(), message, resourceBundle);
+        }
+        DataPointVO dataPoint = point.getVO();
+        return new DataPointStateException(contextEntry.getKey(), dataPoint.getXid(), dataPoint.getExtendedName(), message, resourceBundle);
     }
 }

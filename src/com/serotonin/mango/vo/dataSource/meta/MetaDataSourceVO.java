@@ -60,6 +60,8 @@ public class MetaDataSourceVO extends DataSourceVO<MetaDataSourceVO> {
                 "event.ds.recursiveError")));
         ets.add(createEventType(MetaDataSourceRT.EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, new LocalizableMessage(
                 "event.ds.contextPointUnavailable")));
+        ets.add(createEventType(MetaDataSourceRT.EVENT_TYPE_CONTEXT_POINT_MISSING, new LocalizableMessage(
+                "event.ds.contextPointMissing")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
@@ -69,6 +71,7 @@ public class MetaDataSourceVO extends DataSourceVO<MetaDataSourceVO> {
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_RESULT_TYPE_ERROR, "RESULT_TYPE_ERROR");
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_RECURSIVE_ERROR, "RECURSIVE_ERROR");
         EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, "CONTEXT_POINT_UNAVAILABLE");
+        EVENT_CODES.addElement(MetaDataSourceRT.EVENT_TYPE_CONTEXT_POINT_MISSING, "CONTEXT_POINT_MISSING");
     }
 
     @Override

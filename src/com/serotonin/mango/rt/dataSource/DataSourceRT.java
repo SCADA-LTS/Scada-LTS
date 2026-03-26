@@ -161,12 +161,6 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId, boolean doSetUnreliable) {
-        DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
-
-        Map<String, Object> context = new HashMap<>();
-        context.put("dataSource", vo);
-
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
 
         if(doSetUnreliable && doSetUnreliableDataPoint(eventId)) {
             if (dataPointId == -1) {
@@ -179,6 +173,13 @@ abstract public class DataSourceRT implements ILifecycle {
                 }
             }
         }
+
+        DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
+
+        Map<String, Object> context = new HashMap<>();
+        context.put("dataSource", vo);
+
+        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
     protected void returnToNormal(int eventId, long time, int dataPointId) {
