@@ -101,7 +101,7 @@ public class ScriptsAPI {
         if (user != null && user.isAdmin()) {
             ScriptRT rt;
             try {
-                ScriptVO<?> script = createScriptFromBody(scriptJson, user, dataPointService);
+                ScriptVO<?> script = createScriptFromBody(scriptJson, user);
                 rt = script.createScriptRT();
                 rt.execute();
             } catch (Exception e) {
@@ -178,7 +178,7 @@ public class ScriptsAPI {
             }
             ContextualizedScriptVO vo;
             try {
-                vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
+                vo = createScriptFromBody(jsonBodyRequest, user);
                 scriptService.saveScript(vo);
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());
@@ -242,7 +242,7 @@ public class ScriptsAPI {
             response.put("errors", pointsError);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        updateValueScript(toUpdate, body, dataPointService);
+        updateValueScript(toUpdate, body);
         scriptService.saveScript(toUpdate);
         response.put("status", "updated");
         return new ResponseEntity<>(response, HttpStatus.OK);

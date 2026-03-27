@@ -9,6 +9,7 @@ public class ScriptPoint {
     private String varName;
     @XssProtect
     private String dataPointXid;
+    private int dataPointId;
 
     public ScriptPoint() {
     }
@@ -32,5 +33,13 @@ public class ScriptPoint {
 
     public void setDataPointXid(String dataPointXid) {
         this.dataPointXid = dataPointXid;
+    }
+
+    public int getDataPointId() {
+        return dataPointId;
+    }
+
+    public void setDataPointId(int dataPointId) {
+        this.dataPointId = dataPointId;
     }
 }

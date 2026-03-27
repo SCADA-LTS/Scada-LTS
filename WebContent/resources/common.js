@@ -1360,7 +1360,7 @@ class PointsContext {
           let context = this.contextArray[i];
           let contextPointId = context.pointId;
           if (contextPointId == pointId) {
-              this.#removeContextArray(context);
+              this.removeContextArray(context);
           }
        }
     }
@@ -1380,6 +1380,10 @@ class PointsContext {
         let pointId = this.dataPointsSelect.getPointId();
         this.removeFromContextArray(pointId);
         return pointId;
+    }
+
+    setContextArray(contextArray) {
+        this.contextArray = contextArray;
     }
 
     getPointById(pointId) {
@@ -1406,9 +1410,21 @@ class PointsContext {
         return this.contextTableHeadersId;
     }
 
-    #equalsByOptions(row, obj, rowOptions, objOptions) {
+    getDataPointsSelect() {
+        return this.dataPointsSelect;
+    }
+
+    equalsByOptions(row, obj, rowOptions, objOptions) {
       for (let i = 0; i < objOptions.length; i++) {
-          let cellValue = row.cells[rowOptions[i]].textContent;
+          let cell = row.cells[rowOptions[i]];
+          let cellValue = cell.textContent;
+          if(!cellValue) {
+            let inputs = cell.getElementsByTagName("input");
+            if(inputs && inputs.length > 0) {
+                let input = inputs[0];
+                cellValue = input.value;
+            }
+          }
           let objectValue = obj[objOptions[i]];
           if (!cellValue || !objectValue) {
               return false;
@@ -1420,7 +1436,7 @@ class PointsContext {
       return true;
     }
 
-    #removeContextArray(row) {
+    removeContextArray(row) {
        let contextTableEmptyIdNode = $(this.contextTableEmptyId);
        let contextTableHeadersIdNode = $(this.contextTableHeadersId);
        if (this.contextArray.length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
@@ -1431,19 +1447,19 @@ class PointsContext {
             hide(contextTableEmptyIdNode);
           if(contextTableHeadersIdNode)
             show(contextTableHeadersIdNode);
-          this.#removeRow(this.contextTableId, row, [1], ["pointXid"]);
+          this.removeRow(this.contextTableId, row, [1], ["pointXid"]);
           this.contextArray = this.contextArray.filter(context => context.pointId != row.pointId);
           this.dataPointsSelect.updatePointsList(this.contextArray);
        }
     }
 
-    #removeRow(tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+    removeRow(tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
       let table = document.getElementById(tableId);
       let rows = table.rows;
       let toDeleteRows = new Array();
       for (let i = 0; i < rows.length; i++) {
           let row = rows[i];
-          if(this.#equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
               toDeleteRows[toDeleteRows.length] = row;
           }
       }
@@ -1528,6 +1544,23 @@ class ScriptPointsContext extends PointsContext {
               }
           });
       }
+    }
+
+    removeContextArray(row) {
+       let contextTableEmptyIdNode = $(super.getContextTableEmptyId());
+       let contextTableHeadersIdNode = $(super.getContextTableHeadersId());
+       if (super.getContextArray().length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
+          show(contextTableEmptyIdNode);
+          hide(contextTableHeadersIdNode);
+       } else {
+          if(contextTableEmptyIdNode)
+            hide(contextTableEmptyIdNode);
+          if(contextTableHeadersIdNode)
+            show(contextTableHeadersIdNode);
+          super.removeRow(super.getContextTableId(), row, [3], ["scriptVarName"]);
+          super.setContextArray(super.getContextArray().filter(context => context.pointId != row.pointId));
+          super.getDataPointsSelect().updatePointsList(super.getContextArray());
+       }
     }
 }
 

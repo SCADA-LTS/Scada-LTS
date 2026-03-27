@@ -80,6 +80,7 @@
                 let varName = entry.value;
                 let object = {
                     dataPointXid: dataPointXid,
+                    dataPointId: entry.key,
                     varName: varName
                 };
                 pointsOnContext[pointsOnContext.length] = object;

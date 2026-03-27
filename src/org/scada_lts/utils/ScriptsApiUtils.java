@@ -47,23 +47,35 @@ public class ScriptsApiUtils {
         return msgIfNull("Correct id;", id);
     }
 
+    @Deprecated(since = "2.8.1")
     public static ContextualizedScriptVO createScriptFromBody(JsonScript jsonBodyRequest, User user, DataPointService dataPointService) {
         ContextualizedScriptVO vo = new ContextualizedScriptVO();
         vo.setId(jsonBodyRequest.getId());
         vo.setXid(jsonBodyRequest.getXid());
         vo.setName(jsonBodyRequest.getName());
         vo.setScript(jsonBodyRequest.getScript());
-        vo.setPointsOnContext(convertPointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService));
+        vo.setPointsOnContext(convertPointsOnContext(jsonBodyRequest.getPointsOnContext()));
         vo.setObjectsOnContext(convertObjectsOnContext(jsonBodyRequest));
         vo.setUserId(user.getId());
         return vo;
     }
 
-    private static List<IntValuePair> convertPointsOnContext(List<ScriptPoint> pointsOnContext, DataPointService dataPointService) {
+    public static ContextualizedScriptVO createScriptFromBody(JsonScript jsonBodyRequest, User user) {
+        ContextualizedScriptVO vo = new ContextualizedScriptVO();
+        vo.setId(jsonBodyRequest.getId());
+        vo.setXid(jsonBodyRequest.getXid());
+        vo.setName(jsonBodyRequest.getName());
+        vo.setScript(jsonBodyRequest.getScript());
+        vo.setPointsOnContext(convertPointsOnContext(jsonBodyRequest.getPointsOnContext()));
+        vo.setObjectsOnContext(convertObjectsOnContext(jsonBodyRequest));
+        vo.setUserId(user.getId());
+        return vo;
+    }
+
+    private static List<IntValuePair> convertPointsOnContext(List<ScriptPoint> pointsOnContext) {
         List<IntValuePair> points = new ArrayList<>();
         for (ScriptPoint point : pointsOnContext) {
-            DataPointVO dp = dataPointService.getDataPoint(point.getDataPointXid());
-            points.add(new IntValuePair(dp.getId(), point.getVarName()));
+            points.add(new IntValuePair(point.getDataPointId(), point.getVarName()));
         }
         return points;
     }
@@ -75,12 +87,23 @@ public class ScriptsApiUtils {
         return objects;
     }
 
+    @Deprecated(since = "2.8.1")
     public static void updateValueScript(ContextualizedScriptVO toUpdate, JsonScript source, DataPointService dataPointService) {
         setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
         setIf(source.getId(), toUpdate::setId, Objects::nonNull);
         setIf(source.getName(), toUpdate::setName, Objects::nonNull);
         setIf(source.getScript(), toUpdate::setScript, Objects::nonNull);
-        setIf(convertPointsOnContext(source.getPointsOnContext(), dataPointService), toUpdate::setPointsOnContext, Objects::nonNull);
+        setIf(convertPointsOnContext(source.getPointsOnContext()), toUpdate::setPointsOnContext, Objects::nonNull);
+        setIf(convertObjectsOnContext(source), toUpdate::setObjectsOnContext, Objects::nonNull);
+        setIf(source.getUserId(), toUpdate::setUserId, Objects::nonNull);
+    }
+
+    public static void updateValueScript(ContextualizedScriptVO toUpdate, JsonScript source) {
+        setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
+        setIf(source.getId(), toUpdate::setId, Objects::nonNull);
+        setIf(source.getName(), toUpdate::setName, Objects::nonNull);
+        setIf(source.getScript(), toUpdate::setScript, Objects::nonNull);
+        setIf(convertPointsOnContext(source.getPointsOnContext()), toUpdate::setPointsOnContext, Objects::nonNull);
         setIf(convertObjectsOnContext(source), toUpdate::setObjectsOnContext, Objects::nonNull);
         setIf(source.getUserId(), toUpdate::setUserId, Objects::nonNull);
     }
