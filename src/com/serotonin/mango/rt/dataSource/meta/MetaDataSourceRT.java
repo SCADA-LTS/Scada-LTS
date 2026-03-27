@@ -125,16 +125,10 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
     }
 
     public void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_RECURSIVE_ERROR, runtime, dataPoint);
     }
 
@@ -152,9 +146,6 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void returnToNormalType(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, dataPoint);
     }
 
@@ -179,16 +170,10 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
-        if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint, onlyWithThisMessage);
     }
 
     public void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
-        if(isNone(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint, onlyWithThisMessage);
     }
 
@@ -214,9 +199,6 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void returnToNormalContextPointMissing(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
-        if(isNone(EVENT_TYPE_CONTEXT_POINT_MISSING)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_CONTEXT_POINT_MISSING, runtime, dataPoint, onlyWithThisMessage);
     }
 
