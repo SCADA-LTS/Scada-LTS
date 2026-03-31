@@ -315,12 +315,13 @@
 
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
-			          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
+			          <tr><th colspan="6"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
 			        </tbody>
 			        <tbody id="contextTableHeaders" style="display:none;">
 			          <tr class="smRowHeader">
 			            <td><spring:message code="dsEdit.meta.pointName"/></td>
-			            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+                        <td><spring:message code="dsEdit.meta.pointId"/></td>
+                        <td><spring:message code="dsEdit.meta.pointXid"/></td>
 			            <td><spring:message code="dsEdit.pointDataType"/></td>
 			            <td><spring:message code="dsEdit.meta.var"/></td>
 			            <td></td>

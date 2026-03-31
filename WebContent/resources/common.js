@@ -1333,13 +1333,18 @@ function setValueInNode(id, text) {
 
 class PointsContext {
 
-    constructor (dataPointsSelect, contextTableIdConstructor) {
+    constructor (dataPointsSelect, contextTableIdConstructor, columnIdentifiers) {
        this.dataPointsSelect = dataPointsSelect;
 
        this.contextArray = [];
        this.contextTableId = contextTableIdConstructor || "contextTable";
        this.contextTableEmptyId = "contextTableEmpty";
        this.contextTableHeadersId = "contextTableHeaders";
+       this.columnIdentifiers = columnIdentifiers ? columnIdentifiers :[
+       {
+          position: 1,
+          valueName: "pointId"
+       }];
        this.init(dataPointsSelect.getExcludePointsArray());
     }
 
@@ -1360,7 +1365,7 @@ class PointsContext {
           let context = this.contextArray[i];
           let contextPointId = context.pointId;
           if (contextPointId == pointId) {
-              this.removeContextArray(context);
+              this.#removeContextArray(context);
           }
        }
     }
@@ -1380,10 +1385,6 @@ class PointsContext {
         let pointId = this.dataPointsSelect.getPointId();
         this.removeFromContextArray(pointId);
         return pointId;
-    }
-
-    setContextArray(contextArray) {
-        this.contextArray = contextArray;
     }
 
     getPointById(pointId) {
@@ -1410,13 +1411,9 @@ class PointsContext {
         return this.contextTableHeadersId;
     }
 
-    getDataPointsSelect() {
-        return this.dataPointsSelect;
-    }
-
-    equalsByOptions(row, obj, rowOptions, objOptions) {
-      for (let i = 0; i < objOptions.length; i++) {
-          let cell = row.cells[rowOptions[i]];
+    #equalsBy(row, obj, columnIdentifiers) {
+      for (let i = 0; i < columnIdentifiers.length; i++) {
+          let cell = row.cells[columnIdentifiers[i].position];
           let cellValue = cell.textContent;
           if(!cellValue) {
             let inputs = cell.getElementsByTagName("input");
@@ -1425,7 +1422,7 @@ class PointsContext {
                 cellValue = input.value;
             }
           }
-          let objectValue = obj[objOptions[i]];
+          let objectValue = obj[columnIdentifiers[i].valueName];
           if (!cellValue || !objectValue) {
               return false;
           }
@@ -1436,7 +1433,7 @@ class PointsContext {
       return true;
     }
 
-    removeContextArray(row) {
+    #removeContextArray(row) {
        let contextTableEmptyIdNode = $(this.contextTableEmptyId);
        let contextTableHeadersIdNode = $(this.contextTableHeadersId);
        if (this.contextArray.length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
@@ -1447,19 +1444,19 @@ class PointsContext {
             hide(contextTableEmptyIdNode);
           if(contextTableHeadersIdNode)
             show(contextTableHeadersIdNode);
-          this.removeRow(this.contextTableId, row, [1], ["pointXid"]);
+          this.#removeRows(this.contextTableId, row, this.columnIdentifiers);
           this.contextArray = this.contextArray.filter(context => context.pointId != row.pointId);
           this.dataPointsSelect.updatePointsList(this.contextArray);
        }
     }
 
-    removeRow(tableId, criteriaToDelete, rowOptions, criteriaToDeleteOptions) {
+    #removeRows(tableId, criteriaToDelete, columnIdentifiers) {
       let table = document.getElementById(tableId);
       let rows = table.rows;
       let toDeleteRows = new Array();
       for (let i = 0; i < rows.length; i++) {
           let row = rows[i];
-          if(this.equalsByOptions(row, criteriaToDelete, rowOptions, criteriaToDeleteOptions)) {
+          if(this.#equalsBy(row, criteriaToDelete, columnIdentifiers)) {
               toDeleteRows[toDeleteRows.length] = row;
           }
       }
@@ -1525,6 +1522,7 @@ class ScriptPointsContext extends PointsContext {
           dwr.util.addRows(super.getContextTableId(), [row],
           [
               function(data) { return "<span>" + data.pointName + "</span>"; },
+              function(data) { return "<span>" + data.pointId + "</span>"; },
               function(data) { return "<span>" + data.pointXid + "</span>"; },
               function(data) { return "<span>" + data.pointType + "</span>"; },
               function(data) {
@@ -1544,23 +1542,6 @@ class ScriptPointsContext extends PointsContext {
               }
           });
       }
-    }
-
-    removeContextArray(row) {
-       let contextTableEmptyIdNode = $(super.getContextTableEmptyId());
-       let contextTableHeadersIdNode = $(super.getContextTableHeadersId());
-       if (super.getContextArray().length == 0 && contextTableEmptyIdNode && contextTableHeadersIdNode) {
-          show(contextTableEmptyIdNode);
-          hide(contextTableHeadersIdNode);
-       } else {
-          if(contextTableEmptyIdNode)
-            hide(contextTableEmptyIdNode);
-          if(contextTableHeadersIdNode)
-            show(contextTableHeadersIdNode);
-          super.removeRow(super.getContextTableId(), row, [3], ["scriptVarName"]);
-          super.setContextArray(super.getContextArray().filter(context => context.pointId != row.pointId));
-          super.getDataPointsSelect().updatePointsList(super.getContextArray());
-       }
     }
 }
 
@@ -1622,6 +1603,7 @@ class ReportPointsContext extends PointsContext {
             dwr.util.addRows(super.getContextTableId(), [row],
             [
                 function(data) { return "<span>" + data.pointName + "</span>"; },
+                function(data) { return "<span>" + data.pointId + "</span>"; },
                 function(data) { return "<span>" + data.pointXid + "</span>"; },
                 function(data) { return "<span>" + data.pointType + "</span>"; },
                 function(data) {
@@ -1711,6 +1693,7 @@ class SenderPointsContext extends PointsContext {
           dwr.util.addRows(super.getContextTableId(), [row],
           [
               function(data) { return "<span>" + data.pointName + "</span>";  },
+              function(data) { return "<span>" + data.pointId + "</span>"; },
               function(data) { return "<span>" + data.pointXid + "</span>"; },
               function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
               function(data) { return "<span>" + data.pointType + "</span>";  },
@@ -1795,6 +1778,7 @@ class PersistentPointsContext extends PointsContext {
             dwr.util.addRows(super.getContextTableId(), [row],
             [
                 function(data) { return "<span>" + data.pointName + "</span>"; },
+                function(data) { return "<span>" + data.pointId + "</span>"; },
                 function(data) { return "<span>" + data.pointXid + "</span>"; },
                 function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
                 function(data) { return "<span>" + data.pointType + "</span>"; },
@@ -1875,6 +1859,7 @@ class PachubePointsContext extends PointsContext {
             dwr.util.addRows(super.getContextTableId(), [row],
             [
                 function(data) { return "<span>" + data.pointName + "</span>"; },
+                function(data) { return "<span>" + data.pointId + "</span>"; },
                 function(data) { return "<span>" + data.pointXid + "</span>"; },
                 function(data) { return "<img src='images/"+ (data.enabled ? "brick_go" : "brick_stop") +".png'/>"; },
                 function(data) { return "<span>" + data.pointType + "</span>"; },
