@@ -82,8 +82,8 @@ public class PendingEventService {
 					}
 				}
 				cacheEvents.put(userId, events.stream()
-						.sorted(Comparator.comparing(EventInstanceEqualsById::getId))
 						.map(EventInstanceEqualsById::getEventInstance)
+						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).thenComparing(EventInstance::getId).reversed())
 						.collect(Collectors.toList()));
 			}
 		});

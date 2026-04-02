@@ -732,7 +732,7 @@ public class EventService implements MangoEvent {
 
 	private static List<EventInstance> getEventsSorted(List<EventInstance> result) {
 		return result.stream()
-				.sorted(Comparator.comparing(EventInstance::getId).reversed())
+				.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).thenComparing(EventInstance::getId).reversed())
 				.collect(Collectors.toList());
 	}
 }

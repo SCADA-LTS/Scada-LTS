@@ -243,7 +243,12 @@ public class ScriptsAPI {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         updateValueScript(toUpdate, body);
-        scriptService.saveScript(toUpdate);
+        try {
+            scriptService.saveScript(toUpdate);
+        } catch (Exception e) {
+            response.put("errors", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         response.put("status", "updated");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

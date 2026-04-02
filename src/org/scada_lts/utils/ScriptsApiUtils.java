@@ -62,7 +62,7 @@ public class ScriptsApiUtils {
 
     public static ContextualizedScriptVO createScriptFromBody(JsonScript jsonBodyRequest, User user) {
         ContextualizedScriptVO vo = new ContextualizedScriptVO();
-        vo.setId(jsonBodyRequest.getId());
+        vo.setId(jsonBodyRequest.getId() == null ? -1 : jsonBodyRequest.getId());
         vo.setXid(jsonBodyRequest.getXid());
         vo.setName(jsonBodyRequest.getName());
         vo.setScript(jsonBodyRequest.getScript());
@@ -142,22 +142,52 @@ public class ScriptsApiUtils {
         }
     }
 
+    public static Optional<DataPointVO> getDataPoint(int id, DataPointService dataPointService) {
+        try {
+            DataPointVO dataPointVO = dataPointService.getDataPoint(id);
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
     public static boolean isScriptPresent(String xid, ScriptService scriptService){
-        return getScript(xid, scriptService).isPresent();
+        return xid != null && getScript(xid, scriptService).isPresent();
     }
 
     public static boolean isScriptPresent(Integer id, ScriptService scriptService){
-        return getScript(id, scriptService).isPresent();
+        return id != null && getScript(id, scriptService).isPresent();
     }
 
     public static boolean isDataPointPresent(String xid, DataPointService dataPointService){
-        return getDataPointByXid(xid, dataPointService).isPresent();
+        return xid != null && getDataPointByXid(xid, dataPointService).isPresent();
+    }
+
+    public static boolean isDataPointPresent(Integer id, DataPointService dataPointService){
+        return id != null && getDataPoint(id, dataPointService).isPresent();
+    }
+
+    public static boolean isSamePointIdAndXid(ScriptPoint scirpt, DataPointService dataPointService) {
+        if(scirpt.getDataPointId() == null)
+            return true;
+        if(scirpt.getDataPointXid() == null)
+            return true;
+        DataPointVO dataPoint1 = getDataPointByXid(scirpt.getDataPointXid(), dataPointService).orElse(null);
+        if(dataPoint1 == null)
+            return true;
+        DataPointVO dataPoint2 = getDataPoint(scirpt.getDataPointId(), dataPointService).orElse(null);
+        if(dataPoint2 == null)
+            return true;
+        return dataPoint1.equals(dataPoint2);
     }
 
     public static String validatePointsOnContext(List<ScriptPoint> pointsOnContext, DataPointService dataPointService){
         StringBuilder msg = new StringBuilder();
         for (ScriptPoint point : pointsOnContext) {
             msg.append(msgIfNullOrInvalid("Invalid Xid: {0};", point.getDataPointXid(), a -> !isDataPointPresent(a, dataPointService)));
+            msg.append(msgIfNullOrInvalid("Invalid Id: {0};", point.getDataPointId(), a -> !isDataPointPresent(a, dataPointService)));
+            msg.append(msgIfNullOrInvalid("Invalid Id and Xid - may refer to another point: {0};", point, a -> !isSamePointIdAndXid(a, dataPointService)));
         }
         return msg.toString();
     }
