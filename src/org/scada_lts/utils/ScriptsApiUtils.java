@@ -63,7 +63,7 @@ public class ScriptsApiUtils {
 
     public static ContextualizedScriptVO createScriptFromBody(JsonScript jsonBodyRequest, User user) {
         ContextualizedScriptVO vo = new ContextualizedScriptVO();
-        vo.setId(jsonBodyRequest.getId() == null ? -1 : jsonBodyRequest.getId());
+        vo.setId(-1);
         vo.setXid(jsonBodyRequest.getXid());
         vo.setName(jsonBodyRequest.getName());
         vo.setScript(jsonBodyRequest.getScript());

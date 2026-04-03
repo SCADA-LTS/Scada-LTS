@@ -169,10 +169,6 @@ public class ScriptsAPI {
                 response.put("errors", "This XID is already in use");
                 throw new BadRequestException(request.getRequestURI(), response);
             }
-            if (isScriptPresent(jsonBodyRequest.getId(), scriptService)) {
-                response.put("errors", "This ID is already in use");
-                throw new BadRequestException(request.getRequestURI(), response);
-            }
             String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext());
             if (!pointsError.isEmpty()) {
                 response.put("errors", pointsError);
