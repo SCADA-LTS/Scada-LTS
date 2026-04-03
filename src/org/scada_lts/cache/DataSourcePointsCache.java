@@ -4,7 +4,6 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -24,7 +23,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	private static DataSourcePointsCache instance = null;
 	private final DataPointService dataPointService = new DataPointService();
 	
-	private Map<Long, List<DataPointVO>> dss = new ConcurrentHashMap<>();
+	private Map<Integer, List<DataPointVO>> dss = new ConcurrentHashMap<>();
 
 	private DataSourcePointsCache() {
 		
@@ -38,20 +37,33 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.1")
 	public List<DataPointVO> getDataPoints(Long dataSourceId) {
+
+		LOG.info("I'm using a cache with datasources points");
+
+		if (cacheEnabled) {
+			return dss.get(dataSourceId != null ? dataSourceId.intValue() : -1);
+		} else {
+			throw new RuntimeException("Cache may work only when scada cacheEnabled");
+		}
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(int dataSourceId) {
 
 		LOG.info("I'm using a cache with datasources points");
 
 		if (cacheEnabled) {
 			return dss.get(dataSourceId);
 		} else {
-			throw new RuntimeException("Cache may work only when scada cacheEnabled");
+			return dataPointService.getDataPoints(dataSourceId, null);
 		}
 	}
 
 	@Deprecated(since = "2.8.1")
 	public void setData(Map<Long, List<DataPointVO>> dss) {
-		this.dss = dss;
+		this.dss = dss.entrySet().stream().collect(Collectors.toMap(a -> a.getKey().intValue(), Map.Entry::getValue));
 	}
 
 	@Override
@@ -82,8 +94,9 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		
 		cacheEnabled = true;
 	}
-	
-	public Map<Long, List<DataPointVO>> composeCashData(List<DataPointVO> dps) {
+
+	@Deprecated(since = "2.8.1")
+	public Map<Long, List<DataPointVO>> composeCashDataOld(List<DataPointVO> dps) {
 		
 		Map<Long, List<DataPointVO>> dss = new ConcurrentHashMap<>();
 		if (dps != null && !dps.isEmpty()) {
@@ -101,6 +114,24 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		return dss;
 	}
 
+	public Map<Integer, List<DataPointVO>> composeCashData(List<DataPointVO> dps) {
+
+		Map<Integer, List<DataPointVO>> dss = new ConcurrentHashMap<>();
+		if (dps != null && !dps.isEmpty()) {
+			for (DataPointVO dp : dps) {
+				List<DataPointVO> cacheDs = dss.get(dp.getDataSourceId());
+				if (cacheDs==null) {
+					cacheDs = new CopyOnWriteArrayList<>();
+					cacheDs.add(dp);
+					dss.put(dp.getDataSourceId(), cacheDs);
+				} else {
+					cacheDs.add(dp);
+				}
+			}
+		}
+		return dss;
+	}
+
 	@Override
 	public DataPointVO getDataPoint(int dataPointId) {
 		if (cacheEnabled) {
@@ -109,7 +140,19 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 					.findFirst()
 					.orElse(null);
 		} else {
-			return null;
+			return dataPointService.getDataPoint(dataPointId);
+		}
+	}
+
+	@Override
+	public DataPointVO getDataPoint(String dataPointXid) {
+		if (cacheEnabled) {
+			return getPoints(this.dss).stream()
+					.filter(point -> point.getXid().equals(dataPointXid))
+					.findFirst()
+					.orElse(null);
+		} else {
+			return dataPointService.getDataPoint(dataPointXid);
 		}
 	}
 
@@ -122,7 +165,7 @@ public class DataSourcePointsCache implements IDataPointsCacheWhenStart {
 		ApplicationBeans.getBean("updateDataSourcesPointsScheduler", CronTriggerScheduler.class).schedule(cronExpression);
 	}
 
-	private static List<DataPointVO> getPoints(Map<Long, List<DataPointVO>> pointsBySource) {
+	private static List<DataPointVO> getPoints(Map<Integer, List<DataPointVO>> pointsBySource) {
 		return pointsBySource.values().stream()
 				.flatMap(Collection::stream)
 				.collect(Collectors.toList());

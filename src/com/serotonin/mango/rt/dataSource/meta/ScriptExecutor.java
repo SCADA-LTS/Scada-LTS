@@ -59,7 +59,6 @@ import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.val
  */
 public class ScriptExecutor {
 
-	private final DataPointService dataPointService = new DataPointService();
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptExecutor__();";
 	private static String SCRIPT_FUNCTION_PATH;
@@ -134,9 +133,6 @@ public class ScriptExecutor {
 
 				if(contextPoint == null) {
 					contextPointVO = DataSourcePointsCache.getInstance().getDataPoint(contextEntry.getKey());
-					if(contextPointVO == null) {
-						contextPointVO = dataPointService.getDataPoint(contextEntry.getKey());
-					}
  				} else {
 					contextPointVO = contextPoint.getVO();
 				}

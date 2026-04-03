@@ -7,6 +7,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.serorepl.utils.StringUtils;
@@ -132,6 +133,7 @@ public class ScriptsApiUtils {
         }
     }
 
+    @Deprecated(since = "2.8.1")
     public static Optional<DataPointVO> getDataPointByXid(String xid, DataPointService dataPointService) {
         try {
             DataPointVO dataPointVO = dataPointService.getDataPoint(xid);
@@ -142,6 +144,7 @@ public class ScriptsApiUtils {
         }
     }
 
+    @Deprecated(since = "2.8.1")
     public static Optional<DataPointVO> getDataPoint(int id, DataPointService dataPointService) {
         try {
             DataPointVO dataPointVO = dataPointService.getDataPoint(id);
@@ -160,35 +163,71 @@ public class ScriptsApiUtils {
         return id != null && getScript(id, scriptService).isPresent();
     }
 
+    @Deprecated(since = "2.8.1")
     public static boolean isDataPointPresent(String xid, DataPointService dataPointService){
         return xid != null && getDataPointByXid(xid, dataPointService).isPresent();
     }
 
+    @Deprecated(since = "2.8.1")
     public static boolean isDataPointPresent(Integer id, DataPointService dataPointService){
         return id != null && getDataPoint(id, dataPointService).isPresent();
     }
 
-    public static boolean isSamePointIdAndXid(ScriptPoint scirpt, DataPointService dataPointService) {
-        if(scirpt.getDataPointId() == null)
-            return true;
-        if(scirpt.getDataPointXid() == null)
-            return true;
-        DataPointVO dataPoint1 = getDataPointByXid(scirpt.getDataPointXid(), dataPointService).orElse(null);
-        if(dataPoint1 == null)
-            return true;
-        DataPointVO dataPoint2 = getDataPoint(scirpt.getDataPointId(), dataPointService).orElse(null);
-        if(dataPoint2 == null)
-            return true;
-        return dataPoint1.equals(dataPoint2);
-    }
-
+    @Deprecated(since = "2.8.1")
     public static String validatePointsOnContext(List<ScriptPoint> pointsOnContext, DataPointService dataPointService){
         StringBuilder msg = new StringBuilder();
         for (ScriptPoint point : pointsOnContext) {
             msg.append(msgIfNullOrInvalid("Invalid Xid: {0};", point.getDataPointXid(), a -> !isDataPointPresent(a, dataPointService)));
-            msg.append(msgIfNullOrInvalid("Invalid Id: {0};", point.getDataPointId(), a -> !isDataPointPresent(a, dataPointService)));
-            msg.append(msgIfNullOrInvalid("Invalid Id and Xid - may refer to another point: {0};", point, a -> !isSamePointIdAndXid(a, dataPointService)));
         }
         return msg.toString();
+    }
+
+    public static String validatePointsOnContext(List<ScriptPoint> pointsOnContext) {
+        StringBuilder msg = new StringBuilder();
+        for (ScriptPoint point : pointsOnContext) {
+            msg.append(msgIfNullOrInvalid("Invalid Xid: {0};", point.getDataPointXid(), a -> !isDataPointPresent(a)));
+            msg.append(msgIfNullOrInvalid("Invalid Id: {0};", point.getDataPointId(), a -> !isDataPointPresent(a)));
+            msg.append(msgIfNullOrInvalid("Invalid Id and Xid - may refer to another point: {0};", point, a -> (a.getDataPointId() != null && a.getDataPointXid() != null) && DataSourcePointsCache.getInstance().getDataPoint(a.getDataPointXid()) != null && !isSamePointIdAndXid(a)));
+        }
+        return msg.toString();
+    }
+
+    public static boolean isSamePointIdAndXid(ScriptPoint script) {
+        if(script.getDataPointId() == null)
+            return false;
+        if(script.getDataPointXid() == null)
+            return false;
+        DataPointVO dataPoint1 = DataSourcePointsCache.getInstance().getDataPoint(script.getDataPointXid());
+        if(dataPoint1 == null)
+            return false;
+        return dataPoint1.getId() == script.getDataPointId();
+    }
+
+    public static boolean isDataPointPresent(String xid){
+        return xid != null && getDataPointByXid(xid).isPresent();
+    }
+
+    public static boolean isDataPointPresent(Integer id){
+        return id != null && getDataPoint(id).isPresent();
+    }
+
+    public static Optional<DataPointVO> getDataPointByXid(String xid) {
+        try {
+            DataPointVO dataPointVO = DataSourcePointsCache.getInstance().getDataPoint(xid);
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<DataPointVO> getDataPoint(int id) {
+        try {
+            DataPointVO dataPointVO = DataSourcePointsCache.getInstance().getDataPoint(id);
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
     }
 }

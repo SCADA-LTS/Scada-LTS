@@ -40,11 +40,9 @@ public class ScriptsAPI {
     private static final Log LOG = LogFactory.getLog(ScriptsAPI.class);
 
     private final ScriptService scriptService;
-    private final DataPointService dataPointService;
 
-    public ScriptsAPI(ScriptService scriptService, DataPointService dataPointService) {
+    public ScriptsAPI(ScriptService scriptService) {
         this.scriptService = scriptService;
-        this.dataPointService = dataPointService;
     }
 
     /**
@@ -171,7 +169,11 @@ public class ScriptsAPI {
                 response.put("errors", "This XID is already in use");
                 throw new BadRequestException(request.getRequestURI(), response);
             }
-            String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService);
+            if (isScriptPresent(jsonBodyRequest.getId(), scriptService)) {
+                response.put("errors", "This ID is already in use");
+                throw new BadRequestException(request.getRequestURI(), response);
+            }
+            String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext());
             if (!pointsError.isEmpty()) {
                 response.put("errors", pointsError);
                 throw new NotFoundException(response, request.getRequestURI());
@@ -237,7 +239,7 @@ public class ScriptsAPI {
             response.put("errors", "This XID is already in use");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        String pointsError = validatePointsOnContext(body.getPointsOnContext(), dataPointService);
+        String pointsError = validatePointsOnContext(body.getPointsOnContext());
         if (!pointsError.isEmpty()) {
             response.put("errors", pointsError);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
