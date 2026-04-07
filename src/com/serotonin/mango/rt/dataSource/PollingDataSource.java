@@ -125,7 +125,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
 
     abstract protected void doPoll(long time);
 
-    protected void updateChangedPoints() {
+    protected List<DataPointRT> updateChangedPoints() {
         synchronized (pointListChangeLock) {
             if (addedChangedPoints.size() > 0) {
                 // Remove any existing instances of the points.
@@ -139,6 +139,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
                 removedPoints.clear();
                 pointListChanged = true;
             }
+            return new ArrayList<>(dataPoints);
         }
     }
 

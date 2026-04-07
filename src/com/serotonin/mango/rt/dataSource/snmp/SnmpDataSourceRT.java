@@ -212,9 +212,12 @@ public class SnmpDataSourceRT extends PollingDataSource {
 //                    Common.ctx.getRuntimeManager().stopDataSourceAndDontJoinTermination(vo.getId());
                 } else if (message != null) {
                     raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+                } else {
+                    returnToNormal(PDU_EXCEPTION_EVENT, time);
                 }
             }
             if (response.getErrorStatus() == PDU.noError) {
+                returnToNormal(PDU_EXCEPTION_EVENT, time);
                 DataPointRT dp;
                 for (int i = 0; i < response.size(); i++) {
                     vb = response.get(i);
@@ -274,6 +277,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
         if(messageType!=MessageType.undefined) {
             raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+        } else {
+            returnToNormal(PDU_EXCEPTION_EVENT, time);
         }
 
         return messageType!=MessageType.undefined;
@@ -328,7 +333,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
 
     Version getVersion() { return this.version; }
 
-    void receivedTrap(PDU trap) {
+    @Deprecated(since = "2.8.1")
+    void receivedTrap2(PDU trap) {
         long time = System.currentTimeMillis();
         VariableBinding vb;
 
@@ -363,11 +369,44 @@ public class SnmpDataSourceRT extends PollingDataSource {
         }
     }
 
+    void receivedTrap(PDU trap) {
+        long time = System.currentTimeMillis();
+        VariableBinding vb;
+
+        // Take a look at the response.
+        LocalizableMessage message = validatePdu(trap);
+        if (message != null) {
+            raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
+        } else {
+            returnToNormal(PDU_EXCEPTION_EVENT, time);
+            List<DataPointRT> dataPointRts = updateChangedPoints();
+
+            for (int i = 0; i < trap.getVariableBindings().size(); i++) {
+                vb = trap.get(i);
+                boolean found = false;
+
+                // Find the command for this binding.
+                for (DataPointRT dp : dataPointRts) {
+                    if (getOid(dp).equals(vb.getOid())) {
+                        updatePoint(dp, vb.getVariable(), time);
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    log.warn("Trap not handled: " + vb);
+                    raiseEvent(TRAP_NOT_HANDLED_EVENT, time, true, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+                } else {
+                    returnToNormal(TRAP_NOT_HANDLED_EVENT, time);
+                }
+            }
+        }
+    }
+
     private void updatePoint(DataPointRT dp, Variable variable, long time) {
         SnmpPointLocatorRT locator = dp.getPointLocator();
         dp.updatePointValue(new PointValueTime(locator
                 .variableToValue(variable), time));
-        returnToNormal(PDU_EXCEPTION_EVENT, time, dp);
     }
 
     //
