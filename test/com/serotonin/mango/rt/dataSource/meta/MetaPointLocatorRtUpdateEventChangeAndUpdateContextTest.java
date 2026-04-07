@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 
 import com.serotonin.mango.vo.permission.Permissions;
@@ -27,7 +28,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Common.class, Permissions.class, ScriptContextObject.class, ApplicationBeans.class})
+@PrepareForTest({Common.class, Permissions.class, ScriptContextObject.class, ApplicationBeans.class, Common.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
@@ -44,7 +45,9 @@ public class MetaPointLocatorRtUpdateEventChangeAndUpdateContextTest {
     public void config() throws Exception {
         MetaDataSourceRT dataSource = mock(MetaDataSourceRT.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
-        PowerMockUtils.configMockContextWrapper(runtimeManagerMock);
+        User user = new User();
+        user.setLang("en");
+        PowerMockUtils.configMock(runtimeManagerMock, user);
         vo.setContext(new ArrayList<>());
         vo.setDataTypeId(DataTypes.NUMERIC);
         vo.setScript("return 1;");

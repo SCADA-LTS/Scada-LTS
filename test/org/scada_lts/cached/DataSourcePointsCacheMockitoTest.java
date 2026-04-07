@@ -31,7 +31,7 @@ public class DataSourcePointsCacheMockitoTest {
 		List<DataPointVO> dps = new ArrayList<DataPointVO>();
 		dps.add(TestUtils.newDefaultEmptyDataPointVO());
 		
-		when(cache.getDataPoints(1L)).thenReturn(dps);
+		when(cache.getDataPoints(1)).thenReturn(dps);
 		
 		assertTrue(dps.size()==1);
 		

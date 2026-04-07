@@ -115,12 +115,13 @@
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
         <td><spring:message code="publisherEdit.point.name"/></td>
+        <td><spring:message code="publisherEdit.point.id"/></td>
         <td><spring:message code="publisherEdit.point.xid"/></td>
         <td><spring:message code="publisherEdit.point.status"/></td>
         <td><spring:message code="publisherEdit.point.type"/></td>
         <td></td>
       </tr>
-      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="5"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
+      <tbody id="selectedPointsEmpty" style="display:none;"><tr><td colspan="6"><spring:message code="publisherEdit.noPoints"/></td></tr></tbody>
       <tbody id="selectedPoints"></tbody>
     </table>
     <div id="pointsMsg" class="formError" style="display:none;"></div>

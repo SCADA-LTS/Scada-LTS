@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.scada_lts.dao.*;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
