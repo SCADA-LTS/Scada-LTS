@@ -54,7 +54,7 @@ import java.util.function.Predicate;
 public class EventManager implements ILifecycle {
 	private static final Log LOG = LogFactory.getLog(EventManager.class);
 
-	private final ActiveEvents activeEvents = ActiveEvents.newInstance();
+	private final ActiveEvents activeEvents = ActiveEvents.newSync();
 	private MangoEvent eventService;
 	private MangoUser userService;
 	private long lastAlarmTimestamp = 0;
@@ -176,13 +176,12 @@ public class EventManager implements ILifecycle {
 
 		if(removedEvents != null) {
 			for (EventInstance evt : removedEvents) {
-				resetHighestAlarmLevel(time, false);
-
-				evt.returnToNormal(time, cause);
-				eventService.saveEvent(evt);
-				notifyEventRtn(evt);
-				// Call inactiveEvent handlers.
-				handleInactiveEvent(evt);
+				try {
+					deactivateEvent(evt, time, cause);
+				} catch (Throwable ex) {
+					LOG.error(LoggingUtils.exceptionInfo(ex));
+					activeEvents.isIgnoreIfNotThenAddActiveEvent(evt);
+				}
 			}
 		}
 

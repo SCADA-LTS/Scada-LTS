@@ -476,4 +476,19 @@ public class EventInstance {
         return eventInstance;
     }
 
+    @Override
+    public String toString() {
+        return "EventInstance{" +
+                "id=" + id +
+                ", eventType=" + eventType +
+                ", activeTimestamp=" + activeTimestamp +
+                ", rtnApplicable=" + rtnApplicable +
+                ", rtnTimestamp=" + rtnTimestamp +
+                ", rtnCause=" + rtnCause +
+                ", alarmLevel=" + alarmLevel +
+                ", message=" + message +
+                ", shortMessage=" + shortMessage +
+                ", silenced=" + silenced +
+                '}';
+    }
 }

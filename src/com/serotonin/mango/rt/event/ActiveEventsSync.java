@@ -6,17 +6,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-class ActiveEventsImpl implements ActiveEvents {
+class ActiveEventsSync implements ActiveEvents {
 
-    private static final Log LOG = LogFactory.getLog(ActiveEventsImpl.class);
+    private static final Log LOG = LogFactory.getLog(ActiveEventsSync.class);
 
-    private final Map<EventType, List<EventInstance>> activeEvents = new ConcurrentHashMap<>();
+    private final Map<EventType, List<EventInstance>> activeEvents = new HashMap<>();
     private final ReentrantReadWriteLock activeEventsLock = new ReentrantReadWriteLock(true);
 
     @Override
@@ -24,14 +22,8 @@ class ActiveEventsImpl implements ActiveEvents {
         activeEventsLock.writeLock().lock();
         try {
             for(EventInstance event: events) {
-                activeEvents.compute(event.getEventType(), (a, b) -> {
-                    if (b == null) {
-                        return new CopyOnWriteArrayList<>(Set.of(event));
-                    } else {
-                        b.add(event);
-                        return b;
-                    }
-                });
+                activeEvents.putIfAbsent(event.getEventType(), new ArrayList<>());
+                activeEvents.get(event.getEventType()).add(event);
             }
         } finally {
             activeEventsLock.writeLock().unlock();
@@ -48,7 +40,7 @@ class ActiveEventsImpl implements ActiveEvents {
             boolean ignore = isIgnore(type, message, dup);
             if (!ignore && evt.isRtnApplicable()) {
                 if (dup == null) {
-                    dup = new CopyOnWriteArrayList<>();
+                    dup = new ArrayList<>();
                     activeEvents.put(type, dup);
                 }
                 dup.add(evt);

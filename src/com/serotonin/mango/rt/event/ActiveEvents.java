@@ -14,7 +14,7 @@ public interface ActiveEvents {
     List<EventInstance> removeActiveEvents(EventType type, LocalizableMessage onlyWithThisMessage);
     List<EventInstance> removeActiveEvents(Predicate<EventType> removeIf);
 
-    static ActiveEvents newInstance() {
-        return new ActiveEventsImpl();
+    static ActiveEvents newSync() {
+        return new ActiveEventsSync();
     }
 }
