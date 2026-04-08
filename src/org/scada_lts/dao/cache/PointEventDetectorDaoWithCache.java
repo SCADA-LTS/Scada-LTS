@@ -3,28 +3,35 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
-    private final PointEventDetectorCacheable pointEventDetectorCache;
+    private static final Log LOG = LogFactory.getLog(PointEventDetectorDaoWithCache.class);
 
-    public PointEventDetectorDaoWithCache(PointEventDetectorCacheable pointEventDetectorCache) {
+    private final PointEventDetectorCacheable pointEventDetectorCache;
+    private final IPointEventDetectorDAO pointEventDetectorDAO;
+
+    public PointEventDetectorDaoWithCache(PointEventDetectorCacheable pointEventDetectorCache,
+                                          IPointEventDetectorDAO pointEventDetectorDAO) {
         this.pointEventDetectorCache = pointEventDetectorCache;
+        this.pointEventDetectorDAO = pointEventDetectorDAO;
     }
 
     @Override
     public void init() {
         IDataPointDAO dao = ApplicationBeans.getDataPointDAOBean();
         List<DataPointVO> dataPoints = dao.getDataPoints();
-        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = new PointEventDetectorDAO()
-                .getPointEventDetectors(Integer.MAX_VALUE, 0)
+        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = loadPointEventDetectors(Integer.MAX_VALUE, 0)
                 .stream()
                 .collect(Collectors.groupingBy(a -> a.njbGetDataPoint().getId()));
         for(DataPointVO dataPoint: dataPoints) {
@@ -95,5 +102,27 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     @Override
     public int getDataPointId(int pointEventDetectorId) {
         return pointEventDetectorCache.selectDataPointIdByEventDetectorId(pointEventDetectorId);
+    }
+
+    @Override
+    public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("getPointEventDetector(long limit, int offset) limit:" + limit + ", offset:" + offset);
+        }
+
+        try {
+            return loadPointEventDetectors(limit, offset);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
+    private List<PointEventDetectorVO> loadPointEventDetectors(long limit, int offset) {
+        if (limit <= 0 || offset < 0) {
+            return Collections.emptyList();
+        }
+
+        return pointEventDetectorDAO.getPointEventDetectors(limit, offset);
     }
 }

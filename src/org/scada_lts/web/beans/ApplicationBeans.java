@@ -14,7 +14,6 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.db.BinaryDataHandler;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.alarms.IAlarmsDAO;
 import org.scada_lts.dao.cache.*;
@@ -168,14 +167,6 @@ public class ApplicationBeans {
         return getBeanFromContext("objectMapper", ObjectMapper.class);
     }
 
-    public static BinaryDataHandler getBinaryDataHandler() {
-        BinaryDataHandler handler = getBeanFromContext("binaryDataHandler", BinaryDataHandler.class);
-        if (handler == null) {
-            throw new IllegalStateException("binaryDataHandler bean is missing.");
-        }
-        return handler;
-    }
-
     public static class Lazy {
 
         private Lazy() {}
@@ -227,10 +218,6 @@ public class ApplicationBeans {
         return GetApplicationBeans.context() == null ? null : GetApplicationBeans.context();
     }
 
-    public static ViewHierarchyService getViewHierarchyServiceBean() {
-        return getBean("viewHierarchyService", ViewHierarchyService.class);
-    }
-
     public static IDataPointDAO getDataPointDAOBean(){
         return getBean("dataPointDAO", IDataPointDAO.class);
     }
@@ -259,7 +246,7 @@ public class ApplicationBeans {
         return getBean("pendingEventsDAO", IPendingEventsDAO.class);
     }
 
-    public static ISystemSettingsDAO getSystemSettingsDAOBean() {
+    public static ISystemSettingsDAO getSystemSettingsDaoBean() {
         return getBean("systemSettingsDAO", ISystemSettingsDAO.class);
     }
 

@@ -61,8 +61,8 @@ public class MySQLAccess extends BasePooledAccess {
     }
 
     @Override
-    public String getTypeKey() {
-        return "mysql";
+    public DatabaseType getType() {
+        return DatabaseType.MYSQL;
     }
 
     @Override

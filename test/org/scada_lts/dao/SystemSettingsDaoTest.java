@@ -20,7 +20,6 @@ package org.scada_lts.dao;
 import org.junit.Test;
 import org.scada_lts.dao.report.IReportInstanceDAO;
 import org.scada_lts.dao.report.ReportInstanceDAO;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -68,7 +67,7 @@ public class SystemSettingsDaoTest extends TestDAO {
 	@Test
 	public void databaseTest() {
 
-		double emptySize = systemSettingsDAO.getDataBaseSize();
+		double emptySize = systemSettingsDAO.getDatabaseSize();
 		assertTrue(emptySize > 0);
 
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (`xid`,`name`,`dataSourceType`,`data`) "
@@ -112,7 +111,7 @@ public class SystemSettingsDaoTest extends TestDAO {
 				+ "runEndTime, recordCount, preventPurge) "
 				+ "VALUES (1, 'fName', 1, false, 2, 542145, 321, 123456, 32, true)");
 
-		double sizeWithRecords = systemSettingsDAO.getDataBaseSize();
+		double sizeWithRecords = systemSettingsDAO.getDatabaseSize();
 		assertTrue(sizeWithRecords > 0);
 		assertTrue(sizeWithRecords >= emptySize);
 

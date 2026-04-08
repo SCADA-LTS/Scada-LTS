@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
@@ -45,7 +46,6 @@ import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
 import com.serotonin.mango.vo.dataSource.sql.SqlPointLocatorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.*;
 
 import static com.serotonin.mango.util.SqlDataSourceUtils.addLimitIfWithout;
@@ -282,7 +282,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 				return new NumericValue(rs.getDouble(fieldName));
 			else if (dataType == DataTypes.IMAGE) {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                StreamUtils.transfer(ApplicationBeans.getBinaryDataHandler().getBinaryStream(rs, fieldName), out);
+                                StreamUtils.transfer(DatabaseAccess.getDatabaseAccess().getBinaryStream(rs, fieldName), out);
 				return new ImageValue(out.toByteArray(), ImageValue.TYPE_JPG);
 			} else
 				throw new ShouldNeverHappenException("What's this?: "

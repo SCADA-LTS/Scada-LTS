@@ -112,7 +112,7 @@ public class EmportDwr extends BaseDwr {
 	public static String exportJSON(String xid){
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		DataPointVO dataPoints = new DataPointDao().getDataPointByXid(xid);
-		List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoints);
+		List<PointEventDetectorVO> detectors = ApplicationBeans.getPointEventDetectorDaoBean().getPointEventDetectors(dataPoints);
 		dataPoints.setEventDetectors(detectors);
 		data.put(DATA_POINTS, dataPoints == null?"In the database there is no data point with given xid "+xid:dataPoints);
 		JsonWriter writer = new JsonWriter();
@@ -132,7 +132,7 @@ public class EmportDwr extends BaseDwr {
 		if(dataPoint == null) {
 			data.put(DATA_POINTS, "In the database there is no data point with given xid ");
 		} else {
-			List<PointEventDetectorVO> detectors = new PointEventDetectorDAO().getPointEventDetectors(dataPoint);
+			List<PointEventDetectorVO> detectors = ApplicationBeans.getPointEventDetectorDaoBean().getPointEventDetectors(dataPoint);
 			dataPoint.setEventDetectors(detectors);
 			data.put(DATA_POINTS, dataPoint);
 		}
@@ -309,7 +309,7 @@ public class EmportDwr extends BaseDwr {
 		try {
 			Permissions.ensureAdmin(user);
 			stopRunningDataSources();
-			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 			systemSettingsDAO.resetDataBase();
 			importer.importProject();
 		} catch (Exception e) {

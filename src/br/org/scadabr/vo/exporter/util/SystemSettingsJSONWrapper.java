@@ -43,7 +43,7 @@ public class SystemSettingsJSONWrapper implements JsonSerializable {
 
 		Set<Entry<String, Object>> defaultValues = SystemSettingsDAO.DEFAULT_VALUES
 				.entrySet();
-		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 
 		for (Entry<String, Object> entry : defaultValues) {
 			String key = entry.getKey();

@@ -14,10 +14,14 @@
 package com.serotonin.mango.db;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.MissingResourceException;
 
@@ -45,7 +49,6 @@ import com.serotonin.util.StringUtils;
 abstract public class DatabaseAccess {
 	private final static Log log = LogFactory.getLog(DatabaseAccess.class);
 
-	@Deprecated
 	public enum DatabaseType {
 		DERBY {
 			@Override
@@ -64,11 +67,28 @@ abstract public class DatabaseAccess {
 			DatabaseAccess getImpl() {
 				return new MySQLAccess();
 			}
+
+			@Override
+			public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+				Blob blob = rs.getBlob(columnIndex);
+				return blob == null ? null : blob.getBinaryStream();
+			}
+
+			@Override
+			public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+				Blob blob = rs.getBlob(columnLabel);
+				return blob == null ? null : blob.getBinaryStream();
+			}
 		},
 		POSTGRES {
 			@Override
 			DatabaseAccess getImpl() {
 				return new PostgreSQLAccess();
+			}
+
+			@Override
+			public int getBinarySqlType() {
+				return Types.BINARY;
 			}
 		},
 		ORACLE11G {
@@ -78,20 +98,47 @@ abstract public class DatabaseAccess {
 			}
 		};
 
+		public String getKey() {
+			return name().toLowerCase();
+		}
+
+		public static DatabaseType from(String dbType) {
+			if (dbType == null) {
+				throw new IllegalArgumentException("Unknown database type: null");
+			}
+
+			String normalized = dbType.trim().toLowerCase();
+			if ("postgresql".equals(normalized) || "pgsql".equals(normalized) || "pg".equals(normalized)) {
+				return POSTGRES;
+			}
+			if ("mssqlserver".equals(normalized) || "mssql".equals(normalized)) {
+				return MSSQL;
+			}
+			if ("mysqlserver".equals(normalized) || "mysql".equals(normalized)) {
+				return MYSQL;
+			}
+			return DatabaseType.valueOf(normalized.toUpperCase());
+		}
+
+		public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+			return rs.getBinaryStream(columnIndex);
+		}
+
+		public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+			return rs.getBinaryStream(columnLabel);
+		}
+
+		public int getBinarySqlType() {
+			return Types.BLOB;
+		}
+
 		abstract DatabaseAccess getImpl();
 	}
 
-	@Deprecated
 	public static DatabaseAccess createDatabaseAccess() {
-
 		String type = Common.getEnvironmentProfile().getString("db.type",
 				"derby");
-		DatabaseType dt = DatabaseType.valueOf(type.toUpperCase());
-
-		if (dt == null)
-			throw new IllegalArgumentException("Unknown database type: " + type);
-
-		return dt.getImpl();
+		return DatabaseType.from(type).getImpl();
 	}
 
 	public static DatabaseAccess getDatabaseAccess() {
@@ -119,13 +166,7 @@ abstract public class DatabaseAccess {
 
 				if (!StringUtils.isEmpty(convertTypeStr)) {
 					// Found a database type from which to convert.
-					String convertKey = normalizeDbKey(convertTypeStr);
-					if (StringUtils.isEmpty(convertKey)) {
-						throw new IllegalArgumentException(
-								"Unknown convert database type: " + convertTypeStr);
-					}
-
-					DatabaseAccess sourceAccess = resolveDatabaseAccess(convertKey);
+					DatabaseAccess sourceAccess = resolveDatabaseAccess(DatabaseType.from(convertTypeStr));
 					if (sourceAccess == this) {
 						throw new IllegalStateException(
 								"convert.db.type must be different from db.type.");
@@ -158,7 +199,7 @@ abstract public class DatabaseAccess {
 					new UserDao().saveUser(user);
 
 					// Record the current version.
-					ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+					ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 					systemSettingsDAO.setValue(
 							SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 							Common.getVersion());
@@ -174,7 +215,7 @@ abstract public class DatabaseAccess {
 			}
 		} catch (CannotGetJdbcConnectionException e) {
 			log.fatal("Unable to connect to database of type "
-					+ getTypeKey(), e);
+					+ getType().name(), e);
 			throw e;
 		}
 
@@ -193,10 +234,26 @@ abstract public class DatabaseAccess {
 		}
 	}
 
-	abstract public String getTypeKey();
+	abstract public DatabaseType getType();
+
+	public String getTypeKey() {
+		return getType().getKey();
+	}
 
 	public String getIdQuery() {
 		return "SELECT @@identity";
+	}
+
+	public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+		return getType().getBinaryStream(rs, columnIndex);
+	}
+
+	public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+		return getType().getBinaryStream(rs, columnLabel);
+	}
+
+	public int getBinarySqlType() {
+		return getType().getBinarySqlType();
 	}
 
 	abstract public void terminate();
@@ -275,29 +332,13 @@ abstract public class DatabaseAccess {
 		return connection.prepareStatement(sql, 1);
 	}
 
-	private static DatabaseAccess resolveDatabaseAccess(String dbKey) {
-		String normalized = normalizeDbKey(dbKey);
-		String beanName = "databaseAccess-" + normalized;
+	private static DatabaseAccess resolveDatabaseAccess(DatabaseType dbType) {
+		String beanName = "databaseAccess-" + dbType.getKey();
 		DatabaseAccess access = ApplicationBeans.getBean(beanName, DatabaseAccess.class);
 		if (access == null) {
-			throw new IllegalStateException("DB plugin not found for db.type=" + normalized
+			throw new IllegalStateException("DB plugin not found for db.type=" + dbType.getKey()
 					+ ". Expected bean '" + beanName + "'.");
 		}
 		return access;
 	}
-
-	private static String normalizeDbKey(String dbType) {
-		if (dbType == null) {
-			return "";
-		}
-		String normalized = dbType.trim().toLowerCase();
-		if ("postgresql".equals(normalized) || "pgsql".equals(normalized) || "pg".equals(normalized)) {
-			return "postgres";
-		}
-		if ("sqlserver".equals(normalized) || "sql-server".equals(normalized)) {
-			return "mssql";
-		}
-		return normalized;
-	}
-
 }

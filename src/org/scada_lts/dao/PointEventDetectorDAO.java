@@ -475,6 +475,7 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		}
 	}
 
+	@Override
 	public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getPointEventDetector(long limit, int offset) limit:" +limit + ", offset:" + offset);

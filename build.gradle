@@ -55,7 +55,13 @@ processTestResources {
 }
 
 war {
-    dependsOn(':scadalts-ui:copyNewUiImages')
+    dependsOn(
+            ':scadalts-ui:copyNewUiJsSourceMap',
+            ':scadalts-ui:copyDataSourceJsSourceMap',
+            ':scadalts-ui:copyModernWatchListJsSourceMap',
+            ':scadalts-ui:copyPointHierarchyJsSourceMap',
+            ':scadalts-ui:copyViewsJsSourceMap'
+    )
     from 'WebContent'
     webInf {
         from 'webapp-resources/'
@@ -64,7 +70,13 @@ war {
 }
 
 task warDev(type: War) {
-    dependsOn(':scadalts-ui:copyNewUiWithSourceMap')
+    dependsOn(
+            ':scadalts-ui:copyNewUiJsSourceMap',
+            ':scadalts-ui:copyDataSourceJsSourceMap',
+            ':scadalts-ui:copyModernWatchListJsSourceMap',
+            ':scadalts-ui:copyPointHierarchyJsSourceMap',
+            ':scadalts-ui:copyViewsJsSourceMap'
+    )
     from 'WebContent'
     webInf {
         from 'webapp-resources/'

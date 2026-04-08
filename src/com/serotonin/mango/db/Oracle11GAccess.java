@@ -67,8 +67,8 @@ public class Oracle11GAccess extends BasePooledAccess {
 	}
 
 	@Override
-	public String getTypeKey() {
-		return "oracle11g";
+	public DatabaseType getType() {
+		return DatabaseType.ORACLE11G;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
+import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -54,7 +55,7 @@ public class SystemSettingsService {
     private final ISystemSettingsDAO systemSettingsDAO;
 
     public SystemSettingsService() {
-        systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+        systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
     }
 
     public Map<String, Object> getSettings() {
@@ -270,14 +271,23 @@ public class SystemSettingsService {
     }
 
     public void setDatabaseType(String databaseType) {
-        if (databaseType.equalsIgnoreCase("mysql")) {
-            ConfigurationDB.useMysqlDB();
-        } else if (databaseType.equalsIgnoreCase("mssql")) {
-            ConfigurationDB.useMssqlDB();
-        } else if (databaseType.equalsIgnoreCase("oracle11g")) {
-            ConfigurationDB.useOracle11gDB();
-        } else {
-            ConfigurationDB.useDerbyDB();
+        String dbKey = DatabaseType.from(databaseType).getKey();
+        switch (dbKey) {
+            case "mysql":
+                ConfigurationDB.useMysqlDB();
+                break;
+            case "postgres":
+                ConfigurationDB.usePostgresDB();
+                break;
+            case "mssql":
+                ConfigurationDB.useMssqlDB();
+                break;
+            case "oracle11g":
+                ConfigurationDB.useOracle11gDB();
+                break;
+            default:
+                ConfigurationDB.useDerbyDB();
+                break;
         }
     }
 
@@ -302,7 +312,7 @@ public class SystemSettingsService {
 
         String dbType = getDatabaseType();
         if (dbType.equalsIgnoreCase("mysql") || dbType.equalsIgnoreCase("postgres")) {
-            double size = systemSettingsDAO.getDataBaseSize();
+            double size = systemSettingsDAO.getDatabaseSize();
             if (size >= 0) {
                 data.put("databaseSize", size + "MB");
                 data.put("filedataCount", 0);

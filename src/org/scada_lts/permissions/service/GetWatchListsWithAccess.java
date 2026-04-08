@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
     private final IWatchListDAO watchListDAO;
 
     public GetWatchListsWithAccess() {
-        this.watchListDAO = new WatchListDAO();
+        this.watchListDAO = ApplicationBeans.getBean("watchListDAO", IWatchListDAO.class);
     }
 
     public GetWatchListsWithAccess(IWatchListDAO watchListDAO) {

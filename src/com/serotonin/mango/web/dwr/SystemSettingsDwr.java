@@ -247,7 +247,7 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		String dbType = checkTypeDB();
 		if (dbType.equalsIgnoreCase("mysql") || dbType.equalsIgnoreCase("postgres")) {
-			double size = ApplicationBeans.getSystemSettingsDAOBean().getDataBaseSize();
+			double size = ApplicationBeans.getSystemSettingsDaoBean().getDatabaseSize();
 			if (size >= 0) {
 				data.put("databaseSize", size + " MB");
 				data.put("filedataCount", 0);
@@ -280,7 +280,7 @@ public class SystemSettingsDwr extends BaseDwr {
 			String name, boolean auth, String username, String password,
 			boolean tls, int contentType) {
 		Permissions.ensureAdmin();
-		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
 		systemSettingsDAO.setIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT, port);
 		systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS, from);
@@ -403,7 +403,7 @@ public class SystemSettingsDwr extends BaseDwr {
 								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
 							     int defaultPurgePeriod, int defaultPurgePeriodType, int valuesLimitForPurge) {
 		Permissions.ensureAdmin();
-		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 		systemSettingsDAO
 				.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
 						eventPurgePeriodType);
@@ -465,7 +465,7 @@ public class SystemSettingsDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 			systemSettingsDAO.setValue(
 					SystemSettingsDAO.CHART_BACKGROUND_COLOUR,
 					chartBackgroundColour);
@@ -483,7 +483,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription,String topDescriptionPrefix, String topDescription) {
 		Permissions.ensureAdmin();
-		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 		systemSettingsDAO.setValue(
 				SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
 				newVersionNotificationLevel);
@@ -547,9 +547,21 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	
+	public void usePostgresDB() {
+		Permissions.ensureAdmin();
+		ConfigurationDB.usePostgresDB();
+	}
+
+	
 	public void useMssqlDB() {
 		Permissions.ensureAdmin();
 		ConfigurationDB.useMssqlDB();
+	}
+
+	
+	public void useOracle11gDB() {
+		Permissions.ensureAdmin();
+		ConfigurationDB.useOracle11gDB();
 	}
 
 	

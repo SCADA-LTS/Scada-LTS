@@ -7,6 +7,6 @@ public interface ISystemSettingsDAO {
     public abstract void removeValue(java.lang.String arg0);
     public abstract java.lang.String getDatabaseSchemaVersion(java.lang.String arg0, java.lang.String arg1);
     public abstract void resetDataBase();
-    public abstract double getDataBaseSize();
+    public abstract double getDatabaseSize();
 }
 

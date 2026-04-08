@@ -146,7 +146,7 @@ public class SystemEventType extends EventType {
 		if(et != null) {
 			et.setAlarmLevel(alarmLevel);
 
-			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 			systemSettingsDAO.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
 		} else {
 			LOG.warn(LoggingUtils.eventTypeInfo(type, alarmLevel));

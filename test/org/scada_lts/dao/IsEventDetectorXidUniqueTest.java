@@ -156,7 +156,7 @@ public class IsEventDetectorXidUniqueTest {
     public void config() {
         PointEventDetectorDAO pointEventDetectorDaoMock = mock(PointEventDetectorDAO.class);
         PointEventDetectorCache pointEventDetectorCache = new PointEventDetectorCache(pointEventDetectorDaoMock);
-        subject = new PointEventDetectorDaoWithCache(pointEventDetectorCache);
+        subject = new PointEventDetectorDaoWithCache(pointEventDetectorCache, pointEventDetectorDaoMock);
 
         when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector1.getXid()), eq(dataPointId))).thenReturn(pointEventDetector1);
         when(pointEventDetectorDaoMock.getPointEventDetector(eq(pointEventDetector2.getXid()), eq(dataPointId))).thenReturn(pointEventDetector2);

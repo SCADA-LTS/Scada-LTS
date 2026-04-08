@@ -86,7 +86,7 @@ abstract public class DBUpgrade {
 				LOG.warn("Upgrading instance from " + schemaVersion + " to "
 						+ upgrade.getNewSchemaVersion());
 				upgrade.upgrade();
-				ISystemSettingsDAO systemSettingsDAO = org.scada_lts.web.beans.ApplicationBeans.getSystemSettingsDAOBean();
+				ISystemSettingsDAO systemSettingsDAO = org.scada_lts.web.beans.ApplicationBeans.getSystemSettingsDaoBean();
 				systemSettingsDAO.setValue(
 						SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 						upgrade.getNewSchemaVersion());

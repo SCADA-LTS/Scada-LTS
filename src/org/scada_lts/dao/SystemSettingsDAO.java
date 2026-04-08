@@ -462,7 +462,8 @@ public class SystemSettingsDAO implements ISystemSettingsDAO {
 		ApplicationBeans.getBean("userCommentCache", UserCommentCacheable.class).resetCache();
 	}
 
-	public double getDataBaseSize() {
+	@Override
+	public double getDatabaseSize() {
 
 		final List<Double> size = new ArrayList<>();
 

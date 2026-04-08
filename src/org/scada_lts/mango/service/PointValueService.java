@@ -546,10 +546,6 @@ public class PointValueService implements MangoPointValues {
         private int instancesSize;
         private int entriesSize;
 
-        public static void setPointValueDAO(IPointValueDAO dao) {
-            pointValueDAO = dao;
-        }
-
         @Override
         public void work() {
             try {

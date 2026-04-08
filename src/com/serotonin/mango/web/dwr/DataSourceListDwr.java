@@ -123,10 +123,10 @@ public class DataSourceListDwr extends BaseDwr {
 
 	public DwrResponseI18n toggleDataPoint(int dataPointId) {
 		DataPointVO dataPoint = new DataPointDao().getDataPoint(dataPointId);
-		return toggleDataPoint(dataPoint);
+		return toggleDataPointInternal(dataPoint);
 	}
 
-	public DwrResponseI18n toggleDataPoint(DataPointVO dataPoint) {
+	protected DwrResponseI18n toggleDataPointInternal(DataPointVO dataPoint) {
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				dataPoint.getDataSourceId());
 

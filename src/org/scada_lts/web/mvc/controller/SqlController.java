@@ -44,8 +44,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.util.SerializationHelper;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.web.util.WebUtils;
 
 /**
@@ -128,7 +128,7 @@ public class SqlController {
                     row.add(rs.getString(i + 1));
                 else if (meta.getColumnType(i + 1) == Types.LONGVARBINARY
                         || meta.getColumnType(i + 1) == Types.BLOB || meta.getColumnType(i + 1) == Types.BINARY) {
-                    Object o = SerializationHelper.readObject(ApplicationBeans.getBinaryDataHandler().getBinaryStream(rs, i + 1));
+                    Object o = SerializationHelper.readObject(DatabaseAccess.getDatabaseAccess().getBinaryStream(rs, i + 1));
                     row.add("Serialized data(" + o + ")");
                 } else
                     row.add(rs.getObject(i + 1));

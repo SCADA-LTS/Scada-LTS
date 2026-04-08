@@ -59,8 +59,8 @@ public class PostgreSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    public String getTypeKey() {
-        return "postgres";
+    public DatabaseType getType() {
+        return DatabaseType.POSTGRES;
     }
 
     @Override

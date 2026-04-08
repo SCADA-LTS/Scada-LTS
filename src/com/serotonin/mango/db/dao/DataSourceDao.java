@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.scada_lts.dao.DAO;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.GenericResultSetExtractor;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 
@@ -82,7 +82,7 @@ public class DataSourceDao {
 						if (!rs.next())
 							return null;
 
-						InputStream is = ApplicationBeans.getBinaryDataHandler().getBinaryStream(rs, 1);
+						InputStream is = DatabaseAccess.getDatabaseAccess().getBinaryStream(rs, 1);
 						if (is == null)
 							return null;
 
@@ -97,7 +97,7 @@ public class DataSourceDao {
 				"update dataSources set rtdata=? where id=?",
 				new Object[] { SerializationHelper.writeObject(data), id },
 				new int[] {
-						ApplicationBeans.getBinaryDataHandler().getBinarySqlType(),
+						DatabaseAccess.getDatabaseAccess().getBinarySqlType(),
 						Types.INTEGER });
 	}
 }

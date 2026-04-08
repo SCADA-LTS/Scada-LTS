@@ -292,17 +292,13 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                 boolean hasTypeOrSettableFilter =
                         (searchDataPointJson.getDataTypes() != null && !searchDataPointJson.getDataTypes().isEmpty())
                                 || (searchDataPointJson.getSettable() != null);
-                boolean hasExcludeIds =
-                        searchDataPointJson.getExcludeIds() != null && !searchDataPointJson.getExcludeIds().isEmpty();
-                if(!hasTypeOrSettableFilter && !hasExcludeIds) {
+                if(!hasTypeOrSettableFilter) {
                     return dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
                             searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                             page, searchDataPointJson.getLimit());
                 } else {
-                    // Exclude ids are handled by filterByExcludeIds below.
-                    // Keep DAO query free from NOT IN to avoid SQL-dialect issues.
                     List<DataPointVO>  points = dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
-                            null, searchDataPointJson.isStartsWith(),
+                            searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                             -1, -1);
                     return filteredAndPaginationPoints(user, searchDataPointJson, points);
                 }

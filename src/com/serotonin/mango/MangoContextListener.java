@@ -156,7 +156,7 @@ public class MangoContextListener implements ServletContextListener {
 						+ knownContextPath + " to " + contextPath
 						+ ". Are there two instances of Scada-LTS running?");
 		}
-		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
 		systemSettingsDAO.setValue(SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
 		eventManagerInitialize(ctx);

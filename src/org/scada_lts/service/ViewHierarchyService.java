@@ -27,6 +27,7 @@ import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
 import org.scada_lts.service.model.ViewHierarchyJSON;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.slf4j.profiler.Profiler;
 
 import com.serotonin.mango.view.View;
@@ -55,6 +56,11 @@ public class ViewHierarchyService {
 	public ViewHierarchyService(IViewHierarchyDAO vhDAO, IViewDAO viewDAO){
 		this.vhDAO = vhDAO;
 		this.viewDAO = viewDAO;
+	}
+
+	public ViewHierarchyService(){
+		this.vhDAO = ApplicationBeans.getBean("viewHierarchyDAO", IViewHierarchyDAO.class);
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 	
 	private List<ViewHierarchyJSON> getChildFolder(long l) {

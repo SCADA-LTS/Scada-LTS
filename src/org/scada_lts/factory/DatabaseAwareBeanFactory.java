@@ -1,6 +1,7 @@
 package org.scada_lts.factory;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -78,21 +79,7 @@ public class DatabaseAwareBeanFactory<T> implements FactoryBean<T>, ApplicationC
 
     private String resolveDbKey() {
         String dbType = Common.getEnvironmentProfile().getString("db.type", DEFAULT_DB_TYPE);
-        return normalizeDbKey(dbType);
-    }
-
-    private static String normalizeDbKey(String dbType) {
-        if (dbType == null) {
-            return "";
-        }
-        String normalized = dbType.trim().toLowerCase();
-        if ("postgresql".equals(normalized) || "pgsql".equals(normalized) || "pg".equals(normalized)) {
-            return "postgres";
-        }
-        if ("mssqlserver".equals(normalized) || "mssql-server".equals(normalized) || "mssql".equals(normalized)) {
-            return "mssql";
-        }
-        return normalized;
+        return DatabaseType.from(dbType).getKey();
     }
 
     private void ensureDbPluginLoaded(String dbKey) {

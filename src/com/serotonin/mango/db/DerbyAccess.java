@@ -58,8 +58,8 @@ public class DerbyAccess extends DatabaseAccess {
     private EmbeddedXADataSource40 dataSource;
 
     @Override
-    public String getTypeKey() {
-        return "derby";
+    public DatabaseType getType() {
+        return DatabaseType.DERBY;
     }
 
     @Override

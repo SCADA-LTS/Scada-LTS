@@ -81,7 +81,7 @@ public final class ScadaLocaleUtils {
         if (locale == null)
             throw new IllegalArgumentException(
                     "Locale for given language not found: " + language);
-        ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDAOBean();
+        ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
         systemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, language);
     }
 
