@@ -145,6 +145,52 @@ public class EventInstance {
         this.context = context;
     }
 
+    private EventInstance(EventInstance event) {
+        this.id = event.id;
+        this.eventType = event.eventType;
+        this.activeTimestamp = event.activeTimestamp;
+        this.rtnApplicable = event.rtnApplicable;
+        this.rtnTimestamp = event.rtnTimestamp;
+        this.rtnCause = event.rtnCause;
+        this.alarmLevel = event.alarmLevel;
+        this.message = event.message;
+        this.shortMessage = event.shortMessage;
+        this.eventComments = event.eventComments;
+        this.handlers = event.handlers;
+        this.acknowledgedTimestamp = event.acknowledgedTimestamp;
+        this.acknowledgedByUserId = event.acknowledgedByUserId;
+        this.acknowledgedByUsername = event.acknowledgedByUsername;
+        this.alternateAckSource = event.alternateAckSource;
+        this.assigneeTimestamp = event.assigneeTimestamp;
+        this.assigneeUsername = event.assigneeUsername;
+        this.userNotified = event.userNotified;
+        this.silenced = event.silenced;
+        this.context = event.context;
+    }
+
+    private EventInstance(EventInstance event, Map<String, Object> context) {
+        this.id = event.id;
+        this.eventType = event.eventType;
+        this.activeTimestamp = event.activeTimestamp;
+        this.rtnApplicable = event.rtnApplicable;
+        this.rtnTimestamp = event.rtnTimestamp;
+        this.rtnCause = event.rtnCause;
+        this.alarmLevel = event.alarmLevel;
+        this.message = event.message;
+        this.shortMessage = event.shortMessage;
+        this.eventComments = event.eventComments;
+        this.handlers = event.handlers;
+        this.acknowledgedTimestamp = event.acknowledgedTimestamp;
+        this.acknowledgedByUserId = event.acknowledgedByUserId;
+        this.acknowledgedByUsername = event.acknowledgedByUsername;
+        this.alternateAckSource = event.alternateAckSource;
+        this.assigneeTimestamp = event.assigneeTimestamp;
+        this.assigneeUsername = event.assigneeUsername;
+        this.userNotified = event.userNotified;
+        this.silenced = event.silenced;
+        this.context = context;
+    }
+
     public static EventInstance emptySystemNoneEvent(int eventId) {
         EventInstance eventInstance = new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
         eventInstance.setId(eventId);
@@ -460,7 +506,8 @@ public class EventInstance {
 		return true;
 	}
 
-	public EventInstance copyWithContext(Map<String, Object> context) {
+    @Deprecated(since = "2.8.1")
+	public EventInstance copyWithContextOld(Map<String, Object> context) {
         EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, message, shortMessage, context);
         eventInstance.setId(id);
         eventInstance.setAcknowledgedByUserId(acknowledgedByUserId);
@@ -474,6 +521,14 @@ public class EventInstance {
         eventInstance.setAssigneeTimestamp(assigneeTimestamp);
         eventInstance.setAssigneeUsername(assigneeUsername);
         return eventInstance;
+    }
+
+    public EventInstance copyWithContext(Map<String, Object> context) {
+        return new EventInstance(this, context);
+    }
+
+    public EventInstance copy() {
+        return new EventInstance(this);
     }
 
     @Override

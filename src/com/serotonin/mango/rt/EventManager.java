@@ -176,26 +176,29 @@ public class EventManager implements ILifecycle {
 
 		if(removedEvents != null) {
 			for (EventInstance evt : removedEvents) {
-				try {
-					deactivateEvent(evt, time, cause);
-				} catch (Throwable ex) {
-					LOG.error(LoggingUtils.exceptionInfo(ex));
-					activeEvents.isIgnoreIfNotThenAddActiveEvent(evt);
-				}
+				doDeactivateEvent(time, cause, evt);
 			}
+			removedEvents.clear();
 		}
 
 		if (LOG.isDebugEnabled())
 			LOG.debug("Event returned to normal: type=" + type);
 	}
 
-	private void deactivateEvent(EventInstance evt, long time, int inactiveCause) {
-		resetHighestAlarmLevel(time, false);
-		evt.returnToNormal(time, inactiveCause);
-		eventService.saveEvent(evt);
-		notifyEventRtn(evt);
-		// Call inactiveEvent handlers.
-		handleInactiveEvent(evt);
+	private boolean deactivateEvent(EventInstance evt, long time, int inactiveCause) {
+		EventInstance copy = evt.copy();
+		try {
+			resetHighestAlarmLevel(time, false);
+			evt.returnToNormal(time, inactiveCause);
+			eventService.saveEvent(copy);
+			notifyEventRtn(copy);
+			// Call inactiveEvent handlers.
+			handleInactiveEvent(copy);
+			return true;
+		} catch (Throwable throwable) {
+			LOG.error(LoggingUtils.exceptionInfo(throwable));
+			return false;
+		}
 	}
 
 	public void setLastAlarmTimestamp(long alarmTimestamp) {
@@ -484,8 +487,16 @@ public class EventManager implements ILifecycle {
 		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(cancelIf);
 		if(removedEvents != null) {
 			for (EventInstance event : removedEvents) {
-				deactivateEvent(event, System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED);
+				doDeactivateEvent(System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED, event);
 			}
+			removedEvents.clear();
+		}
+	}
+
+	private void doDeactivateEvent(long time, int cause, EventInstance evt) {
+		boolean deactivated = deactivateEvent(evt, time, cause);
+		if(!deactivated) {
+			activeEvents.addActiveEvent(evt);
 		}
 	}
 }

@@ -22,8 +22,7 @@ class ActiveEventsSync implements ActiveEvents {
         activeEventsLock.writeLock().lock();
         try {
             for(EventInstance event: events) {
-                activeEvents.putIfAbsent(event.getEventType(), new ArrayList<>());
-                activeEvents.get(event.getEventType()).add(event);
+                add(event);
             }
         } finally {
             activeEventsLock.writeLock().unlock();
@@ -52,11 +51,22 @@ class ActiveEventsSync implements ActiveEvents {
     }
 
     @Override
+    public boolean addActiveEvent(EventInstance event) {
+        activeEventsLock.writeLock().lock();
+        try {
+            return add(event);
+        } finally {
+            activeEventsLock.writeLock().unlock();
+        }
+    }
+
+    @Override
     public List<EventInstance> removeActiveEvents(EventType type, LocalizableMessage onlyWithThisMessage) {
         activeEventsLock.writeLock().lock();
         try {
             if(onlyWithThisMessage == null) {
-                return activeEvents.remove(type);
+                List<EventInstance> toRemove = activeEvents.remove(type);
+                return toRemove == null ? null : new ArrayList<>(toRemove);
             } else {
                 List<EventInstance> toRemove = new ArrayList<>();
                 List<EventInstance> events = activeEvents.get(type);
@@ -182,5 +192,10 @@ class ActiveEventsSync implements ActiveEvents {
             }
         }
         return false;
+    }
+
+    private boolean add(EventInstance event) {
+        activeEvents.putIfAbsent(event.getEventType(), new ArrayList<>());
+        return activeEvents.get(event.getEventType()).add(event);
     }
 }

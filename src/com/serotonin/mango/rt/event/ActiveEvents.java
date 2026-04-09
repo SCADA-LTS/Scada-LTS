@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public interface ActiveEvents {
 
     void initActiveEvents(List<EventInstance> events);
+    boolean addActiveEvent(EventInstance evt);
     boolean isIgnoreIfNotThenAddActiveEvent(EventInstance evt);
     int calculateGlobalHighestAlarmLevel();
     List<EventInstance> removeActiveEvents(EventType type, LocalizableMessage onlyWithThisMessage);
