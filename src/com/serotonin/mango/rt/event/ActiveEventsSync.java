@@ -53,15 +53,15 @@ class ActiveEventsSync implements ActiveEvents {
                     setHandlers(event);
                 }
 
-                if (event.isRtnApplicable()) {
-                    eventService.saveEvent(event);
-                }
+                eventService.saveEvent(event);
 
-                if (dup == null) {
-                    dup = new ArrayList<>();
-                    activeEvents.put(type, dup);
+                if (event.isRtnApplicable()) {
+                    if (dup == null) {
+                        dup = new ArrayList<>();
+                        activeEvents.put(type, dup);
+                    }
+                    dup.add(event);
                 }
-                dup.add(event);
             }
             return ignore;
         } finally {
