@@ -121,4 +121,44 @@ public class MultiThreadEngine {
             LOG.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
         }
     }
+
+    public static List<Object> executeCalls(final Executor executor, int concurrency, final List<Callable<?>> actions) throws Throwable {
+        final CountDownLatch ready = new CountDownLatch(concurrency * actions.size());
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch done = new CountDownLatch(concurrency * actions.size());
+        final Set<Throwable> throwableMap = new CopyOnWriteArraySet<>();
+        final List<Object> results = new CopyOnWriteArrayList<>();
+        for (int i = 0; i < concurrency; i++) {
+            for (Callable<?> action : actions) {
+                executor.execute(() -> {
+                    ready.countDown();
+                    try {
+                        start.await();
+                        Object result = action.call();
+                        results.add(result);
+                    } catch (Throwable ex) {
+                        throwableMap.add(ex);
+                    } finally {
+                        done.countDown();
+                    }
+                });
+            }
+        }
+        long startNanos = 0;
+        try {
+            ready.await();
+            startNanos = System.nanoTime();
+            start.countDown();
+            done.await();
+            if(!throwableMap.isEmpty()) {
+                throw throwableMap.iterator().next();
+            }
+        } catch (Throwable ex) {
+            LOG.error(ex.getMessage(), ex);
+            throw ex;
+        } finally {
+            LOG.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+        }
+        return results;
+    }
 }

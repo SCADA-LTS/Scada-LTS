@@ -54,13 +54,21 @@ import java.util.function.Predicate;
 public class EventManager implements ILifecycle {
 	private static final Log LOG = LogFactory.getLog(EventManager.class);
 
-	private final ActiveEvents activeEvents = ActiveEvents.newSync();
-	private MangoEvent eventService;
-	private MangoUser userService;
+	private final ActiveEvents activeEvents;
+	private final MangoEvent eventService;
+	private final MangoUser userService;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
-	private IHighestAlarmLevelService highestAlarmLevelService;
-	private UserEventServiceWebSocket userEventServiceWebSocket;
+	private final IHighestAlarmLevelService highestAlarmLevelService;
+	private final UserEventServiceWebSocket userEventServiceWebSocket;
+
+	public EventManager() {
+		eventService = new EventService();
+		userService = new UserService();
+		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
+		activeEvents = ActiveEvents.newSync(eventService);
+	}
 
 	//
 	//
@@ -79,18 +87,12 @@ public class EventManager implements ILifecycle {
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
 				alarmLevel, message, shortMessage, context);
 
-		if(activeEvents.isIgnoreIfNotThenAddActiveEvent(evt)) {
-			return;
-		}
-
 		// Determine if the event should be suppressed.
 		boolean suppressed = isSuppressed(type);
 
-		if (!suppressed)
-			setHandlers(evt);
-
-		// Get id from database by inserting event immediately.
-		eventService.saveEvent(evt);
+		if(activeEvents.isIgnoreIfNotThenAddActiveEvent(evt, suppressed)) {
+			return;
+		}
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<>();
@@ -189,7 +191,7 @@ public class EventManager implements ILifecycle {
 		EventInstance copy = evt.copy();
 		try {
 			resetHighestAlarmLevel(time, false);
-			evt.returnToNormal(time, inactiveCause);
+			copy.returnToNormal(time, inactiveCause);
 			eventService.saveEvent(copy);
 			notifyEventRtn(copy);
 			// Call inactiveEvent handlers.
@@ -266,10 +268,6 @@ public class EventManager implements ILifecycle {
 	// Lifecycle interface
 	//
 	public void initialize() {
-		eventService = new EventService();
-		userService = new UserService();
-		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 
 		// Get all active events from the database.
 		activeEvents.initActiveEvents(eventService.getActiveEvents());

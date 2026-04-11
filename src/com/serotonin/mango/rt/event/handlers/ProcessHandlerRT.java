@@ -29,7 +29,7 @@ import com.serotonin.util.StringUtils;
  */
 public class ProcessHandlerRT extends EventHandlerRT {
     public ProcessHandlerRT(EventHandlerVO vo) {
-        super(vo, SystemEventType.duplicateIgnoreEventType(SystemEventType.TYPE_PROCESS_FAILURE, vo.getId()));
+        super(vo, SystemEventType.duplicateIgnoreSameMessageEventType(SystemEventType.TYPE_PROCESS_FAILURE, vo.getId()));
     }
 
     @Override

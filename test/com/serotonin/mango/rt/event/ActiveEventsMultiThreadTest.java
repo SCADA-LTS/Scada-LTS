@@ -9,15 +9,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.utils.EventTypeUtil;
 import utils.EventTestUtils;
 import utils.TestConcurrentUtils;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 public class ActiveEventsMultiThreadTest {
@@ -65,7 +67,7 @@ public class ActiveEventsMultiThreadTest {
 
     @Parameterized.Parameters(name= "{index}: events: {0}, expectedEvents: {1}, keys: {2}")
     public static Collection primeNumbers() throws SQLException {
-        return Arrays.asList(new Object[][]{
+        return Arrays.asList(new Object[][] {
                 {
                     Arrays.asList(eventInstance1EventType1, eventInstance2EventType1, eventInstance3EventType1),
                     Arrays.asList(eventInstance1EventType1, eventInstance2EventType1, eventInstance3EventType1),
@@ -95,36 +97,37 @@ public class ActiveEventsMultiThreadTest {
 
     @Before
     public void config() {
-        activeEvents = ActiveEvents.newSync();
+        MangoEvent mangoEvent = mock(MangoEvent.class);
+        activeEvents = ActiveEvents.newSync(mangoEvent);
     }
 
     @Test
-    public void when_initActiveEvents_then_same_list_events() throws SQLException {
+    public void when_initActiveEvents_then_same_list_events() {
 
         //when:
         TestConcurrentUtils.consumer(1, activeEvents::initActiveEvents, events);
 
         //then:
         List<EventInstance> result = activeEvents.removeActiveEvents(key, null);
-        Assert.assertEquals(result, expectedEvents);
+        Assert.assertEquals(expectedEvents, result);
     }
 
     @Test
-    public void when_initActiveEvents_then_size() throws SQLException {
+    public void when_initActiveEvents_then_size() {
 
         //when:
         TestConcurrentUtils.consumer(1, activeEvents::initActiveEvents, events);
 
         //then:
         List<EventInstance> result = activeEvents.removeActiveEvents(key, null);
-        Assert.assertEquals(result.size(), expectedEvents.size());
+        Assert.assertEquals(expectedEvents.size(), result.size());
     }
 
     @Test
-    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_same_event_twice_then_ignore_true() throws SQLException {
+    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_same_event_twice_then_ignore_true() {
         //when:
-        activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance5EventType3);
-        List<Boolean> ignored = TestConcurrentUtils.functionWithResult(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3);
+        activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance5EventType3, false);
+        List<Boolean> ignored = TestConcurrentUtils.functionWithResultCheck(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3, false);
 
         //then:
         for(Boolean ignore: ignored) {
@@ -133,10 +136,10 @@ public class ActiveEventsMultiThreadTest {
     }
 
     @Test
-    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_event_once_then_ignore_false() throws SQLException {
+    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_event_once_then_ignore_false() {
 
         //when:
-        List<Boolean> ignored = TestConcurrentUtils.functionWithResult(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3);
+        List<Boolean> ignored = TestConcurrentUtils.functionWithResultCheck(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3, false);
         List<Boolean> result = ignored.stream().filter(a -> !a).collect(Collectors.toList());
 
         //then:
@@ -144,15 +147,71 @@ public class ActiveEventsMultiThreadTest {
     }
 
     @Test
-    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_event_once_then_this_event() throws SQLException {
+    public void when_isIgnoreIfNotThenAddActiveEvent_rtnApplicable_true_and_ignore_same_message_and_add_event_once_then_this_event() {
         List<EventInstance> expected = Arrays.asList(eventInstance5EventType3);
 
         //when:
-        TestConcurrentUtils.functionWithResult(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3);
+        TestConcurrentUtils.functionWithResultCheck(4, activeEvents::isIgnoreIfNotThenAddActiveEvent, eventInstance5EventType3, false);
 
         //then:
         List<EventInstance> result = activeEvents.removeActiveEvents(eventType3, null);
         Assert.assertEquals(expected, result);
     }
 
+    @Test
+    public void when_isIgnoreIfNotThenAddActiveEvent_and_removeActiveEvents_in_multi_threads_then_same_list_events() throws Throwable {
+
+        //given:
+        List<EventInstance> expected = Arrays.asList(eventInstance1EventType1, eventInstance2EventType1, eventInstance3EventType1);
+
+        List<Function<EventType, ?>> tasks = new ArrayList<>();
+        //activeEvents.initActiveEvents(Arrays.asList(eventInstance1EventType1, eventInstance2EventType1, eventInstance3EventType1));
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance1EventType1, false));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance2EventType1, false));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance3EventType1, false));
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+
+        //when:
+        List<Object> result = TestConcurrentUtils.functionWithResultObjectCheck(1, tasks, eventType1);
+        List<EventInstance> removeEnd = activeEvents.removeActiveEvents(eventType1, null);
+
+        if(removeEnd != null)
+            result.add(removeEnd);
+        result = result.stream().filter(object -> object instanceof List)
+                .flatMap(list -> ((List<?>) list).stream())
+                .map(event -> (EventInstance)event)
+                .sorted(Comparator.comparing(EventInstance::getId))
+                .collect(Collectors.toList());
+        //then:
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void when_isIgnoreIfNotThenAddActiveEvent_and_removeActiveEvents_in_multi_threads_then_same_list_size() throws Throwable {
+
+        //given:
+        List<EventInstance> expected = Arrays.asList(eventInstance1EventType1, eventInstance2EventType1, eventInstance3EventType1);
+
+        List<Function<EventType, ?>> tasks = new ArrayList<>();
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance1EventType1, false));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance2EventType1, false));
+        tasks.add(eventType -> activeEvents.isIgnoreIfNotThenAddActiveEvent(eventInstance3EventType1, false));
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+        tasks.add(eventType -> activeEvents.removeActiveEvents(eventType, null));
+
+        //when:
+        List<Object> result = TestConcurrentUtils.functionWithResultObjectCheck(1, tasks, eventType1);
+        List<EventInstance> removeEnd = activeEvents.removeActiveEvents(eventType1, null);
+
+        if(removeEnd != null)
+            result.add(removeEnd);
+        result = result.stream().filter(object -> object instanceof List)
+                .flatMap(list -> ((List<?>) list).stream())
+                .collect(Collectors.toList());
+        //then:
+        Assert.assertEquals(expected.size(), result.size());
+    }
 }

@@ -18,10 +18,7 @@
  */
 package com.serotonin.mango.rt.event;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
@@ -155,8 +152,8 @@ public class EventInstance {
         this.alarmLevel = event.alarmLevel;
         this.message = event.message;
         this.shortMessage = event.shortMessage;
-        this.eventComments = event.eventComments;
-        this.handlers = event.handlers;
+        this.eventComments = event.eventComments == null ? null : new ArrayList<>(event.eventComments);
+        this.handlers = event.handlers == null ? null : new ArrayList<>(event.handlers);
         this.acknowledgedTimestamp = event.acknowledgedTimestamp;
         this.acknowledgedByUserId = event.acknowledgedByUserId;
         this.acknowledgedByUsername = event.acknowledgedByUsername;
@@ -165,7 +162,7 @@ public class EventInstance {
         this.assigneeUsername = event.assigneeUsername;
         this.userNotified = event.userNotified;
         this.silenced = event.silenced;
-        this.context = event.context;
+        this.context = event.context == null ? null : new HashMap<>(event.context);
     }
 
     private EventInstance(EventInstance event, Map<String, Object> context) {
@@ -178,8 +175,8 @@ public class EventInstance {
         this.alarmLevel = event.alarmLevel;
         this.message = event.message;
         this.shortMessage = event.shortMessage;
-        this.eventComments = event.eventComments;
-        this.handlers = event.handlers;
+        this.eventComments = event.eventComments == null ? null : new ArrayList<>(event.eventComments);
+        this.handlers = event.handlers == null ? null : new ArrayList<>(event.handlers);
         this.acknowledgedTimestamp = event.acknowledgedTimestamp;
         this.acknowledgedByUserId = event.acknowledgedByUserId;
         this.acknowledgedByUsername = event.acknowledgedByUsername;
@@ -188,7 +185,7 @@ public class EventInstance {
         this.assigneeUsername = event.assigneeUsername;
         this.userNotified = event.userNotified;
         this.silenced = event.silenced;
-        this.context = context;
+        this.context = context == null ? null : new HashMap<>(context);
     }
 
     public static EventInstance emptySystemNoneEvent(int eventId) {

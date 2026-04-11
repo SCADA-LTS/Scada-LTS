@@ -1,9 +1,15 @@
 package com.serotonin.mango.rt.event;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
+import com.serotonin.mango.rt.event.type.DataPointEventType;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.adapter.MangoEvent;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -15,7 +21,12 @@ class ActiveEventsSync implements ActiveEvents {
     private static final Log LOG = LogFactory.getLog(ActiveEventsSync.class);
 
     private final Map<EventType, List<EventInstance>> activeEvents = new HashMap<>();
+    private final MangoEvent eventService;
     private final ReentrantReadWriteLock activeEventsLock = new ReentrantReadWriteLock(true);
+
+    public ActiveEventsSync(MangoEvent eventService) {
+        this.eventService = eventService;
+    }
 
     @Override
     public void initActiveEvents(List<EventInstance> events) {
@@ -30,19 +41,27 @@ class ActiveEventsSync implements ActiveEvents {
     }
 
     @Override
-    public boolean isIgnoreIfNotThenAddActiveEvent(EventInstance evt) {
+    public boolean isIgnoreIfNotThenAddActiveEvent(EventInstance event, boolean suppressed) {
         activeEventsLock.writeLock().lock();
         try {
-            EventType type = evt.getEventType();
-            LocalizableMessage message = evt.getMessage();
+            EventType type = event.getEventType();
+            LocalizableMessage message = event.getMessage();
             List<EventInstance> dup = activeEvents.get(type);
             boolean ignore = isIgnore(type, message, dup);
-            if (!ignore && evt.isRtnApplicable()) {
+            if(!ignore) {
+                if (!suppressed) {
+                    setHandlers(event);
+                }
+
+                if (event.isRtnApplicable()) {
+                    eventService.saveEvent(event);
+                }
+
                 if (dup == null) {
                     dup = new ArrayList<>();
                     activeEvents.put(type, dup);
                 }
-                dup.add(evt);
+                dup.add(event);
             }
             return ignore;
         } finally {
@@ -69,10 +88,10 @@ class ActiveEventsSync implements ActiveEvents {
                 return toRemove == null ? null : new ArrayList<>(toRemove);
             } else {
                 List<EventInstance> toRemove = new ArrayList<>();
-                List<EventInstance> events = activeEvents.get(type);
-                if(events == null)
+                List<EventInstance> dup = activeEvents.get(type);
+                if(dup == null)
                     return null;
-                for (EventInstance event : events) {
+                for (EventInstance event : dup) {
                     LocalizableMessage eventMessage = event.getMessage();
                     if (eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
                         toRemove.add(event);
@@ -80,8 +99,8 @@ class ActiveEventsSync implements ActiveEvents {
                 }
                 if(toRemove.isEmpty())
                     return null;
-                events.removeAll(toRemove);
-                if(events.isEmpty()) {
+                dup.removeAll(toRemove);
+                if(dup.isEmpty()) {
                     activeEvents.remove(type);
                 }
                 return toRemove;
@@ -143,6 +162,7 @@ class ActiveEventsSync implements ActiveEvents {
     }
 
     private static boolean isIgnore(EventType type, LocalizableMessage message, List<EventInstance> dup) {
+        // Check if there is an event for this type already active.
         if (dup != null) {
             // Check the duplicate handling.
             int dh = type.getDuplicateHandling();
@@ -197,5 +217,35 @@ class ActiveEventsSync implements ActiveEvents {
     private boolean add(EventInstance event) {
         activeEvents.putIfAbsent(event.getEventType(), new ArrayList<>());
         return activeEvents.get(event.getEventType()).add(event);
+    }
+
+    private void setHandlers(EventInstance evt) {
+        List<EventHandlerVO> vos = eventService
+                .getEventHandlers(evt.getEventType());
+        List<EventHandlerRT> rts = null;
+        for (EventHandlerVO vo : vos) {
+            if (!vo.isDisabled()) {
+                if (rts == null)
+                    rts = new ArrayList<EventHandlerRT>();
+                rts.add(vo.createRuntime());
+            }
+        }
+        if (rts != null)
+            evt.setHandlers(rts);
+    }
+
+    private boolean isSuppressed(EventType eventType) {
+        if (eventType instanceof DataSourceEventType)
+            // Data source events can be suppressed by maintenance events.
+            return Common.ctx.getRuntimeManager().isActiveMaintenanceEvent(
+                    eventType.getDataSourceId());
+
+        if (eventType instanceof DataPointEventType)
+            // Data point events can be suppressed by maintenance events on
+            // their data sources.
+            return Common.ctx.getRuntimeManager().isActiveMaintenanceEvent(
+                    eventType.getDataSourceId());
+
+        return false;
     }
 }
