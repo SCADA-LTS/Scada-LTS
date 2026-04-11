@@ -233,19 +233,4 @@ class ActiveEventsSync implements ActiveEvents {
         if (rts != null)
             evt.setHandlers(rts);
     }
-
-    private boolean isSuppressed(EventType eventType) {
-        if (eventType instanceof DataSourceEventType)
-            // Data source events can be suppressed by maintenance events.
-            return Common.ctx.getRuntimeManager().isActiveMaintenanceEvent(
-                    eventType.getDataSourceId());
-
-        if (eventType instanceof DataPointEventType)
-            // Data point events can be suppressed by maintenance events on
-            // their data sources.
-            return Common.ctx.getRuntimeManager().isActiveMaintenanceEvent(
-                    eventType.getDataSourceId());
-
-        return false;
-    }
 }
