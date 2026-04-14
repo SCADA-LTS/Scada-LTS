@@ -3,15 +3,12 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
+import org.scada_lts.utils.CacheUtils;
+import org.scada_lts.utils.ObjectsPaginationUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
@@ -25,12 +22,12 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     @Override
     public void init() {
         IDataPointDAO dataPointDAO = ApplicationBeans.getDataPointDAOBean();
-        PointEventDetectorDAO rawPointEventDetectorDAO =
-                ApplicationBeans.getBean("pointEventDetectorDAO", PointEventDetectorDAO.class);
+        IPointEventDetectorDAO pointEventDetectorDAO =
+                ApplicationBeans.getBean("pointEventDetectorDAO", IPointEventDetectorDAO.class);
 
         List<DataPointVO> dataPoints = dataPointDAO.getDataPoints();
-        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = rawPointEventDetectorDAO
-                .getPointEventDetectors(Integer.MAX_VALUE, 0)
+        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = pointEventDetectorDAO
+                .getPointEventDetectors()
                 .stream()
                 .collect(Collectors.groupingBy(a -> a.njbGetDataPoint().getId()));
 
@@ -40,6 +37,7 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
                 dataPoint.setEventDetectors(detectors);
                 for (PointEventDetectorVO detector : detectors) {
                     detector.njbSetDataPoint(dataPoint);
+                    pointEventDetectorCache.selectPointEventDetector(detector.getId());
                 }
             }
             pointEventDetectorCache.put(dataPoint.getId(), detectors == null ? new ArrayList<>() : detectors);
@@ -102,5 +100,15 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     @Override
     public int getDataPointId(int pointEventDetectorId) {
         return pointEventDetectorCache.selectDataPointIdByEventDetectorId(pointEventDetectorId);
+    }
+
+    @Override
+    public List<PointEventDetectorVO> getPointEventDetectors() {
+        return CacheUtils.getAllValues("point_event_detector", Comparator.comparing(PointEventDetectorVO::getId));
+    }
+
+    @Override
+    public List<PointEventDetectorVO> getPointEventDetectors(long offset, int limit) {
+        return ObjectsPaginationUtils.pagination(getPointEventDetectors(), offset, limit);
     }
 }
