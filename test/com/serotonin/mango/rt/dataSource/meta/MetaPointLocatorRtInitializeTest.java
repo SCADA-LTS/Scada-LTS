@@ -6,6 +6,8 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.RealTimeTimer;
 import org.junit.Before;
@@ -31,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
-@PrepareForTest({MetaPointLocatorRT.ScheduledUpdateTimeout.class, MetaPointLocatorRT.class})
+@PrepareForTest({MetaPointLocatorRT.ScheduledUpdateTimeout.class, MetaPointLocatorRT.class, Common.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
@@ -89,9 +91,12 @@ public class MetaPointLocatorRtInitializeTest {
         dataSource = mock(MetaDataSourceRT.class);
         timer = mock(RealTimeTimer.class);
         RuntimeManager runtimeManagerMock = mock(RuntimeManager.class);
-        PowerMockUtils.configMockContextWrapper(runtimeManagerMock);
+        User user = new User();
+        user.setLang("en");
+        PowerMockUtils.configMock(runtimeManagerMock, user);
         DataPointRT fromContextDataPoint = mock(DataPointRT.class);
         when(fromContextDataPoint.getDataTypeId()).thenReturn(1);
+        when(fromContextDataPoint.getVO()).thenReturn(mock(DataPointVO.class));
         when(runtimeManagerMock.getDataPoint(eq(1))).thenReturn(fromContextDataPoint);
 
         when(dataPoint.isInitialized()).thenReturn(true);

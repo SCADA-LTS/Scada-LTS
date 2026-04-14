@@ -95,7 +95,7 @@ public class PendingEventsDAO implements IPendingEventsDAO {
 				+ "ue.userId=? and "
 				+ "(e.ackTs is null or e.ackTs = 0) and "
 			    + "e.alarmLevel >= ? "
-			+ "order by e.activeTs desc "
+			+ "order by e.activeTs desc, e.id desc "
 			+ "LIMIT ? OFFSET ?";
 
 	// @formatter:on

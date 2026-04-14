@@ -36,6 +36,7 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.DateUtils;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.AbstractTimer;
@@ -317,13 +318,13 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
                 else if(isUpdatePoint(initializeMode, valueTime, previousValueTime, vo))
                     doUpdate(valueTime, dataPoint);
             } catch (ScriptException e) {
-                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getLocalizedMessage()));
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (ResultTypeException e) {
                 handleTypeError(runtime, dataPoint, e.getLocalizableMessage());
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             } catch (Exception e) {
-                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", e.getMessage()));
+                handleScriptError(runtime, dataPoint, new LocalizableMessage("common.default", LoggingUtils.exceptionInfo(e)));
                 LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
         }
@@ -336,8 +337,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         Map<String, IDataPoint> context;
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
-            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, this.dataSource);
-            returnToNormalContext(System.currentTimeMillis(), dataPoint);
+            context = scriptExecutor.convertContext(vo.getContext(), dataPoint, dataSource);
             return context;
         } catch (Exception e) {
             LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
@@ -384,6 +384,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         dataSource.raiseScriptError(runtime, dataPoint, message);
     }
 
+    @Deprecated(since = "2.8.1")
     protected void handleContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         dataSource.raiseContextError(runtime, dataPoint, message);
     }
@@ -396,6 +397,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         dataSource.returnToNormalRecursive(runtime, dataPoint);
     }
 
+    @Deprecated(since = "2.8.1")
     protected void returnToNormalContext(long runtime, DataPointRT dataPoint) {
         dataSource.returnToNormalContext(runtime, dataPoint);
     }

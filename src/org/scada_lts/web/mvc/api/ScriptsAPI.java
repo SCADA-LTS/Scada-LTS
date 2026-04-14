@@ -40,11 +40,9 @@ public class ScriptsAPI {
     private static final Log LOG = LogFactory.getLog(ScriptsAPI.class);
 
     private final ScriptService scriptService;
-    private final DataPointService dataPointService;
 
-    public ScriptsAPI(ScriptService scriptService, DataPointService dataPointService) {
+    public ScriptsAPI(ScriptService scriptService) {
         this.scriptService = scriptService;
-        this.dataPointService = dataPointService;
     }
 
     /**
@@ -101,7 +99,7 @@ public class ScriptsAPI {
         if (user != null && user.isAdmin()) {
             ScriptRT rt;
             try {
-                ScriptVO<?> script = createScriptFromBody(scriptJson, user, dataPointService);
+                ScriptVO<?> script = createScriptFromBody(scriptJson, user);
                 rt = script.createScriptRT();
                 rt.execute();
             } catch (Exception e) {
@@ -171,14 +169,14 @@ public class ScriptsAPI {
                 response.put("errors", "This XID is already in use");
                 throw new BadRequestException(request.getRequestURI(), response);
             }
-            String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext(), dataPointService);
+            String pointsError = validatePointsOnContext(jsonBodyRequest.getPointsOnContext());
             if (!pointsError.isEmpty()) {
                 response.put("errors", pointsError);
                 throw new NotFoundException(response, request.getRequestURI());
             }
             ContextualizedScriptVO vo;
             try {
-                vo = createScriptFromBody(jsonBodyRequest, user, dataPointService);
+                vo = createScriptFromBody(jsonBodyRequest, user);
                 scriptService.saveScript(vo);
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());
@@ -237,13 +235,18 @@ public class ScriptsAPI {
             response.put("errors", "This XID is already in use");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        String pointsError = validatePointsOnContext(body.getPointsOnContext(), dataPointService);
+        String pointsError = validatePointsOnContext(body.getPointsOnContext());
         if (!pointsError.isEmpty()) {
             response.put("errors", pointsError);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        updateValueScript(toUpdate, body, dataPointService);
-        scriptService.saveScript(toUpdate);
+        updateValueScript(toUpdate, body);
+        try {
+            scriptService.saveScript(toUpdate);
+        } catch (Exception e) {
+            response.put("errors", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         response.put("status", "updated");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

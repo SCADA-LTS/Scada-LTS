@@ -160,13 +160,17 @@ public class ScriptDAO implements IScriptDAO {
 				LOG.trace(vo);
 			}
 			
-			DAO.getInstance().getJdbcTemp().update(SCRIPT_UPDATE, new Object[]  { 
+			int updated = DAO.getInstance().getJdbcTemp().update(SCRIPT_UPDATE, new Object[]  {
 					vo.getXid(),
 					vo.getName(), 
 					vo.getScript(), 
 					vo.getUserId(),
 					new SerializationData().writeObject(vo), 
 					vo.getId() });
+
+			if(updated == 0) {
+				throw new IllegalStateException("Script with id " + vo.getId() + " does not exist.");
+			}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

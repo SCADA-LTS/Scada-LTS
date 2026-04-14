@@ -468,12 +468,13 @@
                 
                 <table cellspacing="1">
                   <tbody id="contextTableEmpty" style="display:none;">
-                    <tr><th colspan="4"><spring:message code="reports.noPoints"/></th></tr>
+                    <tr><th colspan="7"><spring:message code="reports.noPoints"/></th></tr>
                   </tbody>
                   <tbody id="contextTableHeaders" style="display:none;">
                     <tr class="smRowHeader">
                       <td><spring:message code="reports.pointName"/></td>
-                      <td><spring:message code="pointHierarchySLTS.xid"/></td>
+                      <td><spring:message code="reports.pointId"/></td>
+                      <td><spring:message code="reports.pointXid"/></td>
                       <td><spring:message code="reports.dataType"/></td>
                       <td><spring:message code="reports.colour"/></td>
                       <td><spring:message code="reports.consolidatedChart"/></td>

@@ -45,6 +45,7 @@ import javax.script.ScriptException;
 
 import com.serotonin.bacnet4j.type.enumerated.ObjectType;
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.*;
 import com.serotonin.mango.web.dwr.beans.*;
 import com.serotonin.modbus4j.FixedModbusMaster;
@@ -1221,7 +1222,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             response.addMessage("script", e.getLocalizableMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
-            response.addMessage("script", new LocalizableMessage("common.default", e.getMessage()));
+            response.addMessage("script", new LocalizableMessage("common.default", LoggingUtils.exceptionInfo(e)));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         }
 
