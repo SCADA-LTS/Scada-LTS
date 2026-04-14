@@ -289,10 +289,8 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         try {
             if(user.isAdmin()) {
                 int page = searchDataPointJson.getPage();
-                boolean hasTypeOrSettableFilter =
-                        (searchDataPointJson.getDataTypes() != null && !searchDataPointJson.getDataTypes().isEmpty())
-                                || (searchDataPointJson.getSettable() != null);
-                if(!hasTypeOrSettableFilter) {
+                if((searchDataPointJson.getDataTypes() == null || searchDataPointJson.getDataTypes().isEmpty())
+                        && (searchDataPointJson.getSettable() == null)) {
                     return dataPointService.getDataPoints(searchDataPointJson.getKeywordSearch(),
                             searchDataPointJson.getExcludeIds(), searchDataPointJson.isStartsWith(),
                             page, searchDataPointJson.getLimit());

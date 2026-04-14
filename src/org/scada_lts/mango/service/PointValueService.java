@@ -75,14 +75,14 @@ public class PointValueService implements MangoPointValues {
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
-    private IPointValueDAO pointValueDAO;
+    private final IPointValueDAO pointValueDAO;
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
 
     private static final Log LOG = LogFactory.getLog(PointValueService.class);
 
     public PointValueService() {
-        pointValueDAO = ApplicationBeans.getPointValueDAOBean();
+        pointValueDAO = ApplicationBeans.getPointValueDaoBean();
     }
 
     /**
@@ -504,7 +504,7 @@ public class PointValueService implements MangoPointValues {
                 "BatchWriteBehind.ENTRIES_MONITOR", null);
         private static final IntegerMonitor INSTANCES_MONITOR = new IntegerMonitor(
                 "BatchWriteBehind.INSTANCES_MONITOR", null);
-        private static IPointValueDAO pointValueDAO;
+        private final IPointValueDAO pointValueDAO;
 
         static {
 
@@ -518,7 +518,7 @@ public class PointValueService implements MangoPointValues {
         }
 
         public BatchWriteBehind() {
-            pointValueDAO = ApplicationBeans.getPointValueDAOBean();
+            this.pointValueDAO = ApplicationBeans.getPointValueDaoBean();
         }
 
         static void add(BatchWriteBehindEntry e) {

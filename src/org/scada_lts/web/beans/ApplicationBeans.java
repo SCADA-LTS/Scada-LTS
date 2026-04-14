@@ -29,7 +29,6 @@ import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.dao.report.IReportInstanceUserCommentDAO;
 import org.scada_lts.service.IHighestAlarmLevelService;
-import org.scada_lts.service.ViewHierarchyService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -222,7 +221,7 @@ public class ApplicationBeans {
         return getBean("dataPointDAO", IDataPointDAO.class);
     }
 
-    public static IPointValueDAO getPointValueDAOBean(){
+    public static IPointValueDAO getPointValueDaoBean(){
         return getBean("pointValueDAO", IPointValueDAO.class);
     }
 

@@ -1,6 +1,5 @@
 package org.scada_lts.mango.service;
 
-import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
@@ -271,24 +270,7 @@ public class SystemSettingsService {
     }
 
     public void setDatabaseType(String databaseType) {
-        String dbKey = DatabaseType.from(databaseType).getKey();
-        switch (dbKey) {
-            case "mysql":
-                ConfigurationDB.useMysqlDB();
-                break;
-            case "postgres":
-                ConfigurationDB.usePostgresDB();
-                break;
-            case "mssql":
-                ConfigurationDB.useMssqlDB();
-                break;
-            case "oracle11g":
-                ConfigurationDB.useOracle11gDB();
-                break;
-            default:
-                ConfigurationDB.useDerbyDB();
-                break;
-        }
+        DatabaseType.from(databaseType).applyConfiguration();
     }
 
     public Map<String, Object> getDatabaseSize() {

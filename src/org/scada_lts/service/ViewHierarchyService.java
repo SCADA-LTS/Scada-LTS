@@ -31,6 +31,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.slf4j.profiler.Profiler;
 
 import com.serotonin.mango.view.View;
+import org.springframework.stereotype.Service;
 
 /** 
  * Service for views hierarchy.
@@ -38,6 +39,7 @@ import com.serotonin.mango.view.View;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
+@Service
 public class ViewHierarchyService {
 	
 	private static final Log LOG = LogFactory.getLog(ViewHierarchyService.class);

@@ -399,7 +399,6 @@
 
   <bean id="pointEventDetectorDaoWithCache" class="org.scada_lts.dao.cache.PointEventDetectorDaoWithCache" >
     <constructor-arg ref="pointEventDetectorCache"/>
-    <constructor-arg ref="pointEventDetectorDAO"/>
   </bean>
   <!-- -->
 

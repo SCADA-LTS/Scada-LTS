@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import static com.serotonin.mango.util.ThreadPoolExecutorUtils.createForkJoinPool;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 public class PowerMockUtils {
@@ -117,7 +116,7 @@ public class PowerMockUtils {
         when(dao.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
 
         mockStatic(ApplicationBeans.class);
-        when(ApplicationBeans.getPointValueDAOBean())
+        when(ApplicationBeans.getPointValueDaoBean())
                 .thenReturn(dao);
 
         PointValueService pvs = mock(PointValueService.class);

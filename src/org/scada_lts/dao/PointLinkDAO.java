@@ -21,14 +21,17 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -71,7 +74,7 @@ public class PointLinkDAO implements IPointLinkDAO {
 				+ COLUMN_NAME_EVENT_TYPE + ", "
 				+ COLUMN_NAME_DISABLED
 			+ ") "
-			+ "values (?,?,?,?,?,?) RETURNING id";
+			+ "values (?,?,?,?,?,?) ";
 
 	private static final String POINT_LINK_UPDATE = ""
 			+ "update pointLinks set "
@@ -178,18 +181,25 @@ public class PointLinkDAO implements IPointLinkDAO {
 			LOG.trace("insertPointLink(PointLinkVO pointLink) pointLink:" + pointLink.toString());
 		}
 
-        return DAO.getInstance().getJdbcTemp().queryForObject(
-                POINT_LINK_INSERT,
-                new Object[]{
-                        pointLink.getXid(),
-                        pointLink.getSourcePointId(),
-                        pointLink.getTargetPointId(),
-                        pointLink.getScript(),
-                        pointLink.getEvent(),
-                        DAO.boolToChar(pointLink.isDisabled())
-                },
-                Integer.class
-        );
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement(POINT_LINK_INSERT, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[] {
+						pointLink.getXid(),
+						pointLink.getSourcePointId(),
+						pointLink.getTargetPointId(),
+						pointLink.getScript(),
+						pointLink.getEvent(),
+						DAO.boolToChar(pointLink.isDisabled())}
+				).setValues(ps);
+				return ps;
+			}
+		}, keyHolder);
+
+		return keyHolder.getKey().intValue();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

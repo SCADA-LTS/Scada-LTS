@@ -9,7 +9,6 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
@@ -73,7 +72,7 @@ public class ScriptTestUtils {
         DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
         IPointValueDAO pointValueDaoMock = mock(IPointValueDAO.class);
-        when(ApplicationBeans.getPointValueDAOBean())
+        when(ApplicationBeans.getPointValueDaoBean())
                 .thenReturn(pointValueDaoMock);
 
         when(pointValueDaoMock.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));

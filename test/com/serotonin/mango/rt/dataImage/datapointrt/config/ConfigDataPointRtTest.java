@@ -192,7 +192,7 @@ public class ConfigDataPointRtTest {
                 .thenAnswer(a -> pointValueDAOMemory.getPointValue((long)a.getArgument(0)));
 
         mockStatic(ApplicationBeans.class);
-        when(ApplicationBeans.getPointValueDAOBean()).thenReturn(pointValueDAOMock);
+        when(ApplicationBeans.getPointValueDaoBean()).thenReturn(pointValueDAOMock);
 
         DatabaseAccess dbAccessMock = mock(DatabaseAccess.class);
         when(ApplicationBeans.getBean("databaseAccess", DatabaseAccess.class)).thenReturn(dbAccessMock);

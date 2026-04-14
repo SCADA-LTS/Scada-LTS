@@ -22,7 +22,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserDAO;
-import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.login.ILoggedUsers;
 import org.scada_lts.mango.service.PointValueService;
@@ -67,7 +66,7 @@ public class PointValueCacheTest {
         PointValueDAOMemory memoryDao = new PointValueDAOMemory(userDAO);
 
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
-        when(ApplicationBeans.getPointValueDAOBean())
+        when(ApplicationBeans.getPointValueDaoBean())
                 .thenReturn(memoryDao);
 
         SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);

@@ -16,29 +16,29 @@ import java.util.stream.Collectors;
 
 public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
 
-    private static final Log LOG = LogFactory.getLog(PointEventDetectorDaoWithCache.class);
-
     private final PointEventDetectorCacheable pointEventDetectorCache;
-    private final IPointEventDetectorDAO pointEventDetectorDAO;
 
-    public PointEventDetectorDaoWithCache(PointEventDetectorCacheable pointEventDetectorCache,
-                                          IPointEventDetectorDAO pointEventDetectorDAO) {
+    public PointEventDetectorDaoWithCache(PointEventDetectorCacheable pointEventDetectorCache) {
         this.pointEventDetectorCache = pointEventDetectorCache;
-        this.pointEventDetectorDAO = pointEventDetectorDAO;
     }
 
     @Override
     public void init() {
-        IDataPointDAO dao = ApplicationBeans.getDataPointDAOBean();
-        List<DataPointVO> dataPoints = dao.getDataPoints();
-        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = loadPointEventDetectors(Integer.MAX_VALUE, 0)
+        IDataPointDAO dataPointDAO = ApplicationBeans.getDataPointDAOBean();
+        PointEventDetectorDAO rawPointEventDetectorDAO =
+                ApplicationBeans.getBean("pointEventDetectorDAO", PointEventDetectorDAO.class);
+
+        List<DataPointVO> dataPoints = dataPointDAO.getDataPoints();
+        Map<Integer, List<PointEventDetectorVO>> pointEventDetectors = rawPointEventDetectorDAO
+                .getPointEventDetectors(Integer.MAX_VALUE, 0)
                 .stream()
                 .collect(Collectors.groupingBy(a -> a.njbGetDataPoint().getId()));
-        for(DataPointVO dataPoint: dataPoints) {
+
+        for (DataPointVO dataPoint : dataPoints) {
             List<PointEventDetectorVO> detectors = pointEventDetectors.get(dataPoint.getId());
-            if(detectors != null && !detectors.isEmpty()) {
+            if (detectors != null && !detectors.isEmpty()) {
                 dataPoint.setEventDetectors(detectors);
-                for(PointEventDetectorVO detector: detectors) {
+                for (PointEventDetectorVO detector : detectors) {
                     detector.njbSetDataPoint(dataPoint);
                 }
             }
@@ -102,27 +102,5 @@ public class PointEventDetectorDaoWithCache implements IPointEventDetectorDAO {
     @Override
     public int getDataPointId(int pointEventDetectorId) {
         return pointEventDetectorCache.selectDataPointIdByEventDetectorId(pointEventDetectorId);
-    }
-
-    @Override
-    public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("getPointEventDetector(long limit, int offset) limit:" + limit + ", offset:" + offset);
-        }
-
-        try {
-            return loadPointEventDetectors(limit, offset);
-        } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
-            return Collections.emptyList();
-        }
-    }
-
-    private List<PointEventDetectorVO> loadPointEventDetectors(long limit, int offset) {
-        if (limit <= 0 || offset < 0) {
-            return Collections.emptyList();
-        }
-
-        return pointEventDetectorDAO.getPointEventDetectors(limit, offset);
     }
 }

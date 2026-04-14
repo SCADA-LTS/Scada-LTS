@@ -88,7 +88,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final IDataPointUserDAO dataPointUserDAO ;
 
-	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getPointValueDAOBean();
+	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getPointValueDaoBean();
 
 	private final IWatchListDAO watchListDAO;
 

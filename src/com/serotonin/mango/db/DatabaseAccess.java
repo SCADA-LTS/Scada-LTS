@@ -13,6 +13,8 @@
  */
 package com.serotonin.mango.db;
 
+import br.org.scadabr.db.configuration.ConfigurationDB;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,17 +51,112 @@ import com.serotonin.util.StringUtils;
 abstract public class DatabaseAccess {
 	private final static Log log = LogFactory.getLog(DatabaseAccess.class);
 
+	public static final class StorageStatistics {
+		private final boolean databaseSizeKnown;
+		private final Double databaseSizeMb;
+		private final Long databaseSizeBytes;
+		private final int filedataCount;
+		private final long filedataSizeBytes;
+		private final Double totalSizeMb;
+		private final Long totalSizeBytes;
+
+		private StorageStatistics(boolean databaseSizeKnown, Double databaseSizeMb, Long databaseSizeBytes,
+								  int filedataCount, long filedataSizeBytes, Double totalSizeMb, Long totalSizeBytes) {
+			this.databaseSizeKnown = databaseSizeKnown;
+			this.databaseSizeMb = databaseSizeMb;
+			this.databaseSizeBytes = databaseSizeBytes;
+			this.filedataCount = filedataCount;
+			this.filedataSizeBytes = filedataSizeBytes;
+			this.totalSizeMb = totalSizeMb;
+			this.totalSizeBytes = totalSizeBytes;
+		}
+
+		public static StorageStatistics fromFilesystem(long databaseSizeBytes, int filedataCount, long filedataSizeBytes) {
+			return new StorageStatistics(
+					true,
+					null,
+					databaseSizeBytes,
+					filedataCount,
+					filedataSizeBytes,
+					null,
+					databaseSizeBytes + filedataSizeBytes
+			);
+		}
+
+		public static StorageStatistics fromDatabaseSizeMb(double databaseSizeMb) {
+			return new StorageStatistics(
+					true,
+					databaseSizeMb,
+					null,
+					0,
+					0,
+					databaseSizeMb,
+					null
+			);
+		}
+
+		public static StorageStatistics unknownDatabaseSize(int filedataCount, long filedataSizeBytes, long totalSizeBytes) {
+			return new StorageStatistics(
+					false,
+					null,
+					null,
+					filedataCount,
+					filedataSizeBytes,
+					null,
+					totalSizeBytes
+			);
+		}
+
+		public boolean isDatabaseSizeKnown() {
+			return databaseSizeKnown;
+		}
+
+		public Double getDatabaseSizeMb() {
+			return databaseSizeMb;
+		}
+
+		public Long getDatabaseSizeBytes() {
+			return databaseSizeBytes;
+		}
+
+		public int getFiledataCount() {
+			return filedataCount;
+		}
+
+		public long getFiledataSizeBytes() {
+			return filedataSizeBytes;
+		}
+
+		public Double getTotalSizeMb() {
+			return totalSizeMb;
+		}
+
+		public Long getTotalSizeBytes() {
+			return totalSizeBytes;
+		}
+	}
+
 	public enum DatabaseType {
 		DERBY {
 			@Override
 			DatabaseAccess getImpl() {
 				return new DerbyAccess();
 			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useDerbyDB();
+			}
 		},
 		MSSQL {
 			@Override
 			DatabaseAccess getImpl() {
 				return new MSSQLAccess();
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useMssqlDB();
 			}
 		},
 		MYSQL {
@@ -79,6 +176,21 @@ abstract public class DatabaseAccess {
 				Blob blob = rs.getBlob(columnLabel);
 				return blob == null ? null : blob.getBinaryStream();
 			}
+
+			@Override
+			public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+														  java.util.function.DoubleSupplier databaseSizeSupplier) {
+				double size = databaseSizeSupplier.getAsDouble();
+				if (size >= 0) {
+					return StorageStatistics.fromDatabaseSizeMb(size);
+				}
+				return StorageStatistics.unknownDatabaseSize(filedataCount, filedataSizeBytes, dbSizeBytes + filedataSizeBytes);
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useMysqlDB();
+			}
 		},
 		POSTGRES {
 			@Override
@@ -90,11 +202,31 @@ abstract public class DatabaseAccess {
 			public int getBinarySqlType() {
 				return Types.BINARY;
 			}
+
+			@Override
+			public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+														  java.util.function.DoubleSupplier databaseSizeSupplier) {
+				double size = databaseSizeSupplier.getAsDouble();
+				if (size >= 0) {
+					return StorageStatistics.fromDatabaseSizeMb(size);
+				}
+				return StorageStatistics.unknownDatabaseSize(filedataCount, filedataSizeBytes, dbSizeBytes + filedataSizeBytes);
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.usePostgresDB();
+			}
 		},
 		ORACLE11G {
 			@Override
 			DatabaseAccess getImpl() {
 				return new Oracle11GAccess();
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useOracle11gDB();
 			}
 		};
 
@@ -108,16 +240,20 @@ abstract public class DatabaseAccess {
 			}
 
 			String normalized = dbType.trim().toLowerCase();
-			if ("postgresql".equals(normalized) || "pgsql".equals(normalized) || "pg".equals(normalized)) {
-				return POSTGRES;
+			switch (normalized) {
+				case "postgresql":
+				case "pgsql":
+				case "pg":
+					return POSTGRES;
+				case "mssqlserver":
+				case "mssql":
+					return MSSQL;
+				case "mysqlserver":
+				case "mysql":
+					return MYSQL;
+				default:
+					return DatabaseType.valueOf(normalized.toUpperCase());
 			}
-			if ("mssqlserver".equals(normalized) || "mssql".equals(normalized)) {
-				return MSSQL;
-			}
-			if ("mysqlserver".equals(normalized) || "mysql".equals(normalized)) {
-				return MYSQL;
-			}
-			return DatabaseType.valueOf(normalized.toUpperCase());
 		}
 
 		public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
@@ -133,6 +269,13 @@ abstract public class DatabaseAccess {
 		}
 
 		abstract DatabaseAccess getImpl();
+
+		public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+													  java.util.function.DoubleSupplier databaseSizeSupplier) {
+			return StorageStatistics.fromFilesystem(dbSizeBytes, filedataCount, filedataSizeBytes);
+		}
+
+		public abstract void applyConfiguration();
 	}
 
 	public static DatabaseAccess createDatabaseAccess() {

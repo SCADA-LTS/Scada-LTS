@@ -397,7 +397,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         User user = Common.getUser();
         DataPointService dataPointService = new DataPointService();
         DataPointVO dataPoint = dataPointService.getDataPoint(dataPointId);
-        DwrResponseI18n response = super.toggleDataPointInternal(dataPoint);
+        DwrResponseI18n response = super.toggleDataPoint(dataPoint);
         response.addData("points", GetDataPointsUtils.getDataPointsByDataSource(user, dataPoint.getDataSourceId(), dataPointService));
         return response;
     }

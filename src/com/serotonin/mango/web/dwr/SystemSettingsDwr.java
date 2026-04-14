@@ -231,33 +231,39 @@ public class SystemSettingsDwr extends BaseDwr {
 			DirectoryInfo dbInfo = DirectoryUtils
 					.getDirectorySize(dataDirectory);
 			dbSize = dbInfo.getSize();
-			data.put("databaseSize", DirectoryUtils.bytesDescription(dbSize));
-		} else
-			data.put("databaseSize", "(" + getMessage("common.unknown") + ")");
+		}
 
 		// Filedata data
 		DirectoryInfo fileDatainfo = DirectoryUtils.getDirectorySize(new File(
 				Common.getFiledataPath()));
 		long filedataSize = fileDatainfo.getSize();
-		data.put("filedataCount", fileDatainfo.getCount());
-		data.put("filedataSize", DirectoryUtils.bytesDescription(filedataSize));
 
-		data.put("totalSize",
-				DirectoryUtils.bytesDescription(dbSize + filedataSize));
 
-		String dbType = checkTypeDB();
-		if (dbType.equalsIgnoreCase("mysql") || dbType.equalsIgnoreCase("postgres")) {
-			double size = ApplicationBeans.getSystemSettingsDaoBean().getDatabaseSize();
-			if (size >= 0) {
-				data.put("databaseSize", size + " MB");
-				data.put("filedataCount", 0);
-				data.put("filedataSize", 0);
-				data.put("totalSize", size + " MB");
-				data.put("filedataCount", 0);
-				data.put("filedataCount", 0);
-			} else {
-				data.put("databaseSize", "(" + getMessage("common.unknown") + ")");
+		DatabaseAccess.DatabaseType dbType = resolveDatabaseType();
+		DatabaseAccess.StorageStatistics storageStatistics = dbType.getStorageStatistics(
+				dbSize,
+				fileDatainfo.getCount(),
+				filedataSize,
+				() -> ApplicationBeans.getSystemSettingsDaoBean().getDatabaseSize()
+		);
+
+		if (storageStatistics.isDatabaseSizeKnown()) {
+			if (storageStatistics.getDatabaseSizeMb() != null) {
+				data.put("databaseSize", storageStatistics.getDatabaseSizeMb() + " MB");
+			} else if (storageStatistics.getDatabaseSizeBytes() != null) {
+				data.put("databaseSize", DirectoryUtils.bytesDescription(storageStatistics.getDatabaseSizeBytes()));
 			}
+		} else {
+			data.put("databaseSize", "(" + getMessage("common.unknown") + ")");
+		}
+
+		data.put("filedataCount", storageStatistics.getFiledataCount());
+		data.put("filedataSize", DirectoryUtils.bytesDescription(storageStatistics.getFiledataSizeBytes()));
+
+		if (storageStatistics.getTotalSizeMb() != null) {
+			data.put("totalSize", storageStatistics.getTotalSizeMb() + " MB");
+		} else if (storageStatistics.getTotalSizeBytes() != null) {
+			data.put("totalSize", DirectoryUtils.bytesDescription(storageStatistics.getTotalSizeBytes()));
 		}
 
 		// Point history counts.
@@ -565,16 +571,21 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	
-	public String checkTypeDB() {
+	private DatabaseAccess.DatabaseType resolveDatabaseType() {
 		try {
 			DatabaseAccess databaseAccess = DatabaseAccess.getDatabaseAccess();
 			if (databaseAccess != null) {
-				return databaseAccess.getTypeKey();
+				return databaseAccess.getType();
 			}
 		} catch (Exception ignore) {
 			// fallback to env.properties
 		}
-		return Common.getEnvironmentProfile().getString("db.type", "mysql");
+		return DatabaseAccess.DatabaseType.from(Common.getEnvironmentProfile().getString("db.type", "mysql"));
+	}
+
+	
+	public String checkTypeDB() {
+		return resolveDatabaseType().getKey();
 	}
 
 	
