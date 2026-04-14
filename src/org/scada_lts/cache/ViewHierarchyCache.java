@@ -44,7 +44,9 @@ public class ViewHierarchyCache {
 	
 	private void initial() {
 		LOG.info("Initial ViewHierarchyCache");
-		cache = new ViewHierarchyService().getAll();
+		ViewHierarchyService service = new ViewHierarchyService();
+
+		cache = service.getAll();
 	}
 	
 	public static ViewHierarchyCache getInstance() {
