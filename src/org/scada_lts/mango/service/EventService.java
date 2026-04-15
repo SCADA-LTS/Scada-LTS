@@ -73,7 +73,7 @@ public class EventService implements MangoEvent {
 	private final SystemSettingsService systemSettingsService;
 	
 	public EventService() {
-		eventDAO = ApplicationBeans.getBean("eventDAO", IEventDAO.class);
+        eventDAO = ApplicationBeans.getEventDaoBean();
 		userEventDAO = ApplicationBeans.getUserEventDAOBean();
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		systemSettingsService = ApplicationBeans.getBean("systemSettingsService", SystemSettingsService.class);

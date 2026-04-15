@@ -62,10 +62,10 @@ public class ReportService implements MangoReport {
 	private GetReportInstancesWithAccess getReportInstancesWithAccess;
 
 	public ReportService() {
-		this.reportDAO = ApplicationBeans.getBean("reportDAO", IReportDAO.class);
-		this.reportInstanceDAO = ApplicationBeans.getBean("reportInstanceDAO", IReportInstanceDAO.class);
-		this.reportInstanceDataDAO = ApplicationBeans.getBean("reportInstanceDataDAO", IReportInstanceDataDAO.class);
-		this.reportInstancePointDAO = ApplicationBeans.getBean("reportInstancePointDAO", IReportInstancePointDAO.class);
+        this.reportDAO = ApplicationBeans.getReportDaoBean();
+        this.reportInstanceDAO = ApplicationBeans.getReportInstanceDaoBean();
+        this.reportInstanceDataDAO = ApplicationBeans.getReportInstanceDataDaoBean();
+        this.reportInstancePointDAO = ApplicationBeans.getReportInstancePointDaoBean();
 		this.reportInstanceUserCommentDAO = ApplicationBeans.getReportInstanceUserCommentDAOBean();
 		this.getReportsWithAccess = new GetReportsWithAccess(reportDAO);
 		this.getReportInstancesWithAccess = new GetReportInstancesWithAccess(reportInstanceDAO);

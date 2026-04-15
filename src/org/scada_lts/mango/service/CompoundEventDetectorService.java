@@ -37,7 +37,7 @@ public class CompoundEventDetectorService implements MangoCompoundEventDetector 
 	private final ICompoundEventDetectorDAO cedDao;
 	
 	public CompoundEventDetectorService() {
-		cedDao = ApplicationBeans.getBean("compoundEventDetectorDAO", ICompoundEventDetectorDAO.class);
+        cedDao = ApplicationBeans.getCompoundEventDetectorDaoBean();
 	}
 	
 	@Override

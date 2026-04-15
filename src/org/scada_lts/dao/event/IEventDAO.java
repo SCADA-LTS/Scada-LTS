@@ -17,14 +17,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 public interface IEventDAO extends GenericDaoCR<EventInstance> {
-    List<EventInstance> findAll();
-
-    EventInstance findById(Object[] pk);
-
-    List<EventInstance> filtered(String filter, Object[] argsFilter, long limit);
-
-    Object[] create(EventInstance entity);
-
     List<EventDTO> findEventsWithLimit(int typeId, int typeRef, int limit, int offset);
 
     SQLPageWithTotal<EventDTO> findEvents(

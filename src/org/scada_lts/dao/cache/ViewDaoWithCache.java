@@ -26,7 +26,7 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public void init() {
-        IViewDAO viewDao = ApplicationBeans.getBean("viewDAO", IViewDAO.class);
+        IViewDAO viewDao = ApplicationBeans.getViewDaoBean();
         List<View> views = viewDao.findAll();
         for(View view: views) {
             applyShareUsers(view);
@@ -96,6 +96,7 @@ public class ViewDaoWithCache implements IViewDAO {
         return viewCache.findById(viewId);
     }
 
+    @Override
     public View findByName(String name) {
         if(name == null) {
             return null;

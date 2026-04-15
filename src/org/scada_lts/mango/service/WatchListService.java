@@ -55,7 +55,7 @@ public class WatchListService implements MangoWatchList {
 	private GetObjectsWithAccess<WatchList, User> getObjectsWithAccess;
 
 	public WatchListService() {
-		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", IWatchListDAO.class);
+        this.watchListDAO = ApplicationBeans.getWatchListDaoBean();
 		this.getShareUsers = ApplicationBeans.getWatchListGetShareUsersBean();
 		this.usersProfileService = ApplicationBeans.getUsersProfileService();
 		this.getObjectsWithAccess = new GetWatchListsWithAccess(watchListDAO);

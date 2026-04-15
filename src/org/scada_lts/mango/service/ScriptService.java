@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ScriptService implements MangoScript {
 
-    private final IScriptDAO scriptDAO = ApplicationBeans.getBean("scriptDAO", IScriptDAO.class);
+    private final IScriptDAO scriptDAO = ApplicationBeans.getScriptDaoBean();
 
     @Override
     public void saveScript(final ScriptVO<?> vo) {

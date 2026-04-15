@@ -50,7 +50,7 @@ public class MailingListService implements MangoMailingList {
 
 	//TODO
 //	@Resource
-	private static final IMailingListDAO mailingListDAO = ApplicationBeans.getBean("mailingListDAO", IMailingListDAO.class);
+    private static final IMailingListDAO mailingListDAO = ApplicationBeans.getMailingListDaoBean();
 
 	//TODO
 //	@Resource

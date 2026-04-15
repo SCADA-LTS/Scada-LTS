@@ -61,7 +61,7 @@ public class ViewHierarchyService {
 	}
 
 	public ViewHierarchyService(){
-		this.vhDAO = ApplicationBeans.getBean("viewHierarchyDAO", IViewHierarchyDAO.class);
+        this.vhDAO = ApplicationBeans.getViewHierarchyDaoBean();
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 	

@@ -62,7 +62,7 @@ public class DataSourceService implements MangoDataSource {
 	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
 	public DataSourceService() {
-		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
+        this.dataSourceDAO = ApplicationBeans.getDataSourceDaoBean();
 		this.dataPointService = new DataPointService();
 		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, ApplicationBeans.getDataPointDAOBean());
 	}
@@ -172,7 +172,7 @@ public class DataSourceService implements MangoDataSource {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void deleteInTransaction(final int dataSourceId) {
-		IMaintenanceEventDAO meDAO = ApplicationBeans.getBean("maintenanceEventDAO", IMaintenanceEventDAO.class);
+        IMaintenanceEventDAO meDAO = ApplicationBeans.getMaintenanceEventDaoBean();
 		meDAO.deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();

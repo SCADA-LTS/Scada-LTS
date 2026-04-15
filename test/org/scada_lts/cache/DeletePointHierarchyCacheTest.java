@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
@@ -59,7 +57,7 @@ public class DeletePointHierarchyCacheTest {
                         ), 0,
                         Arrays.asList(point1root, point2root, point3root, point4folder4, point5folder4, point6folder5, point7folder5, point8folder6, point9folder6, point10folder7, point11folder7),
                         Arrays.asList(folder4root, folder5root, folder6root, folder7folder6),
-                        Arrays.asList(point2root, folder4root, folder5root, folder6root),
+                        Arrays.asList(folder4root, folder5root, folder6root, point2root),
                 },
                 new Object[]{
                         Arrays.asList(
@@ -83,7 +81,7 @@ public class DeletePointHierarchyCacheTest {
                         ), 6,
                         Arrays.asList(point1root, point2root, point3root, point4folder4, point5folder4, point6folder5, point7folder5, point8folder6, point9folder6, point10folder7, point11folder7),
                         Arrays.asList(folder4root, folder5root, folder6root, folder7folder6),
-                        Arrays.asList(point8folder6, point9folder6, folder7folder6),
+                        Arrays.asList(folder7folder6, point8folder6, point9folder6),
                 },
 
                 new Object[]{
@@ -102,7 +100,7 @@ public class DeletePointHierarchyCacheTest {
                         ), 0,
                         Arrays.asList(point1root, point2root, point3root, point4folder4, point5folder4, point6folder5, point7folder5, point8folder6, point9folder6, point10folder7, point11folder7),
                         Arrays.asList(folder4root, folder5root, folder6root, folder7folder6),
-                        Arrays.asList(point1root, point2root, point3root, folder4root, folder5root, folder6root),
+                        Arrays.asList(folder4root, folder5root, folder6root, point1root, point2root, point3root),
                 },
                 new Object[]{
                         Arrays.asList(
@@ -142,7 +140,7 @@ public class DeletePointHierarchyCacheTest {
                         ), 0,
                         Arrays.asList(point1root, point2root, point3root, point4folder4, point5folder4, point6folder5, point7folder5, point8folder6, point9folder6, point10folder7, point11folder7),
                         Arrays.asList(folder4root, folder5root, folder6root, folder7folder6),
-                        Arrays.asList(point1root, point2root, folder4root, folder5root, folder6root),
+                        Arrays.asList(folder4root, folder5root, folder6root, point1root, point2root),
                 },
                 new Object[]{
                         Arrays.asList(
@@ -166,7 +164,7 @@ public class DeletePointHierarchyCacheTest {
                         ), 6,
                         Arrays.asList(point1root, point2root, point3root, point4folder4, point5folder4, point6folder5, point7folder5, point8folder6, point9folder6, point10folder7, point11folder7),
                         Arrays.asList(folder4root, folder5root, folder6root, folder7folder6),
-                        Arrays.asList(point9folder6, folder7folder6),
+                        Arrays.asList(folder7folder6, point9folder6),
                 },
                 new Object[]{
                         Arrays.asList(
@@ -205,8 +203,8 @@ public class DeletePointHierarchyCacheTest {
 
         Collections.sort(folderHierarchy, PointHierarchyComparator.getInst());
 
-        when(hierarchyDAOMock.getHierarchy()).thenReturn(pointHierarchy);
-        when(pointHierarchyDAOMock.getPointsHierarchy()).thenReturn(folderHierarchy);
+        when(hierarchyDAOMock.getHierarchy()).thenReturn(folderHierarchy);
+        when(pointHierarchyDAOMock.getPointsHierarchy()).thenReturn(pointHierarchy);
 
         PowerMockito.whenNew(HierarchyDAO.class)
                 .withAnyArguments()
@@ -218,10 +216,10 @@ public class DeletePointHierarchyCacheTest {
 
         PowerMockito.mockStatic(ApplicationBeans.class);
 
-        when(ApplicationBeans.getBean(eq("pointHierarchyDAO"), any(Class.class)))
-                .thenReturn(pointHierarchyDAOMock);
         when(ApplicationBeans.getHierarchyDAOBean())
                 .thenReturn(hierarchyDAOMock);
+        when(ApplicationBeans.getPointHierarchyDaoBean())
+                .thenReturn(pointHierarchyDAOMock);
 
         this.pointHierarchyCache = new PointHierarchyCache(true);
     }

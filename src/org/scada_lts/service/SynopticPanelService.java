@@ -21,7 +21,7 @@ import java.util.Optional;
 @Service
 public class SynopticPanelService {
 
-    private final ISynopticPanelDAO synopticPanelDAO = ApplicationBeans.getBean("synopticPanelDAO", ISynopticPanelDAO.class);
+    private final ISynopticPanelDAO synopticPanelDAO = ApplicationBeans.getSynopticPanelDaoBean();
 
     public List<ScadaObjectIdentifier> getSimpleSynopticPanelsList() {
         return synopticPanelDAO.getSimpleList();

@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class PublisherService implements MangoPublisher {
 
-	private final IPublisherDAO publisherDAO = ApplicationBeans.getBean("publisherDAO", IPublisherDAO.class);
+    private final IPublisherDAO publisherDAO = ApplicationBeans.getPublisherDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

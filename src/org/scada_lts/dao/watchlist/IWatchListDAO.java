@@ -11,14 +11,6 @@ import java.util.List;
 
 public interface IWatchListDAO extends GenericDaoCR<WatchList> {
 
-    List<WatchList> findAll();
-
-    WatchList findById(Object[] pk);
-
-    List<WatchList> filtered(String filter, Object[] argsFilter, long limit);
-
-    Object[] create(WatchList entity);
-
     WatchList findByXId(String xid);
 
     List<ShareUser> getWatchListUsers(int watchListId);

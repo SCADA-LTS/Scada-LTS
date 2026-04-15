@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class PointLinkService implements MangoPointLink {
 
-	private static IPointLinkDAO pointLinkDAO = ApplicationBeans.getBean("pointLinkDAO", IPointLinkDAO.class);
+    private static IPointLinkDAO pointLinkDAO = ApplicationBeans.getPointLinkDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

@@ -105,7 +105,7 @@ public class PointHierarchyCache {
 		for (PointHierarchyNode ph : lstHierarchy) {
 			addFolder(ph);
 		}
-		IPointHierarchyDAO pointHierarchyDAO = ApplicationBeans.getBean("pointHierarchyDAO", IPointHierarchyDAO.class);
+        IPointHierarchyDAO pointHierarchyDAO = ApplicationBeans.getPointHierarchyDaoBean();
 		List<PointHierarchyNode> lstPointHierarchy = pointHierarchyDAO.getPointsHierarchy();
 		Collections.sort(lstPointHierarchy, PointHierarchyComparator.getInst());
 		

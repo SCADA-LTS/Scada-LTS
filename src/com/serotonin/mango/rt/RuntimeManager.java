@@ -463,7 +463,7 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
-			IPointEventDetectorDAO pointEventDetectorDAO = ApplicationBeans.getBean("pointEventDetectorDAO", IPointEventDetectorDAO.class);
+            IPointEventDetectorDAO pointEventDetectorDAO = ApplicationBeans.getPointEventDetectorDaoBean();
 			AuditEventUtils.raiseAuditDetectorEvent(point, ped, pointEventDetectorDAO);
 		}
 
@@ -1002,7 +1002,7 @@ public class RuntimeManager {
 	}
 
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
-		IEventDAO eventDAO = ApplicationBeans.getBean("eventDAO", IEventDAO.class);
+        IEventDAO eventDAO = ApplicationBeans.getEventDaoBean();
 		CommunicationChannel channel = CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(eventDAO, ScheduledExecuteInactiveEventDAO.getInstance(),
@@ -1013,7 +1013,7 @@ public class RuntimeManager {
 	}
 
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
-		IEventDAO eventDAO = ApplicationBeans.getBean("eventDAO", IEventDAO.class);
+        IEventDAO eventDAO = ApplicationBeans.getEventDaoBean();
 		CommunicationChannel channel = CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(eventDAO, ScheduledExecuteInactiveEventDAO.getInstance(),

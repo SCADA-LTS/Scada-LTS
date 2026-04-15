@@ -8,21 +8,5 @@ import java.util.List;
 public interface IViewHierarchyDAO extends GenericHierarchyDAO<ViewHierarchyNode> {
     int ROOT_ID = -1;
 
-    List<ViewHierarchyNode> getAll();
-
-    List<ViewHierarchyNode> getNode(long l);
-
     List<ViewInViewHierarchyNode> getViewInHierarchyNode();
-
-    int add(ViewHierarchyNode node);
-
-    int update(ViewHierarchyNode node);
-
-    int moveFolder(int id, int newParentId);
-
-    int moveView(int id, int newParentId);
-
-    int delView(int id);
-
-    int delFolder(int id);
 }

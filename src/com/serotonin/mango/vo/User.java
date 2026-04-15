@@ -587,7 +587,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				}
 			}
 
-			IUsersProfileDAO usersProfileDAO = ApplicationBeans.getBean("usersProfileDAO", IUsersProfileDAO.class);
+            IUsersProfileDAO usersProfileDAO = ApplicationBeans.getUsersProfileDaoBean();
 			String userProfileXid = json.getString("userProfileXid");
 			Integer userProfileId = json.getInt("userProfile");
 			if (userProfileXid != null && !userProfileXid.isEmpty()) {

@@ -3,7 +3,6 @@ package org.scada_lts.dao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;

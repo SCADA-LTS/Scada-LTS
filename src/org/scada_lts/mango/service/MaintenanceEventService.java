@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class MaintenanceEventService implements MangoMaintenanceEvent {
 
-	private final IMaintenanceEventDAO maintenanceEventDAO = ApplicationBeans.getBean("maintenanceEventDAO", IMaintenanceEventDAO.class);
+    private final IMaintenanceEventDAO maintenanceEventDAO = ApplicationBeans.getMaintenanceEventDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

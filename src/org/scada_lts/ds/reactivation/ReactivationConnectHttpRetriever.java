@@ -33,7 +33,7 @@ public class ReactivationConnectHttpRetriever implements StatefulJob {
         int id = (int) entry.getValue();
         String name = (String) entry.getKey();
 
-        IDataSourceDAO dao = ApplicationBeans.getBean("dataSourceDAO", IDataSourceDAO.class);
+        IDataSourceDAO dao = ApplicationBeans.getDataSourceDaoBean();
         DataSourceVO<?> ds = dao.getDataSource(id);
 
         HttpRetrieverDataSourceVO hrds = (HttpRetrieverDataSourceVO) ds;

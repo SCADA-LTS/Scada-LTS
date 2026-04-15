@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ScheduledEventService implements MangoScheduledEvent {
 
-	private final IScheduledEventDAO scheduledEventDAO = ApplicationBeans.getBean("scheduledEventDAO", IScheduledEventDAO.class);
+    private final IScheduledEventDAO scheduledEventDAO = ApplicationBeans.getScheduledEventDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

@@ -23,7 +23,7 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
     private final IWatchListDAO watchListDAO;
 
     public GetWatchListsWithAccess() {
-        this.watchListDAO = ApplicationBeans.getBean("watchListDAO", IWatchListDAO.class);
+        this.watchListDAO = ApplicationBeans.getWatchListDaoBean();
     }
 
     public GetWatchListsWithAccess(IWatchListDAO watchListDAO) {
