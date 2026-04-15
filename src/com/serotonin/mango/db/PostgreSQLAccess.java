@@ -18,16 +18,13 @@
  */
 package com.serotonin.mango.db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.*;
 
 import javax.servlet.ServletContext;
 
+import net.bull.javamelody.internal.common.LOG;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.flywaydb.core.Flyway;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
@@ -62,8 +59,13 @@ public class PostgreSQLAccess extends BasePooledAccess {
     }
 
     @Override
-    public DatabaseAccess.DatabaseType getType() {
-        return DatabaseAccess.DatabaseType.POSTGRES;
+    public DatabaseType getType() {
+        return DatabaseType.POSTGRES;
+    }
+
+    @Override
+    public String getIdQuery() {
+        return "SELECT LASTVAL()";
     }
 
     @Override
@@ -73,46 +75,68 @@ public class PostgreSQLAccess extends BasePooledAccess {
 
     @Override
     protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt, ServletContext ctx) {
+
+        boolean schemaExists = true;
+        boolean baselineNotExist = false;
+
         try {
-            //ejt.execute("select count(*) from users");
-            Class.forName(getDriverClassName());
-            Connection conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url.public"),
-                    Common.getEnvironmentProfile().getString("db.username"),
-                    Common.getEnvironmentProfile().getString("db.password"));
-            ResultSet res = conn.createStatement().executeQuery("SELECT 1 from pg_database WHERE datname='scadabr'");
-            if (res.next()){
-                //se possui registros então é porque a base de dados existe
-                conn.close();
-                return false;
-            }
-            else{
-                //como a base de dados não existe então ela deverá ser criada
-                conn.createStatement().executeUpdate("CREATE DATABASE scadabr WITH OWNER = postgres ENCODING = 'UTF8'");
-                conn.close();
-                //uma vez com o banco de dados criado procederemos com a criação das tabelas
-                conn = DriverManager.getConnection(Common.getEnvironmentProfile().getString("db.url"),
-                    Common.getEnvironmentProfile().getString("db.username"),
-                    Common.getEnvironmentProfile().getString("db.password"));
-                createSchema("/WEB-INF/db/createTables-postgresql.sql", ctx);
-                conn.close();
-                return true;                
-            }
-        } catch (SQLException ex) {
-            //Logger.getLogger(PostgreSQLAccess.class.getName()).log(Level.SEVERE, null, ex);          
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(PostgreSQLAccess.class.getName()).log(Level.SEVERE, null, ex);
+            ejt.execute("SELECT count(*) FROM users");
+            LOG.info("schemaExists: " + schemaExists);
+        } catch (DataAccessException e) {
+            schemaExists = false;
+            LOG.info("schemaExists: " + schemaExists);
         }
-        catch (DataAccessException e) {
-//            if (e.getCause() instanceof SQLException) {
-//                SQLException se = (SQLException) e.getCause();
-//                if ("42S02".equals(se.getSQLState())) {
-//                    // This state means a missing table. Assume that the schema needs to be created.
-//                    createSchema("/WEB-INF/db/createTables-postgresql.sql");
-//                    return true;
-//                }
-//            }
-//            throw e;
+
+        try {
+            ejt.execute("SELECT count(*) FROM schema_version");
+            LOG.info("baselineNotExist: " + baselineNotExist);
+        } catch (DataAccessException e) {
+            baselineNotExist = true;
+            LOG.info("baselineNotExist: " + baselineNotExist);
         }
+
+        try {
+            Flyway flyway = null;
+
+            if (schemaExists) {
+                if (baselineNotExist) {
+                    flyway = Flyway.configure()
+                            .baselineOnMigrate(true)
+                            .dataSource(getDataSource())
+                            .locations("org.scada_lts.dao.migration.postgres")
+                            .table("schema_version")
+                            .load();
+
+                    flyway.baseline();
+                    flyway.migrate();
+                }
+            } else {
+                if (baselineNotExist) {
+                    flyway = Flyway.configure()
+                            .baselineOnMigrate(true)
+                            .dataSource(getDataSource())
+                            .locations("org.scada_lts.dao.migration.postgres")
+                            .table("schema_version")
+                            .load();
+
+                    flyway.migrate();
+                }
+            }
+
+            if (flyway == null) {
+                flyway = Flyway.configure()
+                        .dataSource(getDataSource())
+                        .locations("org.scada_lts.dao.migration.postgres")
+                        .table("schema_version")
+                        .load();
+            }
+
+            flyway.migrate();
+
+        } catch (Exception e) {
+            LOG.warn("Flyway migration failed", e);
+        }
+
         return false;
     }
 
@@ -131,5 +155,13 @@ public class PostgreSQLAccess extends BasePooledAccess {
     @Override
     public void executeCompress(ExtendedJdbcTemplate ejt) {
         // no op
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(Connection connection, String sql, String generatedKey) throws SQLException {
+        if (!sql.toLowerCase().contains("returning")) {
+            sql += " RETURNING " + generatedKey;
+        }
+        return connection.prepareStatement(sql);
     }
 }

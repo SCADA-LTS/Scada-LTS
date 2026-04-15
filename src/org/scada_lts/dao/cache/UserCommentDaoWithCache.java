@@ -4,7 +4,6 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import org.scada_lts.dao.IUserCommentDAO;
-import org.scada_lts.dao.UserCommentDAO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,9 +11,9 @@ import java.util.stream.Collectors;
 public class UserCommentDaoWithCache implements IUserCommentDAO {
 
     public final UserCommentCacheable cache;
-    public final UserCommentDAO userCommentDAO;
+    public final IUserCommentDAO userCommentDAO;
 
-    public UserCommentDaoWithCache(UserCommentCacheable cache, UserCommentDAO userCommentDAO) {
+    public UserCommentDaoWithCache(UserCommentCacheable cache, IUserCommentDAO userCommentDAO) {
         this.cache = cache;
         this.userCommentDAO = userCommentDAO;
     }

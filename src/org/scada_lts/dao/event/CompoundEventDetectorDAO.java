@@ -46,7 +46,7 @@ import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 /**
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
-public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetectorVO> {
+public class CompoundEventDetectorDAO implements ICompoundEventDetectorDAO {
 	
 	private Log LOG = LogFactory.getLog(CompoundEventDetectorDAO.class);
 	
@@ -147,6 +147,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 		}
 	}
 	
+	@Override
 	public CompoundEventDetectorVO findByXId(Object[] pk) {
 		try {
 			return (CompoundEventDetectorVO) DAO.getInstance().getJdbcTemp().queryForObject(COMPOUND_EVENT_DETECTOR_SELECT+ " where " + COMPOUND_EVENT_DETECTOR_FILTERED_BASE_ON_XID, pk , new CompoundEventDetectorRowMapper());
@@ -169,7 +170,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 		return (List<CompoundEventDetectorVO>) DAO.getInstance().getJdbcTemp().query(COMPOUND_EVENT_DETECTOR_SELECT+" where "+ filter + myLimit, args,  new CompoundEventDetectorRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	@Override
 	public Object[] create(final CompoundEventDetectorVO entity) {
 		if (LOG.isTraceEnabled()) {
@@ -198,7 +199,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 			return new Object[] {keyHolder.getKey().intValue()};
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	@Override
 	public void update(CompoundEventDetectorVO entity) {
 
@@ -213,7 +214,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 		});
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	@Override
 	public void delete(CompoundEventDetectorVO entity) {
 		DAO.getInstance().getJdbcTemp().update(COMPOUND_EVENT_DELETE_EVENT_HANLDERS,new Object[]{entity.getId()});

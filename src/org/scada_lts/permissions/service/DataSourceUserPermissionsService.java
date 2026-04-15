@@ -2,15 +2,15 @@ package org.scada_lts.permissions.service;
 
 
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.IDataSourceDAO;
 
 import java.util.List;
 
 public class DataSourceUserPermissionsService implements PermissionsService<Integer, User> {
 
-    private final DataSourceDAO dataSourceDAO;
+    private final IDataSourceDAO dataSourceDAO;
 
-    public DataSourceUserPermissionsService(DataSourceDAO dataSourceDAO) {
+    public DataSourceUserPermissionsService(IDataSourceDAO dataSourceDAO) {
         this.dataSourceDAO = dataSourceDAO;
     }
 

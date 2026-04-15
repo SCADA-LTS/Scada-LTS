@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.RowMapper;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class HierarchyDAO {
+public class HierarchyDAO implements IHierarchyDAO {
 
     private static final Log LOG = LogFactory.getLog(HierarchyDAO.class);
 

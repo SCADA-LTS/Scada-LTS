@@ -45,7 +45,7 @@ import java.util.List;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 
-public class ScheduledEventDAO {
+public class ScheduledEventDAO implements IScheduledEventDAO {
 
 	private static final Log LOG = LogFactory.getLog(ScheduledEventDAO.class);
 
@@ -185,6 +185,7 @@ public class ScheduledEventDAO {
 		}
 	}
 
+	@Override
 	public ScheduledEventVO getScheduledEvent(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -197,6 +198,7 @@ public class ScheduledEventDAO {
 		
 	}
 
+	@Override
 	public ScheduledEventVO getScheduledEvent(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -214,6 +216,7 @@ public class ScheduledEventDAO {
 		return scheduledEvent;
 	}
 
+	@Override
 	public List<ScheduledEventVO> getScheduledEvents() {
 
 		if (LOG.isTraceEnabled()) {
@@ -225,7 +228,8 @@ public class ScheduledEventDAO {
 		return DAO.getInstance().getJdbcTemp().query(templateSelectedOrderBy, new ScheduledEventRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final ScheduledEventVO scheduledEventVO) {
 
 		if (LOG.isTraceEnabled()) {
@@ -267,7 +271,8 @@ public class ScheduledEventDAO {
 		return keyHolder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(ScheduledEventVO scheduledEventVO) {
 
 		if (LOG.isTraceEnabled()) {
@@ -301,7 +306,8 @@ public class ScheduledEventDAO {
 		);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {

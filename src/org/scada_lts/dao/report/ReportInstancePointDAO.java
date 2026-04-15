@@ -21,14 +21,12 @@ import java.sql.Statement;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
-import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,7 +47,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportInstancePointDAO {
+public class ReportInstancePointDAO implements IReportInstancePointDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportInstancePointDAO.class);
 
@@ -98,51 +96,7 @@ public class ReportInstancePointDAO {
 
 	// @formatter:on
 
-	/*
-		PointInfo class
-	 */
-	public static class PointInfo {
-		private final DataPointVO point;
-		private final String colour;
-		private final boolean consolidatedChart;
-
-		public PointInfo(DataPointVO point, String colour, boolean consolidatedChart) {
-			this.point = point;
-			this.colour = colour;
-			this.consolidatedChart = consolidatedChart;
-		}
-
-		public int getId() {
-			return point.getId();
-		}
-
-		public DataPointVO getPoint() {
-			return point;
-		}
-
-		public String getColour() {
-			return colour;
-		}
-
-		public String getName() {
-			return StringUtils.truncate(point.getName(), "", 100);
-		}
-
-		public String getDeviceName() {
-			return StringUtils.truncate(point.getDeviceName(), "", 40);
-		}
-
-		public TextRenderer getTextRenderer() {
-			return point.getTextRenderer();
-		}
-
-
-
-		public boolean isConsolidatedChart() {
-			return consolidatedChart;
-		}
-	}
-
+	@Override
 	public List<ReportPointInfo> getPointInfos(int instanceId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -152,13 +106,8 @@ public class ReportInstancePointDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_POINT_SELECT_WHERE, new Object[]{instanceId}, new ReportPointInfoRowMapper());
 	}
 
-	@Deprecated(since = "2.7.7")
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insert(final ReportInstance reportInstance, final DataPointVO point, final String name, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {
-		return insert(reportInstance, dataType, startValue, pointInfo);
-	}
-
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final ReportInstance reportInstance, final int dataType, final MangoValue startValue, final PointInfo pointInfo) {
 
 		if (LOG.isTraceEnabled()) {

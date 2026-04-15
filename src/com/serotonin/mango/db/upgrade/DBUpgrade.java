@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.util.StringUtils;
 
@@ -85,7 +86,8 @@ abstract public class DBUpgrade {
 				LOG.warn("Upgrading instance from " + schemaVersion + " to "
 						+ upgrade.getNewSchemaVersion());
 				upgrade.upgrade();
-				new SystemSettingsDAO().setValue(
+				ISystemSettingsDAO systemSettingsDAO = org.scada_lts.web.beans.ApplicationBeans.getSystemSettingsDaoBean();
+				systemSettingsDAO.setValue(
 						SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 						upgrade.getNewSchemaVersion());
 			} catch (Exception e) {
@@ -116,7 +118,7 @@ abstract public class DBUpgrade {
 	protected void runScript(Map<String, String[]> scripts,
 			final OutputStream out) throws Exception {
 		DatabaseAccess da = Common.ctx.getDatabaseAccess();
-		String[] script = scripts.get(da.getType().name());
+		String[] script = scripts.get(da.getTypeKey());
 		if (script == null)
 			script = scripts.get(DEFAULT_DATABASE_TYPE);
 		runScript(script, out);

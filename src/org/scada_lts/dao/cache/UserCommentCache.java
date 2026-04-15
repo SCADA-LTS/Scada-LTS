@@ -3,15 +3,15 @@ package org.scada_lts.dao.cache;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
-import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.IUserCommentDAO;
 
 import java.util.List;
 
 public class UserCommentCache implements UserCommentCacheable {
 
-    private final UserCommentDAO userCommentDAO;
+    private final IUserCommentDAO userCommentDAO;
 
-    public UserCommentCache(UserCommentDAO userCommentDAO) {
+    public UserCommentCache(IUserCommentDAO userCommentDAO) {
         this.userCommentDAO = userCommentDAO;
     }
 

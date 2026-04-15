@@ -29,6 +29,7 @@ import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
 /**
  * @author Matthew Lohbihler
  */
+@Deprecated
 public class Upgrade1_12_4 extends DBUpgrade {
 	private final Log log = LogFactory.getLog(getClass());
 

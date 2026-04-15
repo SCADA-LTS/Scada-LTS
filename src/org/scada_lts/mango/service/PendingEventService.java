@@ -24,8 +24,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IPendingEventsDAO;
 import org.scada_lts.dao.IUserCommentDAO;
-import org.scada_lts.dao.PendingEventsDAO;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -42,7 +42,7 @@ public class PendingEventService {
 
 	private final IUserCommentDAO userCommentDAO;
 
-	private final PendingEventsDAO pendingEventsDAO;
+	private final IPendingEventsDAO pendingEventsDAO;
 
 	private final SystemSettingsService systemSettingsService;
 
@@ -51,7 +51,7 @@ public class PendingEventService {
 	public PendingEventService() {
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-		pendingEventsDAO = new PendingEventsDAO();
+		pendingEventsDAO = ApplicationBeans.getPendingEventsDAOBean();
 		systemSettingsService = new SystemSettingsService();
 	}
 

@@ -34,6 +34,7 @@ import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
@@ -52,20 +53,20 @@ import java.util.ResourceBundle;
 @Service
 public class ReportService implements MangoReport {
 
-	private ReportDAO reportDAO;
-	private ReportInstanceDAO reportInstanceDAO;
-	private ReportInstanceDataDAO reportInstanceDataDAO;
-	private ReportInstancePointDAO reportInstancePointDAO;
-	private ReportInstanceUserCommentDAO reportInstanceUserCommentDAO;
+	private IReportDAO reportDAO;
+	private IReportInstanceDAO reportInstanceDAO;
+	private IReportInstanceDataDAO reportInstanceDataDAO;
+	private IReportInstancePointDAO reportInstancePointDAO;
+	private IReportInstanceUserCommentDAO reportInstanceUserCommentDAO;
 	private GetReportsWithAccess getReportsWithAccess;
 	private GetReportInstancesWithAccess getReportInstancesWithAccess;
 
 	public ReportService() {
-		this.reportDAO = new ReportDAO();
-		this.reportInstanceDAO = new ReportInstanceDAO();
-		this.reportInstanceDataDAO = new ReportInstanceDataDAO();
-		this.reportInstancePointDAO = new ReportInstancePointDAO();
-		this.reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
+        this.reportDAO = ApplicationBeans.getReportDaoBean();
+        this.reportInstanceDAO = ApplicationBeans.getReportInstanceDaoBean();
+        this.reportInstanceDataDAO = ApplicationBeans.getReportInstanceDataDaoBean();
+        this.reportInstancePointDAO = ApplicationBeans.getReportInstancePointDaoBean();
+		this.reportInstanceUserCommentDAO = ApplicationBeans.getReportInstanceUserCommentDAOBean();
 		this.getReportsWithAccess = new GetReportsWithAccess(reportDAO);
 		this.getReportInstancesWithAccess = new GetReportInstancesWithAccess(reportInstanceDAO);
 	}
@@ -184,7 +185,7 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
-	public int runReport(final ReportInstance instance, List<ReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
+	public int runReport(final ReportInstance instance, List<IReportInstancePointDAO.PointInfo> points, ResourceBundle bundle) {
 		PointValueService pointValueService = new PointValueService();
 		int count = 0;
 
@@ -215,7 +216,7 @@ public class ReportService implements MangoReport {
 		}
 
 		// For each point.
-		for (ReportInstancePointDAO.PointInfo pointInfo : points) {
+		for (IReportInstancePointDAO.PointInfo pointInfo : points) {
 			DataPointVO point = pointInfo.getPoint();
 			int dataType = point.getPointLocator().getDataTypeId();
 

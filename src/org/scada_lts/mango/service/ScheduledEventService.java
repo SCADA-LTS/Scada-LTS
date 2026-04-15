@@ -22,8 +22,9 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.ScheduledEventDAO;
+import org.scada_lts.dao.IScheduledEventDAO;
 import org.scada_lts.mango.adapter.MangoScheduledEvent;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class ScheduledEventService implements MangoScheduledEvent {
 
-	private ScheduledEventDAO scheduledEventDAO = new ScheduledEventDAO();
+    private final IScheduledEventDAO scheduledEventDAO = ApplicationBeans.getScheduledEventDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

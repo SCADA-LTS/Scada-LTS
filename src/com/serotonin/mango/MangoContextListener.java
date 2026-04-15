@@ -67,6 +67,7 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.ds.polling.PollingDataSourceUtils;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
@@ -155,8 +156,8 @@ public class MangoContextListener implements ServletContextListener {
 						+ knownContextPath + " to " + contextPath
 						+ ". Are there two instances of Scada-LTS running?");
 		}
-		new SystemSettingsDAO().setValue(
-				SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
+		ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
+		systemSettingsDAO.setValue(SystemSettingsDAO.SERVLET_CONTEXT_PATH, ctx.getContextPath());
 
 		eventManagerInitialize(ctx);
 		utilitiesInitialize(ctx);

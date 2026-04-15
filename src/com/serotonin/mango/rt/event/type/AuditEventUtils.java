@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.IPointEventDetectorDAO;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public final class AuditEventUtils {
         }
     }
 
-    public static void raiseAuditDetectorEvent(DataPointVO point, PointEventDetectorVO ped, PointEventDetectorDAO detectorDAO) {
+    public static void raiseAuditDetectorEvent(DataPointVO point, PointEventDetectorVO ped, IPointEventDetectorDAO detectorDAO) {
         try {
             List<PointEventDetectorVO> peds = detectorDAO.getPointEventDetectors(point);
             getPointEventDetector(peds, ped).map(fromPed -> {

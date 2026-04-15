@@ -45,7 +45,7 @@ import br.org.scadabr.vo.scripting.ScriptVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class ScriptDAO  {
+public class ScriptDAO implements IScriptDAO {
 	
 	private static final Log LOG = LogFactory.getLog(ScriptDAO.class);
 	
@@ -123,35 +123,37 @@ public class ScriptDAO  {
 		}
 	}
 
-	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final ScriptVO<?> vo) {
 		
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(vo);
 			}
-			
+
 			KeyHolder keyHolder = new GeneratedKeyHolder();
-			
+
 			DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
 				 			@Override
 				 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				 				PreparedStatement ps = connection.prepareStatement(SCRIPT_INSERT, Statement.RETURN_GENERATED_KEYS);
-				 				new ArgumentPreparedStatementSetter( new Object[] { 
-				 						vo.getXid(), 
-				 						vo.getName(), 
-				 						vo.getScript(), 
+				 				new ArgumentPreparedStatementSetter( new Object[] {
+				 						vo.getXid(),
+				 						vo.getName(),
+				 						vo.getScript(),
 				 						vo.getUserId(),
 				 						new SerializationData().writeObject(vo)
 				 				}).setValues(ps);
 				 				return ps;
 				 			}
 			}, keyHolder);
-			
+
 			return keyHolder.getKey().intValue();
-			
+
 	}
 	
-	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(final ScriptVO<?> vo) {
 		
 			if (LOG.isTraceEnabled()) {
@@ -171,7 +173,8 @@ public class ScriptDAO  {
 			}
 	}
 
-	@Transactional(readOnly = false,propagation=Propagation.REQUIRES_NEW,isolation=Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(final int id) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -182,6 +185,7 @@ public class ScriptDAO  {
 		
 	}
 
+	@Override
 	public ScriptVO<?> getScript(int id) {
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]{id}, new ScriptRowMapper());
@@ -190,10 +194,12 @@ public class ScriptDAO  {
 		}
 	}
 	
+	@Override
 	public List<ScriptVO<?>> getScripts() {
 		return (List<ScriptVO<?>>) DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT, new Object[]{ }, new ScriptRowMapper());
 	}
 		
+	@Override
 	public ScriptVO<?> getScript(String xid) {
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]{
@@ -203,14 +209,17 @@ public class ScriptDAO  {
 		}
 	}
 
+	@Override
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(ScriptVO.XID_PREFIX, "scripts");
 	}
 
+	@Override
 	public boolean isXidUnique(String xid, int excludeId) {
 		return DAO.getInstance().isXidUnique(xid, excludeId, "scripts");
 	}
 
+	@Override
 	public JsonScript findScriptsByPage(String query) {
 		return (JsonScript) DAO.getInstance().getJdbcTemp().query(SCRIPT_SELECT + " ", new Object[]{ }, new ScriptRowMapper());
 	}

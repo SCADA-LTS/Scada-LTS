@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class MailingListMemberDAO {
+public class MailingListMemberDAO implements IMailingListMemberDAO {
 
 	private static final Log LOG = LogFactory.getLog(MailingListMemberDAO.class);
 

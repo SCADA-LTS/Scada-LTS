@@ -49,7 +49,7 @@ import static org.scada_lts.utils.ReportDaoUtils.searchQuery;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class ReportDAO {
+public class ReportDAO implements IReportDAO {
 
 	private static final Log LOG = LogFactory.getLog(ReportDAO.class);
 
@@ -121,6 +121,7 @@ public class ReportDAO {
 		}
 	}
 
+	@Override
 	public ReportVO getReport(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -136,6 +137,7 @@ public class ReportDAO {
 		return reportVO;
 	}
 
+	@Override
 	public ReportVO getReport(String xid) {
 
 		if (LOG.isTraceEnabled()) {
@@ -151,6 +153,7 @@ public class ReportDAO {
 		return reportVO;
 	}
 
+	@Override
 	public List<ReportVO> getReports() {
 
 		if (LOG.isTraceEnabled()) {
@@ -160,10 +163,12 @@ public class ReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT, new ReportRowMapper());
 	}
 
+	@Override
 	public List<ReportVO> search(Map<String, String> query) {
 		return search(Common.NEW_ID, query);
 	}
 
+	@Override
 	public List<ReportVO> search(int userId, Map<String, String> query) {
 
 		if (LOG.isTraceEnabled()) {
@@ -173,6 +178,7 @@ public class ReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(sql.getQuery(), sql.getArgs(), new ReportRowMapper());
 	}
 
+	@Override
 	public List<ReportVO> getReports(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -182,7 +188,8 @@ public class ReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT_WHERE_USER_ID_ORDER, new Object[]{userId}, new ReportRowMapper());
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public int insert(final ReportVO report) {
 
 		if (LOG.isTraceEnabled()) {
@@ -206,7 +213,8 @@ public class ReportDAO {
 		return keyHolder.getKey().intValue();
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void update(final ReportVO report) {
 
 		if (LOG.isTraceEnabled()) {
@@ -221,7 +229,8 @@ public class ReportDAO {
 		);
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Override
 	public void delete(int id) {
 
 		if (LOG.isTraceEnabled()) {

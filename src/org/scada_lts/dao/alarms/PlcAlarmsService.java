@@ -39,10 +39,10 @@ class PlcAlarmsService implements AlarmsService {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
 
-    private final AlarmsDAO alarmsDAO;
+    private final IAlarmsDAO alarmsDAO;
     private final DataPointService dataPointService;
 
-    public PlcAlarmsService(AlarmsDAO alarmsDAO, DataPointService dataPointService) {
+    public PlcAlarmsService(IAlarmsDAO alarmsDAO, DataPointService dataPointService) {
         this.alarmsDAO = alarmsDAO;
         this.dataPointService = dataPointService;
     }

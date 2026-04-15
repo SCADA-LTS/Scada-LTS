@@ -31,7 +31,7 @@ import utils.PointValueDAOMemory;
 
 import java.util.ResourceBundle;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -59,14 +59,15 @@ public class PointValueCacheTest {
         IUserDAO userDAO = mock(IUserDAO.class);
         when(userDAO.getUser(eq(12))).thenReturn(sourceUser);
 
-        mockStatic(PointValueDAO.class);
-        when(PointValueDAO.getInstance()).thenReturn(new PointValueDAOMemory(userDAO));
-
         ILoggedUsers loggedUsers = mock(ILoggedUsers.class);
         when(loggedUsers.getUser(eq(12))).thenReturn(sourceUser);
 
         mockStatic(ApplicationBeans.class);
+        PointValueDAOMemory memoryDao = new PointValueDAOMemory(userDAO);
+
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
+        when(ApplicationBeans.getPointValueDaoBean())
+                .thenReturn(memoryDao);
 
         SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);
         whenNew(SystemSettingsService.class).withAnyArguments().thenReturn(systemSettingsService);

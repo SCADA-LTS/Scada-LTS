@@ -5,18 +5,17 @@ import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.model.BaseObjectIdentifier;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 
 public class ViewCache implements ViewCacheable {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(ViewCache.class);
-    private final ViewDAO viewDAO;
+    private final IViewDAO viewDAO;
 
-    public ViewCache(ViewDAO viewDAO) {
+    public ViewCache(IViewDAO viewDAO) {
         this.viewDAO = viewDAO;
     }
 

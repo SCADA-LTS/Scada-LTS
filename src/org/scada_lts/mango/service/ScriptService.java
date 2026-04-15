@@ -3,8 +3,9 @@ package org.scada_lts.mango.service;
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.GetExtendedNameComparator;
-import org.scada_lts.dao.ScriptDAO;
+import org.scada_lts.dao.IScriptDAO;
 import org.scada_lts.mango.adapter.MangoScript;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 @Service
 public class ScriptService implements MangoScript {
 
-    private ScriptDAO scriptDAO = new ScriptDAO();
+    private final IScriptDAO scriptDAO = ApplicationBeans.getScriptDaoBean();
 
     @Override
     public void saveScript(final ScriptVO<?> vo) {

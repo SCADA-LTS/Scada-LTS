@@ -6,11 +6,11 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IViewDAO;
-import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.BaseObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,8 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public void init() {
-        List<View> views = new ViewDAO().findAll();
+        IViewDAO viewDao = ApplicationBeans.getViewDaoBean();
+        List<View> views = viewDao.findAll();
         for(View view: views) {
             applyShareUsers(view);
             viewCache.put(view);

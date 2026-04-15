@@ -47,7 +47,7 @@ import java.util.function.Function;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class SystemSettingsDAO {
+public class SystemSettingsDAO implements ISystemSettingsDAO {
 
 	// Database schema version
 	public static final String DATABASE_SCHEMA_VERSION = "databaseSchemaVersion";
@@ -190,7 +190,6 @@ public class SystemSettingsDAO {
 	private static final String DATABASE_SIZE = ""
 			+ "select sum(data_length + index_length) /1024 /1024 \"size\" "
 			+ "from information_schema.TABLES where table_schema=";
-
 	private static final String DATABASE_STATEMENT = "DATABASE()";
 	private static final String SELECT_DATABASE = ""
 			+ "select "
@@ -463,7 +462,8 @@ public class SystemSettingsDAO {
 		ApplicationBeans.getBean("userCommentCache", UserCommentCacheable.class).resetCache();
 	}
 
-	public double getDataBaseSize() {
+	@Override
+	public double getDatabaseSize() {
 
 		final List<Double> size = new ArrayList<>();
 
@@ -487,7 +487,7 @@ public class SystemSettingsDAO {
 			e.printStackTrace();
 		}
 
-		return size.get(0);
+		return size.isEmpty() ? -1d : size.get(0);
 	}
 
 	public static <R> R getObject(String key, Function<String, R> convert) {

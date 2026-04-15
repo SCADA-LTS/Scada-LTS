@@ -125,6 +125,55 @@ public class ConfigurationDB {
 		}
 	}
 
+	public static void usePostgresDB() {
+
+		String fileSeparator = System.getProperty("file.separator");
+
+		String path = Common.ctx.getServletContext().getRealPath("");
+
+		boolean win = false;
+
+		File envFile = null;
+
+		if (fileSeparator.equals("\\")) {
+			path = path + "\\" + "WEB-INF" + "\\" + "classes" + "\\";
+			envFile = new File(path + "\\" + "env.properties");
+			win = true;
+		}
+
+		if (fileSeparator.equals("/")) {
+			path = path + "/" + "WEB-INF" + "/" + "classes" + "/";
+			envFile = new File(path + "/" + "env.properties");
+		}
+
+		if (envFile.exists()) {
+
+			if (win) {
+				File postgresFile = new File(path + "\\" + "env.properties.postgres");
+
+				if (postgresFile.exists()) {
+					try {
+						ConfigurationDB.copy(postgresFile, envFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+			} else {
+				File postgresFile = new File(path + "/" + "env.properties.postgres");
+
+				if (postgresFile.exists()) {
+					try {
+						ConfigurationDB.copy(postgresFile, envFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+		}
+	}
+
 	public static void useMssqlDB() {
 
 	}

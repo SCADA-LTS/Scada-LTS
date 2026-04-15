@@ -16,20 +16,23 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.IDataPointDAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.core.JdbcTemplate;
 import utils.TestUtils;
 
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({DAO.class, Common.class, PointValueDAO.class, RuntimeManager.class})
+@PrepareForTest({DAO.class, Common.class, PointValueDAO.class, RuntimeManager.class, IDataPointDAO.class, ApplicationBeans.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class RuntimeManagerCreateDataPointRtTest {
@@ -39,6 +42,17 @@ public class RuntimeManagerCreateDataPointRtTest {
 
     @Before
     public void config() throws Exception {
+
+        IPointValueDAO pointValueDAOMock = mock(IPointValueDAO.class);
+        when(pointValueDAOMock.filtered(
+                eq(PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID),
+                any(Object[].class), anyInt()))
+                .thenReturn(new ArrayList<>());
+
+        mockStatic(org.scada_lts.web.beans.ApplicationBeans.class);
+        when(org.scada_lts.web.beans.ApplicationBeans.getPointValueDaoBean())
+                .thenReturn(pointValueDAOMock);
+
         DAO dao = mock(DAO.class);
         JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
         when(dao.getJdbcTemp()).thenReturn(jdbcTemplate);

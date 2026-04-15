@@ -9,22 +9,21 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.mockito.Mockito;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import utils.mock.PowerMockUtils;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 public class ScriptTestUtils {
 
@@ -72,6 +71,17 @@ public class ScriptTestUtils {
         mockStatic(ApplicationBeans.class);
         DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
+        IPointValueDAO pointValueDaoMock = mock(IPointValueDAO.class);
+        when(ApplicationBeans.getPointValueDaoBean())
+                .thenReturn(pointValueDaoMock);
+
+        when(pointValueDaoMock.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
+        when(pointValueDaoMock.create(anyInt(), anyInt(), anyDouble(), anyLong()))
+                .thenReturn(new Object[]{1L});
+
+        DataPointServiceWebSocket wsMock = mock(DataPointServiceWebSocket.class);
+        when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(wsMock);
+        doNothing().when(wsMock).notifyStateSubscribers(anyBoolean(), anyInt());
     }
 
     public static void configScriptMock(RuntimeManager runtimeManager, ScriptContextObject scriptContextObject) throws Exception {

@@ -20,9 +20,11 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
@@ -36,7 +38,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
@@ -48,19 +49,19 @@ import com.serotonin.mango.vo.WatchList;
 @Service
 public class WatchListService implements MangoWatchList {
 
-	private WatchListDAO watchListDAO;
+	private IWatchListDAO watchListDAO;
 	private GetShareUsers<WatchList> getShareUsers;
 	private UsersProfileService usersProfileService;
 	private GetObjectsWithAccess<WatchList, User> getObjectsWithAccess;
 
 	public WatchListService() {
-		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+        this.watchListDAO = ApplicationBeans.getWatchListDaoBean();
 		this.getShareUsers = ApplicationBeans.getWatchListGetShareUsersBean();
 		this.usersProfileService = ApplicationBeans.getUsersProfileService();
 		this.getObjectsWithAccess = new GetWatchListsWithAccess(watchListDAO);
 	}
 
-	public WatchListService(WatchListDAO watchListDAO, GetShareUsers<WatchList> getShareUsers, UsersProfileService usersProfileService) {
+	public WatchListService(IWatchListDAO watchListDAO, GetShareUsers<WatchList> getShareUsers, UsersProfileService usersProfileService) {
 		this.watchListDAO = watchListDAO;
 		this.getShareUsers = getShareUsers;
 		this.usersProfileService = usersProfileService;

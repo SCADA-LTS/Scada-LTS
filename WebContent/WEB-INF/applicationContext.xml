@@ -27,6 +27,8 @@
         http://www.springframework.org/schema/cache/spring-cache.xsd
 ">
 
+  <import resource="classpath*:META-INF/scadalts-db/*.xml"/>
+
   <!-- DWR -->
   <bean id="CompoundEventsDwr" class="com.serotonin.mango.web.dwr.CompoundEventsDwr"/>
   <bean id="CustomViewDwr" class="com.serotonin.mango.web.dwr.CustomViewDwr"/>
@@ -76,12 +78,39 @@
 
   <bean id="applicationBeans" class="org.scada_lts.web.beans.GetApplicationBeans"/>
 
-  <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
-  <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
-  <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
-  <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
-  <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO"/>
-  <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
+  <bean id="dataPointUserDAO-mysql" class="org.scada_lts.dao.DataPointUserDAO"/>
+  <bean id="dataPointUserDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="eventDetectorTemplateDAO-mysql" class="org.scada_lts.dao.EventDetectorTemplateDAO"/>
+  <bean id="eventDetectorTemplateDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="flexProjectDAO-mysql" class="org.scada_lts.dao.FlexProjectDAO"/>
+  <bean id="flexProjectDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="pendingEventsDAO-mysql" class="org.scada_lts.dao.PendingEventsDAO"/>
+  <bean id="pendingEventsDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="systemSettingsDAO-mysql" class="org.scada_lts.dao.SystemSettingsDAO"/>
+  <bean id="systemSettingsDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="userEventDAO-mysql" class="org.scada_lts.dao.event.UserEventDAO"/>
+  <bean id="userEventDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="mailingListInactiveDAO-mysql" class="org.scada_lts.dao.mailingList.MailingListInactiveDAO"/>
+  <bean id="mailingListInactiveDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="mailingListMemberDAO-mysql" class="org.scada_lts.dao.mailingList.MailingListMemberDAO"/>
+  <bean id="mailingListMemberDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="pointValueAmChartDAO-mysql" class="org.scada_lts.dao.pointvalues.PointValueAmChartDAO"/>
+  <bean id="pointValueAmChartDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="pointValueAdnnotationsDAO-mysql" class="org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO"/>
+  <bean id="pointValueAdnnotationsDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="reportInstanceUserCommentDAO-mysql" class="org.scada_lts.dao.report.ReportInstanceUserCommentDAO"/>
+  <bean id="reportInstanceUserCommentDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
     <constructor-arg ref="watchListDAO"/>
@@ -168,10 +197,12 @@
   <!-- -->
 
   <!-- Point Hierarchy -->
-  <bean id="dataPointDAO" class="org.scada_lts.dao.DataPointDAO"/>
-  <bean id="hierarchyDAO" class="org.scada_lts.dao.HierarchyDAO"/>
-  <bean id="pointHierarchyXidDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO" />
-  <bean id="pointHierarchyDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyDAO" />
+  <bean id="hierarchyDAO-mysql" class="org.scada_lts.dao.HierarchyDAO"/>
+  <bean id="hierarchyDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+  <bean id="pointHierarchyXidDAO-mysql" class="org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO" />
+  <bean id="pointHierarchyXidDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
 
   <bean id="pointHierarchyXidService" class="org.scada_lts.service.pointhierarchy.PointHierarchyXidService" >
     <constructor-arg ref="pointHierarchyXidDAO"/>
@@ -187,8 +218,6 @@
   <!-- -->
 
   <!-- UserComment Cachable -->
-  <bean id="userCommentDAO" class="org.scada_lts.dao.UserCommentDAO" />
-
   <bean id="userCommentCache" class="org.scada_lts.dao.cache.UserCommentCache">
     <constructor-arg ref="userCommentDAO"/>
   </bean>
@@ -211,16 +240,119 @@
     <property name="locations" value="classpath:env.properties"/>
   </bean>
 
-  <bean id="databaseAccess" class="com.serotonin.mango.db.DatabaseAccess" factory-method="createDatabaseAccess" />
+  <!-- Database-aware beans -->
+  <bean id="databaseAccess-mysql" class="com.serotonin.mango.db.MySQLAccess" lazy-init="true" />
+  <bean id="databaseAccess-derby" class="com.serotonin.mango.db.DerbyAccess" lazy-init="true"/>
+  <bean id="databaseAccess-mssql" class="com.serotonin.mango.db.MSSQLAccess" lazy-init="true"/>
+  <bean id="databaseAccess-oracle11g" class="com.serotonin.mango.db.Oracle11GAccess" lazy-init="true"/>
+  <bean id="databaseAccess" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
 
   <bean id="databaseSource" factory-bean="databaseAccess" factory-method="getDataSource" />
 
+  <bean id="dataSourceDAO-mysql" class="org.scada_lts.dao.DataSourceDAO"/>
+  <bean id="dataSourceDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="dataPointDAO-mysql" class="org.scada_lts.dao.DataPointDAO"/>
+  <bean id="dataPointDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="eventDAO-mysql" class="org.scada_lts.dao.event.EventDAO"/>
+  <bean id="eventDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="pointHierarchyDAO-mysql" class="org.scada_lts.dao.pointhierarchy.PointHierarchyDAO"/>
+  <bean id="pointHierarchyDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="pointEventDetectorDAO-mysql" class="org.scada_lts.dao.PointEventDetectorDAO"/>
+  <bean id="pointEventDetectorDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="userCommentDAO-mysql" class="org.scada_lts.dao.UserCommentDAO"/>
+  <bean id="userCommentDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="viewHierarchyDAO-mysql" class="org.scada_lts.dao.ViewHierarchyDAO"/>
+  <bean id="viewHierarchyDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="watchListDAO-mysql" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
+  <bean id="watchListDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="viewDAO-mysql" class="org.scada_lts.dao.ViewDAO"/>
+  <bean id="viewDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="reportDAO-mysql" class="org.scada_lts.dao.report.ReportDAO"/>
+  <bean id="reportDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="pointValueDAO-mysql" class="org.scada_lts.dao.pointvalues.PointValueDAO"/>
+  <bean id="pointValueDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="userDAO-mysql" class="org.scada_lts.dao.UserDAO"/>
+  <bean id="userDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="usersProfileDAO-mysql" class="org.scada_lts.dao.UsersProfileDAO"/>
+  <bean id="usersProfileDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="mailingListDAO-mysql" class="org.scada_lts.dao.mailingList.MailingListDAO"/>
+  <bean id="mailingListDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="reportInstanceDAO-mysql" class="org.scada_lts.dao.report.ReportInstanceDAO"/>
+  <bean id="reportInstanceDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="reportInstancePointDAO-mysql" class="org.scada_lts.dao.report.ReportInstancePointDAO"/>
+  <bean id="reportInstancePointDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="reportInstanceDataDAO-mysql" class="org.scada_lts.dao.report.ReportInstanceDataDAO"/>
+  <bean id="reportInstanceDataDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="scheduledEventDAO-mysql" class="org.scada_lts.dao.ScheduledEventDAO"/>
+  <bean id="scheduledEventDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="compoundEventDetectorDAO-mysql" class="org.scada_lts.dao.event.CompoundEventDetectorDAO"/>
+  <bean id="compoundEventDetectorDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="pointLinkDAO-mysql" class="org.scada_lts.dao.PointLinkDAO"/>
+  <bean id="pointLinkDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="scriptDAO-mysql" class="org.scada_lts.dao.ScriptDAO"/>
+  <bean id="scriptDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="publisherDAO-mysql" class="org.scada_lts.dao.PublisherDAO"/>
+  <bean id="publisherDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="maintenanceEventDAO-mysql" class="org.scada_lts.dao.MaintenanceEventDAO"/>
+  <bean id="maintenanceEventDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
+  <bean id="synopticPanelDAO-mysql" class="org.scada_lts.dao.SynopticPanelDAO"/>
+  <bean id="synopticPanelDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
+
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
 
-  <bean id="alarmsDAO" class="org.scada_lts.dao.alarms.PlcAlarmsDAO" />
+  <bean id="alarmsDAO-mysql" class="org.scada_lts.dao.alarms.PlcAlarmsDAO" />
+  <bean id="alarmsDAO" class="org.scada_lts.factory.DatabaseAwareBeanFactory">
+  </bean>
 
   <!-- Point Event Detectors Cache -->
-  <bean id="pointEventDetectorDAO" class="org.scada_lts.dao.PointEventDetectorDAO" />
 
   <bean id="pointEventDetectorCache" class="org.scada_lts.dao.cache.PointEventDetectorCache">
     <constructor-arg ref="pointEventDetectorDAO"/>

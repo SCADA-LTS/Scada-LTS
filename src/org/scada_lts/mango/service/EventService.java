@@ -39,7 +39,8 @@ import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
-import org.scada_lts.dao.event.UserEventDAO;
+import org.scada_lts.dao.event.IEventDAO;
+import org.scada_lts.dao.event.IUserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -66,14 +67,14 @@ public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
 	
-	private final EventDAO eventDAO;
-	private final UserEventDAO userEventDAO;
+	private final IEventDAO eventDAO;
+	private final IUserEventDAO userEventDAO;
 	private final IUserCommentDAO userCommentDAO;
 	private final SystemSettingsService systemSettingsService;
 	
 	public EventService() {
-		eventDAO = new EventDAO();
-		userEventDAO = new UserEventDAO();
+        eventDAO = ApplicationBeans.getEventDaoBean();
+		userEventDAO = ApplicationBeans.getUserEventDAOBean();
 		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		systemSettingsService = ApplicationBeans.getBean("systemSettingsService", SystemSettingsService.class);
 	}

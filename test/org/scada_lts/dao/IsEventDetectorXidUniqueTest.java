@@ -154,7 +154,7 @@ public class IsEventDetectorXidUniqueTest {
 
     @Before
     public void config() {
-        PointEventDetectorDAO pointEventDetectorDaoMock = mock(PointEventDetectorDAO.class);
+        IPointEventDetectorDAO pointEventDetectorDaoMock = mock(IPointEventDetectorDAO.class);
         PointEventDetectorCache pointEventDetectorCache = new PointEventDetectorCache(pointEventDetectorDaoMock);
         subject = new PointEventDetectorDaoWithCache(pointEventDetectorCache);
 

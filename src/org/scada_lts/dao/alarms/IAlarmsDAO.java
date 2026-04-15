@@ -18,7 +18,7 @@
 
 package org.scada_lts.dao.alarms;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
@@ -32,14 +32,14 @@ import java.util.Optional;
  *
  */
 
-public interface AlarmsDAO {
+public interface IAlarmsDAO {
 
     List<LiveAlarm> getLiveAlarms(int offset, int limit) throws DataAccessException;
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String regex, int offset, int limit) throws DataAccessException;
     boolean setAcknowledgeTime(int id) throws DataAccessException;
     Optional<Long> getInactiveTimeMs(int id) throws DataAccessException;
 
-    static AlarmsDAO getInstance() {
-        return new PlcAlarmsDAO();
+    static IAlarmsDAO getInstance() {
+        return ApplicationBeans.getAlarmsDAOBean();
     }
 }

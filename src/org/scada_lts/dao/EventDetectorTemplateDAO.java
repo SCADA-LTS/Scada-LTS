@@ -46,7 +46,7 @@ import br.org.scadabr.vo.eventDetectorTemplate.EventDetectorTemplateVO;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-public class EventDetectorTemplateDAO {
+public class EventDetectorTemplateDAO implements IEventDetectorTemplateDAO {
 	
 	private static final Log LOG = LogFactory.getLog(EventDetectorTemplateDAO.class);
 	

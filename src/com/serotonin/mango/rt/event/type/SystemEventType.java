@@ -31,7 +31,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -144,8 +146,8 @@ public class SystemEventType extends EventType {
 		if(et != null) {
 			et.setAlarmLevel(alarmLevel);
 
-			SystemSettingsDAO dao = new SystemSettingsDAO();
-			dao.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
+			ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
+			systemSettingsDAO.setIntValue(SYSTEM_SETTINGS_PREFIX + type, alarmLevel);
 		} else {
 			LOG.warn(LoggingUtils.eventTypeInfo(type, alarmLevel));
 		}

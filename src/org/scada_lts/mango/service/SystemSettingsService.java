@@ -1,8 +1,9 @@
 package org.scada_lts.mango.service;
 
-import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
+import com.serotonin.mango.db.DatabaseAccess.DatabaseType;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -18,6 +19,7 @@ import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
@@ -49,10 +51,10 @@ public class SystemSettingsService {
 
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
 
-    private SystemSettingsDAO systemSettingsDAO;
+    private final ISystemSettingsDAO systemSettingsDAO;
 
     public SystemSettingsService() {
-        systemSettingsDAO = new SystemSettingsDAO();
+        systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
     }
 
     public Map<String, Object> getSettings() {
@@ -256,19 +258,19 @@ public class SystemSettingsService {
     }
 
     public String getDatabaseType() {
+        try {
+            DatabaseAccess databaseAccess = DatabaseAccess.getDatabaseAccess();
+            if (databaseAccess != null) {
+                return databaseAccess.getTypeKey();
+            }
+        } catch (Exception ignore) {
+            // fallback to env.properties
+        }
         return Common.getEnvironmentProfile().getString("db.type", "derby");
     }
 
     public void setDatabaseType(String databaseType) {
-        if (databaseType.equalsIgnoreCase("mysql")) {
-            ConfigurationDB.useMysqlDB();
-        } else if (databaseType.equalsIgnoreCase("mssql")) {
-            ConfigurationDB.useMssqlDB();
-        } else if (databaseType.equalsIgnoreCase("oracle11g")) {
-            ConfigurationDB.useOracle11gDB();
-        } else {
-            ConfigurationDB.useDerbyDB();
-        }
+        DatabaseType.from(databaseType).applyConfiguration();
     }
 
     public Map<String, Object> getDatabaseSize() {
@@ -290,12 +292,17 @@ public class SystemSettingsService {
         data.put("filedataSize", com.serotonin.util.DirectoryUtils.bytesDescription(filedataSize));
         data.put("totalSize", com.serotonin.util.DirectoryUtils.bytesDescription(dbSize + filedataSize));
 
-        if (getDatabaseType().equalsIgnoreCase("mysql")) {
-            double size = systemSettingsDAO.getDataBaseSize();
-            data.put("databaseSize", size + "MB");
-            data.put("filedataCount", 0);
-            data.put("filedataSize", 0);
-            data.put("totalSize", size + "MB");
+        String dbType = getDatabaseType();
+        if (dbType.equalsIgnoreCase("mysql") || dbType.equalsIgnoreCase("postgres")) {
+            double size = systemSettingsDAO.getDatabaseSize();
+            if (size >= 0) {
+                data.put("databaseSize", size + "MB");
+                data.put("filedataCount", 0);
+                data.put("filedataSize", 0);
+                data.put("totalSize", size + "MB");
+            } else {
+                data.put("databaseSize", "common.unknown");
+            }
         }
 
         List<PointHistoryCount> counts = new DataPointDao().getTopPointHistoryCounts();

@@ -475,15 +475,28 @@ public class PointEventDetectorDAO implements IPointEventDetectorDAO {
 		}
 	}
 
-	public List<PointEventDetectorVO> getPointEventDetectors(long limit, int offset) {
+	@Override
+	public List<PointEventDetectorVO> getPointEventDetectors() {
+		return getPointEventDetectors(-1, -1);
+	}
+
+	@Override
+	public List<PointEventDetectorVO> getPointEventDetectors(long offset, int limit) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getPointEventDetector(long limit, int offset) limit:" +limit + ", offset:" + offset);
 		}
-
-		String templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID + " LIMIT ? OFFSET ?";
+		String templateSelectWhereIdOrderBy;
+		Object[] args;
+		if(limit == -1 && offset == -1) {
+			templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID;
+			args = new Object[]{};
+		} else {
+			templateSelectWhereIdOrderBy = POINT_EVENT_DETECTOR_SELECT + "order by " + COLUMN_NAME_ID + " LIMIT ? OFFSET ?";
+			args = new Object[]{limit, offset};
+		}
 
 		try {
-			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, new Object[]{limit, offset}, new PointEventDetectorDataPointIdRowMapper());
+			return DAO.getInstance().getJdbcTemp().query(templateSelectWhereIdOrderBy, args, new PointEventDetectorDataPointIdRowMapper());
 		} catch (EmptyResultDataAccessException ex) {
 			return Collections.emptyList();
 		} catch (IncorrectResultSizeDataAccessException ex) {

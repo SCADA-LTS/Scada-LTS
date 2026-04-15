@@ -1,5 +1,7 @@
 package com.serotonin.mango.rt.dataImage.datapointrt.config;
 
+import com.serotonin.mango.db.DatabaseAccess;
+import org.springframework.jdbc.core.JdbcTemplate;
 import utils.TestUtils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -46,6 +48,7 @@ import org.springframework.context.ApplicationContext;
 import utils.UsersDAOMemory;
 import utils.mock.PowerMockUtils;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -57,7 +60,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({DAO.class, Common.class, PointValueDAO.class, DataPointDao.class, DataSourceDao.class,
-        VirtualDataSourceRT.class, RuntimeManager.class, PointValueService.class, PointValueDAO.class, ApplicationBeans.class, PointValueDao.class,
+        VirtualDataSourceRT.class, RuntimeManager.class, PointValueService.class, IPointValueDAO.class, ApplicationBeans.class, PointValueDao.class,
         SystemSettingsDAO.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
@@ -95,7 +98,7 @@ public class ConfigDataPointRtTest {
     private final DataPointSyncMode sync;
 
     private RuntimeManager runtimeManagerMock;
-    private PointValueDAO pointValueDAOMock;
+    private IPointValueDAO pointValueDAOMock;
     private DataSourceVO dataSourceVO;
     private DataPointVO dataPointVO;
 
@@ -163,44 +166,44 @@ public class ConfigDataPointRtTest {
         when(ApplicationBeans.getLoggedUsersBean()).thenReturn(loggedUsers);
         when(loggedUsers.getUser(eq(user.getId()))).thenReturn(user);
 
+        DataSource dsMock = mock(DataSource.class);
+        when(ApplicationBeans.getBean("databaseSource", DataSource.class)).thenReturn(dsMock);
+
         dataSourceVO = createDataSource();
         dataPointVO = createDataPoint(defaultCacheSize, tolerance, startValue, dataTypeId, dataSourceVO);
 
-        pointValueDAOMock = mock(PointValueDAO.class);
+        pointValueDAOMock = mock(PointValueDAOMemory.class);
 
-        when(pointValueDAOMock.createAnnotation(anyLong(), anyString(), anyString(), anyInt(), anyInt())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.createAnnotation((long)args[0], (String)args[1], (String)args[2], (int)args[3], (int)args[4]);
-        });
+        when(pointValueDAOMock.applyBounds(anyDouble())).thenAnswer(inv -> inv.getArgument(0));
 
-        when(pointValueDAOMock.createAnnotation(anyLong(), isNull(), anyString(), anyInt(), anyInt())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.createAnnotation((long)args[0], (String)args[1], (String)args[2], (int)args[3], (int)args[4]);
-        });
+        when(pointValueDAOMock.createAnnotation(anyLong(), anyString(), anyString(), anyInt(), anyInt()))
+                .thenAnswer(a -> pointValueDAOMemory.createAnnotation((long)a.getArgument(0), a.getArgument(1), a.getArgument(2), a.getArgument(3), a.getArgument(4)));
+        when(pointValueDAOMock.createAnnotation(anyLong(), isNull(), anyString(), anyInt(), anyInt()))
+                .thenAnswer(a -> pointValueDAOMemory.createAnnotation((long)a.getArgument(0), a.getArgument(1), a.getArgument(2), a.getArgument(3), a.getArgument(4)));
+        when(pointValueDAOMock.createAnnotation(anyLong(), anyString(), isNull(), anyInt(), anyInt()))
+                .thenAnswer(a -> pointValueDAOMemory.createAnnotation((long)a.getArgument(0), a.getArgument(1), a.getArgument(2), a.getArgument(3), a.getArgument(4)));
+        when(pointValueDAOMock.createAnnotation(anyLong(), isNull(), isNull(), anyInt(), anyInt()))
+                .thenAnswer(a -> pointValueDAOMemory.createAnnotation((long)a.getArgument(0), a.getArgument(1), a.getArgument(2), a.getArgument(3), a.getArgument(4)));
 
-        when(pointValueDAOMock.createAnnotation(anyLong(), anyString(), isNull(), anyInt(), anyInt())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.createAnnotation((long)args[0], (String)args[1], (String)args[2], (int)args[3], (int)args[4]);
-        });
+        when(pointValueDAOMock.create(anyInt(), anyInt(), anyDouble(), anyLong()))
+                .thenAnswer(a -> pointValueDAOMemory.create((int)a.getArgument(0), (int)a.getArgument(1), (double)a.getArgument(2), (long)a.getArgument(3)));
 
-        when(pointValueDAOMock.createAnnotation(anyLong(), isNull(), isNull(), anyInt(), anyInt())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.createAnnotation((long)args[0], (String)args[1], (String)args[2], (int)args[3], (int)args[4]);
-        });
+        when(pointValueDAOMock.getPointValue(anyLong()))
+                .thenAnswer(a -> pointValueDAOMemory.getPointValue((long)a.getArgument(0)));
 
-        when(pointValueDAOMock.create(anyInt(), anyInt(), anyDouble(), anyLong())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.create((int)args[0], (int)args[1], (double)args[2], (long)args[3]);
-        });
+        mockStatic(ApplicationBeans.class);
+        when(ApplicationBeans.getPointValueDaoBean()).thenReturn(pointValueDAOMock);
 
-        when(pointValueDAOMock.getPointValue(anyLong())).thenAnswer(a -> {
-            Object[] args = a.getArguments();
-            return pointValueDAOMemory.getPointValue((long)args[0]);
-        });
-        when(pointValueDAOMock.applyBounds(anyDouble())).thenCallRealMethod();
+        DatabaseAccess dbAccessMock = mock(DatabaseAccess.class);
+        when(ApplicationBeans.getBean("databaseAccess", DatabaseAccess.class)).thenReturn(dbAccessMock);
+        when(dbAccessMock.getTypeKey()).thenReturn("mysql");
 
-        mockStatic(PointValueDAO.class);
-        when(PointValueDAO.getInstance()).thenReturn(pointValueDAOMock);
+        JdbcTemplate jdbcTemplateMock = mock(JdbcTemplate.class);
+        DAO daoMock = mock(DAO.class);
+        when(daoMock.getJdbcTemp()).thenReturn(jdbcTemplateMock);
+        mockStatic(DAO.class);
+        when(DAO.getInstance()).thenReturn(daoMock);
+        when(jdbcTemplateMock.queryForObject(anyString(), any(), eq(Long.class))).thenReturn(1L);
 
         RealTimeTimer realTimeTimerMock = mock(RealTimeTimer.class);
         whenNew(RealTimeTimer.class).withNoArguments().thenReturn(realTimeTimerMock);
@@ -212,17 +215,17 @@ public class ConfigDataPointRtTest {
         runtimeManagerMock = mock(RuntimeManager.class);
 
         doAnswer(a -> {
-            runtimeManager.saveDataPoint((DataPointVO)a.getArguments()[0]);
+            runtimeManager.saveDataPoint(a.getArgument(0));
             return null;
         }).when(runtimeManagerMock).saveDataPoint(any(DataPointVO.class));
 
         doAnswer(a -> {
-            runtimeManager.saveDataSource((DataSourceVO)a.getArguments()[0]);
+            runtimeManager.saveDataSource(a.getArgument(0));
             return null;
         }).when(runtimeManagerMock).saveDataSource(any(DataSourceVO.class));
 
         when(runtimeManagerMock.getDataPoint(anyInt()))
-                .thenAnswer(a -> runtimeManager.getDataPoint((int)a.getArguments()[0]));
+                .thenAnswer(a -> runtimeManager.getDataPoint(a.getArgument(0)));
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManagerMock);
 
         BackgroundProcessing backgroundProcessingMock = mock(BackgroundProcessing.class);
@@ -232,27 +235,19 @@ public class ConfigDataPointRtTest {
         when(contextWrapper.getEventManager()).thenReturn(eventManagerMock);
 
         DataPointService dataPointServiceMock = mock(DataPointService.class);
-        whenNew(DataPointService.class)
-                .withNoArguments()
-                .thenReturn(dataPointServiceMock);
+        whenNew(DataPointService.class).withNoArguments().thenReturn(dataPointServiceMock);
         when(dataPointServiceMock.getDataPoint(anyInt())).thenReturn(dataPointVO);
 
         DataSourceService dataSourceServiceMock = mock(DataSourceService.class);
-        whenNew(DataSourceService.class)
-                .withNoArguments()
-                .thenReturn(dataSourceServiceMock);
+        whenNew(DataSourceService.class).withNoArguments().thenReturn(dataSourceServiceMock);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
         TimeoutTask timeoutTaskMock = mock(TimeoutTask.class);
-        whenNew(TimeoutTask.class)
-                .withAnyArguments()
-                .thenReturn(timeoutTaskMock);
+        whenNew(TimeoutTask.class).withAnyArguments().thenReturn(timeoutTaskMock);
 
         SystemSettingsService systemSettingsServiceMock = mock(SystemSettingsService.class);
         when(systemSettingsServiceMock.getDataPointRtValueSynchronized()).thenReturn(sync);
-        whenNew(SystemSettingsService.class)
-                .withNoArguments()
-                .thenReturn(systemSettingsServiceMock);
+        whenNew(SystemSettingsService.class).withNoArguments().thenReturn(systemSettingsServiceMock);
 
         DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
         when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
@@ -260,6 +255,7 @@ public class ConfigDataPointRtTest {
         IUserDAO userDAO = mock(IUserDAO.class);
         when(ApplicationBeans.getUserDaoBean()).thenReturn(userDAO);
     }
+
 
     protected DataPointVO createDataPoint(int defaultCacheSize,
                                           double tolerance, String startValue,
@@ -445,7 +441,7 @@ public class ConfigDataPointRtTest {
         return numberOfLaunches;
     }
 
-    public PointValueDAO getPointValueDAOMock() {
+    public IPointValueDAO getPointValueDAOMock() {
         return pointValueDAOMock;
     }
 

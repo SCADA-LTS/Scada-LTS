@@ -1,9 +1,10 @@
 package org.scada_lts.service;
 
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.SynopticPanelDAO;
+import org.scada_lts.dao.ISynopticPanelDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Service
 public class SynopticPanelService {
 
-    private final SynopticPanelDAO synopticPanelDAO = new SynopticPanelDAO();
+    private final ISynopticPanelDAO synopticPanelDAO = ApplicationBeans.getSynopticPanelDaoBean();
 
     public List<ScadaObjectIdentifier> getSimpleSynopticPanelsList() {
         return synopticPanelDAO.getSimpleList();

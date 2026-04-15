@@ -20,7 +20,6 @@ package com.serotonin.mango.db.dao;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -33,7 +32,7 @@ import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.GenericResultSetExtractor;
-import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 
@@ -83,19 +82,9 @@ public class DataSourceDao {
 						if (!rs.next())
 							return null;
 
-						InputStream is;
-
-						if (Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres")) {
-							Blob blob = rs.getBlob(1);
-							is = blob.getBinaryStream();
-							if (blob == null)
-								return null;
-						} else {
-							is = rs.getBinaryStream(1);
-							if (is == null)
-								return null;
-						}
+						InputStream is = DatabaseAccess.getDatabaseAccess().getBinaryStream(rs, 1);
+						if (is == null)
+							return null;
 
 						return (Serializable) SerializationHelper
 								.readObjectInContext(is);
@@ -108,8 +97,7 @@ public class DataSourceDao {
 				"update dataSources set rtdata=? where id=?",
 				new Object[] { SerializationHelper.writeObject(data), id },
 				new int[] {
-						Common.getEnvironmentProfile().getString("db.type")
-								.equals("postgres") ? Types.BINARY : Types.BLOB,
+						DatabaseAccess.getDatabaseAccess().getBinarySqlType(),
 						Types.INTEGER });
 	}
 }

@@ -37,10 +37,11 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.scada_lts.dao.PointEventDetectorDAO;
-import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.IPointEventDetectorDAO;
+import org.scada_lts.dao.event.IEventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.*;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
@@ -462,7 +463,8 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
-			AuditEventUtils.raiseAuditDetectorEvent(point, ped, new PointEventDetectorDAO());
+            IPointEventDetectorDAO pointEventDetectorDAO = ApplicationBeans.getPointEventDetectorDaoBean();
+			AuditEventUtils.raiseAuditDetectorEvent(point, ped, pointEventDetectorDAO);
 		}
 
 		new DataPointDao().saveDataPoint(point);
@@ -1000,9 +1002,10 @@ public class RuntimeManager {
 	}
 
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
+        IEventDAO eventDAO = ApplicationBeans.getEventDaoBean();
 		CommunicationChannel channel = CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
-				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+				InactiveEventsProvider.newInstance(eventDAO, ScheduledExecuteInactiveEventDAO.getInstance(),
 						channel, 600),
 				new DataPointService(), new DataSourceService(), 300);
 		sendEmail.initialize();
@@ -1010,9 +1013,10 @@ public class RuntimeManager {
 	}
 
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
+        IEventDAO eventDAO = ApplicationBeans.getEventDaoBean();
 		CommunicationChannel channel = CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
-				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+				InactiveEventsProvider.newInstance(eventDAO, ScheduledExecuteInactiveEventDAO.getInstance(),
 						channel, 600),
 				new DataPointService(), new DataSourceService(), 300);
 		sendSms.initialize();

@@ -41,7 +41,7 @@ import com.serotonin.web.i18n.LocalizableMessageParseException;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class PendingEventsDAO {
+public class PendingEventsDAO implements IPendingEventsDAO {
 
 	private static final Log LOG = LogFactory.getLog(PendingEventsDAO.class);
 

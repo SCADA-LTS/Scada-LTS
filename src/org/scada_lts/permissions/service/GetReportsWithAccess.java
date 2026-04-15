@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.dao.report.ReportDAO;
+import org.scada_lts.dao.report.IReportDAO;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +19,9 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
 
     private static final Log LOG = LogFactory.getLog(GetReportsWithAccess.class);
 
-    private final ReportDAO reportDAO;
+    private final IReportDAO reportDAO;
 
-    public GetReportsWithAccess(ReportDAO reportDAO) {
+    public GetReportsWithAccess(IReportDAO reportDAO) {
         this.reportDAO = reportDAO;
     }
 

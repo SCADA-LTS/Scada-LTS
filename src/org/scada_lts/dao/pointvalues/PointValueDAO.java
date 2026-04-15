@@ -63,7 +63,6 @@ import com.serotonin.mango.vo.bean.PointHistoryCount;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * 
  */
-@Repository
 public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 
 	private static final Log LOG = LogFactory.getLog(PointValueDAO.class);
@@ -740,5 +739,41 @@ public class PointValueDAO implements GenericDaoCR<PointValue>, IPointValueDAO {
 			id = key.longValue();
 		}
 		return id;
+	}
+
+	@Override
+	public List<PointValue> getPointValues(int dataPointId, long since) {
+		return filtered(
+				POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
+				new Object[]{dataPointId, since},
+				GenericDaoCR.NO_LIMIT
+		);
+	}
+
+	@Override
+	public List<PointValue> getPointValuesBetween(int dataPointId, long from, long to) {
+		return filtered(
+				POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
+				new Object[]{dataPointId, from, to},
+				GenericDaoCR.NO_LIMIT
+		);
+	}
+
+	@Override
+	public List<PointValue> getLatestPointValues(int dataPointId, int limit) {
+		return filtered(
+				POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+				new Object[]{dataPointId},
+				limit
+		);
+	}
+
+	@Override
+	public List<PointValue> getLatestPointValues(int dataPointId, int limit, long before) {
+		return filtered(
+				POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID,
+				new Object[]{dataPointId, before},
+				limit
+		);
 	}
 }

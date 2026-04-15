@@ -13,11 +13,17 @@
  */
 package com.serotonin.mango.db;
 
+import br.org.scadabr.db.configuration.ConfigurationDB;
+
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.MissingResourceException;
 
@@ -26,7 +32,9 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.ISystemSettingsDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -43,11 +51,101 @@ import com.serotonin.util.StringUtils;
 abstract public class DatabaseAccess {
 	private final static Log log = LogFactory.getLog(DatabaseAccess.class);
 
+	public static final class StorageStatistics {
+		private final boolean databaseSizeKnown;
+		private final Double databaseSizeMb;
+		private final Long databaseSizeBytes;
+		private final int filedataCount;
+		private final long filedataSizeBytes;
+		private final Double totalSizeMb;
+		private final Long totalSizeBytes;
+
+		private StorageStatistics(boolean databaseSizeKnown, Double databaseSizeMb, Long databaseSizeBytes,
+								  int filedataCount, long filedataSizeBytes, Double totalSizeMb, Long totalSizeBytes) {
+			this.databaseSizeKnown = databaseSizeKnown;
+			this.databaseSizeMb = databaseSizeMb;
+			this.databaseSizeBytes = databaseSizeBytes;
+			this.filedataCount = filedataCount;
+			this.filedataSizeBytes = filedataSizeBytes;
+			this.totalSizeMb = totalSizeMb;
+			this.totalSizeBytes = totalSizeBytes;
+		}
+
+		public static StorageStatistics fromFilesystem(long databaseSizeBytes, int filedataCount, long filedataSizeBytes) {
+			return new StorageStatistics(
+					true,
+					null,
+					databaseSizeBytes,
+					filedataCount,
+					filedataSizeBytes,
+					null,
+					databaseSizeBytes + filedataSizeBytes
+			);
+		}
+
+		public static StorageStatistics fromDatabaseSizeMb(double databaseSizeMb) {
+			return new StorageStatistics(
+					true,
+					databaseSizeMb,
+					null,
+					0,
+					0,
+					databaseSizeMb,
+					null
+			);
+		}
+
+		public static StorageStatistics unknownDatabaseSize(int filedataCount, long filedataSizeBytes, long totalSizeBytes) {
+			return new StorageStatistics(
+					false,
+					null,
+					null,
+					filedataCount,
+					filedataSizeBytes,
+					null,
+					totalSizeBytes
+			);
+		}
+
+		public boolean isDatabaseSizeKnown() {
+			return databaseSizeKnown;
+		}
+
+		public Double getDatabaseSizeMb() {
+			return databaseSizeMb;
+		}
+
+		public Long getDatabaseSizeBytes() {
+			return databaseSizeBytes;
+		}
+
+		public int getFiledataCount() {
+			return filedataCount;
+		}
+
+		public long getFiledataSizeBytes() {
+			return filedataSizeBytes;
+		}
+
+		public Double getTotalSizeMb() {
+			return totalSizeMb;
+		}
+
+		public Long getTotalSizeBytes() {
+			return totalSizeBytes;
+		}
+	}
+
 	public enum DatabaseType {
 		DERBY {
 			@Override
 			DatabaseAccess getImpl() {
 				return new DerbyAccess();
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useDerbyDB();
 			}
 		},
 		MSSQL {
@@ -55,11 +153,43 @@ abstract public class DatabaseAccess {
 			DatabaseAccess getImpl() {
 				return new MSSQLAccess();
 			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useMssqlDB();
+			}
 		},
 		MYSQL {
 			@Override
 			DatabaseAccess getImpl() {
 				return new MySQLAccess();
+			}
+
+			@Override
+			public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+				Blob blob = rs.getBlob(columnIndex);
+				return blob == null ? null : blob.getBinaryStream();
+			}
+
+			@Override
+			public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+				Blob blob = rs.getBlob(columnLabel);
+				return blob == null ? null : blob.getBinaryStream();
+			}
+
+			@Override
+			public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+														  java.util.function.DoubleSupplier databaseSizeSupplier) {
+				double size = databaseSizeSupplier.getAsDouble();
+				if (size >= 0) {
+					return StorageStatistics.fromDatabaseSizeMb(size);
+				}
+				return StorageStatistics.unknownDatabaseSize(filedataCount, filedataSizeBytes, dbSizeBytes + filedataSizeBytes);
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useMysqlDB();
 			}
 		},
 		POSTGRES {
@@ -67,27 +197,91 @@ abstract public class DatabaseAccess {
 			DatabaseAccess getImpl() {
 				return new PostgreSQLAccess();
 			}
+
+			@Override
+			public int getBinarySqlType() {
+				return Types.BINARY;
+			}
+
+			@Override
+			public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+														  java.util.function.DoubleSupplier databaseSizeSupplier) {
+				double size = databaseSizeSupplier.getAsDouble();
+				if (size >= 0) {
+					return StorageStatistics.fromDatabaseSizeMb(size);
+				}
+				return StorageStatistics.unknownDatabaseSize(filedataCount, filedataSizeBytes, dbSizeBytes + filedataSizeBytes);
+			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.usePostgresDB();
+			}
 		},
 		ORACLE11G {
 			@Override
 			DatabaseAccess getImpl() {
 				return new Oracle11GAccess();
 			}
+
+			@Override
+			public void applyConfiguration() {
+				ConfigurationDB.useOracle11gDB();
+			}
 		};
 
+		public String getKey() {
+			return name().toLowerCase();
+		}
+
+		public static DatabaseType from(String dbType) {
+			if (dbType == null) {
+				throw new IllegalArgumentException("Unknown database type: null");
+			}
+
+			String normalized = dbType.trim().toLowerCase();
+			switch (normalized) {
+				case "postgresql":
+				case "pgsql":
+				case "pg":
+					return POSTGRES;
+				case "mssqlserver":
+				case "mssql":
+					return MSSQL;
+				case "mysqlserver":
+				case "mysql":
+					return MYSQL;
+				default:
+					return DatabaseType.valueOf(normalized.toUpperCase());
+			}
+		}
+
+		public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+			return rs.getBinaryStream(columnIndex);
+		}
+
+		public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+			return rs.getBinaryStream(columnLabel);
+		}
+
+		public int getBinarySqlType() {
+			return Types.BLOB;
+		}
+
 		abstract DatabaseAccess getImpl();
+
+		public StorageStatistics getStorageStatistics(long dbSizeBytes, int filedataCount, long filedataSizeBytes,
+													  java.util.function.DoubleSupplier databaseSizeSupplier) {
+			return StorageStatistics.fromFilesystem(dbSizeBytes, filedataCount, filedataSizeBytes);
+		}
+
+		public abstract void applyConfiguration();
 	}
 
 	public static DatabaseAccess createDatabaseAccess() {
-
 		String type = Common.getEnvironmentProfile().getString("db.type",
 				"derby");
-		DatabaseType dt = DatabaseType.valueOf(type.toUpperCase());
-
-		if (dt == null)
-			throw new IllegalArgumentException("Unknown database type: " + type);
-
-		return dt.getImpl();
+		return DatabaseType.from(type).getImpl();
 	}
 
 	public static DatabaseAccess getDatabaseAccess() {
@@ -115,13 +309,11 @@ abstract public class DatabaseAccess {
 
 				if (!StringUtils.isEmpty(convertTypeStr)) {
 					// Found a database type from which to convert.
-					DatabaseType convertType = DatabaseType
-							.valueOf(convertTypeStr.toUpperCase());
-					if (convertType == null)
-						throw new IllegalArgumentException(
-								"Unknown convert database type: " + convertType);
-
-					DatabaseAccess sourceAccess = convertType.getImpl();
+					DatabaseAccess sourceAccess = resolveDatabaseAccess(DatabaseType.from(convertTypeStr));
+					if (sourceAccess == this) {
+						throw new IllegalStateException(
+								"convert.db.type must be different from db.type.");
+					}
 					sourceAccess.initializeImpl("convert.");
 
 					DBConvert convert = new DBConvert();
@@ -150,7 +342,8 @@ abstract public class DatabaseAccess {
 					new UserDao().saveUser(user);
 
 					// Record the current version.
-					new SystemSettingsDAO().setValue(
+					ISystemSettingsDAO systemSettingsDAO = ApplicationBeans.getSystemSettingsDaoBean();
+					systemSettingsDAO.setValue(
 							SystemSettingsDAO.DATABASE_SCHEMA_VERSION,
 							Common.getVersion());
 				}
@@ -185,6 +378,26 @@ abstract public class DatabaseAccess {
 	}
 
 	abstract public DatabaseType getType();
+
+	public String getTypeKey() {
+		return getType().getKey();
+	}
+
+	public String getIdQuery() {
+		return "SELECT @@identity";
+	}
+
+	public InputStream getBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
+		return getType().getBinaryStream(rs, columnIndex);
+	}
+
+	public InputStream getBinaryStream(ResultSet rs, String columnLabel) throws SQLException {
+		return getType().getBinaryStream(rs, columnLabel);
+	}
+
+	public int getBinarySqlType() {
+		return getType().getBinarySqlType();
+	}
 
 	abstract public void terminate();
 
@@ -262,4 +475,13 @@ abstract public class DatabaseAccess {
 		return connection.prepareStatement(sql, 1);
 	}
 
+	private static DatabaseAccess resolveDatabaseAccess(DatabaseType dbType) {
+		String beanName = "databaseAccess-" + dbType.getKey();
+		DatabaseAccess access = ApplicationBeans.getBean(beanName, DatabaseAccess.class);
+		if (access == null) {
+			throw new IllegalStateException("DB plugin not found for db.type=" + dbType.getKey()
+					+ ". Expected bean '" + beanName + "'.");
+		}
+		return access;
+	}
 }

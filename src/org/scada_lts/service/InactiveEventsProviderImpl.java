@@ -5,7 +5,7 @@ import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.IEventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 
@@ -28,13 +28,13 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
 
     private final int dataFromBaseLimit;
     private final AtomicInteger nonBlockingLock;
-    private final EventDAO eventDAO;
+    private final IEventDAO eventDAO;
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final CommunicationChannel communicationChannel;
     private final Queue<ScheduledExecuteInactiveEventInstance> relations;
     private final Set<ScheduledExecuteInactiveEventInstance> blocking;
 
-    InactiveEventsProviderImpl(EventDAO eventDAO, ScheduledExecuteInactiveEventDAO scheduledEventDAO,
+    InactiveEventsProviderImpl(IEventDAO eventDAO, ScheduledExecuteInactiveEventDAO scheduledEventDAO,
                            CommunicationChannel communicationChannel, int dataFromBaseLimit) {
         this.eventDAO = eventDAO;
         this.scheduledEventDAO = scheduledEventDAO;
@@ -45,7 +45,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         this.dataFromBaseLimit = dataFromBaseLimit;
     }
 
-    private static Set<ScheduledExecuteInactiveEventInstance> init(EventDAO eventDAO,
+    private static Set<ScheduledExecuteInactiveEventInstance> init(IEventDAO eventDAO,
                                                             ScheduledExecuteInactiveEventDAO scheduledEventDAO,
                                                             CommunicationChannel communicationChannel,
                                                             Set<ScheduledExecuteInactiveEventInstance> exclude,

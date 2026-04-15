@@ -4,12 +4,10 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
 public interface IUsersProfileDAO extends GenerateXid {
 
     Optional<UsersProfileVO> selectProfileById(int profileId);

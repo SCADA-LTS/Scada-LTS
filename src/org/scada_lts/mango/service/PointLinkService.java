@@ -22,8 +22,9 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.PointLinkDAO;
+import org.scada_lts.dao.IPointLinkDAO;
 import org.scada_lts.mango.adapter.MangoPointLink;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class PointLinkService implements MangoPointLink {
 
-	private static PointLinkDAO pointLinkDAO = new PointLinkDAO();
+    private static IPointLinkDAO pointLinkDAO = ApplicationBeans.getPointLinkDaoBean();
 
 	@Override
 	public String generateUniqueXid() {

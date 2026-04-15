@@ -54,7 +54,7 @@ public class FlexProjectDaoTest extends TestDAO {
 		flexProject.setDescription(DESCRIPTION);
 		flexProject.setXmlConfig(XML_CONFIG);
 
-		FlexProjectDAO flexProjectDAO = new FlexProjectDAO();
+		IFlexProjectDAO flexProjectDAO = new FlexProjectDAO();
 
 		//Insert objects
 		int firstId = flexProjectDAO.insert(NAME, DESCRIPTION, XML_CONFIG);

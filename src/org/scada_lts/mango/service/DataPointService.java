@@ -45,10 +45,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
+import org.scada_lts.dao.pointhierarchy.IPointHierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.pointvalues.IPointValueAmChartDAO;
+import org.scada_lts.dao.pointvalues.IPointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
-import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.dao.watchlist.IWatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
@@ -74,36 +76,36 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
-	private final DataPointDAO dataPointDAO;
+	private final IDataPointDAO dataPointDAO;
 
-	private final DataSourceDAO dataSourceDAO;
+	private final IDataSourceDAO dataSourceDAO;
 
 	private final IUserCommentDAO userCommentDAO;
 
 	private final IPointEventDetectorDAO pointEventDetectorDAO;
 
-	private final PointHierarchyDAO pointHierarchyDAO;
+	private final IPointHierarchyDAO pointHierarchyDAO;
 
-	private final DataPointUserDAO dataPointUserDAO ;
+	private final IDataPointUserDAO dataPointUserDAO ;
 
-	private static final PointValueDAO pointValueDAO = new PointValueDAO();
+	private static final IPointValueDAO pointValueDAO = ApplicationBeans.getPointValueDaoBean();
 
-	private final WatchListDAO watchListDAO;
+	private final IWatchListDAO watchListDAO;
 
-	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
+    private static final IPointLinkDAO pointLinkDAO = ApplicationBeans.getPointLinkDaoBean();
 
 	private final PointHierarchyService pointHierarchyService;
 
-	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
+	private static final IPointValueAmChartDAO pointValueAmChartDao = ApplicationBeans.getPointValueAmChartDAOBean();
 
 	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
 
 	public DataPointService() {
-		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
-		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
-		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", PointHierarchyDAO.class);
-		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
-		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+		this.dataPointDAO = ApplicationBeans.getDataPointDAOBean();
+        this.dataSourceDAO = ApplicationBeans.getDataSourceDaoBean();
+        this.pointHierarchyDAO =  ApplicationBeans.getPointHierarchyDaoBean();
+		this.dataPointUserDAO = ApplicationBeans.getDataPointUserDAOBean();
+        this.watchListDAO = ApplicationBeans.getWatchListDaoBean();
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
 		this.userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
@@ -352,7 +354,7 @@ public class DataPointService implements MangoDataPoint {
 
 	@Override
 	public void updateDataPoint(final DataPointVO dp) {
-		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getId());
+		DataPointVO oldDp = dataPointDAO.getDataPoint(dp.getXid());
 		if (oldDp.getPointLocator().getDataTypeId() != dp.getPointLocator().getDataTypeId()) {
 			new PointValueDao().deletePointValuesWithMismatchedType(dp.getId(), dp.getPointLocator().getDataTypeId());
 		}

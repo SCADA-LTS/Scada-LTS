@@ -486,14 +486,18 @@ public class ViewDAO implements IViewDAO {
 	}
 
 	@Override
-	public View findByName(String name) {
-		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
-	}
-
-	@Override
 	public View findByXid(String xid) {
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, new Object[]{xid}, new ViewRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public View findByName(String name) {
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[]{name}, new ViewRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

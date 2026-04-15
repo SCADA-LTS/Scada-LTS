@@ -21,22 +21,23 @@ import java.util.List;
 
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.event.CompoundEventDetectorDAO;
+import org.scada_lts.dao.event.ICompoundEventDetectorDAO;
 import org.scada_lts.mango.adapter.MangoCompoundEventDetector;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /**
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 public class CompoundEventDetectorService implements MangoCompoundEventDetector {
 	
-	private CompoundEventDetectorDAO cedDao;
+	private final ICompoundEventDetectorDAO cedDao;
 	
 	public CompoundEventDetectorService() {
-		cedDao = new CompoundEventDetectorDAO();
+        cedDao = ApplicationBeans.getCompoundEventDetectorDaoBean();
 	}
 	
 	@Override

@@ -25,7 +25,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @Repository
-public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
+public class SynopticPanelDAO implements ISynopticPanelDAO {
 
     private static final Log LOG = LogFactory.getLog(SynopticPanelDAO.class);
 

@@ -14,10 +14,8 @@ public class MangoEmailContent extends TemplateEmailContent {
     public static final int CONTENT_TYPE_HTML = 1;
     public static final int CONTENT_TYPE_TEXT = 2;
 
-    private static final SystemSettingsDAO SYSTEM_SETTINGS_DAO = new SystemSettingsDAO();
-
     public MangoEmailContent(String templateName, Object model, String encoding) throws TemplateException, IOException {
-        this(templateName, model, encoding, SYSTEM_SETTINGS_DAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE));
+        this(templateName, model, encoding, SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE));
     }
 
     private MangoEmailContent(String templateName, Object model, String encoding, int type) throws TemplateException,

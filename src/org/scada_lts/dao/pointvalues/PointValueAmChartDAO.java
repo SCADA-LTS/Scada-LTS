@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
  */
-public class PointValueAmChartDAO {
+public class PointValueAmChartDAO implements IPointValueAmChartDAO {
 
     private static final Log LOG = LogFactory.getLog(PointValueAmChartDAO.class);
 
