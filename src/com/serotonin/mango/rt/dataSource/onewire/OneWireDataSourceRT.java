@@ -103,7 +103,7 @@ public class OneWireDataSourceRT extends PollingDataSource {
         }
 
         // Create a local list of points so that we can remove those that we're done with.
-        List<DataPointRT> points = new ArrayList<DataPointRT>(dataPoints);
+        List<DataPointRT> points = new ArrayList<>(getDataPoints());
 
         LocalizableMessage exceptionMessage = null;
         try {
@@ -320,67 +320,67 @@ public class OneWireDataSourceRT extends PollingDataSource {
             return;
 
         // Ensure that the write doesn't conflict with a read.
-        synchronized (pointListChangeLock) {
-            OneWirePointLocatorRT locator = dataPoint.getPointLocator();
 
-            NetworkPath path = null;
-            try {
-                localNetwork.lock();
+        OneWirePointLocatorRT locator = dataPoint.getPointLocator();
 
-                path = localNetwork.getNetworkPath(locator.getAddress());
-                if (path == null)
-                    exceptionMessage = new LocalizableMessage("event.1wire.noDevice", Address.toString(locator
-                            .getAddress()), dataPoint.getVO().getName());
-                else {
-                    path.open();
+        NetworkPath path = null;
+        try {
+            localNetwork.lock();
 
-                    int attributeId = locator.getVo().getAttributeId();
-                    int index = locator.getVo().getIndex();
-
-                    if (attributeId == OneWirePointLocatorVO.AttributeTypes.LATCH_STATE) {
-                        SwitchContainer sc = (SwitchContainer) path.getTarget();
-                        byte[] state = sc.readDevice();
-                        boolean value = valueTime.getBooleanValue();
-                        sc.setLatchState(index, value, sc.hasSmartOn(), state);
-                        sc.writeDevice(state);
-                    }
-                    else if (attributeId == OneWirePointLocatorVO.AttributeTypes.WIPER_POSITION) {
-                        PotentiometerContainer pc = (PotentiometerContainer) path.getTarget();
-                        byte[] state = pc.readDevice();
-                        int value = valueTime.getIntegerValue();
-                        pc.setCurrentWiperNumber(index, state);
-                        boolean success = pc.setWiperPosition(value);
-                        if (success)
-                            pc.writeDevice(state);
-                        else
-                            exceptionMessage = new LocalizableMessage("event.1wire.setWiper", Address.toString(locator
-                                    .getAddress()), dataPoint.getVO().getName());
-                    }
-                }
-            }
-            catch (Exception e) {
-                exceptionMessage = getSerialExceptionMessage(e, vo.getCommPortId());
-            }
-            finally {
-                try {
-                    if (path != null)
-                        path.close();
-                }
-                catch (Exception e) {
-                    // no op
-                }
-
-                localNetwork.unlock();
-            }
-
-            // Event handling.
-            if (exceptionMessage != null)
-                raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage, dataPoint);
+            path = localNetwork.getNetworkPath(locator.getAddress());
+            if (path == null)
+                exceptionMessage = new LocalizableMessage("event.1wire.noDevice", Address.toString(locator
+                        .getAddress()), dataPoint.getVO().getName());
             else {
-                dataPoint.setPointValue(valueTime, source);
-                returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+                path.open();
+
+                int attributeId = locator.getVo().getAttributeId();
+                int index = locator.getVo().getIndex();
+
+                if (attributeId == OneWirePointLocatorVO.AttributeTypes.LATCH_STATE) {
+                    SwitchContainer sc = (SwitchContainer) path.getTarget();
+                    byte[] state = sc.readDevice();
+                    boolean value = valueTime.getBooleanValue();
+                    sc.setLatchState(index, value, sc.hasSmartOn(), state);
+                    sc.writeDevice(state);
+                }
+                else if (attributeId == OneWirePointLocatorVO.AttributeTypes.WIPER_POSITION) {
+                    PotentiometerContainer pc = (PotentiometerContainer) path.getTarget();
+                    byte[] state = pc.readDevice();
+                    int value = valueTime.getIntegerValue();
+                    pc.setCurrentWiperNumber(index, state);
+                    boolean success = pc.setWiperPosition(value);
+                    if (success)
+                        pc.writeDevice(state);
+                    else
+                        exceptionMessage = new LocalizableMessage("event.1wire.setWiper", Address.toString(locator
+                                .getAddress()), dataPoint.getVO().getName());
+                }
             }
         }
+        catch (Exception e) {
+            exceptionMessage = getSerialExceptionMessage(e, vo.getCommPortId());
+        }
+        finally {
+            try {
+                if (path != null)
+                    path.close();
+            }
+            catch (Exception e) {
+                // no op
+            }
+
+            localNetwork.unlock();
+        }
+
+        // Event handling.
+        if (exceptionMessage != null)
+            raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false, exceptionMessage, dataPoint);
+        else {
+            dataPoint.setPointValue(valueTime, source);
+            returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
+        }
+
     }
 
     //

@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.dataSource.openv4j;
 import gnu.io.SerialPort;
 
 import java.util.Date;
+import java.util.List;
 
 import net.sf.openv4j.CycleTimes;
 import net.sf.openv4j.ErrorListEntry;
@@ -79,6 +80,7 @@ public class OpenV4JDataSourceRT extends PollingDataSource {
     @Override
     protected synchronized void doPoll(long time) {
         final SegmentedDataContainer dc = new SegmentedDataContainer();
+        List<DataPointRT> dataPoints = getDataPoints();
         for (DataPointRT point : dataPoints) {
             final OpenV4JPointLocatorRT locator = point.getPointLocator();
             dc.addToDataContainer(locator.getDataPoint());

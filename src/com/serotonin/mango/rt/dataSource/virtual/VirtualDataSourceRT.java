@@ -35,7 +35,7 @@ public class VirtualDataSourceRT extends PollingDataSource {
 
     @Override
     public void doPoll(long time) {
-        for (DataPointRT dataPoint : dataPoints) {
+        for (DataPointRT dataPoint : getDataPoints()) {
             VirtualPointLocatorRT locator = dataPoint.getPointLocator();
 
             // Change the point values according to their definitions.

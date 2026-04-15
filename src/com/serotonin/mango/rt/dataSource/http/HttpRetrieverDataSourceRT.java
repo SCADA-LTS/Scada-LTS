@@ -101,7 +101,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
 
         // We have the data. Now run the regex.
         LocalizableMessage parseErrorMessage = null;
-        for (DataPointRT dp : dataPoints) {
+        for (DataPointRT dp : getDataPoints()) {
             HttpRetrieverPointLocatorRT locator = dp.getPointLocator();
 
             try {

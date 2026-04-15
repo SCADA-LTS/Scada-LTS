@@ -1,6 +1,8 @@
 package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class DataPointUnreliableUtils {
@@ -51,5 +54,32 @@ public final class DataPointUnreliableUtils {
 
     public static boolean isSetUnreliable(DataPointRT dataPointRT, boolean unreliable) {
         return SetUnreliableDataPointsAction.isSetUnreliable(dataPointRT, unreliable);
+    }
+
+    public static void setUnreliableDataPoints(EventType type, DataSourceRT dataSourceRT) {
+        doUnreliable(type, dataSourceRT, DataPointUnreliableUtils::setUnreliableDataPoints, DataPointUnreliableUtils::setUnreliableDataPoint);
+    }
+
+    public static void resetUnreliableDataPoints(EventType type, DataSourceRT dataSourceRT) {
+        doUnreliable(type, dataSourceRT, DataPointUnreliableUtils::resetUnreliableDataPoints, DataPointUnreliableUtils::resetUnreliableDataPoint);
+    }
+
+    private static void doUnreliable(EventType type, DataSourceRT dataSourceRT,
+                                    Consumer<List<DataPointRT>> list, Consumer<DataPointRT> single) {
+        if(dataSourceRT != null && type instanceof DataSourceEventType) {
+            List<DataPointRT> dataPoints = dataSourceRT.getDataPoints();
+            DataSourceEventType dataSourceEventType = (DataSourceEventType) type;
+            if(dataSourceRT.doSetUnreliableDataPoint(dataSourceEventType.getDataSourceEventTypeId())) {
+                if (type.getDataPointId() == -1) {
+                    list.accept(dataPoints);
+                } else {
+                    for (DataPointRT dataPoint : dataPoints) {
+                        if (dataPoint.getId() == type.getDataPointId()) {
+                            single.accept(dataPoint);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

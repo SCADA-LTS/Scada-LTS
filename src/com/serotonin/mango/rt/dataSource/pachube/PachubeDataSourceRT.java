@@ -129,18 +129,16 @@ public class PachubeDataSourceRT extends PollingDataSource {
     protected void doPoll(long time) {
         Map<Integer, List<DataPointRT>> devicePoints = new HashMap<Integer, List<DataPointRT>>();
 
-        synchronized (pointListChangeLock) {
-            for (DataPointRT dp : dataPoints) {
-                PachubePointLocatorRT locator = dp.getPointLocator();
+        for (DataPointRT dp : getDataPoints()) {
+            PachubePointLocatorRT locator = dp.getPointLocator();
 
-                List<DataPointRT> points = devicePoints.get(locator.getFeedId());
-                if (points == null) {
-                    points = new ArrayList<DataPointRT>();
-                    devicePoints.put(locator.getFeedId(), points);
-                }
-
-                points.add(dp);
+            List<DataPointRT> points = devicePoints.get(locator.getFeedId());
+            if (points == null) {
+                points = new ArrayList<DataPointRT>();
+                devicePoints.put(locator.getFeedId(), points);
             }
+
+            points.add(dp);
         }
 
         for (Map.Entry<Integer, List<DataPointRT>> entry : devicePoints.entrySet())

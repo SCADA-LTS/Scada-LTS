@@ -76,7 +76,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         ImageRetrieverMonitor monitor = new ImageRetrieverMonitor();
 
         // Add all of the retrievers to the monitor.
-        for (DataPointRT dp : dataPoints) {
+        for (DataPointRT dp : getDataPoints()) {
             ImageRetriever retriever = new ImageRetriever(monitor, dp, time);
             monitor.addRetriever(retriever);
         }

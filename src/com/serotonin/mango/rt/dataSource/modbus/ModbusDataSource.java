@@ -50,7 +50,8 @@ import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
 import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
 import static com.serotonin.mango.rt.dataSource.DataSourceUtils.checkInitialized;
 
 abstract public class ModbusDataSource extends PollingDataSource implements
@@ -140,16 +141,14 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 	@Override
 	public void removeDataPoint(DataPointRT dataPoint) {
-		synchronized (pointListChangeLock) {
-			super.removeDataPoint(dataPoint);
+		super.removeDataPoint(dataPoint);
 
-			// If this is a slave monitor point being removed, also remove it
-			// from the map.
-			ModbusPointLocatorVO locatorVO = dataPoint.getVO()
-					.getPointLocator();
-			if (locatorVO.isSlaveMonitor())
-				slaveMonitors.put(locatorVO.getSlaveId(), null);
-		}
+		// If this is a slave monitor point being removed, also remove it
+		// from the map.
+		ModbusPointLocatorVO locatorVO = dataPoint.getVO()
+				.getPointLocator();
+		if (locatorVO.isSlaveMonitor())
+			slaveMonitors.put(locatorVO.getSlaveId(), null);
 	}
 
 	@Override
@@ -182,7 +181,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		BaseLocator<?> modbusLocator;
 		Object result;
 
-
+		List<DataPointRT> dataPoints = getDataPoints();
 		if (batchRead == null || pointListChanged) {
 			pointListChanged = false;
 			batchRead = new BatchRead<ModbusPointLocatorRT>();
@@ -197,6 +196,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					try {
 						modbusLocator = createModbusLocator(locator.getVO());
 						batchRead.addLocator(locator, modbusLocator);
+						resetUnreliableDataPoint(dataPoint);
 					} catch (Exception e) {
 						LOG.warn(LoggingUtils.info(e, this));
 						setUnreliableDataPoint(dataPoint);
@@ -390,21 +390,15 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		BaseLocator<?> ml = createModbusLocator(pl.getVO());
 		long time = System.currentTimeMillis();
 
-		synchronized (pointListChangeLock) {
-			try {
-				checkInitialized(this);
-				Object value = modbusMaster.getValue(ml);
-				updatePointValue(dataPoint, pl, value, time);
-				returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
-			} catch (ErrorResponseException e) {
-				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
-						new LocalizableMessage("event.exception2", dataPoint
-								.getVO().getName(), e.getMessage()), dataPoint);
-			} catch (Throwable e) {
-				// Don't raise a data source exception. Polling should do that.
-				LOG.warn("Error during forcePointRead", e);
-				setUnreliableDataPoint(dataPoint);
-			}
+		try {
+			checkInitialized(this);
+			Object value = modbusMaster.getValue(ml);
+			updatePointValue(dataPoint, pl, value, time);
+			returnToNormal(POINT_READ_EXCEPTION_EVENT, time, dataPoint);
+		} catch (Throwable e) {
+			raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
+					new LocalizableMessage("event.exception2", dataPoint
+							.getVO().getName(), e.getMessage()), dataPoint);
 		}
 	}
 

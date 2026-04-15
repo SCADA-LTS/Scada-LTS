@@ -90,8 +90,6 @@ import com.serotonin.util.queue.ByteQueue;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
-
 /**
  * @author Matthew Lohbihler
  */
@@ -257,11 +255,9 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
                 d = localDevice.findRemoteDevice(address, network, locator.getRemoteDeviceInstanceNumber());
             }
             catch (BACnetException e) {
-                setUnreliableDataPoint(dataPoint);
                 log.warn(LoggingUtils.info(e, this), e);
             }
             catch (PropertyValueException e) {
-                setUnreliableDataPoint(dataPoint);
                 // Shouldn't happen, so just log.
                 log.error("Couldn't manually get segmentation and vendor id from device: " + LoggingUtils.info(e, this));
             }
@@ -306,20 +302,18 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     protected void doPoll(long time) {
         Map<RemoteDevice, List<DataPointRT>> devicePoints = new HashMap<RemoteDevice, List<DataPointRT>>();
 
-        synchronized (pointListChangeLock) {
-            for (DataPointRT dp : dataPoints) {
-                BACnetIPPointLocatorRT locator = dp.getPointLocator();
-                if (locator.isUseCovSubscription() && dp.getPointValue() != null && !dp.isUnreliable())
-                    continue;
+        for (DataPointRT dp : getDataPoints()) {
+            BACnetIPPointLocatorRT locator = dp.getPointLocator();
+            if (locator.isUseCovSubscription() && dp.getPointValue() != null && !dp.isUnreliable())
+                continue;
 
-                List<DataPointRT> points = devicePoints.get(locator.getRemoteDevice());
-                if (points == null) {
-                    points = new ArrayList<DataPointRT>();
-                    devicePoints.put(locator.getRemoteDevice(), points);
-                }
-
-                points.add(dp);
+            List<DataPointRT> points = devicePoints.get(locator.getRemoteDevice());
+            if (points == null) {
+                points = new ArrayList<DataPointRT>();
+                devicePoints.put(locator.getRemoteDevice(), points);
             }
+
+            points.add(dp);
         }
 
         for (RemoteDevice d : devicePoints.keySet())
@@ -486,11 +480,6 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
     }
 
-    @Override
-    protected List<DataPointRT> getDataPoints() {
-        return dataPoints;
-    }
-
     //
     // COV subscriptions
     class CovResubscriptionTask extends TimerTask {
@@ -500,19 +489,17 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
         @Override
         public void run(long fireTime) {
-            synchronized (pointListChangeLock) {
-                boolean sendFailed = false;
-                for (DataPointRT dp : getDataPoints()) {
-                    BACnetIPPointLocatorRT locator = dp.getPointLocator();
-                    if (locator.isUseCovSubscription()) {
-                        if (!sendCovSubscription(dp, false)) {
-                            sendFailed = true;
-                        }
+            boolean sendFailed = false;
+            for (DataPointRT dp : getDataPoints()) {
+                BACnetIPPointLocatorRT locator = dp.getPointLocator();
+                if (locator.isUseCovSubscription()) {
+                    if (!sendCovSubscription(dp, false)) {
+                        sendFailed = true;
                     }
                 }
-                if(!sendFailed) {
-                    returnToNormalMessageExceptionEvent();
-                }
+            }
+            if(!sendFailed) {
+                returnToNormalMessageExceptionEvent();
             }
         }
     }
@@ -559,13 +546,11 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             // Find the point that cares.
             DataPointRT dataPoint = null;
             BACnetIPPointLocatorRT locator = null;
-            synchronized (pointListChangeLock) {
-                for (DataPointRT dp : dataPoints) {
-                    locator = dp.getPointLocator();
-                    if (locator.getCovId() == covId) {
-                        dataPoint = dp;
-                        break;
-                    }
+            for (DataPointRT dp : getDataPoints()) {
+                locator = dp.getPointLocator();
+                if (locator.getCovId() == covId) {
+                    dataPoint = dp;
+                    break;
                 }
             }
 

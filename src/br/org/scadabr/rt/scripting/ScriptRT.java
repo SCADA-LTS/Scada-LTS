@@ -9,7 +9,9 @@ import com.serotonin.util.LifecycleException;
 
 abstract public class ScriptRT implements ILifecycle {
 
-	abstract public void execute() throws ScriptException;
+	public void execute() throws ScriptException {
+		this.execute(false);
+	}
 
 	protected final ScriptVO<?> vo;
 
@@ -43,4 +45,5 @@ abstract public class ScriptRT implements ILifecycle {
 
 	}
 
+	abstract public void execute(boolean addedExceptionIfPointFromContextIsUnavailable) throws ScriptException;
 }

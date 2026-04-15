@@ -46,7 +46,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 	}
 
 	@Override
-	public void execute() throws ScriptException {
+	public void execute(boolean addedExceptionIfPointFromContextIsUnavailable) throws ScriptException {
 
 		validateScript(getScript());
 
@@ -81,7 +81,7 @@ public class ContextualizedScriptRT extends ScriptRT {
 			Map<String, IDataPoint> context = null;
 
 			try {
-				context = new ScriptExecutor().convertContext(((ContextualizedScriptVO) vo).getPointsOnContext());
+				context = new ScriptExecutor().convertContext(((ContextualizedScriptVO) vo).getPointsOnContext(), addedExceptionIfPointFromContextIsUnavailable);
 			} catch (Throwable e1) {
 				LOG.error("Data Point State Exception: " + LoggingUtils.exceptionInfo(e1) + ", " + LoggingUtils.scriptInfo(vo));
 				if (vo != null) {

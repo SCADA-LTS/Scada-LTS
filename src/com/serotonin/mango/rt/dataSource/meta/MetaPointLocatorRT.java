@@ -276,7 +276,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             execute(updateTime, sourceIds);
         }
     }
-    private void execute(long runtime, List<Integer> sourceIds) {
+    public void execute(long runtime, List<Integer> sourceIds) {
         execute(runtime, sourceIds, false, dataPoint);
     }
 

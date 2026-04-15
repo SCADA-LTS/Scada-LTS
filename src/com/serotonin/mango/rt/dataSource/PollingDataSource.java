@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.dataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.serotonin.mango.util.LoggingUtils;
@@ -42,7 +43,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     private final Logger LOG = LogManager.getLogger(PollingDataSource.class);
 
     private final DataSourceVO<?> vo;
-    protected List<DataPointRT> dataPoints = new ArrayList<DataPointRT>();
+    private final List<DataPointRT> dataPoints = new CopyOnWriteArrayList<>();
     protected boolean pointListChanged = false;
     private long pollingPeriodMillis = 300000; // Default to 5 minutes just to have something here
     private boolean quantize;
@@ -126,7 +127,8 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     abstract protected void doPoll(long time);
 
     protected List<DataPointRT> updateChangedPoints() {
-        synchronized (pointListChangeLock) {
+        getDataPointsLock().writeLock().lock();
+        try {
             if (addedChangedPoints.size() > 0) {
                 // Remove any existing instances of the points.
                 dataPoints.removeAll(addedChangedPoints);
@@ -140,6 +142,8 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
                 pointListChanged = true;
             }
             return new ArrayList<>(dataPoints);
+        } finally {
+            getDataPointsLock().writeLock().unlock();
         }
     }
 
@@ -183,8 +187,13 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     }
 
     @Override
-    protected List<DataPointRT> getDataPoints() {
-        return dataPoints;
+    public List<DataPointRT> getDataPoints() {
+        getDataPointsLock().readLock().lock();
+        try {
+            return new ArrayList<>(dataPoints);
+        } finally {
+            getDataPointsLock().readLock().unlock();
+        }
     }
   
     public boolean isMarkAsTerminating() {
@@ -207,7 +216,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
             LocalizableMessage msg = new LocalizableMessage("event.ds.updateTimeExceededUpdatePeriodAttention",
                     executedMillis, pollingPeriodMillis, LoggingUtils.dataSourceInfo(vo));
             LOG.warn(msg.getLocalizedMessage(Common.getBundle()));
-            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg, false);
+            raiseEvent(getUpdateTimeExceededUpdatePeriodEventId(), fireTime, true, msg);
         } else {
             returnToNormal(getUpdateTimeExceededUpdatePeriodEventId(), fireTime);
         }

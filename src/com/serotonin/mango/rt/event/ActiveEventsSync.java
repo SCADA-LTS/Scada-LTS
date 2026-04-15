@@ -1,9 +1,6 @@
 package com.serotonin.mango.rt.event;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
-import com.serotonin.mango.rt.event.type.DataPointEventType;
-import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -226,7 +223,7 @@ class ActiveEventsSync implements ActiveEvents {
         for (EventHandlerVO vo : vos) {
             if (!vo.isDisabled()) {
                 if (rts == null)
-                    rts = new ArrayList<EventHandlerRT>();
+                    rts = new ArrayList<>();
                 rts.add(vo.createRuntime());
             }
         }

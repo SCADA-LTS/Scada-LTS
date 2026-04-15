@@ -189,7 +189,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
         // asked for, and
         // only what we asked for.
         List<DataPointRT> requestPoints = new ArrayList<DataPointRT>();
-
+        List<DataPointRT> dataPoints = getDataPoints();
         // Add OID to send in the PDU.
         for (DataPointRT dp : dataPoints) {
             if (!getLocatorVO(dp).isTrapOnly()) {
@@ -343,27 +343,25 @@ public class SnmpDataSourceRT extends PollingDataSource {
         if (message != null) {
             raiseEvent(PDU_EXCEPTION_EVENT, time, true, message);
         } else {
-            synchronized (pointListChangeLock) {
-                updateChangedPoints();
+            updateChangedPoints();
 
-                for (int i = 0; i < trap.getVariableBindings().size(); i++) {
-                    vb = trap.get(i);
-                    boolean found = false;
+            for (int i = 0; i < trap.getVariableBindings().size(); i++) {
+                vb = trap.get(i);
+                boolean found = false;
 
-                    // Find the command for this binding.
-                    for (DataPointRT dp : dataPoints) {
-                        if (getOid(dp).equals(vb.getOid())) {
-                            updatePoint(dp, vb.getVariable(), time);
-                            found = true;
-                        }
+                // Find the command for this binding.
+                for (DataPointRT dp : getDataPoints()) {
+                    if (getOid(dp).equals(vb.getOid())) {
+                        updatePoint(dp, vb.getVariable(), time);
+                        found = true;
                     }
+                }
 
-                    if (!found) {
-                        log.warn("Trap not handled: " + vb);
-                        raiseEvent(TRAP_NOT_HANDLED_EVENT, time, true, new LocalizableMessage("event.snmp.trapNotHandled", vb));
-                    } else {
-                        returnToNormal(TRAP_NOT_HANDLED_EVENT, time);
-                    }
+                if (!found) {
+                    log.warn("Trap not handled: " + vb);
+                    raiseEvent(TRAP_NOT_HANDLED_EVENT, time, true, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+                } else {
+                    returnToNormal(TRAP_NOT_HANDLED_EVENT, time);
                 }
             }
         }

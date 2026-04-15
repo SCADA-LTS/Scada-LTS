@@ -86,7 +86,7 @@ public class JmxDataSourceRT extends PollingDataSource {
         if (server == null)
             return;
 
-        for (DataPointRT dprt : dataPoints) {
+        for (DataPointRT dprt : getDataPoints()) {
             if (!updateDataPoint(dprt))
                 continue;
 
