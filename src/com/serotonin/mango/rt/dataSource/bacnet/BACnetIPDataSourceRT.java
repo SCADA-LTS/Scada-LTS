@@ -667,15 +667,21 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
     }
 
     private void fireMessageExceptionEvent(String key, String... args) {
-        raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args));
+        if(isInitialized(localDevice)) {
+            raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args));
+        }
     }
 
     private void fireMessageExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
-        raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
+        if(isInitialized(localDevice)) {
+            raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
+        }
     }
 
     private void fireDeviceExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
-        raiseEvent(DEVICE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
+        if(isInitialized(localDevice)) {
+            raiseEvent(DEVICE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
+        }
     }
 
     private void returnToNormalDeviceExceptionEvent(DataPointRT dataPoint) {

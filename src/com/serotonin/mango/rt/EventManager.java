@@ -47,7 +47,6 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
@@ -112,7 +111,7 @@ public class EventManager implements ILifecycle {
 		}
 
 		if(evt.isRtnApplicable()) {
-			setUnreliableDataPoints(type, dataSourceRT);
+			setUnreliableDataPoints(type, dataSourceRT, activeEvents);
 		}
 
 		// Create user alarm records for all applicable users
@@ -207,7 +206,7 @@ public class EventManager implements ILifecycle {
 			}
 			removedEvents.clear();
 
-			resetUnreliableDataPoints(type, dataSourceRT);
+			resetUnreliableDataPoints(type, dataSourceRT, activeEvents);
 		}
 
 		if (LOG.isDebugEnabled())

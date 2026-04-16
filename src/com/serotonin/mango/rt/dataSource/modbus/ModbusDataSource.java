@@ -196,7 +196,6 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					try {
 						modbusLocator = createModbusLocator(locator.getVO());
 						batchRead.addLocator(locator, modbusLocator);
-						resetUnreliableDataPoint(dataPoint);
 					} catch (Exception e) {
 						LOG.warn(LoggingUtils.info(e, this));
 						setUnreliableDataPoint(dataPoint);
@@ -534,5 +533,19 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 
 	protected ModbusMaster getModbusMaster() {
 		return modbusMaster;
+	}
+
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+		if(isInitialized()) {
+			message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
+			raiseEvent(eventId, time, rtn, message, dataPoint.getId());
+		}
+	}
+
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+		if(isInitialized()) {
+			message = new LocalizableMessage("event.ds", vo.getName(), message);
+			raiseEvent(eventId, time, rtn, message, -1);
+		}
 	}
 }

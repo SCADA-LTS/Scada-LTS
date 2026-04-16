@@ -1,6 +1,9 @@
 package com.serotonin.mango.rt.event;
 
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
+import com.serotonin.mango.rt.event.type.DataPointEventType;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -147,6 +150,36 @@ class ActiveEventsSync implements ActiveEvents {
                     max = event.getAlarmLevel();
             }
             return max;
+        } finally {
+            activeEventsLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean isActiveEventsForDataPoint(EventType type) {
+        activeEventsLock.readLock().lock();
+        try {
+            for(EventInstance event: getActiveEvents()) {
+                if((event.getEventType() instanceof DataPointEventType || event.getEventType() instanceof DataSourcePointEventType) && event.getEventType().getDataPointId() == type.getDataPointId()) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            activeEventsLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean isActiveEventsForDataSource(EventType type) {
+        activeEventsLock.readLock().lock();
+        try {
+            for(EventInstance event: getActiveEvents()) {
+                if((event.getEventType() instanceof DataSourceEventType) && event.getEventType().getDataSourceId() == type.getDataSourceId()) {
+                    return true;
+                }
+            }
+            return false;
         } finally {
             activeEventsLock.readLock().unlock();
         }
