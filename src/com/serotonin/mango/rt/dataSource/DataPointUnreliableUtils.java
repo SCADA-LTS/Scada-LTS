@@ -74,17 +74,14 @@ public final class DataPointUnreliableUtils {
                                      Consumer<List<DataPointRT>> list, Consumer<DataPointRT> single,
                                      Predicate<EventType> doIfDataSource,
                                      Predicate<EventType> doIfDataPoint) {
-        if(dataSourceRT != null && type instanceof DataSourceEventType) {
+        if(dataSourceRT != null && dataSourceRT.doSetUnreliableDataPoint(type)) {
             List<DataPointRT> dataPoints = dataSourceRT.getDataPoints();
-            DataSourceEventType dataSourceEventType = (DataSourceEventType) type;
-            if(dataSourceRT.doSetUnreliableDataPoint(dataSourceEventType.getDataSourceEventTypeId())) {
-                if (type.getDataPointId() == -1 && doIfDataSource.test(type)) {
-                    list.accept(dataPoints);
-                } else {
-                    for (DataPointRT dataPoint : dataPoints) {
-                        if (dataPoint.getId() == type.getDataPointId() && doIfDataPoint.test(type)) {
-                            single.accept(dataPoint);
-                        }
+            if (type.getDataPointId() == -1 && doIfDataSource.test(type)) {
+                list.accept(dataPoints);
+            } else {
+                for (DataPointRT dataPoint : dataPoints) {
+                    if (dataPoint.getId() == type.getDataPointId() && doIfDataPoint.test(type)) {
+                        single.accept(dataPoint);
                     }
                 }
             }

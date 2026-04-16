@@ -110,7 +110,7 @@ public class EventManager implements ILifecycle {
 			return;
 		}
 
-		if(evt.isRtnApplicable()) {
+		if(evt.isRtnApplicable() && dataSourceRT != null) {
 			setUnreliableDataPoints(type, dataSourceRT, activeEvents);
 		}
 
@@ -206,7 +206,8 @@ public class EventManager implements ILifecycle {
 			}
 			removedEvents.clear();
 
-			resetUnreliableDataPoints(type, dataSourceRT, activeEvents);
+			if(dataSourceRT != null)
+				resetUnreliableDataPoints(type, dataSourceRT, activeEvents);
 		}
 
 		if (LOG.isDebugEnabled())

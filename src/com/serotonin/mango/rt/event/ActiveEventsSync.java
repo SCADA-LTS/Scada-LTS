@@ -1,7 +1,6 @@
 package com.serotonin.mango.rt.event;
 
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
-import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -160,7 +159,7 @@ class ActiveEventsSync implements ActiveEvents {
         activeEventsLock.readLock().lock();
         try {
             for(EventInstance event: getActiveEvents()) {
-                if((event.getEventType() instanceof DataPointEventType || event.getEventType() instanceof DataSourcePointEventType) && event.getEventType().getDataPointId() == type.getDataPointId()) {
+                if((event.getEventType() instanceof DataSourcePointEventType) && event.getEventType().getDataPointId() == type.getDataPointId()) {
                     return true;
                 }
             }

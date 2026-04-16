@@ -151,7 +151,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             returnToNormalMessageExceptionEvent();
         }
         catch (BACnetException e) {
-            fireMessageExceptionEvent("event.bacnet.iamError", e.getMessage());
+            fireMessageExceptionEvent(true,"event.bacnet.iamError", e.getMessage());
         }
 
         // Find out who we're slummin with.
@@ -167,7 +167,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             }
         }
         catch (BACnetException e) {
-            fireMessageExceptionEvent("event.bacnet.whoisError", e.getMessage());
+            fireMessageExceptionEvent(true,"event.bacnet.whoisError", e.getMessage());
         }
 
         initialized = isInitialized(localDevice);
@@ -666,20 +666,20 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         log.info("", t);
     }
 
-    private void fireMessageExceptionEvent(String key, String... args) {
-        if(isInitialized(localDevice)) {
+    private void fireMessageExceptionEvent(boolean beforeInit, String key, String... args) {
+        if(beforeInit || isInitialized(localDevice)) {
             raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args));
         }
     }
 
-    private void fireMessageExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
-        if(isInitialized(localDevice)) {
+    private void fireMessageExceptionEvent(DataPointRT dataPointRT, boolean beforeInit, String key, String... args) {
+        if(beforeInit || isInitialized(localDevice)) {
             raiseEvent(MESSAGE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
         }
     }
 
-    private void fireDeviceExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
-        if(isInitialized(localDevice)) {
+    private void fireDeviceExceptionEvent(DataPointRT dataPointRT, boolean beforeInit, String key, String... args) {
+        if(beforeInit || isInitialized(localDevice)) {
             raiseEvent(DEVICE_EXCEPTION_EVENT, System.currentTimeMillis(), true, new LocalizableMessage(key, (Object[]) args), dataPointRT);
         }
     }
@@ -827,5 +827,17 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
     private boolean isReadyDevice(RemoteDevice d) {
         return d != null && d.getSegmentationSupported() != null;
+    }
+
+    private void fireMessageExceptionEvent(String key, String... args) {
+        fireMessageExceptionEvent(false, key, args);
+    }
+
+    private void fireMessageExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
+        fireMessageExceptionEvent(dataPointRT, false, key, args);
+    }
+
+    private void fireDeviceExceptionEvent(DataPointRT dataPointRT, String key, String... args) {
+        fireDeviceExceptionEvent(dataPointRT, false, key, args);
     }
 }

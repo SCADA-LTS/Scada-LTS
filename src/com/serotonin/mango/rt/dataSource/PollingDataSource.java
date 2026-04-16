@@ -223,6 +223,7 @@ abstract public class PollingDataSource extends DataSourceRT implements TimeoutC
     }
 
     @Override
+    @Deprecated(since = "2.8.1")
     public boolean doSetUnreliableDataPoint(int eventId) {
         return eventId != getUpdateTimeExceededUpdatePeriodEventId();
     }

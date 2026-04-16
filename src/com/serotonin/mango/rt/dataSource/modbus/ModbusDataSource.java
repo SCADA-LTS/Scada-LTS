@@ -50,7 +50,6 @@ import com.serotonin.modbus4j.sero.messaging.MessagingExceptionHandler;
 import com.serotonin.modbus4j.sero.messaging.TimeoutException;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
 import static com.serotonin.mango.rt.dataSource.DataSourceUtils.checkInitialized;
 
@@ -371,7 +370,7 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 					System.currentTimeMillis());
 		} catch (Throwable e) {
 			raiseEvent(INITIALIZATION_EXCEPTION_EVENT, System.currentTimeMillis(),
-					true, getLocalExceptionMessage(e));
+					true, getLocalExceptionMessage(e), true);
 			return;
 		}
 
@@ -535,17 +534,25 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 		return modbusMaster;
 	}
 
-	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
-		if(isInitialized()) {
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint, boolean beforeInit) {
+		if(beforeInit || isInitialized()) {
 			message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
 			raiseEvent(eventId, time, rtn, message, dataPoint.getId());
 		}
 	}
 
-	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
-		if(isInitialized()) {
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean beforeInit) {
+		if(beforeInit || isInitialized()) {
 			message = new LocalizableMessage("event.ds", vo.getName(), message);
 			raiseEvent(eventId, time, rtn, message, -1);
 		}
+	}
+
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint) {
+		raiseEvent(eventId, time, rtn, message, dataPoint, false);
+	}
+
+	protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+		raiseEvent(eventId, time, rtn, message, false);
 	}
 }

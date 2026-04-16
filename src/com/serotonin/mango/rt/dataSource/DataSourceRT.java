@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -259,6 +260,10 @@ abstract public class DataSourceRT implements ILifecycle {
 
     public boolean doSetUnreliableDataPoint(int eventId) {
         return true;
+    }
+
+    public boolean doSetUnreliableDataPoint(EventType eventType) {
+        return eventType instanceof DataSourceEventType;
     }
 
     protected void returnToNormal(int eventId, long time, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
