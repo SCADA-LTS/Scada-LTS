@@ -65,9 +65,10 @@ public class ScriptExecutor {
 	private static String FUNCTIONS;
 	private static final Log LOG = LogFactory.getLog(ScriptExecutor.class);
 	private final boolean addedExceptionIfPointFromContextIsUnavailableFromSystemSettings;
-
+	private final boolean raiseEventIfPointFromContextIsUnavailable;
 	public ScriptExecutor() {
 		addedExceptionIfPointFromContextIsUnavailableFromSystemSettings = SystemSettingsUtils.isAddedExceptionIfPointFromContextIsUnavailable();
+		raiseEventIfPointFromContextIsUnavailable = SystemSettingsUtils.isRaisedEventIfPointFromContextIsUnavailable();
 	}
 
 	public static void setScriptFunctionPath(String path) {
@@ -165,11 +166,17 @@ public class ScriptExecutor {
 				).map(iterationExceptions::add);
 
 				eventExecutor.execute(pointUnavailableMessage,
-						(t,p) -> m -> parentSource.raiseContextErrorPointUnavailable(t, p, m),
-						(p,v) -> isUnreliablePoint(p),
-						(t,p) -> m -> parentSource.returnToNormalContextPointUnavailable(t, p, m)
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.raiseContextErrorPointUnavailable(t, p, m);
+						},
+						(p, v) -> isUnreliablePoint(p),
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.returnToNormalContextPointUnavailable(t, p, m);
+						}
 				).map(exception -> {
-					if(addedExceptionIfPointFromContextIsUnavailable || addedExceptionIfPointFromContextIsUnavailableFromSystemSettings)
+					if (addedExceptionIfPointFromContextIsUnavailable || addedExceptionIfPointFromContextIsUnavailableFromSystemSettings)
 						return iterationExceptions.add(exception);
 					return false;
 				});
