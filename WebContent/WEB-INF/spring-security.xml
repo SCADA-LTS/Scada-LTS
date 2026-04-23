@@ -26,7 +26,7 @@
 
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="none" />
+        <session-management session-fixation-protection="newSession" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds/**"
@@ -49,7 +49,7 @@
 
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="none" />
+        <session-management session-fixation-protection="newSession" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/httpds-secure/**"
@@ -72,7 +72,7 @@
 
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="none"/>
+        <session-management session-fixation-protection="newSession" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/work-items/**"
@@ -95,7 +95,7 @@
 
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="none"/>
+        <session-management session-fixation-protection="newSession" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/api/secure/threads/**"
@@ -118,7 +118,7 @@
 
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
-        <session-management session-fixation-protection="none"/>
+        <session-management session-fixation-protection="newSession" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true"
@@ -451,7 +451,7 @@
                     login-processing-url="/login.htm"/>
         <custom-filter ref="xssFilter" before="FIRST"/>
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
-        <session-management session-fixation-protection="none" />
+        <session-management session-fixation-protection="newSession" />
         <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
