@@ -23,41 +23,33 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.directwebremoting.impl.DefaultWebContextBuilder;
+import org.directwebremoting.servlet.DwrWebContextFilter;
 
 /**
  * @author Matthew Lohbihler
  */
 public class WebContextFilter implements Filter {
-    private final DefaultWebContextBuilder builder = new DefaultWebContextBuilder();
-    private ServletContext servletContext;
+
+    private final DwrWebContextFilter delegate = new DwrWebContextFilter();
+
 
     @Override
-    public void init(FilterConfig config) {
-        servletContext = config.getServletContext();
+    public void init(FilterConfig config) throws ServletException {
+        delegate.init(config);
     }
 
     @Override
     public void destroy() {
-        // no op
+        delegate.destroy();
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
-        try {
-            builder.set((HttpServletRequest) request, (HttpServletResponse) response, null, servletContext, null);
-            chain.doFilter(request, response);
-        }
-        finally {
-            builder.unset();
-        }
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        delegate.doFilter(request, response, chain);
     }
 }
