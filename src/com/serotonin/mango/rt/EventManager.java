@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.ActiveEvents;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -48,19 +49,29 @@ import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+
 /**
  * @author Matthew Lohbihler
  */
 public class EventManager implements ILifecycle {
 	private static final Log LOG = LogFactory.getLog(EventManager.class);
 
-	private final ActiveEvents activeEvents = ActiveEvents.newInstance();
-	private MangoEvent eventService;
-	private MangoUser userService;
+	private final ActiveEvents activeEvents;
+	private final MangoEvent eventService;
+	private final MangoUser userService;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
-	private IHighestAlarmLevelService highestAlarmLevelService;
-	private UserEventServiceWebSocket userEventServiceWebSocket;
+	private final IHighestAlarmLevelService highestAlarmLevelService;
+	private final UserEventServiceWebSocket userEventServiceWebSocket;
+
+	public EventManager() {
+		eventService = new EventService();
+		userService = new UserService();
+		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
+		activeEvents = ActiveEvents.newSync(eventService);
+	}
 
 	//
 	//
@@ -73,24 +84,35 @@ public class EventManager implements ILifecycle {
 	}
 
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message,
+						   Map<String, Object> context, DataSourceRT dataSourceRT) {
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, message, context, dataSourceRT);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
 						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
 						   Map<String, Object> context) {
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, shortMessage,
+				context, null);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
+						   Map<String, Object> context, DataSourceRT dataSourceRT) {
 		// Check if there is an event for this type already active.
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
 				alarmLevel, message, shortMessage, context);
 
-		if(activeEvents.isIgnoreIfNotThenAddActiveEvent(evt)) {
-			return;
-		}
-
 		// Determine if the event should be suppressed.
 		boolean suppressed = isSuppressed(type);
 
-		if (!suppressed)
-			setHandlers(evt);
+		if(activeEvents.isIgnoreIfNotThenAddActiveEvent(evt, suppressed)) {
+			return;
+		}
 
-		// Get id from database by inserting event immediately.
-		eventService.saveEvent(evt);
+		if(evt.isRtnApplicable() && dataSourceRT != null) {
+			setUnreliableDataPoints(type, dataSourceRT, activeEvents);
+		}
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<>();
@@ -167,36 +189,47 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void returnToNormal(EventType type, long time) {
-		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, null);
+	public void returnToNormal(EventType type, long time, DataSourceRT dataSourceRT) {
+		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, null, dataSourceRT);
 	}
 
-	public void returnToNormal(EventType type, long time, int cause, LocalizableMessage onlyWithThisMessage) {
+	public void returnToNormal(EventType type, long time) {
+		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, null, null);
+	}
+
+	public void returnToNormal(EventType type, long time, int cause, LocalizableMessage onlyWithThisMessage, DataSourceRT dataSourceRT) {
 		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(type, onlyWithThisMessage);
 
 		if(removedEvents != null) {
 			for (EventInstance evt : removedEvents) {
-				resetHighestAlarmLevel(time, false);
-
-				evt.returnToNormal(time, cause);
-				eventService.saveEvent(evt);
-				notifyEventRtn(evt);
-				// Call inactiveEvent handlers.
-				handleInactiveEvent(evt);
+				doDeactivateEvent(time, cause, evt);
 			}
+			removedEvents.clear();
+
+			if(dataSourceRT != null)
+				resetUnreliableDataPoints(type, dataSourceRT, activeEvents);
 		}
 
 		if (LOG.isDebugEnabled())
 			LOG.debug("Event returned to normal: type=" + type);
 	}
 
-	private void deactivateEvent(EventInstance evt, long time, int inactiveCause) {
-		resetHighestAlarmLevel(time, false);
-		evt.returnToNormal(time, inactiveCause);
-		eventService.saveEvent(evt);
-		notifyEventRtn(evt);
-		// Call inactiveEvent handlers.
-		handleInactiveEvent(evt);
+
+
+	private boolean deactivateEvent(EventInstance evt, long time, int inactiveCause) {
+		EventInstance copy = evt.copy();
+		try {
+			resetHighestAlarmLevel(time, false);
+			copy.returnToNormal(time, inactiveCause);
+			eventService.saveEvent(copy);
+			notifyEventRtn(copy);
+			// Call inactiveEvent handlers.
+			handleInactiveEvent(copy);
+			return true;
+		} catch (Throwable throwable) {
+			LOG.error(LoggingUtils.exceptionInfo(throwable));
+			return false;
+		}
 	}
 
 	public void setLastAlarmTimestamp(long alarmTimestamp) {
@@ -264,10 +297,6 @@ public class EventManager implements ILifecycle {
 	// Lifecycle interface
 	//
 	public void initialize() {
-		eventService = new EventService();
-		userService = new UserService();
-		highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-		userEventServiceWebSocket = ApplicationBeans.getUserEventServiceWebsocketBean();
 
 		// Get all active events from the database.
 		activeEvents.initActiveEvents(eventService.getActiveEvents());
@@ -473,20 +502,34 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	public void returnToNormal(EventType type, long time, int cause) {
-		returnToNormal(type, time, cause, null);
+	public void returnToNormal(EventType type, long time, int cause, DataSourceRT dataSourceRT) {
+		returnToNormal(type, time, cause, null, dataSourceRT);
 	}
 
-	public void returnToNormal(EventType type, long time, LocalizableMessage onlyWithThisMessage) {
-		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, onlyWithThisMessage);
+	public void returnToNormal(EventType type, long time, int cause) {
+		returnToNormal(type, time, cause, null, null);
+	}
+
+	public void returnToNormal(EventType type, long time, LocalizableMessage onlyWithThisMessage, DataSourceRT dataSourceRT) {
+		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL, onlyWithThisMessage, dataSourceRT);
 	}
 
 	private void cancelEventsFor(Predicate<EventType> cancelIf) {
 		List<EventInstance> removedEvents = activeEvents.removeActiveEvents(cancelIf);
 		if(removedEvents != null) {
 			for (EventInstance event : removedEvents) {
-				deactivateEvent(event, System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED);
+				doDeactivateEvent(System.currentTimeMillis(), EventInstance.RtnCauses.SOURCE_DISABLED, event);
 			}
+			removedEvents.clear();
+		}
+	}
+
+	private void doDeactivateEvent(long time, int cause, EventInstance evt) {
+		boolean deactivated = deactivateEvent(evt, time, cause);
+		if(!deactivated) {
+			activeEvents.addActiveEvent(evt);
+		} else {
+			evt.returnToNormal(time, cause);
 		}
 	}
 }

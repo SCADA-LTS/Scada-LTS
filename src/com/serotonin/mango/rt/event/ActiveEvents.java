@@ -2,6 +2,7 @@ package com.serotonin.mango.rt.event;
 
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.adapter.MangoEvent;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -9,12 +10,15 @@ import java.util.function.Predicate;
 public interface ActiveEvents {
 
     void initActiveEvents(List<EventInstance> events);
-    boolean isIgnoreIfNotThenAddActiveEvent(EventInstance evt);
+    boolean addActiveEvent(EventInstance event);
+    boolean isActiveEventsForDataPoint(EventType type);
+    boolean isActiveEventsForDataSource(EventType type);
+    boolean isIgnoreIfNotThenAddActiveEvent(EventInstance event, boolean suppressed);
     int calculateGlobalHighestAlarmLevel();
     List<EventInstance> removeActiveEvents(EventType type, LocalizableMessage onlyWithThisMessage);
     List<EventInstance> removeActiveEvents(Predicate<EventType> removeIf);
 
-    static ActiveEvents newInstance() {
-        return new ActiveEventsImpl();
+    static ActiveEvents newSync(MangoEvent eventService) {
+        return new ActiveEventsSync(eventService);
     }
 }

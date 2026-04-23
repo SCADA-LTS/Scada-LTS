@@ -1201,7 +1201,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ScriptExecutor executor = new ScriptExecutor();
         try {
             Map<String, IDataPoint> convertedContext = executor
-                    .convertContext(context);
+                    .convertContext(context, true);
             PointValueTime pvt = executor.execute(script, convertedContext,
                     System.currentTimeMillis(), dataTypeId, -1);
             if (pvt.getTime() == -1)

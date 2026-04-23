@@ -208,7 +208,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
         dataSourceRT.initialize();
 
         //then:
-        Mockito.verify(eventManager, times(returnToNormalTimes)).returnToNormal(any(EventType.class), anyLong(), any());
+        Mockito.verify(eventManager, times(returnToNormalTimes)).returnToNormal(any(EventType.class), anyLong(), any(), any());
     }
 
     @Test

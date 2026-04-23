@@ -52,7 +52,7 @@ public class IEC101DataSource extends PollingDataSource {
 			return;
 		}
 
-		for (DataPointRT dataPoint : dataPoints) {
+		for (DataPointRT dataPoint : getDataPoints()) {
 			IEC101PointLocatorVO pointLocator = dataPoint.getVO()
 					.getPointLocator();
 

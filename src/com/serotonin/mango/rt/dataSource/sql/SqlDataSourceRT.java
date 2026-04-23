@@ -164,7 +164,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 		ResultSetMetaData meta = rs.getMetaData();
 		if (rs.next()) {
 
-			for (DataPointRT dp : dataPoints) {
+			for (DataPointRT dp : getDataPoints()) {
 				SqlPointLocatorRT locatorRT = dp.getPointLocator();
 				SqlPointLocatorVO locatorVO = locatorRT.getVO();
 
@@ -230,7 +230,7 @@ public class SqlDataSourceRT extends PollingDataSource {
 
 			// Find the vo in question.
 			boolean found = false;
-			for (DataPointRT dp : dataPoints) {
+			for (DataPointRT dp : getDataPoints()) {
 				SqlPointLocatorRT locatorRT = dp.getPointLocator();
 				SqlPointLocatorVO locatorVO = locatorRT.getVO();
 				String fieldName = locatorVO.getFieldName();

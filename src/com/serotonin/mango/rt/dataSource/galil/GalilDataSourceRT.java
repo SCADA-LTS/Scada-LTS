@@ -77,7 +77,7 @@ public class GalilDataSourceRT extends PollingDataSource implements MessagingExc
         Exception messageException = null;
         LocalizableMessage pointError = null;
 
-        for (DataPointRT dataPoint : dataPoints) {
+        for (DataPointRT dataPoint : getDataPoints()) {
             GalilPointLocatorRT locator = dataPoint.getPointLocator();
 
             GalilRequest request = locator.getPollRequest();

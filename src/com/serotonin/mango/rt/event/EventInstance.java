@@ -18,10 +18,7 @@
  */
 package com.serotonin.mango.rt.event;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
@@ -143,6 +140,52 @@ public class EventInstance {
         else
             this.shortMessage = shortMessage;
         this.context = context;
+    }
+
+    private EventInstance(EventInstance event) {
+        this.id = event.id;
+        this.eventType = event.eventType;
+        this.activeTimestamp = event.activeTimestamp;
+        this.rtnApplicable = event.rtnApplicable;
+        this.rtnTimestamp = event.rtnTimestamp;
+        this.rtnCause = event.rtnCause;
+        this.alarmLevel = event.alarmLevel;
+        this.message = event.message;
+        this.shortMessage = event.shortMessage;
+        this.eventComments = event.eventComments == null ? null : new ArrayList<>(event.eventComments);
+        this.handlers = event.handlers == null ? null : new ArrayList<>(event.handlers);
+        this.acknowledgedTimestamp = event.acknowledgedTimestamp;
+        this.acknowledgedByUserId = event.acknowledgedByUserId;
+        this.acknowledgedByUsername = event.acknowledgedByUsername;
+        this.alternateAckSource = event.alternateAckSource;
+        this.assigneeTimestamp = event.assigneeTimestamp;
+        this.assigneeUsername = event.assigneeUsername;
+        this.userNotified = event.userNotified;
+        this.silenced = event.silenced;
+        this.context = event.context == null ? null : new HashMap<>(event.context);
+    }
+
+    private EventInstance(EventInstance event, Map<String, Object> context) {
+        this.id = event.id;
+        this.eventType = event.eventType;
+        this.activeTimestamp = event.activeTimestamp;
+        this.rtnApplicable = event.rtnApplicable;
+        this.rtnTimestamp = event.rtnTimestamp;
+        this.rtnCause = event.rtnCause;
+        this.alarmLevel = event.alarmLevel;
+        this.message = event.message;
+        this.shortMessage = event.shortMessage;
+        this.eventComments = event.eventComments == null ? null : new ArrayList<>(event.eventComments);
+        this.handlers = event.handlers == null ? null : new ArrayList<>(event.handlers);
+        this.acknowledgedTimestamp = event.acknowledgedTimestamp;
+        this.acknowledgedByUserId = event.acknowledgedByUserId;
+        this.acknowledgedByUsername = event.acknowledgedByUsername;
+        this.alternateAckSource = event.alternateAckSource;
+        this.assigneeTimestamp = event.assigneeTimestamp;
+        this.assigneeUsername = event.assigneeUsername;
+        this.userNotified = event.userNotified;
+        this.silenced = event.silenced;
+        this.context = context == null ? null : new HashMap<>(context);
     }
 
     public static EventInstance emptySystemNoneEvent(int eventId) {
@@ -460,7 +503,8 @@ public class EventInstance {
 		return true;
 	}
 
-	public EventInstance copyWithContext(Map<String, Object> context) {
+    @Deprecated(since = "2.8.1")
+	public EventInstance copyWithContextOld(Map<String, Object> context) {
         EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, message, shortMessage, context);
         eventInstance.setId(id);
         eventInstance.setAcknowledgedByUserId(acknowledgedByUserId);
@@ -476,4 +520,27 @@ public class EventInstance {
         return eventInstance;
     }
 
+    public EventInstance copyWithContext(Map<String, Object> context) {
+        return new EventInstance(this, context);
+    }
+
+    public EventInstance copy() {
+        return new EventInstance(this);
+    }
+
+    @Override
+    public String toString() {
+        return "EventInstance{" +
+                "id=" + id +
+                ", eventType=" + eventType +
+                ", activeTimestamp=" + activeTimestamp +
+                ", rtnApplicable=" + rtnApplicable +
+                ", rtnTimestamp=" + rtnTimestamp +
+                ", rtnCause=" + rtnCause +
+                ", alarmLevel=" + alarmLevel +
+                ", message=" + message +
+                ", shortMessage=" + shortMessage +
+                ", silenced=" + silenced +
+                '}';
+    }
 }

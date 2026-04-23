@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
-class RaiseEventExecutorImpl implements RaiseEventExecutor {
+class EventExecutorImpl implements EventExecutor {
 
     private final DataPointRT parentPoint;
     private final DataSourceRT parentSource;
@@ -21,9 +21,9 @@ class RaiseEventExecutorImpl implements RaiseEventExecutor {
     private final DataPointVO contextPointVO;
     private final ResourceBundle resourceBundle;
 
-    public RaiseEventExecutorImpl(DataPointRT parentPoint, DataSourceRT parentSource,
-                                  IntValuePair contextEntry, DataPointRT contextPoint,
-                                  DataPointVO contextPointVO, ResourceBundle resourceBundle) {
+    public EventExecutorImpl(DataPointRT parentPoint, DataSourceRT parentSource,
+                             IntValuePair contextEntry, DataPointRT contextPoint,
+                             DataPointVO contextPointVO, ResourceBundle resourceBundle) {
         this.parentPoint = parentPoint;
         this.parentSource = parentSource;
         this.contextEntry = contextEntry;

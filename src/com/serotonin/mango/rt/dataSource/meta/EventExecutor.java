@@ -12,14 +12,14 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
-public interface RaiseEventExecutor {
+public interface EventExecutor {
     Optional<DataPointStateException> execute(LocalizableMessage message,
                                               BiFunction<Long, DataPointRT, Consumer<LocalizableMessage>> raiseEvent,
                                               BiPredicate<DataPointRT, DataPointVO> raiseEventIf,
                                               BiFunction<Long, DataPointRT, Consumer<LocalizableMessage>> returnToNormal);
-    static RaiseEventExecutor newExecutor(DataPointRT parentPoint, DataSourceRT parentSource,
-                                          IntValuePair contextEntry, DataPointRT contextPoint,
-                                          DataPointVO contextPointVO, ResourceBundle resourceBundle) {
-        return new RaiseEventExecutorImpl(parentPoint, parentSource, contextEntry, contextPoint, contextPointVO, resourceBundle);
+    static EventExecutor newExecutor(DataPointRT parentPoint, DataSourceRT parentSource,
+                                     IntValuePair contextEntry, DataPointRT contextPoint,
+                                     DataPointVO contextPointVO, ResourceBundle resourceBundle) {
+        return new EventExecutorImpl(parentPoint, parentSource, contextEntry, contextPoint, contextPointVO, resourceBundle);
     }
 }

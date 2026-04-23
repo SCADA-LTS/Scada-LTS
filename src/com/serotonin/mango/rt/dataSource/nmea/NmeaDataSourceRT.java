@@ -123,19 +123,17 @@ public class NmeaDataSourceRT extends EventDataSource implements NmeaMessageList
 
         LocalizableMessage parseError = null;
 
-        synchronized (pointListChangeLock) {
-            for (DataPointRT dp : dataPoints) {
-                try {
-                    receivedMessageImpl(dp, message, time);
-                }
-                catch (LocalizableException e) {
-                    if (parseError == null)
-                        parseError = e.getLocalizableMessage();
-                }
-                catch (Throwable e) {
-                    if (parseError == null)
-                        parseError = new LocalizableMessage("event.exception2", dp.getVO().getName(), e.getMessage());
-                }
+        for (DataPointRT dp : getDataPoints()) {
+            try {
+                receivedMessageImpl(dp, message, time);
+            }
+            catch (LocalizableException e) {
+                if (parseError == null)
+                    parseError = e.getLocalizableMessage();
+            }
+            catch (Throwable e) {
+                if (parseError == null)
+                    parseError = new LocalizableMessage("event.exception2", dp.getVO().getName(), e.getMessage());
             }
         }
 

@@ -16,7 +16,6 @@ import org.scada_lts.utils.TimeLocker;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static com.serotonin.mango.util.LoggingUtils.*;
 
 
@@ -104,6 +103,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
+        super.addDataPoint(dataPoint);
+        super.updateChangedPoints();
         try {
             updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new TimeLocker(updateAttempts, waitSeconds));
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
@@ -113,7 +114,6 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, getExceptionMessage(e), dataPoint);
         }
-        super.addDataPoint(dataPoint);
     }
 
     @Override
@@ -133,14 +133,13 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     @Override
     protected void doPoll(long time) {
-        for (DataPointRT dataPoint : dataPoints) {
+        for (DataPointRT dataPoint : getDataPoints()) {
             try {
                 if(!messagingService.isOpen(dataPoint)) {
                     updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new TimeLocker(updateAttempts, waitSeconds));
                     if (updateAttemptsCounters.get(dataPoint.getId()).remainingSeconds() == 0) {
                         messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), getPointUpdateReturnToNormalHandler());
                         returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
-                        resetUnreliableDataPoint(dataPoint);
                     }
                 } else {
                     returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);

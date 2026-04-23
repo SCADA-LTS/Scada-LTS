@@ -1,6 +1,7 @@
 package br.org.scadabr.rt.dataSource.opc;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import com.serotonin.mango.util.LoggingUtils;
@@ -44,6 +45,8 @@ public class OPCDataSource extends PollingDataSource {
 	@Override
 	protected void doPoll(long time) {
 		ArrayList<String> enabledTags = new ArrayList<>();
+
+		List<DataPointRT> dataPoints = getDataPoints();
 
 		for (DataPointRT dataPoint : dataPoints) {
 			OPCPointLocatorVO dataPointVO = dataPoint.getVO().getPointLocator();

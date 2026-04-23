@@ -142,16 +142,14 @@ public class ModbusIpDataSource extends ModbusDataSource {
 
 	@Override
 	public void removeDataPoint(DataPointRT dataPoint) {
-		synchronized (pointListChangeLock) {
-			super.removeDataPoint(dataPoint);
+		super.removeDataPoint(dataPoint);
 
-			// If this is a socket monitor point being removed, also remove it
-			// from the map.
-			ModbusPointLocatorVO locatorVO = dataPoint.getVO()
-					.getPointLocator();
-			if (locatorVO.isSocketMonitor())
-				socketMonitor = null;
-		}
+		// If this is a socket monitor point being removed, also remove it
+		// from the map.
+		ModbusPointLocatorVO locatorVO = dataPoint.getVO()
+				.getPointLocator();
+		if (locatorVO.isSocketMonitor())
+			socketMonitor = null;
 	}
 
 	//

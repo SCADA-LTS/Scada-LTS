@@ -360,4 +360,7 @@
 
   <bean id="opcUaTrustListManager" class="org.scada_lts.ds.polling.protocol.opcua.client.impl.OpcUaTrustListManager"
         destroy-method="close" lazy-init="true"/>
+
+  <bean id="dataSourcePointsCache" class="org.scada_lts.cache.DataPointsCacheWhenStart" init-method="cacheInitialize"
+        destroy-method="cacheDestroy" lazy-init="true" />
 </beans>

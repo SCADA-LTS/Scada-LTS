@@ -49,7 +49,7 @@ public class ASCIIFileDataSource extends PollingDataSource {
 			returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, time);
 			String arquivo = readFile(file);
 
-			for (DataPointRT dataPoint : dataPoints) {
+			for (DataPointRT dataPoint : getDataPoints()) {
 				try {
 					ASCIIFilePointLocatorVO dataPointVO = dataPoint.getVO()
 							.getPointLocator();

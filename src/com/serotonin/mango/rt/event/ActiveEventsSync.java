@@ -1,37 +1,38 @@
 package com.serotonin.mango.rt.event;
 
+import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.adapter.MangoEvent;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-class ActiveEventsImpl implements ActiveEvents {
+class ActiveEventsSync implements ActiveEvents {
 
-    private static final Log LOG = LogFactory.getLog(ActiveEventsImpl.class);
+    private static final Log LOG = LogFactory.getLog(ActiveEventsSync.class);
 
-    private final Map<EventType, List<EventInstance>> activeEvents = new ConcurrentHashMap<>();
+    private final Map<EventType, List<EventInstance>> activeEvents = new HashMap<>();
+    private final MangoEvent eventService;
     private final ReentrantReadWriteLock activeEventsLock = new ReentrantReadWriteLock(true);
+
+    public ActiveEventsSync(MangoEvent eventService) {
+        this.eventService = eventService;
+    }
 
     @Override
     public void initActiveEvents(List<EventInstance> events) {
         activeEventsLock.writeLock().lock();
         try {
             for(EventInstance event: events) {
-                activeEvents.compute(event.getEventType(), (a, b) -> {
-                    if (b == null) {
-                        return new CopyOnWriteArrayList<>(Set.of(event));
-                    } else {
-                        b.add(event);
-                        return b;
-                    }
-                });
+                add(event);
             }
         } finally {
             activeEventsLock.writeLock().unlock();
@@ -39,21 +40,39 @@ class ActiveEventsImpl implements ActiveEvents {
     }
 
     @Override
-    public boolean isIgnoreIfNotThenAddActiveEvent(EventInstance evt) {
+    public boolean isIgnoreIfNotThenAddActiveEvent(EventInstance event, boolean suppressed) {
         activeEventsLock.writeLock().lock();
         try {
-            EventType type = evt.getEventType();
-            LocalizableMessage message = evt.getMessage();
+            EventType type = event.getEventType();
+            LocalizableMessage message = event.getMessage();
             List<EventInstance> dup = activeEvents.get(type);
             boolean ignore = isIgnore(type, message, dup);
-            if (!ignore && evt.isRtnApplicable()) {
-                if (dup == null) {
-                    dup = new CopyOnWriteArrayList<>();
-                    activeEvents.put(type, dup);
+            if(!ignore) {
+                if (!suppressed) {
+                    setHandlers(event);
                 }
-                dup.add(evt);
+
+                eventService.saveEvent(event);
+
+                if (event.isRtnApplicable()) {
+                    if (dup == null) {
+                        dup = new ArrayList<>();
+                        activeEvents.put(type, dup);
+                    }
+                    dup.add(event);
+                }
             }
             return ignore;
+        } finally {
+            activeEventsLock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean addActiveEvent(EventInstance event) {
+        activeEventsLock.writeLock().lock();
+        try {
+            return add(event);
         } finally {
             activeEventsLock.writeLock().unlock();
         }
@@ -64,13 +83,14 @@ class ActiveEventsImpl implements ActiveEvents {
         activeEventsLock.writeLock().lock();
         try {
             if(onlyWithThisMessage == null) {
-                return activeEvents.remove(type);
+                List<EventInstance> toRemove = activeEvents.remove(type);
+                return toRemove == null ? null : new ArrayList<>(toRemove);
             } else {
                 List<EventInstance> toRemove = new ArrayList<>();
-                List<EventInstance> events = activeEvents.get(type);
-                if(events == null)
+                List<EventInstance> dup = activeEvents.get(type);
+                if(dup == null)
                     return null;
-                for (EventInstance event : events) {
+                for (EventInstance event : dup) {
                     LocalizableMessage eventMessage = event.getMessage();
                     if (eventMessage != null && containMessage(eventMessage, onlyWithThisMessage)) {
                         toRemove.add(event);
@@ -78,8 +98,8 @@ class ActiveEventsImpl implements ActiveEvents {
                 }
                 if(toRemove.isEmpty())
                     return null;
-                events.removeAll(toRemove);
-                if(events.isEmpty()) {
+                dup.removeAll(toRemove);
+                if(dup.isEmpty()) {
                     activeEvents.remove(type);
                 }
                 return toRemove;
@@ -134,6 +154,36 @@ class ActiveEventsImpl implements ActiveEvents {
         }
     }
 
+    @Override
+    public boolean isActiveEventsForDataPoint(EventType type) {
+        activeEventsLock.readLock().lock();
+        try {
+            for(EventInstance event: getActiveEvents()) {
+                if((event.getEventType() instanceof DataSourcePointEventType) && event.getEventType().getDataPointId() == type.getDataPointId()) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            activeEventsLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean isActiveEventsForDataSource(EventType type) {
+        activeEventsLock.readLock().lock();
+        try {
+            for(EventInstance event: getActiveEvents()) {
+                if((event.getEventType() instanceof DataSourceEventType) && event.getEventType().getDataSourceId() == type.getDataSourceId()) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            activeEventsLock.readLock().unlock();
+        }
+    }
+
     private List<EventInstance> getActiveEvents() {
         return activeEvents.values().stream()
                 .flatMap(Collection::stream)
@@ -141,6 +191,7 @@ class ActiveEventsImpl implements ActiveEvents {
     }
 
     private static boolean isIgnore(EventType type, LocalizableMessage message, List<EventInstance> dup) {
+        // Check if there is an event for this type already active.
         if (dup != null) {
             // Check the duplicate handling.
             int dh = type.getDuplicateHandling();
@@ -190,5 +241,25 @@ class ActiveEventsImpl implements ActiveEvents {
             }
         }
         return false;
+    }
+
+    private boolean add(EventInstance event) {
+        activeEvents.putIfAbsent(event.getEventType(), new ArrayList<>());
+        return activeEvents.get(event.getEventType()).add(event);
+    }
+
+    private void setHandlers(EventInstance evt) {
+        List<EventHandlerVO> vos = eventService
+                .getEventHandlers(evt.getEventType());
+        List<EventHandlerRT> rts = null;
+        for (EventHandlerVO vo : vos) {
+            if (!vo.isDisabled()) {
+                if (rts == null)
+                    rts = new ArrayList<>();
+                rts.add(vo.createRuntime());
+            }
+        }
+        if (rts != null)
+            evt.setHandlers(rts);
     }
 }

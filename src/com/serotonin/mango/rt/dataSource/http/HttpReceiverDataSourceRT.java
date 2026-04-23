@@ -96,36 +96,34 @@ public class HttpReceiverDataSourceRT extends EventDataSource implements HttpMul
 
     public void data(HttpReceiverData data) {
         // Match data points in the received set with point locators.
-        synchronized (pointListChangeLock) {
-            for (DataPointRT dp : dataPoints) {
-                HttpReceiverPointLocatorVO locator = ((HttpReceiverPointLocatorRT) dp.getPointLocator())
-                        .getPointLocatorVO();
-                String paramName = locator.getParameterName();
+        for (DataPointRT dp : getDataPoints()) {
+            HttpReceiverPointLocatorVO locator = ((HttpReceiverPointLocatorRT) dp.getPointLocator())
+                    .getPointLocatorVO();
+            String paramName = locator.getParameterName();
 
-                for (HttpReceiverPointSample sample : data.getData()) {
-                    if (sample.getKey().equals(paramName)) {
-                        // This just informs the data object that the key was used so that it knows what was used
-                        // and what wasn't.
-                        data.consume(paramName);
+            for (HttpReceiverPointSample sample : data.getData()) {
+                if (sample.getKey().equals(paramName)) {
+                    // This just informs the data object that the key was used so that it knows what was used
+                    // and what wasn't.
+                    data.consume(paramName);
 
-                        String valueStr = sample.getValue();
-                        long time = sample.getTime();
-                        if (time == 0)
-                            time = data.getTime();
+                    String valueStr = sample.getValue();
+                    long time = sample.getTime();
+                    if (time == 0)
+                        time = data.getTime();
 
-                        MangoValue value;
-                        if (locator.getDataTypeId() == DataTypes.BINARY
-                                && !StringUtils.isEmpty(locator.getBinary0Value())) {
-                            if (valueStr.equalsIgnoreCase(locator.getBinary0Value()))
-                                value = BinaryValue.ZERO;
-                            else
-                                value = BinaryValue.ONE;
-                        }
+                    MangoValue value;
+                    if (locator.getDataTypeId() == DataTypes.BINARY
+                            && !StringUtils.isEmpty(locator.getBinary0Value())) {
+                        if (valueStr.equalsIgnoreCase(locator.getBinary0Value()))
+                            value = BinaryValue.ZERO;
                         else
-                            value = MangoValue.stringToValue(valueStr, locator.getDataTypeId());
-
-                        dp.updatePointValue(new PointValueTime(value, time));
+                            value = BinaryValue.ONE;
                     }
+                    else
+                        value = MangoValue.stringToValue(valueStr, locator.getDataTypeId());
+
+                    dp.updatePointValue(new PointValueTime(value, time));
                 }
             }
         }

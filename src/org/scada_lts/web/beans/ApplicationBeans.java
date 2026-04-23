@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.view.View;
+import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.login.ILoggedUsers;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -151,6 +152,10 @@ public class ApplicationBeans {
 
     public static ObjectMapper getObjectMapper() {
         return getBeanFromContext("objectMapper", ObjectMapper.class);
+    }
+
+    public static DataSourcePointsCache getDataSourcePointsCacheBean() {
+        return getBeanFromContext("dataSourcePointsCache", DataSourcePointsCache.class);
     }
 
     public static class Lazy {

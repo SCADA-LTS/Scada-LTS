@@ -101,7 +101,7 @@ public class ScriptsAPI {
             try {
                 ScriptVO<?> script = createScriptFromBody(scriptJson, user);
                 rt = script.createScriptRT();
-                rt.execute();
+                rt.execute(true);
             } catch (Exception e) {
                 throw new InternalServerErrorException(e, request.getRequestURI());
             }

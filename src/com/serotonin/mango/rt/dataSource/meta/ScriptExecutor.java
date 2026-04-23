@@ -49,8 +49,8 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.utils.ScriptContextUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.validateScript;
 
@@ -64,13 +64,20 @@ public class ScriptExecutor {
 	private static String SCRIPT_FUNCTION_PATH;
 	private static String FUNCTIONS;
 	private static final Log LOG = LogFactory.getLog(ScriptExecutor.class);
+	private final boolean addedExceptionIfPointFromContextIsUnavailableFromSystemSettings;
+	private final boolean raiseEventIfPointFromContextIsUnavailable;
+	public ScriptExecutor() {
+		addedExceptionIfPointFromContextIsUnavailableFromSystemSettings = SystemSettingsUtils.isAddedExceptionIfPointFromContextIsUnavailable();
+		raiseEventIfPointFromContextIsUnavailable = SystemSettingsUtils.isRaisedEventIfPointFromContextIsUnavailable();
+	}
 
 	public static void setScriptFunctionPath(String path) {
 		SCRIPT_FUNCTION_PATH = path;
 	}
 
+	@Deprecated(since = "2.8.1")
 	public Map<String, IDataPoint> convertContext(List<IntValuePair> context) throws Exception {
-		return convertContext(context, null, null);
+		return convertContext(context, null, null, false);
 	}
 
 	@Deprecated(since = "2.8.1")
@@ -120,7 +127,8 @@ public class ScriptExecutor {
 		return converted;
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT parentPoint, MetaDataSourceRT parentSource) throws Exception {
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT parentPoint, MetaDataSourceRT parentSource,
+												  boolean addedExceptionIfPointFromContextIsUnavailable) throws Exception {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 		ResourceBundle resourceBundle = Common.getBundle();
 		Map<String, IDataPoint> converted = new HashMap<>();
@@ -143,25 +151,35 @@ public class ScriptExecutor {
 
 				List<DataPointStateException> iterationExceptions = new ArrayList<>();
 
-				RaiseEventExecutor raiseEventExecutor = RaiseEventExecutor.newExecutor(parentPoint, parentSource, contextEntry, contextPoint, contextPointVO, resourceBundle);
+				EventExecutor eventExecutor = EventExecutor.newExecutor(parentPoint, parentSource, contextEntry, contextPoint, contextPointVO, resourceBundle);
 
-				raiseEventExecutor.execute(pointMissingMessage,
+				eventExecutor.execute(pointMissingMessage,
 						(t,p) -> m -> parentSource.raiseContextErrorPointMissing(t, p, m),
 						ScriptExecutor::isMissingPoint,
 						(t,p) -> m -> parentSource.returnToNormalContextPointMissing(t, p, m)
 				).map(iterationExceptions::add);
 
-				raiseEventExecutor.execute(pointDisabledMessage,
+				eventExecutor.execute(pointDisabledMessage,
 						(t,p) -> m -> parentSource.raiseContextErrorPointDisabled(t, p, m),
 						ScriptExecutor::isDisabledPoint,
 						(t,p) -> m -> parentSource.returnToNormalContextPointDisabled(t, p, m)
 				).map(iterationExceptions::add);
 
-				raiseEventExecutor.execute(pointUnavailableMessage,
-						(t,p) -> m -> parentSource.raiseContextErrorPointUnavailable(t, p, m),
+				eventExecutor.execute(pointUnavailableMessage,
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.raiseContextErrorPointUnavailable(t, p, m);
+						},
 						(p, v) -> isUnreliablePoint(p),
-						(t,p) -> m -> parentSource.returnToNormalContextPointUnavailable(t, p, m)
-				).map(iterationExceptions::add);
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.returnToNormalContextPointUnavailable(t, p, m);
+						}
+				).map(exception -> {
+					if (addedExceptionIfPointFromContextIsUnavailable || addedExceptionIfPointFromContextIsUnavailableFromSystemSettings)
+						return iterationExceptions.add(exception);
+					return false;
+				});
 
 				if (iterationExceptions.isEmpty()) {
 					converted.put(contextEntry.getValue(), contextPoint);
@@ -182,6 +200,14 @@ public class ScriptExecutor {
 		}
 
 		return converted;
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT parentPoint, MetaDataSourceRT parentSource) throws Exception {
+		return convertContext(context, parentPoint, parentSource, false);
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, boolean addedExceptionIfPointFromContextIsUnavailable) throws Exception {
+		return convertContext(context, null, null, addedExceptionIfPointFromContextIsUnavailable);
 	}
 
 	private static boolean isUnreliablePoint(DataPointRT point) {

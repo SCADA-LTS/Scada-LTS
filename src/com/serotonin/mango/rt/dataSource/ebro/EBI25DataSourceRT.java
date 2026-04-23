@@ -71,7 +71,7 @@ public class EBI25DataSourceRT extends PollingDataSource implements
 		// disabled points, so completely disabled
 		// loggers will not be in the index list.
 		List<Integer> loggerIndices = new ArrayList<Integer>();
-		for (DataPointRT dp : dataPoints) {
+		for (DataPointRT dp : getDataPoints()) {
 			int index = ((EBI25PointLocatorRT) dp.getPointLocator()).getVO()
 					.getIndex();
 			if (!loggerIndices.contains(index))
@@ -180,7 +180,7 @@ public class EBI25DataSourceRT extends PollingDataSource implements
 	}
 
 	private DataPointRT getLoggerPoint(int index, int type) {
-		for (DataPointRT dp : dataPoints) {
+		for (DataPointRT dp : getDataPoints()) {
 			EBI25PointLocatorRT locator = dp.getPointLocator();
 			if (locator.getVO().getIndex() == index
 					&& locator.getVO().getType() == type)

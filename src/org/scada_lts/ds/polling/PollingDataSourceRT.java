@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.setUnreliableDataPoint;
-
 public class PollingDataSourceRT extends PollingDataSource {
 
 	private final Log LOG = LogFactory.getLog(PollingDataSourceRT.class);
@@ -97,8 +95,6 @@ public class PollingDataSourceRT extends PollingDataSource {
 			String dataPointXid = dataPointVO.getXid();
 
 			response.getError(dataPointXid).ifPresentOrElse(error -> {
-
-				setUnreliableDataPoint(dataPoint);
 				String message = pollingService.getName() + "Read Failed ! :" + LoggingUtils.info(error, this, dataPoint) + " - " + LoggingUtils.dataSourceInfo(vo);
 				LOG.warn(message);
 				raiseEvent(POINT_READ_EXCEPTION_EVENT, time, true,
@@ -111,7 +107,6 @@ public class PollingDataSourceRT extends PollingDataSource {
 						dataPoint.updatePointValue(valueTime);
 						returnToNormal(POINT_UPDATE_EXCEPTION_EVENT, time, dataPoint);
 					} catch (Throwable throwable) {
-						setUnreliableDataPoint(dataPoint);
 						String message = pollingService.getName() + "Update Failed ! :" + LoggingUtils.info(throwable, this, dataPoint) + " - "
 								+ LoggingUtils.dataSourceInfo(vo);
 						LOG.warn(message);
@@ -120,7 +115,6 @@ public class PollingDataSourceRT extends PollingDataSource {
 										vo.getName(), message), dataPoint);
 					}
 				}, () -> {
-					setUnreliableDataPoint(dataPoint);
 					String message = pollingService.getName() + "Read Failed ! :" + LoggingUtils.dataPointInfo(dataPoint) + " - "
 							+ LoggingUtils.dataSourceInfo(vo);
 					LOG.warn(message);
@@ -141,7 +135,6 @@ public class PollingDataSourceRT extends PollingDataSource {
 			dataPoint.setPointValue(valueTime, null);
 			returnToNormal(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), dataPoint);
 		} catch (Throwable e) {
-			setUnreliableDataPoint(dataPoint);
 			String message = pollingService.getName() + "Write Failed ! :" + LoggingUtils.info(e, vo, dataPoint.getVO());
 			LOG.warn(message);
 			raiseEvent(POINT_WRITE_EXCEPTION_EVENT,

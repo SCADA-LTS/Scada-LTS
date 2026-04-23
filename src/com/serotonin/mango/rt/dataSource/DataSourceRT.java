@@ -19,11 +19,14 @@
 package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.event.type.DataSourcePointEventType;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
@@ -36,8 +39,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
 
 /**
  * Data sources are things that produce data for consumption of this system. Anything that houses, creates, manages, or
@@ -81,9 +82,12 @@ abstract public class DataSourceRT implements ILifecycle {
     /**
      * Access to either the addedPoints or removedPoints lists should be synchronized with this object's monitor.
      */
+    @Deprecated(since = "2.8.1")
     protected final Object pointListChangeLock = new Object();
 
     private final List<DataSourceEventType> eventTypes;
+
+    private final ReadWriteLock dataPointsLock = new ReentrantReadWriteLock(true);
 
     public DataSourceRT(DataSourceVO<?> vo) {
         this.vo = vo;
@@ -117,24 +121,34 @@ abstract public class DataSourceRT implements ILifecycle {
         new DataSourceDao().savePersistentData(vo.getId(), persistentData);
     }
 
+    protected ReadWriteLock getDataPointsLock() {
+        return dataPointsLock;
+    }
+
     public void addDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
+        dataPointsLock.writeLock().lock();
+        try {
             addedChangedPoints.remove(dataPoint);
             addedChangedPoints.add(dataPoint);
             removedPoints.remove(dataPoint);
+        } finally {
+            dataPointsLock.writeLock().unlock();
         }
     }
 
     public void removeDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
+        dataPointsLock.writeLock().lock();
+        try {
             addedChangedPoints.remove(dataPoint);
             removedPoints.add(dataPoint);
+        } finally {
+            dataPointsLock.writeLock().unlock();
         }
     }
 
     abstract public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source);
 
-    protected abstract List<DataPointRT> getDataPoints();
+    public abstract List<DataPointRT> getDataPoints();
     public boolean isInitialized() {
         return initialized;
     }
@@ -153,33 +167,18 @@ abstract public class DataSourceRT implements ILifecycle {
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
-        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
         DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
-        if(dataSourceRT != null && dataSourceRT.doSetUnreliableDataPoint(dset.getDataSourceEventTypeId())) {
-            setUnreliableDataPoints(dataSourceRT.getDataPoints());
-        }
+        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context, dataSourceRT);
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId, boolean doSetUnreliable) {
-
-        if(doSetUnreliable && doSetUnreliableDataPoint(eventId)) {
-            if (dataPointId == -1) {
-                setUnreliableDataPoints(getDataPoints());
-            } else {
-                for (DataPointRT dataPoint : getDataPoints()) {
-                    if (dataPoint.getId() == dataPointId) {
-                        setUnreliableDataPoint(dataPoint);
-                    }
-                }
-            }
-        }
+    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
 
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
 
         Map<String, Object> context = new HashMap<>();
         context.put("dataSource", vo);
 
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
+        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context, this);
     }
 
     protected void returnToNormal(int eventId, long time, int dataPointId) {
@@ -263,18 +262,8 @@ abstract public class DataSourceRT implements ILifecycle {
         return true;
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, boolean doSetUnreliable) {
-        message = new LocalizableMessage("event.ds", vo.getName(), message);
-        raiseEvent(eventId, time, rtn, message, -1, doSetUnreliable);
-    }
-
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, DataPointRT dataPoint, boolean doSetUnreliable) {
-        message = new LocalizableMessage("event.ds", dataPoint.getVO().getExtendedName(), message);
-        raiseEvent(eventId, time, rtn, message, dataPoint.getId(), doSetUnreliable);
-    }
-
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message, int dataPointId) {
-        raiseEvent(eventId, time, rtn, message, dataPointId, true);
+    public boolean doSetUnreliableDataPoint(EventType eventType) {
+        return eventType instanceof DataSourceEventType;
     }
 
     protected void returnToNormal(int eventId, long time, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
@@ -283,7 +272,7 @@ abstract public class DataSourceRT implements ILifecycle {
 
     protected void returnToNormal(int eventId, long time, int dataPointId, LocalizableMessage onlyWithThisMessage) {
         DataSourceEventType type = getDataSourceEventType(eventId, dataPointId);
-        Common.ctx.getEventManager().returnToNormal(type, time, onlyWithThisMessage);
+        Common.ctx.getEventManager().returnToNormal(type, time, onlyWithThisMessage, this);
     }
 
     private static LocalizableMessage createPointMessage(DataPointVO dataPoint, LocalizableMessage localizableMessage) {
