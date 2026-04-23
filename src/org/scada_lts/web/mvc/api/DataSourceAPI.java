@@ -64,7 +64,7 @@ public class DataSourceAPI {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/datasource/toggle")
+    @PostMapping(value = "/api/datasource/toggle")
     public ResponseEntity<Map<String, Object>> toggleDataSource(@RequestParam(required = false) Integer id,
                                                                 @RequestParam(required = false) String xid,
                                                                 HttpServletRequest request) {
@@ -85,7 +85,7 @@ public class DataSourceAPI {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/datasource/datapoints/enable")
+    @PutMapping(value = "/api/datasource/datapoints/enable")
     public ResponseEntity<List<DataPointJson>> enableAllPointsInDataSource(@RequestParam(required = false) Integer id,
                                                                            @RequestParam(required = false) String xid,
                                                                            HttpServletRequest request) {

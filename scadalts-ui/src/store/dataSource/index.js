@@ -340,7 +340,10 @@ const ds = {
 
 		enableAllDataPoints({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
-				dispatch('requestGet', `/datasource/datapoints/enable?id=${dataSourceId}`)
+				dispatch('requestPut', {
+					url: `/datasource/datapoints/enable?id=${dataSourceId}`,
+					data: null,
+				})
 				.then((resp) => {
 					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);
 					resolve();
@@ -353,7 +356,10 @@ const ds = {
 
 		toggleDataSource({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
-				dispatch('requestGet', `/datasource/toggle?id=${dataSourceId}`)
+				dispatch('requestPost', {
+					url: `/datasource/toggle?id=${dataSourceId}`,
+					data: null,
+				})
 				.then(() => {
 					commit('TOGGLE_DATA_SOURCE', dataSourceId);
 					resolve();

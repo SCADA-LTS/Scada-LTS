@@ -286,7 +286,7 @@ const storeSystemSettings = {
 		purgeData(context) {
 			return new Promise((resolve, reject) => {
 				axios
-					.get(`${context.state.systemSettingsApiUrl}/purgeData`, {
+					.post(`${context.state.systemSettingsApiUrl}/purgeData`, null, {
 						timeout: 5000,
 						useCredentials: true,
 						credentials: 'same-origin',
@@ -305,7 +305,7 @@ const storeSystemSettings = {
 		},
 
 		purgeNow({dispatch}) {
-			return dispatch('requestGet', '/systemSettings/purgeNow');
+			return dispatch('requestPost', { url: '/systemSettings/purgeNow', data: null });
 		},
 
 		configurationEqual(ctx, objects) {

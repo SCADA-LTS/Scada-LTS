@@ -82,7 +82,7 @@ public class ViewHierarchyAPI {
 	
 		
 	
-	@RequestMapping(value = "/api/view_hierarchy/createFolder/{name}/{parentId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/view_hierarchy/createFolder/{name}/{parentId}", method = RequestMethod.POST)
 	public ResponseEntity<Object> createFolder(@PathVariable("name") String name, @PathVariable("parentId") int parentId, HttpServletRequest request) {
 		
 		LOG.info("/api/view_hierarchy/createFolder/{name}:"+name+" {parentId}:"+parentId);

@@ -40,11 +40,46 @@ public class AuthenticationAPI {
 		this.userService = userService;
 		this.authenticationManager = authenticationManager;
 	}
-	
+
+	public static class AuthenticationRequest {
+		private String username;
+		private String password;
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
+
 	@RequestMapping(value = "/api/auth/{username}/{password}", method = RequestMethod.POST)
 	public ResponseEntity<String> setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password,
 													HttpServletRequest request, HttpServletResponse response) {
 		LOG.info("/api/auth/{username}/{password} username:" + username);
+		Authentication authentication = authenticate(username, password, request, response, authenticationManager, userService);
+		return new ResponseEntity<>(String.valueOf(authentication.isAuthenticated()), HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/api/v2/auth")
+	public ResponseEntity<String> setAuthenticationV2(@RequestBody(required = false) AuthenticationRequest authRequest,
+													  HttpServletRequest request, HttpServletResponse response) {
+		if (authRequest == null || authRequest.getUsername() == null || authRequest.getPassword() == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		String username = authRequest.getUsername();
+		String password = authRequest.getPassword();
+		LOG.info("/api/v2/auth username:" + username);
 		Authentication authentication = authenticate(username, password, request, response, authenticationManager, userService);
 		return new ResponseEntity<>(String.valueOf(authentication.isAuthenticated()), HttpStatus.OK);
 	}
@@ -75,6 +110,18 @@ public class AuthenticationAPI {
 	public ResponseEntity<String> setLogout(@PathVariable("username") String username, HttpServletRequest request) {
 		LOG.info("/api/auth/logout/{username} username:" + username);
 		User user = userService.getUser(username);
+
+		if (user != null) {
+			logout(request);
+		}
+
+		return new ResponseEntity<>(String.valueOf(true),HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/api/v2/auth/logout")
+	public ResponseEntity<String> setLogoutV2(HttpServletRequest request) {
+		LOG.info("/api/v2/auth/logout");
+		User user = Common.getUser(request);
 
 		if (user != null) {
 			logout(request);
