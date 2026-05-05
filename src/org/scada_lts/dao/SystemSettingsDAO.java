@@ -386,7 +386,7 @@ public class SystemSettingsDAO {
 
 		DEFAULT_VALUES.put(LANGUAGE, "en");
 
-		DEFAULT_VALUES.put(FILEDATA_PATH, "~/WEB-INF/filedata");
+		DEFAULT_VALUES.put(FILEDATA_PATH, SystemSettingsUtils.getFiledataPath());
 		DEFAULT_VALUES.put(HTTPDS_PROLOGUE, "");
 		DEFAULT_VALUES.put(HTTPDS_EPILOGUE, "");
 		DEFAULT_VALUES.put(UI_PERFORMANCE, 2000);
