@@ -94,6 +94,8 @@ import static org.scada_lts.utils.UploadFileUtils.loadGraphics;
 
 public class MangoContextListener implements ServletContextListener {
 	private final Log log = LogFactory.getLog(MangoContextListener.class);
+	private static final Object SCRIPT_CONTEXT_LOCK = new Object();
+	private static volatile boolean scriptContextInitialized;
 
 	private boolean initialized;
 
@@ -249,7 +251,17 @@ public class MangoContextListener implements ServletContextListener {
 	 * Set global permission for the ScriptEngine 
 	 */
 	private void scriptContextInitialize() {
-		ContextFactory.initGlobal(new SandboxContextFactory());
+		synchronized (SCRIPT_CONTEXT_LOCK) {
+			if (scriptContextInitialized) {
+				return;
+			}
+			try {
+				ContextFactory.initGlobal(new SandboxContextFactory());
+			} catch (IllegalStateException ex) {
+				log.warn("Rhino ContextFactory global already initialized, reusing existing global context");
+			}
+			scriptContextInitialized = true;
+		}
 	}
 
 	private void dataPointsNameToIdMapping(ServletContext ctx) {
