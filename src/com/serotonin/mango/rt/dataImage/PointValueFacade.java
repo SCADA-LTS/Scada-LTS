@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataImage;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.serotonin.mango.Common;
@@ -35,6 +36,13 @@ public class PointValueFacade {
         this.dataPointId = dataPointId;
         point = Common.ctx.getRuntimeManager().getDataPoint(dataPointId);
         pointValueService = new PointValueService();
+    }
+
+    // Package-private constructor used only by unit tests to inject a mock service.
+    PointValueFacade(int dataPointId, PointValueService pointValueService) {
+        this.dataPointId = dataPointId;
+        this.point = null;
+        this.pointValueService = pointValueService;
     }
 
     public List<PointValueTime> getPointValues(long since) {
@@ -72,4 +80,24 @@ public class PointValueFacade {
             return point.getLatestPointValues(limit);
         return pointValueService.getLatestPointValues(dataPointId, limit);
     }
+
+    // =========================================================================
+    // FIX #3247
+    // Returns point values for [from, to). If none exist, falls back to the
+    // most-recent value recorded before `from`, so the statistics panel always
+    // shows the last known state instead of being blank.
+    // =========================================================================
+    public List<PointValueTime> getPointValuesBetweenWithFallback(long from, long to) {
+        List<PointValueTime> values = getPointValuesBetween(from, to);
+        if (!values.isEmpty())
+            return values;
+
+        // No data in range — fall back to last known value before window start
+        List<PointValueTime> before = pointValueService.getLatestPointValues(dataPointId, 1, from);
+        if (!before.isEmpty())
+            return Collections.singletonList(before.get(0));
+
+        return Collections.emptyList();
+    }
+    // =========================================================================
 }
