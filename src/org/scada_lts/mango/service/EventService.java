@@ -174,6 +174,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.0")
 	public void ackAllPending(long time, int userId, int alternateAckSource) {
 		MangoEvent eventService = new EventService();
 		UserService userEvent = new UserService();
@@ -185,6 +186,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
+	@Deprecated(since = "2.8.0")
 	public void silenceAll(int userId) {
 		eventDAO.silenceEvents(userId);
 	}
@@ -208,7 +210,7 @@ public class EventService implements MangoEvent {
 	public List<EventInstance> getActiveEvents() {
 		List<EventInstance> result = eventDAO.filtered(EventDAO.EVENT_FILTER_ACTIVE, new Object[]{DAO.boolToChar(true)}, EventDAO.NO_LIMIT);
 		attachRelationInfo(result); 
-		return result;
+		return getEventsSorted(result);
 	}
 	
 	@Override
@@ -223,7 +225,7 @@ public class EventService implements MangoEvent {
 		}
 		attachRelationInfo(lst);
 		
-		return lst;
+		return getEventsSorted(lst);
 		
 	}
 
@@ -232,7 +234,7 @@ public class EventService implements MangoEvent {
 		int limit = systemSettingsService.getMiscSettings().getEventPendingLimit();
 		List<EventInstance> lst = eventDAO.getEventsForDataPointLimit(dataPointId, userId, limit);
 		attachRelationInfo(lst);
-		return lst;
+		return getEventsSorted(lst);
 	}
 
 	@Override
@@ -257,7 +259,7 @@ public class EventService implements MangoEvent {
 		}
 		if (list == null)
 			return Collections.emptyList();
-		return list;		
+		return getEventsSorted(list);
 	}
 
 	@Override
@@ -286,7 +288,6 @@ public class EventService implements MangoEvent {
 			if (cacheEnable) {
 				PendingEventsCache.getInstance().startUpdate();
 				results = PendingEventsCache.getInstance().getPendingEvents(userId).stream()
-						.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).reversed())
 						.filter(a -> alarmLevelMin < 0 || a.getAlarmLevel() >= alarmLevelMin)
 						.limit(calcLimit)
 						.collect(Collectors.toList());
@@ -302,7 +303,7 @@ public class EventService implements MangoEvent {
 		} catch (IOException e) {
 			LOG.error(e);	
 		}
-		return results;
+		return results == null ? null : getEventsSorted(results);
 	}
 	
 	@Override
@@ -727,5 +728,11 @@ public class EventService implements MangoEvent {
 
 		clearCache();
 		notifyEventAck(event);
+	}
+
+	private static List<EventInstance> getEventsSorted(List<EventInstance> result) {
+		return result.stream()
+				.sorted(Comparator.comparing(EventInstance::getActiveTimestamp).thenComparing(EventInstance::getId).reversed())
+				.collect(Collectors.toList());
 	}
 }

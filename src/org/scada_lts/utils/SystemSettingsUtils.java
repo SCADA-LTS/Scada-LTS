@@ -68,6 +68,8 @@ public final class SystemSettingsUtils {
     public static final String HTTP_PROTOCOL_TIMEOUT_MS_KEY = "http.protocol.timeout-ms";
     public static final String OPC_UA_SEARCH_DEPTH_LIMIT_KEY = "scadalts.opcua.search-depth-limit";
 
+    public static final String OPC_UA_CLIENT_ALIAS_KEY = "scadalts.opcua.client-alias";
+
     public static final String EVENT_ASSIGN_ENABLED_KEY = "event.assign.enabled";
 
     private static final String SECURITY_HTTP_QUERY_ACCESS_DENIED_REGEX_KEY = "scadalts.security.http.query.access.denied.regex";
@@ -92,6 +94,11 @@ public final class SystemSettingsUtils {
     private static final String DATA_POINT_UNRELIABLE_DEPTH_KEY = "scadalts.datapoint.unreliable.depth";
     private static final String DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY = "scadalts.datapoint.unreliable.execute-in-pool-if-tasks-exceeds";
 
+    private static final String SECURITY_JS_EXECUTOR_JAVA_ENABLED_KEY = "scadalts.security.js.executor.java.enabled";
+    private static final String SECURITY_JS_VALIDATOR_ENABLED_KEY = "scadalts.security.js.validator.enabled";
+    private static final String SECURITY_JS_FILTER_ENABLED_KEY = "scadalts.security.js.filter.enabled";
+    private static final String SCRIPT_CONTEXT_POINT_UNAVAILABLE_EXCEPTION_ADDED_KEY = "script.context.point.unavailable.exception.added";
+    private static final String SCRIPT_CONTEXT_POINT_UNAVAILABLE_EVENT_RAISED_KEY = "script.context.point.unavailable.event.raised";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -809,6 +816,71 @@ public final class SystemSettingsUtils {
         try {
             String property = ScadaConfig.getInstance().getConf().getProperty(DATA_POINT_UNRELIABLE_EXECUTE_IN_POOL_IF_TASKS_EXCEEDS_KEY, String.valueOf(defaultValue));
             return Integer.parseInt(property);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsExecutorJavaEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_EXECUTOR_JAVA_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsValidatorEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_VALIDATOR_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isSecurityJsFilterEnabled() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SECURITY_JS_FILTER_ENABLED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static String getOpcUaClientAlias() {
+        String defaultValue = "scada-lts";
+        try {
+            return ScadaConfig.getInstance().getConf().getProperty(OPC_UA_CLIENT_ALIAS_KEY, defaultValue);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isAddedExceptionIfPointFromContextIsUnavailable() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SCRIPT_CONTEXT_POINT_UNAVAILABLE_EXCEPTION_ADDED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean isRaisedEventIfPointFromContextIsUnavailable() {
+        boolean defaultValue = false;
+        try {
+            String value = ScadaConfig.getInstance().getConf().getProperty(SCRIPT_CONTEXT_POINT_UNAVAILABLE_EVENT_RAISED_KEY, String.valueOf(defaultValue));
+            return Boolean.parseBoolean(value);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return defaultValue;

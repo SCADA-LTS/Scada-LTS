@@ -52,7 +52,6 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.resetUnreliableDataPoint;
 import static org.scada_lts.utils.PointValueStateUtils.isSetPoint;
 
 public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
@@ -148,7 +147,6 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 	 */
 	public void updatePointValue(PointValueTime newValue) {
 		savePointValue(newValue, null, true);
-		resetUnreliableDataPoint(this);
 	}
 
 	public void updatePointValue(String newValue) {
@@ -156,12 +154,10 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 				new PointValueTime(MangoValue.stringToValue(newValue, getDataTypeId()),
 						System.currentTimeMillis());
 		savePointValue(pointValueTime, null, true);
-		resetUnreliableDataPoint(this);
 	}
 
 	public void updatePointValue(PointValueTime newValue, boolean async) {
 		savePointValue(newValue, null, async);
-		resetUnreliableDataPoint(this);
 	}
 
 	/**
@@ -180,7 +176,6 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 			savePointValue(newValue, source, true);
 		else
 			savePointValue(newValue, source, false);
-		resetUnreliableDataPoint(this);
 	}
 
 	protected void savePointValue(PointValueTime newValue, SetPointSource source,
@@ -615,7 +610,7 @@ public class DataPointRT implements IDataPointRT, ILifecycle, TimeoutClient, Sca
 		DataSourceRT dataSourceRT = Common.ctx.getRuntimeManager().getRunningDataSource(getDataSourceId());
 		if(dataSourceRT == null)
 			return true;
-		return !dataSourceRT.isInitialized() || isSetUnreliable();
+		return isSetUnreliable();
 	}
 
 	public boolean isSetUnreliable() {

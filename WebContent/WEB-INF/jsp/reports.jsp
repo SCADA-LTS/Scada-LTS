@@ -23,15 +23,13 @@
 
 <tag:page dwr="ReportsDwr" js="emailRecipients" onload="init">
   <script type="text/javascript">
-    var allPointsArray = new Array();
-    var reportPointsContext;
+    var pointsContext;
     var selectedReport;
     var emailRecipients;
     
     function init() {
         ReportsDwr.init(function(response) {
             hide("hourglass");
-            allPointsArray = response.data.points;
             
             emailRecipients = new mango.erecip.EmailRecipients("recipients",
                     "<spring:message code="reports.recipTestEmailMessage"/>", response.data.mailingLists, response.data.users);
@@ -45,14 +43,8 @@
             }
             
             <c:if test="${!empty param.wlid}">
-              ReportsDwr.createReportFromWatchlist(${param.wlid}, loadReportCB);
+              ReportsDwr.createReportFromWatchlistResponse(${param.wlid}, function(response) {loadReportCB(response.data.report, response.data.points)});
             </c:if>
-        });
-        jQuery("#allPointsList").chosen({
-            allow_single_deselect: true,
-            placeholder_text_single: " ",
-            search_contains: true,
-            width: "400px"
         });
     }
     
@@ -60,7 +52,7 @@
         if (selectedReport)
             stopImageFader("r"+ selectedReport.id +"Img");
         
-        ReportsDwr.getReport(reportId, copy, loadReportCB);
+        ReportsDwr.getReportResponse(reportId, copy, function(response) {loadReportCB(response.data.report, response.data.points)});
         
         if (copy)
             reportId = <c:out value="<%= Common.NEW_ID %>"/>;
@@ -70,7 +62,7 @@
         display("copyImg", reportId != <c:out value="<%= Common.NEW_ID %>"/>);
     }
     
-    function loadReportCB(report) {
+    function loadReportCB(report, points) {
         if (!report)
             return;
         if (!selectedReport)
@@ -78,8 +70,12 @@
         selectedReport = report;
         
         $set("name", report.name);
-        let handlePointsContext = new ReportPointsContext(report.points, allPointsArray);
-        setPointsContext(handlePointsContext);
+
+        pointsContext = new ReportPointsContext(new DataPointsSelect({
+            placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+            excludePointsArray: report.points,
+            pointsArray: points
+        }));
 
         $set("includeEvents", report.includeEvents);
         $set("includeUserComments", report.includeUserComments);
@@ -119,18 +115,6 @@
         updateScheduleFields();
         updateSchedulePeriodFields();
         updateEmailFields();
-    }
-
-    function setPointsContext(reportPointsContext) {
-        this.reportPointsContext = reportPointsContext;
-    }
-    
-    function updatePointColour(pointId, colour) {
-        reportPointsContext.updatePoint(pointId, "colour", colour);
-    }
-    
-    function updatePointConsolidatedChart(pointId, consolidatedChart) {
-        reportPointsContext.updatePoint(pointId, "consolidatedChart", consolidatedChart);
     }
 
     function updateReportInstancesList(instanceArray) {
@@ -301,7 +285,7 @@
     
     function saveReport() {
         startImageFader("saveImg");
-        ReportsDwr.saveReport(selectedReport.id, $get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
+        ReportsDwr.saveReport(selectedReport.id, $get("name"), pointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -372,7 +356,7 @@
         if (hasImageFader("runImg"))
             return;
         
-        ReportsDwr.runReport($get("name"), reportPointsContext.convertToSave(), $get("includeEvents"),
+        ReportsDwr.runReport($get("name"), pointsContext.convertToSave(), $get("includeEvents"),
                 $get("includeUserComments"), $get("dateRangeType"), $get("relativeType"), $get("prevPeriodCount"),
                 $get("prevPeriodType"), $get("pastPeriodCount"), $get("pastPeriodType"), $get("fromNone"),
                 $get("fromYear"), $get("fromMonth"), $get("fromDay"), $get("fromHour"), $get("fromMinute"),
@@ -390,13 +374,6 @@
         });
         startImageFader("runImg");
     }
-
-    jQuery(document).ready(function(){
-        (function($) {
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-        })(jQuery);
-    });
   </script>
   
   <table cellpadding="0" cellspacing="0"><tr><td>
@@ -486,17 +463,18 @@
             <tr>
               <td class="formLabelRequired"><spring:message code="common.points"/></td>
               <td class="formField">
-                <select id="allPointsList"></select>
-                <tag:img png="add" onclick="reportPointsContext.addPointToContext();" title="common.add"/>
+                <select id="allPointsList" style="display:none;"></select>
+                <tag:img id="icon_add" png="add" onclick="pointsContext.addPointToContext();" title="common.add" style="display:none;"/>
                 
                 <table cellspacing="1">
                   <tbody id="contextTableEmpty" style="display:none;">
-                    <tr><th colspan="4"><spring:message code="reports.noPoints"/></th></tr>
+                    <tr><th colspan="7"><spring:message code="reports.noPoints"/></th></tr>
                   </tbody>
                   <tbody id="contextTableHeaders" style="display:none;">
                     <tr class="smRowHeader">
                       <td><spring:message code="reports.pointName"/></td>
-                      <td><spring:message code="pointHierarchySLTS.xid"/></td>
+                      <td><spring:message code="reports.pointId"/></td>
+                      <td><spring:message code="reports.pointXid"/></td>
                       <td><spring:message code="reports.dataType"/></td>
                       <td><spring:message code="reports.colour"/></td>
                       <td><spring:message code="reports.consolidatedChart"/></td>

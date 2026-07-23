@@ -34,13 +34,26 @@
         </c:if>
         <c:if test="${!empty flipbookLimit}">getFlipbookChart();</c:if>
         getStatsChart();
-        
-        jQuery("#datPointDetailsPointSelect").chosen({
-			allow_single_deselect: true,
-			placeholder_text_single: " ",
-			search_contains: true,
-			width: "400px"
-       	});
+
+        let pointsArray = new Array();
+
+        <c:forEach items="${userPoints}" var="dp">
+            pointsArray[pointsArray.length] = {
+                id : "<c:out value="${dp.id}"/>",
+                name : "<c:out value="${dp.extendedName}"/>",
+                xid : "<c:out value="${dp.xid}"/>",
+                dataType : "<sst:i18n message="${dp.dataTypeMessage}"/>"
+            };
+        </c:forEach>
+
+        let datPointDetailsPointSelect = new DataPointsSelect({
+            selectHtmlId: "datPointDetailsPointSelect",
+            placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+            pointsArray: pointsArray.filter((point) => point.id == <c:out value="${point.id}" />),
+            invisibleEmptyOption: true,
+            allowSingleDeselect: false,
+            imgAddHtmlIds: ["bullet_go_left", "bullet_go"]
+        });
     }
     
     //
@@ -152,33 +165,22 @@
     function swapFlipbookImage(uri) {
         $("flipbookImage").src = uri;
     }
-    
-    jQuery(document).ready(function(){
-    	(function($) {
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css"); 	
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-		})(jQuery);
-    });
   </script>
   
   <table width="100%">
     <tr>
       <td valign="top" align="right">
         <spring:message code="pointDetails.goto"/>:&nbsp;
-        <sst:select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid='+ this.value;">
-          <c:forEach items="${userPoints}" var="point">
-            <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
-          </c:forEach>
-        </sst:select>
+        <select id="datPointDetailsPointSelect" value="${point.id}" onchange="window.location='data_point_details.shtm?dpid=' + encodeURIComponent(this.value);" style="display:none;"></select>
 
         <c:if test="${!empty prevId}">
-          <tag:img png="bullet_go_left" title="pagination.previous"
-                  onclick="window.location='data_point_details.shtm?dpid=${prevId}'"/>
+          <tag:img id="bullet_go_left" png="bullet_go_left" title="pagination.previous"
+                  onclick="window.location='data_point_details.shtm?dpid=${prevId}'" style="display:none;"/>
         </c:if>
         
         <c:if test="${!empty nextId}">
-          <tag:img png="bullet_go" title="pagination.next"
-                  onclick="window.location='data_point_details.shtm?dpid=${nextId}'"/>
+          <tag:img id="bullet_go" png="bullet_go" title="pagination.next"
+                  onclick="window.location='data_point_details.shtm?dpid=${nextId}'" style="display:none;"/>
         </c:if>
       </td>
     </tr>
@@ -268,8 +270,7 @@
           </table>
         </div>
       </td>
-      
-      <td valign="top">
+            <td valign="top">
         <div class="borderDiv marB">
           <table width="100%">
             <tr>
@@ -284,8 +285,7 @@
         </div>
       </td>
     </tr>
-    
-    <c:if test="${!empty periodType}">
+        <c:if test="${!empty periodType}">
       <tr>
         <td colspan="3">
           <!--  chart with editable properties and annotations -->

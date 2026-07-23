@@ -17,7 +17,6 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueCache;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.*;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -30,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
@@ -40,7 +38,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
-public class ScriptExecutorTest {
+public class JsScriptExecutorTest {
 
     private static final double DELTA = .01;
 
@@ -58,7 +56,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_return_state_double() throws ScriptException, ResultTypeException {
+    public void when_execute_js_with_return_state_double() throws ScriptException, ResultTypeException {
         ScriptExecutor scriptExecutor = new ScriptExecutor();
         PointValueTime pointValueTime = scriptExecutor.execute("return 2.2;", Collections.emptyMap(),
                 0, DataTypes.NUMERIC, 0);
@@ -67,7 +65,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_return_state_int() throws ScriptException, ResultTypeException {
+    public void when_execute_js_with_return_state_int() throws ScriptException, ResultTypeException {
         ScriptExecutor scriptExecutor = new ScriptExecutor();
         PointValueTime pointValueTime = scriptExecutor.execute("return 2;", Collections.emptyMap(),
                 0, DataTypes.MULTISTATE, 0);
@@ -76,7 +74,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_return_state_string() throws ScriptException, ResultTypeException {
+    public void when_execute_js_with_return_state_string() throws ScriptException, ResultTypeException {
         ScriptExecutor scriptExecutor = new ScriptExecutor();
         PointValueTime pointValueTime = scriptExecutor.execute("return 'abc';", Collections.emptyMap(),
                 0, DataTypes.ALPHANUMERIC, 0);
@@ -85,7 +83,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_return_state_boolean() throws ScriptException, ResultTypeException {
+    public void when_execute_js_with_return_state_boolean() throws ScriptException, ResultTypeException {
         ScriptExecutor scriptExecutor = new ScriptExecutor();
         PointValueTime pointValueTime = scriptExecutor.execute("return true;", Collections.emptyMap(),
                 0, DataTypes.BINARY, 0);
@@ -94,7 +92,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_binary() throws Exception {
+    public void when_execute_js_with_point_context_binary() throws Exception {
 
         //given:
         DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new BinaryValue(true));
@@ -114,7 +112,7 @@ public class ScriptExecutorTest {
     }
 
     @Test(expected = ScriptException.class)
-    public void test_execute_js_with_broken_point_context_binary() throws Exception {
+    public void when_execute_js_with_broken_point_context_binary() throws Exception {
 
         //given:
         ScriptExecutor scriptExecutor = new ScriptExecutor();
@@ -127,7 +125,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_numeric() throws Exception {
+    public void when_execute_js_with_point_context_numeric() throws Exception {
 
         //given:
         DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new NumericValue(1.1));
@@ -148,7 +146,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_numeric_toFixed() throws Exception {
+    public void when_execute_js_with_point_context_numeric_toFixed() throws Exception {
 
         //given:
         DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new NumericValue(1.12345));
@@ -168,7 +166,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_alphanumeric() throws Exception {
+    public void when_execute_js_with_point_context_alphanumeric() throws Exception {
 
         //given:
         DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new AlphanumericValue("alphanumeric test"));
@@ -189,7 +187,7 @@ public class ScriptExecutorTest {
 
 
     @Test
-    public void test_execute_js_with_point_context_multistatic() throws Exception {
+    public void when_execute_js_with_point_context_multistatic() throws Exception {
 
         //given:
         DataPointRT p1 = ScriptTestUtils.createDataPointRT(0, new MultistateValue(1234));
@@ -209,82 +207,8 @@ public class ScriptExecutorTest {
         Assert.assertEquals(5, result);
     }
 
-
     @Test
-    public void test_execute_js_with_java_PointValueTime() throws Exception {
-
-        //given:
-        ScriptExecutor scriptExecutor = new ScriptExecutor();
-
-        //when:
-        PointValueTime pointValueTime = scriptExecutor.execute("" +
-                "var pointValueTime = com.serotonin.mango.rt.dataImage.PointValueTime(new com.serotonin.mango.rt.dataImage.types.NumericValue(12345.5),0);" +
-                "return pointValueTime.getDoubleValue();", Collections.emptyMap(), 0, DataTypes.NUMERIC, 0);
-
-        //then:
-        double result = pointValueTime.getDoubleValue();
-        Assert.assertEquals(12345.5, result, DELTA);
-
-    }
-
-    @Test
-    public void test_execute_js_with_java_PointValueTime_new() throws Exception {
-
-        //given:
-        ScriptExecutor scriptExecutor = new ScriptExecutor();
-
-        //when:
-        PointValueTime pointValueTime = scriptExecutor.execute("" +
-                "var pointValueTime = new com.serotonin.mango.rt.dataImage.PointValueTime(new com.serotonin.mango.rt.dataImage.types.NumericValue(12345.5),0);" +
-                "return pointValueTime.getDoubleValue();", Collections.emptyMap(), 0, DataTypes.NUMERIC, 0);
-
-        //then:
-        double result = pointValueTime.getDoubleValue();
-        Assert.assertEquals(12345.5, result, DELTA);
-
-    }
-
-    @Test
-    public void test_execute_js_with_java_create_ViewDwr() throws Exception {
-
-        //given:
-        ScriptExecutor scriptExecutor = new ScriptExecutor();
-
-        //when:
-        PointValueTime pointValueTime = scriptExecutor.execute("" +
-                "var mydwr=new com.serotonin.mango.web.dwr.ViewDwr();" +
-                "return 'cde';", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
-
-        //then:
-        String result = pointValueTime.getStringValue();
-        Assert.assertEquals("cde", result);
-    }
-
-    @Test
-    public void test_execute_js_with_java_invoke_method_getLoggedUser_in_ViewDwr() throws Exception {
-
-        //given:
-        ScriptExecutor scriptExecutor = new ScriptExecutor();
-        String userName = "user mock";
-
-        mockStatic(Common.class);
-        User user = new User();
-        user.setUsername(userName);
-        when(Common.getUser()).thenReturn(user);
-
-        //when:
-        PointValueTime pointValueTime = scriptExecutor.execute("" +
-                "var mydwr=new com.serotonin.mango.web.dwr.ViewDwr();" +
-                "var user=mydwr.getLoggedUser();" +
-                "return user + '';", Collections.emptyMap(), 0, DataTypes.ALPHANUMERIC, 0);
-
-        //then:
-        String result = pointValueTime.getStringValue();
-        Assert.assertEquals(userName, result);
-    }
-
-    @Test
-    public void test_execute_js_with_point_context_alphanumeric_return_value() throws Exception {
+    public void when_execute_js_with_point_context_alphanumeric_return_value() throws Exception {
 
         //given:
         String value = "alphanumeric test";
@@ -304,7 +228,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_alphanumeric_return_value_plus_value() throws Exception {
+    public void when_execute_js_with_point_context_alphanumeric_return_value_plus_value() throws Exception {
 
         //given:
         String value = "alphanumeric test";
@@ -325,7 +249,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_alphanumeric_return_value_plus_abc() throws Exception {
+    public void when_execute_js_with_point_context_alphanumeric_return_value_plus_abc() throws Exception {
 
         //given:
         String value = "alphanumeric test";
@@ -347,7 +271,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_multistate_return_value() throws Exception {
+    public void when_execute_js_with_point_context_multistate_return_value() throws Exception {
 
         //given:
         int value = 12;
@@ -367,7 +291,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_multistate_return_value_plus_value() throws Exception {
+    public void when_execute_js_with_point_context_multistate_return_value_plus_value() throws Exception {
 
         //given:
         int value = 12;
@@ -388,7 +312,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_multistate_return_value_plus_4() throws Exception {
+    public void when_execute_js_with_point_context_multistate_return_value_plus_4() throws Exception {
 
         //given:
         int value = 12;
@@ -410,7 +334,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_numeric_return_value() throws Exception {
+    public void when_execute_js_with_point_context_numeric_return_value() throws Exception {
 
         //given:
         double value = 12.12;
@@ -430,7 +354,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_numeric_return_value_plus_value() throws Exception {
+    public void when_execute_js_with_point_context_numeric_return_value_plus_value() throws Exception {
 
         //given:
         double value = 12.12;
@@ -451,7 +375,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_numeric_return_value_plus_10_1() throws Exception {
+    public void when_execute_js_with_point_context_numeric_return_value_plus_10_1() throws Exception {
 
         //given:
         double value = 12.12;
@@ -473,7 +397,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_binary_return_value() throws Exception {
+    public void when_execute_js_with_point_context_binary_return_value() throws Exception {
 
         //given:
         boolean value = true;
@@ -493,7 +417,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_binary_return_value_or_value() throws Exception {
+    public void when_execute_js_with_point_context_binary_return_value_or_value() throws Exception {
 
         //given:
         boolean value = true;
@@ -513,7 +437,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_binary_return_value_or_false() throws Exception {
+    public void when_execute_js_with_point_context_binary_return_value_or_false() throws Exception {
 
         //given:
         boolean value = true;
@@ -533,7 +457,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_binary_return_value_and_false() throws Exception {
+    public void when_execute_js_with_point_context_binary_return_value_and_false() throws Exception {
 
         //given:
         boolean value = true;
@@ -554,7 +478,7 @@ public class ScriptExecutorTest {
     }
 
     @Test
-    public void test_execute_js_with_point_context_alphanumeric_return_value_length() throws Exception {
+    public void when_execute_js_with_point_context_alphanumeric_return_value_length() throws Exception {
 
         //given:
         String value = "abc";
@@ -573,4 +497,5 @@ public class ScriptExecutorTest {
         String result = pointValueTime.getStringValue();
         Assert.assertEquals(expected, result);
     }
+
 }

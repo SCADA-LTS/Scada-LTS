@@ -19,18 +19,11 @@
 package com.serotonin.mango.web.dwr;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.publish.persistent.PersistentSenderRT;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
@@ -47,6 +40,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.utils.GetDataPointsUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -73,19 +68,13 @@ public class PublisherEditDwr extends BaseDwr {
     }
 
     public DwrResponseI18n initSender() {
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-
-        // Remove image points
-        Iterator<DataPointVO> iter = allPoints.iterator();
-        while (iter.hasNext()) {
-            DataPointVO dp = iter.next();
-            if (dp.getPointLocator().getDataTypeId() == DataTypes.IMAGE)
-                iter.remove();
-        }
+        User user = Common.getUser();
 
         DwrResponseI18n response = new DwrResponseI18n();
-        response.addData("publisher", Common.getUser().getEditPublisher());
-        response.addData("allPoints", allPoints);
+        PublisherVO<?> publisher = Common.getUser().getEditPublisher();
+        DataPointService dataPointService = new DataPointService();
+        response.addData("publisher", publisher);
+        response.addData("selectedPoints", GetDataPointsUtils.getDataPointsByPublishers(user, Arrays.asList(publisher), dataPointService));
         return response;
     }
 
@@ -127,7 +116,9 @@ public class PublisherEditDwr extends BaseDwr {
         setAuthorizationStaticHeader(p, username, password);
         setContentTypeJsonStaticHeader(p, useJSON);
 
-        return trySave(p);
+        DwrResponseI18n response = trySave(p);
+        response.getData().putAll(initSender().getData());
+        return response;
     }
 
     public void httpSenderTest() {
@@ -245,7 +236,10 @@ public class PublisherEditDwr extends BaseDwr {
         p.setSnapshotSendPeriods(snapshotSendPeriods);
         p.setSnapshotSendPeriodType(snapshotSendPeriodType);
 
-        return trySave(p);
+        DwrResponseI18n response = trySave(p);
+        response.getData().putAll(initSender().getData());
+
+        return response;
     }
 
     //
@@ -274,7 +268,10 @@ public class PublisherEditDwr extends BaseDwr {
         p.setSnapshotSendPeriods(snapshotSendPeriods);
         p.setSnapshotSendPeriodType(snapshotSendPeriodType);
 
-        return trySave(p);
+        DwrResponseI18n response = trySave(p);
+        response.getData().putAll(initSender().getData());
+
+        return response;
     }
 
     public DwrResponseI18n getPersistentSenderStatus() {

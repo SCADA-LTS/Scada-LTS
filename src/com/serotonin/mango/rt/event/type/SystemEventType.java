@@ -38,6 +38,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import static com.serotonin.mango.rt.event.type.EventType.DuplicateHandling.IGNORE;
+import static com.serotonin.mango.rt.event.type.EventType.DuplicateHandling.IGNORE_SAME_MESSAGE;
 
 @JsonRemoteEntity
 public class SystemEventType extends EventType {
@@ -198,6 +199,10 @@ public class SystemEventType extends EventType {
 
 	public static SystemEventType duplicateIgnoreEventType(int systemEventTypeId, int refId2) {
 		return new SystemEventType(systemEventTypeId, refId2, IGNORE);
+	}
+
+	public static SystemEventType duplicateIgnoreSameMessageEventType(int systemEventTypeId, int refId2) {
+		return new SystemEventType(systemEventTypeId, refId2, IGNORE_SAME_MESSAGE);
 	}
 
 	@Override

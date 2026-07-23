@@ -44,8 +44,6 @@
             mango.share.users = result.shareUsers;
             //mango.share.writeSharedUsers(result.viewUsers);
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
-            settingsEditor.setPointList(result.pointList);
-            compoundEditor.setPointList(result.pointList, viewId);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
         
@@ -57,6 +55,8 @@
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
         	loadDefaultSizeContainer('${form.view.backgroundFilename}','viewBackground');
         }
+
+        loadPointsSelects("select[id^=chartComparator]", "<spring:message code='chosen.selector.selectPoint'/>");
     }
     
     function addViewComponent() {
@@ -454,8 +454,6 @@
     function confirmExit(){
         return false;
     }
-
-
   </script>
   
   <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">

@@ -88,7 +88,7 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 		try {
 
 			LOG.debug("Procurando sensores para fazer o polling.");
-
+			List<DataPointRT> dataPoints = getDataPoints();
 			// Procurar a lista de sensores que devem ser feita o pooling
 			List<Integer> listSensores = new ArrayList<Integer>();
 			for (DataPointRT dataPoint : dataPoints) {
@@ -427,7 +427,7 @@ public class RadiuinoPollingDataSource extends PollingDataSource implements
 	private void pacoteRecebido() {
 		LOG.debug("Fazendo parse do pacote Radiuino para salvar nos datasources correspondentes.");
 		int enderecoSensor = pacote[INDICE_ENDERECO_ORIGEM];
-		for (DataPointRT dataPoint : dataPoints) {
+		for (DataPointRT dataPoint : getDataPoints()) {
 			RadiuinoPointLocatorVO dataPointVO = dataPoint.getVO()
 					.getPointLocator();
 			if (enderecoSensor == dataPointVO.getEnderecoSensor()) {

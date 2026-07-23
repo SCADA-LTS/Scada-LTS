@@ -18,8 +18,6 @@
  */
 package com.serotonin.mango.rt.dataSource.modbus;
 
-import com.fazecast.jSerialComm.SerialPort;
-
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusSerialDataSourceVO.EncodingType;

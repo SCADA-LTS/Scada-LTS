@@ -1,25 +1,35 @@
 package org.scada_lts.web.mvc.api.json;
 
 import com.serotonin.mango.Common;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class JsonEventSearch {
 
+    @XssProtect
     private String startDate;
+    @XssProtect
     private String endDate;
+    @XssProtect
     private String startTime;
+    @XssProtect
     private String endTime;
     private int alarmLevel = Common.NEW_ID;
+    @XssProtect
     private String keywords;
+    @XssProtect
     private String status;
     private int eventSourceType;
+    @XssProtect
     private String datapoint;
     private int limit;
     private int offset;
+    @XssProtect
     private String[] sortBy;
     private boolean[] sortDesc;
     private long lastLogin;
     private int receiveAlarmEmails;
     private boolean receiveOwnAuditEvents;
+    @XssProtect
     private String theme;
     private boolean hideMenu;
     private int userProfile;

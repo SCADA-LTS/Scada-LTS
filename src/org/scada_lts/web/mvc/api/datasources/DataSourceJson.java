@@ -30,6 +30,7 @@ public class DataSourceJson {
     private int type;
 
     private boolean enabled;
+    @XssProtect
     private String connectionDescription;
 
     public DataSourceJson() {

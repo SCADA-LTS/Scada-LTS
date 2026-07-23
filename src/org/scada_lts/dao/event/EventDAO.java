@@ -316,31 +316,31 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e."+COLUMN_NAME_TYPE_ID+"=" + EventType.EventSources.DATA_POINT+" and "
 		  + "e."+COLUMN_NAME_TYPE_REF_1+"=? and "
 		  + "ue."+COLUMN_NAME_USER_ID+"=? "
-		  + "order by e."+COLUMN_NAME_ACTIVE_TS+" desc";
+		  + "order by e."+COLUMN_NAME_ACTIVE_TS+" desc, e." + COLUMN_NAME_ID + " desc";
 	
 	private static final String EVENT_FILTER_TYPE_REF_USER = ""
 			+"e."+COLUMN_NAME_TYPE_ID+"=? and "
 			+"e."+COLUMN_NAME_TYPE_REF_1+"=? and "
 			+"ue."+COLUMN_NAME_USER_ID+"=? and "
 			+"((e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) or (e."+COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0) and e."+COLUMN_NAME_ALARM_LEVEL+" > 0))"
-			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc";
+			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc, e." + COLUMN_NAME_ID + " desc";
 	
 	private static final String EVENT_FILTER_TYPE_USER = ""
 			+"e."+COLUMN_NAME_TYPE_ID+"=? and "
 			+"ue."+COLUMN_NAME_USER_ID+"=? and "
 			+"((e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) or (e."+COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0) and e."+COLUMN_NAME_ALARM_LEVEL+" > 0))"
-			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc";
+			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc, e." + COLUMN_NAME_ID + " desc";
 	
 	private static final String EVENT_FILTER_USER = ""
 			+"ue."+COLUMN_NAME_USER_ID+"=? and "
 			+"(e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) "
-			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc";
+			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc, e." + COLUMN_NAME_ID + " desc";
 
 	private static final String EVENT_FILTER_USER_ALARM_LEVEL_MIN = ""
 			+"ue."+COLUMN_NAME_USER_ID+"=? and "
 			+"(e."+COLUMN_NAME_ACT_TS+" is null or e."+COLUMN_NAME_ACT_TS+"=0) and "
 			+"e."+COLUMN_NAME_ALARM_LEVEL+">=? "
-			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc";
+			+"order by e."+COLUMN_NAME_ACTIVE_TS+ " desc, e." + COLUMN_NAME_ID + " desc";
 	
 	private static final String EVENT_COMMENT_SELECT = ""
 			+"select "
@@ -1379,7 +1379,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
-		if(ref2 > 0 && (typeId == EventType.EventSources.DATA_POINT || typeId == EventType.EventSources.DATA_SOURCE))
+		if(ref2 > 0 && (typeId == EventType.EventSources.DATA_POINT || typeId == EventType.EventSources.DATA_SOURCE || typeId == EventType.EventSources.PUBLISHER))
 			return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_REF2, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_N, new Object[] {typeId, ref1}, new EventHandlerRowMapper());
 	}

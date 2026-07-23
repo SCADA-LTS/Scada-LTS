@@ -39,9 +39,9 @@ import com.serotonin.mango.rt.dataSource.sql.SqlDataSourceRT;
 import com.serotonin.mango.rt.dataSource.viconics.ViconicsDataSourceRT;
 import com.serotonin.mango.rt.dataSource.virtual.VirtualDataSourceRT;
 import com.serotonin.mango.rt.dataSource.vmstat.VMStatDataSourceRT;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.InitializeDataSourceRtMockUtils;
 import com.serotonin.mango.util.SqlDataSourceUtils;
-import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.vo.dataSource.http.HttpImageDataSourceVO;
 import com.serotonin.mango.vo.dataSource.http.HttpRetrieverDataSourceVO;
 import com.serotonin.mango.vo.dataSource.internal.InternalDataSourceVO;
@@ -208,7 +208,7 @@ public class InitializeDataSourceRtTest<T extends DataSourceRT> {
         dataSourceRT.initialize();
 
         //then:
-        Mockito.verify(eventManager, times(returnToNormalTimes)).returnToNormal(any(), anyLong());
+        Mockito.verify(eventManager, times(returnToNormalTimes)).returnToNormal(any(EventType.class), anyLong(), any(), any());
     }
 
     @Test

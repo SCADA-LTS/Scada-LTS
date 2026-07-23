@@ -194,30 +194,28 @@ public class VMStatDataSourceRT extends EventDataSource implements Runnable {
         LocalizableMessage error = null;
         long time = System.currentTimeMillis();
 
-        synchronized (pointListChangeLock) {
-            for (DataPointRT dp : dataPoints) {
-                VMStatPointLocatorVO locator = ((VMStatPointLocatorRT) dp.getPointLocator()).getPointLocatorVO();
+        for (DataPointRT dp : getDataPoints()) {
+            VMStatPointLocatorVO locator = ((VMStatPointLocatorRT) dp.getPointLocator()).getPointLocatorVO();
 
-                Integer position = attributePositions.get(locator.getAttributeId());
-                if (position == null) {
-                    if (error != null)
-                        error = new LocalizableMessage("event.vmstat.attributeNotFound", locator
-                                .getConfigurationDescription());
+            Integer position = attributePositions.get(locator.getAttributeId());
+            if (position == null) {
+                if (error != null)
+                    error = new LocalizableMessage("event.vmstat.attributeNotFound", locator
+                            .getConfigurationDescription());
+            }
+            else {
+                try {
+                    String data = parts[position];
+                    Double value = new Double(data);
+                    dp.updatePointValue(new PointValueTime(value, time));
                 }
-                else {
-                    try {
-                        String data = parts[position];
-                        Double value = new Double(data);
-                        dp.updatePointValue(new PointValueTime(value, time));
-                    }
-                    catch (NumberFormatException e) {
-                        log.error("Weird. We couldn't parse the value " + parts[position]
-                                + " into a double. attribute=" + locator.getAttributeId());
-                    }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        log.error("Weird. We need element " + position + " but the vmstat data is only " + parts.length
-                                + " elements long");
-                    }
+                catch (NumberFormatException e) {
+                    log.error("Weird. We couldn't parse the value " + parts[position]
+                            + " into a double. attribute=" + locator.getAttributeId());
+                }
+                catch (ArrayIndexOutOfBoundsException e) {
+                    log.error("Weird. We need element " + position + " but the vmstat data is only " + parts.length
+                            + " elements long");
                 }
             }
         }

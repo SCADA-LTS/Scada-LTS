@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource.meta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,10 +29,11 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import static com.serotonin.mango.rt.dataSource.DataPointUnreliableUtils.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
@@ -41,6 +43,10 @@ public class MetaDataSourceRT extends DataSourceRT {
     public static final int EVENT_TYPE_SCRIPT_ERROR = 2;
     public static final int EVENT_TYPE_RESULT_TYPE_ERROR = 3;
     public static final int EVENT_TYPE_RECURSIVE_ERROR = 4;
+    public static final int EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE = 5;
+    public static final int EVENT_TYPE_CONTEXT_POINT_MISSING = 6;
+
+    private static final Log LOG = LogFactory.getLog(MetaDataSourceRT.class);
 
     private final List<DataPointRT> points = new CopyOnWriteArrayList<DataPointRT>();
     @Deprecated(since = "2.8.0")
@@ -57,26 +63,25 @@ public class MetaDataSourceRT extends DataSourceRT {
 
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
-            remove(dataPoint);
 
-            MetaPointLocatorRT locator = dataPoint.getPointLocator();
-            points.add(dataPoint);
-            locator.initialize(Common.timer, this, dataPoint);
-        }
+        terminate(dataPoint);
+
+        addPoint(dataPoint);
+        MetaPointLocatorRT locator = dataPoint.getPointLocator();
+        locator.initialize(Common.timer, this, dataPoint);
     }
+
+
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
-            remove(dataPoint);
-        }
+        terminate(dataPoint);
     }
 
-    private void remove(DataPointRT dataPoint) {
+    private void terminate(DataPointRT dataPoint) {
         MetaPointLocatorRT locator = dataPoint.getPointLocator();
         locator.terminate();
-        points.remove(dataPoint);
+        removePoint(dataPoint);
     }
 
     @Deprecated(since = "2.8.0")
@@ -104,45 +109,32 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
-            return;
-        }
         raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, true, new LocalizableMessage("event.meta.scriptError", dataPoint
                 .getVO().getName(), message), dataPoint);
     }
 
     public void raiseRecursiveError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
-            return;
-        }
         raiseEvent(EVENT_TYPE_RECURSIVE_ERROR, runtime, true, new LocalizableMessage("event.meta.recursiveError", dataPoint
                 .getVO().getName(), message), dataPoint);
     }
 
+    @Deprecated(since = "2.8.1")
     public void raiseContextError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
-            setUnreliableDataPoint(dataPoint);
             return;
         }
         raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint);
     }
 
     public void returnToNormalScript(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_SCRIPT_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_SCRIPT_ERROR, runtime, dataPoint);
     }
 
     public void returnToNormalRecursive(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_RECURSIVE_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_RECURSIVE_ERROR, runtime, dataPoint);
     }
 
+    @Deprecated(since = "2.8.1")
     public void returnToNormalContext(long runtime, DataPointRT dataPoint) {
         if(isNone(EVENT_TYPE_CONTEXT_POINT_DISABLED)) {
             return;
@@ -151,18 +143,11 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
-        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
-            setUnreliableDataPoint(dataPoint);
-            return;
-        }
         raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, true, new LocalizableMessage("event.meta.typeError",
                 dataPoint.getVO().getName(), message), dataPoint);
     }
 
     public void returnToNormalType(long runtime, DataPointRT dataPoint) {
-        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR)) {
-            return;
-        }
         returnToNormal(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, dataPoint);
     }
 
@@ -174,7 +159,68 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     @Override
-    protected List<DataPointRT> getDataPoints() {
-        return points;
+    public List<DataPointRT> getDataPoints() {
+        getDataPointsLock().readLock().lock();
+        try {
+            return new ArrayList<>(points);
+        } finally {
+            getDataPointsLock().readLock().unlock();
+        }
     }
+
+    public void returnToNormalContextPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, dataPoint, onlyWithThisMessage);
+    }
+
+    public void returnToNormalContextPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, dataPoint, onlyWithThisMessage);
+    }
+
+    public void raiseContextErrorPointDisabled(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_DISABLED, runtime, true, message, dataPoint);
+    }
+
+
+    public void raiseContextErrorPointUnavailable(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_UNAVAILABLE, runtime, true, message, dataPoint);
+    }
+
+    public void returnToNormalContextPointMissing(long runtime, DataPointRT dataPoint, LocalizableMessage onlyWithThisMessage) {
+        returnToNormal(EVENT_TYPE_CONTEXT_POINT_MISSING, runtime, dataPoint, onlyWithThisMessage);
+    }
+
+    public void raiseContextErrorPointMissing(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        raiseEvent(EVENT_TYPE_CONTEXT_POINT_MISSING, runtime, true, message, dataPoint);
+    }
+
+    @Override
+    public void forcePointRead(DataPointRT dataPoint) {
+        if(dataPoint.isInitialized()) {
+            MetaPointLocatorRT metaPointLocatorRT = dataPoint.getPointLocator();
+            if(metaPointLocatorRT != null)
+                metaPointLocatorRT.execute(System.currentTimeMillis(), new ArrayList<>());
+            else
+                LOG.warn("Failed forcePointRead for: " + LoggingUtils.dataPointInfo(dataPoint));
+        }
+    }
+
+    private void addPoint(DataPointRT dataPoint) {
+        getDataPointsLock().writeLock().lock();
+        try {
+            points.add(dataPoint);
+        } finally {
+            getDataPointsLock().writeLock().unlock();
+        }
+    }
+
+    private void removePoint(DataPointRT dataPoint) {
+        getDataPointsLock().writeLock().lock();
+        try {
+            points.remove(dataPoint);
+        } finally {
+            getDataPointsLock().writeLock().unlock();
+        }
+    }
+
+
 }

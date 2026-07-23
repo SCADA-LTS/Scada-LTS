@@ -21,6 +21,8 @@ package com.serotonin.mango.web.dwr.beans;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import java.util.Objects;
+
 public class DataPointBean {
     private int id;
     private String xid;
@@ -29,6 +31,7 @@ public class DataPointBean {
     private int dataType;
     private final LocalizableMessage dataTypeMessage;
     private final String chartColour;
+    private final boolean enabled;
 
     public DataPointBean(DataPointVO vo) {
         id = vo.getId();
@@ -38,6 +41,7 @@ public class DataPointBean {
         dataTypeMessage = vo.getDataTypeMessage();
         chartColour = vo.getChartColour();
         xid = vo.getXid();
+        enabled = vo.isEnabled();
     }
 
     public int getId() {
@@ -86,5 +90,22 @@ public class DataPointBean {
 
     public void setXid(String xid) {
         this.xid = xid;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataPointBean that = (DataPointBean) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

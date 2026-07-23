@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.view.component.SimpleCompoundComponent;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 import java.util.Map;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class SimpleCompoundComponentDTO extends CompoundComponentDTO{
 
+    @XssProtect
     private String backgroundColour;
 
     public SimpleCompoundComponentDTO() {

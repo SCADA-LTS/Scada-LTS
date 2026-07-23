@@ -35,6 +35,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * @author Matthew Lohbihler
@@ -43,10 +44,12 @@ abstract public class PointComponent extends ViewComponent {
 
     private DataPointVO dataPoint;
     @JsonRemoteProperty
+    @XssProtect
     private String nameOverride;
     @JsonRemoteProperty
     private boolean settableOverride;
     @JsonRemoteProperty
+    @XssProtect
     private String bkgdColorOverride;
     @JsonRemoteProperty
     private boolean displayControls;
@@ -87,7 +90,7 @@ abstract public class PointComponent extends ViewComponent {
         } else {
             visible = Permissions.hasDataPointReadPermission(user, dataPoint);
             valid = definition().supports(dataPoint.getPointLocator().getDataTypeId());
-            settableOverride = !makeReadOnly && Permissions.hasDataPointSetPermission(user, dataPoint);
+            settableOverride = !makeReadOnly && Permissions.hasDataPointSetPermission(user, dataPoint) && settableOverride;
         }
     }
 

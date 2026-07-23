@@ -9,6 +9,7 @@ import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.utils.ApiUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.exceptions.*;
 import org.scada_lts.web.mvc.api.json.JsonSettingsSystemInfo;
 import org.scada_lts.web.mvc.api.user.UserInfo;
@@ -81,7 +82,7 @@ public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<Us
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         if(userInfo.getId() == user.getId()) {
-            Common.updateUserInSession(request, userToSave);
+            ApplicationBeans.getLoggedUsersBean().updateUser(userToSave);
         }
         return toUserInfo(userToSave);
     }

@@ -2,19 +2,25 @@ package org.scada_lts.web.mvc.api.dto;
 
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.vo.DataPointVO;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
  * @Author Arkadiusz Parafiniuk
  * arkadiusz.parafiniuk@gmail.com
  */
 public class ViewSimplePointComponentDTO extends ViewComponentDTO {
+
+    @XssProtect
     private String dataPointXid;
+    @XssProtect
     private String nameOverride;
     private boolean settableOverride;
+    @XssProtect
     private String bkgdColorOverride;
     private boolean displayControls;
     private boolean setDisplatText;
     private boolean displayPointName;
+    @XssProtect
     private String styleAttribute;
 
     public ViewSimplePointComponentDTO() {

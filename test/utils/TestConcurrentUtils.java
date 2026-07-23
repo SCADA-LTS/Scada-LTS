@@ -265,4 +265,37 @@ public class TestConcurrentUtils {
             fun.apply(keyA, keyB);
         }
     }
+
+    public static <T> List<Object> functionWithResultObjectCheck(int numberOfLaunches, List<Function<T, ?>> actions, T key) throws Throwable {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches * actions.size());
+        List<Callable<?>> calls = new ArrayList<>();
+        for(Function<T, ?> action: actions) {
+            calls.add(() -> action.apply(key));
+        }
+        try {
+            return MultiThreadEngine.executeCalls(executor, numberOfLaunches, calls);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    public static <A, B, R> List<R> functionWithResultCheck(int numberOfLaunches, BiFunction<A, B, R> fun, A arg1, B arg2) {
+        try {
+            return functionWithResultCheck(numberOfLaunches, fun, arg1, arg2, a -> a);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <A, B, R, N> List<N> functionWithResultCheck(int numberOfLaunches, BiFunction<A, B, R> fun, A arg1, B arg2, Function<R, N> converter) throws Throwable {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Callable<R> action = () -> fun.apply(arg1, arg2);
+        List<R> result = null;
+        try {
+            result = MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        } finally {
+            executor.shutdownNow();
+        }
+        return result.stream().map(converter).filter(Objects::nonNull).collect(Collectors.toList());
+    }
 }

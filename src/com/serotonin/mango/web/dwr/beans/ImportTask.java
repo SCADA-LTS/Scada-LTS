@@ -1043,6 +1043,10 @@ public class ImportTask extends ProgressiveTask {
 				e.printStackTrace();
 				response.addGenericMessage("emport.script.prefix", xid,
 						getJsonExceptionMessage(e));
+			} catch (Exception e) {
+				e.printStackTrace();
+				response.addGenericMessage("emport.script.prefix", xid,
+						e.getMessage());
 			}
 		}
 	}

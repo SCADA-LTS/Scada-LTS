@@ -21,14 +21,12 @@ package com.serotonin.mango.rt.dataSource.meta;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.script.ScriptException;
 
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -49,27 +47,41 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.MultistateValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.config.ScadaConfig;
+import org.scada_lts.utils.ScriptContextUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
+
+import static org.scada_lts.web.beans.validation.script.ScriptValidatorUtils.validateScript;
 
 /**
  * @author Matthew Lohbihler
  */
 public class ScriptExecutor {
+
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptExecutor__();";
 	private static String SCRIPT_FUNCTION_PATH;
 	private static String FUNCTIONS;
-	private Log LOG = LogFactory.getLog(ScriptExecutor.class);
+	private static final Log LOG = LogFactory.getLog(ScriptExecutor.class);
+	private final boolean addedExceptionIfPointFromContextIsUnavailableFromSystemSettings;
+	private final boolean raiseEventIfPointFromContextIsUnavailable;
+	public ScriptExecutor() {
+		addedExceptionIfPointFromContextIsUnavailableFromSystemSettings = SystemSettingsUtils.isAddedExceptionIfPointFromContextIsUnavailable();
+		raiseEventIfPointFromContextIsUnavailable = SystemSettingsUtils.isRaisedEventIfPointFromContextIsUnavailable();
+	}
 
 	public static void setScriptFunctionPath(String path) {
 		SCRIPT_FUNCTION_PATH = path;
 	}
 
+	@Deprecated(since = "2.8.1")
 	public Map<String, IDataPoint> convertContext(List<IntValuePair> context) throws Exception {
-		return convertContext(context, null, null);
+		return convertContext(context, null, null, false);
 	}
 
-	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
+	@Deprecated(since = "2.8.1")
+	public Map<String, IDataPoint> convertContext2(List<IntValuePair> context, DataPointRT dataPoint, MetaDataSourceRT metaDataSource) throws Exception {
 		RuntimeManager rtm = Common.ctx.getRuntimeManager();
 
 		Map<String, IDataPoint> converted = new HashMap<>();
@@ -115,9 +127,107 @@ public class ScriptExecutor {
 		return converted;
 	}
 
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT parentPoint, MetaDataSourceRT parentSource,
+												  boolean addedExceptionIfPointFromContextIsUnavailable) throws Exception {
+		RuntimeManager rtm = Common.ctx.getRuntimeManager();
+		ResourceBundle resourceBundle = Common.getBundle();
+		Map<String, IDataPoint> converted = new HashMap<>();
+		List<DataPointStateException> exceptions = new ArrayList<>();
+		for (IntValuePair contextEntry : context) {
+			if(parentPoint == null || parentPoint.getId() == Common.NEW_ID || parentPoint.getId() != contextEntry.getKey()) {
+				DataPointRT contextPoint = rtm.getDataPoint(contextEntry.getKey());
+
+				DataPointVO contextPointVO;
+
+				if(contextPoint == null) {
+					contextPointVO = DataSourcePointsCache.getInstance().getDataPoint(contextEntry.getKey());
+ 				} else {
+					contextPointVO = contextPoint.getVO();
+				}
+
+				LocalizableMessage pointMissingMessage = createPointMissingMessage(contextEntry);
+				LocalizableMessage pointDisabledMessage = createPointDisabledMessage(contextEntry);
+				LocalizableMessage pointUnavailableMessage = createUnavailablePointMessage(contextEntry);
+
+				List<DataPointStateException> iterationExceptions = new ArrayList<>();
+
+				EventExecutor eventExecutor = EventExecutor.newExecutor(parentPoint, parentSource, contextEntry, contextPoint, contextPointVO, resourceBundle);
+
+				eventExecutor.execute(pointMissingMessage,
+						(t,p) -> m -> parentSource.raiseContextErrorPointMissing(t, p, m),
+						ScriptExecutor::isMissingPoint,
+						(t,p) -> m -> parentSource.returnToNormalContextPointMissing(t, p, m)
+				).map(iterationExceptions::add);
+
+				eventExecutor.execute(pointDisabledMessage,
+						(t,p) -> m -> parentSource.raiseContextErrorPointDisabled(t, p, m),
+						ScriptExecutor::isDisabledPoint,
+						(t,p) -> m -> parentSource.returnToNormalContextPointDisabled(t, p, m)
+				).map(iterationExceptions::add);
+
+				eventExecutor.execute(pointUnavailableMessage,
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.raiseContextErrorPointUnavailable(t, p, m);
+						},
+						(p, v) -> isUnreliablePoint(p),
+						(t, p) -> m -> {
+							if(raiseEventIfPointFromContextIsUnavailable)
+								parentSource.returnToNormalContextPointUnavailable(t, p, m);
+						}
+				).map(exception -> {
+					if (addedExceptionIfPointFromContextIsUnavailable || addedExceptionIfPointFromContextIsUnavailableFromSystemSettings)
+						return iterationExceptions.add(exception);
+					return false;
+				});
+
+				if (iterationExceptions.isEmpty()) {
+					converted.put(contextEntry.getValue(), contextPoint);
+				}
+
+				exceptions.addAll(iterationExceptions);
+			}
+		}
+
+		StringBuilder messages = new StringBuilder();
+		if(!exceptions.isEmpty()) {
+			for(DataPointStateException exception: exceptions) {
+				messages.append(" ")
+						.append(exception.getLocalizedMessage())
+						.append(" ; ");
+			}
+			throw new Exception(messages.toString());
+		}
+
+		return converted;
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, DataPointRT parentPoint, MetaDataSourceRT parentSource) throws Exception {
+		return convertContext(context, parentPoint, parentSource, false);
+	}
+
+	public Map<String, IDataPoint> convertContext(List<IntValuePair> context, boolean addedExceptionIfPointFromContextIsUnavailable) throws Exception {
+		return convertContext(context, null, null, addedExceptionIfPointFromContextIsUnavailable);
+	}
+
+	private static boolean isUnreliablePoint(DataPointRT point) {
+		return point != null && point.isUnreliable();
+	}
+
+	private static boolean isDisabledPoint(DataPointRT point, DataPointVO dataPointVO) {
+		return point == null && dataPointVO != null;
+	}
+
+	private static boolean isMissingPoint(DataPointRT point, DataPointVO dataPointVO) {
+		return point == null && dataPointVO == null;
+	}
+
 	public PointValueTime execute(String script,
 			Map<String, IDataPoint> context, long runtime, int dataTypeId,
 			long timestamp) throws ScriptException, ResultTypeException {
+
+		validateScript(script);
+
 		ensureFunctions();
 
 		// Create the script engine.
@@ -141,7 +251,7 @@ public class ScriptExecutor {
 
 		// Execute.
 		try {
-			scope = cx.initStandardObjects();
+			scope = ScriptContextUtils.initStandardObjects(cx);
 
 			// Create the wrapper object context.
 			WrapperContext wrapperContext = new WrapperContext(runtime);
@@ -205,7 +315,7 @@ public class ScriptExecutor {
 					}
 
 				} catch (Exception e) {
-					LOG.error("Error evaluating string (script): "
+					LOG.warn("Error evaluating string (script): "
 							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
 				}
@@ -268,7 +378,7 @@ public class ScriptExecutor {
 				try {
 					result = cx.evaluateString(scope, script, "<cmd>", 1, null);
 				} catch (Exception e) {
-					LOG.error("Error evaluating string (script): "
+					LOG.warn("Error evaluating string (script): "
 							+ e.getMessage());
 					throw new ScriptException(e.getMessage());
 				}
@@ -368,13 +478,36 @@ public class ScriptExecutor {
 		}
 	}
 
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
-		return new DataPointStateException(contextEntry.getKey(),
-				new LocalizableMessage("event.meta.pointUnavailable", point.getVO().getExtendedName()));
+	@Deprecated(since = "2.8.1")
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
+		return createDataPointStateException(contextEntry, createPointProblemMessage(contextEntry, null), Common.getBundle());
 	}
 
-	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry) {
-		return new DataPointStateException(contextEntry.getKey(),
-				new LocalizableMessage("validate.invalidVariable", LoggingUtils.varInfo(contextEntry)));
+	@Deprecated(since = "2.8.1")
+	private static DataPointStateException createPointUnavailableException(IntValuePair contextEntry, DataPointRT point) {
+		return createDataPointStateException(contextEntry, createPointProblemMessage(contextEntry, point), Common.getBundle());
+	}
+
+	private static LocalizableMessage createUnavailablePointMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointUnavailable", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+	private static LocalizableMessage createPointMissingMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointMissingX", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+	private static LocalizableMessage createPointDisabledMessage(IntValuePair contextEntry) {
+		return new LocalizableMessage("event.meta.pointDisabled", LoggingUtils.varPointInfo(contextEntry));
+	}
+
+
+	private static DataPointStateException createDataPointStateException(IntValuePair contextEntry, LocalizableMessage message, ResourceBundle resourceBundle) {
+		return DataPointStateException.newInstance(contextEntry, message, null, resourceBundle);
+	}
+
+	private static LocalizableMessage createPointProblemMessage(IntValuePair contextEntry, DataPointRT dataPoint) {
+		if(dataPoint == null || dataPoint.getVO() == null)
+			return createPointDisabledMessage(contextEntry);
+		return createUnavailablePointMessage(contextEntry);
 	}
 }

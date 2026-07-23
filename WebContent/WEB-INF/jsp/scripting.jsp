@@ -30,65 +30,66 @@
 
   	var myLocation = getAppLocation();
     var urlGetDataPoints = "api/datapoint/getAll";
-    function executeScript(){
-    	var xid = jQuery("#xid");
-    	// saveScript() nie zdarzy zapisac !!!
-    	jQuery.ajax({
-    		url: myLocation+"script/execute/"+xid[0].value,
-    		type:"POST",
-    		success: function(){
+    function executeScript() {
+
+        let payload = {}
+        payload.id = -1;
+        payload.script = $get("script");
+
+        let toSave = pointsContext.convertToSave();
+        payload.pointsOnContext = convertPointsOnContext(toSave);
+        payload.datapointContext = objectsContextArray[0] ? objectsContextArray[0].value : "";
+        payload.datasourceContext = objectsContextArray[1] ? objectsContextArray[1].value : "";
+
+        jQuery.ajax({
+            url: myLocation+"api/scripts/execute-test",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(payload),
+            success: function() {
               setUserMessage("<spring:message code="script.execute.success"/> ")
-        	},
-        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        		console.log(textStatus);
-        		console.log(XMLHttpRequest);
-        		setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
-        	}
-    	});
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(XMLHttpRequest);
+                console.log(errorThrown);
+                setUserMessage("<spring:message code="script.execute.error"/> "+XMLHttpRequest.responseText);
+            }
+        });
     };
 
-    var pointsArray = new Array();
-    var scriptPointsContext;
+    var pointsContext;
     var objectsContextArray = new Array();
 
     function init() {
         ScriptsDwr.getScripts(initCB);
-        getPointsCB();
-
         createContextualMessageNode("contextContainer", "context");
 
-        jQuery("#allPointsList").chosen({
-       		allow_single_deselect: true,
-			placeholder_text_single: " ",
-			search_contains: true,
-			width: "400px"
-		});
+        document.getElementById("loader").style.display = "none";
+                    document.body.style.overflow="visible";
     }
 
-    function getPointsCB()
-    {
-        jQuery.ajax({
-            type: "GET",
-        	dataType: "text",
-        	url:myLocation+urlGetDataPoints,
-        	success: function(points){
-            points = JSON.parse(points);
-            for(i = 0; i < points.length; i++) {
-                point = points[i];
-                pointsArray[i] = {
-                        "id":point.id,
-                        "name":point.extendName,
-                        "xid":point.xid,
-                        "type":point.dataType,
-                        };
+    function convertPointsOnContext(toSave) {
+        let pointsOnContext = [];
+        for(let i = 0; i < toSave.length; i++) {
+            let entry = toSave[i];
+            let dataPoint = pointsContext.getContextPointById(entry.key);
+            if(dataPoint) {
+                let dataPointXid = dataPoint.xid ? dataPoint.xid : dataPoint.pointXid;
+                let varName = entry.value;
+                let object = {
+                    dataPointXid: dataPointXid,
+                    dataPointId: entry.key,
+                    varName: varName
+                };
+                pointsOnContext[pointsOnContext.length] = object;
+            } else {
+                setUserMessage("<spring:message code="script.execute.error"/> ");
+                throw new Error('dataPoint is undefined!');
             }
-            document.getElementById("loader").style.display = "none";
-            document.body.style.overflow="visible";
-        	},
-        	error: function(XMLHttpRequest, textStatus, errorThrown) {
-        	  console.log(textStatus);
-        	}
-        });
+        }
+        return pointsOnContext;
     }
 
     function initCB(scripts) {
@@ -113,21 +114,24 @@
             stopImageFader($("se"+ editingScript.id +"Img"));
         hideContextualMessages("scriptDetails");
 
-        ScriptsDwr.getScript(seId, function(s) {
+        ScriptsDwr.getScriptResponse(seId, function(response) {
         	 if (!editingScript)
                  show($("scriptDetails"));
 
-            editingScript = s;
-            setValueInNode('xid', s.xid);
-            setValueInNode('name', s.name);
-            setValueInNode('script', s.script);
+            editingScript = response.data.script;
+            setValueInNode('xid', editingScript.xid);
+            setValueInNode('name', editingScript.name);
+            setValueInNode('script', editingScript.script);
 
-            let handlePointsContext = new ScriptPointsContext(s.pointsOnContext, pointsArray);
-            setPointsContext(handlePointsContext);
+            pointsContext = new ScriptPointsContext(new DataPointsSelect({
+                placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                excludePointsArray: editingScript.pointsOnContext,
+                pointsArray: response.data.dataPoints
+            }));
 
             clearObjectsTable();
-		 	for (var i=0; i<s.objectsOnContext.length; i++)
-		 		 objectsContextArray.push({key: s.objectsOnContext[i].key, value: s.objectsOnContext[i].value});
+		 	for (var i=0; i<editingScript.objectsOnContext.length; i++)
+		 		 objectsContextArray.push({key: editingScript.objectsOnContext[i].key, value: editingScript.objectsOnContext[i].value});
 
 	        writeObjectsContextArray();
 	        setUserMessage();
@@ -148,13 +152,9 @@
         }
     }
 
-    function setPointsContext(scriptPointsContext) {
-        this.scriptPointsContext = scriptPointsContext;
-    }
-
     function saveScript() {
         ScriptsDwr.saveScript(editingScript.id,$get("xid"), $get("name"),
-                $get("script"),this.scriptPointsContext.convertToSave(),objectsContextArray,
+                $get("script"),pointsContext.convertToSave(),objectsContextArray,
                 function(response) {
 		        	if (response.hasMessages)
 		                showDwrMessages(response.messages);
@@ -250,15 +250,6 @@
         else
             hide($("userMessage"));
     }
-
-    jQuery(document).ready(function(){
-    	(function($) {
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-			loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-    	})(jQuery);
-    });
-
-
   </script>
 
   <style>body{ overflow:hidden;}</style>
@@ -319,17 +310,18 @@
             <tr>
 			    <td class="formLabelRequired"><spring:message code="scripts.pointsContext"/></td>
 			    <td class="formField">
-			      <select id="allPointsList"></select>
-			      <tag:img png="add" onclick="scriptPointsContext.addPointToContext();" title="common.add"/>
+			      <select id="allPointsList" style="display:none;"></select>
+			      <tag:img id="icon_add" png="add" onclick="pointsContext.addPointToContext();" title="common.add" style="display:none;"/>
 
 			      <table cellspacing="1" id="contextContainer">
 			        <tbody id="contextTableEmpty" style="display:none;">
-			          <tr><th colspan="4"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
+			          <tr><th colspan="6"><spring:message code="dsEdit.meta.noPoints"/></th></tr>
 			        </tbody>
 			        <tbody id="contextTableHeaders" style="display:none;">
 			          <tr class="smRowHeader">
 			            <td><spring:message code="dsEdit.meta.pointName"/></td>
-			            <td><spring:message code="pointHierarchySLTS.xid"/></td>
+                        <td><spring:message code="dsEdit.meta.pointId"/></td>
+                        <td><spring:message code="dsEdit.meta.pointXid"/></td>
 			            <td><spring:message code="dsEdit.pointDataType"/></td>
 			            <td><spring:message code="dsEdit.meta.var"/></td>
 			            <td></td>

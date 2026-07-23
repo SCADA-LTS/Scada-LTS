@@ -72,7 +72,7 @@ public class DrStorageHt5bDataSource extends PollingDataSource {
 					String temp = getTemperature(getValuesHt5b());
 					String hum = getHumidity(getValuesHt5b());
 
-					for (DataPointRT dataPoint : dataPoints) {
+					for (DataPointRT dataPoint : getDataPoints()) {
 
 						try {
 							DrStorageHt5bPointLocatorVO dataPointVO = dataPoint

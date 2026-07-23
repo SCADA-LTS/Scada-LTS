@@ -35,17 +35,23 @@ abstract public class EventDataSource extends DataSourceRT {
 
     @Override
     public void addDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
+        getDataPointsLock().writeLock().lock();
+        try {
             // Remove any existing instances of the points.
             dataPoints.remove(dataPoint);
             dataPoints.add(dataPoint);
+        } finally {
+            getDataPointsLock().writeLock().unlock();
         }
     }
 
     @Override
     public void removeDataPoint(DataPointRT dataPoint) {
-        synchronized (pointListChangeLock) {
+        getDataPointsLock().writeLock().lock();
+        try {
             dataPoints.remove(dataPoint);
+        } finally {
+            getDataPointsLock().writeLock().unlock();
         }
     }
 
@@ -55,7 +61,12 @@ abstract public class EventDataSource extends DataSourceRT {
     }
 
     @Override
-    protected List<DataPointRT> getDataPoints() {
-        return dataPoints;
+    public List<DataPointRT> getDataPoints() {
+        getDataPointsLock().readLock().lock();
+        try {
+            return new ArrayList<>(dataPoints);
+        } finally {
+            getDataPointsLock().readLock().unlock();
+        }
     }
 }

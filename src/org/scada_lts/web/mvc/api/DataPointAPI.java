@@ -18,11 +18,13 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 
+import org.scada_lts.web.mvc.api.datasources.SearchDataPointJson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -130,11 +132,18 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoints")
-    public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@RequestParam(value="keywordSearch", required = false) String searchText,
+    public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@Valid SearchDataPointJson searchDataPoint,
                                                                                 HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
+        List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchDataPoint);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchText);
+    @GetMapping(value = "/api/datapoints/bean")
+    public ResponseEntity<List<DataPointBean>> searchDataPointBean(@Valid SearchDataPointJson searchDataPoint,
+                                                                   HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+        List<DataPointBean> response = dataPointApiService.searchDataPointBean(request, searchDataPoint);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

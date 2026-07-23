@@ -76,7 +76,6 @@ import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.view.component.ThumbnailComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.PermissionException;
@@ -97,6 +96,7 @@ import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.utils.GetDataPointsUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.util.ViewControllerUtils.copyAndSaveView;
@@ -390,7 +390,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 
 		// Users with which to share.
-		result.put("shareUsers", getShareUsers(user));
+		//result.put("shareUsers", getShareUsers(user));
 
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
 		// Users already sharing with.
@@ -403,13 +403,8 @@ public class ViewDwr extends BaseDwr {
 		result.put("componentTypes", components);
 
 		// Available points
-		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-		List<DataPointBean> availablePoints = new ArrayList<DataPointBean>();
-		for (DataPointVO dataPoint : allPoints) {
-			if (Permissions.hasDataPointReadPermission(user, dataPoint))
-				availablePoints.add(new DataPointBean(dataPoint));
-		}
-		result.put("pointList", availablePoints);
+		DataPointService dataPointService = new DataPointService();
+		result.put("pointList", GetDataPointsUtils.getDataPointsByView(user, view, dataPointService));
 
 		return result;
 	}
@@ -417,8 +412,6 @@ public class ViewDwr extends BaseDwr {
 	
 	public ViewComponent addComponent(String componentName, int viewId) {
 		ViewComponent viewComponent = ViewComponent.newInstance(componentName);
-		// System.out.println(componentName);
-		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
 		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
@@ -476,6 +469,8 @@ public class ViewDwr extends BaseDwr {
 			pc.validateDataPoint(user, false);
 		}
 
+		response.addData("pointList", getPointList(viewId, pc, user));
+		response.addData("comp", pc);
 		return response;
 	}
 
@@ -562,7 +557,7 @@ public class ViewDwr extends BaseDwr {
 	
 	public DwrResponseI18n saveAnalogGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
-
+		User user = Common.getUser();
 		// Validate
 		if (min >= max)
 			response.addContextualMessage("graphicRendererAnalogMin", "viewEdit.graphic.invalidMinMax");
@@ -578,15 +573,18 @@ public class ViewDwr extends BaseDwr {
 			c.setDisplayText(displayText);
 			c.tsetImageSet(imageSet);
 			resetPointComponent(c);
+			response.addData("pointList", getPointList(viewId, c, user));
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
-
 		return response;
 	}
 
 	
 	public DwrResponseI18n saveBinaryGraphicComponent(String viewComponentId, int zeroImage, int oneImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
-
+		User user = Common.getUser();
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
 		if (imageSet == null || !imageSet.isAvailable())
@@ -605,15 +603,18 @@ public class ViewDwr extends BaseDwr {
 			c.setOneImage(oneImage);
 			c.setDisplayText(displayText);
 			resetPointComponent(c);
+			response.addData("pointList", getPointList(viewId, c, user));
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
-
 		return response;
 	}
 
 	
 	public DwrResponseI18n saveDynamicGraphicComponent(String viewComponentId, double min, double max, boolean displayText, String dynamicImageId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
-
+		User user = Common.getUser();
 		// Validate
 		if (min >= max)
 			response.addContextualMessage("graphicRendererDynamicMin", "viewEdit.graphic.invalidMinMax");
@@ -629,14 +630,18 @@ public class ViewDwr extends BaseDwr {
 			c.setDisplayText(displayText);
 			c.tsetDynamicImage(dynamicImage);
 			resetPointComponent(c);
+			response.addData("pointList", getPointList(viewId, c, user));
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("pointList", getPointList(viewId, viewComponent, user));
 		}
-
 		return response;
 	}
 
 	
 	public DwrResponseI18n saveMultistateGraphicComponent(String viewComponentId, List<IntValuePair> imageStates, int defaultImage, boolean displayText, String imageSetId, int viewId) {
 		DwrResponseI18n response = new DwrResponseI18n();
+		User user = Common.getUser();
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
@@ -650,8 +655,12 @@ public class ViewDwr extends BaseDwr {
 			c.setDisplayText(displayText);
 			c.tsetImageSet(imageSet);
 			resetPointComponent(c);
-		}
+			response.addData("pointList", getPointList(viewId, c, user));
 
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("pointList", getPointList(viewId, viewComponent, user));
+		}
 		return response;
 	}
 
@@ -678,7 +687,11 @@ public class ViewDwr extends BaseDwr {
 		c.setStyleAttribute(styleAttribute);
 		resetPointComponent(c);
 
-		return new DwrResponseI18n();
+		DwrResponseI18n response = new DwrResponseI18n();
+
+		User user = Common.getUser();
+		response.addData("pointList", getPointList(viewId, c, user));
+		return response;
 	}
 
 	
@@ -721,8 +734,12 @@ public class ViewDwr extends BaseDwr {
 			c.setBackgroundColour(backgroundColour);
 			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
+			response.addData("comp", c);
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("comp", viewComponent);
 		}
-
+		response.addData("pointList", getPointListByChildren(childPointIds));
 		return response;
 	}
 
@@ -732,8 +749,9 @@ public class ViewDwr extends BaseDwr {
 
 		commonImageChartComponentValidation(name, width, height, durationType, durationPeriods, response);
 
+		ImageChartComponent c = null;
 		if (!response.getHasMessages()) {
-			ImageChartComponent c = (ImageChartComponent) getViewComponent(viewComponentId, viewId);
+			c = (ImageChartComponent) getViewComponent(viewComponentId, viewId);
 			c.setName(name);
 			c.setWidth(width);
 			c.setHeight(height);
@@ -741,8 +759,10 @@ public class ViewDwr extends BaseDwr {
 			c.setDurationPeriods(durationPeriods);
 			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
+
 		}
 
+		response.addData("pointList", getPointListByChildren(childPointIds));
 		return response;
 	}
 
@@ -767,6 +787,8 @@ public class ViewDwr extends BaseDwr {
 			c.setLocation(positionX, positionY);
 		}
 
+		response.addData("pointList", getPointListByChildren(childPointIds));
+
 		return response;
 	}
 
@@ -781,8 +803,13 @@ public class ViewDwr extends BaseDwr {
 			c.setName(name);
 			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
+			response.addData("comp", c);
+		} else {
+			ViewComponent viewComponent = getViewComponent(viewComponentId, viewId);
+			response.addData("comp", viewComponent);
 		}
 
+		response.addData("pointList", getPointListByChildren(childPointIds));
 		return response;
 	}
 
@@ -1106,6 +1133,36 @@ public class ViewDwr extends BaseDwr {
 		response.addData("viewCopy", viewCopy);
 
 		return response;
+	}
+
+	public DwrResponseI18n getViewComponentResponse(String viewComponentId, int viewId) {
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		DwrResponseI18n response = new DwrResponseI18n();
+		User user = Common.getUser();
+		ViewComponent viewComponent = getViewComponent(view, viewComponentId);
+		Set<DataPointBean> availablePoints = getPointList(viewId, viewComponent, user);
+		response.addData("pointList", availablePoints);
+		response.addData("comp", viewComponent);
+		return response;
+	}
+
+	private static Set<DataPointBean> getPointList(int viewId, ViewComponent viewComponent, User user) {
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService(), true);
+		GetViewsWithAccess.ensureViewOwnerPermission(user, view);
+		DataPointService dataPointService = new DataPointService();
+		return GetDataPointsUtils.getDataPointsByView(user, view, dataPointService).stream()
+				.filter(point -> isSupportType(point, viewComponent))
+				.collect(Collectors.toSet());
+	}
+
+	private static Set<DataPointBean> getPointListByChildren(List<KeyValuePair> childPointIds) {
+		DataPointService dataPointService = new DataPointService();
+		User user = Common.getUser();
+		return GetDataPointsUtils.getDataPointsByChildren(user, childPointIds, dataPointService);
+	}
+
+	private static boolean isSupportType(DataPointBean dataPointBean, ViewComponent viewComponent) {
+		return viewComponent.definition().getSupportedDataTypes() == null || viewComponent.definition().supports(dataPointBean.getDataType());
 	}
 
 }

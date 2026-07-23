@@ -33,8 +33,6 @@ import static org.mockito.Mockito.*;
 import static utils.ScriptTestUtils.createContext;
 import static utils.ScriptTestUtils.createDataPointRT;
 import static utils.Scripts.createScriptReturnState;
-import static utils.Scripts.createScriptWithJavaPointValueTime;
-import static utils.Scripts.createScriptWithJavaViewDwr;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
@@ -99,24 +97,19 @@ public class ScriptTest {
                 {binaryValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(binaryValue2)},
+                        createScriptReturnState(binaryValue2)},
                 {multistateValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(multistateValue2)},
+                        createScriptReturnState(multistateValue2)},
                 {numericValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(numericValue2)},
+                        createScriptReturnState(numericValue2)},
                 {alphanumericValue2,
                         pointToReadId,
                         Collections.emptyList(),
-                        createScriptWithJavaPointValueTime(alphanumericValue2)},
-
-                {new AlphanumericValue(""),
-                        0,
-                        Collections.emptyList(),
-                        createScriptWithJavaViewDwr()},
+                        createScriptReturnState(alphanumericValue2)},
     };
     }
 

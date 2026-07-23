@@ -56,7 +56,7 @@ public class Dnp3DataSource extends PollingDataSource {
 			return;
 		}
 
-		for (DataPointRT dataPoint : dataPoints) {
+		for (DataPointRT dataPoint : getDataPoints()) {
 			Dnp3PointLocatorVO pointLocator = ((Dnp3PointLocatorVO) dataPoint
 					.getVO().getPointLocator());
 			List<DataElement> pointValues = dnp3Master.read(pointLocator

@@ -1,6 +1,9 @@
 package com.serotonin.mango.rt.dataSource;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.event.ActiveEvents;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
+import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.LoggingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +12,9 @@ import org.scada_lts.utils.SystemSettingsUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class DataPointUnreliableUtils {
 
@@ -20,9 +26,7 @@ public final class DataPointUnreliableUtils {
 
 
     public static void setUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            setUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints.stream().filter(dataPoint -> !dataPoint.isUnreliable()).collect(Collectors.toList()), true);
     }
 
     public static void setUnreliableDataPoint(DataPointRT dataPoint) {
@@ -32,9 +36,7 @@ public final class DataPointUnreliableUtils {
     }
 
     public static void resetUnreliableDataPoints(List<DataPointRT> dataPoints) {
-        for(DataPointRT dataPoint: dataPoints) {
-            resetUnreliableDataPoint(dataPoint);
-        }
+        unreliable(dataPoints.stream().filter(DataPointRT::isUnreliable).collect(Collectors.toList()), false);
     }
 
     public static void resetUnreliableDataPoint(DataPointRT dataPoint) {
@@ -54,5 +56,35 @@ public final class DataPointUnreliableUtils {
 
     public static boolean isSetUnreliable(DataPointRT dataPointRT, boolean unreliable) {
         return SetUnreliableDataPointsAction.isSetUnreliable(dataPointRT, unreliable);
+    }
+
+    public static void setUnreliableDataPoints(EventType type, DataSourceRT dataSourceRT, ActiveEvents activeEvents) {
+        doUnreliable(type, dataSourceRT, DataPointUnreliableUtils::setUnreliableDataPoints, DataPointUnreliableUtils::setUnreliableDataPoint,
+                activeEvents::isActiveEventsForDataSource,
+                activeEvents::isActiveEventsForDataPoint);
+    }
+
+    public static void resetUnreliableDataPoints(EventType type, DataSourceRT dataSourceRT, ActiveEvents activeEvents) {
+        doUnreliable(type, dataSourceRT, DataPointUnreliableUtils::resetUnreliableDataPoints, DataPointUnreliableUtils::resetUnreliableDataPoint,
+                eventType -> !activeEvents.isActiveEventsForDataSource(eventType),
+                eventType -> !activeEvents.isActiveEventsForDataPoint(eventType));
+    }
+
+    private static void doUnreliable(EventType type, DataSourceRT dataSourceRT,
+                                     Consumer<List<DataPointRT>> list, Consumer<DataPointRT> single,
+                                     Predicate<EventType> doIfDataSource,
+                                     Predicate<EventType> doIfDataPoint) {
+        if(dataSourceRT != null && dataSourceRT.doSetUnreliableDataPoint(type)) {
+            List<DataPointRT> dataPoints = dataSourceRT.getDataPoints();
+            if (type.getDataPointId() == -1 && doIfDataSource.test(type)) {
+                list.accept(dataPoints);
+            } else {
+                for (DataPointRT dataPoint : dataPoints) {
+                    if (dataPoint.getId() == type.getDataPointId() && doIfDataPoint.test(type)) {
+                        single.accept(dataPoint);
+                    }
+                }
+            }
+        }
     }
 }

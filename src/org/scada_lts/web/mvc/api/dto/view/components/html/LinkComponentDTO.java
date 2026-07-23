@@ -5,11 +5,14 @@ import br.org.scadabr.view.component.LinkComponent;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class LinkComponentDTO extends HtmlComponentDTO {
 
+    @XssProtect
     private String link;
+    @XssProtect
     private String text;
 
     public LinkComponentDTO() {

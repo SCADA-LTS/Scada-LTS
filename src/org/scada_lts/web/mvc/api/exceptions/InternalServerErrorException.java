@@ -13,7 +13,7 @@ public class InternalServerErrorException extends ScadaApiException {
         super(ScadaErrorMessage.builder(HttpStatus.INTERNAL_SERVER_ERROR)
                 .type(API_EXCEPTIONS + InternalServerErrorException.class.getSimpleName())
                 .title(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .detail("exception", ex.getClass().getName() + " : " + ex.getMessage())
+                .detail("exception", ex.getClass().getName() + " : " + truncateMessage(ex.getMessage()))
                 .instance(instance)
                 .build());
     }

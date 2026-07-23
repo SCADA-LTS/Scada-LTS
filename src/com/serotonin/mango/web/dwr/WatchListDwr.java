@@ -45,6 +45,7 @@ import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -53,12 +54,12 @@ public class WatchListDwr extends BaseDwr {
 
 		PointHierarchy ph = dataPointDao.getPointHierarchy().copyFoldersOnly();
 		User user = Common.getUser();
-		List<DataPointVO> points = dataPointDao.getDataPoints(
-				DataPointExtendedNameComparator.instance, false);
+		DataPointService dataPointService = new DataPointService();
+		List<DataPointVO> points = dataPointService.getDataPointsWithAccess(user);
+
 		for (DataPointVO point : points) {
-			if (Permissions.hasDataPointReadPermission(user, point))
-				ph.addDataPoint(point.getId(), point.getPointFolderId(),
-						point.getExtendedName());
+			ph.addDataPoint(point.getId(), point.getPointFolderId(),
+					point.getExtendedName());
 		}
 
 		ph.parseEmptyFolders();
@@ -69,7 +70,7 @@ public class WatchListDwr extends BaseDwr {
 		user.setWatchList(watchList);
 
 		data.put("pointFolder", ph.getRoot());
-		data.put("shareUsers", getShareUsers(user));
+		//data.put("shareUsers", getShareUsers(user));
 		data.put("selectedWatchList", getWatchListData(user, watchList));
 		data.put("admin", user.isAdmin());
 		return data;

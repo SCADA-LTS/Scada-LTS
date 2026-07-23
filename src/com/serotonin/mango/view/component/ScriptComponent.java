@@ -43,6 +43,9 @@ import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.mango.web.taglib.Functions;
 import com.serotonin.util.SerializationHelper;
 import org.mozilla.javascript.Undefined;
+import org.scada_lts.utils.ScriptContextUtils;
+import org.scada_lts.web.beans.validation.script.ScriptValidatorUtils;
+import org.scada_lts.web.beans.validation.script.ScriptProtect;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
@@ -58,6 +61,7 @@ public class ScriptComponent extends PointComponent {
 	private static final String SCRIPT_SUFFIX = "\r\n}\r\n__scriptRenderer__();";
 
 	@JsonRemoteProperty
+	@ScriptProtect
 	private String script;
 
 	public ScriptComponent() {}
@@ -91,6 +95,14 @@ public class ScriptComponent extends PointComponent {
 	public void addDataToModel(Map<String, Object> model, PointValueTime value) {
 		String result;
 
+		if(!ScriptValidatorUtils.validate(script)) {
+			ScriptException scriptException = new ScriptException("Script no valid");
+			result = ScriptExecutor.prettyScriptMessage(scriptException).getMessage();
+			LOG.error(infoErrorExecutionScript(scriptException, model, this));
+			model.put("scriptContent", result);
+			return;
+		}
+
 		if (value == null)
 			result = "--";
 		else {
@@ -104,7 +116,7 @@ public class ScriptComponent extends PointComponent {
 			 * { throw new ScriptException(e); }
 			 */
 			try {
-				Scriptable scope = cx.initStandardObjects();
+				Scriptable scope = ScriptContextUtils.initStandardObjects(cx);
 				// ScriptEngine engine = manager.getEngineByName("JavaScript");
 				// engine.getContext().setErrorWriter(new
 				// PrintWriter(System.err));
@@ -137,11 +149,11 @@ public class ScriptComponent extends PointComponent {
 						result = o.toString();
 
 					if(o instanceof Undefined) {
-						LOG.warn(infoErrorExecutionScript(model, this));
+						LOG.error(infoErrorExecutionScript(model, this));
 					}
 				} catch (Exception e) {
 					result = ScriptExecutor.prettyScriptMessage(new ScriptException(e)).getMessage();
-					LOG.warn(infoErrorExecutionScript(e, model, this));
+					LOG.error(infoErrorExecutionScript(e, model, this));
 				}
 			} finally {
 				Context.exit();

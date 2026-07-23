@@ -56,7 +56,7 @@ public class NodaveS7DataSource extends PollingDataSource {
 		} else {
 			String arquivo = readFile(file);
 
-			for (DataPointRT dataPoint : dataPoints) {
+			for (DataPointRT dataPoint : getDataPoints()) {
 				try {
 					NodaveS7PointLocatorVO dataPointVO = dataPoint.getVO()
 							.getPointLocator();

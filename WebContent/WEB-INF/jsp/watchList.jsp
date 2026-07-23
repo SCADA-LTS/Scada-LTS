@@ -620,9 +620,6 @@
 
       jQuery(document).ready(function(){
     	  (function($) {
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-    		loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-
     		splitContainerHeight = parseInt(getCookie("split_container_height"));
     		if(splitContainerHeight != null){
     			jQuery("#splitContainer").height(splitContainerHeight);

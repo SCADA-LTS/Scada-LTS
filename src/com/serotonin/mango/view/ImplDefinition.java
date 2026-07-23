@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.serotonin.util.ArrayUtils;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 public class ImplDefinition implements Serializable {
 
@@ -45,8 +46,11 @@ public class ImplDefinition implements Serializable {
     }
 
     private int id;
+    @XssProtect
     private String name;
+    @XssProtect
     private String exportName;
+    @XssProtect
     private final String nameKey;
     private final int[] supportedDataTypes;
 

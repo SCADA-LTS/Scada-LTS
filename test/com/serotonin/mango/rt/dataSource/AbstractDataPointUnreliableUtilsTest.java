@@ -25,6 +25,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.recursive.SetUnreliableDataPointsAction;
 import org.scada_lts.utils.ValidationUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import utils.TestUtils;
@@ -203,7 +204,6 @@ public abstract class AbstractDataPointUnreliableUtilsTest {
         allDataPoints.addAll(virtualDataPointsWith_121_122_123);
         allDataPoints.addAll(metaDataPointsWith_111);
         allDataPoints.addAll(metaDataPointsWithContextWith_112_116_117_118_119_120);
-
         afterConfig();
     }
 

@@ -206,4 +206,34 @@ public final class OnlyMigrationDataPointService implements MangoDataPoint {
 	public List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(String searchText, Set<Integer> excludeIds, boolean start, int offset, int limit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(Set<Integer> ids) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDataPointIdWithAccessPrev(User user, String startDataPointName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDataPointIdWithAccessNext(User user, String startDataPointName) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user) {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +75,7 @@ public class ASCIISerialDataSource extends PollingDataSource {
 	protected void doPoll(long time) {
 
 		try {
-
+			List<DataPointRT> dataPoints = getDataPoints();
 			// nao tem dados
 			if (getInSerialStream() == null || getInSerialStream().available() == 0) {
 

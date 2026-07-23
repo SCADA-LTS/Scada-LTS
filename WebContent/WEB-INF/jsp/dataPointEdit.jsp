@@ -83,14 +83,14 @@
       <tr>
         <td>
             <script>
-                    function init() {
-                        jQuery("#selected_base_on_existing_point_chooser").chosen({
-                            allow_single_deselect: true,
-                            placeholder_text_single: "<spring:message code='chosen.selector.selectPoint'/>",
-                            search_contains: true,
-                            width: "400px"
-                        });
-                    }
+                   function init() {
+                       let dataTypeId = <c:out value="${form.pointLocator.dataTypeId}" />;
+                       let selectedBaseOnExistingPointChooser = new DataPointsSelect({
+                           selectHtmlId: "selected_base_on_existing_point_chooser",
+                           placeholderTextSingle: "<spring:message code='chosen.selector.selectPoint'/>",
+                           dataTypes: [dataTypeId]
+                       });
+                   }
 
                    function checkGetAlertError() {
                      return jQuery("#checkGetAlertError").prop('checked');
@@ -892,13 +892,6 @@
                            					        	});
                   }
 
-                    jQuery(document).ready(function(){
-                        (function($) {
-                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.min.css","css");
-                            loadjscssfile("resources/jQuery/plugins/chosen/chosen.jquery.min.js","js");
-                        })(jQuery);
-                    });
-
                    jQuery(document).ready(function() {
                        function updateSuffixForEngineeringUnits() {
                            let value = jQuery("select[name='engineeringUnits']").val();
@@ -945,9 +938,6 @@
                             <td class="formLabelRequired"><spring:message code="pointEdit.basing_on.select"/></td>
                             <td colspan="2" class="formField">
                                 <select id="selected_base_on_existing_point_chooser">
-                                    <c:forEach items="${userPoints}" var="point">
-                                        <sst:option value="${point.id}"><c:out value="${point.extendedName}"/></sst:option>
-                                    </c:forEach>
                                 </select>
                             </td>
                         </tr>

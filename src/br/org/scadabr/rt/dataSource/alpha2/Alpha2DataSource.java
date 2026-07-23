@@ -50,7 +50,7 @@ public class Alpha2DataSource extends PollingDataSource {
 
 		Map<DeviceLocator, DataPointRT> map = new HashMap<DeviceLocator, DataPointRT>();
 
-		for (DataPointRT pointRT : dataPoints) {
+		for (DataPointRT pointRT : getDataPoints()) {
 			Alpha2PointLocatorVO dp = pointRT.getVO().getPointLocator();
 
 			if (dp.isReadable()) {

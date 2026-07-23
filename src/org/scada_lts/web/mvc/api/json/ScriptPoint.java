@@ -1,8 +1,15 @@
 package org.scada_lts.web.mvc.api.json;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ScriptPoint {
+    @XssProtect
     private String varName;
+    @XssProtect
     private String dataPointXid;
+    private Integer dataPointId;
 
     public ScriptPoint() {
     }
@@ -26,5 +33,18 @@ public class ScriptPoint {
 
     public void setDataPointXid(String dataPointXid) {
         this.dataPointXid = dataPointXid;
+    }
+
+    public Integer getDataPointId() {
+        return dataPointId;
+    }
+
+    public void setDataPointId(Integer dataPointId) {
+        this.dataPointId = dataPointId;
+    }
+
+    @Override
+    public String toString() {
+        return "xid: " + dataPointXid + ", id: " + dataPointId;
     }
 }

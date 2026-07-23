@@ -23,6 +23,7 @@ import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportJob;
@@ -31,13 +32,16 @@ import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.UserIdentifier;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
 import org.scada_lts.permissions.service.GetReportsWithAccess;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
+import org.scada_lts.utils.GetDataPointsUtils;
 
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Matthew Lohbihler
@@ -45,13 +49,22 @@ import java.util.ResourceBundle;
 public class ReportsDwr extends BaseDwr {
     public DwrResponseI18n init() {
         DwrResponseI18n response = new DwrResponseI18n();
-        MangoReport reportDao = new ReportService();
+        MangoReport reportService = new ReportService();
         User user = Common.getUser();
 
-        response.addData("points", getReadablePoints());
-        response.addData("mailingLists", new MailingListService().getMailingLists());
-        response.addData("users", new UserService().getUsers());
-        response.addData("reports", reportDao.getReports(user.getId()));
+
+        MailingListService mailingListService = new MailingListService();
+        List<MailingList> mailingListFromDatabase = mailingListService.getMailingLists();
+        List<MailingListJson> mailingLists = mailingListFromDatabase.stream()
+                .map(MailingListJson::new)
+                .collect(Collectors.toList());
+        response.addData("mailingLists", mailingLists);
+        UserService userService = new UserService();
+        List<UserIdentifier> users = userService.getUsers().stream()
+                .map(UserIdentifier::new)
+                .collect(Collectors.toList());
+        response.addData("users", users);
+        response.addData("reports", reportService.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
         return response;
@@ -59,11 +72,13 @@ public class ReportsDwr extends BaseDwr {
 
     public ReportVO getReport(int id, boolean copy) {
         ReportVO report;
+        User user = Common.getUser();
         if (id == Common.NEW_ID) {
             report = new ReportVO();
             report.setName(getMessage("common.newName"));
-        }
-        else {
+            report.setUserId(user.getId());
+            report.setUsername(user.getUsername());
+        } else {
             report = new ReportService().getReport(id);
 
             if (copy) {
@@ -71,7 +86,7 @@ public class ReportsDwr extends BaseDwr {
                 report.setName(LocalizableMessage.getMessage(getResourceBundle(), "common.copyPrefix", report.getName()));
             }
 
-            Permissions.ensureReportPermission(Common.getUser(), report);
+            Permissions.ensureReportPermission(user, report);
         }
         return report;
     }
@@ -256,6 +271,30 @@ public class ReportsDwr extends BaseDwr {
             report.getPoints().add(rp);
         }
 
+        User user = Common.getUser();
+        report.setUserId(user.getId());
+        report.setUsername(user.getUsername());
         return report;
+    }
+
+    public DwrResponseI18n createReportFromWatchlistResponse(int watchListId) {
+        ReportVO report = createReportFromWatchlist(watchListId);
+        return getReportResponse(report);
+    }
+
+    public DwrResponseI18n getReportResponse(int id, boolean copy) {
+        ReportVO report = getReport(id, copy);
+        return getReportResponse(report);
+    }
+
+    private static DwrResponseI18n getReportResponse(ReportVO report) {
+        User user = Common.getUser();
+        Permissions.ensureReportPermission(user, report);
+        DataPointService dataPointService = new DataPointService();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("report", report);
+        response.addData("points", GetDataPointsUtils.getDataPointsByReport(user, report, dataPointService));
+        return response;
     }
 }

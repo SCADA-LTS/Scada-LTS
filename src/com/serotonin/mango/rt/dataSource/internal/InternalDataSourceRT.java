@@ -41,7 +41,7 @@ public class InternalDataSourceRT extends PollingDataSource {
 
     @Override
     public void doPoll(long time) {
-        for (DataPointRT dataPoint : dataPoints) {
+        for (DataPointRT dataPoint : getDataPoints()) {
             InternalPointLocatorRT locator = dataPoint.getPointLocator();
 
             String monitorId = InternalPointLocatorVO.MONITOR_NAMES[locator.getPointLocatorVO().getAttributeId()];

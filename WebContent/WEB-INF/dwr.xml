@@ -20,7 +20,7 @@
 
 <dwr>
   <init>
-    <converter id="localizableMessage" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
+    <converter id="localizableMessageConverter" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
     <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
     <converter id="xssDataPointVoConverter" class="com.serotonin.mango.web.dwr.XssDataPointVoConverter"/>
     <converter id="xssDataPointBeanConverter" class="com.serotonin.mango.web.dwr.XssDataPointBeanConverter"/>
@@ -161,7 +161,7 @@
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator,engineeringUnits"/>
     </convert>
     <convert converter="xssDataPointBeanConverter" match="com.serotonin.mango.web.dwr.beans.DataPointBean">
-      <param name="include" value="id,xid,name,settable,dataType,dataTypeMessage,chartColour"/>
+      <param name="include" value="id,xid,name,settable,dataType,dataTypeMessage,chartColour,enabled"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.User">
       <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions,userProfile,homeUrl,hideMenu,theme,firstName,lastName,enableFullScreen,hideShortcutDisableFullScreen"/>
@@ -190,7 +190,7 @@
     <convert converter="bean" match="com.serotonin.web.dwr.DwrMessageI18n"/>
     <convert converter="bean" match="com.serotonin.web.dwr.DwrResponseI18n"/>
 
-    <convert converter="localizableMessage" match="com.serotonin.web.i18n.LocalizableMessage"/>
+    <convert converter="localizableMessageConverter" match="com.serotonin.web.i18n.LocalizableMessage"/>
     <convert converter="bean" match="br.org.scadabr.vo.scripting.ScriptVO">
     	<param name="exclude" value="type"/>
     </convert>
@@ -245,6 +245,10 @@
     <convert converter="exception" match="java.lang.Exception">
       <param name="include" value="message"/>
     </convert>
+
+    <convert converter="bean" match="org.scada_lts.dao.model.UserIdentifier"/>
+    <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.MailingListJson"/>
+    <convert converter="bean" match="org.scada_lts.web.mvc.api.dto.EmailRecipientJson"/>
   </allow>
   <signatures>
     <![CDATA[

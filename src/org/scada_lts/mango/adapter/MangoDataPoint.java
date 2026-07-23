@@ -25,6 +25,7 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DataPointService adapter
@@ -94,4 +95,16 @@ public interface MangoDataPoint {
 	List<DataPointVO> getDataPointsWithAccess(User user);
 
 	List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator);
+
+	List<DataPointVO> getDataPoints(Set<Integer> ids);
+
+	List<DataPointVO> getDataPoints(String keywordSearch, Set<Integer> excludeIds, boolean start, int offset, int limit);
+
+	List<DataPointVO> getDataPointsWithAccess(User user, boolean includeRelationalData);
+
+	int getDataPointIdWithAccessPrev(User user, String dataPointName);
+
+	int getDataPointIdWithAccessNext(User user, String dataPointName);
+
+	List<DataPointVO> getDataPoints(Set<Integer> pointIds, User user);
 }

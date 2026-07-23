@@ -86,4 +86,12 @@ public final class EventTestUtils {
         emailEventHandler.setHandlerType(eventHandlerType);
         return emailEventHandler;
     }
+
+    public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
+                                                                  EventType eventType, boolean rtnApplicable) {
+        EventInstance event = new EventInstance(eventType, activeTime.getMillis(), rtnApplicable, AlarmLevels.CRITICAL,
+                localizableMessage, Collections.emptyMap());
+        event.setId(id);
+        return event;
+    }
 }

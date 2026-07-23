@@ -191,7 +191,7 @@ public class Pop3DataSourceRT extends PollingDataSource {
     }
 
     private void processMessage(Pop3Email pop3Email, long time) throws LocalizableException {
-        for (DataPointRT dp : dataPoints) {
+        for (DataPointRT dp : getDataPoints()) {
             Pop3PointLocatorRT locator = dp.getPointLocator();
 
             // Get the value

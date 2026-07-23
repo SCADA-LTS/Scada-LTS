@@ -68,6 +68,7 @@ import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
 import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.ds.polling.PollingDataSourceUtils;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.quartz.EverySecond;
 import org.scada_lts.quartz.EverySecondTool;
@@ -168,8 +169,6 @@ public class MangoContextListener implements ServletContextListener {
 		}
 
 		try {
-			DataSourcePointsCache.getInstance().cacheInitialize();
-			log.info("Cache data points initialized");
 			
 			runtimeManagerInitialize(ctx);
 			
@@ -236,6 +235,7 @@ public class MangoContextListener implements ServletContextListener {
 		utilitiesTerminate(ctx);
 		highPriorityServiceTerminate();
 		databaseTerminate(ctx);
+		terminatePollingDataSource();
 
 		Common.ctx = null;
 
@@ -737,5 +737,9 @@ public class MangoContextListener implements ServletContextListener {
 		StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
 		standardContextField.setAccessible(false);
 		return standardContext.getManager();
+	}
+
+	private static void terminatePollingDataSource() {
+		PollingDataSourceUtils.terminateNetty();
 	}
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -39,6 +40,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.utils.XidUtils;
+import org.scada_lts.web.mvc.api.dto.EmailRecipientJson;
+import org.scada_lts.web.mvc.api.dto.MailingListJson;
 
 @JsonRemoteEntity
 public class MailingList extends EmailRecipient {
@@ -233,5 +236,20 @@ public class MailingList extends EmailRecipient {
 
     public boolean isActive(EventInstance sendTime) {
         return IntervalUtil.isActiveByInterval(this, sendTime);
+    }
+
+    @Override
+    public EmailRecipientJson to() {
+        MailingListJson mailingList = new MailingListJson();
+        mailingList.setId(id);
+        mailingList.setXid(xid);
+        mailingList.setName(name);
+        mailingList.setCronPattern(cronPattern);
+        mailingList.setEntries(entries.stream().map(EmailRecipient::to).collect(Collectors.toList()));
+        mailingList.setDailyLimitSentEmails(dailyLimitSentEmails);
+        mailingList.setCollectInactiveEmails(collectInactiveEmails);
+        mailingList.setDailyLimitSentEmailsNumber(dailyLimitSentEmailsNumber);
+        mailingList.setInactiveIntervals(inactiveIntervals);
+        return mailingList;
     }
 }

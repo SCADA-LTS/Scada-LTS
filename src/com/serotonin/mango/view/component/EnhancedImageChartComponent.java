@@ -12,10 +12,11 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.dataImage.PointValueFacade;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImplDefinition;
+
+import static org.scada_lts.utils.GetDataPointValuesUtils.getDataPointValues;
 
 /**
  * Component for Enhanced Image Chart.
@@ -172,7 +173,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
         long to = System.currentTimeMillis();
         long from = to - Common.getMillis(durationType, durationPeriods);
 
-        Map<Long, Number[]> data = new TreeMap<Long, Number[]>();
+        Map<Long, Object[]> data = new TreeMap<>();
 
         List<CompoundChild> children = getChildComponents();
         int childCount = nonEmptyChildrenCount();
@@ -180,13 +181,12 @@ public class EnhancedImageChartComponent extends CompoundComponent {
         for (CompoundChild child : children) {
             int dataPointId = ((EnhancedPointComponent) child.getViewComponent()).getDataPointId();
             if (dataPointId != 0) {
-                PointValueFacade pointValueFacade = new PointValueFacade(dataPointId);
-                List<PointValueTime> pointData = pointValueFacade.getPointValuesBetween(from, to);
+                List<PointValueTime> pointData = getDataPointValues(from, to, dataPointId);
                 for (PointValueTime val : pointData) {
                     if (data.get(val.getTime()) == null) {
-                        data.put(val.getTime(), new Number[childCount]);
+                        data.put(val.getTime(), new Object[childCount]);
                     }
-                    data.get(val.getTime())[j] = val.getValue().numberValue();
+                    data.get(val.getTime())[j] = getObject(val.getValue().getObjectValue());
                 }
                 j++;
             }
@@ -196,7 +196,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
 
         for (Long time : data.keySet()) {
             csv.append(time);
-            for (Number val : data.get(time)) {
+            for (Object val : data.get(time)) {
                 csv.append(",").append(val == null ? "" : val);
             }
             csv.append("\n");
@@ -306,5 +306,9 @@ public class EnhancedImageChartComponent extends CompoundComponent {
                 ", durationPeriods=" + durationPeriods +
                 ", enhancedImageChartType=" + enhancedImageChartType +
                 "} " + super.toString();
+    }
+
+    private static Object getObject(Object object) {
+        return object instanceof Boolean ? ((Boolean) object ? 1 : 0) : object;
     }
 }

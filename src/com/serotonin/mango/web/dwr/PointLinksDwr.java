@@ -18,14 +18,10 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.script.ScriptException;
 
-import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.PointLinkDao;
@@ -35,19 +31,22 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.meta.ResultTypeException;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.link.PointLinkRT;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.util.StringUtils;
+import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.PointLinkService;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static org.scada_lts.utils.GetDataPointsUtils.getSourceDataPointsByPointLinks;
+import static org.scada_lts.utils.GetDataPointsUtils.getTargetDataPointsByPointLinks;
 
 /**
  * @author Matthew Lohbihler
@@ -57,28 +56,28 @@ public class PointLinksDwr extends BaseDwr {
     public Map<String, Object> init() {
         User user = Common.getUser();
         Permissions.ensureAdmin(user);
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
 
         // Get the points that this user can access.
-        List<DataPointVO> allPoints = new DataPointDao().getDataPoints(DataPointExtendedNameComparator.instance, false);
-        List<IntValuePair> sourcePoints = new ArrayList<IntValuePair>();
-        List<IntValuePair> targetPoints = new ArrayList<IntValuePair>();
-        for (DataPointVO point : allPoints) {
-            if (Permissions.hasDataPointReadPermission(user, point))
-                sourcePoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
-            if (point.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, point))
-                targetPoints.add(new IntValuePair(point.getId(), point.getExtendedName()));
-        }
+        List<PointLinkVO> pointLinks = new PointLinkService().getPointLinks();
+        DataPointService dataPointService = new DataPointService();
+        Set<DataPointBean> sourcePoints = getSourceDataPointsByPointLinks(user, pointLinks, dataPointService);
+        Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, pointLinks, dataPointService);
 
         data.put("sourcePoints", sourcePoints);
         data.put("targetPoints", targetPoints);
 
         // Get the existing point links.
-        List<PointLinkVO> pointLinks = new ArrayList<PointLinkVO>();
-        for (PointLinkVO pointLink : new PointLinkDao().getPointLinks()) {
-            if (containsPoint(sourcePoints, pointLink.getSourcePointId())
-                    && containsPoint(targetPoints, pointLink.getTargetPointId()))
-                pointLinks.add(pointLink);
+        for (PointLinkVO pointLink : pointLinks) {
+            boolean existSourcePoint = containsPoint(sourcePoints, pointLink.getSourcePointId());
+            boolean existTargetPoint = containsPoint(targetPoints, pointLink.getTargetPointId());
+
+            if(!existSourcePoint) {
+                LOG.error("Problem PointLinks with Source Point: " + LoggingUtils.pointLinkInfo(pointLink));
+            }
+            if(!existTargetPoint) {
+                LOG.error("Problem PointLinks with Target Point: " + LoggingUtils.pointLinkInfo(pointLink));
+            }
         }
 
         data.put("pointLinks", pointLinks);
@@ -86,9 +85,9 @@ public class PointLinksDwr extends BaseDwr {
         return data;
     }
 
-    private boolean containsPoint(List<IntValuePair> pointList, int pointId) {
-        for (IntValuePair ivp : pointList) {
-            if (ivp.getKey() == pointId)
+    private boolean containsPoint(Set<DataPointBean> pointList, int pointId) {
+        for (DataPointBean ivp : pointList) {
+            if (ivp.getId() == pointId)
                 return true;
         }
         return false;
@@ -120,7 +119,6 @@ public class PointLinksDwr extends BaseDwr {
         vo.setDisabled(disabled);
 
         DwrResponseI18n response = new DwrResponseI18n();
-        PointLinkDao pointLinkDao = new PointLinkDao();
 
         vo.validate(response);
 
@@ -177,6 +175,31 @@ public class PointLinksDwr extends BaseDwr {
         }
 
         response.addMessage("script", message);
+        return response;
+    }
+
+    public DwrResponseI18n getPointLinkResponse(int id) {
+        PointLinkVO vo = getPointLink(id);
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("pointLink", vo);
+
+        DataPointService dataPointService = new DataPointService();
+        User user = Common.getUser();
+        Set<DataPointBean> sourcePoints = getSourceDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
+        Set<DataPointBean> targetPoints = getTargetDataPointsByPointLinks(user, Collections.singletonList(vo), dataPointService);
+        response.addData("sourcePoints", sourcePoints);
+        response.addData("targetPoints", targetPoints);
+        return response;
+    }
+
+    public DwrResponseI18n initResponse() {
+        Map<String, Object> initMap = init();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+
+        for(Map.Entry<String, Object> entry: initMap.entrySet()) {
+            response.addData(entry.getKey(), entry.getValue());
+        }
         return response;
     }
 }

@@ -14,15 +14,18 @@ import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 @JsonRemoteEntity
 public class ButtonComponent extends ScriptComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("button",
 			"BUTTON", "graphic.button", new int[] { DataTypes.BINARY });
 	@JsonRemoteProperty
+	@XssProtect
 	private String whenOffLabel = "ON";
 
 	@JsonRemoteProperty
+	@XssProtect
 	private String whenOnLabel = "OFF";
 
 	@JsonRemoteProperty

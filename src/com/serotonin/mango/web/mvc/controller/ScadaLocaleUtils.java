@@ -12,6 +12,9 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -136,7 +139,7 @@ public final class ScadaLocaleUtils {
         return getLocaleResolver(request).resolveLocale(request);
     }
 
-    private static ResourceBundle getResourceBundleByLocale(Locale locale) {
+    public static ResourceBundle getResourceBundleByLocale(Locale locale) {
         return ResourceBundle.getBundle("messages", locale);
     }
 
@@ -165,9 +168,17 @@ public final class ScadaLocaleUtils {
 
     private static HttpServletRequest getRequestFromWebContext() {
         WebContext webContext = WebContextFactory.get();
-        if(webContext != null)
-            return webContext.getHttpServletRequest();
-        return null;
+        HttpServletRequest httpServletRequest = null;
+        if(webContext != null) {
+            httpServletRequest = webContext.getHttpServletRequest();
+        }
+        if(httpServletRequest == null) {
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes instanceof ServletRequestAttributes) {
+                httpServletRequest = ((ServletRequestAttributes) requestAttributes).getRequest();
+            }
+        }
+        return httpServletRequest;
     }
 
     public static List<Locale> getLocales() {

@@ -105,6 +105,34 @@ public final class TestUtils {
 		return dataPoint1;
 	}
 
+	public static DataPointVO newPointNonSettable(int id, int folderId) {
+		DataPointVO dataPoint1 = newPointSettable(id, folderId);
+		dataPoint1.setId(id);
+		dataPoint1.setPointFolderId(folderId);
+		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
+		pointLocatorVO.setSettable(false);
+		dataPoint1.setPointLocator(pointLocatorVO);
+		return dataPoint1;
+	}
+
+	public static DataPointVO newPointNonSettable(int id, int folderId, int dataTypeId) {
+		DataPointVO dataPoint1 = newPointNonSettable(id, folderId);
+		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
+		pointLocatorVO.setSettable(false);
+		pointLocatorVO.setDataTypeId(dataTypeId);
+		dataPoint1.setPointLocator(pointLocatorVO);
+		return dataPoint1;
+	}
+
+	public static DataPointVO newPointSettable(int id, int folderId, int dataTypeId) {
+		DataPointVO dataPoint1 = newPointSettable(id, folderId);
+		VirtualPointLocatorVO pointLocatorVO = new VirtualPointLocatorVO();
+		pointLocatorVO.setSettable(true);
+		pointLocatorVO.setDataTypeId(dataTypeId);
+		dataPoint1.setPointLocator(pointLocatorVO);
+		return dataPoint1;
+	}
+
 	public static DataPointVO newPointSettable(int id, DataSourceVO<?> dataSource, int folderId) {
 		DataPointVO dataPoint1 = newDefaultEmptyDataPointVO();
 		dataPoint1.setId(id);
