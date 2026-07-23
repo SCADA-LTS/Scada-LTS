@@ -31,7 +31,7 @@ import static org.scada_lts.utils.ScriptsApiUtils.*;
 /**
  * Simple controller for Scripts in Scada-LTS
  *
- * @author Sergio Selvaggi <sselvaggi@softq.pl>
+ * @author Sergio Selvaggi on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @RestController
 @RequestMapping(value = {"/api/scripts", "/script"})

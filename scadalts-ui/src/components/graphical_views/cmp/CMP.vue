@@ -153,7 +153,7 @@ class ChangeDataDTO {
 }
 
 /**
- * @author grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 class ApiCMP {
 	get(xIds) {
@@ -210,7 +210,7 @@ class ApiCMP {
 }
 
 /**
- * @author grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 export default {
 	components: {

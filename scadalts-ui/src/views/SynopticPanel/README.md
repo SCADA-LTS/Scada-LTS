@@ -1,6 +1,6 @@
 # Synoptic Panel 
 **Version:** 1.1.0  
-**Author:** Radek Jajko [rjajko@softq.pl](mailto:rjajko@softq.pl)
+**Author:** Radek Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 
 Prepare your custom SVG graphic panel and upload it into ScadaLTS Synoptic Panel. Attach 
 data points to selected elements and make this panel alive! It is very simple view to monitor

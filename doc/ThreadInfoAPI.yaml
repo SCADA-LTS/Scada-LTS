@@ -9,8 +9,8 @@ info:
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
   contact:
-    name: 'Kamil Jarmusik - SoftQ Developer'
-    email: 'kamil.jarmusik@softq.pl'
+    name: 'Abil’I.T.'
+    email: 'sdt@abilit.eu'
   license:
     name: 'GPL-2.0'
 paths:

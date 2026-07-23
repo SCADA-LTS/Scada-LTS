@@ -38,7 +38,7 @@ import com.serotonin.mango.view.View;
 /** 
  * Service for views hierarchy.
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 @Service

@@ -1,7 +1,7 @@
 package com.serotonin.mango.vo.dataSource.http;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 31.10.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public interface ICheckReactivation {
 

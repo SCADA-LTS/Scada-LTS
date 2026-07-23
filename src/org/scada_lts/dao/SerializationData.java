@@ -31,7 +31,7 @@ import org.scada_lts.exception.StreamDaoException;
 
 /** 
  * Serialization data from database
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class SerializationData {
 	

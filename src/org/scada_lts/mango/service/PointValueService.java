@@ -67,7 +67,7 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
 /**
  * Base on the PointValueDao
  *
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Service
 public class PointValueService implements MangoPointValues {
@@ -729,4 +729,3 @@ public class PointValueService implements MangoPointValues {
 
     }
 }
-

@@ -9,8 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Class created by Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class PermissionWatchlistACL {
 

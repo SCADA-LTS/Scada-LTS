@@ -4,8 +4,7 @@ import org.scada_lts.web.beans.validation.script.ScriptProtect;
 import org.scada_lts.web.beans.validation.xss.XssProtect;
 
 /**
- * @Author Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ViewScriptComponentDTO extends ViewComponentDTO {
 

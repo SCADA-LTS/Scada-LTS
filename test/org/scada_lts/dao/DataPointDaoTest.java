@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test DataPointDAO
  *
- * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
+ * @author Mateusz Kaproń on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class DataPointDaoTest extends TestDAO {
 

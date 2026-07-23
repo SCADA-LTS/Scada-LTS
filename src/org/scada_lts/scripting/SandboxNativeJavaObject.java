@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 /** 
  * Own sandbox for native java object.
  * 
- * @author Zuzana Maczek, grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author Zuzana Maczek, grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class SandboxNativeJavaObject extends NativeJavaObject  {
 

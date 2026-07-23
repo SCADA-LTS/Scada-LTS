@@ -25,7 +25,7 @@ import static org.scada_lts.utils.ApiUtils.toUserInfo;
  * 
  * Controller for data point edition 
  * 
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller 
 public class AuthenticationAPI {

@@ -1,7 +1,7 @@
 # System Settings Vue Component
 
 Vesrion: 1.1.0  
-Creator: Radoslaw Jajko [rjajko@softq.pl](mailto:rjajko@softq.pl)
+Creator: Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 
 System Settings component use REST API to configure Scada-LTS parameters. All available settings are displayed in the SystemSettings section "mainbar" as individual components with common interface. All changes done by user are summarized before final save. From each section changes can be individually restored or saved.
 

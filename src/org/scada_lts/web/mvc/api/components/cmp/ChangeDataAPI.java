@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 24.09.2019
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class ChangeDataAPI {

@@ -17,7 +17,7 @@ import org.scada_lts.ds.state.StartSleepStateDs;
 import java.util.Map;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 24.10.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ReactivationConnectHttpRetriever implements StatefulJob {
 

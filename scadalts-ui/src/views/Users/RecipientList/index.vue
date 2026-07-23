@@ -114,7 +114,7 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
  * but more detailed information about specific list is
  * passed to the "RecipientListDetails" component.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.1
  */
 export default {

@@ -33,16 +33,9 @@ import static org.scada_lts.utils.PointPropertiesApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.validId;
 
 /**
- * Helper class
- *
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
- */
-
-
-/**
  * Controller for API point properties
  *
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 @RequestMapping(path = "/api/point_properties")

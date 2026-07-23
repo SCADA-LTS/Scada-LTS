@@ -8,7 +8,7 @@ import DataSourceLoader from './DataSourceLoader';
  * DataSource Types. It provide the basic methods and common structure
  * for all DataSources within New User Interface in Scada-LTS.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 export default {
 	components: {

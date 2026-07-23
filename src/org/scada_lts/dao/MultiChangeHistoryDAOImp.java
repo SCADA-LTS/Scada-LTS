@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 /**
- * @author grzegorz.bylica@abilit.eu on 16.10.2019
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Repository
 public class MultiChangeHistoryDAOImp implements MultiChangesHistory {

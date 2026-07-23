@@ -38,7 +38,7 @@
  * Auto Manual Errors component
  * 
  * @version 2.0.0
- * @author Radek Jajko <rjajko@softq.pl>
+ * @author Radek Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 export default {
 	props: ['errorHandler'],

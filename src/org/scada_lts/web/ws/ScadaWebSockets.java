@@ -12,7 +12,7 @@ package org.scada_lts.web.ws;
  * @see org.scada_lts.web.ws.services.AbstractWebSocket
  *
  * @param <T> - Type of message
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.1.0
  */
 public interface ScadaWebSockets<T> {

@@ -118,7 +118,7 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
  * This page is used to view and manage the user profiles. User
  * profile is a set of permissions that can be assigned to a multiple users.
  * 
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export default {

@@ -6,7 +6,7 @@ import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 12.10.2020
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class V2_4__ extends BaseJavaMigration {
 

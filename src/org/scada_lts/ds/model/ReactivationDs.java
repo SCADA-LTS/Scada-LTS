@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 23.10.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *
  * Associated with class in vuejs SleepAndReactivationDS.vue
  */

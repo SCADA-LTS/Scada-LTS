@@ -32,7 +32,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 /** 
  * Adapter for EventService
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 public interface MangoEvent {

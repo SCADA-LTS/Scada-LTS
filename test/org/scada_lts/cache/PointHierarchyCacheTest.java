@@ -29,7 +29,7 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 /** 
  * Test EventDetectorTemplateDAO
  * 
- * @author grzegorz bylica, Marcin Gołda Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica, Marcin Gołda on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 public class PointHierarchyCacheTest {

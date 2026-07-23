@@ -5,7 +5,7 @@ import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 /**
  * Enum with chain keys for thread pool config
  *
- * @author kamil.jarmusik@gmail.com
+ * @author Kamil Jarmusik on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *
  */
 

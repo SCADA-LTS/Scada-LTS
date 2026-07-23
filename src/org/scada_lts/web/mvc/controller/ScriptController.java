@@ -43,7 +43,7 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
 /**
  * Controller for script.
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu person
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *         supporting and coreecting translation Jerzy Piejko
  */
 //@Controller

@@ -40,7 +40,7 @@ import java.util.List;
 import static org.apache.http.HttpHeaders.USER_AGENT;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  **/
 public class PermissionEvaluatorAclImp implements PermissionEvaluatorAcl {
 

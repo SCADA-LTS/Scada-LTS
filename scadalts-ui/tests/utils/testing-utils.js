@@ -3,7 +3,7 @@
  *
  * Set of useful functions to provide better testing expierience.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';

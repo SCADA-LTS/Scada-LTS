@@ -45,7 +45,7 @@ import {unescapeHtml} from '../../utils/common';
  * components in library there is a possibility to configure
  * synoptic panel behaviour.
  * 
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export default {

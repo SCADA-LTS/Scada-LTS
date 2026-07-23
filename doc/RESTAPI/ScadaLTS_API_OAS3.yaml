@@ -9,8 +9,8 @@ info:
   description: 'Scada-LTS OpenAPI Specification. REST API interface description with examples and request structure. It can be easily imported into Postman or Swagger application.'
   termsOfService: ''
   contact:
-    name: 'Radek - SoftQ Developer'
-    email: 'rjajko@softq.pl'
+    name: 'Abil’I.T.'
+    email: 'sdt@abilit.eu'
   license:
     name: 'GPL-2.0'
 paths:

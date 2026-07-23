@@ -311,7 +311,7 @@ class ValueToJSON implements Serializable {
 /**
  * Controller for API pointValue
  *
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class PointValueAPI {
@@ -765,4 +765,3 @@ public class PointValueAPI {
     }
 
 }
-
