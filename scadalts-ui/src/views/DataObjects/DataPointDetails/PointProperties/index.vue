@@ -129,7 +129,7 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
  *
  * @param {Object} data - Point Details object with data.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0
  */
 export default {

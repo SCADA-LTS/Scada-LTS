@@ -88,7 +88,7 @@ import UpdatePeriodType from '@/layout/forms/UpdatePeriodType';
  * This component handle the logic for creation and update of DataSource so in
  * the child component that methods are not needed.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export default {

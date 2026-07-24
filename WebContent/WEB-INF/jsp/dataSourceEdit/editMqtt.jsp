@@ -1,7 +1,6 @@
 <%--
-    SoftQ - http://www.softq.pl/
-    Copyright (C) 2022 Softq
-    @author Kamil Jarmusik
+    Copyright (C) 2022 Abil'I.T.
+    @author Kamil Jarmusik on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>

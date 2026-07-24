@@ -21,7 +21,7 @@ package org.scada_lts.mango.adapter;
 /** 
  * Interface mango to change hierarchy
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 import com.serotonin.mango.vo.DataPointVO;

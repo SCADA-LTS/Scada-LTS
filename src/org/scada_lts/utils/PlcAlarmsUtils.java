@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 
 /**
  *
- * @author kamil.jarmusik@gmail.com
+ * @author Kamil Jarmusik on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *
  */
 

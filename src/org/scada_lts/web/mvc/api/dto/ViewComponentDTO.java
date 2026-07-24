@@ -3,8 +3,7 @@ package org.scada_lts.web.mvc.api.dto;
 import java.io.Serializable;
 
 /**
- * @Author Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ViewComponentDTO implements Serializable {
     private String id;

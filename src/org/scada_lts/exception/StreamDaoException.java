@@ -20,7 +20,7 @@ package org.scada_lts.exception;
 
 /** 
  * Exception for serialization data from database
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class StreamDaoException extends RuntimeException {
 	
@@ -32,5 +32,4 @@ public class StreamDaoException extends RuntimeException {
 	public StreamDaoException(Throwable cause) { super(cause); }
 
 }
-
 

@@ -137,7 +137,7 @@ import PermissionsWatchLists from './PermissionsWatchLists';
  * to creation or edition of that profile. Most of the 
  * permission logic is handled by Vuex Store.
  * 
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export default {

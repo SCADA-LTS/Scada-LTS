@@ -3,7 +3,7 @@ package org.scada_lts.dao.model.multichangehistory;
 import java.util.Objects;
 
 /**
- * @author  grzegorz.bylica@abilit.eu on 16.10.2019
+ * @author  Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class MultiChangeHistoryValues {
 

@@ -185,7 +185,7 @@ import webSocketMixin from '@/utils/web-socket-utils'
  *
  * @param {number} datapointId - Point Detail Id
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.2
  */
 export default {

@@ -104,7 +104,7 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
  *
  * The Point Details page can be extended using additional components.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0
  */
 export default {

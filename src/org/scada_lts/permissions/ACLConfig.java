@@ -24,7 +24,7 @@ import org.scada_lts.config.ScadaConfig;
 import java.io.IOException;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  **/
 public class ACLConfig {
 

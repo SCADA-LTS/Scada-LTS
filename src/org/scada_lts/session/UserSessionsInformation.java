@@ -26,7 +26,7 @@ import org.directwebremoting.WebContextFactory;
 import org.json.JSONArray;
 
 /** 
- * @author Abil'I.T. development team, sdt@abilit.eu
+ * @author Abil'I.T. development team on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class UserSessionsInformation {
 

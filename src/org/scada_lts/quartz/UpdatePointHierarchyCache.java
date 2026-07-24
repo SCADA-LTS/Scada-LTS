@@ -28,7 +28,7 @@ import org.scada_lts.cache.PointHierarchyCache;
 /** 
  * Update data job for point hierarchy in cache.
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class UpdatePointHierarchyCache implements StatefulJob{

@@ -1,5 +1,5 @@
 /*
- * (c) 2020 hyski.mateusz@gmail.com
+ * Copyright (C) 2020 Abil'I.T.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ import java.text.MessageFormat;
 /**
  * Create by at Mateusz Hyski
  *
- * @author hyski.mateusz@gmail.com
+ * @author Mateusz Hyski on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 class Validation {
 

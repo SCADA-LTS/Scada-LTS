@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /** 
- * @author Abil'I.T. development team, sdt@abilit.eu
+ * @author Abil'I.T. development team on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @WebListener
 public class HttpSessionListenerImpl implements HttpSessionListener {

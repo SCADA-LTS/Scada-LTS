@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  **/
 public class TestLoger {
 

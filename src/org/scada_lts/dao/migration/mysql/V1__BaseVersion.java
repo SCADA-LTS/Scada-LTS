@@ -28,7 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.serotonin.mango.Common;
 
 /**
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class V1__BaseVersion extends BaseJavaMigration {
 

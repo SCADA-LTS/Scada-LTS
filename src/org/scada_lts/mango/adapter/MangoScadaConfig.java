@@ -26,7 +26,7 @@ import org.scada_lts.config.ScadaConfig;
 /** 
  * Adapter for {@link MangoScadaConfigurable}
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class MangoScadaConfig implements MangoScadaConfigurable {
 

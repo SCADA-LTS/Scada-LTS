@@ -18,17 +18,20 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 
+import org.scada_lts.web.mvc.api.datasources.SearchDataPointJson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +39,7 @@ import java.util.Map;
 
 
 /**
- * @author Arkadiusz Parafiniuk
- * E-mail: arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class DataPointAPI {
@@ -91,7 +93,7 @@ public class DataPointAPI {
     }
 
     @PostMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) DataPointJson datapoint,
+    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
                                                          HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 
@@ -100,7 +102,7 @@ public class DataPointAPI {
     }
 
     @PutMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) DataPointJson datapoint,
+    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) @Valid DataPointJson datapoint,
                                                          HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 
@@ -129,20 +131,27 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoints")
-    public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@RequestParam(value="keywordSearch", required = false) String searchText,
+    public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@Valid SearchDataPointJson searchDataPoint,
                                                                                 HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
+        List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchDataPoint);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchText);
+    @GetMapping(value = "/api/datapoints/bean")
+    public ResponseEntity<List<DataPointBean>> searchDataPointBean(@Valid SearchDataPointJson searchDataPoint,
+                                                                   HttpServletRequest request) {
+        LOG.debug(request.getRequestURI());
+        List<DataPointBean> response = dataPointApiService.searchDataPointBean(request, searchDataPoint);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datapoint/getConfigurationByXid/{xid}")
-    public ResponseEntity<String> getConfigurationByXid(@PathVariable(required = false) String xid,
+    public ResponseEntity<Map<String, Object>> getConfigurationByXid(@PathVariable(required = false) String xid,
                                                         HttpServletRequest request) {
         LOG.debug(request.getRequestURI());
 
-        String response = dataPointApiService.getConfigurationByXid(request, xid);
+        Map<String, Object>  response = dataPointApiService.getDataPointByXid(request, xid);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

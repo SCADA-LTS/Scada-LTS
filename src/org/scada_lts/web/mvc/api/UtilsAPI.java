@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Controller for API watchList
  * 
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller 
 public class UtilsAPI {

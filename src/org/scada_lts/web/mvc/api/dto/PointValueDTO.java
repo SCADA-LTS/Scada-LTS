@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 23.03.2020
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class PointValueDTO {
 

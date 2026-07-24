@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author grzegorz.bylica@abilit.eu on 17.10.2019
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class GetHistoryChangesAPI {

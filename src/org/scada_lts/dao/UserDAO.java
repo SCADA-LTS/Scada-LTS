@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * DAO for User.
  *
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *         person supporting and coreecting translation Jerzy Piejko
- * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
+ * @author Mateusz Kaproń on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class UserDAO implements IUserDAO {
 

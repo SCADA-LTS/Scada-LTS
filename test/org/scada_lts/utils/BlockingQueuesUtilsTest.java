@@ -9,7 +9,7 @@ import static org.scada_lts.utils.BlockingQueuesUtils.newBlockingQueue;
 
 /**
  *
- * @author kamil.jarmusik@gmail.com
+ * @author Kamil Jarmusik on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *
  */
 

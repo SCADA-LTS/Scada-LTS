@@ -35,9 +35,9 @@ import static org.scada_lts.utils.WatchListApiUtils.*;
 /**
  * Controller for API watchList
  *
- * @author Grzesiek Bylica grzegorz.bylica@gmail.com
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * Updated by:
- * @author Radoslaw Jajko rjajko@softq.pl
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 2.0.0
  */
 @Controller

@@ -2,7 +2,7 @@
  * @mixin
  * Utils mixin for modifing the SVG graphic.
  * 
- * @author Radoslaw Jajko <rjajko@sotfq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export const vectorImageOpsMixin = {

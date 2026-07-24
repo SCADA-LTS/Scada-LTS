@@ -7,7 +7,7 @@ import org.scada_lts.dao.IUserCommentDAO;
 /**
  * Service for Comments
  *
- * @author Radoslaw Jajko, rjajko@softq.pl
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class UserCommentService {
 

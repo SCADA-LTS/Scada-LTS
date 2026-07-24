@@ -21,7 +21,7 @@ package org.scada_lts.dao.model.event;
 /**
  * UserEvent bean
  *
- * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class UserEvent {
 	

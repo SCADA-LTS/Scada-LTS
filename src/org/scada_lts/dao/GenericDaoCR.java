@@ -24,7 +24,7 @@ import java.util.List;
 /** 
  * Generic DAO Create, Read 
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 

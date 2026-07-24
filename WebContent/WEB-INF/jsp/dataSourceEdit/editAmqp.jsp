@@ -1,7 +1,6 @@
 <%--
-    SoftQ - http://www.softq.pl/
-    Copyright (C) 2019 Softq
-    @author Radek Jajko
+    Copyright (C) 2019 Abil'I.T.
+    @author Radek Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>

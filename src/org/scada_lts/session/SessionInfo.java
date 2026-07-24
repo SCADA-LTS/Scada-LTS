@@ -34,7 +34,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 
 /** 
- * @author Abil'I.T. development team, sdt@abilit.eu
+ * @author Abil'I.T. development team on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public final class SessionInfo {
 

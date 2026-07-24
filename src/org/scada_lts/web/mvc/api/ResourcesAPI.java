@@ -1,5 +1,5 @@
 /*
- * (c) 2018 grzegorz.bylica@gmail.com
+ * Copyright (C) 2018 Abil'I.T.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Create by at Grzesiek Bylica
  *
- * @author grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class ResourcesAPI {

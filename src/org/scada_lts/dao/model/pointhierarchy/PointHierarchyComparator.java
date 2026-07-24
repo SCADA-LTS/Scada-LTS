@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Comparator for sort points hierarchy 
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class PointHierarchyComparator implements Comparator<PointHierarchyNode> {

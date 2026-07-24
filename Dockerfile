@@ -1,6 +1,6 @@
 #Create an Scada-LTS.war file and deploy it into Docker Tomcat Image.
 FROM tomcat:9.0.86-jre11
-LABEL maintainer="rjajko@softq.pl"
+LABEL maintainer="sdt@abilit.eu"
 COPY tomcat/lib/mysql-connector-java-5.1.49.jar /usr/local/tomcat/lib/mysql-connector-java-5.1.49.jar
 COPY tomcat/lib/activation.jar /usr/local/tomcat/lib/activation.jar
 COPY tomcat/lib/jaxb-api-2.4.0-b180830.0359.jar /usr/local/tomcat/lib/jaxb-api-2.4.0-b180830.0359.jar

@@ -16,7 +16,7 @@ import java.util.Properties;
  * properties are missing it will render the default values.
  * That information is rendered next to the Scada-LTS Logo in a header.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 public class ScadaVersion {

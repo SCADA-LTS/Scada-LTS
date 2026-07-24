@@ -66,7 +66,7 @@ import com.serotonin.web.i18n.LocalizableMessageParseException;
 /**
  * Event DAO base on before version EventDao 
  *
- * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class EventDAO implements GenericDaoCR<EventInstance> {
 

@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Simple controller for Reports in Scada-LTS
  *
- * @author Sergio Selvaggi <sselvaggi@softq.pl>
+ * @author Sergio Selvaggi on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 @RequestMapping(value = "/api/reports")

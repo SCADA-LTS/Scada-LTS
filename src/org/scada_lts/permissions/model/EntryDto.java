@@ -20,7 +20,7 @@ package org.scada_lts.permissions.model;
 import java.io.Serializable;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  **/
 public class EntryDto implements Serializable {
 

@@ -54,7 +54,7 @@ import static org.scada_lts.utils.ValidationUtils.validId;
 import static org.scada_lts.utils.ViewApiUtils.*;
 
 /**
- * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 @RequestMapping(path = "/api/view")

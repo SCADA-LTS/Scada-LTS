@@ -46,7 +46,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 /**
  * Event DAO base on before version EventDao 
  *
- * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class EventServiceTest extends TestDAO {
 	

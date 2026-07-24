@@ -24,7 +24,7 @@ import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * @author grzegorz bylica grzegorz.bylica@gmail.com
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class V1_1__ViewsHierarchy extends BaseJavaMigration {
 

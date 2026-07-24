@@ -39,4 +39,4 @@ Properties properties for Simple Point Table
 
 # Author
 
-- [Radosław Jajko](https://github.com/radek2s): **rjajko@softq.pl**
+- [Radosław Jajko](https://github.com/radek2s): on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
