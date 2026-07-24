@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 24.09.2019
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 @RequestMapping(value = "/api/is_alive")
@@ -51,7 +51,7 @@ public class TimeFromServer {
     }
 
     /**
-     * @author radek2s <rjajko@softq.pl>
+     * @author radek2s on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
      * @return ResponseEntity with status message
      */
     @GetMapping(value = "/time2")
@@ -70,7 +70,7 @@ public class TimeFromServer {
     }
 
     /**
-     * @author radek2s <rjajko@softq.pl>
+     * @author radek2s on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
      * @return ResponseEntity with status message
      */
     @PostMapping(value = "/watchdog")

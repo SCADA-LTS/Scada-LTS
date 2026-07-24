@@ -81,7 +81,7 @@ import PointChart from './PointChart/index.vue';
 import WatchListConfig from './WatchListConfig';
 import { createWatchList, deleteWatchList, updateWatchList } from '@s/watchList/actions';
 /**
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.1.0
  */
 export default {

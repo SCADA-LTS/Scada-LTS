@@ -127,8 +127,8 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
  * manage the user details. You can create, edit and delete users
  * from that page. Communication is based on the HTTP requests.
  *
- * @author Sergio Selvaggi <sselvaggi@softq.pl>
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Sergio Selvaggi on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.2
  */
 export default {

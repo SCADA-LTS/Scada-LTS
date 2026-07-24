@@ -15,8 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
  
-  @Author Arkadiusz Parafiniuk
-  arkadiusz.parafiniuk@gmail.com
+  @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  --%>
 
 <%@page import="org.apache.commons.logging.Log"%>

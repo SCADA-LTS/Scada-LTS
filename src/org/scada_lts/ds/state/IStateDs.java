@@ -4,7 +4,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 
 /**
  * @project Scada-LTS-master
- * @autor grzegorz.bylica@gmail.com on 10.10.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public interface IStateDs {
 

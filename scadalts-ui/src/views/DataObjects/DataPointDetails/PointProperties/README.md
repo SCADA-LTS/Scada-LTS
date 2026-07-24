@@ -8,7 +8,7 @@ Point Properties is a additional component that allow Scada-LTS users to modify 
 
 **This page do not provide the final functionality!**
 
-Done by Radoslaw Jajko <rjajko@softq.pl>
+Done by Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 
 ## Works to be done in future:
 

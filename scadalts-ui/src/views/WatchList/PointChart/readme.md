@@ -1,6 +1,6 @@
 # Modern Watch List View
 
-Created by _Radek Jajko_ [rjajko@softq.pl](mail:rjajko@softq.pl)  
+Created by _Radek Jajko_ on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
 Updated for Scada-LTS version 2.4.0.
 
 Modern Wach list is a new View for ScadaLTS working next to the classic WatchList page.

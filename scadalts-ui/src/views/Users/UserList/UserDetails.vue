@@ -226,8 +226,8 @@ import UserProfileDetails from '../UserProfiles/UserProfileDetails'
  * @param userDetails Object - User detailed object
  * @param edit boolean - Enabled "edit" mode
  *
- * @author Sergio Selvaggi <sselvaggi@softq.pl>
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Sergio Selvaggi on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.1
  */
 export default {

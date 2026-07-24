@@ -4,8 +4,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.vo.DataPointVO;
 
 /**
- * @Author Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ViewSimplePointComponentDTO extends ViewComponentDTO {
     private String dataPointXid;

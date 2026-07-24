@@ -32,7 +32,7 @@
 import moment from 'moment';
 
 /**
- * @author grzegorz.bylica@abilit.eu
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  *
  * <div
  *    id='app-isalive'

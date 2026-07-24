@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ViewMultistateGraphicComponentDTO extends ViewImageSetComponentDTO {
     private List<IntValuePair> stateImageMap = new ArrayList<>();

@@ -43,7 +43,7 @@ import com.serotonin.mango.vo.DataPointVO;
 /**
  * DAO for point hierarchy (data points).
  *
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 

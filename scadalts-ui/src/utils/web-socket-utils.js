@@ -10,7 +10,7 @@ import { initWebSocket } from "../web-socket";
  * changed to suit your needs.
  * 
  * @version 1.0.0
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 export const webSocketUtilsMixin = {
 

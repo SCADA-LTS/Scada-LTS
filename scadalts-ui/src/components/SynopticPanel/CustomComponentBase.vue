@@ -7,7 +7,7 @@ import svgMixin from './SvgOperationsMixin';
  * inheritated by child components. It is providing basic methods
  * to manipulate SVG object. Use that methods or try to override them.
  * 
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.1.0
  */
 export default {

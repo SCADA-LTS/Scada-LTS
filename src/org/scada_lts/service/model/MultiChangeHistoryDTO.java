@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * @author  grzegorz.bylica@abilit.eu on 15.10.2019
+ * @author  Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class MultiChangeHistoryDTO {
 

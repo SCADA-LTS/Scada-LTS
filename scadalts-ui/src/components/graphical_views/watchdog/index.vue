@@ -102,7 +102,7 @@ const MSG_TYPES = {
  *
  * Watchdog Component
  *
- * @author radek2s <rjajko@softq.pl>
+ * @author radek2s on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.01
  */
 export default {

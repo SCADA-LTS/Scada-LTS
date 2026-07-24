@@ -1,5 +1,5 @@
 /**
- * @author grzegorz.bylica@abilit.eu
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 
 import storeIsAlive from './storeIsAlive';

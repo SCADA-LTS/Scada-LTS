@@ -38,7 +38,7 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 /** 
  * Test PointValueDAO
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 public class PointValuesDaoTest extends TestDAO {

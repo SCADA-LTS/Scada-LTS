@@ -3,8 +3,7 @@ package org.scada_lts.web.mvc.api.dto;
 import com.serotonin.mango.view.component.ViewComponent;
 
 /**
- * @Author Arkadiusz Parafiniuk
- * arkadiusz.parafiniuk@gmail.com
+ * @author Arkadiusz Parafiniuk on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class ViewLinkComponentDTO extends ViewComponentDTO {
     private String text;

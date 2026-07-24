@@ -5,7 +5,7 @@ import org.scada_lts.permissions.model.EntryDto;
 import java.util.List;
 
 /**
- * @author Grzegorz Bylica grzegorz.bylica@gmail.com
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  **/
 public interface PermissionEvaluatorAcl {
 

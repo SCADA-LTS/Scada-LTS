@@ -20,7 +20,7 @@ package org.scada_lts.dao.model;
 /** 
  * Model for buffering UserCommentCache
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class UserCommentCache {

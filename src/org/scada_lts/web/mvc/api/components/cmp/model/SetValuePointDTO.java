@@ -3,7 +3,7 @@ package org.scada_lts.web.mvc.api.components.cmp.model;
 import java.io.Serializable;
 
 /**
- * @author grzegorz.bylica@gmail.com on 17.01.19
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class SetValuePointDTO implements Serializable {
 

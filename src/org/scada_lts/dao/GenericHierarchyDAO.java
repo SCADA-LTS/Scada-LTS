@@ -23,7 +23,7 @@ import java.util.List;
 /** 
  * Generic Hierarchy DAO 
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * 
  */
 public interface GenericHierarchyDAO<T> {

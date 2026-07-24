@@ -10,7 +10,7 @@ import org.scada_lts.ds.state.change.AlertObserver;
 
 /**
  * @project Scada-LTS
- * @autor grzegorz.bylica@gmail.com on 05.10.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class StartStopDsRT implements Runnable {
 

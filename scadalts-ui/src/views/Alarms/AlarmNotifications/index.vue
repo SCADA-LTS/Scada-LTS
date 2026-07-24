@@ -105,7 +105,7 @@ import CreationSettingsDialog from './CreationSettings';
  * Alarm notification View-component.
  * Render page that main purpose is management of PLC notifications.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.1
  *
  */

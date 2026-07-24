@@ -13,7 +13,7 @@
  *  - Canvas context: the context is the canvas element.
  *  - Selection context: the context are all selected graphical view elements.
  * 
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * @version 1.0.0
  */
 export const layoutMixin = {

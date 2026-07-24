@@ -2,7 +2,7 @@
   "name": "scada-lts-webapp",
   "version": "1.0.0",
   "description": "Package manager for Scada-LTS web content",
-  "author": "SoftQ development team",
+  "author": "Abil'I.T. development team",
   "license": "ISC",
   "dependencies": {
     "axios": "0.21.4",

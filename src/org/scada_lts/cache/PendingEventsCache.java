@@ -37,7 +37,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 /** 
  * Class responsible for buffering of PendingEvents
  * 
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
 public class PendingEventsCache {

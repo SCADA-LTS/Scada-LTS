@@ -22,7 +22,7 @@ import java.util.List;
 
 
 /**
- * @author grzegorz.bylica@gmail.com on 17.01.19
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Controller
 public class ReadDataBaseXIdAPI {

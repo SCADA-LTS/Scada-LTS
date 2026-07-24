@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * @autor grzegorz.bylica@gmail.com on 02.11.18
+ * @author Grzegorz Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class SleepStateDs implements  IStateDs, Serializable {
 

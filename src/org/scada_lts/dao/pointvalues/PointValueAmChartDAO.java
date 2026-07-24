@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * on simple objects that does not contains any additional properties
  * to reduce the memory usage. Match result with AmChart data interface.
  *
- * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @author Radoslaw Jajko on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class PointValueAmChartDAO {
 

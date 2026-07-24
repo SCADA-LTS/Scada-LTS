@@ -32,7 +32,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 /**
  * Test EventDAO
  *
- * @author Grzesiek Bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author Grzesiek Bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 public class EventDaoTest extends TestDAO {
 		

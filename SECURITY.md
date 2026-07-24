@@ -2,7 +2,7 @@
 
 ## To report a security issue
 
-1. Use the contact address sdt (at) abilit.eu
+1. Use the contact address sdt@abilit.eu
 2. Provide description of the issue, the steps you took to create the issue, affected versions, and, if known, mitigations for the issue etc.
 
 - If you have a fix, that is most welcome -- please attach or summarize it in your message!

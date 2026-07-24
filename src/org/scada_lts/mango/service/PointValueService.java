@@ -67,7 +67,7 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
 /**
  * Base on the PointValueDao
  *
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
+ * @author grzegorz bylica on behalf of Abil'I.T. (code owner) email: sdt@abilit.eu
  */
 @Service
 public class PointValueService implements MangoPointValues {
@@ -312,6 +312,7 @@ public class PointValueService implements MangoPointValues {
     //TODO rewrite
     private List<PointValueTime> getLstPointValueTime(List<PointValue> lstIn) {
         List<PointValueTime> lst = new ArrayList<PointValueTime>();
+        lstIn.sort(Comparator.comparing(PointValue::getId).reversed());
         for (PointValue pv : lstIn) {
             lst.add(pv.getPointValue());
         }
@@ -545,16 +546,11 @@ public class PointValueService implements MangoPointValues {
                 }
             }
         }
-
-        private int instancesSize;
-        private int entriesSize;
-
         public BatchWriteBehind() {}
 
         @Override
         public void work() {
             try {
-                this.instancesSize = instances.size();
                 BatchWriteBehindEntry[] inserts;
                 while (true) {
                     synchronized (ENTRIES) {
@@ -563,7 +559,6 @@ public class PointValueService implements MangoPointValues {
 
                         inserts = new BatchWriteBehindEntry[ENTRIES.size() < MAX_ROWS ? ENTRIES
                                 .size() : MAX_ROWS];
-                        this.entriesSize = inserts.length;
                         ENTRIES.pop(inserts);
                         ENTRIES_MONITOR.setValue(ENTRIES.size());
                     }
@@ -623,7 +618,7 @@ public class PointValueService implements MangoPointValues {
 
         @Override
         public String toString() {
-            return "BatchWriteBehind{current instances size: " + INSTANCES_MONITOR.getValue() + ", current entries size: " + ENTRIES_MONITOR.getValue() + ", instances size: " + this.instancesSize + ", entries size: " + this.entriesSize + '}';
+            return "BatchWriteBehind{instances size: " + instances.size() + '}';
         }
 
         @Override
@@ -686,7 +681,7 @@ public class PointValueService implements MangoPointValues {
 
                 ScriptExecutor scriptExecutor = new ScriptExecutor();
 
-                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext(), dataPointRT, metaDataSourceRT);
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
 
                 PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
                 Common.ctx.getRuntimeManager().setDataPointValue(dataPoint.getId(), pointValueTime, user);
