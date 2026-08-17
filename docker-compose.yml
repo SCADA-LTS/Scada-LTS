@@ -19,14 +19,21 @@ services:
             - ./db_data:/var/lib/mysql:rw
             - ./db_conf:/etc/mysql:ro
         command: --log_bin_trust_function_creators=1
+        healthcheck:
+            test: ["CMD", "mysql", "-h", "127.0.0.1", "-uroot", "-proot", "-e", "SELECT 1", "scadalts"]
+            interval: 5s
+            timeout: 5s
+            retries: 30
+            start_period: 30s
     scadalts:
         image: scadalts/scadalts:latest
         environment:
             - CATALINA_OPTS=-Xmx2G -Xms2G
         ports: 
             - "8080:8080"
-        depends_on: 
-            - database
+        depends_on:
+            database:
+                condition: service_healthy
         expose: ["8080", "8000"]
         volumes:
             - ./tomcat_log:/usr/local/tomcat/logs:rw
@@ -36,11 +43,17 @@ services:
             - /usr/bin/wait-for-it
             - --host=database
             - --port=3306
-            - --timeout=30
+            - --timeout=60
             - --strict
             - --
             - /usr/local/tomcat/bin/catalina.sh
             - run
+        healthcheck:
+            test: ["CMD", "/usr/bin/wait-for-it", "--host=localhost", "--port=8080", "--timeout=5"]
+            interval: 10s
+            timeout: 5s
+            retries: 18
+            start_period: 60s
     mqtt:
         image: hivemq/hivemq4:latest
         ports:
