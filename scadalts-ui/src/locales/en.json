@@ -238,6 +238,8 @@
 	"datasource.modbus.datatype.15": "8 byte float swapped",
 	"datasource.modbus.datatype.18": "Fixed length string",
 	"datasource.modbus.datatype.19": "Variable length string",
+	"datasource.modbus.swapStringBytes": "Swap bytes within each string register",
+	"datasource.modbus.swapStringBytesHint": "Low byte first; the default is high byte first. Register order is unchanged.",
 	"event.audit.compoundEventDetector": "Compound event detector",
 	"event.audit.dataPoint": "Data point",
 	"event.audit.dataSource": "Data source",

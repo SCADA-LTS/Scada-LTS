@@ -96,6 +96,7 @@
       temp.bit = $get("test_bit");
       temp.registerCount = $get("test_registerCount");
       temp.charset = $get("test_charset");
+      temp.swapStringBytes = $get("test_swapStringBytes");
 
       return temp;
   }
@@ -128,6 +129,7 @@
           locator.bit = parseInt(locatorConfigTemp.bit);
           locator.registerCount = parseInt(locatorConfigTemp.registerCount);
           locator.charset = locatorConfigTemp.charset;
+          locator.swapStringBytes = locatorConfigTemp.swapStringBytes;
 
           locatorTestImpl(locator);
       }
@@ -226,6 +228,7 @@
 	      $set("bit", $get("test_bit"));
 	      $set("registerCount", $get("test_registerCount"));
 	      $set("charset", $get("test_charset"));
+	      $set("swapStringBytes", $get("test_swapStringBytes"));
           changeRange('');
 	  });
   }
@@ -261,6 +264,7 @@
       $set("bit", locator.bit);
       $set("registerCount", locator.registerCount);
       $set("charset", locator.charset);
+      $set("swapStringBytes", locator.swapStringBytes);
       $set("settableOverride", locator.settableOverride);
       $set("multiplier", locator.multiplier);
       $set("additive", locator.additive);
@@ -293,6 +297,7 @@
       locator.bit = $get("bit");
       locator.registerCount = $get("registerCount");
       locator.charset = $get("charset");
+      locator.swapStringBytes = $get("swapStringBytes");
       locator.settableOverride = $get("settableOverride");
       locator.multiplier = $get("multiplier");
       locator.additive = $get("additive");
@@ -336,6 +341,7 @@
   }
   
   function changeDataType(prefix) {
+	  setDisabled(prefix +"swapStringBytes", !isString(prefix));
 	  if (isBinary(prefix)) {
           setDisabled(prefix +"bit", isBinaryRange(prefix));
           setDisabled(prefix +"registerCount", true);
@@ -571,6 +577,11 @@
           <td class="formLabelRequired"><spring:message code="dsEdit.modbus.charset"/></td>
           <td class="formField"><input id="test_charset" type="text" value="ASCII"/></td>
         </tr>
+
+        <tr>
+          <td class="formLabel"><spring:message code="dsEdit.modbus.swapStringBytes"/></td>
+          <td class="formField"><input id="test_swapStringBytes" type="checkbox"/></td>
+        </tr>
         
         <tr>
           <td colspan="2" align="center">
@@ -649,6 +660,11 @@
     <tr>
       <td class="formLabelRequired"><spring:message code="dsEdit.modbus.charset"/></td>
       <td class="formField"><input id="charset" type="text"/></td>
+    </tr>
+
+    <tr>
+      <td class="formLabel"><spring:message code="dsEdit.modbus.swapStringBytes"/></td>
+      <td class="formField"><input id="swapStringBytes" type="checkbox"/></td>
     </tr>
     
     <tr>

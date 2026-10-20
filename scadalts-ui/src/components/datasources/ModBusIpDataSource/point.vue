@@ -62,6 +62,15 @@
 					></v-text-field>
 				</v-col>
 
+				<v-col v-if="settingsCharVisible">
+					<v-checkbox
+						v-model="datapoint.pointLocator.swapStringBytes"
+						:label="$t('datasource.modbus.swapStringBytes')"
+						:hint="$t('datasource.modbus.swapStringBytesHint')"
+						persistent-hint
+					></v-checkbox>
+				</v-col>
+
 				<v-col v-if="settingsBinaryVisible">
 					<v-text-field label="Bit" v-model="datapoint.pointLocator.bit"></v-text-field>
 				</v-col>
@@ -124,6 +133,15 @@
 						label="Character encoding"
 						v-model="datapoint.pointLocator.charset"
 					></v-text-field>
+				</v-col>
+
+				<v-col v-if="settingsCharVisible">
+					<v-checkbox
+						v-model="datapoint.pointLocator.swapStringBytes"
+						:label="$t('datasource.modbus.swapStringBytes')"
+						:hint="$t('datasource.modbus.swapStringBytesHint')"
+						persistent-hint
+					></v-checkbox>
 				</v-col>
 
 				<v-col v-if="settingsBinaryVisible">

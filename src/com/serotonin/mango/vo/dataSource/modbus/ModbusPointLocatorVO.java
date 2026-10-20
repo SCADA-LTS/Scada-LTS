@@ -182,6 +182,8 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 	@JsonRemoteProperty
 	private String charset = "ASCII";
 	@JsonRemoteProperty
+	private boolean swapStringBytes;
+	@JsonRemoteProperty
 	private boolean settableOverride = true;
 	@JsonRemoteProperty
 	private double multiplier = 1;
@@ -218,6 +220,14 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 
 	public void setCharset(String charset) {
 		this.charset = charset;
+	}
+
+	public boolean isSwapStringBytes() {
+		return swapStringBytes;
+	}
+
+	public void setSwapStringBytes(boolean swapStringBytes) {
+		this.swapStringBytes = swapStringBytes;
 	}
 
 	public boolean isSettableOverride() {
@@ -352,6 +362,8 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 					"dsEdit.modbus.registerCount", registerCount);
 			AuditEventType.addPropertyMessage(list, "dsEdit.modbus.charset",
 					charset);
+			AuditEventType.addPropertyMessage(list, "dsEdit.modbus.swapStringBytes",
+					swapStringBytes);
 			AuditEventType.addPropertyMessage(list,
 					"dsEdit.modbus.settableOverride", settableOverride);
 			AuditEventType.addPropertyMessage(list, "dsEdit.modbus.multiplier",
@@ -383,6 +395,8 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"dsEdit.modbus.charset", from.charset, charset);
 			AuditEventType.maybeAddPropertyChangeMessage(list,
+					"dsEdit.modbus.swapStringBytes", from.swapStringBytes, swapStringBytes);
+			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"dsEdit.modbus.settableOverride", from.settableOverride,
 					settableOverride);
 			AuditEventType.maybeAddPropertyChangeMessage(list,
@@ -398,7 +412,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 6;
+	private static final int version = 7;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -414,6 +428,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 		out.writeBoolean(settableOverride);
 		out.writeDouble(multiplier);
 		out.writeDouble(additive);
+		out.writeBoolean(swapStringBytes);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException {
@@ -475,7 +490,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 			settableOverride = in.readBoolean();
 			multiplier = in.readDouble();
 			additive = in.readDouble();
-		} else if (ver == 6) {
+		} else if (ver == 6 || ver == 7) {
 			range = in.readInt();
 			modbusDataType = in.readInt();
 			slaveId = in.readInt();
@@ -488,6 +503,8 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 			settableOverride = in.readBoolean();
 			multiplier = in.readDouble();
 			additive = in.readDouble();
+			if (ver >= 7)
+				swapStringBytes = in.readBoolean();
 		}
 	}
 
@@ -535,6 +552,7 @@ public class ModbusPointLocatorVO extends AbstractPointLocatorVO implements
 				", bit=" + bit +
 				", registerCount=" + registerCount +
 				", charset='" + charset + '\'' +
+				", swapStringBytes=" + swapStringBytes +
 				", settableOverride=" + settableOverride +
 				", multiplier=" + multiplier +
 				", additive=" + additive +
