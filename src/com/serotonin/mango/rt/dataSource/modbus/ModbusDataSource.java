@@ -43,6 +43,7 @@ import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.exception.ModbusTransportException;
 import com.serotonin.modbus4j.locator.BaseLocator;
@@ -493,6 +494,11 @@ abstract public class ModbusDataSource extends PollingDataSource implements
 	}
 
 	public static BaseLocator<?> createModbusLocator(ModbusPointLocatorVO vo) {
+		if (vo.isSwapStringBytes() && (vo.getModbusDataType() == DataType.CHAR
+				|| vo.getModbusDataType() == DataType.VARCHAR))
+			return new SwappedStringLocator(vo.getSlaveId(), vo.getRange(),
+					vo.getOffset(), vo.getModbusDataType(), vo.getRegisterCount(),
+					Charset.forName(vo.getCharset()));
 		return BaseLocator.createLocator(vo.getSlaveId(), vo.getRange(),
 				vo.getOffset(), vo.getModbusDataType(), vo.getBit(),
 				vo.getRegisterCount(), Charset.forName(vo.getCharset()));

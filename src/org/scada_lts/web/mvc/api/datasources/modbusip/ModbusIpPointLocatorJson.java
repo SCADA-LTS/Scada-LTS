@@ -16,6 +16,7 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
     private int registerCount;
     @XssProtect
     private String charset;
+    private boolean swapStringBytes;
     private boolean settableOverride;
     private double multiplier;
     private double additive;
@@ -34,6 +35,7 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
         this.bit = pointLocatorVO.getBit();
         this.registerCount = pointLocatorVO.getRegisterCount();
         this.charset = pointLocatorVO.getCharset();
+        this.swapStringBytes = pointLocatorVO.isSwapStringBytes();
         this.settableOverride = pointLocatorVO.isSettableOverride();
         this.multiplier = pointLocatorVO.getMultiplier();
         this.additive = pointLocatorVO.getAdditive();
@@ -52,6 +54,7 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
         plVO.setBit(this.getBit());
         plVO.setRegisterCount(this.getRegisterCount());
         plVO.setCharset(this.getCharset());
+        plVO.setSwapStringBytes(this.isSwapStringBytes());
         plVO.setSettableOverride(this.isSettableOverride());
         plVO.setMultiplier(this.getMultiplier());
         plVO.setAdditive(this.getAdditive());
@@ -128,6 +131,14 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
 
     public void setCharset(String charset) {
         this.charset = charset;
+    }
+
+    public boolean isSwapStringBytes() {
+        return swapStringBytes;
+    }
+
+    public void setSwapStringBytes(boolean swapStringBytes) {
+        this.swapStringBytes = swapStringBytes;
     }
 
     public boolean isSettableOverride() {

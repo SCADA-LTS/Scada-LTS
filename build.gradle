@@ -185,6 +185,9 @@ task clearProject (type: Delete) {
 
 test {
     filter {
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.modbus.ModbusStringByteOrderTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.modbus.ModbusStringTcpTest"
+        includeTestsMatching "com.serotonin.mango.vo.dataSource.modbus.ModbusStringConfigurationTest"
         includeTestsMatching "org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
         includeTestsMatching "org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
         includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueCacheTest"

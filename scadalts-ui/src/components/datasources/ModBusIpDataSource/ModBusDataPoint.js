@@ -17,6 +17,7 @@ export class ModBusDataPoint {
             bit: 0,
             registerCount: 0,
             charset: "ASCII",
+            swapStringBytes: false,
             settableOverride: true,
             multiplier: 1,
             additive: 0,

@@ -60,6 +60,19 @@
   settable.
 </p>
 <p>
+  For fixed and variable length strings, <b>Swap bytes within each string register</b> selects low-byte-first
+  character data. By default the high byte is decoded first, preserving existing point configurations. This option
+  exchanges the two bytes within each 16-bit register before character decoding, without changing register order.
+  It also applies when writing strings. For example, registers 0x6947, 0x6874, 0x6275 decode as "Github" when enabled.
+</p>
+<p>
+  The <b>Number of registers</b> still defines the byte capacity (two bytes per register). Fixed length strings
+  retain all bytes, including padding; writes are padded with spaces. Variable length strings stop at the first
+  zero byte, and writes reserve the last byte for a zero terminator when full. These existing rules also apply to
+  the selected character encoding: variable length strings are unsuitable for encodings such as UTF-16 that
+  contain zero bytes within characters. Values exceeding the byte capacity are truncated as before.
+</p>
+<p>
   The <b>Multiplier</b> and <b>Additive</b> fields can be used when trivial value conversions are required. Numeric 
   values read from the network are calculated as follows: (raw value) * multiplier + additive. The reverse is applied 
   when a numeric value is written to the network.
