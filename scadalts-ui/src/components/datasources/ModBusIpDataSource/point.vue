@@ -64,7 +64,8 @@
 
 				<v-col v-if="settingsCharVisible">
 					<v-checkbox
-						v-model="datapoint.pointLocator.swapStringBytes"
+						:input-value="datapoint.pointLocator.swapStringBytes"
+						@change="$emit('swap-string-bytes', $event)"
 						:label="$t('datasource.modbus.swapStringBytes')"
 						:hint="$t('datasource.modbus.swapStringBytesHint')"
 						persistent-hint
@@ -137,7 +138,8 @@
 
 				<v-col v-if="settingsCharVisible">
 					<v-checkbox
-						v-model="datapoint.pointLocator.swapStringBytes"
+						:input-value="datapoint.pointLocator.swapStringBytes"
+						@change="$emit('swap-string-bytes', $event)"
 						:label="$t('datasource.modbus.swapStringBytes')"
 						:hint="$t('datasource.modbus.swapStringBytesHint')"
 						persistent-hint

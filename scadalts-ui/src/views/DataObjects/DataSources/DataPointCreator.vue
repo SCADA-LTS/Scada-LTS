@@ -4,6 +4,7 @@
 			v-if="dialogVisible"
 			:is="`${datasourceType}`"
 			:datapoint="datapoint"
+			@swap-string-bytes="$set(datapoint.pointLocator, 'swapStringBytes', $event)"
 			:createMode="!editMode"
 			:visible="dialogVisible"
 			@canceled="onCanceled()"

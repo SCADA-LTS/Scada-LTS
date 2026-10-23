@@ -579,7 +579,7 @@
         </tr>
 
         <tr>
-          <td class="formLabel"><spring:message code="dsEdit.modbus.swapStringBytes"/></td>
+          <td class="formLabel"><label for="test_swapStringBytes"><spring:message code="dsEdit.modbus.swapStringBytes"/></label></td>
           <td class="formField"><input id="test_swapStringBytes" type="checkbox"/></td>
         </tr>
         
@@ -663,7 +663,7 @@
     </tr>
 
     <tr>
-      <td class="formLabel"><spring:message code="dsEdit.modbus.swapStringBytes"/></td>
+      <td class="formLabel"><label for="swapStringBytes"><spring:message code="dsEdit.modbus.swapStringBytes"/></label></td>
       <td class="formField"><input id="swapStringBytes" type="checkbox"/></td>
     </tr>
     

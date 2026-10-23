@@ -5,6 +5,7 @@
                 <Point
          :createMode="false"
          :datapoint="datapoint"
+         @swap-string-bytes="$set(datapoint.pointLocator, 'swapStringBytes', $event)"
          :visible="true"
          :pointLocatorTest="true"
         ></Point>

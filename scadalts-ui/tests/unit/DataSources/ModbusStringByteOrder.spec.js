@@ -1,13 +1,14 @@
 import { expect } from 'chai';
 import { mount } from '@vue/test-utils';
 import PointEditor from '@/components/datasources/ModBusIpDataSource/point.vue';
+import PointLocatorTest from '@/components/datasources/ModBusIpDataSource/components/PointLocatorTest.vue';
 import ModBusDataPoint from '@/components/datasources/ModBusIpDataSource/ModBusDataPoint';
 import en from '@/locales/en.json';
 
 const slot = { template: '<div><slot /></div>' };
 const checkbox = {
-	props: ['value', 'label', 'hint'],
-	template: '<label>{{ label }}<input type="checkbox" :checked="value" @change="$emit(\'input\', $event.target.checked)">{{ hint }}</label>',
+	props: ['inputValue', 'label', 'hint'],
+	template: '<label>{{ label }}<input type="checkbox" :checked="inputValue" @change="$emit(\'change\', $event.target.checked)">{{ hint }}</label>',
 };
 
 [false, true].forEach((pointLocatorTest) => {
@@ -21,6 +22,11 @@ const checkbox = {
 			datapoint.pointLocator.modbusDataType = 18;
 			wrapper = mount(PointEditor, {
 				propsData: { datapoint, pointLocatorTest },
+				listeners: {
+					'swap-string-bytes': (value) => {
+						datapoint.pointLocator.swapStringBytes = value;
+					},
+				},
 				mocks: {
 					$t: (key) => en[key] || key,
 					$store: { state: { dataSourceState: { datapointTypes: [] } } },
@@ -48,6 +54,7 @@ const checkbox = {
 
 		it('updates the submitted point and preserves the value on reopen', async () => {
 			await wrapper.find('input[type="checkbox"]').setChecked(true);
+			expect(wrapper.emitted('swap-string-bytes')[0]).to.deep.equal([true]);
 			expect(datapoint.pointLocator.swapStringBytes).to.equal(true);
 			wrapper.vm.save(datapoint);
 			expect(wrapper.emitted('saved')[0][0].pointLocator.swapStringBytes).to.equal(true);
@@ -72,5 +79,50 @@ const checkbox = {
 				expect(wrapper.find('input[type="checkbox"]').exists()).to.equal(range === 4);
 			}
 		});
+	});
+});
+
+describe('Modbus locator test byte-order event', () => {
+	it('sends the parent-owned byte-order value in the locator request', async () => {
+		let request;
+		const wrapper = mount(PointLocatorTest, {
+			propsData: { datasource: { id: 1 } },
+			mocks: {
+				$t: (key) => en[key] || key,
+				$store: {
+					state: { dataSourceState: { datapointTypes: [] } },
+					dispatch: (action, data) => {
+						expect(action).to.equal('modbusPointLocatorTest');
+						request = data;
+						return Promise.resolve({ status: 'success', value: 'Github' });
+					},
+				},
+			},
+			stubs: {
+				DataPointCreation: slot,
+				'v-card': slot,
+				'v-card-text': slot,
+				'v-row': slot,
+				'v-col': slot,
+				'v-btn': slot,
+				'v-icon': true,
+				'v-select': true,
+				'v-text-field': true,
+				'v-checkbox': checkbox,
+			},
+		});
+		try {
+			wrapper.vm.datapoint.pointLocator.range = 3;
+			wrapper.vm.datapoint.pointLocator.modbusDataType = 18;
+			wrapper.findComponent(PointEditor).vm.changeRegisterRange();
+			await wrapper.vm.$nextTick();
+			await wrapper.find('input[type="checkbox"]').setChecked(true);
+			wrapper.vm.testPointLocator();
+			await wrapper.vm.$nextTick();
+			expect(request.pointLocator.swapStringBytes).to.equal(true);
+			expect(wrapper.vm.status.message).to.equal('Github');
+		} finally {
+			wrapper.destroy();
+		}
 	});
 });
